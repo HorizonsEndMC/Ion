@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.command.misc
 
 import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import io.papermc.paper.util.StacktraceDeobfuscator
@@ -11,6 +10,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.admin.IonChunkCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
+import net.horizonsend.ion.server.features.transport.nodes.cache.CacheState
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
@@ -104,31 +104,33 @@ object TransportDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("dump nodes chunk")
-	@CommandCompletion("power") /* |item|gas") */
 	fun dumpNodesChunk(sender: Player, network: CacheType) {
 		val ionChunk = sender.chunk.ion()
 		val grid = network.get(ionChunk)
+			.getRawCache()
+			.filter { entry -> entry.value !is CacheState.Empty }
 
-		sender.information("${grid.getRawCache().size} covered position(s).")
-		sender.information("${grid.getRawCache().values.distinct().size} unique node(s).")
+		sender.information("${grid.size} covered position(s).")
+		sender.information("${grid.values.distinct().size} unique node(s).")
 
-		grid.getRawCache().forEach { (t, _) ->
+		grid.forEach { (t, _) ->
 			val vec = toVec3i(t)
 			sender.highlightBlock(vec, 50L)
 		}
 	}
 
 	@Subcommand("dump nodes ship")
-	@CommandCompletion("power") /* |item|gas") */
 	fun dumpNodesShip(sender: Player, network: CacheType) {
 		val ship = getStarshipRiding(sender)
 		val grid = network.get(ship)
+			.getRawCache()
+			.filter { entry -> entry.value !is CacheState.Empty }
 
-		sender.information("${grid.getRawCache().size} covered position(s).")
-		sender.information("${grid.getRawCache().values.distinct().size} unique node(s).")
+		sender.information("${grid.size} covered position(s).")
+		sender.information("${grid.values.distinct().size} unique node(s).")
 
-		grid.getRawCache().forEach { (t, _) ->
-			val vec = toVec3i(t)
+		grid.forEach { (localKey, _) ->
+			val vec = ship.transportManager.getGlobalCoordinate(toVec3i(localKey))
 			sender.highlightBlock(vec, 50L)
 		}
 	}
@@ -153,7 +155,7 @@ object TransportDebugCommand : SLCommand() {
 		sender.information("${extractors.getExtractors().size} covered position(s).")
 
 		extractors.getExtractors().forEach { extractor ->
-			sender.highlightBlock(toVec3i(extractor.pos), 50L)
+			sender.highlightBlock(ship.transportManager.getGlobalCoordinate(toVec3i(extractor.pos)), 50L)
 		}
 	}
 

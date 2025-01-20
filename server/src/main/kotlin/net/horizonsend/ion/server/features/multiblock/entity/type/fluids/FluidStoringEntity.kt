@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.fluids
 
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.InternalStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.StorageContainer
@@ -8,7 +7,6 @@ import net.horizonsend.ion.server.features.transport.fluids.Fluid
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.STORAGES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.kyori.adventure.text.Component
 import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataAdapterContext
@@ -144,15 +142,4 @@ interface FluidStoringEntity {
 	}
 
 	val fluidInputOffset: Vec3i
-
-	fun getFluidInputLocation(): Vec3i {
-		this as MultiblockEntity
-		return getRelative(
-			origin = vec3i,
-			forwardFace= structureDirection,
-			right = fluidInputOffset.x,
-			up = fluidInputOffset.y,
-			forward = fluidInputOffset.z
-		)
-	}
 }
