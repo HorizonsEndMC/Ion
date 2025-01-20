@@ -107,7 +107,7 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, PipedGasCollectorMultiblock, x, y, z, world, structureDirection), AsyncTickingMultiblockEntity, FluidStoringEntity, DisplayMultiblockEntity {
+	) : MultiblockEntity(manager, PipedGasCollectorMultiblock, world, x, y, z, structureDirection), AsyncTickingMultiblockEntity, FluidStoringEntity, DisplayMultiblockEntity {
 		override val tickingManager: TickingManager = TickingManager(interval = 4)
 
 		override val fluidStores: Array<StorageContainer> = arrayOf(

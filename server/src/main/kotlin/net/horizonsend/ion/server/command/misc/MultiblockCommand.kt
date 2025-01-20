@@ -191,10 +191,8 @@ object MultiblockCommand : SLCommand() {
 		})
 
 		if (visual == true) {
-			for ((key, _) in entities) {
-				val vec = toVec3i(key)
-
-				sender.highlightBlock(vec, 30L)
+			for ((_, entity) in entities) {
+				sender.highlightBlock(entity.globalVec3i, 30L)
 			}
 		}
 
@@ -209,24 +207,21 @@ object MultiblockCommand : SLCommand() {
 		val manager = ship.multiblockManager
 		val entities = manager.getAllMultiblockEntities().toList()
 
-		sender.sendMessage(
-			formatPaginatedMenu(
-				entities.size,
-				"/ionchunk dumpentities ${visual ?: false}",
-				page ?: 1,
-			) { index ->
-				val (key, entity) = entities[index]
+		sender.sendMessage(formatPaginatedMenu(
+			entities.size,
+			"/ionchunk dumpentities ${visual ?: false}",
+			page ?: 1,
+		) { index ->
+			val (key, entity) = entities[index]
 
-				val vec = toVec3i(key)
+			val vec = toVec3i(key)
 
-				text("$vec : $entity")
-			})
+			text("$vec : $entity")
+		})
 
 		if (visual == true) {
-			for ((key, _) in entities) {
-				val vec = toVec3i(key)
-
-				sender.highlightBlock(vec, 30L)
+			for ((_, entity) in entities) {
+				sender.highlightBlock(entity.globalVec3i, 30L)
 			}
 		}
 

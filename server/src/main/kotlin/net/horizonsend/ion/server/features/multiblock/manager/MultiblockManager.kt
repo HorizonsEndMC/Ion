@@ -11,7 +11,11 @@ import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
@@ -52,25 +56,25 @@ abstract class MultiblockManager(val log: Logger) {
 	 **/
 	fun addMultiblockEntity(entity: MultiblockEntity, save: Boolean = true, ensureSign: Boolean = false) {
 		if (ensureSign) {
-			val signOrigin = MultiblockEntity.getSignFromOrigin(entity.world, entity.vec3i, entity.structureDirection)
+			val signOrigin = MultiblockEntity.getSignFromOrigin(entity.world, entity.globalVec3i, entity.structureDirection)
 			if (!signOrigin.type.isWallSign) {
-				log.info("Removing invalid multiblock entity at ${entity.vec3i} on ${entity.world.name}")
+				log.info("Removing invalid multiblock entity at ${entity.globalVec3i} on ${entity.world.name}")
 				entity.remove()
 				return
 			}
 		}
 
-		multiblockEntities.remove(entity.locationKey)?.processRemoval()
-		multiblockEntities[entity.locationKey] = entity
+		multiblockEntities.remove(entity.localBlockKey)?.processRemoval()
+		multiblockEntities[entity.localBlockKey] = entity
 
 		entity.processLoad()
 
 		if (entity is SyncTickingMultiblockEntity) {
-			syncTickingMultiblockEntities[entity.locationKey] = entity
+			syncTickingMultiblockEntities[entity.localBlockKey] = entity
 		}
 
 		if (entity is AsyncTickingMultiblockEntity) {
-			asyncTickingMultiblockEntities[entity.locationKey] = entity
+			asyncTickingMultiblockEntities[entity.localBlockKey] = entity
 		}
 
 		if (save) save()
@@ -148,24 +152,42 @@ abstract class MultiblockManager(val log: Logger) {
 
 	fun isOccupied(x: Int, y: Int, z: Int): Boolean = multiblockEntities.containsKey(toBlockKey(x, y, z))
 
-	fun handleTransfer(location: BlockKey, destination: MultiblockManager) {
-		val atLocation = get(location) ?: return
-		atLocation.releaseInputs()
-		atLocation.manager = this
-		multiblockEntities.remove(location)
+	fun handleTransferTo(oldBlockKey: BlockKey, newBlockKey: BlockKey, destination: MultiblockManager) {
+		val atLocation = get(oldBlockKey) ?: return
 
-		destination.multiblockEntities[location] = atLocation
+		// Remove all ties to old manager and other multis
+		atLocation.releaseInputs()
+		atLocation.removeLinkages()
+
+		// Transfer manager
+		atLocation.manager = destination
+
+		// Remove current occupant at spot to handle it properly
+		multiblockEntities.remove(oldBlockKey)
+
+		destination.multiblockEntities[newBlockKey] = atLocation
+		if (oldBlockKey != newBlockKey) {
+			atLocation.localOffsetX = getX(newBlockKey)
+			atLocation.localOffsetY = getY(newBlockKey)
+			atLocation.localOffsetZ = getZ(newBlockKey)
+		}
+
+		// Tie into new network
 		atLocation.registerInputs()
+		atLocation.linkages.forEach { t -> t.register() }
 
 		if (atLocation is SyncTickingMultiblockEntity) {
-			destination.syncTickingMultiblockEntities[location] = atLocation
-			syncTickingMultiblockEntities.remove(location)
+			destination.syncTickingMultiblockEntities[newBlockKey] = atLocation
+			syncTickingMultiblockEntities.remove(oldBlockKey)
 		}
 
 		if (atLocation is AsyncTickingMultiblockEntity) {
-			destination.asyncTickingMultiblockEntities[location] = atLocation
-			asyncTickingMultiblockEntities.remove(location)
+			destination.asyncTickingMultiblockEntities[newBlockKey] = atLocation
+			asyncTickingMultiblockEntities.remove(oldBlockKey)
 		}
 	}
+
+	open fun getGlobalCoordinate(localVec3i: Vec3i): Vec3i = localVec3i
+	open fun getLocalCoordinate(globalVec3i: Vec3i): Vec3i = globalVec3i
 }
 

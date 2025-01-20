@@ -25,7 +25,7 @@ abstract class SimplePoweredEntity(
 	world: World,
 	structureDirection: BlockFace,
 	final override val maxPower: Int
-) : MultiblockEntity(manager, multiblock, x, y, z, world, structureDirection), PoweredMultiblockEntity, DisplayMultiblockEntity {
+) : MultiblockEntity(manager, multiblock, world, x, y, z, structureDirection), PoweredMultiblockEntity, DisplayMultiblockEntity {
 	@Suppress("LeakingThis") // Only a reference is needed, max power is provided in the constructor
 	final override val powerStorage: PowerStorage = PowerStorage(
 		this,

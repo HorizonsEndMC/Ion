@@ -36,6 +36,7 @@ class ChunkCacheHolder<T: TransportCache> private constructor (override val tran
 		val xDiff = transportManager.chunk.x - chunkX
 		val zDiff = transportManager.chunk.z - chunkZ
 
+		// Only allow access to adjacent chunks
 		if (xDiff > 1 || xDiff < -1) return null
 		if (zDiff > 1 || zDiff < -1) return null
 

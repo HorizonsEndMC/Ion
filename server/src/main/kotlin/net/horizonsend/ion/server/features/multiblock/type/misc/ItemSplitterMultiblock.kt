@@ -129,7 +129,7 @@ object ItemSplitterMultiblock : Multiblock(), InteractableMultiblock, EntityMult
 		world: World,
 		structureDirection: BlockFace,
 		private var isBlacklist: Boolean
-	) : MultiblockEntity(manager, ItemSplitterMultiblock, x, y, z, world, structureDirection), SyncTickingMultiblockEntity, LegacyMultiblockEntity {
+	) : MultiblockEntity(manager, ItemSplitterMultiblock, world, x, y, z, structureDirection), SyncTickingMultiblockEntity, LegacyMultiblockEntity {
 		override val tickingManager: TickingManager = TickingManager(interval = 20)
 		override val inputsData: InputsData = none()
 

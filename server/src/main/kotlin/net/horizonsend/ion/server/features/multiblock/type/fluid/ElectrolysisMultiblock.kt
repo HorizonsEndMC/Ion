@@ -211,7 +211,7 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 		z: Int,
 		world: World,
 		structureDirection: BlockFace
-	) : MultiblockEntity(manager, ElectrolysisMultiblock, x, y, z, world, structureDirection), AsyncTickingMultiblockEntity, FluidStoringEntity, PoweredMultiblockEntity, DisplayMultiblockEntity {
+	) : MultiblockEntity(manager, ElectrolysisMultiblock, world, x, y, z, structureDirection), AsyncTickingMultiblockEntity, FluidStoringEntity, PoweredMultiblockEntity, DisplayMultiblockEntity {
 		override val maxPower: Int = 100_000
 		override val multiblock = ElectrolysisMultiblock
 		override val tickingManager: TickingManager = TickingManager(interval = 4)

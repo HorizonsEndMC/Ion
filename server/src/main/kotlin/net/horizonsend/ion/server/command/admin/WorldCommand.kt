@@ -206,9 +206,9 @@ object WorldCommand : SLCommand() {
 		) {
 			val entity = entities[it]
 
-			ofChildren(text(entity.javaClass.simpleName), space(), bracketed(text("${entity.x} ${entity.y} ${entity.z}")),)
-				.clickEvent(ClickEvent.runCommand("/tp ${entity.x} ${entity.y} ${entity.z}"))
-				.hoverEvent(text("/tp ${entity.x} ${entity.y} ${entity.z}"))
+			ofChildren(text(entity.javaClass.simpleName), space(), bracketed(text("${entity.globalVec3i.x} ${entity.globalVec3i.y} ${entity.globalVec3i.z}")),)
+				.clickEvent(ClickEvent.runCommand("/tp ${entity.globalVec3i.x} ${entity.globalVec3i.y} ${entity.globalVec3i.z}"))
+				.hoverEvent(text("/tp ${entity.globalVec3i.x} ${entity.globalVec3i.y} ${entity.globalVec3i.z}"))
 		}
 
 		sender.information("Entities:")

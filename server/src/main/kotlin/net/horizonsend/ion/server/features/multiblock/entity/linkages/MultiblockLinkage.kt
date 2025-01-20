@@ -16,7 +16,6 @@ open class MultiblockLinkage(
 	fun getLinkLocation(): BlockKey = getRelative(location, linkDirection)
 
 	fun displace(movement: StarshipMovement) {
-		location = movement.displaceKey(location)
 		linkDirection = movement.displaceFace(linkDirection)
 	}
 

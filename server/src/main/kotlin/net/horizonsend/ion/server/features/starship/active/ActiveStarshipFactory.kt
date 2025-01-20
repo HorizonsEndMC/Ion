@@ -35,6 +35,7 @@ object ActiveStarshipFactory {
 
 		val starship = createStarship(data, blocks, carriedShips)
 
+		starship.multiblockManager.processLoad()
 		initSubsystems(feedbackDestination, starship)
 
 		return starship
@@ -113,6 +114,8 @@ object ActiveStarshipFactory {
 			.maxByOrNull { it.value.maxSpeed }
 			?.key
 			?: starship.forward
+
+		starship.multiblockManager.referenceForward = starship.forward
 	}
 
 	private fun prepareShields(starship: ActiveControlledStarship) {
