@@ -20,8 +20,8 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.multiblock.manager.ShipMultiblockManager
 import net.horizonsend.ion.server.features.gui.custom.starship.RenameButton.Companion.starshipNameSerializer
+import net.horizonsend.ion.server.features.multiblock.manager.ShipMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
@@ -62,14 +62,15 @@ import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustDat
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
-import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.CustomTurretSubsystem
+import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
@@ -101,11 +102,13 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.math.cbrt
+import kotlin.math.cos
 import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 class Starship(
@@ -641,4 +644,52 @@ class Starship(
 	}
 
 	val initPrintCost = blocks.sumOf { ShipFactoryMaterialCosts.getPrice(world.getBlockAtKey(it).blockData) }
+
+	// Region coordinate utils
+	// This bit of code adds the ability to have relative coordinates within the starship, may be useful in the future
+	var referenceForward = BlockFace.NORTH
+
+	// Get a Vec3i relative to the ship's center of mass from a world coordinate
+	fun getGlobalCoordinate(localVec3i: Vec3i): Vec3i {
+		val globalReference = centerOfMass
+		val starshipDirection = forward
+
+		// Shortcut
+		if (starshipDirection == referenceForward) return localVec3i + globalReference
+
+		return getAdjusted(referenceForward, starshipDirection, localVec3i) + globalReference
+	}
+
+	// Get a world coordinate from a Vec3i relative to the ship's center of mass
+	fun getLocalCoordinate(globalVec3i: Vec3i): Vec3i {
+		val local = globalVec3i - centerOfMass
+		val starshipDirection = forward
+
+		// Shortcut
+		if (starshipDirection == referenceForward) return local
+
+		return getAdjusted(starshipDirection, referenceForward, local)
+	}
+
+	fun getAdjusted(from: BlockFace, to: BlockFace, vec3i: Vec3i): Vec3i {
+		val relativeFace = RelativeFace[from, to]
+
+		// Get rotation to match the offset of the to face from the from face
+		val rotation = when (relativeFace) {
+			RelativeFace.FORWARD -> 0.0
+			RelativeFace.RIGHT -> 90.0
+			RelativeFace.LEFT -> -90.0
+			RelativeFace.BACKWARD -> 180.0
+			else -> throw IllegalArgumentException("Illegal forward face: $to")
+		}
+
+		val cosTheta: Double = cos(Math.toRadians(rotation))
+		val sinTheta: Double = sin(Math.toRadians(rotation))
+
+		return Vec3i(
+			(vec3i.x.toDouble() * cosTheta - vec3i.z.toDouble() * sinTheta).roundToInt(),
+			vec3i.y,
+			(vec3i.x.toDouble() * sinTheta + vec3i.z.toDouble() * cosTheta).roundToInt()
+		)
+	}
 }
