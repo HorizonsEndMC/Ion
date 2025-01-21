@@ -2,6 +2,9 @@ package net.horizonsend.ion.server.features.transport.nodes.inputs
 
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 
 class InputsData private constructor (val holder: MultiblockEntity, private val inputs: List<BuiltInputData>){
 	fun registerInputs() {
@@ -26,7 +29,16 @@ class InputsData private constructor (val holder: MultiblockEntity, private val 
 		private val offsetUp: Int,
 		private val offsetForward: Int,
 	) {
-		private fun getRealPos(holder: MultiblockEntity) = holder.getKeyRelative(offsetRight, offsetUp, offsetForward)
+		private fun getRealPos(holder: MultiblockEntity): BlockKey {
+			val newPos = getRelative(
+				origin = holder.localVec3i,
+				forwardFace = holder.structureDirection,
+				right = offsetRight,
+				up = offsetUp,
+				forward = offsetForward
+			)
+			return toBlockKey(newPos)
+		}
 
 		fun register(manager: InputManager, holder: MultiblockEntity) {
 			manager.registerInput(type, getRealPos(holder), holder)

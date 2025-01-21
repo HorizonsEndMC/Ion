@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.manager
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkageManager
@@ -189,5 +190,8 @@ abstract class MultiblockManager(val log: Logger) {
 
 	open fun getGlobalCoordinate(localVec3i: Vec3i): Vec3i = localVec3i
 	open fun getLocalCoordinate(globalVec3i: Vec3i): Vec3i = globalVec3i
+
+	open fun getGlobalMultiblockEntity(world: World, x: Int, y: Int, z: Int): MultiblockEntity? =
+		MultiblockEntities.getMultiblockEntity(world, x, y, z)
 }
 

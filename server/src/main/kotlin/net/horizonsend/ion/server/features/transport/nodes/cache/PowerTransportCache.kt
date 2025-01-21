@@ -11,7 +11,6 @@ import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.Material.CRAFTING_TABLE
@@ -50,13 +49,16 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	private fun tickPowerExtractor(location: BlockKey, delta: Double) = NewTransport.executor.submit {
 		measureOrFallback(TransportDebugCommand.extractorTickTimes) {
 			val world = holder.getWorld()
+
 			val sources = getExtractorSources<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
 			val source = sources.randomOrNull() ?: return@measureOrFallback //TODO take from all
 
 			// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-			val destinations: List<BlockKey> = measureOrFallback(TransportDebugCommand.floodFillTimes) {
+			val destinations: Collection<BlockKey> = measureOrFallback(TransportDebugCommand.floodFillTimes) {
 				getNetworkDestinations<PowerInputNode>(location) { node ->
-					world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is PoweredMultiblockEntity && !entity.powerStorage.isFull() }
+					getInputEntities(node.position).any { entity ->
+						(entity is PoweredMultiblockEntity) && !entity.powerStorage.isFull()
+					}
 				}
 			}
 
@@ -93,8 +95,12 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 			if (transportPower == 0) return@measureOrFallback
 
 			// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-			val destinations: List<BlockKey> = getNetworkDestinations<PowerInputNode>(location) { node ->
-				holder.getWorld().ion.inputManager.getHolders(CacheType.POWER, node.position).any { entity -> entity is PoweredMultiblockEntity && !entity.powerStorage.isFull() }
+			val destinations: Collection<BlockKey> = measureOrFallback(TransportDebugCommand.solarFloodFillTimes) {
+				getNetworkDestinations<PowerInputNode>(location) { node ->
+					getInputEntities(node.position).any { entity ->
+						(entity is PoweredMultiblockEntity) && !entity.powerStorage.isFull()
+					}
+				}
 			}
 
 			if (destinations.isEmpty()) return@measureOrFallback
@@ -160,7 +166,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 		for ((index, destination) in filteredDestinations.withIndex()) {
 			val shareFactor = shareFactors[index] ?: continue
-			val inputData = PowerInputNode.getPoweredEntities(source.world, destination)
+			val inputData = getInputEntities(destination).filterIsInstance<PoweredMultiblockEntity>()
 
 			val share = shareFactor / shareFactorSum
 

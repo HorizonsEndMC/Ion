@@ -49,7 +49,7 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		if (source.getStoredResources().isEmpty()) return@submit
 
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: List<BlockKey> = getNetworkDestinations<FluidNode.FluidInputNode>(location) { node ->
+		val destinations: Collection<BlockKey> = getNetworkDestinations<FluidNode.FluidInputNode>(location) { node ->
 			world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is FluidStoringEntity && !entity.isFull() }
 		}
 
@@ -85,7 +85,7 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 	/**
 	 * Executes the transfer from the source node to the lit of destinations. Transports one fluid at a time.
 	 **/
-	private fun runFluidTransfer(source: Node.NodePositionData, rawDestinations: List<BlockKey>, fluid: Fluid, amount: Int): Int {
+	private fun runFluidTransfer(source: Node.NodePositionData, rawDestinations: Collection<BlockKey>, fluid: Fluid, amount: Int): Int {
 		if (rawDestinations.isEmpty()) return amount
 
 		val filteredDestinations = rawDestinations.filter { destinationLoc ->
