@@ -82,7 +82,7 @@ object StarshipWeaponry : IonServerComponent() {
 
 	fun findPossibleTarget(loc: Location, originalTarget: Vector, starship: ActiveStarship): Vector? {
 		// Position originalTarget vector relative to the origin (shooter) perspective
-		val targetOffset = originalTarget.clone().subtract(loc.toVector())
+		val targetOffset = originalTarget.clone().multiply(MAX_POSSIBLE_RANGE).subtract(loc.toVector())
 		// Get all starships CoM within range
 		val targetShips = ActiveStarships.getInWorld(loc.world).filter { otherStarship ->
 			otherStarship.centerOfMass.toCenterVector().distanceSquared(loc.toVector()) <= MAX_POSSIBLE_RANGE * MAX_POSSIBLE_RANGE &&
