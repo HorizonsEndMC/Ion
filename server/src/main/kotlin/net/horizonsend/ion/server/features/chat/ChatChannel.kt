@@ -114,14 +114,13 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				if (other.location.distanceSquared(player.location) > distanceSquared) continue
 				if (PlayerCache[other].blockedPlayerIDs.contains(player.slPlayerId)) continue
 
-				var newMessage = message;
-				if (PlayerCache[other].shortenChatChannels) newMessage = NormalChatMessage(
-					ofChildren(
+				val newMessage = NormalChatMessage(
+					 if (PlayerCache[other].shortenChatChannels) ofChildren(
 						bracketed(text(Levels[event.player], AQUA)),
 						space(),
 						bracketed(text("L", YELLOW, TextDecoration.BOLD)),
 						space()
-					),
+					) else message.ionPrefix,
 					message.luckPermsPrefix,
 					message.playerDisplayName,
 					message.luckPermsSuffix,
@@ -130,7 +129,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 					message.color,
 					message.sender
 				)
-				other.sendMessage(checkGlobalPrefix(player, newMessage))
+				other.sendMessage(checkGlobalPrefix(other, newMessage))
 			}
 		}
 	},
@@ -147,14 +146,13 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 
 			for (other in player.world.players) {
 				if (PlayerCache[other].blockedPlayerIDs.contains(player.slPlayerId)) continue
-				var newMessage = message;
-				if (PlayerCache[other].shortenChatChannels) newMessage = NormalChatMessage(
-					ofChildren(
+				val newMessage = NormalChatMessage(
+					 if (PlayerCache[other].shortenChatChannels) ofChildren(
 						bracketed(text(Levels[event.player], AQUA)),
 						space(),
 						bracketed(text("P", BLUE, TextDecoration.BOLD)),
 						space()
-					),
+					) else message.ionPrefix,
 					message.luckPermsPrefix,
 					message.playerDisplayName,
 					message.luckPermsSuffix,
@@ -163,7 +161,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 					message.color,
 					message.sender
 				)
-				other.sendMessage(checkGlobalPrefix(player, newMessage))
+				other.sendMessage(checkGlobalPrefix(other, newMessage))
 			}
 		}
 	},
@@ -197,14 +195,13 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 
 			for (other in worlds.flatMap { it.players }) {
 				if (PlayerCache[other].blockedPlayerIDs.contains(player.slPlayerId)) continue
-				var newMessage = message;
-				if (PlayerCache[other].shortenChatChannels) newMessage = NormalChatMessage(
-					ofChildren(
+				val newMessage = NormalChatMessage(
+					 if (PlayerCache[other].shortenChatChannels) ofChildren(
 						bracketed(text(Levels[event.player], AQUA)),
 						space(),
 						bracketed(text("Sy", GOLD, TextDecoration.BOLD)),
 						space()
-					),
+					) else message.ionPrefix,
 					message.luckPermsPrefix,
 					message.playerDisplayName,
 					message.luckPermsSuffix,
@@ -213,7 +210,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 					message.color,
 					message.sender
 				)
-				other.sendMessage(checkGlobalPrefix(player, newMessage))
+				other.sendMessage(checkGlobalPrefix(other, newMessage))
 			}
 		}
 	},
@@ -298,8 +295,9 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				(starship.controller as? PlayerController)?.player -> bracketed(text("Captain", BLUE))
 				else -> bracketed(text("Ship", HEColorScheme.HE_LIGHT_BLUE))
 			}
-
-			starship.sendMessage(checkPrefix(player, formatChatMessage(ofChildren(prefix, space()), player, event, messageColor)))
+			for(passenger in starship.onlinePassengers) {
+				passenger.sendMessage(checkPrefix(passenger, formatChatMessage(ofChildren(prefix, space()), player, event, messageColor)))
+			}
 		}
 	},
 
@@ -317,7 +315,8 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 						space()
 					) else empty()
 				)
-				Bukkit.getPlayer(fleetMember)?.sendMessage(checkPrefix(player, formatChatMessage(prefix, player, event, messageColor)))
+				val other = Bukkit.getPlayer(fleetMember)!!
+				other.sendMessage(checkPrefix(other, formatChatMessage(prefix, player, event, messageColor)))
 			}
 		}
 	},
@@ -335,6 +334,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 
 			settlementAction(NationsChatMessage(
 				id = settlement,
+				sender = player,
 				ionPrefix = prefix,
 				luckPermsPrefix = player.common().getPrefix(),
 				playerDisplayName = event.player.displayName(),
@@ -364,6 +364,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 
 			nationAction(NationsChatMessage(
 				id = nation,
+				sender = player,
 				ionPrefix = prefix,
 				luckPermsPrefix = player.common().getPrefix(),
 				playerDisplayName = event.player.displayName(),
@@ -392,6 +393,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 
 			allyAction(NationsChatMessage(
 				id = nation,
+				sender = player,
 				ionPrefix = prefix,
 				luckPermsPrefix = player.common().getPrefix(),
 				playerDisplayName = event.player.displayName(),
@@ -425,7 +427,7 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 		}.registerRedisAction("chat-global", runSync = false)
 
 		private fun checkGlobalPrefix(player: Player, message: ChatMessage): Component {
-			val newMessage = ofChildren(
+			return ofChildren(
 				message.ionPrefix.orEmpty(),
 				message.luckPermsPrefix?.takeIf { !PlayerCache[player].hideGlobalPrefixes }.orEmpty(),
 				message.playerDisplayName,
@@ -433,11 +435,10 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				text(" » ", HEColorScheme.HE_DARK_GRAY),
 				message.message.color(message.color),
 			).hoverEvent(message.playerInfo)
-			return newMessage
 		}
 
 		private fun checkPrefix(player: Player, message: ChatMessage): Component {
-			val newMessage = ofChildren(
+			return ofChildren(
 				message.ionPrefix.orEmpty(),
 				message.luckPermsPrefix?.takeIf { !PlayerCache[player].hideUserPrefixes }.orEmpty(),
 				message.playerDisplayName,
@@ -445,7 +446,6 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				text(" » ", HEColorScheme.HE_DARK_GRAY),
 				message.message.color(message.color),
 			).hoverEvent(message.playerInfo)
-			return newMessage
 		}
 
 		private fun simpleCrossServerChannelAction(name: String): RedisAction<NormalChatMessage> {
@@ -498,9 +498,10 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 					message.id,
 					ofChildren(
 						bracketed(text("S", AQUA, TextDecoration.BOLD)),
-						formatSpacePrefix(LegacyComponentSerializer.legacyAmpersand().deserialize(PlayerCache[player].settlementTag ?: "")),
+						formatSpacePrefix(LegacyComponentSerializer.legacyAmpersand().deserialize(PlayerCache[message.sender].settlementTag ?: "")),
 						space()
 					),
+					message.sender,
 					message.luckPermsPrefix,
 					message.playerDisplayName,
 					message.luckPermsSuffix,
@@ -520,9 +521,10 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 					message.id,
 					ofChildren(
 						bracketed(text("N", GREEN, TextDecoration.BOLD)),
-						formatSpacePrefix(LegacyComponentSerializer.legacyAmpersand().deserialize(PlayerCache[player].nationTag ?: "")),
+						formatSpacePrefix(LegacyComponentSerializer.legacyAmpersand().deserialize(PlayerCache[message.sender].nationTag ?: "")),
 						space()
 					),
+					message.sender,
 					message.luckPermsPrefix,
 					message.playerDisplayName,
 					message.luckPermsSuffix,
@@ -539,15 +541,15 @@ enum class ChatChannel(val displayName: Component, val commandAliases: List<Stri
 				val playerNation = PlayerCache.getIfOnline(player)?.nationOid ?: continue
 				if (RelationCache[playerNation, message.id] < NationRelation.Level.ALLY) continue
 
-				var newMessage = message;
-				if (PlayerCache[player].shortenChatChannels) newMessage = NationsChatMessage(
+				val newMessage = NationsChatMessage(
 					message.id,
-					ofChildren(
+					 if (PlayerCache[player].shortenChatChannels) ofChildren(
 						bracketed(text("A", DARK_PURPLE, TextDecoration.BOLD)),
 						space(),
-						text(NationCache[PlayerCache[player].nationOid!!].name, YELLOW),
+						text(NationCache[PlayerCache[message.sender].nationOid!!].name, YELLOW),
 						space()
-					),
+					) else message.ionPrefix,
+					message.sender,
 					message.luckPermsPrefix,
 					message.playerDisplayName,
 					message.luckPermsSuffix,
