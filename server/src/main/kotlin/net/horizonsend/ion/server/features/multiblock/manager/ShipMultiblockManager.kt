@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
+import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import java.util.concurrent.ConcurrentHashMap
@@ -98,7 +99,6 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 
 			// If it was lost, don't place it back
 			if (!multiblockEntity.isIntact(checkSign = true)) {
-				println("Not intact")
 				multiblockEntity.processRemoval()
 				continue
 			}
@@ -159,5 +159,9 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 
 	override fun getLocalCoordinate(globalVec3i: Vec3i): Vec3i {
 		return starship.getLocalCoordinate(globalVec3i)
+	}
+
+	override fun getGlobalMultiblockEntity(world: World, x: Int, y: Int, z: Int): MultiblockEntity? {
+		return get(x, y, z)
 	}
 }
