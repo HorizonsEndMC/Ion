@@ -5,12 +5,10 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlerHolder
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.FlowMeterDisplayModule
-import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -54,7 +52,6 @@ sealed interface PowerNode : Node {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = false
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
-		fun getPoweredEntities(world: World, location: BlockKey) = world.ion.inputManager.getHolders(CacheType.POWER, location).filterIsInstance<PoweredMultiblockEntity>()
 	}
 
 	interface MergeNode : PowerNode {
@@ -154,7 +151,6 @@ sealed interface PowerNode : Node {
         }
 
 		override fun handlerGetWorld(): World = world
-
 
 		companion object { private const val NUMBER_STORED_AVERAGES = 20 }
 	}
