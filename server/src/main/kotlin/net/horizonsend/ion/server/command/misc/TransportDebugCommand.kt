@@ -94,10 +94,10 @@ object TransportDebugCommand : SLCommand() {
 	fun dumpInputsShip(sender: Player, type: CacheType) {
 		val ship = getStarshipRiding(sender)
 		val inputManager = ship.transportManager.inputManager
-		val loc = Vec3i(sender.location)
-		val inputs = inputManager.getLocations(type)
-			.map { toVec3i(it) }
-			.filter { it.distance(loc) < 100.0 }
+
+		val inputs = inputManager
+			.getLocations(type)
+			.map { ship.transportManager.getGlobalCoordinate(toVec3i(it)) }
 
 		sender.highlightBlocks(inputs, 50L)
 		sender.information("${inputs.size} inputs")
