@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.util.RollingAverage
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -19,6 +20,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Axis
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import java.text.DecimalFormat
 
 sealed interface PowerNode : Node {
     override val cacheType: CacheType get() = CacheType.POWER
@@ -94,43 +96,29 @@ sealed interface PowerNode : Node {
     }
 
     data class PowerFlowMeter(val cache: PowerTransportCache, var face: BlockFace, var world: World, var location: BlockKey) : PowerNode, ComplexNode, DisplayHandlerHolder {
-		/** Data entry of transferred power, contains the amount and the timestamp if the transfer */
-		private data class TransferredPower(val transferred: Int, val time: Long = System.currentTimeMillis())
-
-		// Use array deque as a stack
-		private val averages = ArrayDeque<TransferredPower?>(NUMBER_STORED_AVERAGES)
+		val rollingAverage = RollingAverage()
 
 		override var isAlive: Boolean = true
-
-        val displayHandler = DisplayHandlers.newBlockOverlay(this, toVec3i(location), face, { FlowMeterDisplayModule(it, this, 0.0, 0.0, 0.0, 0.7f) })
+		val displayHandler = DisplayHandlers.newBlockOverlay(this, toVec3i(location), face, { FlowMeterDisplayModule(it, this, 0.0, 0.0, 0.0, 0.7f) })
 
         fun onCompleteChain(transferred: Int) {
 			// Push onto queue
-			if (averages.size == NUMBER_STORED_AVERAGES) averages.removeFirst()
-			averages.addLast(TransferredPower(transferred))
-
+			rollingAverage.addEntry(transferred)
             displayHandler.update()
         }
 
-        private fun calculateAverage(): Double {
-			val nonNull = averages.filterNotNull()
-            val sum = nonNull.sumOf { it.transferred }
-
-            val timeDiff = (System.currentTimeMillis() - nonNull.minOf { it.time }) / 1000.0
-
-            return sum / timeDiff
-        }
+		companion object {
+			val format = DecimalFormat("##.##")
+		}
 
         fun formatFlow(): Component {
-			val nonNull = averages.filterNotNull()
-            var avg = runCatching { calculateAverage().roundToHundredth() }.getOrDefault(0.0)
+            val avg = runCatching { rollingAverage.getAverage().roundToHundredth() }.getOrDefault(0.0)
 
-            // If no averages, or no power has been moved in 5 seconds, go to 0
-            if (averages.isEmpty() || System.currentTimeMillis() - nonNull.maxOf { it.time } > 5000) {
-                avg = 0.0
-            }
-
-            return ofChildren(FlowMeterDisplayModule.firstLine, Component.text(avg, NamedTextColor.GREEN), FlowMeterDisplayModule.secondLine)
+            return ofChildren(
+				FlowMeterDisplayModule.firstLine,
+				Component.text(format.format(avg), NamedTextColor.GREEN),
+				FlowMeterDisplayModule.secondLine
+			)
         }
 
         override val pathfindingResistance: Double = 0.5
@@ -151,7 +139,5 @@ sealed interface PowerNode : Node {
         }
 
 		override fun handlerGetWorld(): World = world
-
-		companion object { private const val NUMBER_STORED_AVERAGES = 20 }
 	}
 }
