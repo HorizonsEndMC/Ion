@@ -10,7 +10,7 @@ import org.bukkit.Material
 import org.bukkit.craftbukkit.block.impl.CraftGrindstone
 
 class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCache(holder) {
-	override val type: CacheType = CacheType.FLUID
+	override val type: CacheType = CacheType.ITEMS
 	override val nodeFactory: NodeCacheFactory = NodeCacheFactory.builder()
 		.addSimpleNode(STAINED_GLASS_TYPES) { _, material -> SolidGlassNode(ItemNode.PipeChannel[material]!!) }
 		.addSimpleNode(STAINED_GLASS_TYPES) { _, material -> ItemNode.PaneGlassNode(ItemNode.PipeChannel[material]!!) }

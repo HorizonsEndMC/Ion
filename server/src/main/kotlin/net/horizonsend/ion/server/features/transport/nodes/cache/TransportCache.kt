@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import com.google.common.collect.TreeBasedTable
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
@@ -12,8 +11,6 @@ import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
 import net.horizonsend.ion.server.features.transport.util.getIdealPath
-import net.horizonsend.ion.server.features.transport.util.getOrCacheNode
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -23,6 +20,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isAdjacent
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.set
 import org.bukkit.block.Block
@@ -98,15 +96,18 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 	 * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
 	 **/
 	fun getInputEntities(location: BlockKey): Set<MultiblockEntity> {
-		val inputManager = holder.getWorld().ion.inputManager
+		val inputManager = holder.getInputManager()
 		val registered = inputManager.getHolders(type, location)
 
 		// The stupid offsets are a list of locations that a multiblock entity would be accessible from if its sign were touching the provided location
 		// Doing a call to try to find a sign is a lot more expensive since it has a getChunk call
 		//
 		// If this actually finds an entity, it makes sure that its sign block is adjacent to the input
+		val multiblockManager = holder.getMultiblockManager()
 		val adjacentBlocks = stupidOffsets.mapNotNull {
-			MultiblockEntities.getMultiblockEntity(holder.getWorld(), it.x, it.y, it.z)?.takeIf { entity ->
+			val loc = Vec3i(it.x, it.y, it.z) + toVec3i(location)
+
+			multiblockManager.getGlobalMultiblockEntity(holder.getWorld(), loc.x, loc.y, loc.z)?.takeIf { entity ->
 				val signLoc = entity.getSignKey()
 				isAdjacent(signLoc, location)
 			}
@@ -160,8 +161,8 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 	inline fun <reified T: Node> getNetworkDestinations(
 		originPos: BlockKey,
 		check: (Node.NodePositionData) -> Boolean,
-	): List<BlockKey> {
-		val originNode = getOrCacheNode(type, holder.getWorld(), originPos) ?: return listOf()
+	): Collection<BlockKey> {
+		val originNode = holder.nodeProvider.invoke(type, holder.getWorld(), originPos) ?: return listOf()
 
 		val visitQueue = ArrayDeque<Node.NodePositionData>()
 		val visited = LongOpenHashSet()
@@ -179,13 +180,14 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 			val current = visitQueue.removeFirst()
 			visited.add(current.position)
 
-			if (current.type is T && check(current)) destinations.add(current.position)
-
+			if (current.type is T && check(current)) {
+				destinations.add(current.position)
+			}
 
 			visitQueue.addAll(current.getNextNodes(holder.nodeProvider, null).filterNot { visited.contains(it.position) || visitQueue.contains(it) })
 		}
 
-		return destinations.toList()
+		return destinations
 	}
 
 	/**
