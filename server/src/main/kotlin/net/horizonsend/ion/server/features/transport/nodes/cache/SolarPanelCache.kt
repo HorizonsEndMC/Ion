@@ -4,12 +4,9 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.transport.util.getOrCacheNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import org.bukkit.Material
 import org.bukkit.World
@@ -40,16 +37,17 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 	}
 
 	fun isSolarPanel(extractorKey: BlockKey): Boolean {
-		if (getOrCacheNode(CacheType.SOLAR_PANELS, holder.getWorld(), extractorKey) !is SolarPanelComponent.CraftingTable) return false
-		if (getOrCacheNode(CacheType.SOLAR_PANELS, holder.getWorld(), getRelative(extractorKey, BlockFace.UP, 1)) !is SolarPanelComponent.DiamondBlock) return false
-		if (getOrCacheNode(CacheType.SOLAR_PANELS, holder.getWorld(), getRelative(extractorKey, BlockFace.UP, 2)) !is SolarPanelComponent.DaylightDetector) return false
+		if (holder.nodeProvider.invoke(type, holder.getWorld(), extractorKey) !is SolarPanelComponent.CraftingTable) return false
+		if (holder.nodeProvider.invoke(type, holder.getWorld(), getRelative(extractorKey, BlockFace.UP, 1)) !is SolarPanelComponent.DiamondBlock) return false
+		if (holder.nodeProvider.invoke(type, holder.getWorld(), getRelative(extractorKey, BlockFace.UP, 2)) !is SolarPanelComponent.DaylightDetector) return false
+
 		return true
 	}
 
 	fun getPower(world: World, extractPos: BlockKey, delta: Double): Int {
-		val detectorPosition = getRelative(extractPos, BlockFace.UP, 2)
+		val detectorPosition = holder.transportManager.getGlobalCoordinate(toVec3i(getRelative(extractPos, BlockFace.UP, 2)))
 		val powerMultiplier = if (world.environment == World.Environment.NORMAL) 1.0 else 0.5
-		val data = getBlockDataSafe(world, getX(detectorPosition), getY(detectorPosition), getZ(detectorPosition)) as? DaylightDetector ?: return 0
+		val data = getBlockDataSafe(world, detectorPosition.x, detectorPosition.y, detectorPosition.z) as? DaylightDetector ?: return 0
 		val powerRatio = data.power.toDouble() / data.maximumPower.toDouble()
 
 		val base = ConfigurationFiles.transportSettings().powerConfiguration.solarPanelTickPower * delta
