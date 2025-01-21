@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkage
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import java.util.function.Supplier
 import kotlin.reflect.KClass
@@ -19,7 +20,15 @@ class MultiblockLinkageHolder(
 	var location: BlockKey = toBlockKey(entity.getPosRelative(offsetRight, offsetUp, offsetForward))
 
 	fun register() {
-		location = toBlockKey(entity.getPosRelative(offsetRight, offsetUp, offsetForward))
+		val newPos = getRelative(
+			origin = entity.localVec3i,
+			forwardFace = entity.structureDirection,
+			right = offsetRight,
+			up = offsetUp,
+			forward = offsetForward
+		)
+
+		location = toBlockKey(newPos)
 
 		val manager = entity.manager
 
