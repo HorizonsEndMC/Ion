@@ -4,11 +4,11 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDa
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializers
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 
-abstract class AdvancedExtractorData<C: Any>(
+abstract class AdvancedExtractorData<C: ExtractorMetaData>(
 	pos: BlockKey,
 	val metaData: C
 ) : ExtractorData(pos) {
-	abstract val serializer: PDCSerializers.RegisteredSerializer<C>
+	abstract val metaSerializer: PDCSerializers.RegisteredSerializer<C>
 
-	fun asMetaDataContainer(): MetaDataContainer<C, PDCSerializers.RegisteredSerializer<C>> = MetaDataContainer(serializer, metaData)
+	fun asMetaDataContainer(): MetaDataContainer<C, PDCSerializers.RegisteredSerializer<C>> = MetaDataContainer(metaSerializer, metaData)
 }
