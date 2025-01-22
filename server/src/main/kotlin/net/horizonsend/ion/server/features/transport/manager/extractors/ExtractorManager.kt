@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.manager.extractors
 
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.blocks.CustomExtractorBlock
+import net.horizonsend.ion.server.features.custom.blocks.extractor.CustomExtractorBlock
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
