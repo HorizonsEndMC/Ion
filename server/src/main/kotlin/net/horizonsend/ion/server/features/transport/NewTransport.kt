@@ -16,6 +16,7 @@ import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPistonExtendEvent
 import org.bukkit.event.block.BlockPistonRetractEvent
@@ -108,31 +109,31 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	fun onPlayerBlockPlace(event: BlockPlaceEvent) {
 		val block = event.block
 		handleBlockEvent(block.world, block.x, block.y, block.z, event.blockReplacedState.blockData, block.blockData)
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	fun onPlayerBlockBreak(event: BlockBreakEvent) {
 		val block = event.block
 		handleBlockEvent(block.world, block.x, block.y, block.z, block.blockData, Material.AIR.createBlockData())
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	fun onShipBlockPlace(event: StarshipPlaceBlockEvent) {
 		val block = event.block
 		handleBlockEvent(block.world, block.x, block.y, block.z, Material.AIR.createBlockData(), block.blockData)
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	fun onShipBlockBreak(event: StarshipBreakBlockEvent) {
 		val block = event.block
 		handleBlockEvent(block.world, block.x, block.y, block.z, event.block.blockData, Material.AIR.createBlockData())
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	fun handlePistonExtend(event: BlockPistonExtendEvent) {
 		val piston = event.block
 		Tasks.sync {
@@ -142,7 +143,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	fun handlePistonRetract(event: BlockPistonRetractEvent) {
 		val piston = event.block
 		Tasks.sync {

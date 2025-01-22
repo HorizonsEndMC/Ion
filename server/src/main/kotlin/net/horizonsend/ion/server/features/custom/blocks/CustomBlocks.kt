@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import net.horizonsend.ion.server.features.custom.blocks.extractor.AdvancedItemExtractorBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_DRILL_BASIC
@@ -199,11 +200,13 @@ object CustomBlocks {
 		)
 	) { CustomItemRegistry.CRUISER_REACTOR_CORE })
 
-	private fun customItemDrop(customItem: Supplier<CustomItem>, amount: Int = 1): Supplier<Collection<ItemStack>> {
+	fun customItemDrop(customItem: Supplier<CustomItem>, amount: Int = 1): Supplier<Collection<ItemStack>> {
 		return customItem.map { item -> listOf(item.constructItemStack(amount)) }
 	}
 
 	val MULTIBLOCK_WORKBENCH = register(MultiblockWorkbench)
+
+	val ADVANCED_ITEM_EXTRACTOR = register(AdvancedItemExtractorBlock)
 
     fun customItemDrop(identifier: String, amount: Int = 1): Supplier<Collection<ItemStack>> {
         val customItem = CustomItemRegistry.getByIdentifier(identifier)?.constructItemStack() ?: return Supplier { listOf() }
