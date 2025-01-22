@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.manager.extractors
 
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomExtractorBlock
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
@@ -31,13 +32,13 @@ abstract class ExtractorManager {
 
 	companion object {
 		val STANDARD_EXTRACTOR_TYPE = Material.CRAFTING_TABLE
+		fun isExtractorData(data: BlockData): Boolean = data.material == STANDARD_EXTRACTOR_TYPE || CustomBlocks.getByBlockData(data) is CustomExtractorBlock
 
 		fun getExtractorData(data: BlockData, pos: BlockKey): ExtractorData? {
 			if (data.material == STANDARD_EXTRACTOR_TYPE) return ExtractorData(pos)
 
 			val customBlock = CustomBlocks.getByBlockData(data)
-
-
+			if (customBlock is CustomExtractorBlock) return customBlock.createExtractorData(pos)
 
 			return null
 		}
