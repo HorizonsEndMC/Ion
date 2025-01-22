@@ -7,8 +7,9 @@ import net.horizonsend.ion.server.features.transport.manager.extractors.data.Ext
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import org.bukkit.persistence.PersistentDataType
 
 class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManager() {
@@ -23,15 +24,19 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 	}
 
 	override fun registerExtractor(x: Int, y: Int, z: Int, ensureExtractor: Boolean): Boolean {
-		if (ensureExtractor && getBlockTypeSafe(manager.chunk.world, x, y, z) != STANDARD_EXTRACTOR_TYPE) return false
+		val blockData = getBlockDataSafe(manager.chunk.world, x, y, z) ?: return false
+		val key = toBlockKey(manager.getLocalCoordinate(Vec3i(x, y, z)))
+
 		if (!manager.chunk.isInBounds(x, y, z)) {
 			IonServer.slF4JLogger.warn("Extractor manager of ${manager.chunk} tried to register an extractor outside its bounds!")
 			return false
 		}
-		val key = toBlockKey(x, y, z)
+
+		val data = getExtractorData(blockData, key)
+		if (data == null) return false
 
 		synchronized(mutex) {
-			extractors[key] = ExtractorData(key)
+			extractors[key] = data
 		}
 
 		needsSave = true
@@ -73,7 +78,7 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 		val minBlockZ = snapshot.z.shl(4)
 
 		for (x in 0..15) for (z in 0..15) for (y in manager.chunk.world.minHeight..snapshot.getHighestBlockYAt(x, z)) {
-			if (snapshot.getBlockType(x, y, z) != STANDARD_EXTRACTOR_TYPE) continue
+			if (!isExtractorData(snapshot.getBlockData(x, y, z))) continue
 			val key = toBlockKey(x + minBlockX, y, z + minBlockZ)
 			extractors[key] = ExtractorData(key)
 		}
