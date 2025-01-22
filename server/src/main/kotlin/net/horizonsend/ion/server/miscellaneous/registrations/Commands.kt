@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.command.misc.AIOpponentCommand
 import net.horizonsend.ion.server.command.misc.BlockCommand
 import net.horizonsend.ion.server.command.misc.BountyAdminCommand
 import net.horizonsend.ion.server.command.misc.BountyCommand
+import net.horizonsend.ion.server.command.misc.ChatCommand
 import net.horizonsend.ion.server.command.misc.CombatTimerCommand
 import net.horizonsend.ion.server.command.misc.DyeCommand
 import net.horizonsend.ion.server.command.misc.EnableProtectionMessagesCommand
@@ -192,5 +193,6 @@ val commands: List<SLCommand> = listOf(
 	IonSitCommand,
 	SuicideCommand,
 	NavigationCommand,
-	DisplayDebug
+	DisplayDebug,
+	ChatCommand
 )
