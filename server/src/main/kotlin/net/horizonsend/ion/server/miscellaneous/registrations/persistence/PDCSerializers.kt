@@ -7,9 +7,11 @@ import kotlin.reflect.KClass
 
 object PDCSerializers {
 	private val registeredSerializers = mutableMapOf<String, RegisteredSerializer<*>>()
+	private val typedSerialized = mutableMapOf<KClass<*>, RegisteredSerializer<*>>()
 
 	fun <T: RegisteredSerializer<*>> register(serializer: T): T {
 		registeredSerializers[serializer.identifier] = serializer
+		typedSerialized[serializer.complexType] = serializer
 		return serializer
 	}
 
@@ -29,5 +31,11 @@ object PDCSerializers {
 		fun loadMetaDataContainer(data: PersistentDataContainer, context: PersistentDataAdapterContext): MetaDataContainer<C, *> {
 			return MetaDataContainer(this, deserialize(data, context))
 		}
+	}
+
+	fun <C : Any> pack(data: C): MetaDataContainer<C, RegisteredSerializer<C>> {
+		@Suppress("UNCHECKED_CAST")
+		val serializer = (typedSerialized[data::class] as? RegisteredSerializer<C>) ?: throw NoSuchElementException("No serialier found for ${data::class.simpleName}")
+		return MetaDataContainer(serializer, data)
 	}
 }

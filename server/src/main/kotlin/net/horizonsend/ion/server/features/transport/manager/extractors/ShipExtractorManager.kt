@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 
 class ShipExtractorManager(val manager: ShipTransportManager) : ExtractorManager() {
 	var extractors = Long2ObjectOpenHashMap<ExtractorData>()
@@ -27,11 +27,15 @@ class ShipExtractorManager(val manager: ShipTransportManager) : ExtractorManager
 
 	/** Returns true if an extractor was registered */
 	override fun registerExtractor(x: Int, y: Int, z: Int, ensureExtractor: Boolean): Boolean {
-		if (ensureExtractor && getBlockTypeSafe(manager.starship.world, x, y, z) != STANDARD_EXTRACTOR_TYPE) return false
+		val blockData = getBlockDataSafe(manager.starship.world, x, y, z) ?: return false
 
 		// Store extractors via local coordinates
 		val key = toBlockKey(manager.getLocalCoordinate(Vec3i(x, y, z)))
-		extractors[key] = ExtractorData(key)
+
+		val data = getExtractorData(blockData, key)
+		if (data == null) return false
+
+		extractors[key] = data
 
 		return true
 	}

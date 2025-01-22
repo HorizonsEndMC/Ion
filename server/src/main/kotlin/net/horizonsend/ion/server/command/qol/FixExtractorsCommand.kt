@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.transport.NewTransport
-import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.STANDARD_EXTRACTOR_TYPE
+import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
 import org.bukkit.entity.Player
 
@@ -35,8 +35,7 @@ object FixExtractorsCommand : SLCommand() {
 
 			val block = sender.world.getBlockAt(x, y, z)
 
-			if (block.type != STANDARD_EXTRACTOR_TYPE) continue
-
+			if (!ExtractorManager.isExtractorData(block.blockData)) continue
 			if (NewTransport.isExtractor(sender.world, x, y, z)) continue
 
 			count++

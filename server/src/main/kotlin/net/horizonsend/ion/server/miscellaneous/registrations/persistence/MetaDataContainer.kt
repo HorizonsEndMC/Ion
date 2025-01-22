@@ -4,9 +4,9 @@ import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
-data class MetaDataContainer<V : Any, C : PDCSerializers.RegisteredSerializer<V>>(
-	val persistentDataType: C,
-	val data: V
+data class MetaDataContainer<C : Any, S : PDCSerializers.RegisteredSerializer<C>>(
+	val persistentDataType: S,
+	val data: C
 ) {
 	companion object : PersistentDataType<PersistentDataContainer, MetaDataContainer<*, *>> {
 		override fun getPrimitiveType(): Class<PersistentDataContainer> = PersistentDataContainer::class.java
