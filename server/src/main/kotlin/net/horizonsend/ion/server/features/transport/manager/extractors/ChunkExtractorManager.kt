@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManag
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData.StandardExtractorData
+import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.ListMetaDataContainerType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -62,16 +63,26 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 
 	override fun onLoad() {
 		val standard = manager.chunk.inner.persistentDataContainer.get(NamespacedKeys.STANDARD_EXTRACTORS, PersistentDataType.LONG_ARRAY)
-		val complex = manager.chunk.inner.persistentDataContainer.get(NamespacedKeys.COMPLEX_EXTRACTORS, ListMetaDataContainerType)
+
+		val complex = runCatching { manager.chunk.inner.persistentDataContainer.get(NamespacedKeys.COMPLEX_EXTRACTORS, ListMetaDataContainerType) }
+			.onFailure { exception -> IonServer.slF4JLogger.error("There was an error deserializing complex extractor data: $exception"); exception.printStackTrace() }
+			.getOrNull()
 
 		if (standard == null || complex == null) {
 			loadFromChunk()
 			return
 		}
 
-		synchronized(mutex) {
-			standard.associateWithTo(extractors) { StandardExtractorData(it) }
-			complex.associateTo(extractors) { it.data as ExtractorData; it.data.pos to it.data }
+		runCatching {
+			synchronized(mutex) {
+				standard.associateWithTo(extractors) { StandardExtractorData(it) }
+				complex.associateTo(extractors) { it.data as ExtractorMetaData; it.data.key to it.data.toExtractorData() }
+			}
+		}.onFailure { exception ->
+			IonServer.slF4JLogger.error("There was an error loading complex extractor data: $exception")
+			exception.printStackTrace()
+
+			loadFromChunk()
 		}
 	}
 
