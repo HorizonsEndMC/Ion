@@ -6,14 +6,15 @@ import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlo
 import net.horizonsend.ion.server.features.starship.event.build.StarshipPlaceBlockEvent
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
-import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.STANDARD_EXTRACTOR_TYPE
+import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.isExtractorData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.block.data.BlockData
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPistonExtendEvent
@@ -84,40 +85,51 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	}
 
 	fun ensureExtractor(world: World, x: Int, y: Int, z: Int) {
-		val type = getBlockTypeSafe(world, x, y, z) ?: return
-		val isExtractor = isExtractor(world, x, y, z)
-		if (type == STANDARD_EXTRACTOR_TYPE && !isExtractor) addExtractor(world, x, y, z)
-		if (type != STANDARD_EXTRACTOR_TYPE && isExtractor) removeExtractor(world, x, y, z)
+		val type = getBlockDataSafe(world, x, y, z) ?: return
+
+		val isExtractorPresent = this@NewTransport.isExtractor(world, x, y, z)
+		val isExtractor = isExtractorData(type)
+
+		if (isExtractor && !isExtractorPresent) addExtractor(world, x, y, z)
+		if (!isExtractor && isExtractorPresent) removeExtractor(world, x, y, z)
 	}
 
-	fun handleBlockEvent(world: World, x: Int, y: Int, z: Int, previousType: Material?, newType: Material) = Tasks.async {
+	fun handleBlockEvent(world: World, x: Int, y: Int, z: Int, previousData: BlockData, newData: BlockData) = Tasks.async {
 		invalidateCache(world, x, y, z)
-		if (previousType == STANDARD_EXTRACTOR_TYPE && newType != STANDARD_EXTRACTOR_TYPE) return@async removeExtractor(world, x, y, z)
-		if (newType == STANDARD_EXTRACTOR_TYPE) return@async addExtractor(world, x, y, z)
+
+		if (isExtractorData(previousData) && !isExtractorData(newData)) {
+			removeExtractor(world, x, y, z)
+			return@async
+		}
+
+		if (isExtractorData(newData)) {
+			addExtractor(world, x, y, z)
+			return@async
+		}
 	}
 
 	@EventHandler
 	fun onPlayerBlockPlace(event: BlockPlaceEvent) {
 		val block = event.block
-		handleBlockEvent(block.world, block.x, block.y, block.z, event.blockReplacedState.type, block.type)
+		handleBlockEvent(block.world, block.x, block.y, block.z, event.blockReplacedState.blockData, block.blockData)
 	}
 
 	@EventHandler
 	fun onPlayerBlockBreak(event: BlockBreakEvent) {
 		val block = event.block
-		handleBlockEvent(block.world, block.x, block.y, block.z, block.type, Material.AIR)
+		handleBlockEvent(block.world, block.x, block.y, block.z, block.blockData, Material.AIR.createBlockData())
 	}
 
 	@EventHandler
 	fun onShipBlockPlace(event: StarshipPlaceBlockEvent) {
 		val block = event.block
-		handleBlockEvent(block.world, block.x, block.y, block.z, Material.AIR, block.type)
+		handleBlockEvent(block.world, block.x, block.y, block.z, Material.AIR.createBlockData(), block.blockData)
 	}
 
 	@EventHandler
 	fun onShipBlockBreak(event: StarshipBreakBlockEvent) {
 		val block = event.block
-		handleBlockEvent(block.world, block.x, block.y, block.z, event.block.type, Material.AIR)
+		handleBlockEvent(block.world, block.x, block.y, block.z, event.block.blockData, Material.AIR.createBlockData())
 	}
 
 	@EventHandler
