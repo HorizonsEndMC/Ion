@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlo
 import net.horizonsend.ion.server.features.starship.event.build.StarshipPlaceBlockEvent
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
-import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.EXTRACTOR_TYPE
+import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.STANDARD_EXTRACTOR_TYPE
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -80,20 +80,20 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	}
 
 	fun isExtractor(world: World, x: Int, y: Int, z: Int): Boolean {
-		return getExtractorManager(world, x, z)?.isExtractor(x, y, z) ?: false
+		return getExtractorManager(world, x, z)?.isExtractorPresent(x, y, z) ?: false
 	}
 
 	fun ensureExtractor(world: World, x: Int, y: Int, z: Int) {
 		val type = getBlockTypeSafe(world, x, y, z) ?: return
 		val isExtractor = isExtractor(world, x, y, z)
-		if (type == EXTRACTOR_TYPE && !isExtractor) addExtractor(world, x, y, z)
-		if (type != EXTRACTOR_TYPE && isExtractor) removeExtractor(world, x, y, z)
+		if (type == STANDARD_EXTRACTOR_TYPE && !isExtractor) addExtractor(world, x, y, z)
+		if (type != STANDARD_EXTRACTOR_TYPE && isExtractor) removeExtractor(world, x, y, z)
 	}
 
 	fun handleBlockEvent(world: World, x: Int, y: Int, z: Int, previousType: Material?, newType: Material) = Tasks.async {
 		invalidateCache(world, x, y, z)
-		if (previousType == EXTRACTOR_TYPE && newType != EXTRACTOR_TYPE) return@async removeExtractor(world, x, y, z)
-		if (newType == EXTRACTOR_TYPE) return@async addExtractor(world, x, y, z)
+		if (previousType == STANDARD_EXTRACTOR_TYPE && newType != STANDARD_EXTRACTOR_TYPE) return@async removeExtractor(world, x, y, z)
+		if (newType == STANDARD_EXTRACTOR_TYPE) return@async addExtractor(world, x, y, z)
 	}
 
 	@EventHandler
