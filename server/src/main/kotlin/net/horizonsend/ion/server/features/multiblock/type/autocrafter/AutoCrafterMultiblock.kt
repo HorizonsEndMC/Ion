@@ -42,7 +42,7 @@ import java.util.Optional
 private const val POWER_USAGE_PER_INGREDIENT = 15
 
 abstract class AutoCrafterMultiblock(
-	val tierText: Component,
+	tierText: Component,
 	private val tierMaterial: Material,
 	private val iterations: Int,
 ) : Multiblock(), EntityMultiblock<AutoCrafterMultiblock.AutoCrafterEntity>, DisplayNameMultilblock {
@@ -52,7 +52,7 @@ abstract class AutoCrafterMultiblock(
 
 	abstract val maxPower: Int
 
-	override val displayName: Component = ofChildren(tierText, text("Auto Crafter"))
+	override val displayName: Component = ofChildren(tierText, text(" Auto Crafter"))
 	override val description: Component get() = text("Executes the recipe outlined in the center dropper. Input items are consumed to craft the output.")
 
 	override fun MultiblockShape.buildStructure() {
