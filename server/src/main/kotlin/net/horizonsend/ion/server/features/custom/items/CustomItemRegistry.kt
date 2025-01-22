@@ -329,6 +329,8 @@ object CustomItemRegistry : IonServerComponent() {
 
 	val WRENCH = register(Wrench)
 
+	val ADVANCED_ITEM_EXTRACTOR = customBlockItem("ADVANCED_ITEM_EXTRACTOR", "tool/multiblock_workbench", text("Advanced Item Extractor"), CustomBlocks::ADVANCED_ITEM_EXTRACTOR)
+
 	private fun formatToolName(tierName: String, tierColor: TextColor, toolName: String) = ofChildren(
 		text("$tierName ", tierColor),
 		text("Power ", GOLD),

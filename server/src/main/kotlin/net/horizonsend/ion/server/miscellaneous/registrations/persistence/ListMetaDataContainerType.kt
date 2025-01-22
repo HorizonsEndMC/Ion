@@ -1,10 +1,11 @@
 package net.horizonsend.ion.server.miscellaneous.registrations.persistence
 
+import org.bukkit.persistence.ListPersistentDataType
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
-object ListMetaDataContainerType : PersistentDataType<List<PersistentDataContainer>, List<MetaDataContainer<*, *>>> {
+object ListMetaDataContainerType : ListPersistentDataType<PersistentDataContainer, MetaDataContainer<*, *>> {
 	@Suppress("UNCHECKED_CAST")
 	override fun getPrimitiveType(): Class<List<PersistentDataContainer>> = List::class.java as Class<List<PersistentDataContainer>>
 	@Suppress("UNCHECKED_CAST")
@@ -28,5 +29,9 @@ object ListMetaDataContainerType : PersistentDataType<List<PersistentDataContain
 			primitive,
 			context
 		).map { container -> MetaDataContainer.fromPrimitive(container, context) }
+	}
+
+	override fun elementType(): PersistentDataType<PersistentDataContainer, MetaDataContainer<*, *>> {
+		return MetaDataContainer.Companion
 	}
 }
