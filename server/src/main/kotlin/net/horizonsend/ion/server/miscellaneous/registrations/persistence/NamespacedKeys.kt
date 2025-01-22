@@ -99,7 +99,8 @@ object NamespacedKeys {
 	val STORED_MULTIBLOCK_ENTITIES = key("stored_multiblock_entities")
 	val STORED_MULTIBLOCK_ENTITIES_OLD = key("stored_multiblock_entities_old")
 
-	val EXTRACTORS = key("extractors")
+	val STANDARD_EXTRACTORS = key("standard_extractors")
+	val COMPLEX_EXTRACTORS = key("complex_extractors")
 
 	val NODE_TYPE = key("node_type")
 
