@@ -81,8 +81,6 @@ object StarshipWeaponry : IonServerComponent() {
 	private const val MAX_POSSIBLE_ANGLE = 0.523599 // 30 degrees in radians
 
 	fun findPossibleTarget(loc: Location, originalTarget: Vector, starship: ActiveStarship): Vector? {
-		// Position originalTarget vector relative to the origin (shooter) perspective
-		val targetOffset = originalTarget.clone().multiply(MAX_POSSIBLE_RANGE).subtract(loc.toVector())
 		// Get all starships CoM within range
 		val targetShips = ActiveStarships.getInWorld(loc.world).filter { otherStarship ->
 			otherStarship.centerOfMass.toCenterVector().distanceSquared(loc.toVector()) <= MAX_POSSIBLE_RANGE * MAX_POSSIBLE_RANGE &&
@@ -94,10 +92,10 @@ object StarshipWeaponry : IonServerComponent() {
 			otherStarship -> otherStarship.centerOfMass.toCenterVector().subtract(loc.toVector())
 		}.filter { comVector ->
 			// Filter vectors by maximum angle
-			comVector.angle(targetOffset) <= MAX_POSSIBLE_ANGLE
+			comVector.angle(originalTarget) <= MAX_POSSIBLE_ANGLE
 		}.minByOrNull { comVector ->
 			// Get the vector with the smallest angle
-			comVector.angle(targetOffset)
+			comVector.angle(originalTarget)
 		}
 	}
 
