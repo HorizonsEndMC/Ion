@@ -57,7 +57,7 @@ object NamespacedKeys {
 
 	val SPLITTER_DIRECTION = key("splitter_direction")
 	val USER = key("user")
-	val USER_NAME = key("user")
+	val USER_NAME = key("user_name")
 
 	@Deprecated("") val ORE_CHECK = key("oreCheck")
 
@@ -83,6 +83,9 @@ object NamespacedKeys {
 
 	val POWER = key("power")
 	val GAS = key("Gas")
+
+	val SERIALIZATION_TYPE = key("serialization_type")
+	val META_DATA = key("meta_data")
 
 	val FILTER_DATA = key("filter_data")
 	val FILTER_TYPE = key("filter_type")
