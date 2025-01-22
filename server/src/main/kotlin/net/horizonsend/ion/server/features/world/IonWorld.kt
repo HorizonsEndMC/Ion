@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.event.world.WorldSaveEvent
 import org.bukkit.event.world.WorldUnloadEvent
@@ -122,6 +123,11 @@ class IonWorld private constructor(
 				val result = runCatching(starship::tick).exceptionOrNull() ?: continue
 				log.warn("Exception while ticking starship!", result)
 			}
+		}
+
+		@EventHandler
+		fun onMobSpawn(event: CreatureSpawnEvent) {
+			event.location.world.ion.customMonSpawner.handleSpawnEvent(event)
 		}
 
 		@EventHandler
