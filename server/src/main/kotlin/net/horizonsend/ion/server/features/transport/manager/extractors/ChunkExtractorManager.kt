@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.manager.extractors
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManager
+import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -22,7 +23,7 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 	}
 
 	override fun registerExtractor(x: Int, y: Int, z: Int, ensureExtractor: Boolean): Boolean {
-		if (ensureExtractor && getBlockTypeSafe(manager.chunk.world, x, y, z) != EXTRACTOR_TYPE) return false
+		if (ensureExtractor && getBlockTypeSafe(manager.chunk.world, x, y, z) != STANDARD_EXTRACTOR_TYPE) return false
 		if (!manager.chunk.isInBounds(x, y, z)) {
 			IonServer.slF4JLogger.warn("Extractor manager of ${manager.chunk} tried to register an extractor outside its bounds!")
 			return false
@@ -47,7 +48,7 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 		return extractors.remove(key)
 	}
 
-	override fun isExtractor(key: BlockKey): Boolean = synchronized(mutex) {
+	override fun isExtractorPresent(key: BlockKey): Boolean = synchronized(mutex) {
 		return extractors.contains(key)
 	}
 
@@ -72,7 +73,7 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 		val minBlockZ = snapshot.z.shl(4)
 
 		for (x in 0..15) for (z in 0..15) for (y in manager.chunk.world.minHeight..snapshot.getHighestBlockYAt(x, z)) {
-			if (snapshot.getBlockType(x, y, z) != EXTRACTOR_TYPE) continue
+			if (snapshot.getBlockType(x, y, z) != STANDARD_EXTRACTOR_TYPE) continue
 			val key = toBlockKey(x + minBlockX, y, z + minBlockZ)
 			extractors[key] = ExtractorData(key)
 		}
