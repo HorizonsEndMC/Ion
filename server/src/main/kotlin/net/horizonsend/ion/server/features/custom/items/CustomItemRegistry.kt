@@ -212,28 +212,28 @@ object CustomItemRegistry : IonServerComponent() {
 
 	// Minerals start
 	private fun registerRawOre(identifier: String, name: String, smeltingResult: Supplier<CustomItem>) = register(identifier, text("Raw ${name.replaceFirstChar { it.uppercase() }}"), stackableCustomItem(model = "mineral/raw_$name")).withComponent(CustomComponentTypes.SMELTABLE, Smeltable(smeltingResult.map { it.constructItemStack() }))
-	private fun registerOreIngot(identifier: String, name: String) = register(identifier, text("${name.replaceFirstChar { it.uppercase() }} Ingot"), stackableCustomItem(model = "mineral/$name"))
+	private fun registerOreIngot(identifier: String, name: String, useSuffix: Boolean) = register(identifier, text("${name.replaceFirstChar { it.uppercase() }}${if (useSuffix) " Ingot" else ""}"), stackableCustomItem(model = "mineral/$name"))
 	private fun registerOreBlock(identifier: String, name: String, block: Supplier<CustomBlock>, smeltingResult: Supplier<CustomItem>) = customBlockItem(identifier, "mineral/${name}_ore", text("${name.replaceFirstChar { it.uppercase() }} Ore"), block).withComponent(CustomComponentTypes.SMELTABLE, Smeltable(smeltingResult.map { it.constructItemStack() }))
 	private fun registerIngotBlock(identifier: String, name: String, block: Supplier<CustomBlock>) = customBlockItem(identifier, "mineral/${name}_block", text("${name.replaceFirstChar { it.uppercase() }} Block"), block)
 	private fun registerRawBlock(identifier: String, name: String, block: Supplier<CustomBlock>) = customBlockItem(identifier, "mineral/raw_${name}_block", text("Raw ${name.replaceFirstChar { it.uppercase() }} Block"), block)
 
-	val ALUMINUM_INGOT = registerOreIngot("ALUMINUM_INGOT", "aluminum")
+	val ALUMINUM_INGOT = registerOreIngot("ALUMINUM_INGOT", "aluminum", true)
 	val RAW_ALUMINUM = registerRawOre("RAW_ALUMINUM", "aluminum", smeltingResult = CustomItemRegistry::ALUMINUM_INGOT)
 	val ALUMINUM_ORE: CustomBlockItem = registerOreBlock("ALUMINUM_ORE", "aluminum", block = CustomBlocks::ALUMINUM_ORE, smeltingResult = CustomItemRegistry::ALUMINUM_INGOT)
 	val ALUMINUM_BLOCK: CustomBlockItem = registerIngotBlock("ALUMINUM_BLOCK", "aluminum", block = CustomBlocks::ALUMINUM_BLOCK)
 	val RAW_ALUMINUM_BLOCK: CustomBlockItem = registerRawBlock("RAW_ALUMINUM_BLOCK", "aluminum", block = CustomBlocks::RAW_ALUMINUM_BLOCK)
 
-	val CHETHERITE = registerOreIngot("CHETHERITE", "chetherite")
+	val CHETHERITE = registerOreIngot("CHETHERITE", "chetherite", false)
 	val CHETHERITE_ORE: CustomBlockItem = registerOreBlock("CHETHERITE_ORE", "chetherite", block = CustomBlocks::CHETHERITE_ORE, smeltingResult = CustomItemRegistry::CHETHERITE)
 	val CHETHERITE_BLOCK: CustomBlockItem = registerIngotBlock("CHETHERITE_BLOCK", "chetherite", block = CustomBlocks::CHETHERITE_BLOCK)
 
-	val TITANIUM_INGOT = registerOreIngot("TITANIUM_INGOT", "titanium")
+	val TITANIUM_INGOT = registerOreIngot("TITANIUM_INGOT", "titanium", true)
 	val RAW_TITANIUM = registerRawOre("RAW_TITANIUM", "titanium", smeltingResult = CustomItemRegistry::TITANIUM_INGOT)
 	val TITANIUM_ORE: CustomBlockItem = registerOreBlock("TITANIUM_ORE", "titanium", block = CustomBlocks::TITANIUM_ORE, smeltingResult = CustomItemRegistry::TITANIUM_INGOT)
 	val TITANIUM_BLOCK: CustomBlockItem = registerIngotBlock("TITANIUM_BLOCK", "titanium", block = CustomBlocks::TITANIUM_BLOCK)
 	val RAW_TITANIUM_BLOCK: CustomBlockItem = registerRawBlock("RAW_TITANIUM_BLOCK", "titanium", block = CustomBlocks::RAW_TITANIUM_BLOCK)
 
-	val URANIUM = registerOreIngot(identifier = "URANIUM", name = "uranium")
+	val URANIUM = registerOreIngot(identifier = "URANIUM", name = "uranium", true)
 	val RAW_URANIUM = registerRawOre(identifier = "RAW_URANIUM", name = "uranium", smeltingResult = CustomItemRegistry::URANIUM)
 	val URANIUM_ORE: CustomBlockItem = registerOreBlock(identifier = "URANIUM_ORE", name = "uranium", block = CustomBlocks::URANIUM_ORE, smeltingResult = CustomItemRegistry::URANIUM)
 	val URANIUM_BLOCK: CustomBlockItem = registerIngotBlock(identifier = "URANIUM_BLOCK", name = "uranium", block = CustomBlocks::URANIUM_BLOCK)
