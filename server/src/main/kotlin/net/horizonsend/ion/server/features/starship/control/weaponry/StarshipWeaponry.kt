@@ -49,13 +49,13 @@ object StarshipWeaponry : IonServerComponent() {
 		if (!leftClick) cooldown.tryExec(shooter, fireTask) else fireTask()
 	}
 
-	fun getTarget(loc: Location, dir: Vector, starship: ActiveStarship, maxDist: Int = 500): Vector {
+	fun getTarget(loc: Location, dir: Vector, starship: ActiveStarship, defaultDistance: Int = 500): Vector {
 		val world = loc.world
 		var target: Vector = loc.toVector()
 		val x = loc.blockX
 		val y = loc.blockY
 		val z = loc.blockZ
-		for (i in 0 until maxDist) {
+		for (i in 0 until 500) {
 			val bx = (x + dir.x * i).toInt()
 			val by = (y + dir.y * i).toInt()
 			val bz = (z + dir.z * i).toInt()
@@ -68,13 +68,14 @@ object StarshipWeaponry : IonServerComponent() {
 			val type = world.getBlockAt(bx, by, bz).type
 			target = Vector(bx + 0.5, by + 0.5, bz + 0.5)
 			if (!type.isAir && !type.isWater && !type.isLava) {
-				break
+				return target
 			}
 			if (world.getNearbyLivingEntities(target.toLocation(world), 0.5).any { !starship.isWithinHitbox(it) }) {
-				break
+				return target
 			}
 		}
-		return target
+		// return a vector along the direction vector with the default distance
+		return Vector((x + dir.x * defaultDistance) + 0.5, (y + dir.y * defaultDistance) + 0.5, (z + dir.z * defaultDistance) + 0.5)
 	}
 
 	private const val MAX_POSSIBLE_RANGE = 500
