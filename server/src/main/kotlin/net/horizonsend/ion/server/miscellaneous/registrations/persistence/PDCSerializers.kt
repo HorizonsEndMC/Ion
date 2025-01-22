@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.registrations.persistence
 
+import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -15,9 +16,14 @@ object PDCSerializers {
 		return serializer
 	}
 
+	val ITEM_EXTRACTOR_METADATA = register(ItemExtractorData.ItemExtractorMetaData.Companion)
+
 	operator fun get(identifier: String) : RegisteredSerializer<*> = registeredSerializers[identifier]!!
 
 	abstract class RegisteredSerializer<C : Any>(val identifier: String, val complexType: KClass<C>) : PersistentDataType<PersistentDataContainer, C> {
+		override fun getComplexType(): Class<C> = complexType.java
+		override fun getPrimitiveType(): Class<PersistentDataContainer> = PersistentDataContainer::class.java
+
 		fun serialize(obj: Any, context: PersistentDataAdapterContext): PersistentDataContainer {
 			require(complexType.isInstance(obj))
 			@Suppress("UNCHECKED_CAST")

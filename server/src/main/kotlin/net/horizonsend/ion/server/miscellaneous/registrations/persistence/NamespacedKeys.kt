@@ -10,6 +10,8 @@ object NamespacedKeys {
 	val Y = key("y")
 	val Z = key("z")
 
+	val BLOCK_KEY = key("block_key")
+
 	val AXIS = key("axis")
 
 	val UP_DOWN = key("up_down")
@@ -101,6 +103,8 @@ object NamespacedKeys {
 
 	val STANDARD_EXTRACTORS = key("standard_extractors")
 	val COMPLEX_EXTRACTORS = key("complex_extractors")
+
+	val SORTING_ORDER = key("sorting_order")
 
 	val NODE_TYPE = key("node_type")
 

@@ -113,7 +113,7 @@ class IonChunk(val inner: Chunk) {
 				val chunk = event.chunk
 				if (chunk.world.ion.isChunkLoaded(key)) return
 
-				val ionChunk = registerChunk(chunk)
+				registerChunk(chunk)
 			} catch (e: Throwable) {
 				log.info("Problem when loading IonChunk ${event.chunk.x} ${event.chunk.z} in ${event.chunk.world.name}: ")
 				e.printStackTrace()
