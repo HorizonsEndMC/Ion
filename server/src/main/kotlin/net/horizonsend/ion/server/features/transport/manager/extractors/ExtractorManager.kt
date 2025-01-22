@@ -35,7 +35,7 @@ abstract class ExtractorManager {
 		fun isExtractorData(data: BlockData): Boolean = data.material == STANDARD_EXTRACTOR_TYPE || CustomBlocks.getByBlockData(data) is CustomExtractorBlock
 
 		fun getExtractorData(data: BlockData, pos: BlockKey): ExtractorData? {
-			if (data.material == STANDARD_EXTRACTOR_TYPE) return ExtractorData(pos)
+			if (data.material == STANDARD_EXTRACTOR_TYPE) return ExtractorData.StandardExtractorData(pos)
 
 			val customBlock = CustomBlocks.getByBlockData(data)
 			if (customBlock is CustomExtractorBlock) return customBlock.createExtractorData(pos)
