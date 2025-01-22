@@ -3,7 +3,10 @@ package net.horizonsend.ion.server.features.transport.manager.extractors
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManager
+import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData
+import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData.StandardExtractorData
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.ListMetaDataContainerType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -58,18 +61,31 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 	}
 
 	override fun onLoad() {
-		val existing = manager.chunk.inner.persistentDataContainer.get(NamespacedKeys.EXTRACTORS, PersistentDataType.LONG_ARRAY)
+		val standard = manager.chunk.inner.persistentDataContainer.get(NamespacedKeys.STANDARD_EXTRACTORS, PersistentDataType.LONG_ARRAY)
+		val complex = manager.chunk.inner.persistentDataContainer.get(NamespacedKeys.COMPLEX_EXTRACTORS, ListMetaDataContainerType)
 
-		if (existing == null) {
+		if (standard == null || complex == null) {
 			loadFromChunk()
 			return
 		}
 
-		synchronized(mutex) { existing.associateWithTo(extractors) { ExtractorData(it) } }
+		synchronized(mutex) {
+			standard.associateWithTo(extractors) { StandardExtractorData(it) }
+			complex.associateTo(extractors) { it.data as ExtractorData; it.data.pos to it.data }
+		}
 	}
 
 	override fun save() {
-		manager.chunk.inner.persistentDataContainer.set(NamespacedKeys.EXTRACTORS, PersistentDataType.LONG_ARRAY, extractors.keys.toLongArray())
+		val pdc = manager.chunk.inner.persistentDataContainer
+		val standard = Long2ObjectOpenHashMap<ExtractorData>()
+		extractors.filterTo(standard) { entry -> entry.value is StandardExtractorData }
+
+		pdc.set(NamespacedKeys.STANDARD_EXTRACTORS, PersistentDataType.LONG_ARRAY, standard.keys.toLongArray())
+
+		val complex = extractors.values.filterIsInstance<AdvancedExtractorData<*>>()
+		val serialized = complex.map { it.asMetaDataContainer() }
+
+		pdc.set(NamespacedKeys.COMPLEX_EXTRACTORS, ListMetaDataContainerType, serialized)
 	}
 
 	private fun loadFromChunk() = Tasks.async {
@@ -80,9 +96,8 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 		for (x in 0..15) for (z in 0..15) for (y in manager.chunk.world.minHeight..snapshot.getHighestBlockYAt(x, z)) {
 			if (!isExtractorData(snapshot.getBlockData(x, y, z))) continue
 			val key = toBlockKey(x + minBlockX, y, z + minBlockZ)
-			extractors[key] = ExtractorData(key)
+			extractors[key] = StandardExtractorData(key)
 		}
-
 
 		save()
 	}
