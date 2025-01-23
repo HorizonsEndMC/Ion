@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomComponen
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.isInside
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.GameMode
@@ -91,7 +90,7 @@ enum class Environment {
 				if (!entity.world.hasEnvironment()) return@listen
 
 				entity.setGravity(false)
-				Tasks.syncDelay(0L) { entity.velocity = entity.velocity.multiply(0.05) }
+				entity.velocity = entity.velocity.multiply(0.05)
 			}
 
 			listen<PlayerMoveEvent> { event ->
