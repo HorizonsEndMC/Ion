@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.util.CacheType
@@ -54,5 +55,5 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 		return (base * powerRatio * powerMultiplier).roundToInt()
 	}
 
-	override fun tickExtractor(location: BlockKey, delta: Double) {  }
+	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) {  }
 }

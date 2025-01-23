@@ -21,9 +21,15 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 	override val itemPipeManager = ShipCacheHolder(this) { ItemTransportCache(it) }
 //	override val fluidNodeManager = ShipCacheHolder(this) { FluidTransportCache(it) }
 
-	override val networks: Array<ShipCacheHolder<*>> = arrayOf(
+	override val cacheHolders: Array<ShipCacheHolder<*>> = arrayOf(
 		powerNodeManager,
 		solarPanelManager,
+		itemPipeManager,
+//		fluidNodeManager
+	)
+
+	override val tickedHolders: Array<ShipCacheHolder<*>> = arrayOf(
+		powerNodeManager,
 		itemPipeManager,
 //		fluidNodeManager
 	)
@@ -33,19 +39,19 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 	}
 
 	fun load() {
-		networks.forEach { it.handleLoad() }
+		cacheHolders.forEach { it.handleLoad() }
 		extractorManager.loadExtractors()
 		NewTransport.registerTransportManager(this)
 	}
 
 	fun release() {
-		networks.forEach { it.release() }
+		cacheHolders.forEach { it.release() }
 		NewTransport.removeTransportManager(this)
 		extractorManager.releaseExtractors()
 	}
 
 	fun displace(movement: StarshipMovement) {
-		networks.forEach { it.displace(movement) }
+		cacheHolders.forEach { it.displace(movement) }
 	}
 
 	override fun getInputProvider(): InputManager {

@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.manager
 
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
+import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
@@ -16,15 +17,18 @@ abstract class TransportManager<T: CacheHolder<*>> {
 	abstract val itemPipeManager: CacheHolder<ItemTransportCache>
 //	abstract val fluidNodeManager: CacheHolder<FluidTransportCache>
 
-	abstract val networks: Array<T>
+	abstract val cacheHolders: Array<T>
+	abstract val tickedHolders: Array<T>
 
 	abstract fun getInputProvider(): InputManager
 
 	fun tick() {
 		for (extractor in extractorManager.getExtractors()) {
 			val delta = extractor.markTicked()
-			powerNodeManager.cache.tickExtractor(extractor.pos, delta)
-//			fluidNodeManager.cache.tickExtractor(extractor.pos, delta)
+
+			for (network in tickedHolders) {
+				network.cache.tickExtractor(extractor.pos, delta, (extractor as? AdvancedExtractorData<*>)?.metaData)
+			}
 		}
 	}
 

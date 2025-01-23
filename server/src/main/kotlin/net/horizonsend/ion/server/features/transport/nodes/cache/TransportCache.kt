@@ -4,6 +4,7 @@ import com.google.common.collect.TreeBasedTable
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.ComplexNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
@@ -35,7 +36,7 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 	abstract val type: CacheType
 	abstract val nodeFactory: NodeCacheFactory
 
-	abstract fun tickExtractor(location: BlockKey, delta: Double)
+	abstract fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?)
 
 	fun isCached(at: BlockKey): Boolean = cache.containsKey(at)
 
@@ -140,7 +141,7 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 		Vec3i(-1, 0, -1),
 	)
 
-	inline fun <reified T> getExtractorSources(extractorLocation: BlockKey, filterNot: (T) -> Boolean): List<T> {
+	inline fun <reified T> getExtractorSourceEntities(extractorLocation: BlockKey, filterNot: (T) -> Boolean): List<T> {
 		val sources = mutableListOf<T>()
 
 		for (face in ADJACENT_BLOCK_FACES) {
