@@ -86,7 +86,7 @@ class PowerDrill(identifier: String, displayName: Component, modLimit: Int, base
 		powerManager.setPower(this, itemStack, availablePower)
 
 		for ((key, items) in drops) {
-			val location = BlockPos.of(key).toLocation(player.world)
+			val location = BlockPos.of(key).toLocation(player.world).toCenterLocation()
 			items.forEach { player.world.dropItemNaturally(location, it) }
 		}
 
