@@ -1,10 +1,12 @@
 package net.horizonsend.ion.server.features.custom.blocks.extractor
 
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.mushroomBlockData
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.features.transport.items.SortingOrder
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.block.Block
@@ -27,6 +29,13 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 	}
 
 	override fun openGUI(player: Player, block: Block, extractorData: ItemExtractorData) {
-		player.success("Workin")
+		val current = extractorData.metaData.sortingOrder
+		val entires = SortingOrder.entries
+		player.information("Current: $current")
+
+		val new = if (current.ordinal + 1 > entires.lastIndex) 0 else current.ordinal + 1
+
+		player.success("New: ${SortingOrder.entries[new]}")
+		extractorData.metaData.sortingOrder = SortingOrder.entries[new]
 	}
 }
