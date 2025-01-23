@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidSt
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.fluids.Fluid
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
+import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.FilterNode
 import net.horizonsend.ion.server.features.transport.nodes.types.FluidNode
@@ -41,9 +42,9 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		.addSimpleNode(Material.LAPIS_BLOCK, FluidNode.FluidInvertedMergeNode)
 		.build()
 
-	override fun tickExtractor(location: BlockKey, delta: Double) { NewTransport.executor.submit {
+	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) { NewTransport.executor.submit {
 		val world = holder.getWorld()
-		val sources = getExtractorSources<FluidStoringEntity>(location) { it.isEmpty() }
+		val sources = getExtractorSourceEntities<FluidStoringEntity>(location) { it.isEmpty() }
 		val source = sources.randomOrNull() ?: return@submit //TODO take from all
 
 		if (source.getStoredResources().isEmpty()) return@submit
