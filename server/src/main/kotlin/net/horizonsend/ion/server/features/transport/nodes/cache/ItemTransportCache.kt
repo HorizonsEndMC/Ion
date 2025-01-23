@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.nodes.cache
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand.measureOrFallback
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.items.SortingOrder
@@ -55,7 +56,7 @@ class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCach
 		delta: Double,
 		metaData: ExtractorMetaData?,
 	) {
-		return
+//		return
 
 		NewTransport.executor.submit {
 			measureOrFallback(TransportDebugCommand.extractorTickTimes) {
@@ -69,14 +70,19 @@ class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCach
 
 		val sources = getSources(location)
 		if (sources.isEmpty()) {
-			println("No source inventories")
 			return
 		}
 
-		val destinations: Collection<BlockKey> = getNetworkDestinations<ItemNode.InventoryNode>(location) { node ->
+		val destinations: List<BlockKey> = getNetworkDestinations<ItemNode.InventoryNode>(location) { node ->
 			getInventory(node.position) != null
+		}.toList()
+
+		val destination = if (meta != null) distributionOrder.getDestination(meta, destinations) else {
+			val extractorPosition = toVec3i(location)
+			destinations.minBy { key -> extractorPosition.distance(toVec3i(key)) }
 		}
 
+		debugAudience.highlightBlock(toVec3i(destination), 40L)
 		debugAudience.information("Destinations: ${destinations.size}")
 	}
 
