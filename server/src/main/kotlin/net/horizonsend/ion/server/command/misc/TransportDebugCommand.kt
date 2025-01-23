@@ -7,10 +7,11 @@ import io.papermc.paper.util.StacktraceDeobfuscator
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.command.admin.IonChunkCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
+import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
 import net.horizonsend.ion.server.features.transport.nodes.cache.CacheState
+import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
@@ -160,7 +161,7 @@ object TransportDebugCommand : SLCommand() {
 	}
 
 	private fun requireLookingAt(sender: Player, network: (Block) -> TransportCache): Pair<Node, BlockKey> {
-		val targeted = sender.getTargetBlock(null, 10)
+		val targeted = sender.getTargetBlockExact(10) ?: fail { "No block in range" }
 		val grid = network(targeted)
 		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
 
@@ -180,17 +181,27 @@ object TransportDebugCommand : SLCommand() {
 		sender.information("Targeted node: $node at ${toVec3i(location)}")
 	}
 
-	@Subcommand("test extractor test")
+	@Subcommand("test extractor")
 	fun onTick(sender: Player, type: CacheType) {
-		val (node, location) = requireLookingAt(sender) { type.get(it.chunk.ion()) }
+		val (_, location) = requireLookingAt(sender) { type.get(it.chunk.ion()) }
 		val chunk = IonChunk.getFromWorldCoordinates(sender.world, getX(location), getZ(location)) ?: fail { "Chunk not loaded" }
 		val grid = type.get(chunk)
-		if (grid.holder.getExtractorManager().isExtractorPresent(location)) IonChunkCommand.fail { "Extractor not targeted" }
+		if (grid.holder.getExtractorManager().isExtractorPresent(location)) fail { "Extractor not targeted" }
 
-		grid.tickExtractor(location, 1.0)
+		grid.tickExtractor(location, 1.0, null)
 	}
 
-	@Subcommand("test flood test")
+	@Subcommand("test item extractor")
+	fun onTickItem(sender: Player) {
+		val (_, location) = requireLookingAt(sender) { CacheType.ITEMS.get(it.chunk.ion()) }
+		val chunk = IonChunk.getFromWorldCoordinates(sender.world, getX(location), getZ(location)) ?: fail { "Chunk not loaded" }
+		val grid = CacheType.ITEMS.get(chunk) as ItemTransportCache
+		if (grid.holder.getExtractorManager().isExtractorPresent(location)) fail { "Extractor not targeted" }
+
+		grid.handleExtractorTick(location, 1.0, (grid.holder.getExtractorManager().getExtractorData(location) as? ItemExtractorData)?.metaData)
+	}
+
+	@Subcommand("test flood")
 	fun onTestFloodFill(sender: Player, type: CacheType) {
 		sender.information("Trying to find input nodes")
 		val (_, location) = requireLookingAt(sender) { type.get(it.chunk.ion()) }
