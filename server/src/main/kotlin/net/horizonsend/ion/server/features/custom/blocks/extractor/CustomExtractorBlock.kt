@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.custom.blocks.InteractableCustomBlock
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
+import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.block.Block
@@ -21,6 +22,7 @@ abstract class CustomExtractorBlock<T: ExtractorData>(
     customBlockItem: Supplier<CustomBlockItem>,
 	val extractorDataType: KClass<T>
 ) : InteractableCustomBlock(identifier, blockData, drops, customBlockItem)  {
+	val cooldown = PerPlayerCooldown(5L)
 
 	override fun onRightClick(event: PlayerInteractEvent, block: Block) {
 		val chunk = IonChunk[block.world, block.x.shr(4), block.z.shr(4)] ?: return
@@ -34,8 +36,12 @@ abstract class CustomExtractorBlock<T: ExtractorData>(
 
 		if (!extractorDataType.isInstance(extractorData)) return
 
-		@Suppress("UNCHECKED_CAST")
-		openGUI(event.player, block, extractorData as T)
+		event.isCancelled = true
+
+		cooldown.tryExec(event.player) {
+			@Suppress("UNCHECKED_CAST")
+			openGUI(event.player, block, extractorData as T)
+		}
 	}
 
 	abstract fun createExtractorData(pos: BlockKey): T
