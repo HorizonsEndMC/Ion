@@ -13,7 +13,7 @@ class ItemExtractorData(pos: BlockKey, metaData: ItemExtractorMetaData) : Advanc
 
 	data class ItemExtractorMetaData(
 		override val key: BlockKey,
-		val sortingOrder: SortingOrder = SortingOrder.NEAREST_FIRST
+		var sortingOrder: SortingOrder = SortingOrder.NEAREST_FIRST
 	) : ExtractorMetaData {
 		override fun toExtractorData(): ExtractorData {
 			return ItemExtractorData(key, this)

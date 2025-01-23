@@ -54,6 +54,8 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	override fun onDisable() {
 		if (::monitorThread.isInitialized) monitorThread.cancel()
 		if (::executor.isInitialized) executor.shutdown()
+
+		saveExtractors()
 	}
 
 	fun registerTransportManager(manager: TransportManager<*>) {
@@ -155,8 +157,8 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 	fun saveExtractors() {
 		for (world in Bukkit.getWorlds().map { it.ion }) {
-			val chunks = world.getAllChunks().values.forEach { chunk ->
-				chunk.transportNetwork.extractorManager.takeIf { it.needsSave }?.save()
+			world.getAllChunks().values.forEach { chunk ->
+				chunk.transportNetwork.extractorManager.save()
 			}
 		}
 	}
