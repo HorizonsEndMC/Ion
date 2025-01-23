@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.transport.nodes.types
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.PipeChannel.entries
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.fromHexString
@@ -11,6 +13,21 @@ import org.bukkit.block.BlockFace
 
 interface ItemNode : Node {
 	override val cacheType: CacheType get() = CacheType.ITEMS
+
+	data class InventoryNode(val position: BlockKey) : ItemNode {
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
+		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = false
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf()
+
+		override val pathfindingResistance: Double = 0.0
+	}
+
+	data object ItemExtractorNode : ItemNode {
+		override val pathfindingResistance: Double = 0.5
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = false
+		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is InventoryNode
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+	}
 
 	sealed interface ChanneledItemNode {
 		val channel: PipeChannel
@@ -81,6 +98,7 @@ interface ItemNode : Node {
 		PURPLE(Material.PURPLE_STAINED_GLASS, Material.PURPLE_STAINED_GLASS_PANE, NamedTextColor.DARK_PURPLE),
 		MAGENTA(Material.MAGENTA_STAINED_GLASS, Material.MAGENTA_STAINED_GLASS_PANE, NamedTextColor.LIGHT_PURPLE),
 		PINK(Material.PINK_STAINED_GLASS, Material.PINK_STAINED_GLASS_PANE, fromHexString("#FFC0CB")!!),
+		CLEAR(Material.GLASS, Material.GLASS_PANE, NamedTextColor.WHITE),
 
 		;
 
@@ -92,5 +110,10 @@ interface ItemNode : Node {
 
 			operator fun get(material: Material) = byMaterial[material]
 		}
+
+		val displayName = Component.text(
+			name.split('_').joinToString(separator = " ") { string -> string.replaceFirstChar { ch -> ch.uppercase() } },
+			textColor
+		)
 	}
 }
