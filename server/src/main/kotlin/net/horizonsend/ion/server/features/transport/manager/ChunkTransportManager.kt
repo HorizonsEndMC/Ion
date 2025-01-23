@@ -21,9 +21,15 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHo
 	override val itemPipeManager = ChunkCacheHolder(this) { ItemTransportCache(it) }
 //	override val fluidNodeManager = ChunkCacheHolder(this) { FluidTransportCache(it) }
 
-	override val networks: Array<ChunkCacheHolder<*>> = arrayOf(
+	override val cacheHolders: Array<ChunkCacheHolder<*>> = arrayOf(
 		powerNodeManager,
 		solarPanelManager,
+		itemPipeManager,
+//		fluidNodeManager
+	)
+
+	override val tickedHolders: Array<ChunkCacheHolder<*>> = arrayOf(
+		powerNodeManager,
 		itemPipeManager,
 //		fluidNodeManager
 	)
@@ -37,12 +43,12 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHo
 	}
 
 	fun setup() {
-		networks.forEach { it.handleLoad() }
+		cacheHolders.forEach { it.handleLoad() }
 		NewTransport.registerTransportManager(this)
 	}
 
 	fun onUnload() {
-		networks.forEach { it.handleUnload() }
+		cacheHolders.forEach { it.handleUnload() }
 		NewTransport.removeTransportManager(this)
 	}
 
@@ -51,14 +57,14 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHo
 	}
 
 	fun invalidateCache(key: BlockKey) {
-		networks.forEach { it.cache.invalidate(key) }
+		cacheHolders.forEach { it.cache.invalidate(key) }
 	}
 
 	fun processBlockRemoval(key: BlockKey) {
-		networks.forEach { it.cache.invalidate(key) }
+		cacheHolders.forEach { it.cache.invalidate(key) }
 	}
 
 	fun processBlockChange(block: Block) {
-		networks.forEach { it.cache.invalidate(toBlockKey(block.x, block.y, block.z)) }
+		cacheHolders.forEach { it.cache.invalidate(toBlockKey(block.x, block.y, block.z)) }
 	}
 }

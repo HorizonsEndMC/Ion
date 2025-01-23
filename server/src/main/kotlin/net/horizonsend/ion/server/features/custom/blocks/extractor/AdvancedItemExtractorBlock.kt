@@ -8,7 +8,11 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.mushroomBl
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.transport.items.SortingOrder
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
+import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
+import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace.DOWN
 import org.bukkit.block.BlockFace.NORTH
@@ -37,5 +41,9 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 
 		player.success("New: ${SortingOrder.entries[new]}")
 		extractorData.metaData.sortingOrder = SortingOrder.entries[new]
+
+		val chunk = IonChunk[block.world, block.x.shr(4), block.z.shr(4)] ?: return
+		val itemCache = CacheType.ITEMS.get(chunk) as ItemTransportCache
+		itemCache.handleExtractorTick(toBlockKey(block.x, block.y, block.z), 1.0, extractorData.metaData)
 	}
 }
