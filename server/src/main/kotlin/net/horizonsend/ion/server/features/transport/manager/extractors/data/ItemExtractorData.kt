@@ -15,6 +15,8 @@ class ItemExtractorData(pos: BlockKey, metaData: ItemExtractorMetaData) : Advanc
 		override val key: BlockKey,
 		var sortingOrder: SortingOrder = SortingOrder.NEAREST_FIRST
 	) : ExtractorMetaData {
+		var roundRobinIndex = 0
+
 		override fun toExtractorData(): ExtractorData {
 			return ItemExtractorData(key, this)
 		}
