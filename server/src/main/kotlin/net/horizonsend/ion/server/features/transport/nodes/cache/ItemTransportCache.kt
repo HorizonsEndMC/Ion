@@ -74,7 +74,8 @@ class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCach
 		}
 
 		val destinations: List<BlockKey> = getNetworkDestinations<ItemNode.InventoryNode>(location) { node ->
-			getInventory(node.position) != null
+			val inventory = getInventory(node.position)
+			inventory != null && inventory.isEmpty //TODO full
 		}.toList()
 
 		val destination = if (meta != null) distributionOrder.getDestination(meta, destinations) else {
