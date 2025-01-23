@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.getByIdentifier
-import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
@@ -41,15 +40,10 @@ object CustomItemCommand : SLCommand() {
 	) {
 		val player = target?.player ?: sender as? Player ?: fail { "Console must specify a target player" }
 
-		val customItemObj = getByIdentifier(customItem)
+		val itemStack = getByIdentifier(customItem)?.constructItemStack()
 
-		if (customItemObj == null) return player.userError("No custom item $customItem found!")
+		if (itemStack == null) return player.userError("No custom item $customItem found!")
 		if (amount != null && amount <= 0) return player.userError("Amount cannot be less than 0!")
-
-		val itemStack = if (customItemObj is GasCanister) {
-			// Hacky fix to gas canisters spawning in with 0 fill
-			customItemObj.createWithFill(customItemObj.maximumFill)
-		} else customItemObj.constructItemStack()
 
 		itemStack.amount = amount ?: 1
 
