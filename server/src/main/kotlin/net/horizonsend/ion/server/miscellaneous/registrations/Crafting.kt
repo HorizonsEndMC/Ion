@@ -613,7 +613,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('g', RAW_GOLD)
 			setIngredient('b', TITANIUM_BLOCK.constructItemStack())
 			setIngredient('t', TITANIUM_INGOT.constructItemStack())
-			setIngredient('s', ItemStack(ENCHANTED_BOOK).updateData(DataComponentTypes.ENCHANTMENTS, ItemEnchantments.itemEnchantments(mutableMapOf(Enchantment.SILK_TOUCH to 1), true)))
+			setIngredient('s', ItemStack(ENCHANTED_BOOK).updateData(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantments.itemEnchantments(mapOf(Enchantment.SILK_TOUCH to 1), true)))
 			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
 		}
 		shaped("fortune_1_touch_modifier", FORTUNE_1.constructItemStack()) {
