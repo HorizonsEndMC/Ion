@@ -25,19 +25,23 @@ class ShipExtractorManager(val manager: ShipTransportManager) : ExtractorManager
 		return extractors.contains(key)
 	}
 
+	override fun getExtractorData(key: BlockKey): ExtractorData? {
+		return extractors[key]
+	}
+
 	/** Returns true if an extractor was registered */
-	override fun registerExtractor(x: Int, y: Int, z: Int, ensureExtractor: Boolean): Boolean {
-		val blockData = getBlockDataSafe(manager.starship.world, x, y, z) ?: return false
+	override fun registerExtractor(x: Int, y: Int, z: Int): ExtractorData? {
+		val blockData = getBlockDataSafe(manager.starship.world, x, y, z) ?: return null
 
 		// Store extractors via local coordinates
 		val key = toBlockKey(manager.getLocalCoordinate(Vec3i(x, y, z)))
 
 		val data = getExtractorData(blockData, key)
-		if (data == null) return false
+		if (data == null) return null
 
 		extractors[key] = data
 
-		return true
+		return data
 	}
 
 	override fun removeExtractor(x: Int, y: Int, z: Int): ExtractorData? {
@@ -51,7 +55,7 @@ class ShipExtractorManager(val manager: ShipTransportManager) : ExtractorManager
 	fun loadExtractors() {
 		manager.starship.iterateBlocks { x, y, z ->
 			// If an extractor is added at the starship, remove the one in the world
-			if (registerExtractor( x, y, z, true)) {
+			if (registerExtractor( x, y, z) == null) {
 				NewTransport.removeExtractor(manager.starship.world, x, y, z)
 			}
 		}
@@ -69,7 +73,7 @@ class ShipExtractorManager(val manager: ShipTransportManager) : ExtractorManager
 
 			for (entry in entries) {
 				val worldCoord = toBlockKey(manager.getGlobalCoordinate(toVec3i(entry)))
-				ionChunk.transportNetwork.extractorManager.registerExtractor(worldCoord, ensureExtractor = true)
+				ionChunk.transportNetwork.extractorManager.registerExtractor(worldCoord)
 			}
 		}
 	}

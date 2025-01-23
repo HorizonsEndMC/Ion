@@ -14,8 +14,8 @@ import org.bukkit.block.data.BlockData
 abstract class ExtractorManager {
 	abstract fun getExtractors(): Collection<ExtractorData>
 
-	fun registerExtractor(key: BlockKey, ensureExtractor: Boolean): Boolean = registerExtractor(getX(key), getY(key), getZ(key), ensureExtractor)
-	abstract fun registerExtractor(x: Int, y: Int, z: Int, ensureExtractor: Boolean): Boolean
+	fun registerExtractor(key: BlockKey): ExtractorData? = registerExtractor(getX(key), getY(key), getZ(key))
+	abstract fun registerExtractor(x: Int, y: Int, z: Int): ExtractorData?
 
 	abstract fun removeExtractor(key: BlockKey): ExtractorData?
 	abstract fun removeExtractor(x: Int, y: Int, z: Int): ExtractorData?
@@ -30,15 +30,17 @@ abstract class ExtractorManager {
 	 **/
 	abstract fun isExtractorPresent(key: BlockKey): Boolean
 
+	abstract fun getExtractorData(key: BlockKey): ExtractorData?
+
 	companion object {
 		val STANDARD_EXTRACTOR_TYPE = Material.CRAFTING_TABLE
-		fun isExtractorData(data: BlockData): Boolean = data.material == STANDARD_EXTRACTOR_TYPE || CustomBlocks.getByBlockData(data) is CustomExtractorBlock
+		fun isExtractorData(data: BlockData): Boolean = data.material == STANDARD_EXTRACTOR_TYPE || CustomBlocks.getByBlockData(data) is CustomExtractorBlock<*>
 
 		fun getExtractorData(data: BlockData, pos: BlockKey): ExtractorData? {
 			if (data.material == STANDARD_EXTRACTOR_TYPE) return ExtractorData.StandardExtractorData(pos)
 
 			val customBlock = CustomBlocks.getByBlockData(data)
-			if (customBlock is CustomExtractorBlock) return customBlock.createExtractorData(pos)
+			if (customBlock is CustomExtractorBlock<*>) return customBlock.createExtractorData(pos)
 
 			return null
 		}

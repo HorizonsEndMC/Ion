@@ -73,8 +73,8 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		return IonChunk.getFromWorldCoordinates(world, x, z)?.transportNetwork?.extractorManager
 	}
 
-	fun addExtractor(world: World, x: Int, y: Int, z: Int, ensureExtractor: Boolean = false) {
-		getExtractorManager(world, x, z)?.registerExtractor(x, y, z, ensureExtractor)
+	fun addExtractor(world: World, x: Int, y: Int, z: Int) {
+		getExtractorManager(world, x, z)?.registerExtractor(x, y, z)
 	}
 
 	fun removeExtractor(world: World, x: Int, y: Int, z: Int) {
