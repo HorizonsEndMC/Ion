@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.command.misc.TransportDebugCommand.measureOrFa
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSettings
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.NewTransport
+import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
@@ -39,7 +40,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		.addSimpleNode(NOTE_BLOCK, PowerInputNode)
 		.build()
 
-	override fun tickExtractor(location: BlockKey, delta: Double) {
+	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) {
 		val solarCache = holder.transportManager.solarPanelManager.cache
 		if (solarCache.isSolarPanel(location)) tickSolarPanel(location, delta, solarCache)
 
@@ -50,7 +51,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		measureOrFallback(TransportDebugCommand.extractorTickTimes) {
 			val world = holder.getWorld()
 
-			val sources = getExtractorSources<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
+			val sources = getExtractorSourceEntities<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
 			val source = sources.randomOrNull() ?: return@measureOrFallback //TODO take from all
 
 			// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
