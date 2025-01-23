@@ -27,24 +27,24 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 		return extractors.values
 	}
 
-	override fun registerExtractor(x: Int, y: Int, z: Int, ensureExtractor: Boolean): Boolean {
-		val blockData = getBlockDataSafe(manager.chunk.world, x, y, z) ?: return false
+	override fun registerExtractor(x: Int, y: Int, z: Int): ExtractorData? {
+		val blockData = getBlockDataSafe(manager.chunk.world, x, y, z) ?: return null
 		val key = toBlockKey(manager.getLocalCoordinate(Vec3i(x, y, z)))
 
 		if (!manager.chunk.isInBounds(x, y, z)) {
 			IonServer.slF4JLogger.warn("Extractor manager of ${manager.chunk} tried to register an extractor outside its bounds!")
-			return false
+			return null
 		}
 
 		val data = getExtractorData(blockData, key)
-		if (data == null) return false
+		if (data == null) return null
 
 		synchronized(mutex) {
 			extractors[key] = data
 		}
 
 		needsSave = true
-		return true
+		return data
 	}
 
 	override fun removeExtractor(x: Int, y: Int, z: Int): ExtractorData? = synchronized(mutex) {
@@ -59,6 +59,10 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 
 	override fun isExtractorPresent(key: BlockKey): Boolean = synchronized(mutex) {
 		return extractors.contains(key)
+	}
+
+	override fun getExtractorData(key: BlockKey): ExtractorData? {
+		return extractors[key]
 	}
 
 	override fun onLoad() {
