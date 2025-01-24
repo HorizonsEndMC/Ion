@@ -36,11 +36,7 @@ data class FilterData<T : Any>(
 
 			data.set(NamespacedKeys.BLOCK_KEY, PersistentDataType.LONG, complex.position)
 			data.set(NamespacedKeys.WHITELIST, PersistentDataType.BOOLEAN, complex.isWhitelist)
-			data.set(NamespacedKeys.FILTER_TYPE, PersistentDataType.STRING, complex.type.javaClass.simpleName)
-//
-//			println("Serialized entries")
-//			Throwable().printStackTrace()
-//			println(complex.entries.map { key -> NbtUtils.structureToSnbt((FilterEntry.toPrimitive(key, context) as CraftPersistentDataContainer).toTagCompound()) })
+			data.set(NamespacedKeys.FILTER_TYPE, PersistentDataType.STRING, complex.type.identifier)
 
 			data.set(NamespacedKeys.FILTER_ENTRY, PersistentDataType.LIST.dataContainers(), complex.entries.map { key -> FilterEntry.toPrimitive(key, context) })
 

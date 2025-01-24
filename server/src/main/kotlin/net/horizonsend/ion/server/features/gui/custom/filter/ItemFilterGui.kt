@@ -103,10 +103,8 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack>,
 			if (cursor.isEmpty) {
 				entry.value = null
 			} else {
-				entry.value = cursor
+				entry.value = cursor.clone()
 			}
-
-			println("updated entry to: ${entry.value}, ${System.identityHashCode(entry)}")
 
 			notifyWindows()
 			updateSlotOverlay(event.view)
@@ -118,7 +116,6 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack>,
 
 		override fun getItemProvider(viewer: Player): ItemProvider = provider
 		val provider = ItemProvider {
-
 			(data.type as FilterType.ItemType).toItem(data.type.cast(entry)) ?: ItemStack.empty()
 		}
 	}
