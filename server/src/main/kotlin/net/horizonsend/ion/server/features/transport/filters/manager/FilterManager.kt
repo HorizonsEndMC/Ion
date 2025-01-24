@@ -39,7 +39,13 @@ abstract class FilterManager(val manager: TransportManager<*>) {
 	}
 
 	fun <T : Any, D : FilterData<T>> registerFilter(key: BlockKey, block: CustomFilterBlock<T, D>): D {
-		val data = block.createData(key)
+		val global = manager.getGlobalCoordinate(toVec3i(key))
+		val world = manager.getWorld()
+
+		val state = world.getBlockState(global.x, global.y, global.z) as? CommandBlock
+
+		@Suppress("UNCHECKED_CAST")
+		val data = state?.persistentDataContainer?.get(NamespacedKeys.FILTER_DATA, FilterData) as? D ?: block.createData(key)
 
 		addFilter(key, data)
 
@@ -59,16 +65,6 @@ abstract class FilterManager(val manager: TransportManager<*>) {
 
 	companion object {
 		fun save(commandBlock: CommandBlock, data: FilterData<*>) {
-//			val test = ItemStack(Material.DIRT).updatePersistentDataContainer {
-//				set(NamespacedKeys.FILTER_DATA, FilterData, data)
-//			}
-//
-//			for (entry in data.entries) {
-//				println("${entry.value}, ${System.identityHashCode(entry)}")
-//			}
-//
-//			println(NbtUtils.structureToSnbt(CraftItemStack.asNMSCopy(test).save(MinecraftServer.getServer().registryAccess()) as CompoundTag))
-
 			commandBlock.persistentDataContainer.set(NamespacedKeys.FILTER_DATA, FilterData, data)
 			commandBlock.update()
 		}
