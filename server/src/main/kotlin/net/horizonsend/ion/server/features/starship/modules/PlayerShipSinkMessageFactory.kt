@@ -54,7 +54,7 @@ class PlayerShipSinkMessageFactory(private val sunkShip: ActiveStarship) : Messa
 		val assistsData = getAssists(sortedByTime)
 
 		val message = template(
-			text("{0} was sunk by {1} using {2}{3}", RED),
+			text("{0} was sunk by {1} using {2}", RED),
 			formatName(sunkShip),
 			formatName(killerDamager),
 			sunkShip.lastWeaponName ?: text("Unknown Weapon"),
