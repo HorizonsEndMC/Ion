@@ -9,14 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.nbt.NbtUtils
-import net.minecraft.server.MinecraftServer
-import org.bukkit.Material
 import org.bukkit.block.CommandBlock
-import org.bukkit.craftbukkit.inventory.CraftItemStack
-import org.bukkit.inventory.ItemStack
 
 abstract class FilterManager(val manager: TransportManager<*>) {
 	val filters = Long2ObjectOpenHashMap<FilterData<*>>()
@@ -66,11 +59,15 @@ abstract class FilterManager(val manager: TransportManager<*>) {
 
 	companion object {
 		fun save(commandBlock: CommandBlock, data: FilterData<*>) {
-			val test = ItemStack(Material.DIRT).updatePersistentDataContainer {
-				set(NamespacedKeys.FILTER_DATA, FilterData, data)
-			}
-
-			println(NbtUtils.structureToSnbt(CraftItemStack.asNMSCopy(test).save(MinecraftServer.getServer().registryAccess()) as CompoundTag))
+//			val test = ItemStack(Material.DIRT).updatePersistentDataContainer {
+//				set(NamespacedKeys.FILTER_DATA, FilterData, data)
+//			}
+//
+//			for (entry in data.entries) {
+//				println("${entry.value}, ${System.identityHashCode(entry)}")
+//			}
+//
+//			println(NbtUtils.structureToSnbt(CraftItemStack.asNMSCopy(test).save(MinecraftServer.getServer().registryAccess()) as CompoundTag))
 
 			commandBlock.persistentDataContainer.set(NamespacedKeys.FILTER_DATA, FilterData, data)
 			commandBlock.update()

@@ -43,7 +43,7 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack>,
 
 	val toggleWhitelistButton = createButton(GuiItem.CRUISER.makeItem(whitelistText)) { _, _, event ->
 		data.isWhitelist = !data.isWhitelist
-		setSlotOverlay(event.view)
+		updateSlotOverlay(event.view)
 	}
 
 	override fun open() {
@@ -74,12 +74,26 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack>,
 			.single()
 			.setGui(gui)
 			.setTitle(AdventureComponentWrapper(getSlotOverlay()))
-			.addCloseHandler {
-				FilterManager.save(commandBlock.get(), data)
-			}
 			.build(viewer)
 
 		currentWindow = window.apply { open() }
+	}
+
+	fun getSlotOverlay(): Component = GuiText("Item Filter")
+		.setSlotOverlay(
+			". . . . . . # # #",
+			"# # # # # # # # #",
+		)
+		.add(
+			component = whitelistText,
+			alignment = GuiText.TextAlignment.CENTER,
+			horizontalShift = 55,
+			verticalShift = 20
+		)
+		.build()
+
+	fun updateSlotOverlay(view: InventoryView) {
+		view.setTitle(getSlotOverlay())
 	}
 
 	fun filterSlotProvider(entry: FilterEntry<ItemStack>, slot: Int) = object : AbstractItem() {
@@ -92,15 +106,19 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack>,
 				entry.value = cursor
 			}
 
+			println("updated entry to: ${entry.value}, ${System.identityHashCode(entry)}")
+
 			notifyWindows()
-			setSlotOverlay(event.view)
+			updateSlotOverlay(event.view)
 
 			@Suppress("UNCHECKED_CAST")
-			(data.entries as MutableList<FilterEntry<ItemStack>>).set(slot, entry)
+			(data.entries as MutableList<FilterEntry<ItemStack>>)[slot] = entry
 			FilterManager.save(commandBlock.get(), data)
 		}
 
-		override fun getItemProvider(viewer: Player?): ItemProvider = ItemProvider {
+		override fun getItemProvider(viewer: Player): ItemProvider = provider
+		val provider = ItemProvider {
+
 			(data.type as FilterType.ItemType).toItem(data.type.cast(entry)) ?: ItemStack.empty()
 		}
 	}
@@ -110,16 +128,15 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack>,
 			strictess[slot] = !(strictess.getOrDefault(slot, true))
 
 			notifyWindows()
-			setSlotOverlay(event.view)
+			updateSlotOverlay(event.view)
 
 			@Suppress("UNCHECKED_CAST")
-			(data.entries as MutableList<FilterEntry<ItemStack>>).set(slot, entry)
+			(data.entries as MutableList<FilterEntry<ItemStack>>)[slot] = entry
 			FilterManager.save(commandBlock.get(), data)
 		}
 
-		override fun getItemProvider(viewer: Player?): ItemProvider = ItemProvider {
-			getStrictnessItem(strictess.getOrDefault(slot, true))
-		}
+		override fun getItemProvider(viewer: Player): ItemProvider = provider
+		val provider = ItemProvider { getStrictnessItem(strictess.getOrDefault(slot, true)) }
 	}
 
 	fun getStrictnessItem(strict: Boolean): ItemStack {
@@ -146,22 +163,5 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack>,
 		))
 
 		return base
-	}
-
-	fun getSlotOverlay(): Component = GuiText("Item Filter")
-		.setSlotOverlay(
-			". . . . . . # # #",
-			"# # # # # # # # #",
-		)
-		.add(
-			component = whitelistText,
-			alignment = GuiText.TextAlignment.CENTER,
-			horizontalShift = 55,
-			verticalShift = 20
-		)
-		.build()
-
-	fun setSlotOverlay(view: InventoryView) {
-		view.setTitle(getSlotOverlay())
 	}
 }

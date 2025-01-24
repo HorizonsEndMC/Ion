@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.filters
 
-import com.manya.pdc.minecraft.ItemStackDataType
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.features.transport.fluids.Fluid
 import net.horizonsend.ion.server.features.transport.fluids.FluidPersistentDataType
@@ -56,7 +55,7 @@ abstract class FilterType<T : Any>(val cacheType: CacheType, val identifier: Str
 		}
 	}
 
-	data object ItemType : FilterType<ItemStack>(CacheType.ITEMS, "ITEMS", ItemStack::class.java, ItemStackDataType()) {
+	data object ItemType : FilterType<ItemStack>(CacheType.ITEMS, "ITEMS", ItemStack::class.java, ItemSerializer) {
 		override fun toItem(entry: FilterEntry<ItemStack>): ItemStack? = entry.value?.clone()
 	}
 
