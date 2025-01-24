@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.manager
 
+import net.horizonsend.ion.server.features.transport.filters.manager.FilterManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
@@ -11,6 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 
 abstract class TransportManager<T: CacheHolder<*>> {
 	abstract val extractorManager: ExtractorManager
+	abstract val filterManager: FilterManager
 
 	abstract val powerNodeManager: CacheHolder<PowerTransportCache>
 	abstract val solarPanelManager: CacheHolder<SolarPanelCache>

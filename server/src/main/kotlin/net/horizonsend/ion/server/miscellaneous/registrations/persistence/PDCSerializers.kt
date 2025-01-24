@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.registrations.persistence
 
+import net.horizonsend.ion.server.features.transport.filters.FilterData.FilterDataSerializer
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -17,6 +18,7 @@ object PDCSerializers {
 	}
 
 	val ITEM_EXTRACTOR_METADATA = register(ItemExtractorData.ItemExtractorMetaData.Companion)
+	val FILTER_DATA = register(FilterDataSerializer)
 
 	operator fun get(identifier: String) : RegisteredSerializer<*> = registeredSerializers[identifier]!!
 

@@ -8,7 +8,7 @@ object FluidPersistentDataType : PersistentDataType<String, Fluid> {
 	override fun getPrimitiveType(): Class<String> = String::class.java
 
 	override fun fromPrimitive(primitive: String, context: PersistentDataAdapterContext): Fluid {
-		return FluidRegistry.get(primitive)!!
+		return FluidRegistry[primitive]!!
 	}
 
 	override fun toPrimitive(complex: Fluid, context: PersistentDataAdapterContext): String {
