@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.player
 
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
+import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -153,6 +154,7 @@ object CombatTimer : IonServerComponent() {
 		if (!enabled) return
 
 		if (!isNpcCombatTagged(player) && PlayerCache[player].enableCombatTimerAlerts) {
+			player.alert("You are now in combat (NPC)")
 			player.sendMessage(npcTimerAlertComponent(reason))
 		}
 
@@ -166,6 +168,7 @@ object CombatTimer : IonServerComponent() {
 		if (!enabled) return
 
 		if (!isPvpCombatTagged(player) && PlayerCache[player].enableCombatTimerAlerts) {
+			player.alert("You are now in combat (PVP)")
 			player.sendMessage(pvpTimerAlertComponent(reason))
 		}
 
