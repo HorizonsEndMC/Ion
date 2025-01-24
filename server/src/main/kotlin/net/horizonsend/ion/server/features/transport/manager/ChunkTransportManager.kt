@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import org.bukkit.World
 import org.bukkit.block.Block
 
 class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHolder<*>>() {
@@ -36,6 +37,10 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHo
 		itemPipeManager,
 //		fluidNodeManager
 	)
+
+	override fun getWorld(): World {
+		return chunk.world
+	}
 
 	override fun getInputProvider(): InputManager {
 		return chunk.world.ion.inputManager
