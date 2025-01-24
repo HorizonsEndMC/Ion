@@ -118,6 +118,7 @@ object StarshipControl : IonServerComponent() {
 				.append(text(planet.name, NamedTextColor.BLUE))
 				.append(text("..."))
 		)
+		starship.setIsInterdicting(false)
 
 		StarshipTeleportation.teleportStarship(starship, target)
 		return true
