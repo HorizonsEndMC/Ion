@@ -62,10 +62,10 @@ abstract class FilterType<T : Any>(val cacheType: CacheType, val identifier: Str
 	companion object {
 		private val byId = mapOf("FLUID" to FluidType, "ITEMS" to ItemType)
 
-		operator fun get(identifier: String): FilterType<*> = byId[identifier]!!
+		operator fun get(identifier: String): FilterType<*> = byId[identifier] ?: throw NoSuchElementException("Filter type $identifier not found")
 
 		private val byClass: Map<KClass<*>, FilterType<*>> = mapOf(Fluid::class to FluidType, ItemStack::class to ItemType)
 
-		operator fun get(clazz: KClass<*>): FilterType<*> = byClass[clazz]!!
+		operator fun get(clazz: KClass<*>): FilterType<*> = byClass[clazz] ?: throw NoSuchElementException("Filter type for ${clazz.simpleName} not found")
 	}
 }

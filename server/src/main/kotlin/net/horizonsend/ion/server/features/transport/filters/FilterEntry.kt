@@ -19,7 +19,7 @@ data class FilterEntry<T : Any>(var value: T?, val type: FilterType<out T>, /*TO
 
 		override fun toPrimitive(complex: FilterEntry<*>, context: PersistentDataAdapterContext): PersistentDataContainer {
 			val pdc = context.newPersistentDataContainer()
-			val typeIdentifier = complex.type.javaClass.simpleName
+			val typeIdentifier = complex.type.identifier
 
 			pdc.set(NamespacedKeys.FILTER_TYPE, PersistentDataType.STRING, typeIdentifier)
 			complex.value?.let { complex.type.store(pdc, it) }
