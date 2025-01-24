@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.transport.manager
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.NewTransport
+import net.horizonsend.ion.server.features.transport.filters.manager.FilterManager
+import net.horizonsend.ion.server.features.transport.filters.manager.ShipFilterManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ShipExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ShipCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
@@ -14,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 
 class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheHolder<*>>() {
 	override val extractorManager: ShipExtractorManager = ShipExtractorManager(this)
+	override val filterManager: FilterManager = ShipFilterManager(this)
 	val inputManager = ShipInputManager(this)
 
 	override val powerNodeManager = ShipCacheHolder(this) { PowerTransportCache(it) }
