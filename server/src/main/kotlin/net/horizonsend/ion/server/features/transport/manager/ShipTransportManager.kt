@@ -13,11 +13,14 @@ import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.nodes.inputs.ShipInputManager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import org.bukkit.World
 
 class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheHolder<*>>() {
 	override val extractorManager: ShipExtractorManager = ShipExtractorManager(this)
 	override val filterManager: FilterManager = ShipFilterManager(this)
 	val inputManager = ShipInputManager(this)
+
+	override fun getWorld(): World = starship.world
 
 	override val powerNodeManager = ShipCacheHolder(this) { PowerTransportCache(it) }
 	override val solarPanelManager = ShipCacheHolder(this) { SolarPanelCache(it) }
