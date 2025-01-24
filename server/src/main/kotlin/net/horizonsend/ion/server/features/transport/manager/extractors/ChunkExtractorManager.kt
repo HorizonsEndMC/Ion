@@ -54,7 +54,9 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 
 	override fun removeExtractor(key: BlockKey): ExtractorData? = synchronized(mutex) {
 		needsSave = true
-		return extractors.remove(key)
+		return synchronized(mutex) {
+			extractors.remove(key)
+		}
 	}
 
 	override fun isExtractorPresent(key: BlockKey): Boolean = synchronized(mutex) {

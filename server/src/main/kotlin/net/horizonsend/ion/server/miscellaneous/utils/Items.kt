@@ -28,6 +28,9 @@ fun ItemStack.updateMeta(block: (ItemMeta) -> Unit): ItemStack = apply {
 fun ItemStack.updatePersistentDataContainer(edit: PersistentDataContainer.() -> Unit) = updateMeta { meta -> edit.invoke(meta.persistentDataContainer) }
 
 fun <T : Any> ItemStack.updateData(type: DataComponentType.Valued<T>, data: T): ItemStack = apply { setData(type, data) }
+fun ItemStack.updateData(type: DataComponentType.NonValued, value: Boolean): ItemStack = apply {
+	if (value) setData(type) else unsetData(type)
+}
 
 fun ItemStack.setModel(model: Key) = updateData(DataComponentTypes.ITEM_MODEL, model)
 fun ItemStack.setModel(model: String) = updateData(DataComponentTypes.ITEM_MODEL, NamespacedKeys.packKey(model))

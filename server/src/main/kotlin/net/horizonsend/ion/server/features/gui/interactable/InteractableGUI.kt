@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.gui.interactable
 
 import io.papermc.paper.adventure.PaperAdventure
+import net.horizonsend.ion.server.features.gui.GuiWrapper
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -24,7 +25,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.UUID
 import java.util.function.Consumer
 
-abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
+abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder, GuiWrapper {
 	protected abstract val internalInventory: Inventory
 	abstract val inventorySize: Int
 
@@ -36,7 +37,7 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 	protected val noDropSlots: MutableSet<Int> = mutableSetOf()
 	protected val lockedSlots: MutableSet<Int> = mutableSetOf()
 
-	fun open() {
+	override fun open() {
 		// Will return CRAFTING if none is open
 		if (viewer.openInventory.type != InventoryType.CRAFTING && viewer.openInventory.type != InventoryType.CREATIVE) return
 
@@ -59,6 +60,17 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 	abstract fun canAdd(itemStack: ItemStack, slot: Int, player: Player): Boolean
 	abstract fun canRemove(slot: Int, player: Player): Boolean
 	abstract fun itemChanged(changedSlot: Int, changedItem: ItemStack)
+
+	open fun handleAddItem(slot: Int, item: ItemStack, event: InventoryClickEvent) {
+		buttons[slot]?.accept(event)
+
+		if (lockedSlots.contains(slot) || !canAdd(item, slot, event.whoClicked as Player)) {
+			event.isCancelled = true
+			return
+		}
+
+		itemChanged(slot, item)
+	}
 
 	open fun handleAddItem(slot: Int, item: ItemStack, event: InventoryInteractEvent) {
 		if (lockedSlots.contains(slot) || !canAdd(item, slot, event.whoClicked as Player)) {
@@ -161,7 +173,14 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 		private val inventories = mutableMapOf<UUID, InteractableGUI>()
 
 		fun getInventory(uuid: UUID): InteractableGUI? = inventories[uuid]
-		fun setInventory(uuid: UUID, gui: InteractableGUI) { inventories[uuid] = gui }
+		fun setInventory(uuid: UUID, gui: InteractableGUI?) {
+			if (gui == null) {
+				inventories.remove(uuid)
+				return
+			}
+
+			inventories[uuid] = gui
+		}
 
 		@EventHandler
 		fun onInventoryClick(event: InventoryClickEvent) {
@@ -204,17 +223,17 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder {
 				holder.handleClose(event)
 			}
 		}
-	}
 
-	/**
-	 * Updates the title of this inventory
-	 **/
-	protected fun InventoryView.setTitle(title: Component) {
-		val entityPlayer = (player as Player).minecraft
-		val containerId = entityPlayer.containerMenu.containerId
-		val windowType = CraftContainer.getNotchInventoryType(topInventory)
-		entityPlayer.connection.send(ClientboundOpenScreenPacket(containerId, windowType, PaperAdventure.asVanilla(title)))
-		(player as Player).updateInventory()
+		/**
+		 * Updates the title of this inventory
+		 **/
+		fun InventoryView.setTitle(title: Component) {
+			val entityPlayer = (player as Player).minecraft
+			val containerId = entityPlayer.containerMenu.containerId
+			val windowType = CraftContainer.getNotchInventoryType(topInventory)
+			entityPlayer.connection.send(ClientboundOpenScreenPacket(containerId, windowType, PaperAdventure.asVanilla(title)))
+			(player as Player).updateInventory()
+		}
 	}
 
 	/**
