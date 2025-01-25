@@ -7,14 +7,14 @@ import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
-data class FilterData<T : Any>(
+data class FilterData<T : Any, M : FilterMeta>(
 	var position: BlockKey,
-	val type: FilterType<out T>,
-	var entries: MutableList<out FilterEntry<out T>> = mutableListOf(),
+	val type: FilterType<out T, out M>,
+	var entries: MutableList<out FilterEntry<out T, out M>> = mutableListOf(),
 	var isWhitelist: Boolean = true,
 ) {
-	companion object FilterDataSerializer : PDCSerializers.RegisteredSerializer<FilterData<*>>("FILTER_DATA", FilterData::class) {
-		override fun fromPrimitive(primitive: PersistentDataContainer, context: PersistentDataAdapterContext): FilterData<*> {
+	companion object FilterDataSerializer : PDCSerializers.RegisteredSerializer<FilterData<*, *>>("FILTER_DATA", FilterData::class) {
+		override fun fromPrimitive(primitive: PersistentDataContainer, context: PersistentDataAdapterContext): FilterData<*, *> {
 			val whitelist = primitive.getOrDefault(NamespacedKeys.WHITELIST, PersistentDataType.BOOLEAN, true)
 			val entries = primitive.getOrDefault(NamespacedKeys.FILTER_ENTRY, PersistentDataType.LIST.dataContainers(), listOf())
 
@@ -23,7 +23,7 @@ data class FilterData<T : Any>(
 			val filterType = FilterType[filterTypeIdentifier]
 			val formatted = filterType.loadFilterEntries(entries, context)
 
-			return FilterData<Any>(
+			return FilterData<Any, FilterMeta>(
 				position = primitive.get(NamespacedKeys.BLOCK_KEY, PersistentDataType.LONG)!!,
 				type = filterType,
 				entries = formatted,
@@ -31,7 +31,7 @@ data class FilterData<T : Any>(
 			)
 		}
 
-		override fun toPrimitive(complex: FilterData<*>, context: PersistentDataAdapterContext): PersistentDataContainer {
+		override fun toPrimitive(complex: FilterData<*, *>, context: PersistentDataAdapterContext): PersistentDataContainer {
 			val data = context.newPersistentDataContainer()
 
 			data.set(NamespacedKeys.BLOCK_KEY, PersistentDataType.LONG, complex.position)

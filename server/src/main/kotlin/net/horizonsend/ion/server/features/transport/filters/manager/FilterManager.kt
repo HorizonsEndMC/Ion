@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.filters.manager
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.custom.blocks.filter.CustomFilterBlock
 import net.horizonsend.ion.server.features.transport.filters.FilterData
+import net.horizonsend.ion.server.features.transport.filters.FilterMeta
 import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -12,25 +13,25 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.block.CommandBlock
 
 abstract class FilterManager(val manager: TransportManager<*>) {
-	val filters = Long2ObjectOpenHashMap<FilterData<*>>()
+	val filters = Long2ObjectOpenHashMap<FilterData<*, *>>()
 
 	private val mutex = Any()
 
-	fun getFilters(): Collection<FilterData<*>> {
+	fun getFilters(): Collection<FilterData<*, *>> {
 		return filters.values
 	}
 
-	fun <T: Any> getFilters(type: FilterType<T>): Collection<FilterData<T>> {
+	fun <T: Any, M : FilterMeta> getFilters(type: FilterType<T, M>): Collection<FilterData<T, M>> {
 		return filters.values
 			.filter { data -> data.type == type }
-			.filterIsInstance<FilterData<T>>()
+			.filterIsInstance<FilterData<T, M>>()
 	}
 
-	fun getFilter(key: BlockKey): FilterData<*>? {
+	fun getFilter(key: BlockKey): FilterData<*, *>? {
 		return filters[key]
 	}
 
-	fun addFilter(key: BlockKey, data: FilterData<*>) {
+	fun addFilter(key: BlockKey, data: FilterData<*, *>) {
 		val local = manager.getLocalCoordinate(toVec3i(key))
 
 		synchronized(mutex) {
@@ -38,14 +39,14 @@ abstract class FilterManager(val manager: TransportManager<*>) {
 		}
 	}
 
-	fun <T : Any, D : FilterData<T>> registerFilter(key: BlockKey, block: CustomFilterBlock<T, D>): D {
+	fun <T : Any, M : FilterMeta> registerFilter(key: BlockKey, block: CustomFilterBlock<T, M>): FilterData<T, M> {
 		val global = manager.getGlobalCoordinate(toVec3i(key))
 		val world = manager.getWorld()
 
 		val state = world.getBlockState(global.x, global.y, global.z) as? CommandBlock
 
 		@Suppress("UNCHECKED_CAST")
-		val data = state?.persistentDataContainer?.get(NamespacedKeys.FILTER_DATA, FilterData) as? D ?: block.createData(key)
+		val data = state?.persistentDataContainer?.get(NamespacedKeys.FILTER_DATA, FilterData) as? FilterData<T, M> ?: block.createData(key)
 
 		addFilter(key, data)
 
@@ -64,7 +65,7 @@ abstract class FilterManager(val manager: TransportManager<*>) {
 	abstract fun load()
 
 	companion object {
-		fun save(commandBlock: CommandBlock, data: FilterData<*>) {
+		fun save(commandBlock: CommandBlock, data: FilterData<*, *>) {
 			commandBlock.persistentDataContainer.set(NamespacedKeys.FILTER_DATA, FilterData, data)
 			commandBlock.update()
 		}
