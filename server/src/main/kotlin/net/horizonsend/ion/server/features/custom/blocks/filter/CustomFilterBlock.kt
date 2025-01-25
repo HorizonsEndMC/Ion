@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.custom.blocks.InteractableCustomBlock
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.gui.GuiWrapper
 import net.horizonsend.ion.server.features.transport.filters.FilterData
+import net.horizonsend.ion.server.features.transport.filters.FilterMeta
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -17,7 +18,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import java.util.function.Supplier
 
-abstract class CustomFilterBlock<T: Any, D: FilterData<T>>(
+abstract class CustomFilterBlock<T: Any, M: FilterMeta>(
 	identifier: String,
 	blockData: BlockData,
 	drops: BlockLoot,
@@ -34,19 +35,19 @@ abstract class CustomFilterBlock<T: Any, D: FilterData<T>>(
 		val key = toBlockKey(block.x, block.y, block.z)
 
 		val filterManager = chunk.transportNetwork.filterManager
-		val filterData = filterManager.getFilter(key) ?: filterManager.registerFilter(key, this)
+		val filterData = filterManager.getFilter(key) ?: filterManager.registerFilter<T, M>(key, this)
 
 		cooldown.tryExec(event.player) {
 			Tasks.sync {
 				@Suppress("UNCHECKED_CAST")
-				val gui = getGui(event.player, block, filterData as D) { block.state as CommandBlock }
+				val gui = getGui(event.player, block, filterData as FilterData<T, M>) { block.state as CommandBlock }
 
 				gui.open()
 			}
 		}
 	}
 
-	abstract fun createData(pos: BlockKey): D
+	abstract fun createData(pos: BlockKey): FilterData<T, M>
 
-	abstract fun getGui(player: Player, block: Block, filterData: D, commandBlock: Supplier<CommandBlock>) : GuiWrapper
+	abstract fun getGui(player: Player, block: Block, filterData: FilterData<T, M>, commandBlock: Supplier<CommandBlock>) : GuiWrapper
 }
