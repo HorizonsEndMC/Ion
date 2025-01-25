@@ -92,6 +92,8 @@ object NamespacedKeys {
 	val FILTER_DATA = key("filter_data")
 	val FILTER_TYPE = key("filter_type")
 	val FILTER_ENTRY = key("filter_entry")
+	val SORTING_METHOD = key("sorting_method")
+	val FILTER_META = key("filter_meta")
 	val WHITELIST = key("whitelist")
 
 	val POWER_TRANSPORT = key("power_transport")
