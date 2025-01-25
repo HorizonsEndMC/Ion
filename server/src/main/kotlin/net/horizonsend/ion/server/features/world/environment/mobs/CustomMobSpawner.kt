@@ -21,13 +21,13 @@ class CustomMobSpawner(val world: IonWorld, mobs: List<WorldSettings.SpawnedMob>
 		if (event.entity !is Monster) return
 		if (event.entity.persistentDataContainer.get(CUSTOM_ENTITY, BOOLEAN) == true) return
 
-		event.isCancelled = true
-
 		val location = event.location
 
 		val mob = mobs.weightedRandomOrNull { it.spawningWeight } ?: return
 
 		if (!mob.function.get()) return
+
+		event.isCancelled = true
 
 		val name = mob.namePool.entries.weightedRandomOrNull { it.value }
 
