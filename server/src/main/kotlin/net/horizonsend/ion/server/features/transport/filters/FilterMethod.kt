@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.filters
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_DRILL_BASIC
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
@@ -25,7 +26,11 @@ enum class FilterMethod(val icon: ItemStack) {
 		}
 		.updateDisplayName(text("Strict item checks"))
 		.updateLore(mutableListOf(text("All item data will be matched.")))
-	),
+	) {
+		override fun matches(data: ItemStack, target: ItemStack): Boolean {
+			return data.isSimilar(target)
+		}
+	},
 	LENIENT(POWER_DRILL_BASIC.constructItemStack()
 		.updatePersistentDataContainer {
 			set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, "USELESS")
@@ -34,5 +39,16 @@ enum class FilterMethod(val icon: ItemStack) {
 		.updateData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
 		.updateDisplayName(text("Lenient item checks"))
 		.updateLore(mutableListOf(text("Only item IDs will be matched.")))
-	);
+	) {
+		override fun matches(data: ItemStack, target: ItemStack): Boolean {
+			val customItem = target.customItem
+			if (customItem != null) {
+				return data.customItem == customItem
+			}
+
+			return target.type == data.type
+		}
+	};
+
+	abstract fun matches(data: ItemStack, target: ItemStack): Boolean
 }

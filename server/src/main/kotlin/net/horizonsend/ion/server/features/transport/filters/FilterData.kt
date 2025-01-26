@@ -13,6 +13,18 @@ data class FilterData<T : Any, M : FilterMeta>(
 	var entries: MutableList<out FilterEntry<out T, out M>> = mutableListOf(),
 	var isWhitelist: Boolean = true,
 ) {
+	fun matchesFilter(data: T): Boolean {
+		val nonEmpty = entries.filterNot(FilterEntry<*, *>::isEmpty)
+
+		return if (isWhitelist) nonEmpty.any { entry ->
+			// In a whitelist, any entry being true would let it through
+			entry.matches(data = data, isWhitelist = true)
+		} else nonEmpty.all { entry ->
+			// In a blacklist, all entries must return true (not filter it out) to let it through
+			entry.matches(data = data, isWhitelist = false)
+		}
+	}
+
 	companion object FilterDataSerializer : PDCSerializers.RegisteredSerializer<FilterData<*, *>>("FILTER_DATA", FilterData::class) {
 		override fun fromPrimitive(primitive: PersistentDataContainer, context: PersistentDataAdapterContext): FilterData<*, *> {
 			val whitelist = primitive.getOrDefault(NamespacedKeys.WHITELIST, PersistentDataType.BOOLEAN, true)

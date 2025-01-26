@@ -19,19 +19,22 @@ import kotlin.reflect.KClass
 
 abstract class FilterType<T : Any, M : FilterMeta>(
 	val cacheType: CacheType,
-	val identifier: String, val
-	typeClass: Class<T>,
+	val identifier: String,
+	val typeClass: Class<T>,
 	val persistentDataType: PersistentDataType<*, T>,
 	val metaType: PDCSerializers.RegisteredSerializer<M>
 ) {
-	fun store(pdc: PersistentDataContainer, data: Any) {
+	fun castAndMatch(data: Any, isWhitelist: Boolean, entry: FilterEntry<in T, in M>): Boolean = matches(cast(data), isWhitelist, entry)
+	abstract fun matches(data: T, isWhitelist: Boolean, entry: FilterEntry<in T, in M>): Boolean
+
+	fun store(pdc: PersistentDataContainer, data: Any?) {
 		if (!typeClass.isInstance(data)) return
 		if (data is ItemStack && data.isEmpty) {
 			return
 		}
 
 		@Suppress("UNCHECKED_CAST")
-		pdc.set(NamespacedKeys.FILTER_ENTRY, persistentDataType, data as T)
+		data?.let { pdc.set(NamespacedKeys.FILTER_ENTRY, persistentDataType, it as T) }
 	}
 
 	fun retrieveValue(pdc: PersistentDataContainer): T? {
@@ -61,6 +64,11 @@ abstract class FilterType<T : Any, M : FilterMeta>(
 	@Suppress("UNCHECKED_CAST")
 	fun cast(entry: FilterEntry<*, *>): FilterEntry<T, M> = entry as FilterEntry<T, M>
 
+	@Suppress("UNCHECKED_CAST")
+	fun cast(data: FilterData<*, *>): FilterData<T, M> = data as FilterData<T, M>
+
+	fun cast(data: Any): T = data as T
+
 	abstract fun toItem(entry: FilterEntry<T, M>): ItemStack?
 
 	data object FluidType : FilterType<Fluid, EmptyFilterMeta>(CacheType.FLUID, "FLUID", Fluid::class.java, FluidPersistentDataType, PDCSerializers.EMPTY_FILTER_META) {
@@ -74,12 +82,31 @@ abstract class FilterType<T : Any, M : FilterMeta>(
 		}
 
 		override fun buildEmptyMeta(): EmptyFilterMeta = EmptyFilterMeta
+
+		override fun matches(
+			data: Fluid,
+			isWhitelist: Boolean,
+			entry: FilterEntry<in Fluid, in EmptyFilterMeta>,
+		): Boolean {
+			val matched = entry.value ?: return true
+			return matched == data
+		}
 	}
 
 	data object ItemType : FilterType<ItemStack, ItemFilterMeta>(CacheType.ITEMS, "ITEMS", ItemStack::class.java, ItemSerializer, PDCSerializers.ITEM_FILTER_META) {
 		override fun toItem(entry: FilterEntry<ItemStack, ItemFilterMeta>): ItemStack? = entry.value?.clone()
 
 		override fun buildEmptyMeta(): ItemFilterMeta = ItemFilterMeta()
+
+		override fun matches(
+			data: ItemStack,
+			isWhitelist: Boolean,
+			entry: FilterEntry<in ItemStack, in ItemFilterMeta>,
+		): Boolean {
+			if (entry.value !is ItemStack) return true
+
+			return (entry.metaData as ItemFilterMeta).filterMethod.matches(data, entry.value as ItemStack) == isWhitelist
+		}
 	}
 
 	companion object {
