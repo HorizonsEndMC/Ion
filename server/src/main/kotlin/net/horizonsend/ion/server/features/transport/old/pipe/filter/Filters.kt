@@ -24,7 +24,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.concurrent.TimeUnit
 
 object Filters : IonServerComponent() {
-	private val cache: LoadingCache<FilterDataKey, FilterData> = CacheBuilder.newBuilder()
+	private val cache: LoadingCache<FilterDataKey, LegacyFilterData> = CacheBuilder.newBuilder()
 		.expireAfterWrite(1L, TimeUnit.MINUTES)
 		.build(
 			CacheLoader.from { key ->
@@ -38,7 +38,7 @@ object Filters : IonServerComponent() {
 				val items: Set<FilterItemData> = getItemData(inventory)
 
 				val face: BlockFace = (state.blockData as Directional).facing
-				return@from FilterData(items, face)
+				return@from LegacyFilterData(items, face)
 			}
 		)
 
@@ -65,7 +65,7 @@ object Filters : IonServerComponent() {
 	private fun getKey(world: World, x: Int, y: Int, z: Int) =
 		FilterDataKey(world.uid, Vec3i(x, y, z))
 
-	fun getCached(world: World, x: Int, y: Int, z: Int): FilterData? {
+	fun getCached(world: World, x: Int, y: Int, z: Int): LegacyFilterData? {
 		return cache.getIfPresent(getKey(world, x, y, z))
 	}
 

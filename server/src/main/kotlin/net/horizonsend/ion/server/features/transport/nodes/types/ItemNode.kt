@@ -1,15 +1,27 @@
 package net.horizonsend.ion.server.features.transport.nodes.types
 
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.transport.filters.FilterData
+import net.horizonsend.ion.server.features.transport.filters.FilterMeta
+import net.horizonsend.ion.server.features.transport.filters.FilterType
+import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.PipeChannel.entries
+import net.horizonsend.ion.server.features.transport.old.pipe.filter.FilterItemData
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.fromHexString
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
+import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.ItemStack
+import java.lang.ref.WeakReference
 
 interface ItemNode : Node {
 	override val cacheType: CacheType get() = CacheType.ITEMS
@@ -29,7 +41,9 @@ interface ItemNode : Node {
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 	}
 
-	sealed interface ChanneledItemNode {
+	sealed interface IntermediateNode
+
+	sealed interface ChanneledItemNode : IntermediateNode {
 		val channel: PipeChannel
 
 		/**
@@ -79,6 +93,72 @@ interface ItemNode : Node {
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 
 		override val pathfindingResistance: Double = 1.0
+	}
+
+	sealed interface FilterNode : ItemNode {
+		fun matches(itemStack: ItemStack) : Boolean
+	}
+
+	data class AdvancedFilterNode(val position: BlockKey, val cache: ItemTransportCache) : FilterNode {
+		val filter: WeakReference<FilterData<ItemStack, FilterMeta.ItemFilterMeta>> = WeakReference(cache.holder.transportManager.filterManager.getFilter(position, FilterType.ItemType)!!)
+		override val pathfindingResistance: Double = 1.0
+
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+
+		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is InventoryNode
+
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = other !is ItemExtractorNode
+
+		override fun matches(itemStack: ItemStack): Boolean {
+			return filter.get()?.matchesFilter(itemStack) == true
+		}
+	}
+
+	data class HopperFilterNode(val position: BlockKey, var face: BlockFace, val cache: ItemTransportCache) : FilterNode, ComplexNode {
+		val globalPosition get() = cache.holder.transportManager.getGlobalCoordinate(toVec3i(position))
+		override val pathfindingResistance: Double = 1.0
+
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(face)
+
+		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is InventoryNode
+
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = other !is ItemExtractorNode
+
+		override fun matches(itemStack: ItemStack): Boolean {
+			val inventory = cache.getInventory(toBlockKey(globalPosition)) ?: return false
+			val filterData = getItemData(inventory)
+
+			val itemData = createFilterItemData(itemStack)
+			return filterData.any { data -> data == itemData }
+		}
+
+		override fun displace(movement: StarshipMovement) {
+			face = movement.displaceFace(face)
+		}
+
+		data class LegacyFilterData(val items: Set<FilterItemData>, val face: BlockFace) {
+			override fun toString(): String = "[$items towards $face]"
+		}
+
+		fun getItemData(inventory: Inventory): Set<FilterItemData> {
+			val types = mutableSetOf<FilterItemData>()
+
+			for (item: ItemStack? in inventory.contents) {
+				val type = item?.type ?: continue
+
+				if (type.isAir) {
+					continue
+				}
+
+				types.add(createFilterItemData(item))
+			}
+
+			return types
+		}
+
+		fun createFilterItemData(item: ItemStack): FilterItemData {
+			return FilterItemData(item.type, item.customItem?.identifier)
+		}
 	}
 
 	enum class PipeChannel(val solidMaterial: Material, val paneMaterial: Material, val textColor: TextColor) {

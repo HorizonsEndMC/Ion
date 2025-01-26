@@ -31,6 +31,10 @@ abstract class FilterManager(val manager: TransportManager<*>) {
 		return filters[key]
 	}
 
+	fun <T : Any, M : FilterMeta> getFilter(key: BlockKey, type: FilterType<T, M>): FilterData<T, M>? {
+		return filters[key]?.let { data -> type.cast(data) }
+	}
+
 	fun addFilter(key: BlockKey, data: FilterData<*, *>) {
 		val local = manager.getLocalCoordinate(toVec3i(key))
 

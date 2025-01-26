@@ -6,9 +6,9 @@ import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.features.machine.GeneratorFuel
-import net.horizonsend.ion.server.features.transport.old.pipe.filter.FilterData
 import net.horizonsend.ion.server.features.transport.old.pipe.filter.FilterItemData
 import net.horizonsend.ion.server.features.transport.old.pipe.filter.Filters
+import net.horizonsend.ion.server.features.transport.old.pipe.filter.LegacyFilterData
 import net.horizonsend.ion.server.features.transport.old.transportConfig
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
@@ -43,9 +43,6 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
 object Pipes : IonServerComponent() {
 	private lateinit var thread: ExecutorService
@@ -205,7 +202,7 @@ object Pipes : IonServerComponent() {
 
 			val sidePipes = mutableListOf<BlockFace>()
 			val sideInventories = mutableListOf<BlockFace>()
-			val filters = mutableMapOf<BlockFace, FilterData>()
+			val filters = mutableMapOf<BlockFace, LegacyFilterData>()
 			val filterItems = mutableMapOf<BlockFace, Set<FilterItemData>>()
 
 			val reverse = data.direction.oppositeFace
@@ -295,7 +292,7 @@ object Pipes : IonServerComponent() {
 		nx: Int,
 		ny: Int,
 		nz: Int,
-		filters: MutableMap<BlockFace, FilterData>,
+		filters: MutableMap<BlockFace, LegacyFilterData>,
 		filterItems: MutableMap<BlockFace, Set<FilterItemData>>
 	) {
 		val sidePipeFace: BlockFace = pickDirection(nextType, sidePipes, data.direction)
@@ -317,24 +314,24 @@ object Pipes : IonServerComponent() {
 
 	private fun handleFilter(
 		data: PipeChainData,
-		filterData: FilterData,
+		legacyFilterData: LegacyFilterData,
 		sideX: Int,
 		sideY: Int,
 		sideZ: Int,
 		sidePipes: MutableList<BlockFace>,
 		sideFace: BlockFace,
-		sideFilters: MutableMap<BlockFace, FilterData>,
+		sideFilters: MutableMap<BlockFace, LegacyFilterData>,
 		sideFilterItems: MutableMap<BlockFace, Set<FilterItemData>>
 	) {
-		val combinedFilter = data.accumulatedFilter.intersect(filterData.items)
+		val combinedFilter = data.accumulatedFilter.intersect(legacyFilterData.items)
 
 		if (combinedFilter.isEmpty()) {
 			return
 		}
 
-		val pipeX = sideX + filterData.face.modX
-		val pipeY = sideY + filterData.face.modY
-		val pipeZ = sideZ + filterData.face.modZ
+		val pipeX = sideX + legacyFilterData.face.modX
+		val pipeY = sideY + legacyFilterData.face.modY
+		val pipeZ = sideZ + legacyFilterData.face.modZ
 
 		val pipeType = getBlockTypeSafe(data.world, pipeX, pipeY, pipeZ) ?: return
 
@@ -343,7 +340,7 @@ object Pipes : IonServerComponent() {
 		}
 
 		sidePipes.add(sideFace)
-		sideFilters[sideFace] = filterData
+		sideFilters[sideFace] = legacyFilterData
 		sideFilterItems[sideFace] = combinedFilter
 	}
 	/** Helper function for filtering direction for grindstones by matching proposal with
@@ -393,7 +390,7 @@ object Pipes : IonServerComponent() {
 		val z: Int,
 		val inventories: List<BlockFace>,
 		val pipes: List<BlockFace>,
-		val filters: MutableMap<BlockFace, FilterData>,
+		val filters: MutableMap<BlockFace, LegacyFilterData>,
 		val filterItems: MutableMap<BlockFace, Set<FilterItemData>>
 	)
 
