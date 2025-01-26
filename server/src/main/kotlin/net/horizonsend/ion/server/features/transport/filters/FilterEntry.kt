@@ -8,6 +8,14 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
 data class FilterEntry<T : Any, M : FilterMeta>(var value: T?, val type: FilterType<out T, out M>, val metaData: M) {
+	fun matches(data: Any, isWhitelist: Boolean): Boolean {
+		if (!type.typeClass.isInstance(data)) return false
+		if (value == null) return !isWhitelist
+
+		return type.castAndMatch(data, isWhitelist = isWhitelist, entry = this)
+	}
+
+	fun isEmpty() = value == null
 
 	companion object : PersistentDataType<PersistentDataContainer, FilterEntry<*, *>> {
 		override fun getComplexType(): Class<FilterEntry<*, *>> = FilterEntry::class.java
@@ -34,7 +42,7 @@ data class FilterEntry<T : Any, M : FilterMeta>(var value: T?, val type: FilterT
 			pdc.set(NamespacedKeys.FILTER_TYPE, PersistentDataType.STRING, typeIdentifier)
 
 			// Store value if present
-			complex.value?.let { complex.type.store(pdc, it) }
+			complex.type.store(pdc, complex.value)
 
 			// Store meta data
 			pdc.set(NamespacedKeys.FILTER_META, MetaDataContainer, PDCSerializers.pack(complex.metaData))
