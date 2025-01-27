@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.custom.items.component.Listener.Compa
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropSource
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.SilkTouchSource
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -141,7 +142,8 @@ class PowerDrill(identifier: String, displayName: Component, modLimit: Int, base
 				block.world.playEffect(block.location, Effect.STEP_SOUND, blockType)
 			}
 
-			breakNaturally(block, dropSource.shouldDropXP)
+			val usedTool = ((mods.firstOrNull { mod -> mod is SilkTouchSource }) as? SilkTouchSource)?.usedTool
+			breakNaturally(block, dropSource.shouldDropXP, usedTool)
 
 			if (blockType == Material.END_PORTAL_FRAME) block.world.dropItem(block.location, ItemStack(Material.END_PORTAL_FRAME))
 
