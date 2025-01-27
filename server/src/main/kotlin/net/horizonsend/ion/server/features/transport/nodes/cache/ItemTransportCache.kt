@@ -34,9 +34,11 @@ import org.bukkit.craftbukkit.block.impl.CraftGrindstone
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import kotlin.reflect.KClass
 
 class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCache(holder) {
 	override val type: CacheType = CacheType.ITEMS
+	override val extractorNodeClass: KClass<out Node> = ItemNode.ItemExtractorNode::class
 	override val nodeFactory: NodeCacheFactory = NodeCacheFactory.builder()
 		.addSimpleNode(CRAFTING_TABLE, ItemNode.ItemExtractorNode)
 		.addSimpleNode(CustomBlocks.ADVANCED_ITEM_EXTRACTOR, ItemNode.ItemExtractorNode)
@@ -93,9 +95,11 @@ class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCach
 
 		debugAudience.information("counts: [${byCount.entries.joinToString { "${it.key.type}, ${it.value}]" }}, ${toVec3i(location)}")
 
+		val originNode = getOrCache(location) ?: return
+
 		for ((item, count) in byCount) {
 			debugAudience.information("Checking ${item.type} [$count]")
-			val destinations: List<BlockKey> = getNetworkDestinations<ItemNode.InventoryNode>(location) { node ->
+			val destinations: List<BlockKey> = getNetworkDestinations<ItemNode.InventoryNode>(location, originNode) { node ->
 				val inventory = getInventory(node.position)
 				inventory != null && inventory.isEmpty //TODO full
 			}.toList()
