@@ -204,9 +204,10 @@ object TransportDebugCommand : SLCommand() {
 	@Subcommand("test flood")
 	fun onTestFloodFill(sender: Player, type: CacheType) {
 		sender.information("Trying to find input nodes")
-		val (_, location) = requireLookingAt(sender) { type.get(it.chunk.ion()) }
+		val (node, location) = requireLookingAt(sender) { type.get(it.chunk.ion()) }
 		val cache = type.get(sender.chunk.ion())
-		val destinations = cache.getNetworkDestinations<PowerInputNode>(location) { true }
+
+		val destinations = cache.getNetworkDestinations<PowerInputNode>(location, node) { true }
 		sender.information("${destinations.size} destinations")
 		sender.highlightBlocks(destinations.map(::toVec3i), 50L)
 	}
