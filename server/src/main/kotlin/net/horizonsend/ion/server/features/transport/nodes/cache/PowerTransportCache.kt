@@ -141,7 +141,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		val numDestinations = filteredDestinations.size
 
 		val paths: Array<PathfindingReport?> = measureOrFallback(TransportDebugCommand.pathfindTimes) { Array(numDestinations) {
-			getOrCachePath(source, filteredDestinations[it])
+			findPath(source, filteredDestinations[it])
 		} }
 
 		var maximumResistance: Double = -1.0

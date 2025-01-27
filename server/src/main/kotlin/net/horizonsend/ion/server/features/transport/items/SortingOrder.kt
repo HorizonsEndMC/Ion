@@ -14,10 +14,10 @@ enum class SortingOrder {
 	},
 	ROUND_ROBIN {
 		override fun getDestination(extractorData: ItemExtractorMetaData, destinations: List<BlockKey>): BlockKey {
-			val currentIndex = extractorData.roundRobinIndex
+			val currentIndex = extractorData.roundRobinIndex.toInt()
 
 			val nextIndex = (currentIndex + 1) % destinations.size
-			extractorData.roundRobinIndex = nextIndex
+			extractorData.roundRobinIndex = nextIndex.toUShort()
 			return destinations[nextIndex]
 		}
 	},
