@@ -112,16 +112,17 @@ class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCach
 			val numDestinations = destinations.size
 
 			val paths: Array<PathfindingReport?> = measureOrFallback(TransportDebugCommand.pathfindTimes) { Array(numDestinations) {
-				getOrCachePath(
-					Node.NodePositionData(
+				findPath(
+					origin = Node.NodePositionData(
 						ItemNode.ItemExtractorNode,
 						holder.getWorld(),
 						location,
 						BlockFace.SELF
 					),
-					destinations[it]
+					destination = destinations[it],
+					ignoreCache = true // TODO wait for a caching implementation that will allow compound keys for item types
 				) { node, blockFace ->
-					if (node !is ItemNode.FilterNode) return@getOrCachePath true
+					if (node !is ItemNode.FilterNode) return@findPath true
 					debugAudience.serverError("checking filter")
 					node.matches(item)
 				}
@@ -134,7 +135,10 @@ class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCach
 			if (validDestinations.isEmpty()) {
 				debugAudience.serverError("Could not find valid destination.")
 				println(paths.toList())
+				return
 			}
+
+			meta?.markItemPathfind(item)
 
 			val destination = if (meta != null) {
 				distributionOrder.getDestination(meta, validDestinations)
