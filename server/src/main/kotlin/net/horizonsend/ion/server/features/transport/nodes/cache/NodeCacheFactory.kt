@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.data.BlockData
-import org.bukkit.block.data.MultipleFacing
 import kotlin.reflect.KClass
 
 class NodeCacheFactory private constructor(private val materialHandlers: Map<Material, MaterialHandler<*>>) {
@@ -30,6 +29,15 @@ class NodeCacheFactory private constructor(private val materialHandlers: Map<Mat
 		inline fun <reified T: BlockData> addDataHandler(material: Material, noinline constructor: (T, BlockKey) -> Node?): Builder {
 			this.materialHandlers[material] = MaterialHandler(T::class, constructor)
 			return this
+		}
+
+		inline fun <reified T: BlockData> addDataHandler(customBlock: CustomBlock, noinline constructor: (T, BlockKey) -> Node?): Builder {
+			require(customBlock.blockData is T)
+
+			return addDataHandler<T>(customBlock.blockData.material) { data, lng ->
+				if (CustomBlocks.getByBlockData(data) != customBlock) return@addDataHandler null
+				constructor.invoke(data, lng)
+			}
 		}
 
 		inline fun <reified T: BlockData> addDataHandler(materials: Iterable<Material>, noinline constructor: (T, BlockKey) -> Node): Builder {
@@ -63,7 +71,7 @@ class NodeCacheFactory private constructor(private val materialHandlers: Map<Mat
 		}
 
 		fun addSimpleNode(customBlock: CustomBlock, node: Node): Builder {
-			return addDataHandler<MultipleFacing>(Material.BROWN_MUSHROOM_BLOCK) { data, lng ->
+			return addDataHandler<BlockData>(customBlock.blockData.material) { data, lng ->
 				if (CustomBlocks.getByBlockData(data) != customBlock) return@addDataHandler null
 				node
 			}

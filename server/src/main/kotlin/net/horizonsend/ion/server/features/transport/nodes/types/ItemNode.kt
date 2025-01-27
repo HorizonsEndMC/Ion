@@ -79,14 +79,6 @@ interface ItemNode : Node {
 		override val pathfindingResistance: Double = 1.0
 	}
 
-	data object WildcardPaneGlassNode : ItemNode {
-		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true //TODO
-		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true //TODO
-		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
-
-		override val pathfindingResistance: Double = 1.0
-	}
-
 	data object ItemMergeNode : ItemNode {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true //TODO
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true //TODO
@@ -112,6 +104,10 @@ interface ItemNode : Node {
 		override fun matches(itemStack: ItemStack): Boolean {
 			return filter.get()?.matchesFilter(itemStack) == true
 		}
+
+		override fun toString(): String {
+			return filter.get().toString()
+		}
 	}
 
 	data class HopperFilterNode(val position: BlockKey, var face: BlockFace, val cache: ItemTransportCache) : FilterNode, ComplexNode {
@@ -136,10 +132,6 @@ interface ItemNode : Node {
 			face = movement.displaceFace(face)
 		}
 
-		data class LegacyFilterData(val items: Set<FilterItemData>, val face: BlockFace) {
-			override fun toString(): String = "[$items towards $face]"
-		}
-
 		fun getItemData(inventory: Inventory): Set<FilterItemData> {
 			val types = mutableSetOf<FilterItemData>()
 
@@ -158,6 +150,10 @@ interface ItemNode : Node {
 
 		fun createFilterItemData(item: ItemStack): FilterItemData {
 			return FilterItemData(item.type, item.customItem?.identifier)
+		}
+
+		override fun toString(): String {
+			return getItemData(cache.getInventory(toBlockKey(globalPosition))!!).toString()
 		}
 	}
 
