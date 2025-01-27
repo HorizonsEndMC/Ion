@@ -102,7 +102,7 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		val numDestinations = filteredDestinations.size
 
 		val paths: Array<PathfindingReport?> = Array(numDestinations) {
-			getOrCachePath(source, filteredDestinations[it]) { node, _ ->
+			findPath(source, filteredDestinations[it]) { node, _ ->
 				(node is FluidNode) && (@Suppress("UNCHECKED_CAST") (node as? FilterNode<Fluid>)?.canTransfer(fluid) != false)
 			}
 		}
