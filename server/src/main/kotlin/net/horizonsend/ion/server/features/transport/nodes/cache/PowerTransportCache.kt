@@ -26,9 +26,12 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.Observer
 import org.bukkit.craftbukkit.block.impl.CraftEndRod
 import kotlin.math.roundToInt
+import kotlin.reflect.KClass
 
 class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportCache(holder) {
 	override val type: CacheType = CacheType.POWER
+	override val extractorNodeClass: KClass<out Node> = PowerNode.PowerExtractorNode::class
+
 	override val nodeFactory: NodeCacheFactory = NodeCacheFactory.builder()
 		.addSimpleNode(CRAFTING_TABLE, PowerNode.PowerExtractorNode)
 		.addSimpleNode(SPONGE, PowerNode.SpongeNode)
@@ -54,9 +57,11 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 			val sources = getExtractorSourceEntities<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
 			val source = sources.randomOrNull() ?: return@measureOrFallback //TODO take from all
 
+			val originNode = holder.nodeProvider.invoke(type, holder.getWorld(), location) ?: return@measureOrFallback
+
 			// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
 			val destinations: Collection<BlockKey> = measureOrFallback(TransportDebugCommand.floodFillTimes) {
-				getNetworkDestinations<PowerInputNode>(location) { node ->
+				getNetworkDestinations<PowerInputNode>(location, originNode) { node ->
 					getInputEntities(node.position).any { entity ->
 						(entity is PoweredMultiblockEntity) && !entity.powerStorage.isFull()
 					}
@@ -95,9 +100,11 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 			val transportPower = solarCache.getPower(holder.getWorld(), location, delta)
 			if (transportPower == 0) return@measureOrFallback
 
+			val originNode = holder.nodeProvider.invoke(type, holder.getWorld(), location) ?: return@measureOrFallback
+
 			// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
 			val destinations: Collection<BlockKey> = measureOrFallback(TransportDebugCommand.solarFloodFillTimes) {
-				getNetworkDestinations<PowerInputNode>(location) { node ->
+				getNetworkDestinations<PowerInputNode>(location, originNode) { node ->
 					getInputEntities(node.position).any { entity ->
 						(entity is PoweredMultiblockEntity) && !entity.powerStorage.isFull()
 					}
