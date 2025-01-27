@@ -15,11 +15,14 @@ import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.SolidGlassNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.util.ItemTransaction
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -28,6 +31,7 @@ import net.minecraft.world.Container
 import org.bukkit.Material
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.block.BlockFace
+import org.bukkit.block.BlockState
 import org.bukkit.block.data.type.CommandBlock
 import org.bukkit.block.data.type.Hopper
 import org.bukkit.craftbukkit.block.impl.CraftGrindstone
@@ -128,8 +132,12 @@ class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCach
 				}
 			} }
 
-			val validDestinations = destinations.filterIndexed { index, _ ->
-				paths[index] != null
+			var destinationMap = mutableMapOf<BlockKey, Int>()
+
+			val validDestinations = destinations.filterIndexed { index, destination ->
+				val path = paths[index]
+				path?.let { destinationMap[destination] = index }
+				path != null
 			}
 
 			if (validDestinations.isEmpty()) {
@@ -147,12 +155,28 @@ class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCach
 				destinations.minBy { key -> extractorPosition.distance(toVec3i(key)) }
 			}
 
+			val path = destinationMap[destination]!!
+
+			val transact = ItemTransaction(holder as CacheHolder<ItemTransportCache>, { stack1, stack2 ->
+				stack1.isSimilar(stack2) //TODO
+			})
+
+			for (source in sources) {
+				val key = toBlockKey(Vec3i((source.holder as BlockState).location))
+
+				transact.addRemoval(key, ItemTransaction.ItemDiff(item, -count))
+			}
+
+			transact.addAddition(destination,  ItemTransaction.ItemDiff(item, count))
+
+			transact.commit()
+
 			debugAudience.highlightBlock(toVec3i(destination), 40L)
 		}
 	}
 
-	fun getInventory(key: BlockKey): Inventory? {
-		val globalVec = holder.transportManager.getGlobalCoordinate(toVec3i(key))
+	fun getInventory(localKey: BlockKey): Inventory? {
+		val globalVec = holder.transportManager.getGlobalCoordinate(toVec3i(localKey))
 		val nmsChunk = holder.getWorld().minecraft.getChunkIfLoaded(globalVec.x.shr(4), globalVec.z.shr(4)) ?: return null
 		val tileEntity = nmsChunk.getBlockEntity(BlockPos(globalVec.x, globalVec.y, globalVec.z)) as? Container ?: return null
 
