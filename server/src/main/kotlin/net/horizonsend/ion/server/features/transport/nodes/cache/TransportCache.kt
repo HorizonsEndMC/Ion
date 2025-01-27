@@ -252,15 +252,20 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 		}
 	}
 
-	fun getOrCachePath(origin: Node.NodePositionData, destination: BlockKey, pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null): PathfindingReport? {
-		if (pathCache.contains(origin.position, destination)) {
+	fun findPath(
+		origin: Node.NodePositionData,
+		destination: BlockKey,
+		ignoreCache: Boolean = false,
+		pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null
+	): PathfindingReport? {
+		if (!ignoreCache && pathCache.contains(origin.position, destination)) {
 			return synchronized(pathCacheLock) { pathCache.get(origin.position, destination)?.getOrNull() }
 		}
 
 		val path = runCatching { getIdealPath(origin, destination, holder.nodeProvider, pathfindingFilter) }.getOrNull()
 
 		if (path == null) {
-			synchronized(pathCacheLock) { pathCache[origin.position, destination] = Optional.empty() }
+			if (!ignoreCache) synchronized(pathCacheLock) { pathCache[origin.position, destination] = Optional.empty() }
 			return null
 		}
 
@@ -268,7 +273,7 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 
 		val report = PathfindingReport(path, resistance)
 
-		synchronized(pathCacheLock) { pathCache[origin.position, destination] = Optional.of(report) }
+		if (!ignoreCache) synchronized(pathCacheLock) { pathCache[origin.position, destination] = Optional.of(report) }
 		return report
 	}
 
