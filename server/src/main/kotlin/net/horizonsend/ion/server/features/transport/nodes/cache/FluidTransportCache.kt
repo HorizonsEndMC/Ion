@@ -25,9 +25,11 @@ import org.bukkit.Material.WAXED_WEATHERED_CHISELED_COPPER
 import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.block.impl.CraftLightningRod
 import kotlin.math.roundToInt
+import kotlin.reflect.KClass
 
 class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCache(holder) {
 	override val type: CacheType = CacheType.FLUID
+	override val extractorNodeClass: KClass<out Node> = FluidNode.FluidExtractorNode::class
 	override val nodeFactory: NodeCacheFactory = NodeCacheFactory.builder()
 		.addDataHandler<CraftLightningRod>(Material.LIGHTNING_ROD) { data, _ -> FluidNode.LightningRodNode(data.facing.axis) }
 		.addSimpleNode(WAXED_CHISELED_COPPER) { FluidNode.FluidJunctionNode(WAXED_CHISELED_COPPER) }
@@ -49,8 +51,10 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 
 		if (source.getStoredResources().isEmpty()) return@submit
 
+		val originNode = holder.nodeProvider.invoke(type, holder.getWorld(), location) ?: return@submit
+
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: Collection<BlockKey> = getNetworkDestinations<FluidNode.FluidInputNode>(location) { node ->
+		val destinations: Collection<BlockKey> = getNetworkDestinations<FluidNode.FluidInputNode>(location, originNode) { node ->
 			world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is FluidStoringEntity && !entity.isFull() }
 		}
 

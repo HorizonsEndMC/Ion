@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
+import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -14,6 +15,7 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.DaylightDetector
 import kotlin.math.roundToInt
+import kotlin.reflect.KClass
 
 class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(holder) {
 	override val nodeFactory: NodeCacheFactory = NodeCacheFactory.builder()
@@ -23,6 +25,8 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 		.build()
 
 	override val type: CacheType = CacheType.SOLAR_PANELS
+
+	override val extractorNodeClass: KClass<out Node> = PowerNode.PowerExtractorNode::class
 
 	sealed interface SolarPanelComponent: Node {
 		data object CraftingTable: SolarPanelComponent

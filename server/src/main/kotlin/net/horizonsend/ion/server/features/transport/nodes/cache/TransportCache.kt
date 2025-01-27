@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import com.google.common.collect.TreeBasedTable
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
@@ -22,6 +23,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isAdjacent
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.set
 import org.bukkit.block.Block
@@ -29,19 +31,29 @@ import org.bukkit.block.BlockFace
 import java.util.Optional
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.jvm.optionals.getOrNull
+import kotlin.reflect.KClass
 
 abstract class TransportCache(val holder: CacheHolder<*>) {
-	private var cache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap()
+	/**
+	 * Cache containing a cache state at their corresponding block position.
+	 * The state can either be empty, or present. Empty key / value pairs have not been cached.
+	 **/
+	private var nodeCache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap()
+
+	/**
+	 * A table containing cached paths. The first value is the origin of the path, usually an extractor, and the second is the destination location.
+	 **/
+	private val pathCache = TreeBasedTable.create<BlockKey, BlockKey, Optional<PathfindingReport>>()
 
 	abstract val type: CacheType
 	abstract val nodeFactory: NodeCacheFactory
 
 	abstract fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?)
 
-	fun isCached(at: BlockKey): Boolean = cache.containsKey(at)
+	fun isCached(at: BlockKey): Boolean = nodeCache.containsKey(at)
 
 	fun getCached(at: BlockKey): Node? {
-		val state = cache[at] ?: return null
+		val state = nodeCache[at] ?: return null
 		return when (state) {
 			is CacheState.Empty -> null
 			is CacheState.Present -> state.node
@@ -63,12 +75,12 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 
 	fun cache(location: BlockKey, block: Block): Node? = synchronized(mutex)  {
 		// On race conditions
-		cache[location]?.let { return@synchronized (it as? CacheState.Present)?.node }
+		nodeCache[location]?.let { return@synchronized (it as? CacheState.Present)?.node }
 
 		val type = nodeFactory.cache(block)
 		val state = if (type == null) CacheState.Empty else CacheState.Present(type)
 
-		cache[location] = state
+		nodeCache[location] = state
 		return type
 	}
 
@@ -76,11 +88,15 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 		invalidate(toBlockKey(x, y, z))
 	}
 
+	abstract val extractorNodeClass: KClass<out Node>
+
 	fun invalidate(key: BlockKey) {
-		(cache.remove(key) as? CacheState.Present)?.node?.onInvalidate()
+		val removed = (nodeCache.remove(key) as? CacheState.Present)?.node
+		removed?.onInvalidate() ?: return
+		invalidatePaths(key, removed)
 	}
 
-	fun getRawCache() = cache
+	fun getRawCache() = nodeCache
 
 	fun displace(movement: StarshipMovement) {
 		for (state in getRawCache().values) {
@@ -161,10 +177,17 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 
 	inline fun <reified T: Node> getNetworkDestinations(
 		originPos: BlockKey,
-		check: (Node.NodePositionData) -> Boolean,
-	): Collection<BlockKey> {
-		val originNode = holder.nodeProvider.invoke(type, holder.getWorld(), originPos) ?: return listOf()
+		originNode: Node,
+		noinline check: ((Node.NodePositionData) -> Boolean)? = null
+	): Collection<BlockKey> = getNetworkDestinations(T::class, originPos, originNode, check)
 
+	fun getNetworkDestinations(
+		clazz: KClass<out Node>,
+		originPos: BlockKey,
+		originNode: Node,
+		nodeCheck: ((Node.NodePositionData) -> Boolean)? = null,
+		nextNodeProvider: Node.NodePositionData.() -> List<Node.NodePositionData> = { getNextNodes(holder.nodeProvider, null) }
+	): Collection<BlockKey> {
 		val visitQueue = ArrayDeque<Node.NodePositionData>()
 		val visited = LongOpenHashSet()
 		val destinations = LongOpenHashSet()
@@ -181,30 +204,63 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 			val current = visitQueue.removeFirst()
 			visited.add(current.position)
 
-			if (current.type is T && check(current)) {
+			if (clazz.isInstance(current.type) && (nodeCheck?.invoke(current) != false)) {
 				destinations.add(current.position)
 			}
 
-			visitQueue.addAll(current.getNextNodes(holder.nodeProvider, null).filterNot { visited.contains(it.position) || visitQueue.contains(it) })
+			visitQueue.addAll(nextNodeProvider(current).filterNot { visited.contains(it.position) || visitQueue.contains(it) })
 		}
 
 		return destinations
 	}
 
-	/**
-	 *
-	 **/
-	private val simplePathCache = TreeBasedTable.create<BlockKey, BlockKey, Optional<PathfindingReport>>()
+	private val pathCacheLock = Any()
+
+	fun invalidatePaths(pos: BlockKey, node: Node) {
+		val toRemove = mutableSetOf<Pair<BlockKey, BlockKey>>()
+
+		// If the pos is an origin or destination, there is no need to perform a flood to find the connected rows / destinations
+		// If the path cache contains a row at this pos, an origin is present here, and it can be removed
+		if (pathCache.containsRow(pos)) {
+			pathCache.rowMap()[pos]?.keys?.forEach { columnKey ->
+				toRemove.add(pos to columnKey)
+			}
+		}
+
+		// If the path cache contains a column at this pos, a destination from an origin within the chunk can be invalidated
+		if (pathCache.containsColumn(pos)) {
+			pathCache.columnMap()[pos]?.keys?.forEach { rowKey ->
+				toRemove.add(rowKey to pos)
+			}
+		}
+
+		// Perform a flood fill to find all network destinations, then remove all destination columns
+		getNetworkDestinations(clazz = extractorNodeClass, originPos = pos, originNode = node) {
+			// Traverse network backwards
+			getPreviousNodes(holder.nodeProvider, null)
+		}.forEach { extractorPos ->
+			debugAudience.highlightBlock(holder.transportManager.getGlobalCoordinate(toVec3i(extractorPos)), 10L)
+
+			pathCache.rowMap()[extractorPos]?.keys?.forEach { columnKey ->
+				toRemove.add(extractorPos to columnKey)
+			}
+		}
+
+		// Remove all the paths after being found
+		synchronized(pathCacheLock) {
+			for ((rowKey, columnKey) in toRemove) pathCache.remove(rowKey, columnKey)
+		}
+	}
 
 	fun getOrCachePath(origin: Node.NodePositionData, destination: BlockKey, pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null): PathfindingReport? {
-		if (simplePathCache.contains(origin.position, destination)) {
-			return simplePathCache.get(origin.position, destination)?.getOrNull()
+		if (pathCache.contains(origin.position, destination)) {
+			return synchronized(pathCacheLock) { pathCache.get(origin.position, destination)?.getOrNull() }
 		}
 
 		val path = runCatching { getIdealPath(origin, destination, holder.nodeProvider, pathfindingFilter) }.getOrNull()
 
 		if (path == null) {
-			simplePathCache[origin.position, destination] = Optional.empty()
+			synchronized(pathCacheLock) { pathCache[origin.position, destination] = Optional.empty() }
 			return null
 		}
 
@@ -212,7 +268,7 @@ abstract class TransportCache(val holder: CacheHolder<*>) {
 
 		val report = PathfindingReport(path, resistance)
 
-		simplePathCache[origin.position, destination] = Optional.of(report)
+		synchronized(pathCacheLock) { pathCache[origin.position, destination] = Optional.of(report) }
 		return report
 	}
 
