@@ -103,6 +103,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 		for ((item, count) in byCount) {
 			debugAudience.information("Checking ${item.type} [$count]")
+
 			val destinations: List<BlockKey> = getNetworkDestinations<ItemNode.InventoryNode>(location, originNode) { node ->
 				val inventory = getInventory(node.position)
 				inventory != null && LegacyItemUtils.canFit(inventory, item, 1)
@@ -132,17 +133,15 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 				}
 			} }
 
-			var destinationMap = mutableMapOf<BlockKey, Int>()
+//			var destinationMap = mutableMapOf<BlockKey, Int>()
 
 			val validDestinations = destinations.filterIndexed { index, destination ->
 				val path = paths[index]
-				path?.let { destinationMap[destination] = index }
+//				path?.let { destinationMap[destination] = index }
 				path != null
 			}
 
 			if (validDestinations.isEmpty()) {
-				debugAudience.serverError("Could not find valid destination.")
-				println(paths.toList())
 				return
 			}
 
@@ -157,19 +156,11 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 			debugAudience.information("Selected destination ${toVec3i(destination)}")
 
-//			val path = destinationMap[destination]!!
-			val diffProvider = { stack1: ItemStack, stack2: ItemStack ->
-				stack1.isSimilar(stack2) //TODO
-			}
-
 			val transact = ItemTransaction(holder)
 
 			for (source in sources) {
-				println("source holder: ${source.inventory}")
 				val key = toBlockKey((source.inventory as BlockEntity).blockPos.toVec3i())
-				debugAudience.information("3 ${toVec3i(key)}")
-
-				transact.addRemoval(key, Change.ItemRemoval(item, count, diffProvider))
+				transact.addRemoval(key, Change.ItemRemoval(item, count))
 			}
 
 			transact.addAddition(destination, Change.ItemAddition(item, count))
