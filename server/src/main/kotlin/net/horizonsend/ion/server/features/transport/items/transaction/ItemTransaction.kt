@@ -1,9 +1,9 @@
-package net.horizonsend.ion.server.features.transport.util.transaction
+package net.horizonsend.ion.server.features.transport.items.transaction
 
+import net.horizonsend.ion.server.features.transport.items.transaction.Change.ItemAddition
+import net.horizonsend.ion.server.features.transport.items.transaction.Change.ItemRemoval
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
-import net.horizonsend.ion.server.features.transport.util.transaction.Change.ItemAddition
-import net.horizonsend.ion.server.features.transport.util.transaction.Change.ItemRemoval
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import org.bukkit.inventory.Inventory
