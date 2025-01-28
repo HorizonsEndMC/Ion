@@ -10,7 +10,7 @@ interface Change {
 
 	fun execute(inventory: Inventory): Boolean
 
-	class ItemRemoval(val item: ItemStack, val amount: Int, val similarityProvider: (ItemStack, ItemStack) -> Boolean) : Change {
+	class ItemRemoval(val item: ItemStack, val amount: Int) : Change {
 		override fun check(inventory: Inventory): Boolean {
 			return true //TODO
 		}
@@ -28,7 +28,7 @@ interface Change {
 
 			val toRemove = abs(amount)
 
-			if (byCount.getOrDefault(item, 0) <= toRemove) return false
+			if (byCount.getOrDefault(item, 0) < toRemove) return false
 
 			var remaining = toRemove
 
@@ -36,13 +36,18 @@ interface Change {
 			// Upper bound of inventory as double chest size
 			while (remaining > 0 && iterations < 54) {
 				iterations++
-				val item = contents.first { stack -> similarityProvider(stack, item) }
-				val amount = item.amount
+				val invItem = contents.first { stack -> stack.isSimilar(item) }
+				val amount = invItem.amount
 
 				val toRemove = minOf(amount, remaining)
 
 				remaining -= toRemove
-				item.amount -= toRemove
+
+				if (toRemove == invItem.maxStackSize) {
+					inventory.remove(invItem)
+				}
+
+				invItem.amount -= toRemove
 			}
 
 			return true
