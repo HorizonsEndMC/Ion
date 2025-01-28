@@ -128,7 +128,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 	}
 
-	private fun checkDimensions(world: World, x: Int, z: Int, radius: Int, cachedStation: CachedSpaceStation<*, *, *>?) {
+	private fun checkDimensions(world: World, x: Int, z: Int, radius: Int, cachedStation: CachedSpaceStation<*, *, *>?, sender: Player? = null) {
 		failIf(radius !in 15..10_000) { "Radius must be at least 15 and at most 10,000 blocks" }
 
 		val y = 128 // we don't care about comparing height here
@@ -186,7 +186,12 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			if (other.databaseId == cachedStation?.databaseId) continue
 			if (other.world != world.name) continue
 
-			val minDistance = other.radius + radius + 200
+			var padding = 0
+			if(!other.hasOwnershipContext(sender.slPlayerId)){
+				padding = 200
+			}
+
+			val minDistance = other.radius + radius + padding
 			val distance = distance(x, y, z, other.x, y, other.z)
 
 			failIf(distance < minDistance) {
@@ -381,7 +386,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val world = Bukkit.getWorld(station.world) ?: fail { "Could not find station world; please contact staff" }
 		val x = station.x
 		val z = station.z
-		checkDimensions(world, x, z, newRadius, station)
+		checkDimensions(world, x, z, newRadius, station, sender)
 
 		val realCost = calculateCost(station.radius, newRadius)
 		requireMoney(sender, realCost, "create a space station")
