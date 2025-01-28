@@ -8,6 +8,8 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.items.SortingOrder
+import net.horizonsend.ion.server.features.transport.items.transaction.Change
+import net.horizonsend.ion.server.features.transport.items.transaction.ItemTransaction
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData.ItemExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
@@ -15,8 +17,6 @@ import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.SolidGlassNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.transport.util.transaction.Change
-import net.horizonsend.ion.server.features.transport.util.transaction.ItemTransaction
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
@@ -128,7 +128,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 				) { node, blockFace ->
 					if (node !is ItemNode.FilterNode) return@findPath true
 					debugAudience.serverError("checking filter")
-					node.matches(item).apply { debugAudience.serverError("filter returned $this") }
+					node.matches(item)
 				}
 			} }
 
@@ -161,10 +161,8 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 			val diffProvider = { stack1: ItemStack, stack2: ItemStack ->
 				stack1.isSimilar(stack2) //TODO
 			}
-			debugAudience.information("1")
 
 			val transact = ItemTransaction(holder)
-			debugAudience.information("2")
 
 			for (source in sources) {
 				println("source holder: ${source.inventory}")
@@ -173,13 +171,10 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 				transact.addRemoval(key, Change.ItemRemoval(item, count, diffProvider))
 			}
-			debugAudience.information("4")
 
 			transact.addAddition(destination, Change.ItemAddition(item, count))
 
-			debugAudience.information("Committing transaction")
 			transact.commit()
-			debugAudience.information("Finished transaction")
 
 			debugAudience.highlightBlock(toVec3i(destination), 40L)
 		}
