@@ -212,7 +212,7 @@ object TransportDebugCommand : SLCommand() {
 		sender.highlightBlocks(destinations.map(::toVec3i), 50L)
 	}
 
-	const val COLLECT_TRANSPORT_METRICS = true
+	const val COLLECT_TRANSPORT_METRICS = false
 
 	val floodFillTimes = LinkedBlockingDeque<Long>(10_000)
 	val solarFloodFillTimes = LinkedBlockingDeque<Long>(10_000)
