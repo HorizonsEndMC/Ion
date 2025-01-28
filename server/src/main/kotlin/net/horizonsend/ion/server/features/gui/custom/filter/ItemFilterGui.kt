@@ -93,7 +93,7 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack, 
 			if (cursor.isEmpty) {
 				entry.value = null
 			} else {
-				entry.value = cursor.clone()
+				entry.value = cursor.asQuantity(1)
 			}
 
 			notifyWindows()
