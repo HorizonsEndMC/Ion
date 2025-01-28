@@ -12,7 +12,7 @@ interface Change {
 
 	class ItemRemoval(val item: ItemStack, val amount: Int, val similarityProvider: (ItemStack, ItemStack) -> Boolean) : Change {
 		override fun check(inventory: Inventory): Boolean {
-			TODO("Not yet implemented")
+			return true //TODO
 		}
 
 		override fun execute(inventory: Inventory): Boolean {
@@ -51,14 +51,10 @@ interface Change {
 
 	class ItemAddition(val item: ItemStack, val amount: Int) : Change {
 		override fun check(inventory: Inventory): Boolean {
-			TODO("Not yet implemented")
+			return LegacyItemUtils.canFit(inventory, item, amount) //TODO
 		}
 
 		override fun execute(inventory: Inventory): Boolean {
-			if (!LegacyItemUtils.canFit(inventory, item, amount)) {
-				return false
-			}
-
 			val stacks = mutableListOf<ItemStack>()
 
 			var remaining = amount

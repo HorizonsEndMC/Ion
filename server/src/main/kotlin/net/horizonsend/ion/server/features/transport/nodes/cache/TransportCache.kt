@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.jvm.optionals.getOrNull
 import kotlin.reflect.KClass
 
-abstract class TransportCache(val holder: CacheHolder<*>) {
+abstract class TransportCache(open val holder: CacheHolder<*>) {
 	/**
 	 * Cache containing a cache state at their corresponding block position.
 	 * The state can either be empty, or present. Empty key / value pairs have not been cached.

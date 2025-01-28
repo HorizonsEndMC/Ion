@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.filters
 
 import net.horizonsend.ion.common.utils.text.toComponent
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta.EmptyFilterMeta
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta.ItemFilterMeta
 import net.horizonsend.ion.server.features.transport.fluids.Fluid
@@ -109,7 +110,7 @@ abstract class FilterType<T : Any, M : FilterMeta>(
 		}
 	}
 
-	companion object {
+	companion object : IonServerComponent() {
 		private val byId = mapOf("FLUID" to FluidType, "ITEMS" to ItemType)
 
 		operator fun get(identifier: String): FilterType<*, *> = byId[identifier] ?: throw NoSuchElementException("Filter type $identifier not found")

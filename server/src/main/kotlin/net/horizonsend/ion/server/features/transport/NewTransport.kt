@@ -30,8 +30,8 @@ import kotlin.concurrent.fixedRateTimer
 object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick to wait on the full server startup. */) {
 	private val transportManagers = ConcurrentHashMap.newKeySet<TransportManager<*>>()
 
-	lateinit var monitorThread: Timer
-	lateinit var executor: ExecutorService
+	private lateinit var monitorThread: Timer
+	private lateinit var executor: ExecutorService
 
 	override fun onEnable() {
 		executor = Executors.newFixedThreadPool(64, Tasks.namedThreadFactory("wire-transport"))
@@ -56,6 +56,17 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		if (::executor.isInitialized) executor.shutdown()
 
 		saveExtractors()
+	}
+
+	fun runTask(task: () -> Unit) {
+		executor.execute {
+			try {
+				task.invoke()
+			} catch (e: Throwable) {
+				log.error("Encountered exception when executing async transport task: ${e.message}")
+				e.printStackTrace()
+			}
+		}
 	}
 
 	fun registerTransportManager(manager: TransportManager<*>) {

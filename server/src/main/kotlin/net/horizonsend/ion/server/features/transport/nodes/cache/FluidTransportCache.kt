@@ -44,21 +44,21 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		.addSimpleNode(Material.LAPIS_BLOCK, FluidNode.FluidInvertedMergeNode)
 		.build()
 
-	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) { NewTransport.executor.submit {
+	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) { NewTransport.runTask {
 		val world = holder.getWorld()
 		val sources = getExtractorSourceEntities<FluidStoringEntity>(location) { it.isEmpty() }
-		val source = sources.randomOrNull() ?: return@submit //TODO take from all
+		val source = sources.randomOrNull() ?: return@runTask //TODO take from all
 
-		if (source.getStoredResources().isEmpty()) return@submit
+		if (source.getStoredResources().isEmpty()) return@runTask
 
-		val originNode = holder.nodeProvider.invoke(type, holder.getWorld(), location) ?: return@submit
+		val originNode = holder.nodeProvider.invoke(type, holder.getWorld(), location) ?: return@runTask
 
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
 		val destinations: Collection<BlockKey> = getNetworkDestinations<FluidNode.FluidInputNode>(location, originNode) { node ->
 			world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is FluidStoringEntity && !entity.isFull() }
 		}
 
-		if (destinations.isEmpty()) return@submit
+		if (destinations.isEmpty()) return@runTask
 
 		val transferLimit = (transportSettings().extractorConfiguration.maxFluidRemovedPerExtractorTick * delta).roundToInt()
 		val resources = source.getExtractableResources()

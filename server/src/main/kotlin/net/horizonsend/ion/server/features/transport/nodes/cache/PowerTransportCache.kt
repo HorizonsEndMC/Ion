@@ -50,7 +50,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		tickPowerExtractor(location, delta)
 	}
 
-	private fun tickPowerExtractor(location: BlockKey, delta: Double) = NewTransport.executor.submit {
+	private fun tickPowerExtractor(location: BlockKey, delta: Double) = NewTransport.runTask {
 		measureOrFallback(TransportDebugCommand.extractorTickTimes) {
 			val world = holder.getWorld()
 
@@ -95,7 +95,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		}
 	}
 
-	private fun tickSolarPanel(location: BlockKey, delta: Double, solarCache: SolarPanelCache) = NewTransport.executor.submit {
+	private fun tickSolarPanel(location: BlockKey, delta: Double, solarCache: SolarPanelCache) = NewTransport.runTask {
 		measureOrFallback(TransportDebugCommand.solarTickTimes) {
 			val transportPower = solarCache.getPower(holder.getWorld(), location, delta)
 			if (transportPower == 0) return@measureOrFallback
