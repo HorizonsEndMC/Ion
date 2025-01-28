@@ -15,12 +15,13 @@ import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.SolidGlassNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.util.transaction.Change
 import net.horizonsend.ion.server.features.transport.util.transaction.ItemTransaction
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
@@ -28,19 +29,18 @@ import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.world.Container
+import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.Material
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.block.BlockFace
-import org.bukkit.block.BlockState
 import org.bukkit.block.data.type.CommandBlock
 import org.bukkit.block.data.type.Hopper
 import org.bukkit.craftbukkit.block.impl.CraftGrindstone
 import org.bukkit.craftbukkit.inventory.CraftInventory
-import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
 
-class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCache(holder) {
+class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): TransportCache(holder) {
 	override val type: CacheType = CacheType.ITEMS
 	override val extractorNodeClass: KClass<out Node> = ItemNode.ItemExtractorNode::class
 	override val nodeFactory: NodeCacheFactory = NodeCacheFactory.builder()
@@ -70,7 +70,7 @@ class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCach
 		delta: Double,
 		metaData: ExtractorMetaData?,
 	) {
-		NewTransport.executor.submit {
+		NewTransport.runTask {
 			measureOrFallback(TransportDebugCommand.extractorTickTimes) {
 				handleExtractorTick(location, delta, metaData as? ItemExtractorMetaData)
 			}
@@ -105,7 +105,7 @@ class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCach
 			debugAudience.information("Checking ${item.type} [$count]")
 			val destinations: List<BlockKey> = getNetworkDestinations<ItemNode.InventoryNode>(location, originNode) { node ->
 				val inventory = getInventory(node.position)
-				inventory != null && inventory.isEmpty //TODO full
+				inventory != null && LegacyItemUtils.canFit(inventory, item, 1)
 			}.toList()
 
 			if (destinations.isEmpty()) {
@@ -128,7 +128,7 @@ class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCach
 				) { node, blockFace ->
 					if (node !is ItemNode.FilterNode) return@findPath true
 					debugAudience.serverError("checking filter")
-					node.matches(item)
+					node.matches(item).apply { debugAudience.serverError("filter returned $this") }
 				}
 			} }
 
@@ -155,27 +155,37 @@ class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCach
 				destinations.minBy { key -> extractorPosition.distance(toVec3i(key)) }
 			}
 
-			val path = destinationMap[destination]!!
+			debugAudience.information("Selected destination ${toVec3i(destination)}")
 
-			val transact = ItemTransaction(holder as CacheHolder<ItemTransportCache>, { stack1, stack2 ->
+//			val path = destinationMap[destination]!!
+			val diffProvider = { stack1: ItemStack, stack2: ItemStack ->
 				stack1.isSimilar(stack2) //TODO
-			})
+			}
+			debugAudience.information("1")
+
+			val transact = ItemTransaction(holder)
+			debugAudience.information("2")
 
 			for (source in sources) {
-				val key = toBlockKey(Vec3i((source.holder as BlockState).location))
+				println("source holder: ${source.inventory}")
+				val key = toBlockKey((source.inventory as BlockEntity).blockPos.toVec3i())
+				debugAudience.information("3 ${toVec3i(key)}")
 
-				transact.addRemoval(key, ItemTransaction.ItemDiff(item, -count))
+				transact.addRemoval(key, Change.ItemRemoval(item, count, diffProvider))
 			}
+			debugAudience.information("4")
 
-			transact.addAddition(destination,  ItemTransaction.ItemDiff(item, count))
+			transact.addAddition(destination, Change.ItemAddition(item, count))
 
+			debugAudience.information("Committing transaction")
 			transact.commit()
+			debugAudience.information("Finished transaction")
 
 			debugAudience.highlightBlock(toVec3i(destination), 40L)
 		}
 	}
 
-	fun getInventory(localKey: BlockKey): Inventory? {
+	fun getInventory(localKey: BlockKey): CraftInventory? {
 		val globalVec = holder.transportManager.getGlobalCoordinate(toVec3i(localKey))
 		val nmsChunk = holder.getWorld().minecraft.getChunkIfLoaded(globalVec.x.shr(4), globalVec.z.shr(4)) ?: return null
 		val tileEntity = nmsChunk.getBlockEntity(BlockPos(globalVec.x, globalVec.y, globalVec.z)) as? Container ?: return null
@@ -183,8 +193,8 @@ class ItemTransportCache(holder: CacheHolder<ItemTransportCache>): TransportCach
 		return CraftInventory(tileEntity)
 	}
 
-	fun getSources(extractorLocation: BlockKey): Set<Inventory> {
-		val inventories = mutableSetOf<Inventory>()
+	fun getSources(extractorLocation: BlockKey): Set<CraftInventory> {
+		val inventories = mutableSetOf<CraftInventory>()
 
 		for (face in ADJACENT_BLOCK_FACES) {
 			val inventoryLocation = getRelative(extractorLocation, face)
