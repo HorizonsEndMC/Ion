@@ -23,10 +23,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
+import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.minecraft.world.Container
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.inventory.CraftInventory
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
 
@@ -54,16 +56,19 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 			return
 		}
 
-		val items = sources.flatMap { inv -> inv }.filterNotNull()
-		if (items.isEmpty()) return
+		val byInventory = sources.associateWith { stacks -> stacks.filterNotNull() }
+		if (byInventory.isEmpty()) return
 
 		val byCount = mutableMapOf<ItemStack, Int>()
+		val itemReferences = multimapOf<ItemStack, Pair<Inventory, ItemStack>>()
 
-		for (item in items) {
-			val asOne = item.asOne()
-			if (byCount.containsKey(asOne)) continue
-			val count = items.sumOf { stack -> if (stack.isSimilar(item)) stack.amount else 0 }
-			byCount[asOne] = count
+		for ((inventory, items) in byInventory) {
+			for (item in items) {
+				val asOne = item.asOne()
+				if (byCount.containsKey(asOne)) continue
+				val count = items.sumOf { stack -> if (stack.isSimilar(item)) stack.amount else 0 }
+				byCount[asOne] = count
+			}
 		}
 
 		debugAudience.information("counts: [${byCount.entries.joinToString { "${it.key.type}, ${it.value}]" }}, ${toVec3i(location)}")
