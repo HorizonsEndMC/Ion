@@ -30,8 +30,6 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
-import kotlin.collections.component1
-import kotlin.collections.component2
 import kotlin.math.min
 import kotlin.system.measureNanoTime
 
@@ -275,8 +273,7 @@ object Wires : IonServerComponent() {
 
 			var originPower = when {
 				originSign != null -> powerSignUpdateCache[originSign]
-				else -> transportConfig.wires.solarPanelPower /
-					if (world.environment == World.Environment.NORMAL) 1 else 2
+				else -> (transportConfig.wires.solarPanelPower / if (world.environment == World.Environment.NORMAL) 1 else 2) * transportConfig.wires.solarTickInterval
 			}
 
 			// if it has no power then there is nothing to extract from it anymore
