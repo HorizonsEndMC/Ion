@@ -44,7 +44,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 	override val extractorNodeClass: KClass<out Node> = ItemNode.ItemExtractorNode::class
 	override val nodeFactory: NodeCacheFactory = NodeCacheFactory.builder()
 		.addSimpleNode(CRAFTING_TABLE, ItemNode.ItemExtractorNode)
-		.addSimpleNode(CustomBlocks.ADVANCED_ITEM_EXTRACTOR, ItemNode.ItemExtractorNode)
+		.addDataHandler<CommandBlock>(CustomBlocks.ADVANCED_ITEM_EXTRACTOR) { _, _ -> ItemNode.ItemExtractorNode }
 		.addSimpleNode(STAINED_GLASS_TYPES) { _, material -> SolidGlassNode(ItemNode.PipeChannel[material]!!) }
 		.addSimpleNode(STAINED_GLASS_PANE_TYPES) { _, material -> ItemNode.PaneGlassNode(ItemNode.PipeChannel[material]!!) }
 		.addSimpleNode(Material.GLASS, SolidGlassNode(ItemNode.PipeChannel.CLEAR))

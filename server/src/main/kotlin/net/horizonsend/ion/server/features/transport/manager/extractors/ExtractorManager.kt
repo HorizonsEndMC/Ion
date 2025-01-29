@@ -3,12 +3,16 @@ package net.horizonsend.ion.server.features.transport.manager.extractors
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.blocks.extractor.CustomExtractorBlock
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData
+import net.horizonsend.ion.server.features.transport.util.getPersistentDataContainer
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDataContainer
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.Material
+import org.bukkit.World
 import org.bukkit.block.data.BlockData
 
 abstract class ExtractorManager {
@@ -36,11 +40,20 @@ abstract class ExtractorManager {
 		val STANDARD_EXTRACTOR_TYPE = Material.CRAFTING_TABLE
 		fun isExtractorData(data: BlockData): Boolean = data.material == STANDARD_EXTRACTOR_TYPE || CustomBlocks.getByBlockData(data) is CustomExtractorBlock<*>
 
-		fun getExtractorData(data: BlockData, pos: BlockKey): ExtractorData? {
+		fun getExtractorData(data: BlockData, pos: BlockKey, world: World): ExtractorData? {
 			if (data.material == STANDARD_EXTRACTOR_TYPE) return ExtractorData.StandardExtractorData(pos)
 
 			val customBlock = CustomBlocks.getByBlockData(data)
-			if (customBlock is CustomExtractorBlock<*>) return customBlock.createExtractorData(pos)
+			if (customBlock is CustomExtractorBlock<*>) {
+				val pdc = getPersistentDataContainer(pos, world)
+				val stored = pdc?.get(NamespacedKeys.COMPLEX_EXTRACTORS, MetaDataContainer)
+
+				if (stored != null) {
+					return customBlock.load(stored)
+				}
+
+				return customBlock.createExtractorData(pos)
+			}
 
 			return null
 		}
