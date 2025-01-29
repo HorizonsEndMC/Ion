@@ -13,36 +13,14 @@ import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
-import net.horizonsend.ion.server.miscellaneous.utils.UNWAXED_CHISELED_COPPER_TYPES
-import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import org.bukkit.Material
-import org.bukkit.Material.CRAFTING_TABLE
-import org.bukkit.Material.WAXED_CHISELED_COPPER
-import org.bukkit.Material.WAXED_EXPOSED_CHISELED_COPPER
-import org.bukkit.Material.WAXED_OXIDIZED_COPPER
-import org.bukkit.Material.WAXED_WEATHERED_CHISELED_COPPER
 import org.bukkit.block.BlockFace
-import org.bukkit.craftbukkit.block.impl.CraftLightningRod
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass
 
 class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCache(holder) {
 	override val type: CacheType = CacheType.FLUID
 	override val extractorNodeClass: KClass<out Node> = FluidNode.FluidExtractorNode::class
-	override val nodeFactory: NodeCacheFactory = NodeCacheFactory.builder()
-		.addDataHandler<CraftLightningRod>(Material.LIGHTNING_ROD) { data, _ -> FluidNode.LightningRodNode(data.facing.axis) }
-		.addSimpleNode(WAXED_CHISELED_COPPER) { FluidNode.FluidJunctionNode(WAXED_CHISELED_COPPER) }
-		.addSimpleNode(WAXED_EXPOSED_CHISELED_COPPER) { FluidNode.FluidJunctionNode(WAXED_EXPOSED_CHISELED_COPPER) }
-		.addSimpleNode(WAXED_WEATHERED_CHISELED_COPPER) { FluidNode.FluidJunctionNode(WAXED_WEATHERED_CHISELED_COPPER) }
-		.addSimpleNode(WAXED_OXIDIZED_COPPER) { FluidNode.FluidJunctionNode(WAXED_OXIDIZED_COPPER) }
-		.addSimpleNode(UNWAXED_CHISELED_COPPER_TYPES) { _, _ -> FluidNode.FluidJunctionNode(CRAFTING_TABLE) } // All unwaxed chiseled are a single channel
-		.addSimpleNode(CRAFTING_TABLE, FluidNode.FluidExtractorNode)
-		.addSimpleNode(Material.FLETCHING_TABLE, FluidNode.FluidInputNode)
-		.addSimpleNode(Material.REDSTONE_BLOCK, FluidNode.FluidMergeNode)
-		.addSimpleNode(Material.IRON_BLOCK, FluidNode.FluidMergeNode)
-		.addSimpleNode(Material.LAPIS_BLOCK, FluidNode.FluidInvertedMergeNode)
-		.build()
 
 	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) { NewTransport.runTask {
 		val world = holder.getWorld()

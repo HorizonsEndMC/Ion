@@ -46,7 +46,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	private val pathCache = TreeBasedTable.create<BlockKey, BlockKey, Optional<PathfindingReport>>()
 
 	abstract val type: CacheType
-	abstract val nodeFactory: NodeCacheFactory
+	val nodeFactory: NodeCacheFactory get() = type.nodeCacheFactory
 
 	abstract fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?)
 
@@ -77,7 +77,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		// On race conditions
 		nodeCache[location]?.let { return@synchronized (it as? CacheState.Present)?.node }
 
-		val type = nodeFactory.cache(block)
+		val type = nodeFactory.cache(block, this.holder)
 		val state = if (type == null) CacheState.Empty else CacheState.Present(type)
 
 		nodeCache[location] = state

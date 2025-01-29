@@ -12,36 +12,14 @@ import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import org.bukkit.Material.CRAFTING_TABLE
-import org.bukkit.Material.END_ROD
-import org.bukkit.Material.IRON_BLOCK
-import org.bukkit.Material.LAPIS_BLOCK
-import org.bukkit.Material.NOTE_BLOCK
-import org.bukkit.Material.OBSERVER
-import org.bukkit.Material.REDSTONE_BLOCK
-import org.bukkit.Material.SPONGE
 import org.bukkit.block.BlockFace
-import org.bukkit.block.data.type.Observer
-import org.bukkit.craftbukkit.block.impl.CraftEndRod
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass
 
 class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportCache(holder) {
 	override val type: CacheType = CacheType.POWER
 	override val extractorNodeClass: KClass<out Node> = PowerNode.PowerExtractorNode::class
-
-	override val nodeFactory: NodeCacheFactory = NodeCacheFactory.builder()
-		.addSimpleNode(CRAFTING_TABLE, PowerNode.PowerExtractorNode)
-		.addSimpleNode(SPONGE, PowerNode.SpongeNode)
-		.addDataHandler<CraftEndRod>(END_ROD) { data, _ -> PowerNode.EndRodNode(data.facing.axis) }
-		.addSimpleNode(REDSTONE_BLOCK, PowerNode.RedstoneMergeNode)
-		.addSimpleNode(IRON_BLOCK, PowerNode.IronMergeNode)
-		.addSimpleNode(LAPIS_BLOCK, PowerNode.InvertedMergeNode)
-		.addDataHandler<Observer>(OBSERVER) { data, loc -> PowerFlowMeter(this, data.facing, holder.getWorld(), loc) }
-		.addSimpleNode(NOTE_BLOCK, PowerInputNode)
-		.build()
 
 	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) {
 		val solarCache = holder.transportManager.solarPanelManager.cache
