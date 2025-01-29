@@ -19,7 +19,8 @@ data class TransportConfig(
 		val solarPanelPower: Int = 100,
 		val maxPowerInput: Int = 1000,
 		val maxShieldInput: Int = 50,
-		val maxDistance: Int = 2000
+		val maxDistance: Int = 2000,
+		val solarTickInterval: Int = 10
 	)
 
 	@Serializable

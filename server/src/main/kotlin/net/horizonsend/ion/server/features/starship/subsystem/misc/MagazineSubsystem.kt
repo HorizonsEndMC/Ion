@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.misc
 
 import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractMagazineMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.subsystem.AbstractMultiblockSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
@@ -12,11 +13,13 @@ import org.bukkit.inventory.InventoryHolder
 
 class MagazineSubsystem(starship: ActiveStarship, sign: Sign, multiblock: AbstractMagazineMultiblock) : AbstractMultiblockSubsystem<AbstractMagazineMultiblock>(starship, sign, multiblock) {
 	fun isAmmoAvailable(subsystem: AmmoConsumingWeaponSubsystem): Boolean {
+		if (starship.controller is AIController) return true
 		val inventory = getInventory() ?: return false
 		return inventory.filterNotNull().any(subsystem::isRequiredAmmo)
 	}
 
 	fun tryConsumeAmmo(subsystem: AmmoConsumingWeaponSubsystem): Boolean {
+		if (starship.controller is AIController) return true
 		val inventory = getInventory()
 			?: return false
 

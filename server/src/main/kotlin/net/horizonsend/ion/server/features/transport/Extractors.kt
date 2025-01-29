@@ -35,7 +35,6 @@ import java.io.File
 import java.nio.file.Files
 import java.util.Timer
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.set
 import kotlin.concurrent.fixedRateTimer
 
 object Extractors : IonServerComponent() {
@@ -76,9 +75,11 @@ object Extractors : IonServerComponent() {
 
 		val interval: Long = (1000 / extractorTicksPerSecond).toLong()
 
+		var tickNumber = 0
 		timer = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = interval, period = interval) {
 			try {
-				worldDataMap.keys.forEach(Extractors::tickExtractors)
+				tickNumber++
+				worldDataMap.keys.forEach { t -> tickExtractors(t, tickNumber) }
 			} catch (exception: Exception) {
 				exception.printStackTrace()
 			}
@@ -148,10 +149,23 @@ object Extractors : IonServerComponent() {
 	}
 	//endregion
 
-	private fun tickExtractors(world: World) {
+	private fun tickExtractors(world: World, tick: Int) {
 		val extractorLocations: Set<Vec3i> = worldDataMap[world] ?: return
 
+		val chunkLength = extractorLocations.size / transportConfig.wires.solarTickInterval
+		val offset = tick % transportConfig.wires.solarTickInterval
+
+		val isLastChunk = offset == (transportConfig.wires.solarTickInterval - 1)
+
+		val solarTickRange = IntRange(
+			offset * chunkLength,
+			if (!isLastChunk) (offset + 1) * chunkLength else extractorLocations.size - 1
+		)
+
+		var itr = 0
+
 		extractorLoop@ for (extractorLocation: Vec3i in extractorLocations) {
+			itr++
 			val (x: Int, y: Int, z: Int) = extractorLocation
 
 			// note on continuing for null values: if it is null that means
@@ -199,7 +213,7 @@ object Extractors : IonServerComponent() {
 						wires.add(face)
 					}
 
-					adjacentType == Material.DIAMOND_BLOCK && face == BlockFace.UP -> {
+					adjacentType == Material.DIAMOND_BLOCK && face == BlockFace.UP && solarTickRange.contains(tick) -> {
 						val sensor: BlockData = getBlockDataSafe(world, adjacentX, adjacentY + 1, adjacentZ)
 							?: continue@extractorLoop
 
@@ -219,7 +233,7 @@ object Extractors : IonServerComponent() {
 				handleWire(world, x, y, z, computers, wires)
 			}
 
-			if (solarSensor != null) {
+			if (solarTickRange.contains(tick) && solarSensor != null) {
 				handleSolarPanel(world, x, y, z, wires, solarSensor)
 			}
 		}
