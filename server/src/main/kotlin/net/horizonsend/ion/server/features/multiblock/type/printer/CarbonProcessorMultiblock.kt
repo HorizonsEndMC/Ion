@@ -101,7 +101,7 @@ object CarbonProcessorMultiblock : Multiblock(), PowerStoringMultiblock, Furnace
 		event.isCancelled = true
 		val smelting = furnace.inventory.smelting
 		val fuel = furnace.inventory.fuel
-		if (PowerMachines.getPower(sign) == 0 ||
+		if (PowerMachines.getPower(sign) < 100 ||
 			smelting == null ||
 			smelting.type != Material.PRISMARINE_CRYSTALS ||
 			fuel == null ||
