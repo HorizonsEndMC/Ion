@@ -7,12 +7,15 @@ import net.horizonsend.ion.server.features.transport.manager.extractors.data.Adv
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData.StandardExtractorData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
+import net.horizonsend.ion.server.features.transport.util.getPersistentDataContainer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.ListMetaDataContainerType
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDataContainer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import org.bukkit.persistence.PersistentDataType
 
@@ -36,7 +39,7 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 			return null
 		}
 
-		val data = getExtractorData(blockData, key)
+		val data = getExtractorData(blockData, key, manager.getWorld())
 		if (data == null) return null
 
 		synchronized(mutex) {
@@ -100,7 +103,16 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 		pdc.set(NamespacedKeys.STANDARD_EXTRACTORS, PersistentDataType.LONG_ARRAY, standard.keys.toLongArray())
 
 		val complex = extractors.values.filterIsInstance<AdvancedExtractorData<*>>()
-		val serialized = complex.map { it.asMetaDataContainer() }
+
+		val serialized = complex.map { entry ->
+			val serialized = entry.asMetaDataContainer()
+			getPersistentDataContainer(
+				manager.getGlobalCoordinate(toVec3i(entry.pos)),
+				manager.getWorld()
+			)?.set(NamespacedKeys.COMPLEX_EXTRACTORS, MetaDataContainer, serialized)
+
+			serialized
+		}
 
 		pdc.set(NamespacedKeys.COMPLEX_EXTRACTORS, ListMetaDataContainerType, serialized)
 	}
