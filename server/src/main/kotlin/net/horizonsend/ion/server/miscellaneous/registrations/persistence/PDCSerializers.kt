@@ -49,4 +49,9 @@ object PDCSerializers {
 		val serializer = (typedSerialized[data::class] as? RegisteredSerializer<C>) ?: throw NoSuchElementException("No serialier found for ${data::class.simpleName}")
 		return MetaDataContainer(serializer, data)
 	}
+
+	fun <T : Any> unpack(metaDataContainer: MetaDataContainer<*, *>): T {
+		@Suppress("UNCHECKED_CAST")
+		return metaDataContainer.data as T
+	}
 }
