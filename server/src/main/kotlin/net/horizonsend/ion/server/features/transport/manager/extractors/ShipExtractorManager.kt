@@ -36,7 +36,7 @@ class ShipExtractorManager(val manager: ShipTransportManager) : ExtractorManager
 		// Store extractors via local coordinates
 		val key = toBlockKey(manager.getLocalCoordinate(Vec3i(x, y, z)))
 
-		val data = getExtractorData(blockData, key)
+		val data = getExtractorData(blockData, key, manager.getWorld())
 		if (data == null) return null
 
 		extractors[key] = data

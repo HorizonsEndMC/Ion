@@ -5,6 +5,8 @@ import net.horizonsend.ion.server.features.custom.blocks.InteractableCustomBlock
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDataContainer
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializers
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -23,6 +25,10 @@ abstract class CustomExtractorBlock<T: ExtractorData>(
 	val extractorDataType: KClass<T>
 ) : InteractableCustomBlock(identifier, blockData, drops, customBlockItem)  {
 	val cooldown = PerPlayerCooldown(5L)
+
+	fun load(container: MetaDataContainer<*, *>): T {
+		return PDCSerializers.unpack(container)
+	}
 
 	override fun onRightClick(event: PlayerInteractEvent, block: Block) {
 		val chunk = IonChunk[block.world, block.x.shr(4), block.z.shr(4)] ?: return
