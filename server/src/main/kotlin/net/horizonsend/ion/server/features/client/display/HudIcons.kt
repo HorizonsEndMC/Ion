@@ -146,10 +146,7 @@ object HudIcons : IonServerComponent() {
 
         // remove entity if it is in an unloaded chunk or different world (this causes the entity client-side to despawn?)
         // also do not render if the planet is closer than the entity render distance
-        if (!nmsEntity.isChunkLoaded ||
-            nmsEntity.level().world.name != player.world.name ||
-            visualDistance < entityRenderDistance * 2
-        ) {
+        if (nmsEntity.level().world.name != player.world.name || visualDistance < entityRenderDistance * 2) {
             ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
             ClientDisplayEntities[player.uniqueId]?.remove(identifier)
             return
@@ -251,9 +248,7 @@ object HudIcons : IonServerComponent() {
 
         // remove entity if it is in an unloaded chunk or different world (this causes the entity client-side to despawn?)
         // also do not render if the planet is closer than the entity render distance
-        if (!nmsEntity.isChunkLoaded ||
-            nmsEntity.level().world.name != player.world.name
-        ) {
+        if (nmsEntity.level().world.name != player.world.name) {
             ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
             ClientDisplayEntities[player.uniqueId]?.remove(SELECTOR_ID)
             return
@@ -353,9 +348,7 @@ object HudIcons : IonServerComponent() {
 
         // remove entity if it is in an unloaded chunk or different world (this causes the entity client-side to despawn?)
         // also do not render if the planet is closer than the entity render distance
-        if (!nmsEntity.isChunkLoaded ||
-            nmsEntity.level().world.name != player.world.name
-        ) {
+        if (nmsEntity.level().world.name != player.world.name) {
             ClientDisplayEntities.deleteDisplayEntityPacket(player, nmsEntity)
             ClientDisplayEntities[player.uniqueId]?.remove(SELECTOR_TEXT_ID)
             return

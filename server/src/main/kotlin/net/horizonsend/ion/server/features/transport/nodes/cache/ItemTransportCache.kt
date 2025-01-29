@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.SolidGlassNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.util.getBlockEntity
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
@@ -26,8 +27,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.minecraft.core.BlockPos
 import net.minecraft.world.Container
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.Material
@@ -172,10 +171,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 	}
 
 	fun getInventory(localKey: BlockKey): CraftInventory? {
-		val globalVec = holder.transportManager.getGlobalCoordinate(toVec3i(localKey))
-		val nmsChunk = holder.getWorld().minecraft.getChunkIfLoaded(globalVec.x.shr(4), globalVec.z.shr(4)) ?: return null
-		val tileEntity = nmsChunk.getBlockEntity(BlockPos(globalVec.x, globalVec.y, globalVec.z)) as? Container ?: return null
-
+		val tileEntity = getBlockEntity(holder.transportManager.getGlobalCoordinate(toVec3i(localKey)), holder.getWorld()) as? Container ?: return null
 		return CraftInventory(tileEntity)
 	}
 
