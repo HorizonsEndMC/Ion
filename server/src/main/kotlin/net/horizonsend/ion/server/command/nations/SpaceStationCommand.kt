@@ -187,7 +187,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			if (other.world != world.name) continue
 
 			var padding = 0
-			if(!other.hasOwnershipContext(sender.slPlayerId)){
+			if(sender != null && !other.hasOwnershipContext(sender.slPlayerId)){
 				padding = 200
 			}
 
