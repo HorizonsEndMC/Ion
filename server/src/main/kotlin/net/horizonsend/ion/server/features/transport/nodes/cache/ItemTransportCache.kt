@@ -5,7 +5,6 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand.measureOrFallback
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.items.SortingOrder
 import net.horizonsend.ion.server.features.transport.items.transaction.Change
@@ -14,14 +13,11 @@ import net.horizonsend.ion.server.features.transport.manager.extractors.data.Ext
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData.ItemExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
-import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.SolidGlassNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.getBlockEntity
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
-import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
-import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -29,12 +25,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.minecraft.world.Container
 import net.minecraft.world.level.block.entity.BlockEntity
-import org.bukkit.Material
-import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.block.BlockFace
-import org.bukkit.block.data.type.CommandBlock
-import org.bukkit.block.data.type.Hopper
-import org.bukkit.craftbukkit.block.impl.CraftGrindstone
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
@@ -42,27 +33,6 @@ import kotlin.reflect.KClass
 class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): TransportCache(holder) {
 	override val type: CacheType = CacheType.ITEMS
 	override val extractorNodeClass: KClass<out Node> = ItemNode.ItemExtractorNode::class
-	override val nodeFactory: NodeCacheFactory = NodeCacheFactory.builder()
-		.addSimpleNode(CRAFTING_TABLE, ItemNode.ItemExtractorNode)
-		.addDataHandler<CommandBlock>(CustomBlocks.ADVANCED_ITEM_EXTRACTOR) { _, _ -> ItemNode.ItemExtractorNode }
-		.addSimpleNode(STAINED_GLASS_TYPES) { _, material -> SolidGlassNode(ItemNode.PipeChannel[material]!!) }
-		.addSimpleNode(STAINED_GLASS_PANE_TYPES) { _, material -> ItemNode.PaneGlassNode(ItemNode.PipeChannel[material]!!) }
-		.addSimpleNode(Material.GLASS, SolidGlassNode(ItemNode.PipeChannel.CLEAR))
-		.addSimpleNode(Material.GLASS_PANE, ItemNode.PaneGlassNode(ItemNode.PipeChannel.CLEAR))
-		.addSimpleNode(Material.TINTED_GLASS, ItemNode.WildcardSolidGlassNode)
-		.addDataHandler<CraftGrindstone>(Material.GRINDSTONE) { data, key -> ItemNode.ItemMergeNode }
-		.addDataHandler<CommandBlock>(CustomBlocks.ITEM_FILTER) { data, key -> ItemNode.AdvancedFilterNode(key, this) }
-		.addDataHandler<Hopper>(Material.HOPPER) { data, key -> ItemNode.HopperFilterNode(key, data.facing, this) }
-		.addSimpleNode(
-			Material.CHEST,
-			Material.TRAPPED_CHEST,
-			Material.BARREL,
-			Material.FURNACE,
-			Material.DISPENSER,
-			Material.DROPPER,
-			Material.DECORATED_POT
-		) { key, _ -> ItemNode.InventoryNode(key) }
-		.build()
 
 	override fun tickExtractor(
 		location: BlockKey,
