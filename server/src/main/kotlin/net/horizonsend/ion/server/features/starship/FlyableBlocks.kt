@@ -44,6 +44,7 @@ import org.bukkit.Material.CHAIN
 import org.bukkit.Material.CHEST
 import org.bukkit.Material.CHIPPED_ANVIL
 import org.bukkit.Material.COAL_BLOCK
+import org.bukkit.Material.COMMAND_BLOCK
 import org.bukkit.Material.COMPARATOR
 import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COPPER_BLOCK
@@ -207,6 +208,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	EMERALD_BLOCK,
 	COAL_BLOCK,
 	BROWN_MUSHROOM_BLOCK, // custom ores
+	COMMAND_BLOCK, // custom blocks
 
 	// used for landing gears
 	PISTON,
