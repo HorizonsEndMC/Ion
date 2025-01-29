@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
-import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.DaylightDetector
@@ -18,12 +17,6 @@ import kotlin.math.roundToInt
 import kotlin.reflect.KClass
 
 class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(holder) {
-	override val nodeFactory: NodeCacheFactory = NodeCacheFactory.builder()
-		.addSimpleNode(Material.CRAFTING_TABLE, SolarPanelComponent.CraftingTable)
-		.addSimpleNode(Material.DIAMOND_BLOCK, SolarPanelComponent.DiamondBlock)
-		.addSimpleNode(Material.DAYLIGHT_DETECTOR, SolarPanelComponent.DaylightDetector)
-		.build()
-
 	override val type: CacheType = CacheType.SOLAR_PANELS
 
 	override val extractorNodeClass: KClass<out Node> = PowerNode.PowerExtractorNode::class
