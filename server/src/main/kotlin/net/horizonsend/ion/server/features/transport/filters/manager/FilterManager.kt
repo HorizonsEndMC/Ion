@@ -6,13 +6,14 @@ import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta
 import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
+import net.horizonsend.ion.server.features.transport.util.getPersistentDataContainer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.block.CommandBlock
 
-abstract class FilterManager(val manager: TransportManager<*>) {
+abstract class FilterManager(open val manager: TransportManager<*>) {
 	val filters = Long2ObjectOpenHashMap<FilterData<*, *>>()
 
 	private val mutex = Any()
@@ -28,11 +29,27 @@ abstract class FilterManager(val manager: TransportManager<*>) {
 	}
 
 	fun getFilter(key: BlockKey): FilterData<*, *>? {
-		return filters[key]
+		val saved = filters[key]
+		if (saved != null) return saved
+
+		val pdc = getPersistentDataContainer(key, manager.getWorld()) ?: return null
+
+		val entityStored = pdc.get(NamespacedKeys.FILTER_DATA, FilterData)
+		if (entityStored != null) { filters[toBlockKey(manager.getLocalCoordinate(toVec3i(key)))] = entityStored }
+
+		return  entityStored
 	}
 
 	fun <T : Any, M : FilterMeta> getFilter(key: BlockKey, type: FilterType<T, M>): FilterData<T, M>? {
-		return filters[key]?.let { data -> type.cast(data) }
+		val saved = filters[key]?.let { data -> type.cast(data) }
+		if (saved != null) return saved
+
+		val pdc = getPersistentDataContainer(key, manager.getWorld()) ?: return null
+
+		val entityStored = pdc.get(NamespacedKeys.FILTER_DATA, FilterData)?.let { data -> type.cast(data) }
+		if (entityStored != null) { filters[toBlockKey(manager.getLocalCoordinate(toVec3i(key)))] = entityStored }
+
+		return entityStored
 	}
 
 	fun addFilter(key: BlockKey, data: FilterData<*, *>) {
