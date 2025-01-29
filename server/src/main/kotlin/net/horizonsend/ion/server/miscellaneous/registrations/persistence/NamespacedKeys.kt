@@ -89,6 +89,7 @@ object NamespacedKeys {
 	val SERIALIZATION_TYPE = key("serialization_type")
 	val META_DATA = key("meta_data")
 
+	val CHUNK_FILTER_DATA = key("chunk_filter_data")
 	val FILTER_DATA = key("filter_data")
 	val FILTER_TYPE = key("filter_type")
 	val FILTER_ENTRY = key("filter_entry")
