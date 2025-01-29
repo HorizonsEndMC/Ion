@@ -128,7 +128,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 	}
 
-	private fun checkDimensions(world: World, x: Int, z: Int, radius: Int, cachedStation: CachedSpaceStation<*, *, *>?, sender: Player? = null) {
+	private fun checkDimensions(world: World, x: Int, z: Int, radius: Int, cachedStation: CachedSpaceStation<*, *, *>?, sender: Player) {
 		failIf(radius !in 15..10_000) { "Radius must be at least 15 and at most 10,000 blocks" }
 
 		val y = 128 // we don't care about comparing height here
@@ -187,7 +187,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			if (other.world != world.name) continue
 
 			var padding = 0
-			if(sender != null && !other.hasOwnershipContext(sender.slPlayerId)){
+			if(!other.hasOwnershipContext(sender.slPlayerId)){
 				padding = 200
 			}
 
@@ -321,7 +321,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val world = location.world
 		val x = location.blockX
 		val z = location.blockZ
-		checkDimensions(world, x, z, radius, null)
+		checkDimensions(world, x, z, radius, null, sender)
 
 		val realCost = calculateCost(0, radius)
 		requireMoney(sender, realCost, "create a space station")
