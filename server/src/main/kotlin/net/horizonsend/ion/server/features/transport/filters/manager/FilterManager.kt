@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.filters.manager
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.blocks.filter.CustomFilterBlock
 import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta
@@ -44,10 +45,20 @@ abstract class FilterManager(open val manager: TransportManager<*>) {
 		val saved = filters[key]?.let { data -> type.cast(data) }
 		if (saved != null) return saved
 
-		val pdc = getPersistentDataContainer(key, manager.getWorld()) ?: return null
+		val globalVec3i = manager.getGlobalCoordinate(toVec3i(key))
+		val pdc = getPersistentDataContainer(globalVec3i, manager.getWorld()) ?: return null
 
 		val entityStored = pdc.get(NamespacedKeys.FILTER_DATA, FilterData)?.let { data -> type.cast(data) }
 		if (entityStored != null) { filters[toBlockKey(manager.getLocalCoordinate(toVec3i(key)))] = entityStored }
+
+		if (entityStored == null) {
+			val block = manager.getWorld().getBlockData(globalVec3i.x, globalVec3i.y, globalVec3i.z)
+			val customBlock = CustomBlocks.getByBlockData(block)
+			if (customBlock !is CustomFilterBlock<*, *>) return null
+
+			@Suppress("UNCHECKED_CAST")
+			return registerFilter(key, customBlock as CustomFilterBlock<T, M>)
+		}
 
 		return entityStored
 	}
