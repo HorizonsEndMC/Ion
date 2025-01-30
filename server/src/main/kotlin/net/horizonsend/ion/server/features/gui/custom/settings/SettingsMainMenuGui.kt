@@ -102,7 +102,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 		createSettingsPage(player, "Other Settings",
 			DBCachedBooleanToggle(text("Enable Combat Timer Alerts"), "", GuiItem.LIST, true, SLPlayer::enableCombatTimerAlerts, AbstractPlayerCache.PlayerData::enableCombatTimerAlerts),
 			DBCachedBooleanToggle(text("Enable Protection Messages"), "", GuiItem.LIST, true, SLPlayer::protectionMessagesEnabled, AbstractPlayerCache.PlayerData::protectionMessagesEnabled),
-			DBCachedBooleanToggle(text("Shorten Chat Channels"), "", GuiItem.LIST, false, SLPlayer::shortenChatChannels, AbstractPlayerCache.PlayerData::shortenChatChannels),
+			DBCachedBooleanToggle(text("Shorten Chat Messages"), "", GuiItem.LIST, false, SLPlayer::shortenChatChannels, AbstractPlayerCache.PlayerData::shortenChatChannels),
 			DBCachedBooleanToggle(text("Remove User Prefixes"), "Removes prefixes, like Helper and Mod, from non-global chats", GuiItem.LIST, false, SLPlayer::hideUserPrefixes, AbstractPlayerCache.PlayerData::hideUserPrefixes),
 			DBCachedBooleanToggle(text("Remove Global Prefixes"), "Removes prefixes, like Helper and Mod, from global chats", GuiItem.LIST, false, SLPlayer::hideGlobalPrefixes, AbstractPlayerCache.PlayerData::hideGlobalPrefixes),
 			DBCachedBooleanToggle(text("Show /itemsearch Items"), "", GuiItem.COMPASS_NEEDLE, true, SLPlayer::showItemSearchItem, AbstractPlayerCache.PlayerData::showItemSearchItem),

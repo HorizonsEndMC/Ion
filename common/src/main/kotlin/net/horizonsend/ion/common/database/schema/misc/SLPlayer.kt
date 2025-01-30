@@ -116,6 +116,7 @@ data class SLPlayer(
 	var hitmarkerOnHull: Boolean = true,
 
 	var shortenChatChannels: Boolean = false,
+
 	var hideUserPrefixes: Boolean = false,
 	var hideGlobalPrefixes: Boolean = false,
 
