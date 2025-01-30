@@ -117,7 +117,6 @@ sealed interface PowerNode : Node {
             return ofChildren(
 				FlowMeterDisplayModule.firstLine,
 				Component.text(format.format(avg), NamedTextColor.GREEN),
-				FlowMeterDisplayModule.secondLine
 			)
         }
 
