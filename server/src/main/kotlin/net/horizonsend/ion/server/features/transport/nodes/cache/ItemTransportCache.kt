@@ -1,13 +1,12 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
+import com.google.common.collect.Multimap
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand.measureOrFallback
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.transport.NewTransport
-import net.horizonsend.ion.server.features.transport.items.SortingOrder
-import net.horizonsend.ion.server.features.transport.items.transaction.Change
+import net.horizonsend.ion.server.features.transport.items.transaction.ItemReference
 import net.horizonsend.ion.server.features.transport.items.transaction.ItemTransaction
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData.ItemExtractorMetaData
@@ -20,12 +19,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.minecraft.world.Container
-import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.Inventory
@@ -49,100 +46,135 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 	}
 
 	fun handleExtractorTick(location: BlockKey, delta: Double, meta: ItemExtractorMetaData?) {
-		val distributionOrder = meta?.sortingOrder ?: SortingOrder.NEAREST_FIRST
-
 		val sources = getSources(location)
 		if (sources.isEmpty()) {
 			return
 		}
 
-		val byInventory = sources.associateWith { stacks -> stacks.filterNotNull() }
+		val byInventory: Map<CraftInventory, List<IndexedValue<ItemStack>>> = sources.associateWith { stacks -> stacks.withIndex().filter { (_, value) -> value != null } }
 		if (byInventory.isEmpty()) return
 
 		val byCount = mutableMapOf<ItemStack, Int>()
-		val itemReferences = multimapOf<ItemStack, Pair<Inventory, ItemStack>>()
+		val itemReferences = multimapOf<ItemStack, ItemReference>()
 
 		for ((inventory, items) in byInventory) {
-			for (item in items) {
+			for ((index, item) in items) {
 				val asOne = item.asOne()
+
+				itemReferences[asOne].add(ItemReference(inventory, index))
+
 				if (byCount.containsKey(asOne)) continue
-				val count = items.sumOf { stack -> if (stack.isSimilar(item)) stack.amount else 0 }
+				val count = items.sumOf { stack -> if (stack.value.isSimilar(item)) stack.value.amount else 0 }
 				byCount[asOne] = count
 			}
 		}
 
 		debugAudience.information("counts: [${byCount.entries.joinToString { "${it.key.type}, ${it.value}]" }}, ${toVec3i(location)}")
+		debugAudience.information("references: [${itemReferences.entries().joinToString { "${it.key} ${it.value}" }}, ${toVec3i(location)}")
 
 		val originNode = getOrCache(location) ?: return
 
-		for ((item, count) in byCount) {
-			debugAudience.information("Checking ${item.type} [$count]")
+		val destinationInvCache = mutableMapOf<BlockKey, Inventory>()
 
-			val destinations: List<BlockKey> = getNetworkDestinations<ItemNode.InventoryNode>(location, originNode) { node ->
-				val inventory = getInventory(node.position)
-				inventory != null && LegacyItemUtils.canFit(inventory, item, 1)
-			}.toList()
+		for ((item, count) in byCount) 	transferItemType(
+			location,
+			originNode,
+			meta,
+			item,
+			count,
+			destinationInvCache,
+			itemReferences
+		)
+	}
 
-			if (destinations.isEmpty()) {
-				debugAudience.information("No destinations found")
-				continue
+	fun transferItemType(
+		originKey: BlockKey,
+		originNode: Node,
+		meta: ItemExtractorMetaData?,
+		singletonItem: ItemStack,
+		count: Int,
+		destinationInvCache: MutableMap<BlockKey, Inventory>,
+		itemReferences: Multimap<ItemStack, ItemReference>,
+	) {
+		val availableItemReferences = itemReferences[singletonItem]
+		debugAudience.information("Checking ${singletonItem.type} [$count]")
+
+		val destinations: List<BlockKey> = getNetworkDestinations<ItemNode.InventoryNode>(originKey, originNode) { node ->
+			val inventory = destinationInvCache.getOrPut(node.position) {
+				getInventory(node.position) ?: return@getNetworkDestinations false
 			}
 
-			val numDestinations = destinations.size
+			LegacyItemUtils.canFit(inventory, singletonItem, 1)
+		}.toList()
 
-			val paths: Array<PathfindingReport?> = measureOrFallback(TransportDebugCommand.pathfindTimes) { Array(numDestinations) {
-				findPath(
-					origin = Node.NodePositionData(
-						ItemNode.ItemExtractorNode,
-						holder.getWorld(),
-						location,
-						BlockFace.SELF
-					),
-					destination = destinations[it],
-					ignoreCache = true // TODO wait for a caching implementation that will allow compound keys for item types
-				) { node, blockFace ->
-					if (node !is ItemNode.FilterNode) return@findPath true
-					debugAudience.serverError("checking filter")
-					node.matches(item)
-				}
-			} }
+		if (destinations.isEmpty()) return debugAudience.information("No destinations found")
 
-//			var destinationMap = mutableMapOf<BlockKey, Int>()
+		val numDestinations = destinations.size
 
-			val validDestinations = destinations.filterIndexed { index, destination ->
-				val path = paths[index]
-//				path?.let { destinationMap[destination] = index }
-				path != null
+		val paths: Array<PathfindingReport?> = Array(numDestinations) {
+			findPath(
+				origin = Node.NodePositionData(
+					ItemNode.ItemExtractorNode,
+					holder.getWorld(),
+					originKey,
+					BlockFace.SELF
+				),
+				destination = destinations[it],
+				ignoreCache = true // TODO wait for a caching implementation that will allow compound keys for item types
+			) { node, blockFace ->
+				if (node !is ItemNode.FilterNode) return@findPath true
+
+				node.matches(singletonItem)
 			}
+		}
 
-			if (validDestinations.isEmpty()) {
-				return
-			}
+		val validDestinations = destinations.filterIndexedTo(mutableListOf()) { index, destination ->
+			val path = paths[index]
+			path != null
+		}
+		if (validDestinations.isEmpty()) return
 
-			meta?.markItemPathfind(item)
+//		meta?.markItemPathfind(item) TODO path caching for items
 
-			val destination = if (meta != null) {
-				distributionOrder.getDestination(meta, validDestinations)
-			} else {
-				val extractorPosition = toVec3i(location)
-				destinations.minBy { key -> extractorPosition.distance(toVec3i(key)) }
-			}
+		val transaction = ItemTransaction()
+
+		for (reference in availableItemReferences) {
+			var destination = getDestination(meta, originKey, validDestinations)
 
 			debugAudience.information("Selected destination ${toVec3i(destination)}")
 
-			val transact = ItemTransaction(holder)
+			val destinationInventory = destinationInvCache[destination]!!
+			val room = LegacyItemUtils.getSpaceFor(destinationInventory, singletonItem)
 
-			for (source in sources) {
-				val key = toBlockKey((source.inventory as BlockEntity).blockPos.toVec3i())
-				transact.addRemoval(key, Change.ItemRemoval(item, count))
+			if (room == 0) {
+				validDestinations.remove(destination)
+				destination = getDestination(meta, originKey, validDestinations)
+				continue
 			}
 
-			transact.addAddition(destination, Change.ItemAddition(item, count))
+			val amount = minOf(reference.get()?.amount ?: 0, room)
+			if (amount == 0) continue
 
-			transact.commit()
+			transaction.addTransfer(
+				reference,
+				destinationInventory,
+				singletonItem,
+				amount
+			)
 
 			debugAudience.highlightBlock(toVec3i(destination), 40L)
 		}
+
+		transaction.commit()
+	}
+
+	fun getDestination(meta: ItemExtractorMetaData?, extractorKey: BlockKey, destinations: List<BlockKey>): BlockKey {
+		if (meta != null) {
+			return meta.sortingOrder.getDestination(meta, destinations)
+		}
+
+		val extractorPosition = toVec3i(extractorKey)
+		return destinations.minBy { key -> extractorPosition.distance(toVec3i(key)) }
 	}
 
 	fun getInventory(localKey: BlockKey): CraftInventory? {
