@@ -12,16 +12,11 @@ class BackedItemTransaction(val source: ItemReference, val item: ItemStack, val 
 		val cloned = source.inventory.getItem(source.index)?.clone() ?: return
 		val notRemoved = tryRemove()
 
-		println("Not removed: $notRemoved")
 		val limit = amount - notRemoved
-
-		println("Limit: $limit")
 
 		if (limit <= 0) return
 
-		println("Adding to destination")
 		val notAdded = addToDestination(limit)
-		println("Not added: $notAdded")
 		if (notAdded <= 0) return
 
 		source.inventory.setItem(source.index, cloned.asQuantity(notAdded))
