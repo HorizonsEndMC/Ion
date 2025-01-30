@@ -101,7 +101,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 				getInventory(node.position) ?: return@getNetworkDestinations false
 			}
 
-			LegacyItemUtils.canFit(inventory, singletonItem, 1)
+			LegacyItemUtils.canFit(inventory, singletonItem, 1) && availableItemReferences.none { reference -> reference.inventory == inventory }
 		}.toList()
 
 //		if (destinations.isEmpty()) return debugAudience.information("No destinations found")
