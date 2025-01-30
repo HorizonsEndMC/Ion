@@ -1,10 +1,8 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import com.google.common.collect.Multimap
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand.measureOrFallback
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.items.transaction.ItemReference
 import net.horizonsend.ion.server.features.transport.items.transaction.ItemTransaction
@@ -20,7 +18,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.minecraft.world.Container
 import org.bukkit.block.BlockFace
@@ -69,8 +66,8 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 			}
 		}
 
-		debugAudience.information("counts: [${byCount.entries.joinToString { "${it.key.type}, ${it.value}]" }}, ${toVec3i(location)}")
-		debugAudience.information("references: [${itemReferences.entries().joinToString { "${it.key} ${it.value}" }}, ${toVec3i(location)}")
+//		debugAudience.information("counts: [${byCount.entries.joinToString { "${it.key.type}, ${it.value}]" }}, ${toVec3i(location)}")
+//		debugAudience.information("references: [${itemReferences.entries().joinToString { "${it.key} ${it.value}" }}, ${toVec3i(location)}")
 
 		val originNode = getOrCache(location) ?: return
 
@@ -97,7 +94,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		itemReferences: Multimap<ItemStack, ItemReference>,
 	) {
 		val availableItemReferences = itemReferences[singletonItem]
-		debugAudience.information("Checking ${singletonItem.type} [$count]")
+//		debugAudience.information("Checking ${singletonItem.type} [$count]")
 
 		val destinations: List<BlockKey> = getNetworkDestinations<ItemNode.InventoryNode>(originKey, originNode) { node ->
 			val inventory = destinationInvCache.getOrPut(node.position) {
@@ -107,7 +104,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 			LegacyItemUtils.canFit(inventory, singletonItem, 1)
 		}.toList()
 
-		if (destinations.isEmpty()) return debugAudience.information("No destinations found")
+//		if (destinations.isEmpty()) return debugAudience.information("No destinations found")
 
 		val numDestinations = destinations.size
 
@@ -141,7 +138,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		for (reference in availableItemReferences) {
 			var destination = getDestination(meta, originKey, validDestinations)
 
-			debugAudience.information("Selected destination ${toVec3i(destination)}")
+//			debugAudience.information("Selected destination ${toVec3i(destination)}")
 
 			val destinationInventory = destinationInvCache[destination]!!
 			val room = LegacyItemUtils.getSpaceFor(destinationInventory, singletonItem)
@@ -162,7 +159,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 				amount
 			)
 
-			debugAudience.highlightBlock(toVec3i(destination), 40L)
+//			debugAudience.highlightBlock(toVec3i(destination), 40L)
 		}
 
 		transaction.commit()
