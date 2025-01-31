@@ -31,7 +31,6 @@ import net.minecraft.world.level.block.state.properties.ChestType
 import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest
-import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
 
@@ -80,7 +79,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 		val originNode = getOrCache(location) ?: return
 
-		val destinationInvCache = mutableMapOf<BlockKey, Inventory>()
+		val destinationInvCache = mutableMapOf<BlockKey, CraftInventory>()
 
 		for ((item, count) in byCount) 	transferItemType(
 			location,
@@ -99,7 +98,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		meta: ItemExtractorMetaData?,
 		singletonItem: ItemStack,
 		count: Int,
-		destinationInvCache: MutableMap<BlockKey, Inventory>,
+		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
 		itemReferences: Multimap<ItemStack, ItemReference>,
 	) {
 		val availableItemReferences = itemReferences[singletonItem]
@@ -110,7 +109,18 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 				getInventory(node.position) ?: return@getNetworkDestinations false
 			}
 
-			LegacyItemUtils.canFit(inventory, singletonItem, 1) && availableItemReferences.none { reference -> (reference.inventory as CraftInventory).inventory == (inventory as CraftInventory).inventory }
+			if (!LegacyItemUtils.canFit(inventory, singletonItem, 1)) return@getNetworkDestinations false
+
+			availableItemReferences.none { reference ->
+				if (inventory is CraftInventoryDoubleChest) {
+					val leftMatches = reference.inventory.inventory == (inventory.leftSide as CraftInventory).inventory
+					val rightMatches = reference.inventory.inventory == (inventory.rightSide as CraftInventory).inventory
+
+					return@getNetworkDestinations leftMatches || rightMatches
+				}
+
+				reference.inventory.inventory == inventory.inventory
+			}
 		}.toList()
 
 //		if (destinations.isEmpty()) return debugAudience.information("No destinations found")
