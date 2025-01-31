@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.SubsystemMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -17,6 +18,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.minecraft.world.level.block.Rotation
 import org.bukkit.Location
 import org.bukkit.Material
@@ -30,7 +33,7 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeaponSubsystem> {
+abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeaponSubsystem>, DisplayNameMultilblock {
 	init {
 		shape.signCentered()
 		shape.ignoreDirection()
@@ -38,6 +41,11 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 
 	override val name: String = "turret"
 	override val signText = createSignText("&8Turret", null, null, null)
+
+	override val displayName: Component
+		get() = text("(TODO: Get type from java class) Turret")
+	override val description: Component
+		get() = text("TODO")
 
 	abstract fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon
 

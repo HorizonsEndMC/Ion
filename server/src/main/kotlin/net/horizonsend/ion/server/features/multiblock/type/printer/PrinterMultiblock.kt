@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.kyori.adventure.text.Component.text
@@ -25,7 +26,7 @@ import org.bukkit.block.Sign
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
 
-abstract class PrinterMultiblock : Multiblock(), EntityMultiblock<PrinterMultiblock.PrinterEntity> {
+abstract class PrinterMultiblock : Multiblock(), EntityMultiblock<PrinterMultiblock.PrinterEntity>, DisplayNameMultilblock {
 	override val name: String = "printer"
 	abstract fun getOutput(product: Material): ItemStack
 	abstract val mirrored: Boolean

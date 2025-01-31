@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
@@ -25,6 +26,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.weightedRandomOrNull
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -37,7 +40,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.roundToInt
 
-object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterGasCollectorMultiblock.CanisterGasCollectorEntity>, InteractableMultiblock {
+object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterGasCollectorMultiblock.CanisterGasCollectorEntity>, InteractableMultiblock, DisplayNameMultilblock {
 	override val name = "gascollector"
 
 	override val signText = createSignText(
@@ -46,6 +49,11 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 		line3 = null,
 		line4 = null
 	)
+
+	override val displayName: Component
+		get() = text("Canister Gas Collector")
+	override val description: Component
+		get() = text("Fills Empty Gas Canisters with a random gas on this planet.")
 
 	override fun MultiblockShape.buildStructure() {
 		at(0, 0, 0).machineFurnace()

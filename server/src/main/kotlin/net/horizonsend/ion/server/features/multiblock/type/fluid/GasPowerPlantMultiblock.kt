@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.kyori.adventure.text.Component
@@ -33,7 +34,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import kotlin.math.roundToInt
 
-object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMultiblock.GasPowerPlantMultiblockEntity> {
+object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMultiblock.GasPowerPlantMultiblockEntity>, DisplayNameMultilblock {
 	override val name: String = "gaspowerplant"
 
 	override val signText: Array<Component?> = arrayOf(
@@ -45,6 +46,11 @@ object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMul
 		null,
 		null
 	)
+
+	override val displayName: Component
+		get() = text("Gas Power Plant")
+	override val description: Component
+		get() = text("Burns a Fuel Gas and Oxidizer Gas to generate power.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
