@@ -22,10 +22,8 @@ object GasFurnaceMultiblock : Multiblock(), EntityMultiblock<GasFurnaceMultibloc
 		line4 = null
 	)
 
-	override val displayName: Component
-		get() = text("Gas Furnace")
-	override val description: Component
-		get() = text("Heats material in the presence of gas to produce refined materials.")
+	override val displayName: Component get() = text("Gas Furnace")
+	override val description: Component get() = text("Heats material in the presence of gas to produce refined materials.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {

@@ -23,10 +23,8 @@ object CentrifugeMultiblock : Multiblock(), EntityMultiblock<CentrifugeMultibloc
 		line4 = null
 	)
 
-	override val displayName: Component
-		get() = text("Centrifuge")
-	override val description: Component
-		get() = text("Applies centrifugal force to materials to refine them.")
+	override val displayName: Component get() = text("Centrifuge")
+	override val description: Component get() = text("Applies centrifugal force to materials to refine them.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {

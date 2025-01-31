@@ -39,10 +39,8 @@ object CarbonProcessorMultiblock : Multiblock(), EntityMultiblock<CarbonProcesso
 		line3 = null,
 		line4 = "&7:[''']:"
 	)
-	override val displayName: Component
-		get() = text("Carbon Processor")
-	override val description: Component
-		get() = text("Transforms Concrete Powder into Concrete.")
+	override val displayName: Component get() = text("Carbon Processor")
+	override val description: Component get() = text("Transforms Concrete Powder into Concrete.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {

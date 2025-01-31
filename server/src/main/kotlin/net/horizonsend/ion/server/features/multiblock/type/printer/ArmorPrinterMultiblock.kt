@@ -15,10 +15,7 @@ abstract class AbstractArmorPrinterMultiblock : PrinterMultiblock() {
 		line4 = "&7!??_+!0"
 	)
 
-	override val displayName: Component
-		get() = text("Armor Printer")
-	override val description: Component
-		get() = text("Transforms Cobblestone into Terracotta.")
+	override val description: Component get() = text("Transforms Cobblestone into Terracotta.")
 	override fun getOutput(product: Material): ItemStack = ItemStack(product, 1)
 
 	override fun MultiblockShape.RequirementBuilder.printerMachineryBlock() = sponge()
@@ -29,8 +26,10 @@ abstract class AbstractArmorPrinterMultiblock : PrinterMultiblock() {
 
 object ArmorPrinterMultiblock : AbstractArmorPrinterMultiblock() {
 	override val mirrored = false
+	override val displayName: Component get() = text("Armor Printer")
 }
 
 object ArmorPrinterMultiblockMirrored : AbstractArmorPrinterMultiblock() {
 	override val mirrored = true
+	override val displayName: Component get() = text("Armor Printer (Mirrored)")
 }

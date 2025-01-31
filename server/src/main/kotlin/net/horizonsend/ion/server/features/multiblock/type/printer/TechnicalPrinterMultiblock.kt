@@ -13,10 +13,7 @@ abstract class AbstractTechnicalPrinterMultiblock : PrinterMultiblock() {
 		"",
 		"&7+?[-|],+"
 	)
-	override val displayName: Component
-		get() = text("Technical Printer")
-	override val description: Component
-		get() = text("Transforms Cobblestone into Sponge.")
+	override val description: Component get() = text("Transforms Cobblestone into Sponge.")
 	override fun getOutput(product: Material) = ItemStack(product, 1)
 
 	override fun MultiblockShape.RequirementBuilder.printerMachineryBlock() = redstoneLamp()
@@ -26,8 +23,10 @@ abstract class AbstractTechnicalPrinterMultiblock : PrinterMultiblock() {
 
 object TechnicalPrinterMultiblock : AbstractTechnicalPrinterMultiblock() {
 	override val mirrored = false
+	override val displayName: Component get() = text("Technical Printer")
 }
 
 object TechnicalPrinterMultiblockMirrored : AbstractTechnicalPrinterMultiblock() {
 	override val mirrored = true
+	override val displayName: Component get() = text("Technical Printer (Mirrored)")
 }

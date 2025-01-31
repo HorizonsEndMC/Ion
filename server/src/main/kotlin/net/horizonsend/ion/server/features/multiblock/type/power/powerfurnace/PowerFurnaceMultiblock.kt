@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.multiblock.type.power.powerfurnace
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
+import net.horizonsend.ion.common.utils.text.legacyAmpersand
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
@@ -54,7 +56,7 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 		line4 = tierText
 	)
 
-	override val displayName: Component = text("Power Furnace")
+	override val displayName: Component = ofChildren(legacyAmpersand.deserialize(tierText), text(" Power Furnace"))
 	override val description: Component = text("Smelts items using power instead of fuel.")
 
 	override fun MultiblockShape.buildStructure() {

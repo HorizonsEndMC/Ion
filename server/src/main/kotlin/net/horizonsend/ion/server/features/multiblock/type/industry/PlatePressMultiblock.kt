@@ -110,10 +110,8 @@ object PlatePressMultiblock : Multiblock(), EntityMultiblock<PlatePressMultibloc
 		line4 = null
 	)
 
-	override val displayName: Component
-		get() = text("Plate Press")
-	override val description: Component
-		get() = text("Compresses metal and other materials into refined plates.")
+	override val displayName: Component get() = text("Plate Press")
+	override val description: Component get() = text("Compresses metal and other materials into refined plates.")
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): PlatePressMultiblockEntity {
 		return PlatePressMultiblockEntity(data, manager, x, y, z, world, structureDirection)
