@@ -15,13 +15,22 @@ import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.getBlockEntity
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
+import net.horizonsend.ion.server.miscellaneous.utils.blockFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockSateSafe
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
+import net.minecraft.world.CompoundContainer
 import net.minecraft.world.Container
+import net.minecraft.world.level.block.ChestBlock
+import net.minecraft.world.level.block.DoubleBlockCombiner
+import net.minecraft.world.level.block.entity.ChestBlockEntity
+import net.minecraft.world.level.block.state.properties.ChestType
 import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.inventory.CraftInventory
+import org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
@@ -174,9 +183,62 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		return destinations.minBy { key -> extractorPosition.distance(toVec3i(key)) }
 	}
 
+	companion object {
+		private val CHEST_COMBINER = object  : DoubleBlockCombiner.Combiner<ChestBlockEntity, Int> {
+			override fun acceptDouble(p0: ChestBlockEntity, p1: ChestBlockEntity): Int {
+				return 2
+			}
+
+			override fun acceptSingle(p0: ChestBlockEntity): Int {
+				return 1
+			}
+
+			override fun acceptNone(): Int {
+				return 0
+			}
+		}
+	}
+
+	/**
+	 * Gets a live inventory.
+	 * RETURNED INVENTORIES SHOULD NOT BE MODIFIED ASYNC
+	 **/
 	fun getInventory(localKey: BlockKey): CraftInventory? {
-		val tileEntity = getBlockEntity(holder.transportManager.getGlobalCoordinate(toVec3i(localKey)), holder.getWorld()) as? Container ?: return null
-		return CraftInventory(tileEntity)
+		val global = holder.transportManager.getGlobalCoordinate(toVec3i(localKey))
+
+		val state = getNMSBlockSateSafe(holder.getWorld(), global.x, global.y, global.z) ?: return null
+		val entity = getBlockEntity(global, holder.getWorld()) as? Container ?: return null
+
+		return when (state.block) {
+			is ChestBlock -> {
+				val type = state.getValue(ChestBlock.TYPE)
+
+				if (type == ChestType.SINGLE) {
+					return CraftInventory(entity)
+				}
+
+				val relativeFace = when (type) {
+					// If it is on the left, need to look right, vice versa
+					ChestType.LEFT -> RelativeFace.RIGHT
+					ChestType.RIGHT -> RelativeFace.LEFT
+					else -> error("Single condition already matched")
+				}
+
+				val direction = state.getValue(ChestBlock.FACING)
+				val otherPos = global.getRelative(relativeFace[direction.blockFace])
+
+				val otherEntity = getBlockEntity(otherPos, holder.getWorld()) as? Container
+
+				if (otherEntity == null) {
+					return CraftInventory(entity)
+				}
+
+				return CraftInventoryDoubleChest(CompoundContainer(entity, otherEntity))
+			}
+			else -> {
+				CraftInventory(entity)
+			}
+		}
 	}
 
 	fun getSources(extractorLocation: BlockKey): Set<CraftInventory> {
