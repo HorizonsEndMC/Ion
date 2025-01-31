@@ -14,10 +14,7 @@ abstract class AbstractCarbonPrinterMultiblock : PrinterMultiblock() {
 		"",
 		"&7-:[=]:-"
 	)
-	override val displayName: Component
-		get() = text("Carbon Printer")
-	override val description: Component
-		get() = text("Transforms Cobblestone into Concrete Powder.")
+	override val description: Component get() = text("Transforms Cobblestone into Concrete Powder.")
 	override fun getOutput(product: Material): ItemStack = ItemStack(product, 2)
 
 	override fun MultiblockShape.RequirementBuilder.printerMachineryBlock() = sponge()
@@ -27,8 +24,10 @@ abstract class AbstractCarbonPrinterMultiblock : PrinterMultiblock() {
 
 object CarbonPrinterMultiblock : AbstractCarbonPrinterMultiblock() {
 	override val mirrored = false
+	override val displayName: Component get() = text("Carbon Printer")
 }
 
 object CarbonPrinterMultiblockMirrored : AbstractCarbonPrinterMultiblock() {
 	override val mirrored = true
+	override val displayName: Component get() = text("Carbon Printer (Mirrored)")
 }
