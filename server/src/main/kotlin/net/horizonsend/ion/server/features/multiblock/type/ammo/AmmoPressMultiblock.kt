@@ -17,7 +17,9 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.World
@@ -27,7 +29,11 @@ import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
 import java.lang.Integer.min
 
-abstract class AmmoPressMultiblock : Multiblock(), EntityMultiblock<AmmoPressMultiblock.AmmoPressMultiblockEntity> {
+abstract class AmmoPressMultiblock : Multiblock(), EntityMultiblock<AmmoPressMultiblock.AmmoPressMultiblockEntity>, DisplayNameMultilblock {
+	override val displayName: Component
+		get() = text("Ammo Press")
+	override val description: Component
+		get() = text("Refills Blasters and Magazines with various ammunition refills.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
