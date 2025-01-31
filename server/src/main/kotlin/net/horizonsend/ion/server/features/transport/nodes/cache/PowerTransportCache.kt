@@ -122,11 +122,13 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		} }
 
 		var maximumResistance: Double = -1.0
+		var minimumResistance = 0.0
 
 		// Perform the calc & max find in the same loop
 		val pathResistance: Array<Double?> = Array(numDestinations) {
 			val res = paths[it]?.resistance
 			if (res != null && maximumResistance < res) maximumResistance = res
+			if (res != null && minimumResistance > res) minimumResistance = res
 
 			res
 		}
@@ -140,7 +142,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		val sortedIndexes = getSorted(pathResistance)
 
 		val shareFactors: Array<Double?> = Array(numDestinations) { index ->
-			val resistance = pathResistance[index] ?: return@Array null
+			val resistance = (pathResistance[index] ?: return@Array null) - minimumResistance
 			val fac = (numDestinations - sortedIndexes[index]).toDouble() / (resistance / maximumResistance)
 			shareFactorSum += fac
 
