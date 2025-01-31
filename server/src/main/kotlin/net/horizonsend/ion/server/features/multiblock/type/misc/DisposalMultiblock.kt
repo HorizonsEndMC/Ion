@@ -34,7 +34,6 @@ abstract class AbstractDisposalMultiblock : Multiblock(), EntityMultiblock<Abstr
 	private val powerConsumed = 0.5
 	abstract val mirrored: Boolean
 
-	override val displayName: Component = text("Incincerator ${if (mirrored) "(Mirrored)" else ""}")
 	override val description: Component get() = text("Destroys all items inserted into the attached inventory.")
 
 	override fun MultiblockShape.buildStructure() {
@@ -132,8 +131,10 @@ abstract class AbstractDisposalMultiblock : Multiblock(), EntityMultiblock<Abstr
 
 object DisposalMultiblock : AbstractDisposalMultiblock() {
 	override val mirrored = false
+	override val displayName: Component = text("Incinerator ${if (mirrored) "(Mirrored)" else ""}")
 }
 
 object DisposalMultiblockMirrored : AbstractDisposalMultiblock() {
 	override val mirrored = true
+	override val displayName: Component = text("Incinerator ${if (mirrored) "(Mirrored)" else ""}")
 }

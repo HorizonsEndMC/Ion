@@ -30,10 +30,8 @@ import org.bukkit.inventory.ItemStack
 import java.lang.Integer.min
 
 abstract class AmmoPressMultiblock : Multiblock(), EntityMultiblock<AmmoPressMultiblock.AmmoPressMultiblockEntity>, DisplayNameMultilblock {
-	override val displayName: Component
-		get() = text("Ammo Press")
-	override val description: Component
-		get() = text("Refills Blasters and Magazines with various ammunition refills.")
+	override val displayName: Component get() = text("Ammo Press")
+	override val description: Component get() = text("Refills Blasters and Magazines with various ammunition refills.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
