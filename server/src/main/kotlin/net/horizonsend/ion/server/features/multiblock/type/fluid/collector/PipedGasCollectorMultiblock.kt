@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTi
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
@@ -38,8 +39,14 @@ import kotlin.math.roundToInt
 
 object PipedGasCollectorMultiblock : Multiblock(),
 	EntityMultiblock<PipedGasCollectorMultiblock.GasCollectorEntity>,
-	InteractableMultiblock {
+	InteractableMultiblock,
+	DisplayNameMultilblock {
 	override val name: String = "gascollector"
+
+	override val displayName: Component
+		get() = text("Piped Gas Collector")
+	override val description: Component
+		get() = text("Fills itself with random gases on this planet.")
 
 	override val signText: Array<Component?> = arrayOf(
 		ofChildren(text("Gas ", RED), text("Collector", GOLD)),

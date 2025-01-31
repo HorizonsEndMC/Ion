@@ -5,12 +5,15 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.IndustryEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 
-object CircuitfabMultiblock : Multiblock(), EntityMultiblock<CircuitfabMultiblock.CircuitfabMultiblockEntity> {
+object CircuitfabMultiblock : Multiblock(), EntityMultiblock<CircuitfabMultiblock.CircuitfabMultiblockEntity>, DisplayNameMultilblock {
 	override val name = "circuitfab"
 
 	override val signText = createSignText(
@@ -19,6 +22,11 @@ object CircuitfabMultiblock : Multiblock(), EntityMultiblock<CircuitfabMultibloc
 		line3 = null,
 		line4 = null
 	)
+
+	override val displayName: Component
+		get() = text("Circuitfab")
+	override val description: Component
+		get() = text("Manufactures refined circuit components.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {

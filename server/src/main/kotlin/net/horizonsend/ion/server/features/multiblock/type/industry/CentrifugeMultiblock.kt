@@ -5,12 +5,15 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.IndustryEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 
 
-object CentrifugeMultiblock : Multiblock(), EntityMultiblock<CentrifugeMultiblock.CentrifugeMultiblockEntity> {
+object CentrifugeMultiblock : Multiblock(), EntityMultiblock<CentrifugeMultiblock.CentrifugeMultiblockEntity>, DisplayNameMultilblock {
 	override val name = "centrifuge"
 
 	override val signText = createSignText(
@@ -19,6 +22,11 @@ object CentrifugeMultiblock : Multiblock(), EntityMultiblock<CentrifugeMultibloc
 		line3 = null,
 		line4 = null
 	)
+
+	override val displayName: Component
+		get() = text("Centrifuge")
+	override val description: Component
+		get() = text("Applies centrifugal force to materials to refine them.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {

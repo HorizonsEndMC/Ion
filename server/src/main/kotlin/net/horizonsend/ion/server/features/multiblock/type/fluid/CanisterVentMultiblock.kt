@@ -11,16 +11,18 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTi
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.inventory.FurnaceInventory
 
-object CanisterVentMultiblock : Multiblock(), EntityMultiblock<CanisterVentMultiblock.CanisterVentMultiblockEntity> {
+object CanisterVentMultiblock : Multiblock(), EntityMultiblock<CanisterVentMultiblock.CanisterVentMultiblockEntity>, DisplayNameMultilblock {
 	override val name: String = "vent"
 
 	override val signText: Array<Component?> = arrayOf(
@@ -32,6 +34,11 @@ object CanisterVentMultiblock : Multiblock(), EntityMultiblock<CanisterVentMulti
 		null,
 		null
 	)
+
+	override val displayName: Component
+		get() = text("Canister Gas Vent")
+	override val description: Component
+		get() = text("Removes gas from a Gas Canister.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
