@@ -1,17 +1,25 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc
 
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.PointDefenseSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.block.BlockFace
 
-sealed class PointDefenseStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<PointDefenseSubsystem>() {
+sealed class PointDefenseStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<PointDefenseSubsystem>(), DisplayNameMultilblock {
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): PointDefenseSubsystem {
 		val adjustedFace = getAdjustedFace(face)
 		return PointDefenseSubsystem(starship, pos, adjustedFace)
 	}
+
+	override val displayName: Component
+		get() = text("Point Defense Turret")
+	override val description: Component
+		get() = text("An automatic-only weapon effective against players and entities.")
 
 	protected abstract fun getAdjustedFace(originalFace: BlockFace): BlockFace
 }

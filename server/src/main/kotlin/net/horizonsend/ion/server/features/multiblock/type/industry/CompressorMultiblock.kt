@@ -5,12 +5,15 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.IndustryEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 
 
-object CompressorMultiblock : Multiblock(), EntityMultiblock<CompressorMultiblock.CompressorMultiblockEntity> {
+object CompressorMultiblock : Multiblock(), EntityMultiblock<CompressorMultiblock.CompressorMultiblockEntity>, DisplayNameMultilblock {
 	override val name = "compressor"
 
 	override val signText = createSignText(
@@ -19,6 +22,11 @@ object CompressorMultiblock : Multiblock(), EntityMultiblock<CompressorMultibloc
 		line3 = null,
 		line4 = null
 	)
+
+	override val displayName: Component
+		get() = text("Compressor")
+	override val description: Component
+		get() = text("Applies a high compression force to materials to refine them.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
