@@ -35,14 +35,16 @@ import org.bukkit.inventory.FurnaceInventory
 
 abstract class PlanterMultiblock(val tierMaterial: Material, val tierNumber: Int, tierColor: TextColor) : Multiblock(), EntityMultiblock<PlanterMultiblock.PlanterEntity>, DisplayNameMultilblock {
 	override val name: String = "planter"
+	private val nameText = ofChildren(text("Auto ", GRAY), text("Planter", GREEN))
+	val tierText = ofChildren(text("Tier ", DARK_AQUA), text(tierNumber, tierColor))
 	override val signText: Array<Component?> = arrayOf(
-		ofChildren(text("Auto ", GRAY), text("Planter", GREEN)),
-		ofChildren(text("Tier ", DARK_AQUA), text(tierNumber, tierColor)),
+		nameText,
+		tierText,
 		null,
 		null
 	)
 
-	override val displayName: Component = text("Tier $tierNumber Planter")
+	override val displayName: Component = ofChildren(tierText, nameText)
 	override val description: Component get() = text("Plants crops on farmland. Crops will be planted opposite of the sign, up to $regionDepth blocks away.")
 
 	abstract val regionDepth: Int

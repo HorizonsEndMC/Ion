@@ -136,10 +136,8 @@ object MissileLoaderMultiblock : Multiblock(), EntityMultiblock<MissileLoaderMul
         line4 = null
     )
 
-    override val displayName: Component
-        get() = text("Missile Loader")
-    override val description: Component
-        get() = text("Secures warheads and arms missile projectiles.")
+    override val displayName: Component get() = text("Missile Loader")
+    override val description: Component get() = text("Secures warheads and arms missile projectiles.")
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): MissileLoaderMultiblockEntity {
 		return MissileLoaderMultiblockEntity(data, manager, x, y, z, world, structureDirection)
