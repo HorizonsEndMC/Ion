@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.RollingAverage
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
+import net.horizonsend.ion.server.miscellaneous.utils.axisOrNull
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.faces
@@ -34,8 +35,8 @@ sealed interface PowerNode : Node {
 
     data class EndRodNode(var axis: Axis) : PowerNode, ComplexNode {
         override val pathfindingResistance: Double = 0.5
-        override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = offset.axis == this.axis
-        override fun canTransferTo(other: Node, offset: BlockFace): Boolean = offset.axis == this.axis
+        override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = offset.axisOrNull == this.axis
+        override fun canTransferTo(other: Node, offset: BlockFace): Boolean = offset.axisOrNull == this.axis
         override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(backwards.oppositeFace)
         override fun displace(movement: StarshipMovement) {
             this.axis = movement.displaceFace(this.axis.faces.first).axis
