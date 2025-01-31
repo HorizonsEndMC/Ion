@@ -29,9 +29,9 @@ import org.bukkit.persistence.PersistentDataAdapterContext
  * @param manager The multiblock manager that this is registered to
  * @param multiblock The type of multiblock this entity represents
  *
- * @param x The absolute x position of this multiblock's origin location
- * @param y The absolute x position of this multiblock's origin location
- * @param z The absolute x position of this multiblock's origin location
+ * @param localOffsetX The local x position of this multiblock's origin location
+ * @param localOffsetY The local y position of this multiblock's origin location
+ * @param localOffsetZ The local z position of this multiblock's origin location
  * @param world The world this multiblock is in
  *
  * @param structureDirection The direction this multiblock is oriented [from the origin]
