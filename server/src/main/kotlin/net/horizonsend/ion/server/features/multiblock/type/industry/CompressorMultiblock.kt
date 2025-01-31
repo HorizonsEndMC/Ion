@@ -23,10 +23,8 @@ object CompressorMultiblock : Multiblock(), EntityMultiblock<CompressorMultibloc
 		line4 = null
 	)
 
-	override val displayName: Component
-		get() = text("Compressor")
-	override val description: Component
-		get() = text("Applies a high compression force to materials to refine them.")
+	override val displayName: Component get() = text("Compressor")
+	override val description: Component get() = text("Applies a high compression force to materials to refine them.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
