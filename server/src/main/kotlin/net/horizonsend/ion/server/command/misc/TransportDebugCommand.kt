@@ -186,7 +186,7 @@ object TransportDebugCommand : SLCommand() {
 		val (_, location) = requireLookingAt(sender) { type.get(it.chunk.ion()) }
 		val chunk = IonChunk.getFromWorldCoordinates(sender.world, getX(location), getZ(location)) ?: fail { "Chunk not loaded" }
 		val grid = type.get(chunk)
-		if (grid.holder.getExtractorManager().isExtractorPresent(location)) fail { "Extractor not targeted" }
+//		if (grid.holder.getExtractorManager().isExtractorPresent(location)) fail { "Extractor not targeted" }
 
 		grid.tickExtractor(location, 1.0, null)
 	}
