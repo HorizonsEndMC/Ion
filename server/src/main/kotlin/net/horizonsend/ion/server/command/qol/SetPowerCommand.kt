@@ -31,7 +31,7 @@ object SetPowerCommand : SLCommand() {
 
 		if (sender.world.name != selection.world?.name) return
 
-		var hits = 0
+		val entities = mutableSetOf<PoweredMultiblockEntity>()
 
 		for (blockPosition in selection) {
 			val x = blockPosition.x()
@@ -45,20 +45,20 @@ object SetPowerCommand : SLCommand() {
 				val entity = MultiblockEntities.getMultiblockEntity(x, y, z, sender.world, data)
 
 				if (entity is PoweredMultiblockEntity) {
-					entity.powerStorage.setPower(amount)
-					hits++
+					entities.add(entity)
 				}
 			}
 
 			val entity = MultiblockEntities.getMultiblockEntity(sender.world, x, y ,z)
 			if (entity !is PoweredMultiblockEntity) continue
 
-			entity.powerStorage.setPower(amount)
-			hits++
-
-			sender.debug("power sent")
+			entities.add(entity)
 		}
 
-		sender.success("Set power to $amount in $hits multiblocks.")
+		entities.forEach { entity ->
+			entity.powerStorage.setPower(amount)
+		}
+
+		sender.success("Set power to $amount in ${entities.size} multiblocks.")
 	}
 }
