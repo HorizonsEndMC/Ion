@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
-import com.google.common.collect.Multimap
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand.measureOrFallback
 import net.horizonsend.ion.server.features.transport.NewTransport
@@ -15,13 +14,13 @@ import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.getBlockEntity
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockSateSafe
-import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.minecraft.world.CompoundContainer
 import net.minecraft.world.Container
 import net.minecraft.world.level.block.ChestBlock
@@ -56,37 +55,29 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 			return
 		}
 
-		val byInventory: Map<CraftInventory, List<IndexedValue<ItemStack>>> = sources.associateWith { stacks -> stacks.withIndex().filter { (_, value) -> value != null } }
-		if (byInventory.isEmpty()) return
+		val references = mutableMapOf<ItemStack, ArrayDeque<ItemReference>>()
 
-		val byCount = mutableMapOf<ItemStack, Int>()
-		val itemReferences = multimapOf<ItemStack, ItemReference>()
+		for (inventory in sources) {
+			val items = inventory.contents.withIndex()
 
-		for ((inventory, items) in byInventory) {
-			for ((index, item) in items) {
-				val asOne = item.asOne()
+			for ((index, item: ItemStack?) in items) {
+				if (item == null) continue
 
-				itemReferences[asOne].add(ItemReference(inventory, index))
-
-				if (byCount.containsKey(asOne)) continue
-				val count = items.sumOf { stack -> if (stack.value.isSimilar(item)) stack.value.amount else 0 }
-				byCount[asOne] = count
+				references.getOrPut(item.asOne()) { ArrayDeque() }.add(ItemReference(inventory, index))
 			}
 		}
 
-//		debugAudience.information("counts: [${byCount.entries.joinToString { "${it.key.type}, ${it.value}]" }}, ${toVec3i(location)}")
-//		debugAudience.information("references: [${itemReferences.entries().joinToString { "${it.key} ${it.value}" }}, ${toVec3i(location)}")
+//		debugAudience.information("references: [${references.entries.joinToString { "${it.key} ${it.value}" }}, ${toVec3i(location)}")
 
 		val originNode = getOrCache(location) ?: return
 
 		val destinationInvCache = mutableMapOf<BlockKey, CraftInventory>()
 
-		for ((item, count) in byCount) 	transferItemType(
+		for ((item, itemReferences) in references) transferItemType(
 			location,
 			originNode,
 			meta,
 			item,
-			count,
 			destinationInvCache,
 			itemReferences
 		)
@@ -97,37 +88,36 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		originNode: Node,
 		meta: ItemExtractorMetaData?,
 		singletonItem: ItemStack,
-		count: Int,
 		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
-		itemReferences: Multimap<ItemStack, ItemReference>,
+		availableItemReferences: ArrayDeque<ItemReference>,
 	) {
-		val availableItemReferences = itemReferences[singletonItem]
 //		debugAudience.information("Checking ${singletonItem.type} [$count]")
 
 		val destinations: List<BlockKey> = getNetworkDestinations<ItemNode.InventoryNode>(originKey, originNode) { node ->
-			val inventory = destinationInvCache.getOrPut(node.position) {
+			val destinationInventory = destinationInvCache.getOrPut(node.position) {
 				getInventory(node.position) ?: return@getNetworkDestinations false
 			}
 
-			if (!LegacyItemUtils.canFit(inventory, singletonItem, 1)) return@getNetworkDestinations false
+			if (!LegacyItemUtils.canFit(destinationInventory, singletonItem, 1)) {
+				return@getNetworkDestinations false
+			}
 
-			availableItemReferences.none { reference ->
-				if (inventory is CraftInventoryDoubleChest) {
-					val leftMatches = reference.inventory.inventory == (inventory.leftSide as CraftInventory).inventory
-					val rightMatches = reference.inventory.inventory == (inventory.rightSide as CraftInventory).inventory
+			availableItemReferences.none { itemReference ->
+				val referenceInventory = itemReference.inventory
+				if (destinationInventory is CraftInventoryDoubleChest && referenceInventory is CraftInventoryDoubleChest) {
+					val leftMatches = (referenceInventory.leftSide as CraftInventory).inventory == (destinationInventory.leftSide as CraftInventory).inventory
+					val rightMatches = (referenceInventory.rightSide as CraftInventory).inventory == (destinationInventory.rightSide as CraftInventory).inventory
 
-					return@getNetworkDestinations leftMatches || rightMatches
+					return@none leftMatches || rightMatches
 				}
 
-				reference.inventory.inventory == inventory.inventory
+				referenceInventory.inventory == destinationInventory.inventory
 			}
 		}.toList()
 
 //		if (destinations.isEmpty()) return debugAudience.information("No destinations found")
 
-		val numDestinations = destinations.size
-
-		val paths: Array<PathfindingReport?> = Array(numDestinations) {
+		val paths: Array<PathfindingReport?> = Array(destinations.size) {
 			findPath(
 				origin = Node.NodePositionData(
 					ItemNode.ItemExtractorNode,
@@ -181,7 +171,9 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 //			debugAudience.highlightBlock(toVec3i(destination), 40L)
 		}
 
-		transaction.commit()
+		Tasks.sync {
+			transaction.commit()
+		}
 	}
 
 	fun getDestination(meta: ItemExtractorMetaData?, extractorKey: BlockKey, destinations: List<BlockKey>): BlockKey {
@@ -243,7 +235,14 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 					return CraftInventory(entity)
 				}
 
-				return CraftInventoryDoubleChest(CompoundContainer(entity, otherEntity))
+				if (otherEntity == entity) {
+					// Idk, just in case
+					return CraftInventory(entity)
+				}
+
+				val left = if (type == ChestType.LEFT) entity else otherEntity
+				val right = if (type == ChestType.RIGHT) entity else otherEntity
+				return CraftInventoryDoubleChest(CompoundContainer(left, right))
 			}
 			else -> {
 				CraftInventory(entity)
