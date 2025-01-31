@@ -35,14 +35,16 @@ import org.bukkit.block.data.Ageable
 
 abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: Int, tierColor: TextColor) : Multiblock(), EntityMultiblock<HarvesterMultiblock.HarvesterEntity>, DisplayNameMultilblock {
 	override val name: String = "harvester"
+	val nameText = ofChildren(text("Auto ", GRAY), text("Harvester", GREEN))
+	val tierText = ofChildren(text("Tier ", DARK_AQUA), text(tierNumber, tierColor))
 	override val signText: Array<Component?> = arrayOf(
-		ofChildren(text("Auto ", GRAY), text("Harvester", GREEN)),
-		ofChildren(text("Tier ", DARK_AQUA), text(tierNumber, tierColor)),
+		nameText,
+		tierText,
 		null,
 		null
 	)
 
-	override val displayName: Component = text("Tier $tierNumber Harvester")
+	override val displayName: Component = ofChildren(tierText, nameText)
 	override val description: Component get() = text("Harvests crops. Crops will be harvested opposite of the sign, up to $regionDepth blocks away.")
 
 	val powerPerCrop: Int = 10

@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.power.generator
 
+import net.horizonsend.ion.common.utils.text.legacyAmpersand
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
@@ -33,7 +35,7 @@ abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: M
 
 	abstract val maxPower: Int
 
-	override val displayName: Component = text("Generator")
+	override val displayName: Component = ofChildren(legacyAmpersand.deserialize(tierText), text(" Generator"))
 	override val description: Component get() = text("Burns a fuel to generate to be used by other machines.")
 
 	override val signText = createSignText(
