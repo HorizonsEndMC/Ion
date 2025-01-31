@@ -5,12 +5,15 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.IndustryEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 
-object AmmoLoaderMultiblock	: Multiblock(), EntityMultiblock<AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity> {
+object AmmoLoaderMultiblock	: Multiblock(), EntityMultiblock<AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity>, DisplayNameMultilblock {
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
@@ -130,6 +133,11 @@ object AmmoLoaderMultiblock	: Multiblock(), EntityMultiblock<AmmoLoaderMultibloc
 			line3 = null,
 			line4 = null
 	)
+
+	override val displayName: Component
+		get() = text("Ammo Loader")
+	override val description: Component
+		get() = text("Activates heavy starship ammunition.")
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): AmmoLoaderMultiblockEntity {
 		return AmmoLoaderMultiblockEntity(data, manager, x, y, z, world, structureDirection)

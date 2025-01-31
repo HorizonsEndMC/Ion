@@ -13,11 +13,13 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.isConcretePowder
 import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlass
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -28,7 +30,7 @@ import org.bukkit.block.Sign
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
 
-object CarbonProcessorMultiblock : Multiblock(), EntityMultiblock<CarbonProcessorMultiblock.CarbonProcessorEntity> {
+object CarbonProcessorMultiblock : Multiblock(), EntityMultiblock<CarbonProcessorMultiblock.CarbonProcessorEntity>, DisplayNameMultilblock {
 	override val name = "processor"
 
 	override val signText = createSignText(
@@ -37,6 +39,10 @@ object CarbonProcessorMultiblock : Multiblock(), EntityMultiblock<CarbonProcesso
 		line3 = null,
 		line4 = "&7:[''']:"
 	)
+	override val displayName: Component
+		get() = text("Carbon Processor")
+	override val description: Component
+		get() = text("Transforms Concrete Powder into Concrete.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {

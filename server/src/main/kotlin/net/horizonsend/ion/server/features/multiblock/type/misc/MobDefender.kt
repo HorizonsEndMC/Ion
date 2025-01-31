@@ -6,9 +6,12 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -16,7 +19,7 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import kotlin.math.abs
 
-object MobDefender : Multiblock(), EntityMultiblock<MobDefender.MobDefenderEntity> {
+object MobDefender : Multiblock(), EntityMultiblock<MobDefender.MobDefenderEntity>, DisplayNameMultilblock {
 	override val name = "mobdefender"
 
 	override val signText = createSignText(
@@ -25,6 +28,11 @@ object MobDefender : Multiblock(), EntityMultiblock<MobDefender.MobDefenderEntit
 		line3 = "&7Control",
 		line4 = "MobDefender Co"
 	)
+
+	override val displayName: Component
+		get() = text("Mob Defender")
+	override val description: Component
+		get() = text("Prevents hostile mobs from spawning in a 99-block wide cube centered around this multiblock.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(-1) {
