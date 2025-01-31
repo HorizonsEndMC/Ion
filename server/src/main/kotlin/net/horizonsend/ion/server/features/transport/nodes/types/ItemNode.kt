@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta
 import net.horizonsend.ion.server.features.transport.filters.FilterType
+import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.PipeChannel.entries
 import net.horizonsend.ion.server.features.transport.old.pipe.filter.FilterItemData
@@ -13,12 +14,14 @@ import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextColor.fromHexString
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
+import org.bukkit.block.data.BlockData
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import java.lang.ref.WeakReference
@@ -32,6 +35,11 @@ interface ItemNode : Node {
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf()
 
 		override val pathfindingResistance: Double = 0.0
+
+		fun getBlockData(holder: CacheHolder<*>): BlockData? {
+			val (x, y, z) = holder.transportManager.getGlobalCoordinate(toVec3i(position))
+			return getBlockDataSafe(holder.getWorld(), x, y, z)
+		}
 	}
 
 	data object ItemExtractorNode : ItemNode {
