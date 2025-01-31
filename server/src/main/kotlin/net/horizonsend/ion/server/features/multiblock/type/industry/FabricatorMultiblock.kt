@@ -5,13 +5,16 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.IndustryEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 
 
-object FabricatorMultiblock : Multiblock(), EntityMultiblock<FabricatorMultiblock.FabricatorMultiblockEntity> {
+object FabricatorMultiblock : Multiblock(), EntityMultiblock<FabricatorMultiblock.FabricatorMultiblockEntity>, DisplayNameMultilblock {
 	override val name = "fabricator"
 
 	override val signText = createSignText(
@@ -20,6 +23,11 @@ object FabricatorMultiblock : Multiblock(), EntityMultiblock<FabricatorMultibloc
 		line3 = null,
 		line4 = null
 	)
+
+	override val displayName: Component
+		get() = text("Fabricator")
+	override val description: Component
+		get() = text("Refines materials that are too advanced for simple crafting.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
