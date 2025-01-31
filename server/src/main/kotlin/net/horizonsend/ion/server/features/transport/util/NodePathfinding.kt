@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.util
 
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet
+import it.unimi.dsi.fastutil.longs.Long2IntRBTreeMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
@@ -18,6 +18,8 @@ fun getOrCacheNode(type: CacheType, world: World, pos: BlockKey): Node? {
 	val chunk = IonChunk[world, getX(pos).shr(4), getZ(pos).shr(4)] ?: return null
 	return type.get(chunk).getOrCache(pos)
 }
+
+const val MAX_PATHFINDS_OVER_BLOCK = 6
 
 /**
  * Uses the A* algorithm to find the shortest available path between these two nodes.
@@ -50,7 +52,18 @@ fun getIdealPath(
 		f = getHeuristic(from, destination)
 	))
 
-	val visited = IntOpenHashSet()
+	val visited = Long2IntRBTreeMap()
+
+	fun markVisited(node: PathfindingNodeWrapper) {
+		val pos = node.node.position
+		val existing = visited.getOrDefault(pos, 0)
+
+		visited[pos] = existing + 1
+	}
+
+	fun canVisit(node: Node.NodePositionData): Boolean {
+		return visited.getOrDefault(node.position, 0) < MAX_PATHFINDS_OVER_BLOCK
+	}
 
 	// Safeguard
 	var iterations = 0
@@ -63,11 +76,11 @@ fun getIdealPath(
 		if (current.node.position == destination) return current.buildPath()
 
 		queueRemove(current)
-		visited.add(current.node.hashCode())
+		markVisited(current)
 
 		// Compute new neighbor data from current position
 		for (computedNeighbor in getNeighbors(current, cachedNodeProvider, pathfindingFilter)) {
-			if (visited.contains(computedNeighbor.node.hashCode())) continue
+			if (!canVisit(computedNeighbor.node)) continue
 
 			// Update the f value
 			computedNeighbor.f = (computedNeighbor.g + getHeuristic(computedNeighbor.node, destination))

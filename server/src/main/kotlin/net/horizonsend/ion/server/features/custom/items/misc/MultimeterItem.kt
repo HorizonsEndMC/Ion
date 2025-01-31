@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.misc
 
+import it.unimi.dsi.fastutil.longs.Long2IntRBTreeMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
@@ -14,6 +15,7 @@ import net.horizonsend.ion.server.features.custom.items.component.Listener.Compa
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.util.MAX_PATHFINDS_OVER_BLOCK
 import net.horizonsend.ion.server.features.transport.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
 import net.horizonsend.ion.server.features.transport.util.getHeuristic
@@ -30,6 +32,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
+import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -75,9 +78,7 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 		val targeted = livingEntity.getTargetBlock(null, 10)
 		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
 
-		itemStack.updateMeta {
-			it.persistentDataContainer.set(Z, LONG, key)
-		}
+		itemStack.updatePersistentDataContainer { set(Z, LONG, key) }
 
 		livingEntity.information("Set second point to ${toVec3i(key)}")
 
@@ -139,7 +140,18 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 			f = getHeuristic(fromNode, destination)
 		))
 
-		val visited = LongOpenHashSet()
+		val visited = Long2IntRBTreeMap()
+
+		fun markVisited(node: PathfindingNodeWrapper) {
+			val pos = node.node.position
+			val existing = visited.getOrDefault(pos, 0)
+
+			visited[pos] = existing + 1
+		}
+
+		fun canVisit(node: Node.NodePositionData): Boolean {
+			return visited.getOrDefault(node.position, 0) < MAX_PATHFINDS_OVER_BLOCK
+		}
 
 		// Safeguard
 		var iterations = 0L
@@ -153,14 +165,14 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 			if (current.node.position == destination) return current.buildPath()
 
 			queueRemove(current)
-			visited.add(current.node.position)
+			markVisited(current)
 
 			val neighbors = getNeighbors(current, { cacheType, world, pos -> getOrCacheNode(cacheType, world, pos) }, null)
 			audience.userError("Found ${neighbors.size} neighbors")
 
 			for (newNeighbor in neighbors) {
 				audience.information("new neighbor: $newNeighbor at ${toVec3i(newNeighbor.node.position)}")
-				if (visited.contains(newNeighbor.node.position)) {
+				if (!canVisit(newNeighbor.node)) {
 					audience.information("conmtinue")
 					continue
 				}
