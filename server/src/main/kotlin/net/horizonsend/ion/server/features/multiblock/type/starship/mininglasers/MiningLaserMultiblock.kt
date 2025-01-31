@@ -1,18 +1,24 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers
 
+import net.horizonsend.ion.common.utils.text.legacyAmpersand
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
+import net.kyori.adventure.text.Component.text
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
 
-abstract class MiningLaserMultiblock : Multiblock(), EntityMultiblock<MiningLaserMultiblock.MiningLaserMultiblockEntity> {
+abstract class MiningLaserMultiblock : Multiblock(), EntityMultiblock<MiningLaserMultiblock.MiningLaserMultiblockEntity>, DisplayNameMultilblock {
 	override val name = "mininglaser"
 	abstract val range: Double
 
@@ -26,6 +32,9 @@ abstract class MiningLaserMultiblock : Multiblock(), EntityMultiblock<MiningLase
 
 	abstract val outputOffset: Vec3i
 	abstract val maxPower: Int
+
+	override val displayName: Component get() = ofChildren(text("Tier $tier Mining Laser"))
+	override val description: Component = text("Emits a beam $range blocks long that breaks blocks in a $mineRadius block radius.")
 
 	abstract fun getFirePointOffset(): Vec3i
 

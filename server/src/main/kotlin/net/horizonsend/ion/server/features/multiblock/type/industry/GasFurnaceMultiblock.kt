@@ -5,11 +5,14 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.IndustryEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 
-object GasFurnaceMultiblock : Multiblock(), EntityMultiblock<GasFurnaceMultiblock.GasFurnaceMultiblockEntity> {
+object GasFurnaceMultiblock : Multiblock(), EntityMultiblock<GasFurnaceMultiblock.GasFurnaceMultiblockEntity>, DisplayNameMultilblock {
 	override val name = "gasfurnace"
 
 	override val signText = createSignText(
@@ -18,6 +21,11 @@ object GasFurnaceMultiblock : Multiblock(), EntityMultiblock<GasFurnaceMultibloc
 		line3 = null,
 		line4 = null
 	)
+
+	override val displayName: Component
+		get() = text("Gas Furnace")
+	override val description: Component
+		get() = text("Heats material in the presence of gas to produce refined materials.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
