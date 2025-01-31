@@ -128,12 +128,14 @@ val BlockFace.leftFace: BlockFace
 		else -> error("Unsupported direction $this")
 	}
 
-val BlockFace.axis: Axis
+val BlockFace.axis: Axis get() = this.axisOrNull ?: error("Unsupported axis for BlockFace: $this")
+
+val BlockFace.axisOrNull: Axis?
 	get() = when (this) {
 		BlockFace.NORTH, BlockFace.SOUTH -> Axis.Z
 		BlockFace.EAST, BlockFace.WEST -> Axis.X
 		BlockFace.UP, BlockFace.DOWN -> Axis.Y
-		else -> error("Unsupported axis for BlockFace: $this")
+		else -> null
 	}
 
 val Axis.faces: Pair<BlockFace, BlockFace>
