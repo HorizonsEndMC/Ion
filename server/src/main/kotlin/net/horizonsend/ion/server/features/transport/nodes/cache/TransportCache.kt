@@ -1,16 +1,18 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import com.google.common.collect.TreeBasedTable
+import it.unimi.dsi.fastutil.longs.Long2IntRBTreeMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.ComplexNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
+import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.util.MAX_PATHFINDS_OVER_BLOCK
 import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
 import net.horizonsend.ion.server.features.transport.util.getIdealPath
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -23,7 +25,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isAdjacent
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.set
 import org.bukkit.block.Block
@@ -178,18 +179,31 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	inline fun <reified T: Node> getNetworkDestinations(
 		originPos: BlockKey,
 		originNode: Node,
-		noinline check: ((Node.NodePositionData) -> Boolean)? = null
+		noinline check: ((NodePositionData) -> Boolean)? = null
 	): Collection<BlockKey> = getNetworkDestinations(T::class, originPos, originNode, check)
 
 	fun getNetworkDestinations(
 		clazz: KClass<out Node>,
 		originPos: BlockKey,
 		originNode: Node,
-		nodeCheck: ((Node.NodePositionData) -> Boolean)? = null,
-		nextNodeProvider: Node.NodePositionData.() -> List<Node.NodePositionData> = { getNextNodes(holder.nodeProvider, null) }
+		nodeCheck: ((NodePositionData) -> Boolean)? = null,
+		nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.nodeProvider, null) }
 	): Collection<BlockKey> {
-		val visitQueue = ArrayDeque<Node.NodePositionData>()
-		val visited = LongOpenHashSet()
+		val visitQueue = ArrayDeque<NodePositionData>()
+
+		val visited = Long2IntRBTreeMap()
+
+		fun markVisited(node: NodePositionData) {
+			val pos = node.position
+			val existing = visited.getOrDefault(pos, 0)
+
+			visited[pos] = existing + 1
+		}
+
+		fun canVisit(node: NodePositionData): Boolean {
+			return visited.getOrDefault(node.position, 0) < MAX_PATHFINDS_OVER_BLOCK
+		}
+
 		val destinations = LongOpenHashSet()
 
 		visitQueue.addAll(originNode.getNextNodes(
@@ -200,15 +214,19 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 			null
 		))
 
-		while (visitQueue.isNotEmpty()) {
+		var iterations = 0L
+		val upperBound = 20_000
+
+		while (visitQueue.isNotEmpty() && iterations < upperBound) {
+			iterations++
 			val current = visitQueue.removeFirst()
-			visited.add(current.position)
+			markVisited(current)
 
 			if (clazz.isInstance(current.type) && (nodeCheck?.invoke(current) != false)) {
 				destinations.add(current.position)
 			}
 
-			visitQueue.addAll(nextNodeProvider(current).filterNot { visited.contains(it.position) || visitQueue.contains(it) })
+			visitQueue.addAll(nextNodeProvider(current).filterNot { !canVisit(it) || visitQueue.contains(it) })
 		}
 
 		return destinations
@@ -239,8 +257,6 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 			// Traverse network backwards
 			getPreviousNodes(holder.nodeProvider, null)
 		}.forEach { extractorPos ->
-			debugAudience.highlightBlock(holder.transportManager.getGlobalCoordinate(toVec3i(extractorPos)), 10L)
-
 			pathCache.rowMap()[extractorPos]?.keys?.forEach { columnKey ->
 				toRemove.add(extractorPos to columnKey)
 			}

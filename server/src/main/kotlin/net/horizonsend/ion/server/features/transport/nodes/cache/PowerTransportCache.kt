@@ -28,8 +28,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		tickPowerExtractor(location, delta)
 	}
 
-	private fun tickPowerExtractor(location: BlockKey, delta: Double) = NewTransport.runTask {
-		measureOrFallback(TransportDebugCommand.extractorTickTimes) {
+	private fun tickPowerExtractor(location: BlockKey, delta: Double) =	NewTransport.runTask { measureOrFallback(TransportDebugCommand.extractorTickTimes) {
 			val world = holder.getWorld()
 
 			val sources = getExtractorSourceEntities<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
