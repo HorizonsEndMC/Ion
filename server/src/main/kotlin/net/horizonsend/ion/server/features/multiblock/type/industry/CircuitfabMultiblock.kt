@@ -23,10 +23,8 @@ object CircuitfabMultiblock : Multiblock(), EntityMultiblock<CircuitfabMultibloc
 		line4 = null
 	)
 
-	override val displayName: Component
-		get() = text("Circuitfab")
-	override val description: Component
-		get() = text("Manufactures refined circuit components.")
+	override val displayName: Component get() = text("Circuitfab")
+	override val description: Component get() = text("Manufactures refined circuit components.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {

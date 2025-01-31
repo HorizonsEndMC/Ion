@@ -1,32 +1,38 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers
 
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.block.BlockFace
 
 sealed class MiningLaserMultiblockTier3 : MiningLaserMultiblock() {
+	val tierText = text("Tier 3").color(NamedTextColor.AQUA)
 	override val signText: Array<Component?> = arrayOf(
-		Component.text("Mining ").color(NamedTextColor.DARK_GRAY)
-			.append(Component.text("Laser").color(NamedTextColor.GREEN)),
-		Component.text("Tier 3").color(NamedTextColor.AQUA),
-		Component.text(""),
-		Component.text("")
+		text("Mining ").color(NamedTextColor.DARK_GRAY)
+			.append(text("Laser").color(NamedTextColor.GREEN)),
+		tierText,
+		text(""),
+		text("")
 	)
 
 	override val maxPower: Int = 500000
 	override val beamOrigin = Triple(0, 3, 1)
-	override val range: Double = 170.0
-	override val mineRadius = 7
+	final override val range: Double = 170.0
+	final override val mineRadius = 7
 	override val beamCount: Int = 6
 	override val maxBroken: Int = 9
 	override val sound: String = "horizonsend:starship.weapon.mining_laser.t3_loop"
 
 	override val tier: Int = 3
+
+	override val description: Component = text("Emits a beam $range blocks long that breaks blocks in a $mineRadius block radius.")
 }
 
 object MiningLaserMultiblockTier3Top : MiningLaserMultiblockTier3() {
+	override val displayName: Component get() = ofChildren(tierText, text(" Mining Laser (Top)"))
 	override val side = BlockFace.UP
 
 	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +6, +2)
@@ -270,6 +276,7 @@ object MiningLaserMultiblockTier3Top : MiningLaserMultiblockTier3() {
 }
 
 object MiningLaserMultiblockTier3TopMirrored : MiningLaserMultiblockTier3() {
+	override val displayName: Component get() = ofChildren(tierText, text(" Mining Laser (Top) (Mirrored)"))
 	override val side = BlockFace.UP
 
 	override fun getFirePointOffset(): Vec3i = Vec3i(+0, +6, -3)
@@ -513,6 +520,7 @@ object MiningLaserMultiblockTier3TopMirrored : MiningLaserMultiblockTier3() {
 }
 
 object MiningLaserMultiblockTier3Bottom : MiningLaserMultiblockTier3() {
+	override val displayName: Component get() = ofChildren(tierText, text(" Mining Laser (Bottom)"))
 	override val side = BlockFace.DOWN
 
 	override fun getFirePointOffset(): Vec3i = Vec3i(+0, -6, +2)
@@ -756,6 +764,7 @@ object MiningLaserMultiblockTier3Bottom : MiningLaserMultiblockTier3() {
 }
 
 object MiningLaserMultiblockTier3BottomMirrored : MiningLaserMultiblockTier3() {
+	override val displayName: Component get() = ofChildren(tierText, text(" Mining Laser (Bottom) (Mirrored)"))
 	override val side = BlockFace.DOWN
 
 	override fun getFirePointOffset(): Vec3i = Vec3i(+0, -6, -3)
@@ -999,6 +1008,7 @@ object MiningLaserMultiblockTier3BottomMirrored : MiningLaserMultiblockTier3() {
 }
 
 object MiningLaserMultiblockTier3Side : MiningLaserMultiblockTier3() {
+	override val displayName: Component get() = ofChildren(tierText, text(" Mining Laser (Side)"))
 	override val side = BlockFace.UP
 
 	override fun getFirePointOffset(): Vec3i = Vec3i(-1, +1, +8)
@@ -1240,6 +1250,7 @@ object MiningLaserMultiblockTier3Side : MiningLaserMultiblockTier3() {
 }
 
 object MiningLaserMultiblockTier3SideMirrored : MiningLaserMultiblockTier3() {
+	override val displayName: Component get() = ofChildren(tierText, text(" Mining Laser (Side) (Mirrored)"))
 	override val side = BlockFace.UP
 
 	override fun getFirePointOffset(): Vec3i = Vec3i(+1, -1, -8)

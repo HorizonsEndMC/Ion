@@ -279,6 +279,7 @@ abstract class AutoCrafterMultiblockMirrored(
 	iterations: Int,
 ) : AutoCrafterMultiblock(tierText, tierMaterial, iterations) {
 	override val mirrored = true
+	override val displayName: Component = ofChildren(tierText, text(" Auto Crafter (Mirrored)"))
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {

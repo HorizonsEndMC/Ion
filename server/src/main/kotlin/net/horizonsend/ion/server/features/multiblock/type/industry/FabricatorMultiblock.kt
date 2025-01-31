@@ -24,10 +24,8 @@ object FabricatorMultiblock : Multiblock(), EntityMultiblock<FabricatorMultibloc
 		line4 = null
 	)
 
-	override val displayName: Component
-		get() = text("Fabricator")
-	override val description: Component
-		get() = text("Refines materials that are too advanced for simple crafting.")
+	override val displayName: Component get() = text("Fabricator")
+	override val description: Component get() = text("Refines materials that are too advanced for simple crafting.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
