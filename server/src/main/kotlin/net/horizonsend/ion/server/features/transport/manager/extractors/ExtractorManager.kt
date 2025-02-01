@@ -2,11 +2,14 @@ package net.horizonsend.ion.server.features.transport.manager.extractors
 
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.blocks.extractor.CustomExtractorBlock
+import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData
+import net.horizonsend.ion.server.features.transport.util.getBlockEntity
 import net.horizonsend.ion.server.features.transport.util.getPersistentDataContainer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDataContainer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
@@ -56,6 +59,11 @@ abstract class ExtractorManager {
 			}
 
 			return null
+		}
+
+		fun saveExtractor(world: World, x: Int, y: Int, z: Int, data: AdvancedExtractorData<*>) {
+			val entity = getBlockEntity(Vec3i(x, y, z), world) ?: return
+			entity.persistentDataContainer.set(NamespacedKeys.COMPLEX_EXTRACTORS, MetaDataContainer, data.asMetaDataContainer())
 		}
 	}
 
