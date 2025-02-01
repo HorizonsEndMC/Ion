@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield
 
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.utils.text.legacyAmpersand
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.multiblock.Multiblock
@@ -30,11 +32,6 @@ abstract class AreaShield(val radius: Int) : Multiblock(), EntityMultiblock<Area
 	override fun onTransformSign(player: Player, sign: Sign) {
 		player.success("Area Shield created.")
 	}
-
-	override val displayName: Component
-		get() = text("Area Shield (Radius $radius)")
-	override val description: Component
-		get() = text("Prevents explosions within a $radius radius.")
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		val blocks: List<Vec3i> = getSphereBlocks(radius)
@@ -68,13 +65,17 @@ abstract class AreaShield(val radius: Int) : Multiblock(), EntityMultiblock<Area
 		}.runTaskTimer(IonServer, 20, 20)
 	}
 
+	val shieldText = "&8Radius: &a$radius"
 	override val name = "areashield"
 	override val signText = createSignText(
 		"&6Area",
 		"&bParticle Shield",
 		null,
-		"&8Radius: &a$radius"
+		shieldText,
 	)
+
+	override val displayName: Component get() = ofChildren(text("Area Shield "), text("("), legacyAmpersand.deserialize(shieldText), text(")"))
+	override val description: Component get() = text("Prevents explosions within a $radius radius.")
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): AreaShieldEntity {
 		return AreaShieldEntity(data, manager, this, x, y, z, world, structureDirection)

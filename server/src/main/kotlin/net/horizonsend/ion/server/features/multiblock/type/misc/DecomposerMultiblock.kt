@@ -19,12 +19,14 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMul
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.listener.misc.ProtectionListener.isRegionDenied
 import net.horizonsend.ion.server.miscellaneous.utils.CHISELED_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.World
@@ -34,7 +36,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 
-object DecomposerMultiblock : Multiblock(), EntityMultiblock<DecomposerMultiblock.DecomposerEntity>, InteractableMultiblock {
+object DecomposerMultiblock : Multiblock(), EntityMultiblock<DecomposerMultiblock.DecomposerEntity>, InteractableMultiblock, DisplayNameMultilblock {
 	override val name: String = "decomposer"
 	override val signText = createSignText(
 		"&cDecomposer",
@@ -42,6 +44,9 @@ object DecomposerMultiblock : Multiblock(), EntityMultiblock<DecomposerMultibloc
 		null,
 		null
 	)
+
+	override val displayName: Component get() = text("Decomposer")
+	override val description: Component get() = text("Removes blocks in a rectangular region.")
 
 	override fun MultiblockShape.buildStructure() {
 		at(0, 0, 0).ironBlock()
