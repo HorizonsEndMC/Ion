@@ -16,16 +16,14 @@ sealed class PointDefenseStarshipWeaponMultiblock : SignlessStarshipWeaponMultib
 		return PointDefenseSubsystem(starship, pos, adjustedFace)
 	}
 
-	override val displayName: Component
-		get() = text("Point Defense Turret")
-	override val description: Component
-		get() = text("An automatic-only weapon effective against players and entities.")
+	override val description: Component get() = text("Automated weapon system effective against players and entities. Cannot be manually controlled.")
 
 	protected abstract fun getAdjustedFace(originalFace: BlockFace): BlockFace
 }
 
 object PointDefenseStarshipWeaponMultiblockTop : PointDefenseStarshipWeaponMultiblock() {
 	override fun getAdjustedFace(originalFace: BlockFace): BlockFace = BlockFace.UP
+	override val displayName: Component get() = text("Point Defense Turret (Top)")
 
 	override fun MultiblockShape.buildStructure() {
 		at(+0, +0, +0).dispenser()
@@ -36,6 +34,7 @@ object PointDefenseStarshipWeaponMultiblockTop : PointDefenseStarshipWeaponMulti
 
 object PointDefenseStarshipWeaponMultiblockBottom : PointDefenseStarshipWeaponMultiblock() {
 	override fun getAdjustedFace(originalFace: BlockFace): BlockFace = BlockFace.DOWN
+	override val displayName: Component get() = text("Point Defense Turret (Bottom)")
 
 	override fun MultiblockShape.buildStructure() {
 		at(+0, +0, +0).dispenser()
@@ -46,6 +45,7 @@ object PointDefenseStarshipWeaponMultiblockBottom : PointDefenseStarshipWeaponMu
 
 object PointDefenseStarshipWeaponMultiblockSide : PointDefenseStarshipWeaponMultiblock() {
 	override fun getAdjustedFace(originalFace: BlockFace): BlockFace = originalFace
+	override val displayName: Component get() = text("Point Defense Turret (Side)")
 
 	override fun MultiblockShape.buildStructure() {
 		at(+0, +0, +0).dispenser()

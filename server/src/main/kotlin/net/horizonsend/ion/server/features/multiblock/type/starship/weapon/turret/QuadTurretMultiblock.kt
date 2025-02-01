@@ -8,6 +8,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.QuadTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.QuadTurretProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material.GRINDSTONE
 import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.World
@@ -23,6 +25,8 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 
 	protected abstract fun getSign(): Int
 
+	override val displayName: Component get() = text("Quad Turret (${if (getSign() == 1) "Top" else "Bottom"})")
+	override val description: Component get() = text("Rotating weapon system effective against the largest targets. Manual fire only. Consumes ammo.")
 
 	override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.quadTurret
 

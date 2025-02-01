@@ -18,8 +18,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.text
 import net.minecraft.world.level.block.Rotation
 import org.bukkit.Location
 import org.bukkit.Material
@@ -41,11 +39,6 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 
 	override val name: String = "turret"
 	override val signText = createSignText("&8Turret", null, null, null)
-
-	override val displayName: Component
-		get() = text("(TODO: Get type from java class) Turret")
-	override val description: Component
-		get() = text("TODO")
 
 	abstract fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon
 

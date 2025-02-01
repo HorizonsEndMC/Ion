@@ -2,9 +2,12 @@ package net.horizonsend.ion.server.features.multiblock.type.misc
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 
-abstract class AbstractMagazineMultiblock : Multiblock() {
+abstract class AbstractMagazineMultiblock : Multiblock(), DisplayNameMultilblock {
 	override val name: String = "magazine"
 	override val signText = createSignText(
 		"&7-=[&c=&a=&b=&7]=-",
@@ -13,9 +16,12 @@ abstract class AbstractMagazineMultiblock : Multiblock() {
 		"&7-=[&c=&a=&b=&7]=-"
 	)
 	abstract val mirrored: Boolean
+
+	override val description: Component get() = text("Stores ammunition for starship weapons.")
 }
 
 object MagazineMultiblock : AbstractMagazineMultiblock() {
+	override val displayName: Component get() = text("Magazine")
 	override val mirrored = false
 	override fun MultiblockShape.buildStructure() {
 		y(+0) {
@@ -32,6 +38,7 @@ object MagazineMultiblock : AbstractMagazineMultiblock() {
 }
 
 object MagazineMultiblockMirrored : AbstractMagazineMultiblock() {
+	override val displayName: Component get() = text("Magazine (Mirrored)")
 	override val mirrored = true
 	override fun MultiblockShape.buildStructure() {
 		y(+0) {

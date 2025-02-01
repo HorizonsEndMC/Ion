@@ -3,10 +3,11 @@ package net.horizonsend.ion.server.features.multiblock.type.starship.checklist
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import org.bukkit.block.Sign
 import org.bukkit.block.sign.Side
 
-abstract class AbstractReactorCore(val core: MultiblockShape.RequirementBuilder.() -> Unit) : Multiblock() {
+abstract class AbstractReactorCore(val core: MultiblockShape.RequirementBuilder.() -> Unit) : Multiblock(), DisplayNameMultilblock {
 	override fun matchesUndetectedSign(sign: Sign): Boolean {
 		return super.matchesUndetectedSign(sign) || sign.getSide(Side.FRONT).line(0).plainText().equals("[reactor]", ignoreCase = true)
 	}

@@ -1,13 +1,16 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ArsenalRocketStarshipWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.block.BlockFace
 
-sealed class ArsenalRocketStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<ArsenalRocketStarshipWeaponSubsystem>() {
+sealed class ArsenalRocketStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<ArsenalRocketStarshipWeaponSubsystem>(), DisplayNameMultilblock {
 	override fun createSubsystem(
 		starship: ActiveStarship,
 		pos: Vec3i,
@@ -20,6 +23,9 @@ sealed class ArsenalRocketStarshipWeaponMultiblock : SignlessStarshipWeaponMulti
 }
 
 sealed class VerticalArsenalStarshipWeaponMultiblock : ArsenalRocketStarshipWeaponMultiblock() {
+	override val displayName: Component get() = text("Arsenal Missile Launcher (${if (getYFactor() == 1) "Top" else "Bottom"})")
+	override val description: Component get() = text("Launches missiles that deal enormous damage only to Area Shields and other land-based defenses. Consumes ammo.")
+
 	protected abstract fun getYFactor(): Int
 
 	override fun MultiblockShape.buildStructure() {

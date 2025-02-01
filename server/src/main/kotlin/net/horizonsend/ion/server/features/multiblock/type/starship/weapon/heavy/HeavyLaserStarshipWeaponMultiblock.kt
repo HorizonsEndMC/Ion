@@ -18,7 +18,7 @@ object HeavyLaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<Hea
 	override val displayName: Component
 		get() = text("Heavy Laser")
 	override val description: Component
-		get() = text("A heavy weapon with a homing projectile. Slows down small ships on impact if the firing ship is also small.")
+		get() = text("A heavy weapon with a homing projectile. Slows down small ships on impact if the firing ship is also small. Consumes ammo.")
 
 	override fun MultiblockShape.buildStructure() {
 		repeat(+7) { z ->

@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -18,7 +19,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
-abstract class GravityWellMultiblock : Multiblock(), InteractableMultiblock {
+abstract class GravityWellMultiblock : Multiblock(), InteractableMultiblock, DisplayNameMultilblock {
 	override fun matchesUndetectedSign(sign: Sign): Boolean {
 		return super.matchesUndetectedSign(sign) || sign.getSide(Side.FRONT).line(0).plainText().equals("[gravwell]", ignoreCase = true)
 	}

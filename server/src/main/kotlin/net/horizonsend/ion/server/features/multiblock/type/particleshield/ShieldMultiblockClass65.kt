@@ -1,15 +1,23 @@
 package net.horizonsend.ion.server.features.multiblock.type.particleshield
 
+import net.horizonsend.ion.common.utils.text.legacyAmpersand
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 
 object ShieldMultiblockClass65 : SphereShieldMultiblock() {
 	override val maxRange = 30
+	const val SHIELD_CLASS_TEXT = "&8Class &b6.5"
 	override val signText = createSignText(
 		line1 = "&3Particle Shield",
 		line2 = "&7Generator",
 		line3 = null,
-		line4 = "&8Class &b6.5"
+		line4 = SHIELD_CLASS_TEXT
 	)
+
+	override val displayName: Component get() = ofChildren(legacyAmpersand.deserialize(SHIELD_CLASS_TEXT), text(" Shield"))
+	override val description: Component get() = text("Protects a starship from explosion damage within a $maxRange block radius.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {

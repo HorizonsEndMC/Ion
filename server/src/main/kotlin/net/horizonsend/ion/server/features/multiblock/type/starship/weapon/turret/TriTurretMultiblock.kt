@@ -6,6 +6,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.TriTurretWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material.GRINDSTONE
 import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.block.BlockFace
@@ -17,6 +19,8 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 
 	protected abstract fun getYFactor(): Int
 
+	override val displayName: Component get() = text("Tri Turret (${if (getYFactor() == 1) "Top" else "Bottom"})")
+	override val description: Component get() = text("Rotating weapon system effective against large targets. Can be auto-targeting.")
 
 	override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.triTurret
 

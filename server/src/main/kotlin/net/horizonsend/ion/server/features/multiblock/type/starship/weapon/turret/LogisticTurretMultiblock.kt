@@ -8,6 +8,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.LogisticTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.LogisticTurretProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material.GRINDSTONE
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -18,6 +20,9 @@ sealed class LogisticTurretMultiblock : TurretMultiblock() {
     override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TurretWeaponSubsystem {
         return LogisticTurretWeaponSubsystem(starship, pos, getFacing(pos, starship), this)
     }
+
+    override val displayName: Component get() = text("Cycle Turret (${if (getSign() == 1) "Top" else "Bottom"})")
+    override val description: Component get() = text("Rotating weapon system that heals other starships.")
 
     protected abstract fun getSign(): Int
 

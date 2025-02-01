@@ -1,19 +1,25 @@
 package net.horizonsend.ion.server.features.multiblock.type.particleshield
 
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import kotlin.math.abs
 
-object BoxShieldMultiblock : ShieldMultiblock() {
+object BoxShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 	private const val MIN_DIMENSION = 5
 	private const val MAX_DIMENSION = 21
 	private const val MIN_VOLUME = 256
 	private const val MAX_VOLUME = 8192
+
+	override val displayName: Component get() = text("Box Shield")
+	override val description: Component get() = text("Protects a starship from explosion damage within a user-specified rectangular region, between $MIN_DIMENSION and $MAX_DIMENSION blocks long for each side.")
 
 	override fun setupSign(player: Player, sign: Sign) {
 		val line = sign.getLine(2)

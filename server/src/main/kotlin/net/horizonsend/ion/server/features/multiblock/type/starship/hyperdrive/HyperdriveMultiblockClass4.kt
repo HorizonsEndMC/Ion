@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive
 
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 
 object HyperdriveMultiblockClass4 : HyperdriveMultiblock() {
 	override val signText = createSignText(
@@ -12,6 +14,8 @@ object HyperdriveMultiblockClass4 : HyperdriveMultiblock() {
 	)
 
 	override val maxPower = 100_000
+
+	override val displayName: Component get() = text("Class 4 Hyperdrive")
 
 	override val hyperdriveClass = 4
 

@@ -29,10 +29,8 @@ object MobDefender : Multiblock(), EntityMultiblock<MobDefender.MobDefenderEntit
 		line4 = "MobDefender Co"
 	)
 
-	override val displayName: Component
-		get() = text("Mob Defender")
-	override val description: Component
-		get() = text("Prevents hostile mobs from spawning in a 99-block wide cube centered around this multiblock.")
+	override val displayName: Component get() = text("Mob Defender")
+	override val description: Component get() = text("Prevents hostile mobs from spawning in a 99-block wide cube centered around this multiblock.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(-1) {

@@ -3,12 +3,14 @@ package net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive
 import net.horizonsend.ion.server.features.gui.custom.navigation.NavigationSystemMapGui
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.add
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.block.BlockFace
@@ -18,11 +20,13 @@ import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 
-abstract class HyperdriveMultiblock : Multiblock(), InteractableMultiblock {
+abstract class HyperdriveMultiblock : Multiblock(), InteractableMultiblock, DisplayNameMultilblock {
 	override val name = "hyperdrive"
 
 	abstract val maxPower: Int
 	abstract val hyperdriveClass: Int
+
+	override val description: Component get() = text("Allows a starship to enter and exit hyperspace. Consumes chetherite.")
 
 	protected abstract fun buildHopperOffsets(): List<Vec3i>
 
