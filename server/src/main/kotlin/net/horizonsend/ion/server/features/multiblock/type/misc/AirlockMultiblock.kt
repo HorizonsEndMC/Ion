@@ -2,11 +2,13 @@ package net.horizonsend.ion.server.features.multiblock.type.misc
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
@@ -19,8 +21,11 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 
-object AirlockMultiblock : Multiblock(), InteractableMultiblock {
+object AirlockMultiblock : Multiblock(), InteractableMultiblock, DisplayNameMultilblock {
 	override val name: String = "airlock"
+
+	override val displayName: Component get() = text("Airlock")
+	override val description: Component get() = text("A force field that can be toggled to allow or prevent players from passing through.")
 
 	override val signText = createSignText(
 		line1 = "&7Airlock",
