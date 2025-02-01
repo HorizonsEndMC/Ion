@@ -1,9 +1,14 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell
 
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 
 object StandardGravityWellMultiblock : GravityWellMultiblock() {
 	override val name = "gravitywell"
+
+	override val displayName: Component get() = text("Gravity Well")
+	override val description: Component get() = text("Generates a spherical region around the starship that inhibits hyperspace travel.")
 
 	override val signText = createSignText(
 		line1 = "&2Gravity",
