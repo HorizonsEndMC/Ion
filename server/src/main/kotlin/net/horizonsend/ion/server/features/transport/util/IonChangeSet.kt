@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import org.bukkit.block.Sign
+import org.bukkit.block.data.type.WallSign
 import java.util.Collections
 
 class IonChangeSet(world: World) : AbstractChangeSet(world) {
@@ -25,10 +26,17 @@ class IonChangeSet(world: World) : AbstractChangeSet(world) {
 
 		addWriteTask {
 			NewTransport.invalidateCache(bukkitWorld, x, y, z)
-			val type = BukkitAdapter.adapt(BlockTypesCache.states[combinedTo].blockType)
+			val oldData = BukkitAdapter.adapt(BlockTypesCache.states[combinedFrom])
+			val newType = BukkitAdapter.adapt(BlockTypesCache.states[combinedTo].blockType)
 
-			if (type.isWallSign) processMultiblock(x, y, z)
-			if (type.isAir) removeMultiblock(x, y, z)
+			if (newType.isWallSign) processMultiblock(x, y, z)
+			if (newType.isAir) {
+				MultiblockEntities.removeMultiblockEntity(bukkitWorld, x, y, z)
+
+				if (oldData.material.isWallSign) {
+					MultiblockEntities.removeMultiblockEntity(bukkitWorld, x, y, z, oldData as WallSign)
+				}
+			}
 		}
 	}
 
@@ -42,10 +50,6 @@ class IonChangeSet(world: World) : AbstractChangeSet(world) {
 			val state = bukkitWorld.getBlockState(x, y, z) as? Sign ?: return@sync
 			MultiblockEntities.loadFromSign(state)
 		}
-	}
-
-	private fun removeMultiblock(x: Int, y: Int, z: Int) {
-		MultiblockEntities.removeMultiblockEntity(bukkitWorld, x, y, z)
 	}
 
 	private var recording: Boolean = true
