@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
@@ -44,7 +45,7 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: I
 		null
 	)
 
-	override val displayName: Component = ofChildren(tierText, nameText)
+	override val displayName: Component = ofChildren(tierText, space(), nameText)
 	override val description: Component get() = text("Harvests crops. Crops will be harvested opposite of the sign, up to $regionDepth blocks away.")
 
 	val powerPerCrop: Int = 10
