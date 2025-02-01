@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.hyperdrive
 
-import net.horizonsend.ion.server.features.gui.custom.navigation.NavigationSystemMapGui
+import net.horizonsend.ion.server.command.misc.NavigationCommand
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
@@ -55,6 +55,6 @@ abstract class HyperdriveMultiblock : Multiblock(), InteractableMultiblock {
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		NavigationSystemMapGui(player, player.world).openMainWindow()
+		NavigationCommand.openNavigationGui(player)
 	}
 }
