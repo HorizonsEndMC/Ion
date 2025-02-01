@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import org.bukkit.block.CommandBlock
+import org.bukkit.block.TileState
 
 abstract class FilterManager(open val manager: TransportManager<*>) {
 	val filters = Long2ObjectOpenHashMap<FilterData<*, *>>()
@@ -75,7 +75,7 @@ abstract class FilterManager(open val manager: TransportManager<*>) {
 		val global = manager.getGlobalCoordinate(toVec3i(key))
 		val world = manager.getWorld()
 
-		val state = world.getBlockState(global.x, global.y, global.z) as? CommandBlock
+		val state = world.getBlockState(global.x, global.y, global.z) as? TileState
 
 		@Suppress("UNCHECKED_CAST")
 		val data = state?.persistentDataContainer?.get(NamespacedKeys.FILTER_DATA, FilterData) as? FilterData<T, M> ?: block.createData(key)
@@ -97,9 +97,9 @@ abstract class FilterManager(open val manager: TransportManager<*>) {
 	abstract fun load()
 
 	companion object {
-		fun save(commandBlock: CommandBlock, data: FilterData<*, *>) {
-			commandBlock.persistentDataContainer.set(NamespacedKeys.FILTER_DATA, FilterData, data)
-			commandBlock.update()
+		fun save(tileState: TileState, data: FilterData<*, *>) {
+			tileState.persistentDataContainer.set(NamespacedKeys.FILTER_DATA, FilterData, data)
+			tileState.update()
 		}
 	}
 }
