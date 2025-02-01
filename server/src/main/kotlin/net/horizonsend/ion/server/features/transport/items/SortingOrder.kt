@@ -4,15 +4,16 @@ import com.manya.pdc.base.EnumDataType
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData.ItemExtractorMetaData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.kyori.adventure.text.Component
 
-enum class SortingOrder {
-	NEAREST_FIRST {
+enum class SortingOrder(val displayName: Component) {
+	NEAREST_FIRST(Component.text("Nearest First")) {
 		override fun getDestination(extractorData: ItemExtractorMetaData, destinations: List<BlockKey>): BlockKey {
 			val extractorPosition = toVec3i(extractorData.key)
 			return destinations.minBy { key -> extractorPosition.distance(toVec3i(key)) }
 		}
 	},
-	ROUND_ROBIN {
+	ROUND_ROBIN(Component.text("Round Robin")) {
 		override fun getDestination(extractorData: ItemExtractorMetaData, destinations: List<BlockKey>): BlockKey {
 			val currentIndex = extractorData.roundRobinIndex.toInt()
 
@@ -21,13 +22,13 @@ enum class SortingOrder {
 			return destinations[nextIndex]
 		}
 	},
-	FARTHEST_FIRST {
+	FARTHEST_FIRST(Component.text("Farthest First")) {
 		override fun getDestination(extractorData: ItemExtractorMetaData, destinations: List<BlockKey>): BlockKey {
 			val extractorPosition = toVec3i(extractorData.key)
 			return destinations.maxBy { key -> extractorPosition.distance(toVec3i(key)) }
 		}
 	},
-	RANDOM {
+	RANDOM(Component.text("Random")) {
 		override fun getDestination(extractorData: ItemExtractorMetaData, destinations: List<BlockKey>): BlockKey {
 			return destinations.random()
 		}
