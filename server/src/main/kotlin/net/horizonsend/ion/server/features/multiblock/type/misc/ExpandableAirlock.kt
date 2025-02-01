@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -17,6 +18,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.isSlab
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.audience.Audience
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -27,7 +30,7 @@ import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 
-object ExpandableAirlock : Multiblock(), InteractableMultiblock {
+object ExpandableAirlock : Multiblock(), InteractableMultiblock, DisplayNameMultilblock {
 	override val name: String = "airlock"
 
 	override val signText = createSignText(
@@ -36,6 +39,9 @@ object ExpandableAirlock : Multiblock(), InteractableMultiblock {
 		line3 = "&bRayshielding",
 		line4 = "&bSolutions, Inc."
 	)
+
+	override val displayName: Component get() = text("Airlock (Expandable)")
+	override val description: Component get() = text("A larger force field that can be toggled to allow or prevent players from passing through.")
 
 	override fun MultiblockShape.buildStructure() {
 		at(0, 0, 0).ironBlock()

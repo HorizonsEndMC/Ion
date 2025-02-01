@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell
 
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 
 object AmplifiedGravityWellMultiblock : GravityWellMultiblock() {
@@ -11,6 +13,9 @@ object AmplifiedGravityWellMultiblock : GravityWellMultiblock() {
 		line3 = null,
 		line4 = "&8&o[&d&lAmplified&8&o]"
 	)
+
+	override val displayName: Component get() = text("Amplified Gravity Well")
+	override val description: Component get() = text("Generates a spherical region around the starship that inhibits hyperspace travel.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {

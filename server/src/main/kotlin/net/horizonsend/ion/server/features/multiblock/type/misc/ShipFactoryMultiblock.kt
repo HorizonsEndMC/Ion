@@ -2,11 +2,14 @@ package net.horizonsend.ion.server.features.multiblock.type.misc
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -14,7 +17,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
-object ShipFactoryMultiblock : Multiblock(), InteractableMultiblock {
+object ShipFactoryMultiblock : Multiblock(), InteractableMultiblock, DisplayNameMultilblock {
 	override val name = "shipfactory"
 
 	override val signText = createSignText(
@@ -23,6 +26,9 @@ object ShipFactoryMultiblock : Multiblock(), InteractableMultiblock {
 		line3 = null,
 		line4 = null
 	)
+
+	override val displayName: Component get() = text("Ship Factory")
+	override val description: Component get() = text("Print starships and other structures with materials and credits.")
 
 //	override val maxPower: Int = 1_000_000
 

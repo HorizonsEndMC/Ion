@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer
 
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 
 object NavigationComputerMultiblockBasic : NavigationComputerMultiblock() {
 	override val signText = createSignText(
@@ -9,6 +11,9 @@ object NavigationComputerMultiblockBasic : NavigationComputerMultiblock() {
 		line3 = "&8Computer",
 		line4 = null
 	)
+
+	override val displayName: Component get() = text("Basic Navigation Computer")
+	override val description: Component get() = text("Allows a starship to jump to set coordinates in space. Base range $baseRange.")
 
 	override val baseRange: Int = 15000
 
