@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta
 import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
+import net.horizonsend.ion.server.features.transport.util.getBlockEntity
 import net.horizonsend.ion.server.features.transport.util.getPersistentDataContainer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -73,12 +74,11 @@ abstract class FilterManager(open val manager: TransportManager<*>) {
 
 	fun <T : Any, M : FilterMeta> registerFilter(key: BlockKey, block: CustomFilterBlock<T, M>): FilterData<T, M> {
 		val global = manager.getGlobalCoordinate(toVec3i(key))
-		val world = manager.getWorld()
 
-		val state = world.getBlockState(global.x, global.y, global.z) as? TileState
+		val pdc = getBlockEntity(global, manager.getWorld())?.persistentDataContainer
 
 		@Suppress("UNCHECKED_CAST")
-		val data = state?.persistentDataContainer?.get(NamespacedKeys.FILTER_DATA, FilterData) as? FilterData<T, M> ?: block.createData(key)
+		val data = pdc?.get(NamespacedKeys.FILTER_DATA, FilterData) as? FilterData<T, M> ?: block.createData(key)
 
 		addFilter(key, data)
 
