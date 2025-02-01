@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterManager
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import org.bukkit.block.CommandBlock
+import org.bukkit.block.TileState
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -26,7 +26,7 @@ import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
 import java.util.function.Supplier
 
-class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack, FilterMeta.ItemFilterMeta>, private val commandBlock: Supplier<CommandBlock>) : GuiWrapper {
+class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack, FilterMeta.ItemFilterMeta>, private val tileState: Supplier<TileState>) : GuiWrapper {
 	private var currentWindow: Window? = null
 
 	val whitelistText get() = if (data.isWhitelist) text("Whitelist") else text("Blacklist")
@@ -99,7 +99,7 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack, 
 			notifyWindows()
 			updateSlotOverlay(event.view)
 
-			FilterManager.save(commandBlock.get(), data)
+			FilterManager.save(tileState.get(), data)
 		}
 
 		override fun getItemProvider(viewer: Player): ItemProvider = provider
@@ -119,7 +119,7 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack, 
 			notifyWindows()
 			updateSlotOverlay(event.view)
 
-			FilterManager.save(commandBlock.get(), data)
+			FilterManager.save(tileState.get(), data)
 		}
 
 		override fun getItemProvider(viewer: Player): ItemProvider = provider
