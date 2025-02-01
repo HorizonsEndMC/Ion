@@ -2,9 +2,15 @@ package net.horizonsend.ion.server.features.multiblock.type.misc
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 
-object FuelTankMultiblock : Multiblock() {
+object FuelTankMultiblock : Multiblock(), DisplayNameMultilblock {
+	override val displayName: Component get() = text("Fuel Tank")
+	override val description: Component get() = text("Supplies fuel for supercapital starships.")
+
 	override val name: String = "tank"
 	override val signText = createSignText(
 			"&7-=[&c==&a==&b==&7]=-",

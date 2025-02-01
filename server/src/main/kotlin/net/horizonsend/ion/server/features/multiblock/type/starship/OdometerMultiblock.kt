@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.misc.OdometerSubsystem
@@ -18,7 +19,10 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataType
 
-object OdometerMultiblock : Multiblock(), SubsystemMultiblock<OdometerSubsystem>, InteractableMultiblock {
+object OdometerMultiblock : Multiblock(), SubsystemMultiblock<OdometerSubsystem>, InteractableMultiblock, DisplayNameMultilblock {
+	override val displayName: Component get() = text("Odometer")
+	override val description: Component get() = text("Measures the blocks traveled on a starship.")
+
 	override val name: String = "odometer"
 	override val signText: Array<Component?> = arrayOf(
 		text("Ship Odometer", AQUA),
