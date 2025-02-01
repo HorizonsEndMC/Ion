@@ -9,6 +9,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.CycleTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.CycleTurretProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
@@ -16,6 +18,9 @@ import org.bukkit.util.Vector
 sealed class CycleTurretMultiblock : TurretMultiblock() {
 
     val slowedStarships = mutableMapOf<ActiveControlledStarship, Long>()
+
+    override val displayName: Component get() = text("Cycle Turret (${if (getYFactor() == 1) "Top" else "Bottom"})")
+    override val description: Component get() = text("Rotating weapon system effective against small targets. Rapid fire and slows ships down.")
 
     override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TurretWeaponSubsystem {
         return CycleTurretWeaponSubsystem(starship, pos, getFacing(pos, starship), this)

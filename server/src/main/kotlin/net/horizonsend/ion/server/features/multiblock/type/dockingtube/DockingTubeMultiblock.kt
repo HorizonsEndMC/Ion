@@ -2,11 +2,13 @@ package net.horizonsend.ion.server.features.multiblock.type.dockingtube
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Axis
 import org.bukkit.Location
@@ -16,7 +18,7 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 
-abstract class DockingTubeMultiblock(val stateText: Component) : Multiblock(), InteractableMultiblock {
+abstract class DockingTubeMultiblock(val stateText: Component) : Multiblock(), InteractableMultiblock, DisplayNameMultilblock {
 	override val name = "dockingtube"
 
 	override val signText = arrayOf(
@@ -25,6 +27,8 @@ abstract class DockingTubeMultiblock(val stateText: Component) : Multiblock(), I
 		null,
 		stateText
 	)
+
+	override val description: Component get() = text("Creates a glass pathway between structures that also have docking tubes.")
 
 	override fun MultiblockShape.buildStructure() {
 		at(0, 0, 0).anyDoor()
