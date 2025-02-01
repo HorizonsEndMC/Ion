@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.block.Block
-import org.bukkit.block.CommandBlock
+import org.bukkit.block.TileState
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
@@ -40,7 +40,7 @@ abstract class CustomFilterBlock<T: Any, M: FilterMeta>(
 		cooldown.tryExec(event.player) {
 			Tasks.sync {
 				@Suppress("UNCHECKED_CAST")
-				val gui = getGui(event.player, block, filterData as FilterData<T, M>) { block.state as CommandBlock }
+				val gui = getGui(event.player, block, filterData as FilterData<T, M>) { block.state as TileState }
 
 				gui.open()
 			}
@@ -49,5 +49,5 @@ abstract class CustomFilterBlock<T: Any, M: FilterMeta>(
 
 	abstract fun createData(pos: BlockKey): FilterData<T, M>
 
-	abstract fun getGui(player: Player, block: Block, filterData: FilterData<T, M>, commandBlock: Supplier<CommandBlock>) : GuiWrapper
+	abstract fun getGui(player: Player, block: Block, filterData: FilterData<T, M>, tileState: Supplier<TileState>) : GuiWrapper
 }

@@ -12,17 +12,19 @@ import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import org.bukkit.Axis
 import org.bukkit.Material
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
+import org.bukkit.block.data.type.CreakingHeart
 import org.bukkit.entity.Player
 
 object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 	"ADVANCED_ITEM_EXTRACTOR",
-	blockData = Material.COMMAND_BLOCK.createBlockData { t ->
-		t as org.bukkit.block.data.type.CommandBlock
-		t.facing = BlockFace.UP
-		t.isConditional = false
+	blockData = Material.CREAKING_HEART.createBlockData { t ->
+		t as CreakingHeart
+		t.axis = Axis.X
+		t.isNatural = false
+		t.isActive = false
 	},
 	BlockLoot(
 		requiredTool = { BlockLoot.Tool.PICKAXE },
