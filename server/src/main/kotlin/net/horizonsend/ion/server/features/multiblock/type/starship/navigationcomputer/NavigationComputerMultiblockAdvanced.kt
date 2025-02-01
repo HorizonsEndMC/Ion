@@ -13,7 +13,7 @@ import org.bukkit.block.data.Bisected.Half.TOP
 import org.bukkit.block.data.type.Stairs.Shape.STRAIGHT
 
 sealed class NavigationComputerMultiblockAdvanced : NavigationComputerMultiblock(), DisplayNameMultilblock {
-	override val description: Component get() = text("Allows a starship to jump to set coordinates in space. Base range ${NavigationComputerMultiblockBasic.baseRange}.")
+	override val description: Component get() = text("Allows a starship to jump to set coordinates in space. Base range $baseRange.")
 	override val signText = createSignText(
 		line1 = "&6Advanced",
 		line2 = "&8Navigation",
