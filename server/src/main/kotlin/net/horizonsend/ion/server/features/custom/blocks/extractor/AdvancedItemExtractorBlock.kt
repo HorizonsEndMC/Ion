@@ -1,22 +1,26 @@
 package net.horizonsend.ion.server.features.custom.blocks.extractor
 
-import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.features.gui.GuiItems
+import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.gui.GuiWrapper
+import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI.Companion.setTitle
 import net.horizonsend.ion.server.features.transport.items.SortingOrder
+import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
-import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
-import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.kyori.adventure.text.Component
 import org.bukkit.Axis
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.data.type.CreakingHeart
 import org.bukkit.entity.Player
+import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
+import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.item.impl.AbstractItem
+import xyz.xenondevs.invui.window.Window
 
 object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 	"ADVANCED_ITEM_EXTRACTOR",
@@ -38,17 +42,68 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 	}
 
 	override fun openGUI(player: Player, block: Block, extractorData: ItemExtractorData) {
-		val current = extractorData.metaData.sortingOrder
-		val entires = SortingOrder.entries
-		player.information("Current: $current")
+		AdvancedItemExtractorGUI(player, block, extractorData).open()
+	}
 
-		val new = if (current.ordinal + 1 > entires.lastIndex) 0 else current.ordinal + 1
+	class AdvancedItemExtractorGUI(val viewer: Player, val block: Block, val extractorData: ItemExtractorData) : GuiWrapper {
+		override fun open() {
+			val gui = Gui.normal()
+				.setStructure(
+					"u u u u u u u u u",
+					". . . . . . . . .",
+					"d d d d d d d d d"
+				)
+				.addIngredient('u', getTraverseButton(1))
+				.addIngredient('d', getTraverseButton(-1))
 
-		player.success("New: ${SortingOrder.entries[new]}")
-		extractorData.metaData.sortingOrder = SortingOrder.entries[new]
+			Window
+				.single()
+				.setGui(gui)
+				.setTitle(AdventureComponentWrapper(getSlotOverlay()))
+				.build(viewer)
+				.open()
+		}
 
-		val chunk = IonChunk[block.world, block.x.shr(4), block.z.shr(4)] ?: return
-		val itemCache = CacheType.ITEMS.get(chunk) as ItemTransportCache
-		itemCache.handleExtractorTick(toBlockKey(block.x, block.y, block.z), 1.0, extractorData.metaData)
+		fun getOffset(offset: Int): SortingOrder {
+			val current = extractorData.metaData.sortingOrder
+			val entries = SortingOrder.entries
+			return SortingOrder.entries[Math.floorMod(current.ordinal + offset, entries.size)]
+		}
+
+		fun getSlotOverlay(): Component = GuiText("Item Filter")
+			.setSlotOverlay(
+				"# # # # # # # # #",
+				"# # # # # # # # #",
+				"# # # # # # # # #"
+			)
+			.add(
+				component = getOffset(+1).displayName,
+				alignment = GuiText.TextAlignment.CENTER,
+				line = 0
+			)
+			.add(
+				component = getOffset(+0).displayName,
+				alignment = GuiText.TextAlignment.CENTER,
+				line = 2,
+			)
+			.add(
+				component = getOffset(-1).displayName,
+				alignment = GuiText.TextAlignment.CENTER,
+				line = 4,
+			)
+			.build()
+
+		fun getTraverseButton(offset: Int): AbstractItem = GuiItems.createButton(GuiItems.blankItem) { _, player, event ->
+			val current = extractorData.metaData.sortingOrder
+			val entires = SortingOrder.entries
+
+			val newIndex = Math.floorMod(current.ordinal + offset, entires.size)
+
+			extractorData.metaData.sortingOrder = entires[newIndex]
+
+			ExtractorManager.saveExtractor(block.world, block.x, block.y, block.z, extractorData)
+
+			event.view.setTitle(getSlotOverlay())
+		}
 	}
 }
