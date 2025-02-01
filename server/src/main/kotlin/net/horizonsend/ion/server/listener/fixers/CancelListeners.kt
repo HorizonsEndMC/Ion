@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.minecraft.world.entity.item.ItemEntity
 import org.bukkit.Material
 import org.bukkit.entity.EnderPearl
+import org.bukkit.entity.EntityType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
@@ -23,6 +24,7 @@ import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
 import org.bukkit.event.block.BlockPistonExtendEvent
 import org.bukkit.event.block.BlockPistonRetractEvent
+import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.PotionSplashEvent
@@ -216,5 +218,10 @@ class CancelListeners : SLEventListener() {
 				"Beds are disabled on this server! Use a cryopod instead"
 			)
 		}
+	}
+
+	@EventHandler
+	fun onMonsterSpawn(event: CreatureSpawnEvent) {
+		if (event.entity.type == EntityType.CREAKING) event.isCancelled = true
 	}
 }

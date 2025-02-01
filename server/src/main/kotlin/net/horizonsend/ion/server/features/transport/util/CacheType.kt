@@ -41,7 +41,7 @@ import org.bukkit.Material.WAXED_EXPOSED_CHISELED_COPPER
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
 import org.bukkit.Material.WAXED_WEATHERED_CHISELED_COPPER
 import org.bukkit.NamespacedKey
-import org.bukkit.block.data.type.CommandBlock
+import org.bukkit.block.data.type.CreakingHeart
 import org.bukkit.block.data.type.Hopper
 import org.bukkit.block.data.type.Observer
 import org.bukkit.craftbukkit.block.impl.CraftEndRod
@@ -112,14 +112,14 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 	ITEMS(NamespacedKeys.ITEM_TRANSPORT) {
 		override val nodeCacheFactory: NodeCacheFactory = NodeCacheFactory.builder()
 			.addSimpleNode(CRAFTING_TABLE, ItemNode.ItemExtractorNode)
-			.addDataHandler<CommandBlock>(CustomBlocks.ADVANCED_ITEM_EXTRACTOR) { _, _, _ -> ItemNode.ItemExtractorNode }
+			.addDataHandler<CreakingHeart>(CustomBlocks.ADVANCED_ITEM_EXTRACTOR) { _, _, _ -> ItemNode.ItemExtractorNode }
 			.addSimpleNode(STAINED_GLASS_TYPES) { _, material, _ -> SolidGlassNode(ItemNode.PipeChannel[material]!!) }
 			.addSimpleNode(STAINED_GLASS_PANE_TYPES) { _, material, _ -> ItemNode.PaneGlassNode(ItemNode.PipeChannel[material]!!) }
 			.addSimpleNode(GLASS, SolidGlassNode(ItemNode.PipeChannel.CLEAR))
 			.addSimpleNode(GLASS_PANE, ItemNode.PaneGlassNode(ItemNode.PipeChannel.CLEAR))
 			.addSimpleNode(TINTED_GLASS, ItemNode.WildcardSolidGlassNode)
 			.addDataHandler<CraftGrindstone>(GRINDSTONE) { data, key, _ -> ItemNode.ItemMergeNode }
-			.addDataHandler<CommandBlock>(CustomBlocks.ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(key, holder.cache as ItemTransportCache) }
+			.addDataHandler<CreakingHeart>(CustomBlocks.ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(key, holder.cache as ItemTransportCache) }
 			.addDataHandler<Hopper>(Material.HOPPER) { data, key, holder -> ItemNode.HopperFilterNode(key, data.facing, holder.cache as ItemTransportCache) }
 			.addSimpleNode(
 				Material.CHEST,
