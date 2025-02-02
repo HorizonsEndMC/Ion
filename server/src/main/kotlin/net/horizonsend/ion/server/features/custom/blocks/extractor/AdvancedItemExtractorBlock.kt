@@ -81,7 +81,7 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 				component = Component.text().color(NamedTextColor.GRAY).append(getOffset(+1).displayName).build(),
 				alignment = GuiText.TextAlignment.CENTER,
 				line = 0,
-				verticalShift = -54
+				verticalShift = +4
 			)
 			.add(
 				component = getOffset(+0).displayName,
@@ -92,7 +92,7 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 				component = Component.text().color(NamedTextColor.GRAY).append(getOffset(-1).displayName).build(),
 				alignment = GuiText.TextAlignment.CENTER,
 				line = 4,
-				verticalShift = +4
+				verticalShift = -4
 			)
 			.build()
 
