@@ -246,4 +246,29 @@ object TransportDebugCommand : SLCommand() {
 		sender.sendMessage("Solar panel average: ${solarTickTimes.average().takeIf { d -> d.isFinite() }?.roundToInt()} ns")
 		sender.sendMessage("Solar flood average: ${solarFloodFillTimes.average().takeIf { d -> d.isFinite() }?.roundToInt()} ns")
 	}
+
+	val idealNumbers: LinkedBlockingDeque<Int> = LinkedBlockingDeque<Int>()
+	val stepNumbers: LinkedBlockingDeque<Int> = LinkedBlockingDeque<Int>()
+
+	@Subcommand("metrics astar")
+	fun getMetricsAstar(sender: Player) {
+		val averageStepNumber = stepNumbers.average()
+		val maxStep = stepNumbers.max()
+		val minStep = stepNumbers.min()
+		val averageIdealNumber = idealNumbers.average()
+		val maxIdeal = idealNumbers.max()
+		val minIdeal = idealNumbers.min()
+
+		sender.sendRichMessage("""
+			maxStep: $maxStep
+			minStep: $minStep
+			maxIdeal: $maxIdeal
+			minIdeal: $minIdeal
+
+			averageIdealNumber: $averageIdealNumber
+			averageStepNumber: $averageStepNumber
+
+			average : ideal ratio: ${averageStepNumber / averageIdealNumber}
+		""".trimIndent())
+	}
 }
