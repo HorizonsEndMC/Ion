@@ -18,6 +18,7 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockFromToEvent
 import org.bukkit.event.block.BlockPistonExtendEvent
 import org.bukkit.event.block.BlockPistonRetractEvent
 import org.bukkit.event.block.BlockPlaceEvent
@@ -122,48 +123,59 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		}
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onPlayerBlockPlace(event: BlockPlaceEvent) {
 		val block = event.block
 		handleBlockEvent(block.world, block.x, block.y, block.z, event.blockReplacedState.blockData, block.blockData)
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onPlayerBlockBreak(event: BlockBreakEvent) {
 		val block = event.block
 		handleBlockEvent(block.world, block.x, block.y, block.z, block.blockData, Material.AIR.createBlockData())
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onShipBlockPlace(event: StarshipPlaceBlockEvent) {
 		val block = event.block
 		handleBlockEvent(block.world, block.x, block.y, block.z, Material.AIR.createBlockData(), block.blockData)
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onShipBlockBreak(event: StarshipBreakBlockEvent) {
 		val block = event.block
 		handleBlockEvent(block.world, block.x, block.y, block.z, event.block.blockData, Material.AIR.createBlockData())
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun handlePistonExtend(event: BlockPistonExtendEvent) {
-		val piston = event.block
-		Tasks.sync {
+		Tasks.async {
+			val piston = event.block
+			invalidateCache(piston.world, piston.x, piston.y, piston.z)
+
 			for (block in event.blocks) {
-				ensureExtractor(piston.world, piston.x, piston.y, piston.z)
+				ensureExtractor(block.world, block.x, block.y, block.z)
+				invalidateCache(block.world, block.x, block.y, block.z)
 			}
 		}
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun handlePistonRetract(event: BlockPistonRetractEvent) {
-		val piston = event.block
-		Tasks.sync {
+		Tasks.async {
+			val piston = event.block
+			invalidateCache(piston.world, piston.x, piston.y, piston.z)
+
 			for (block in event.blocks) {
-				ensureExtractor(piston.world, piston.x, piston.y, piston.z)
+				ensureExtractor(block.world, block.x, block.y, block.z)
+				invalidateCache(block.world, block.x, block.y, block.z)
 			}
 		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	fun handleWaterFlow(event: BlockFromToEvent) {
+		invalidateCache(event.block.world, event.block.x, event.block.y, event.block.z)
 	}
 
 	fun saveExtractors() {
