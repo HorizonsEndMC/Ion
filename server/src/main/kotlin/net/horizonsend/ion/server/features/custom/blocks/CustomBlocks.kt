@@ -243,6 +243,8 @@ open class CustomBlock(
 	private val customBlockItem: Supplier<CustomBlockItem>
 ) {
 	val customItem get() = customBlockItem.get()
+
+	open fun placeCallback(placedItem: ItemStack, block: Block) {}
 }
 
 data class BlockLoot(
