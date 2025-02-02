@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.util
 
 import it.unimi.dsi.fastutil.longs.Long2IntRBTreeMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.command.misc.TransportDebugCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
@@ -73,7 +74,12 @@ fun getIdealPath(
 		iterations++
 		val current = queue.minBy { it.f }
 
-		if (current.node.position == destination) return current.buildPath()
+		if (current.node.position == destination) {
+			val path = current.buildPath()
+			TransportDebugCommand.idealNumbers.offer(path.size)
+			TransportDebugCommand.stepNumbers.offer(iterations)
+			return path
+		}
 
 		queueRemove(current)
 		markVisited(current)
