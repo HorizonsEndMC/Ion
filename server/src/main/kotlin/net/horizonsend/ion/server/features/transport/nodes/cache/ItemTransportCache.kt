@@ -8,10 +8,14 @@ import net.horizonsend.ion.server.features.transport.items.transaction.ItemTrans
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData.ItemExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
+import net.horizonsend.ion.server.features.transport.nodes.cache.path.PathCache
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
+import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
 import net.horizonsend.ion.server.features.transport.util.getBlockEntity
+import net.horizonsend.ion.server.features.transport.util.getIdealPath
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -31,11 +35,15 @@ import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest
 import org.bukkit.inventory.ItemStack
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 import kotlin.reflect.KClass
 
 class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): TransportCache(holder) {
 	override val type: CacheType = CacheType.ITEMS
 	override val extractorNodeClass: KClass<out Node> = ItemNode.ItemExtractorNode::class
+
+	override val pathCache: PathCache<MutableMap<ItemStack, Optional<PathfindingReport>>> = PathCache.keyed<ItemStack>(this)
 
 	override fun tickExtractor(
 		location: BlockKey,
@@ -119,14 +127,14 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 		val paths: Array<PathfindingReport?> = Array(destinations.size) {
 			findPath(
-				origin = Node.NodePositionData(
+				origin = NodePositionData(
 					ItemNode.ItemExtractorNode,
 					holder.getWorld(),
 					originKey,
 					BlockFace.SELF
 				),
 				destination = destinations[it],
-				ignoreCache = true // TODO wait for a caching implementation that will allow compound keys for item types
+				itemStack = singletonItem,
 			) { node, blockFace ->
 				if (node !is ItemNode.FilterNode) return@findPath true
 
@@ -154,6 +162,8 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 			if (room == 0) {
 				validDestinations.remove(destination)
+				if (validDestinations.isEmpty()) return
+
 				destination = getDestination(meta, originKey, validDestinations)
 				continue
 			}
@@ -262,5 +272,22 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		}
 
 		return inventories
+	}
+
+	fun findPath(
+		origin: NodePositionData,
+		destination: BlockKey,
+		itemStack: ItemStack,
+		pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null
+	): PathfindingReport? {
+		val entry = pathCache.getOrCompute(origin.position, destination) { mutableMapOf() } ?: return null // Should not return null, but handle the possibility
+
+		return entry.getOrPut(itemStack) {
+			val path = runCatching { getIdealPath(origin, destination, holder.nodeProvider, pathfindingFilter) }.getOrNull()
+			if (path == null) return@getOrPut Optional.empty()
+
+			val resistance = calculatePathResistance(path)
+			Optional.of(PathfindingReport(path, resistance))
+		}.getOrNull()
 	}
 }

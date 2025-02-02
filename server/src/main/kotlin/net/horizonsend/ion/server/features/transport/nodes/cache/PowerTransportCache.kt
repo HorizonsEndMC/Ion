@@ -7,11 +7,15 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredM
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
+import net.horizonsend.ion.server.features.transport.nodes.cache.path.PathCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
+import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
+import net.horizonsend.ion.server.features.transport.util.getIdealPath
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.block.BlockFace
 import kotlin.math.roundToInt
@@ -20,6 +24,8 @@ import kotlin.reflect.KClass
 class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportCache(holder) {
 	override val type: CacheType = CacheType.POWER
 	override val extractorNodeClass: KClass<out Node> = PowerNode.PowerExtractorNode::class
+
+	override val pathCache: PathCache<PathfindingReport> = PathCache.standard(this)
 
 	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) {
 		val solarCache = holder.transportManager.solarPanelManager.cache
@@ -218,4 +224,13 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 		return remainingPower
 	}
+
+	fun findPath(origin: NodePositionData, destination: BlockKey, pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null): PathfindingReport? =
+		pathCache.getOrCompute(origin.position, destination) {
+			val path = runCatching { getIdealPath(origin, destination, holder.nodeProvider, pathfindingFilter) }.getOrNull()
+			if (path == null) return@getOrCompute null
+
+			val resistance = calculatePathResistance(path)
+				PathfindingReport(path, resistance)
+		}
 }
