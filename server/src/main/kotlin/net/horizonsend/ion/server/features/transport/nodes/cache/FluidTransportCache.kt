@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.transport.fluids.Fluid
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.types.FilterNode
+import net.horizonsend.ion.server.features.transport.nodes.cache.path.PathCache
 import net.horizonsend.ion.server.features.transport.nodes.types.FluidNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
@@ -21,6 +21,8 @@ import kotlin.reflect.KClass
 class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCache(holder) {
 	override val type: CacheType = CacheType.FLUID
 	override val extractorNodeClass: KClass<out Node> = FluidNode.FluidExtractorNode::class
+
+	override val pathCache: PathCache<*> = PathCache.keyed<Fluid>(this)
 
 	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) { NewTransport.runTask {
 		val world = holder.getWorld()
@@ -79,67 +81,67 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 
 		val numDestinations = filteredDestinations.size
 
-		val paths: Array<PathfindingReport?> = Array(numDestinations) {
-			findPath(source, filteredDestinations[it]) { node, _ ->
-				(node is FluidNode) && (@Suppress("UNCHECKED_CAST") (node as? FilterNode<Fluid>)?.canTransfer(fluid) != false)
-			}
-		}
+//		val paths: Array<PathfindingReport?> = Array(numDestinations) {
+//			findPath(source, filteredDestinations[it]) { node, _ ->
+//				(node is FluidNode) && (@Suppress("UNCHECKED_CAST") (node as? FilterNode<Fluid>)?.canTransfer(fluid) != false)
+//			}
+//		}
+//
+//		var maximumResistance: Double = -1.0
+//
+//		// Perform the calc & max find in the same loop
+//		val pathResistance: Array<Double?> = Array(numDestinations) {
+//			val res = paths[it]?.resistance
+//			if (res != null && maximumResistance < res) maximumResistance = res
+//
+//			res
+//		}
+//
+//		// All null, no paths found
+//		if (maximumResistance == -1.0) return amount
+//
+//		var shareFactorSum = 0.0
+//
+//		// Get a parallel array containing the ascending order of resistances
+//		val sortedIndexes = getSorted(pathResistance)
+//
+//		val shareFactors: Array<Double?> = Array(numDestinations) { index ->
+//			val resistance = pathResistance[index] ?: return@Array null
+//			val fac = (numDestinations - sortedIndexes[index]).toDouble() / (resistance / maximumResistance)
+//			shareFactorSum += fac
+//
+//			fac
+//		}
+//
+//		var remainingAmount = amount
+//
+//		for ((index, destination) in filteredDestinations.withIndex()) {
+//			val shareFactor = shareFactors[index] ?: continue
+//			val inputData = FluidNode.FluidInputNode.getFluidEntities(source.world, destination)
+//
+//			val share = shareFactor / shareFactorSum
+//
+//			val idealSend = (amount * share).roundToInt()
+//			val capacity = getRemainingCapacity(fluid, inputData)
+//			val toSend = minOf(idealSend, capacity)
+//
+//			// Amount of power that didn't fit
+//			val remainder = distributeFluid(inputData, fluid, toSend)
+//			val realTaken = toSend - remainder
+//
+//			remainingAmount -= realTaken
+//			completeChain(paths[index]?.traversedNodes, realTaken)
+//
+//			if (remainder == 0) continue
+//
+//			// Get the proportion of the amount of power that sent compared to the ideal calculations.
+//			val usedShare = realTaken.toDouble() / idealSend.toDouble()
+//			// Use that to get a proportion of the share factor, and remove that from the sum.
+//			val toRemove = shareFactor * usedShare
+//			shareFactorSum -= toRemove
+//		}
 
-		var maximumResistance: Double = -1.0
-
-		// Perform the calc & max find in the same loop
-		val pathResistance: Array<Double?> = Array(numDestinations) {
-			val res = paths[it]?.resistance
-			if (res != null && maximumResistance < res) maximumResistance = res
-
-			res
-		}
-
-		// All null, no paths found
-		if (maximumResistance == -1.0) return amount
-
-		var shareFactorSum = 0.0
-
-		// Get a parallel array containing the ascending order of resistances
-		val sortedIndexes = getSorted(pathResistance)
-
-		val shareFactors: Array<Double?> = Array(numDestinations) { index ->
-			val resistance = pathResistance[index] ?: return@Array null
-			val fac = (numDestinations - sortedIndexes[index]).toDouble() / (resistance / maximumResistance)
-			shareFactorSum += fac
-
-			fac
-		}
-
-		var remainingAmount = amount
-
-		for ((index, destination) in filteredDestinations.withIndex()) {
-			val shareFactor = shareFactors[index] ?: continue
-			val inputData = FluidNode.FluidInputNode.getFluidEntities(source.world, destination)
-
-			val share = shareFactor / shareFactorSum
-
-			val idealSend = (amount * share).roundToInt()
-			val capacity = getRemainingCapacity(fluid, inputData)
-			val toSend = minOf(idealSend, capacity)
-
-			// Amount of power that didn't fit
-			val remainder = distributeFluid(inputData, fluid, toSend)
-			val realTaken = toSend - remainder
-
-			remainingAmount -= realTaken
-			completeChain(paths[index]?.traversedNodes, realTaken)
-
-			if (remainder == 0) continue
-
-			// Get the proportion of the amount of power that sent compared to the ideal calculations.
-			val usedShare = realTaken.toDouble() / idealSend.toDouble()
-			// Use that to get a proportion of the share factor, and remove that from the sum.
-			val toRemove = shareFactor * usedShare
-			shareFactorSum -= toRemove
-		}
-
-		return remainingAmount
+		return amount
 	}
 
 	private fun getRemainingCapacity(fluid: Fluid, destinations: List<FluidStoringEntity>): Int {

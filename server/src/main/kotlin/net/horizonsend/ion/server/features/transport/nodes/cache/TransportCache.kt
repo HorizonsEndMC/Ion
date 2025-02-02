@@ -1,20 +1,18 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
-import com.google.common.collect.TreeBasedTable
 import it.unimi.dsi.fastutil.longs.Long2IntRBTreeMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
+import net.horizonsend.ion.server.features.transport.nodes.cache.path.PathCache
 import net.horizonsend.ion.server.features.transport.nodes.types.ComplexNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.MAX_PATHFINDS_OVER_BLOCK
-import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
-import net.horizonsend.ion.server.features.transport.util.getIdealPath
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -26,12 +24,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isAdjacent
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
-import net.horizonsend.ion.server.miscellaneous.utils.set
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
-import java.util.Optional
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.jvm.optionals.getOrNull
 import kotlin.reflect.KClass
 
 abstract class TransportCache(open val holder: CacheHolder<*>) {
@@ -44,7 +39,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	/**
 	 * A table containing cached paths. The first value is the origin of the path, usually an extractor, and the second is the destination location.
 	 **/
-	private val pathCache = TreeBasedTable.create<BlockKey, BlockKey, Optional<PathfindingReport>>()
+	abstract val pathCache: PathCache<*>
 
 	abstract val type: CacheType
 	val nodeFactory: NodeCacheFactory get() = type.nodeCacheFactory
@@ -94,7 +89,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	fun invalidate(key: BlockKey) {
 		val removed = (nodeCache.remove(key) as? CacheState.Present)?.node
 		removed?.onInvalidate() ?: return
-		invalidatePaths(key, removed)
+		pathCache.invalidatePaths(key, removed)
 	}
 
 	fun getRawCache() = nodeCache
@@ -232,68 +227,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		return destinations
 	}
 
-	private val pathCacheLock = Any()
-
-	fun invalidatePaths(pos: BlockKey, node: Node) {
-		val toRemove = mutableSetOf<Pair<BlockKey, BlockKey>>()
-
-		// If the pos is an origin or destination, there is no need to perform a flood to find the connected rows / destinations
-		// If the path cache contains a row at this pos, an origin is present here, and it can be removed
-		if (pathCache.containsRow(pos)) {
-			pathCache.rowMap()[pos]?.keys?.forEach { columnKey ->
-				toRemove.add(pos to columnKey)
-			}
-		}
-
-		// If the path cache contains a column at this pos, a destination from an origin within the chunk can be invalidated
-		if (pathCache.containsColumn(pos)) {
-			pathCache.columnMap()[pos]?.keys?.forEach { rowKey ->
-				toRemove.add(rowKey to pos)
-			}
-		}
-
-		// Perform a flood fill to find all network destinations, then remove all destination columns
-		getNetworkDestinations(clazz = extractorNodeClass, originPos = pos, originNode = node) {
-			// Traverse network backwards
-			getPreviousNodes(holder.nodeProvider, null)
-		}.forEach { extractorPos ->
-			pathCache.rowMap()[extractorPos]?.keys?.forEach { columnKey ->
-				toRemove.add(extractorPos to columnKey)
-			}
-		}
-
-		// Remove all the paths after being found
-		synchronized(pathCacheLock) {
-			for ((rowKey, columnKey) in toRemove) pathCache.remove(rowKey, columnKey)
-		}
-	}
-
-	fun findPath(
-		origin: Node.NodePositionData,
-		destination: BlockKey,
-		ignoreCache: Boolean = false,
-		pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null
-	): PathfindingReport? {
-		if (!ignoreCache && pathCache.contains(origin.position, destination)) {
-			return synchronized(pathCacheLock) { pathCache.get(origin.position, destination)?.getOrNull() }
-		}
-
-		val path = runCatching { getIdealPath(origin, destination, holder.nodeProvider, pathfindingFilter) }.getOrNull()
-
-		if (path == null) {
-			if (!ignoreCache) synchronized(pathCacheLock) { pathCache[origin.position, destination] = Optional.empty() }
-			return null
-		}
-
-		val resistance = calculatePathResistance(path)
-
-		val report = PathfindingReport(path, resistance)
-
-		if (!ignoreCache) synchronized(pathCacheLock) { pathCache[origin.position, destination] = Optional.of(report) }
-		return report
-	}
-
-	data class PathfindingReport(val traversedNodes: Array<Node.NodePositionData>, val resistance: Double) {
+	data class PathfindingReport(val traversedNodes: Array<NodePositionData>, val resistance: Double) {
 		override fun equals(other: Any?): Boolean {
 			if (this === other) return true
 			if (javaClass != other?.javaClass) return false
