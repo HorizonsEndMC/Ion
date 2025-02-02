@@ -22,6 +22,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.Sign as SignState
 import org.bukkit.block.data.type.WallSign as WallSignData
 import org.bukkit.event.EventHandler
+import java.util.concurrent.TimeUnit
 
 /**
  * Provides utility functions for multiblock entities, and handles sign backups
@@ -139,15 +140,17 @@ object MultiblockEntities : IonServerComponent() {
 		new?.saveToSign()
 	}
 
+	val msptBuffer = TimeUnit.MILLISECONDS.toNanos(5)
+
 	@EventHandler
 	fun onTickEnd(event: ServerTickEndEvent) {
-		if (event.timeRemaining < 0) return
+		if (event.timeRemaining < msptBuffer) return
 
 		MultiblockTicking.iterateManagers { manager ->
 			if (manager.getSignUnsavedTime() < 5000L) return@iterateManagers
 
 			for (keyEntity in manager.getAllMultiblockEntities()) {
-				if (event.timeRemaining < 0) return
+				if (event.timeRemaining < msptBuffer) return
 				keyEntity.value.saveToSign()
 			}
 
