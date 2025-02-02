@@ -27,7 +27,7 @@ class NodeCacheFactory private constructor(private val materialHandlers: Multima
 		return filtered.firstNotNullOfOrNull { handler -> handler.construct(blockData, toBlockKey(block.x, block.y, block.z), holder) }
 	}
 
-	class Builder	{
+	class Builder {
 		val materialHandlers = multimapOf<Material, MaterialHandler<*>>()
 
 		inline fun <reified T: BlockData> addDataHandler(material: Material, noinline constructor: (T, BlockKey, CacheHolder<*>) -> Node?): Builder {
