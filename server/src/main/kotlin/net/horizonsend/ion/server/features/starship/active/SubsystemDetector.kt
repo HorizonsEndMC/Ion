@@ -142,6 +142,9 @@ object SubsystemDetector {
 				throw ActiveStarshipFactory.StarshipActivationException("Custom turrets share blocks!")
 			}
 		}
+
+        starship.initMaxReserveShieldPower()
+        starship.rechargeReserveShieldPower()
 	}
 
 	private fun detectSign(starship: ActiveControlledStarship, block: Block) {
