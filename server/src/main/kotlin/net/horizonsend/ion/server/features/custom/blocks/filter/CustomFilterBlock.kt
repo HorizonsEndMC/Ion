@@ -27,6 +27,7 @@ abstract class CustomFilterBlock<T: Any, M: FilterMeta>(
 	val cooldown = PerPlayerCooldown(5L)
 
 	override fun onRightClick(event: PlayerInteractEvent, block: Block) {
+		if (event.player.isSneaking) return
 		event.isCancelled = true
 		event.player.closeInventory()
 
