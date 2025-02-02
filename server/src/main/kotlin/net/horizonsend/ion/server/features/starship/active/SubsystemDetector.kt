@@ -128,6 +128,9 @@ object SubsystemDetector {
 
 		// Do this after all subsystems are detected so that they can be captured
 		starship.customTurrets.forEach { it.detectTurret() }
+
+		starship.initMaxReserveShieldPower()
+		starship.rechargeReserveShieldPower()
 	}
 
 	private fun detectSign(starship: ActiveControlledStarship, block: Block) {
