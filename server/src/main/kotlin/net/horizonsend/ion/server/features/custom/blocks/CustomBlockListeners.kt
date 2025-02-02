@@ -10,7 +10,6 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
-import org.bukkit.block.data.BlockData
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -30,9 +29,10 @@ object CustomBlockListeners : SLEventListener() {
         val hand = event.hand
         val itemStack = player.inventory.getItem(hand).clone()
         val item: CustomBlockItem = itemStack.customItem as? CustomBlockItem ?: return
-        val blockData: BlockData = item.getCustomBlock().blockData
+        val block = item.getCustomBlock()
 
-        event.block.location.block.setBlockData(blockData, true)
+        event.block.location.block.setBlockData(block.blockData, true)
+		block.placeCallback(event.block)
     }
 
 	val noDropEvents: ConcurrentHashMap.KeySetView<BlockBreakEvent, Boolean> = ConcurrentHashMap.newKeySet()

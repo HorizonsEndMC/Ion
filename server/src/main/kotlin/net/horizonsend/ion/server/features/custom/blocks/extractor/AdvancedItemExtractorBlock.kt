@@ -10,14 +10,18 @@ import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI.Comp
 import net.horizonsend.ion.server.features.transport.items.SortingOrder
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDataContainer
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Axis
 import org.bukkit.Material
 import org.bukkit.block.Block
+import org.bukkit.block.TileState
 import org.bukkit.block.data.type.CreakingHeart
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.impl.AbstractItem
@@ -44,6 +48,15 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 
 	override fun openGUI(player: Player, block: Block, extractorData: ItemExtractorData) {
 		AdvancedItemExtractorGUI(player, block, extractorData).open()
+	}
+
+	override fun placeCallback(placedItem: ItemStack, block: Block) {
+		val extractorData = placedItem.persistentDataContainer.get(NamespacedKeys.COMPLEX_EXTRACTORS, MetaDataContainer) ?: return
+
+		val state = block.state
+		if (state !is TileState) return
+
+		state.persistentDataContainer.set(NamespacedKeys.COMPLEX_EXTRACTORS, MetaDataContainer, extractorData)
 	}
 
 	class AdvancedItemExtractorGUI(val viewer: Player, val block: Block, val extractorData: ItemExtractorData) : GuiWrapper {
