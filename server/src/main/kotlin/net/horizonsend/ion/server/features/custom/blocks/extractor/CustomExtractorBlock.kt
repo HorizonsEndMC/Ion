@@ -31,6 +31,7 @@ abstract class CustomExtractorBlock<T: ExtractorData>(
 	}
 
 	override fun onRightClick(event: PlayerInteractEvent, block: Block) {
+		if (event.player.isSneaking) return
 		val chunk = IonChunk[block.world, block.x.shr(4), block.z.shr(4)] ?: return
 
 		val key = toBlockKey(block.x, block.y, block.z)
