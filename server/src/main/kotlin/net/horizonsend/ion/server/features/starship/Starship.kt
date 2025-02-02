@@ -176,6 +176,12 @@ class Starship (
 			getBlockTypeSafe(world, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
 		}
 		hullIntegrity = currentBlockCount.toDouble() / initialBlockCount.toDouble()
+
+		// Do not recharge reserve shield power if the ship has a player controller and is combat tagged
+		if (controller is PlayerController && (CombatTimer.isNpcCombatTagged((controller as PlayerController).player) ||
+					CombatTimer.isPvpCombatTagged((controller as PlayerController).player))) return
+
+		rechargeReserveShieldPower()
 	}
 
 	inline fun iterateBlocks(x: (Int, Int, Int) -> Unit) {
@@ -426,6 +432,12 @@ class Starship (
 	val maxShields: Double = (0.00671215 * initialBlockCount.toDouble().pow(0.836512) - 0.188437)
 		get() = if (initialBlockCount < 500) field.coerceAtLeast(1.0) else field
 
+	var maxReserveShieldPower = 0 // Shields have not been initialized yet; set this later
+    var reserveShieldPower: Int = maxReserveShieldPower
+		set(value) {
+			field = value.coerceIn(0, maxReserveShieldPower)
+		}
+
 	val thrusterMap = mutableMapOf<BlockFace, ThrustData>()
 
 	// used to identify the ship to auto turrets
@@ -631,4 +643,12 @@ class Starship (
 	}
 
 	val initPrintCost = blocks.sumOf { ShipFactoryMaterialCosts.getPrice(world.getBlockAtKey(it).blockData) }
+
+	/** Must be called after shield subsystems are detected*/
+	fun initMaxReserveShieldPower() {
+		maxReserveShieldPower = shields.sumOf { shield -> shield.power } * 3
+	}
+	fun rechargeReserveShieldPower() {
+		reserveShieldPower = maxReserveShieldPower
+	}
 }
