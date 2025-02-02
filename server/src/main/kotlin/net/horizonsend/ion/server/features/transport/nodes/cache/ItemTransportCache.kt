@@ -250,9 +250,9 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 					return CraftInventory(entity)
 				}
 
-				val left = if (type == ChestType.LEFT) entity else otherEntity
 				val right = if (type == ChestType.RIGHT) entity else otherEntity
-				return CraftInventoryDoubleChest(CompoundContainer(left, right))
+				val left = if (type == ChestType.LEFT) entity else otherEntity
+				return CraftInventoryDoubleChest(CompoundContainer(right, left))
 			}
 			else -> {
 				CraftInventory(entity)
