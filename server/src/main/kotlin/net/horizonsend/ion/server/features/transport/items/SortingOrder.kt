@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.items
 import com.manya.pdc.base.EnumDataType
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData.ItemExtractorMetaData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component
 
@@ -17,9 +18,12 @@ enum class SortingOrder(val displayName: Component) {
 		override fun getDestination(extractorData: ItemExtractorMetaData, destinations: List<BlockKey>): BlockKey {
 			val currentIndex = extractorData.roundRobinIndex.toInt()
 
+			val extractorPosition = toVec3i(extractorData.key)
+			val distanceIndexed = destinations.sortedBy { key -> distanceSquared(toVec3i(key), extractorPosition) }
+
 			val nextIndex = (currentIndex + 1) % destinations.size
 			extractorData.roundRobinIndex = nextIndex.toUShort()
-			return destinations[nextIndex]
+			return distanceIndexed[nextIndex]
 		}
 	},
 	FARTHEST_FIRST(Component.text("Farthest First")) {
