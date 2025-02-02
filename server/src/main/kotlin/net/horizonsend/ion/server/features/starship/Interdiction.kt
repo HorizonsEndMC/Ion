@@ -171,6 +171,7 @@ object Interdiction : IonServerComponent() {
 	fun starshipInterdictionRangeEquation(starship: Starship): Double {
 		if (starship.type == StarshipType.SPEEDER ||
 			starship.type == StarshipType.STARFIGHTER ||
+			starship.type == StarshipType.INTERCEPTOR ||
 			starship.type == StarshipType.SHUTTLE ||
 			starship.type == StarshipType.PLATFORM) return 10.0
 		return if (starship.type.typeCategory == TypeCategory.WAR_SHIP) 3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())
