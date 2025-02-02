@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.transport.manager.extractors.Extracto
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Axis
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -70,16 +71,17 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 			return SortingOrder.entries[Math.floorMod(current.ordinal + offset, entries.size)]
 		}
 
-		fun getSlotOverlay(): Component = GuiText("Item Filter")
+		fun getSlotOverlay(): Component = GuiText("Item Extractor Configuration")
 			.setSlotOverlay(
 				"# # # # # # # # #",
 				"# # # # # # # # #",
 				"# # # # # # # # #"
 			)
 			.add(
-				component = getOffset(+1).displayName,
+				component = Component.text().color(NamedTextColor.GRAY).append(getOffset(+1).displayName).build(),
 				alignment = GuiText.TextAlignment.CENTER,
-				line = 0
+				line = 0,
+				verticalShift = -54
 			)
 			.add(
 				component = getOffset(+0).displayName,
@@ -87,9 +89,10 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 				line = 2,
 			)
 			.add(
-				component = getOffset(-1).displayName,
+				component = Component.text().color(NamedTextColor.GRAY).append(getOffset(-1).displayName).build(),
 				alignment = GuiText.TextAlignment.CENTER,
 				line = 4,
+				verticalShift = +4
 			)
 			.build()
 
