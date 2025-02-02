@@ -44,13 +44,13 @@ import org.bukkit.Material.CHAIN
 import org.bukkit.Material.CHEST
 import org.bukkit.Material.CHIPPED_ANVIL
 import org.bukkit.Material.COAL_BLOCK
-import org.bukkit.Material.COMMAND_BLOCK
 import org.bukkit.Material.COMPARATOR
 import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_GRATE
 import org.bukkit.Material.COPPER_BULB
 import org.bukkit.Material.CRAFTING_TABLE
+import org.bukkit.Material.CREAKING_HEART
 import org.bukkit.Material.CREEPER_HEAD
 import org.bukkit.Material.CREEPER_WALL_HEAD
 import org.bukkit.Material.DAMAGED_ANVIL
@@ -216,7 +216,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	EMERALD_BLOCK,
 	COAL_BLOCK,
 	BROWN_MUSHROOM_BLOCK, // custom ores
-	COMMAND_BLOCK, // custom blocks
+	CREAKING_HEART, // custom blocks
 
 	// used for landing gears
 	PISTON,
