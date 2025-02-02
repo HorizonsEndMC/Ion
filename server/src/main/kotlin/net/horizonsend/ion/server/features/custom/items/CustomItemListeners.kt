@@ -4,8 +4,10 @@ import com.destroystokyo.paper.event.server.ServerTickEndEvent
 import io.papermc.paper.event.block.BlockPreDispenseEvent
 import net.horizonsend.ion.server.command.misc.DyeCommand
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.Listener
 import net.horizonsend.ion.server.features.custom.items.component.TickReceiverModule
+import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter.getComponent
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -210,9 +212,11 @@ object CustomItemListeners : SLEventListener() {
 		val toReplace = mutableMapOf<ItemStack, ItemStack>()
 
 		val stockCustomItems = Array(currentItems.size) {
-			val item = currentItems[it]
-			val customItem = item?.customItem
-			if (customItem == null) return@Array item ?: ItemStack.empty()
+			val item = currentItems[it] ?: return@Array ItemStack.empty()
+			val customItem = item.customItem ?: return@Array item
+			val powerStorageComponent = getComponent(CustomComponentTypes.POWER_STORAGE)
+			// if one of these items is using a custom item that holds power and is not fully charged, prevent the craft
+			if (powerStorageComponent.getPower(item) < powerStorageComponent.getMaxPower(customItem, item)) return
 			val ideal = customItem.constructItemStack(item.amount)
 			if (ideal == item) return@Array item
 			toReplace[item] = ideal
