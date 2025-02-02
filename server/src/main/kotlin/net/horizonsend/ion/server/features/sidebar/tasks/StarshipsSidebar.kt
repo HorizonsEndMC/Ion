@@ -47,6 +47,10 @@ object StarshipsSidebar {
         }}
     }
 
+    fun reserveShieldPowerComponent(reserveShieldPower: Int): Component {
+        return Component.text("$reserveShieldPower", WHITE)
+    }
+
     fun blockCountComponent(currentBlockCount: Int, initialBlockCount: Int): Component {
         return ofChildren(
             Component.text(currentBlockCount, WHITE),
