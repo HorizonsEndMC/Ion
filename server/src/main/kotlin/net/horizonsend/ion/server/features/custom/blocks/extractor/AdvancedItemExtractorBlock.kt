@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.gui.GuiWrapper
 import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI.Companion.setTitle
 import net.horizonsend.ion.server.features.transport.items.SortingOrder
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
+import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDataContainer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -46,6 +47,10 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 		return ItemExtractorData(pos, ItemExtractorData.ItemExtractorMetaData(pos))
 	}
 
+	override fun createExtractorData(pos: BlockKey, metaData: ExtractorMetaData): ItemExtractorData {
+		return ItemExtractorData(pos, metaData as ItemExtractorData.ItemExtractorMetaData)
+	}
+
 	override fun openGUI(player: Player, block: Block, extractorData: ItemExtractorData) {
 		AdvancedItemExtractorGUI(player, block, extractorData).open()
 	}
@@ -57,6 +62,7 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 		if (state !is TileState) return
 
 		state.persistentDataContainer.set(NamespacedKeys.COMPLEX_EXTRACTORS, MetaDataContainer, extractorData)
+		state.update()
 	}
 
 	class AdvancedItemExtractorGUI(val viewer: Player, val block: Block, val extractorData: ItemExtractorData) : GuiWrapper {
