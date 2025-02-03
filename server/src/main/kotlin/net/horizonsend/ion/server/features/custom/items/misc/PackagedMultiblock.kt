@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component.text
+import org.bukkit.GameMode
 import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
@@ -91,7 +92,9 @@ object PackagedMultiblock : CustomItem(
 			}
 		}
 
-		itemStack.amount--
+		if (event.player.gameMode != GameMode.CREATIVE) {
+			itemStack.amount--
+		}
 	}
 
 	fun tryPreview(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
