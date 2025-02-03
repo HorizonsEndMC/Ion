@@ -52,7 +52,7 @@ abstract class ExtractorManager {
 				val stored = pdc?.get(NamespacedKeys.COMPLEX_EXTRACTORS, MetaDataContainer)
 
 				if (stored != null) {
-					return customBlock.load(stored)
+					return customBlock.load(pos, stored)
 				}
 
 				return customBlock.createExtractorData(pos)

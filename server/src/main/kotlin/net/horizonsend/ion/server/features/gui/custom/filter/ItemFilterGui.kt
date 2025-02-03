@@ -34,6 +34,8 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack, 
 	val toggleWhitelistButton = createButton(GuiItem.CRUISER.makeItem(whitelistText)) { _, _, event ->
 		data.isWhitelist = !data.isWhitelist
 		updateSlotOverlay(event.view)
+
+		FilterManager.save(tileState.get(), data)
 	}
 
 	override fun open() {

@@ -45,6 +45,8 @@ fun ItemStack.updateDisplayName(name: Component): ItemStack {
 	return this
 }
 
+fun ItemStack.getCustomName(): Component? = getData(DataComponentTypes.CUSTOM_NAME)
+
 @Deprecated("use components")
 fun ItemStack.setLoreAndGetString(lines: List<String>): ItemStack = apply { this.lore = lines }
 

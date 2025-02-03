@@ -32,7 +32,7 @@ object CustomBlockListeners : SLEventListener() {
         val block = item.getCustomBlock()
 
         event.block.location.block.setBlockData(block.blockData, true)
-		block.placeCallback(event.block)
+		block.placeCallback(itemStack, event.block)
     }
 
 	val noDropEvents: ConcurrentHashMap.KeySetView<BlockBreakEvent, Boolean> = ConcurrentHashMap.newKeySet()
