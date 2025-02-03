@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.World
 
-interface CacheHolder <T: TransportCache> {
+interface CacheHolder<T: TransportCache> {
 	val transportManager: TransportManager<*>
 	val cache: T
 
@@ -43,6 +43,8 @@ interface CacheHolder <T: TransportCache> {
 	fun getExtractorManager(): ExtractorManager
 
 	fun getInputManager(): InputManager
+
+	fun getCacheHolderAt(key: BlockKey): CacheHolder<T>?
 
 	val nodeProvider: (CacheType, World, BlockKey) -> Node?
 }
