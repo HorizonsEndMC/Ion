@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.gui.custom.filter.ItemFilterGui
 import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta.ItemFilterMeta
 import net.horizonsend.ion.server.features.transport.filters.FilterType
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.Axis
 import org.bukkit.Material
@@ -44,14 +43,5 @@ object ItemFilterBlock : CustomFilterBlock<ItemStack, ItemFilterMeta>(
 		tileState: Supplier<TileState>
 	): GuiWrapper {
 		return ItemFilterGui(player, filterData, tileState)
-	}
-
-	override fun placeCallback(placedItem: ItemStack, block: Block) {
-		val storedFilterData = placedItem.persistentDataContainer.get(NamespacedKeys.FILTER_DATA, FilterData) ?: return
-
-		val state = block.state
-		if (state !is TileState) return
-
-		state.persistentDataContainer.set(NamespacedKeys.FILTER_DATA, FilterData, storedFilterData)
 	}
 }
