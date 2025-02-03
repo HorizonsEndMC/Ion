@@ -64,4 +64,10 @@ class ChunkCacheHolder<T: TransportCache> private constructor (override val tran
 	override fun getInputManager(): InputManager {
 		return transportManager.getInputProvider()
 	}
+
+	override fun getCacheHolderAt(key: BlockKey): CacheHolder<T>? {
+		val chunk = IonChunk[getWorld(), getX(key).shr(4), getZ(key).shr(4)] ?: return null
+		@Suppress("UNCHECKED_CAST")
+		return cache.type.get(chunk).holder as CacheHolder<T>
+	}
 }
