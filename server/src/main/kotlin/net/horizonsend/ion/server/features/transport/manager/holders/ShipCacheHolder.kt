@@ -73,4 +73,8 @@ class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTran
 	override fun getInputManager(): InputManager {
 		return transportManager.inputManager
 	}
+
+	override fun getCacheHolderAt(key: BlockKey): CacheHolder<T> {
+		return this
+	}
 }

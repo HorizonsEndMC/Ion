@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.linkages.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.util.CacheType
@@ -39,6 +40,8 @@ abstract class MultiblockManager(val log: Logger) {
 	abstract fun getInputManager(): InputManager
 
 	abstract fun getLinkageManager(): MultiblockLinkageManager
+
+	abstract fun getTransportManager(): TransportManager<*>
 
 	abstract fun save()
 
