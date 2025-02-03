@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.transport.filters.FilterMeta.ItemFilt
 import net.horizonsend.ion.server.features.transport.fluids.Fluid
 import net.horizonsend.ion.server.features.transport.fluids.FluidPersistentDataType
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDataContainer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializers
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
@@ -42,8 +43,9 @@ abstract class FilterType<T : Any, M : FilterMeta>(
 		return pdc.get(NamespacedKeys.FILTER_ENTRY, persistentDataType)
 	}
 
-	fun retrieveMeta(pdc: PersistentDataContainer, context: PersistentDataAdapterContext): M {
-		return metaType.loadMetaDataContainer(pdc, context).data
+	fun retrieveMeta(container: MetaDataContainer<*, *>): M {
+		@Suppress("UNCHECKED_CAST")
+		return container.data as M
 	}
 
 	abstract fun buildEmptyMeta(): M
@@ -72,7 +74,13 @@ abstract class FilterType<T : Any, M : FilterMeta>(
 
 	abstract fun toItem(entry: FilterEntry<T, M>): ItemStack?
 
-	data object FluidType : FilterType<Fluid, EmptyFilterMeta>(CacheType.FLUID, "FLUID", Fluid::class.java, FluidPersistentDataType, PDCSerializers.EMPTY_FILTER_META) {
+	data object FluidType : FilterType<Fluid, EmptyFilterMeta>(
+		cacheType = CacheType.FLUID,
+		identifier = "FLUID",
+		typeClass = Fluid::class.java,
+		persistentDataType = FluidPersistentDataType,
+		metaType = PDCSerializers.EMPTY_FILTER_META
+	) {
 		override fun toItem(entry: FilterEntry<Fluid, EmptyFilterMeta>): ItemStack? {
 			val value = entry.value
 			if (value == null) return null
@@ -94,7 +102,13 @@ abstract class FilterType<T : Any, M : FilterMeta>(
 		}
 	}
 
-	data object ItemType : FilterType<ItemStack, ItemFilterMeta>(CacheType.ITEMS, "ITEMS", ItemStack::class.java, ItemSerializer, PDCSerializers.ITEM_FILTER_META) {
+	data object ItemType : FilterType<ItemStack, ItemFilterMeta>(
+		cacheType = CacheType.ITEMS,
+		identifier = "ITEMS",
+		typeClass = ItemStack::class.java,
+		persistentDataType = ItemSerializer,
+		metaType = PDCSerializers.ITEM_FILTER_META
+	) {
 		override fun toItem(entry: FilterEntry<ItemStack, ItemFilterMeta>): ItemStack? = entry.value?.clone()
 
 		override fun buildEmptyMeta(): ItemFilterMeta = ItemFilterMeta()
