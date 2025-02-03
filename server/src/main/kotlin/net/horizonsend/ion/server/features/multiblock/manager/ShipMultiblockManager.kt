@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.util.CacheType
@@ -44,6 +45,8 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 	override fun getInputManager(): InputManager {
 		return starship.transportManager.getInputProvider()
 	}
+
+	override fun getTransportManager(): TransportManager<*> = starship.transportManager
 
 	override fun getLinkageManager(): MultiblockLinkageManager {
 		return multiblockLinkageManager
