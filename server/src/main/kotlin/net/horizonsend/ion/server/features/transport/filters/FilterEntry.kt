@@ -25,12 +25,12 @@ data class FilterEntry<T : Any, M : FilterMeta>(var value: T?, val type: FilterT
 			val filterTypeIdentifier = primitive.get(NamespacedKeys.FILTER_TYPE, PersistentDataType.STRING)!!
 			val filterType = FilterType[filterTypeIdentifier]
 
-			val meta = primitive.get(NamespacedKeys.FILTER_META, PersistentDataType.TAG_CONTAINER)
+			val meta = primitive.get(NamespacedKeys.FILTER_META, MetaDataContainer)
 
 			return FilterEntry(
 				filterType.retrieveValue(primitive),
 				filterType,
-				meta?.let { filterType.retrieveMeta(meta, context) } ?: filterType.buildEmptyMeta()
+				meta?.let { filterType.retrieveMeta(meta) } ?: filterType.buildEmptyMeta()
 			)
 		}
 
