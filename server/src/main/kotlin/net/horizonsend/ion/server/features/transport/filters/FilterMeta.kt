@@ -17,8 +17,9 @@ interface FilterMeta {
 				return pdc
 			}
 
-			override fun fromPrimitive(primitive: PersistentDataContainer, context: PersistentDataAdapterContext, ): ItemFilterMeta {
-				return ItemFilterMeta(primitive.getOrDefault(NamespacedKeys.SORTING_METHOD, enumType, FilterMethod.LENIENT))
+			override fun fromPrimitive(primitive: PersistentDataContainer, context: PersistentDataAdapterContext): ItemFilterMeta {
+				val sortingMethod = primitive.get(NamespacedKeys.SORTING_METHOD, enumType)!!
+				return ItemFilterMeta(sortingMethod)
 			}
 		}
 	}
