@@ -1,15 +1,17 @@
-package net.horizonsend.ion.server.features.multiblock.type.misc
+package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
-import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
-import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
@@ -17,8 +19,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
-object ShipFactoryMultiblock : Multiblock(), InteractableMultiblock, DisplayNameMultilblock {
-	override val name = "shipfactory"
+object ShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShipFactoryEntity>() {
 
 	override val signText = createSignText(
 		line1 = "&1Ship Factory",
@@ -62,5 +63,17 @@ object ShipFactoryMultiblock : Multiblock(), InteractableMultiblock, DisplayName
 		Tasks.async {
 			StarshipFactories.process(event.player, sign, leftClick)
 		}
+	}
+
+	override fun createEntity(
+		manager: MultiblockManager,
+		data: PersistentMultiblockData,
+		world: World,
+		x: Int,
+		y: Int,
+		z: Int,
+		structureDirection: BlockFace,
+	): AdvancedShipFactoryEntity {
+		return AdvancedShipFactoryEntity(data, manager, x, y, z, world, structureDirection)
 	}
 }
