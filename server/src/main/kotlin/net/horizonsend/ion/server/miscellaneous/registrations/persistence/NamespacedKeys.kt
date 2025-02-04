@@ -13,6 +13,7 @@ object NamespacedKeys {
 	val BLOCK_KEY = key("block_key")
 
 	val AXIS = key("axis")
+	val ROTATION = key("rotation")
 
 	val UP_DOWN = key("up_down")
 	val LEFT_RIGHT = key("left_right")
@@ -121,6 +122,11 @@ object NamespacedKeys {
 	val TANK_1 = key("tank_1")
 	val TANK_2 = key("tank_2")
 	val TANK_3 = key("tank_3")
+
+	val FLUID_PACEMENT = key("fluid_pacement")
+	val COMPLETE_OBSTRUCTIONS = key("complete_obstructions")
+	val LEAVE_ITEM_REMAINING = key("leave_item_remaining")
+	val GRAB_NETWORKED_INVENTORIES = key("grab_networked_inventories")
 
 	fun key(key: String) = NamespacedKey(IonServer, key)
 
