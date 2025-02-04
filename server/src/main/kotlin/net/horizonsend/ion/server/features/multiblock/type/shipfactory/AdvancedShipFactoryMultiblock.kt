@@ -1,26 +1,15 @@
-package net.horizonsend.ion.server.features.multiblock.type.misc
+package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
-import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
-import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity
+import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
@@ -37,17 +26,12 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.block.Sign
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs.Shape.STRAIGHT
-import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-object AdvancedShipFactoryMultiblock : Multiblock(), EntityMultiblock<AdvancedShipFactoryEntity>, DisplayNameMultilblock, InteractableMultiblock {
-	override val name: String = "shipfactory"
-
+object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShipFactoryEntity>() {
 	override val signText = createSignText(
 		line1 = text("Starship Factory", NamedTextColor.BLUE),
 		line2 = text("Advanced", NamedTextColor.YELLOW),
@@ -109,11 +93,6 @@ object AdvancedShipFactoryMultiblock : Multiblock(), EntityMultiblock<AdvancedSh
 		}
 	}
 
-	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		val entity = getMultiblockEntity(sign) ?: return
-		entity.openMenu(player)
-	}
-
 	override fun createEntity(
 		manager: MultiblockManager,
 		data: PersistentMultiblockData,
@@ -133,16 +112,10 @@ object AdvancedShipFactoryMultiblock : Multiblock(), EntityMultiblock<AdvancedSh
 		y: Int,
 		z: Int,
 		world: World,
-		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, AdvancedShipFactoryMultiblock, world, x, y, z, structureDirection), StatusTickedMultiblockEntity, SyncTickingMultiblockEntity, PoweredMultiblockEntity, UserManagedMultiblockEntity, DisplayMultiblockEntity {
-		override val multiblock: AdvancedShipFactoryMultiblock = AdvancedShipFactoryMultiblock
-
+		structureDirection: BlockFace
+	) : ShipFactoryEntity(data, AdvancedShipFactoryMultiblock, manager, world, x, y, z, structureDirection), PoweredMultiblockEntity {
 		override val maxPower: Int = 300_000
 		override val powerStorage: PowerStorage = loadStoredPower(data)
-
-		override val userManager: UserManagedMultiblockEntity.UserManager = UserManagedMultiblockEntity.UserManager(data, true)
-		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(5)
-		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
@@ -154,15 +127,6 @@ object AdvancedShipFactoryMultiblock : Multiblock(), EntityMultiblock<AdvancedSh
 			.addPowerInput(0, -1, 0)
 			.build()
 
-		fun openMenu(player: Player) {
-			if (userManager.currentlyUsed()) {
-				userManager.clear()
-				return
-			}
-
-			userManager.setUser(player)
-		}
-
 		override fun tick() {
 			if (!userManager.currentlyUsed()) return
 			println("Toggled on")
@@ -171,6 +135,7 @@ object AdvancedShipFactoryMultiblock : Multiblock(), EntityMultiblock<AdvancedSh
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
 			userManager.saveUserData(store)
 			savePowerData(store)
+			settings.save(store)
 		}
 
 		private val pipeInputOffsets = arrayOf(
