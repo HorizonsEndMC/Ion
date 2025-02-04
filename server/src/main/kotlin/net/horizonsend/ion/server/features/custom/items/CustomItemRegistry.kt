@@ -324,13 +324,13 @@ object CustomItemRegistry : IonServerComponent() {
 	val MULTIBLOCK_WORKBENCH = register(CustomBlockItem(
 		identifier = "MULTIBLOCK_WORKBENCH",
 		displayName = text("Multiblock Workbench"),
-		customModel = "tool/multiblock_workbench"
+		customModel = "misc/multiblock_workbench"
 	) { CustomBlocks.MULTIBLOCK_WORKBENCH })
 
 	val WRENCH = register(Wrench)
 
 	val ADVANCED_ITEM_EXTRACTOR = customBlockItem("ADVANCED_ITEM_EXTRACTOR", "misc/advanced_item_extractor", text("Advanced Item Extractor"), CustomBlocks::ADVANCED_ITEM_EXTRACTOR)
-	val ITEM_FILTER = customBlockItem("ITEM_FILTER", "tool/multiblock_workbench", text("Item Filter"), CustomBlocks::ITEM_FILTER)
+	val ITEM_FILTER = customBlockItem("ITEM_FILTER", "misc/item_filter", text("Item Filter"), CustomBlocks::ITEM_FILTER)
 
 	private fun formatToolName(tierName: String, tierColor: TextColor, toolName: String) = ofChildren(
 		text("$tierName ", tierColor),
