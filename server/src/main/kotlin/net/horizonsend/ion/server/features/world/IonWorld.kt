@@ -4,8 +4,8 @@ import com.destroystokyo.paper.event.server.ServerTickStartEvent
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.configuration.Configuration
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.multiblock.manager.WorldMultiblockManager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.transport.nodes.inputs.WorldInputManager
@@ -39,6 +39,11 @@ class IonWorld private constructor(
 			field = value
 		}
 
+	val multiblockManager = WorldMultiblockManager(this)
+	val inputManager = WorldInputManager(this)
+
+	private val chunkLock = Any()
+
 	/**
 	 * Key: The location of the chunk packed into a long
 	 *
@@ -46,43 +51,40 @@ class IonWorld private constructor(
 	 **/
 	private val chunks: Long2ObjectOpenHashMap<IonChunk> = Long2ObjectOpenHashMap()
 
-	val multiblockManager = WorldMultiblockManager(this)
-	val inputManager = WorldInputManager(this)
-
 	/**
 	 * Gets the IonChunk at the specified coordinates if it is loaded
 	 **/
 	fun getChunk(x: Int, z: Int): IonChunk? {
 		val key = Chunk.getChunkKey(x, z)
 
-		return chunks[key]
+		return synchronized(chunkLock) { chunks[key] }
 	}
 
 	/**
 	 * Gets the IonChunk at the specified key if it is loaded
 	 **/
 	fun getChunk(key: Long): IonChunk? {
-		return chunks[key]
+		return synchronized(chunkLock) { chunks[key] }
 	}
 
-	fun isChunkLoaded(key: Long) = chunks.keys.contains(key)
+	fun isChunkLoaded(key: Long) = synchronized(chunkLock) { chunks.keys.contains(key) }
 
 	/**
 	 * Adds the chunk
 	 **/
 	fun addChunk(chunk: IonChunk) {
-		if (chunks.containsKey(chunk.locationKey)) {
+		if (isChunkLoaded(chunk.locationKey)) {
 			log.warn("Attempted to add a chunk that was already in the map!")
 		}
 
-		chunks[chunk.locationKey] = chunk
+		synchronized(chunkLock) { chunks[chunk.locationKey] = chunk }
 	}
 
 	/**
 	 * Removes the chunk
 	 ***/
 	fun removeChunk(chunk: Chunk): IonChunk? {
-		val result = chunks.remove(chunk.chunkKey)
+		val result = synchronized(chunkLock) { chunks.remove(chunk.chunkKey) }
 
 		if (result == null) {
 			log.warn("Chunk removed that was not in the map!")
