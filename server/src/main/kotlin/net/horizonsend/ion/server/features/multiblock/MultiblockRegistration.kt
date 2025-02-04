@@ -40,7 +40,6 @@ import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMu
 import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.AdvancedShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
@@ -53,7 +52,6 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.LargeTractorBeam
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
-import net.horizonsend.ion.server.features.multiblock.type.misc.ShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventShieldMultiblock
@@ -86,6 +84,8 @@ import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterM
 import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblockMirrored
+import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.OdometerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BargeReactorMultiBlock
