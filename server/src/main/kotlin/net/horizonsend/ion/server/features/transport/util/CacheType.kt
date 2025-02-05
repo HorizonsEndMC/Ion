@@ -117,8 +117,8 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 			.addSimpleNode(GLASS, SolidGlassNode(ItemNode.PipeChannel.CLEAR))
 			.addSimpleNode(GLASS_PANE, ItemNode.PaneGlassNode(ItemNode.PipeChannel.CLEAR))
 			.addSimpleNode(TINTED_GLASS, ItemNode.WildcardSolidGlassNode)
-			.addDataHandler<CraftGrindstone>(GRINDSTONE) { data, key, _ -> ItemNode.ItemMergeNode }
-			.addDataHandler<Vault>(CustomBlocks.ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(key, holder.cache as ItemTransportCache) }
+			.addDataHandler<CraftGrindstone>(GRINDSTONE) { _, _, _ -> ItemNode.ItemMergeNode }
+			.addDataHandler<Vault>(CustomBlocks.ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(key, holder.cache as ItemTransportCache, CustomBlocks.ITEM_FILTER.getFace(data)) }
 			.addDataHandler<Hopper>(Material.HOPPER) { data, key, holder -> ItemNode.HopperFilterNode(key, data.facing, holder.cache as ItemTransportCache) }
 			.addSimpleNode(
 				Material.CHEST,
