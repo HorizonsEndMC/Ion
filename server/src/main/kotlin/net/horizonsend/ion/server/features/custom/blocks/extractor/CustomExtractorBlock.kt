@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.blocks.extractor
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.orEmpty
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.InteractableCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.WrenchRemovable
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
@@ -34,7 +35,7 @@ abstract class CustomExtractorBlock<T: ExtractorData>(
     drops: BlockLoot,
     customBlockItem: Supplier<CustomBlockItem>,
 	val extractorDataType: KClass<T>
-) : InteractableCustomBlock(identifier, blockData, drops, customBlockItem), WrenchRemovable  {
+) : CustomBlock(identifier, blockData, drops, customBlockItem), InteractableCustomBlock, WrenchRemovable  {
 	val cooldown = PerPlayerCooldown(5L)
 
 	fun load(key: BlockKey, container: MetaDataContainer<*, *>): T {
