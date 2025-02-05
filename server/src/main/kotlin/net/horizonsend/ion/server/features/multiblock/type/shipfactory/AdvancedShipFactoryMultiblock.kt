@@ -1,9 +1,14 @@
 package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
+import net.horizonsend.ion.common.utils.text.ADVANCED_SHIP_FACTORY_CHARACTER
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
+import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItems
+import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.gui.GuiWrapper
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
@@ -25,11 +30,18 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Sign
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs.Shape.STRAIGHT
+import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
+import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
+import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.window.Window
 
 object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShipFactoryEntity>() {
 	override val signText = createSignText(
@@ -103,6 +115,10 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 		structureDirection: BlockFace,
 	): AdvancedShipFactoryEntity {
 		return AdvancedShipFactoryEntity(data, manager, x, y, z, world, structureDirection)
+	}
+
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
+		AdvancedShipFactoryGui(player, sign.block).open()
 	}
 
 	class AdvancedShipFactoryEntity(
@@ -190,5 +206,36 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 
 			return path != null
 		}
+	}
+
+	class AdvancedShipFactoryGui(val viewer: Player, val block: Block) : GuiWrapper {
+		override fun open() {
+			val gui = Gui.normal()
+				.setStructure(
+					". . . . . i . . .",
+					"^ ^ ^ . ^ ^ . . .",
+					". . . . . . . . .",
+					"v v v . v v . . .",
+					". . . . . . . . .",
+					". . . . . . . . ."
+				)
+				.addIngredient('^', GuiItems.CustomControlItem(text("up"), GuiItem.UP))
+				.addIngredient('v', GuiItems.CustomControlItem(text("down"), GuiItem.DOWN))
+				.addIngredient('i', GuiItems.CustomControlItem(text("down"), GuiItem.MAGNIFYING_GLASS))
+
+			Window.single()
+				.setGui(gui)
+				.setTitle(AdventureComponentWrapper(setGuiOverlay()))
+				.build(viewer)
+				.open()
+		}
+
+		fun setGuiOverlay(): Component = GuiText("Advanced Goon Factory")
+			.addBackground(GuiText.GuiBackground(
+				backgroundChar = ADVANCED_SHIP_FACTORY_CHARACTER,
+				backgroundWidth = 250 - 9,
+				verticalShift = 10
+			))
+			.build()
 	}
 }
