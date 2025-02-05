@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.custom.blocks.extractor
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.orEmpty
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
-import net.horizonsend.ion.server.features.custom.blocks.InteractableCustomBlock
-import net.horizonsend.ion.server.features.custom.blocks.WrenchRemovable
+import net.horizonsend.ion.server.features.custom.blocks.misc.InteractableCustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.misc.WrenchRemovable
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData

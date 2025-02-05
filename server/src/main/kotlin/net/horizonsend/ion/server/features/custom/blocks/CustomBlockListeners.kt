@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.blocks
 
 import io.papermc.paper.event.player.PlayerPickItemEvent
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
+import net.horizonsend.ion.server.features.custom.blocks.misc.InteractableCustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.listener.SLEventListener
