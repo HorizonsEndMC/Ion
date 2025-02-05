@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.custom.blocks
+package net.horizonsend.ion.server.features.custom.blocks.misc
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
@@ -6,6 +6,8 @@ import net.horizonsend.ion.common.utils.text.MULTIBLOCK_WORKBENCH
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gui.GuiItem
