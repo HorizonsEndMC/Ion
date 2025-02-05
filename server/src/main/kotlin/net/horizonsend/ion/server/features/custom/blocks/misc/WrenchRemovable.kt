@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.custom.blocks
+package net.horizonsend.ion.server.features.custom.blocks.misc
 
 import org.bukkit.block.Block
 import org.bukkit.inventory.ItemStack
