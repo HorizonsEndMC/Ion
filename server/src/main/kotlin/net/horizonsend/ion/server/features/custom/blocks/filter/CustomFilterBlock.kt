@@ -2,10 +2,8 @@ package net.horizonsend.ion.server.features.custom.blocks.filter
 
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.orEmpty
-import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
 import net.horizonsend.ion.server.features.custom.blocks.misc.InteractableCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.WrenchRemovable
-import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.gui.GuiWrapper
 import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta
@@ -21,19 +19,15 @@ import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContai
 import net.kyori.adventure.text.Component
 import org.bukkit.block.Block
 import org.bukkit.block.TileState
-import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
-abstract class CustomFilterBlock<T: Any, M: FilterMeta>(
-	identifier: String,
-	blockData: BlockData,
-	drops: BlockLoot,
-	customBlockItem: Supplier<CustomBlockItem>
-) : InteractableCustomBlock(identifier, blockData, drops, customBlockItem), WrenchRemovable  {
-	val cooldown = PerPlayerCooldown(5L)
+interface CustomFilterBlock<T: Any, M: FilterMeta> : WrenchRemovable, InteractableCustomBlock {
+	companion object {
+		val cooldown = PerPlayerCooldown(5L)
+	}
 
 	override fun onRightClick(event: PlayerInteractEvent, block: Block) {
 		if (event.player.isSneaking) return
@@ -57,9 +51,9 @@ abstract class CustomFilterBlock<T: Any, M: FilterMeta>(
 		}
 	}
 
-	abstract fun createData(pos: BlockKey): FilterData<T, M>
+	fun createData(pos: BlockKey): FilterData<T, M>
 
-	abstract fun getGui(player: Player, block: Block, filterData: FilterData<T, M>, tileState: Supplier<TileState>) : GuiWrapper
+	fun getGui(player: Player, block: Block, filterData: FilterData<T, M>, tileState: Supplier<TileState>) : GuiWrapper
 
 	override fun decorateItem(itemStack: ItemStack, block: Block) {
 		val state = block.state
@@ -74,15 +68,5 @@ abstract class CustomFilterBlock<T: Any, M: FilterMeta>(
 			.updatePersistentDataContainer {
 				set(NamespacedKeys.FILTER_DATA, FilterData, data)
 			}
-	}
-
-	override fun placeCallback(placedItem: ItemStack, block: Block) {
-		val storedFilterData = placedItem.persistentDataContainer.get(NamespacedKeys.FILTER_DATA, FilterData) ?: return
-
-		val state = block.state
-		if (state !is TileState) return
-
-		state.persistentDataContainer.set(NamespacedKeys.FILTER_DATA, FilterData, storedFilterData)
-		state.update()
 	}
 }

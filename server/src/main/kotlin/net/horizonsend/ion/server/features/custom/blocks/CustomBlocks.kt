@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
+import com.google.common.collect.HashBasedTable
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.custom.blocks.extractor.AdvancedItemExtractorBlock
 import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
+import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.MultiblockWorkbench
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
@@ -12,6 +14,7 @@ import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.miscellaneous.utils.getMatchingMaterials
 import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.horizonsend.ion.server.miscellaneous.utils.set
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -31,6 +34,7 @@ object CustomBlocks {
     val ALL get() = customBlocks.values
     private val customBlocks: MutableMap<String, CustomBlock> = mutableMapOf()
     private val customBlocksData = Object2ObjectOpenHashMap<BlockState, CustomBlock>()
+	private val directionalCustomBlocksData = HashBasedTable.create<BlockState, BlockFace, CustomBlock>()
 
     fun mushroomBlockData(faces: Set<BlockFace>) : BlockData {
         return Material.BROWN_MUSHROOM_BLOCK.createBlockData { data ->
@@ -221,6 +225,17 @@ object CustomBlocks {
     fun <T : CustomBlock> register(customBlock: T): T {
         customBlocks[customBlock.identifier] = customBlock
         customBlocksData[customBlock.blockData.nms] = customBlock
+        return customBlock
+    }
+
+    fun <T : DirectionalCustomBlock> registerDirectional(customBlock: T): T {
+        customBlocks[customBlock.identifier] = customBlock
+        customBlocksData[customBlock.blockData.nms] = customBlock
+
+		for ((data, face) in customBlock.faceLookup) {
+			directionalCustomBlocksData[data.nms, face] = customBlock
+		}
+
         return customBlock
     }
 
