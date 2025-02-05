@@ -2,15 +2,18 @@ package net.horizonsend.ion.server.features.custom.blocks
 
 import io.papermc.paper.event.player.PlayerPickItemEvent
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
+import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.InteractableCustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
 import net.minecraft.server.network.ServerGamePacketListenerImpl
 import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
+import org.bukkit.block.BlockFace
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -32,7 +35,27 @@ object CustomBlockListeners : SLEventListener() {
         val item: CustomBlockItem = itemStack.customItem as? CustomBlockItem ?: return
         val block = item.getCustomBlock()
 
-        event.block.location.block.setBlockData(block.blockData, true)
+		if (block is DirectionalCustomBlock) {
+			val faceVertical = vectorToBlockFace(event.player.location.direction, includeVertical = true)
+			val faceHorizontal = vectorToBlockFace(event.player.location.direction, includeVertical = false)
+			val placedAgainst = BlockFace.entries.first {
+				it.modX == (event.blockAgainst.x - event.blockPlaced.x) &&
+				it.modY == (event.blockAgainst.y - event.blockPlaced.y) &&
+				it.modZ == (event.blockAgainst.z - event.blockPlaced.z)
+			}
+
+			val data = when {
+				block.faceData.containsKey(faceVertical) -> block.faceData[faceVertical]!!
+				block.faceData.containsKey(faceHorizontal) -> block.faceData[faceHorizontal]!!
+				block.faceData.containsKey(placedAgainst) -> block.faceData[placedAgainst]!!
+				else -> block.blockData
+			}
+
+			event.block.location.block.setBlockData(data, true)
+		} else {
+			event.block.location.block.setBlockData(block.blockData, true)
+		}
+
 		block.placeCallback(itemStack, event.block)
     }
 
