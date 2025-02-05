@@ -34,7 +34,7 @@ object CustomBlocks {
     val ALL get() = customBlocks.values
     private val customBlocks: MutableMap<String, CustomBlock> = mutableMapOf()
     private val customBlocksData = Object2ObjectOpenHashMap<BlockState, CustomBlock>()
-	private val directionalCustomBlocksData = HashBasedTable.create<BlockState, BlockFace, CustomBlock>()
+	private val directionalCustomBlocksData = HashBasedTable.create<BlockState, CustomBlock, BlockFace>()
 
     fun mushroomBlockData(faces: Set<BlockFace>) : BlockData {
         return Material.BROWN_MUSHROOM_BLOCK.createBlockData { data ->
@@ -213,7 +213,7 @@ object CustomBlocks {
 	val MULTIBLOCK_WORKBENCH = register(MultiblockWorkbench)
 
 	val ADVANCED_ITEM_EXTRACTOR = register(AdvancedItemExtractorBlock)
-	val ITEM_FILTER = register(ItemFilterBlock)
+	val ITEM_FILTER = registerDirectional(ItemFilterBlock)
 
     fun customItemDrop(identifier: String, amount: Int = 1): Supplier<Collection<ItemStack>> {
         val customItem = CustomItemRegistry.getByIdentifier(identifier)?.constructItemStack() ?: return Supplier { listOf() }
@@ -230,10 +230,10 @@ object CustomBlocks {
 
     fun <T : DirectionalCustomBlock> registerDirectional(customBlock: T): T {
         customBlocks[customBlock.identifier] = customBlock
-        customBlocksData[customBlock.blockData.nms] = customBlock
 
 		for ((data, face) in customBlock.faceLookup) {
-			directionalCustomBlocksData[data.nms, face] = customBlock
+			directionalCustomBlocksData[data.nms, customBlock] = face
+			customBlocksData[data.nms] = customBlock
 		}
 
         return customBlock
