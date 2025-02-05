@@ -16,11 +16,11 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Axis
 import org.bukkit.Material
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.block.TileState
-import org.bukkit.block.data.type.CreakingHeart
+import org.bukkit.block.data.type.Vault
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
@@ -30,11 +30,11 @@ import xyz.xenondevs.invui.window.Window
 
 object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 	"ADVANCED_ITEM_EXTRACTOR",
-	blockData = Material.CREAKING_HEART.createBlockData { t ->
-		t as CreakingHeart
-		t.axis = Axis.X
-		t.isNatural = false
-		t.isActive = false
+	blockData = Material.VAULT.createBlockData { t ->
+		t as Vault
+		t.facing = BlockFace.SOUTH
+		t.isOminous = false
+		t.vaultState = Vault.State.INACTIVE
 	},
 	BlockLoot(
 		requiredTool = { BlockLoot.Tool.PICKAXE },
