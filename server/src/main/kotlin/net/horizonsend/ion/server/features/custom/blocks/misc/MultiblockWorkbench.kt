@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
@@ -49,7 +50,7 @@ import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.TimeUnit
 
-object MultiblockWorkbench : InteractableCustomBlock(
+object MultiblockWorkbench : CustomBlock(
 	identifier = "MULTIBLOCK_WORKBENCH",
 	blockData = CustomBlocks.mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.DOWN, BlockFace.EAST)),
 	drops = BlockLoot(
@@ -57,7 +58,7 @@ object MultiblockWorkbench : InteractableCustomBlock(
 		drops = customItemDrop("MULTIBLOCK_WORKBENCH", 1)
 	),
 	customBlockItem = { CustomItemRegistry.MULTIBLOCK_WORKBENCH }
-) {
+), InteractableCustomBlock {
 	private val cooldown = PerPlayerCooldown(5L, TimeUnit.MILLISECONDS)
 
 	// Initalized before multiblocks are registered
