@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.transport.filters.FilterMeta
 import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
-import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.PipeChannel.entries
 import net.horizonsend.ion.server.features.transport.old.pipe.filter.FilterItemData
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -99,7 +98,7 @@ interface ItemNode : Node {
 		fun matches(itemStack: ItemStack) : Boolean
 	}
 
-	data class AdvancedFilterNode(val position: BlockKey, val cache: ItemTransportCache) : FilterNode {
+	data class AdvancedFilterNode(val position: BlockKey, val cache: ItemTransportCache, val face: BlockFace) : FilterNode {
 		val filter: WeakReference<FilterData<ItemStack, FilterMeta.ItemFilterMeta>> = WeakReference(cache.holder.transportManager.filterManager.getFilter(position, FilterType.ItemType)!!)
 		override val pathfindingResistance: Double = 1.0
 
@@ -111,10 +110,6 @@ interface ItemNode : Node {
 
 		override fun matches(itemStack: ItemStack): Boolean {
 			return filter.get()?.matchesFilter(itemStack) == true
-		}
-
-		override fun toString(): String {
-			return filter.get().toString()
 		}
 	}
 
