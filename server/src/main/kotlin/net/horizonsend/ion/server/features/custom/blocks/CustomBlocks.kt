@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.blocks
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.custom.blocks.extractor.AdvancedItemExtractorBlock
 import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
+import net.horizonsend.ion.server.features.custom.blocks.misc.MultiblockWorkbench
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_DRILL_BASIC
