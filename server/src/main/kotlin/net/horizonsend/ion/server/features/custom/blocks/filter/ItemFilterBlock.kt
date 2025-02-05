@@ -52,14 +52,14 @@ object ItemFilterBlock : DirectionalCustomBlock(
 		BlockFace.UP to Material.VAULT.createBlockData { t ->
 			t as VaultData
 			t.facing = BlockFace.NORTH
-			t.isOminous = true
-			t.vaultState = VaultData.State.EJECTING
+			t.isOminous = false
+			t.vaultState = VaultData.State.ACTIVE
 		},
 		BlockFace.DOWN to Material.VAULT.createBlockData { t ->
 			t as VaultData
 			t.facing = BlockFace.NORTH
 			t.isOminous = true
-			t.vaultState = VaultData.State.UNLOCKING
+			t.vaultState = VaultData.State.ACTIVE
 		}
 	),
 	drops = BlockLoot(
