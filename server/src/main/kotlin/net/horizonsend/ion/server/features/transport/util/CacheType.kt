@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.SolidG
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
-import net.horizonsend.ion.server.features.transport.util.CacheType.entries
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
@@ -41,9 +40,9 @@ import org.bukkit.Material.WAXED_EXPOSED_CHISELED_COPPER
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
 import org.bukkit.Material.WAXED_WEATHERED_CHISELED_COPPER
 import org.bukkit.NamespacedKey
-import org.bukkit.block.data.type.CreakingHeart
 import org.bukkit.block.data.type.Hopper
 import org.bukkit.block.data.type.Observer
+import org.bukkit.block.data.type.Vault
 import org.bukkit.craftbukkit.block.impl.CraftEndRod
 import org.bukkit.craftbukkit.block.impl.CraftGrindstone
 import org.bukkit.craftbukkit.block.impl.CraftLightningRod
@@ -112,14 +111,14 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 	ITEMS(NamespacedKeys.ITEM_TRANSPORT) {
 		override val nodeCacheFactory: NodeCacheFactory = NodeCacheFactory.builder()
 			.addSimpleNode(CRAFTING_TABLE, ItemNode.ItemExtractorNode)
-			.addDataHandler<CreakingHeart>(CustomBlocks.ADVANCED_ITEM_EXTRACTOR) { _, _, _ -> ItemNode.ItemExtractorNode }
+			.addDataHandler<Vault>(CustomBlocks.ADVANCED_ITEM_EXTRACTOR) { _, _, _ -> ItemNode.ItemExtractorNode }
 			.addSimpleNode(STAINED_GLASS_TYPES) { _, material, _ -> SolidGlassNode(ItemNode.PipeChannel[material]!!) }
 			.addSimpleNode(STAINED_GLASS_PANE_TYPES) { _, material, _ -> ItemNode.PaneGlassNode(ItemNode.PipeChannel[material]!!) }
 			.addSimpleNode(GLASS, SolidGlassNode(ItemNode.PipeChannel.CLEAR))
 			.addSimpleNode(GLASS_PANE, ItemNode.PaneGlassNode(ItemNode.PipeChannel.CLEAR))
 			.addSimpleNode(TINTED_GLASS, ItemNode.WildcardSolidGlassNode)
 			.addDataHandler<CraftGrindstone>(GRINDSTONE) { data, key, _ -> ItemNode.ItemMergeNode }
-			.addDataHandler<CreakingHeart>(CustomBlocks.ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(key, holder.cache as ItemTransportCache) }
+			.addDataHandler<Vault>(CustomBlocks.ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(key, holder.cache as ItemTransportCache) }
 			.addDataHandler<Hopper>(Material.HOPPER) { data, key, holder -> ItemNode.HopperFilterNode(key, data.facing, holder.cache as ItemTransportCache) }
 			.addSimpleNode(
 				Material.CHEST,

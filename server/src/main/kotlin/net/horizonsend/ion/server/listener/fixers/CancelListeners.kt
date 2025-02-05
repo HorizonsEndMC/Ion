@@ -8,13 +8,23 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.isBed
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.item.ItemEntity
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.entity.trialspawner.PlayerDetector
+import net.minecraft.world.level.block.entity.vault.VaultConfig
+import net.minecraft.world.level.block.entity.vault.VaultServerData
+import net.minecraft.world.level.entity.EntityTypeTest
+import net.minecraft.world.phys.AABB
 import org.bukkit.Material
+import org.bukkit.craftbukkit.block.CraftVault
 import org.bukkit.entity.EnderPearl
-import org.bukkit.entity.EntityType
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
@@ -24,7 +34,7 @@ import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
 import org.bukkit.event.block.BlockPistonExtendEvent
 import org.bukkit.event.block.BlockPistonRetractEvent
-import org.bukkit.event.entity.CreatureSpawnEvent
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.PotionSplashEvent
@@ -35,6 +45,9 @@ import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.inventory.ItemStack
+import java.lang.reflect.Field
+import java.util.Optional
+import java.util.function.Predicate
 
 class CancelListeners : SLEventListener() {
 	private val preventFormBlocks = enumSetOf(
@@ -220,8 +233,34 @@ class CancelListeners : SLEventListener() {
 		}
 	}
 
-	@EventHandler
-	fun onMonsterSpawn(event: CreatureSpawnEvent) {
-		if (event.entity.type == EntityType.CREAKING) event.isCancelled = true
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	fun onTrialVaultPlacement(event: BlockPlaceEvent) {
+		Tasks.sync {
+			val state = event.block.state
+			if (state !is CraftVault) return@sync
+
+			val entity = state.tileEntity
+
+			entity.config = disabledVaultConfig
+			vaultServerDataResumeField.set(entity.serverData, Long.MAX_VALUE)
+		}
 	}
+
+	private val vaultServerDataResumeField: Field = VaultServerData::class.java.getDeclaredField("stateUpdatingResumesAt").apply { isAccessible = true }
+
+	private val emptyPlayerDetector = PlayerDetector { _, _, _, _, _ -> listOf() }
+	private val emptyEntitySelector = object : PlayerDetector.EntitySelector {
+		override fun getPlayers(p0: ServerLevel, p1: Predicate<in Player>): List<Player> = listOf()
+		override fun <T : Entity> getEntities(p0: ServerLevel, p1: EntityTypeTest<Entity, T>, p2: AABB, p3: Predicate<in T>): List<T> = listOf()
+	}
+
+	private val disabledVaultConfig = VaultConfig(
+		net.minecraft.world.entity.EntityType.BAT.defaultLootTable.get(),
+		0.0,
+		0.0001,
+		net.minecraft.world.item.ItemStack(Blocks.BEDROCK),
+		Optional.empty(),
+		emptyPlayerDetector,
+		emptyEntitySelector,
+	)
 }

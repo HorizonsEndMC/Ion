@@ -50,7 +50,6 @@ import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_GRATE
 import org.bukkit.Material.COPPER_BULB
 import org.bukkit.Material.CRAFTING_TABLE
-import org.bukkit.Material.CREAKING_HEART
 import org.bukkit.Material.CREEPER_HEAD
 import org.bukkit.Material.CREEPER_WALL_HEAD
 import org.bukkit.Material.DAMAGED_ANVIL
@@ -163,6 +162,7 @@ import org.bukkit.Material.TARGET
 import org.bukkit.Material.TERRACOTTA
 import org.bukkit.Material.TORCH
 import org.bukkit.Material.TRAPPED_CHEST
+import org.bukkit.Material.VAULT
 import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.WALL_TORCH
 import org.bukkit.Material.WATER_CAULDRON
@@ -216,7 +216,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	EMERALD_BLOCK,
 	COAL_BLOCK,
 	BROWN_MUSHROOM_BLOCK, // custom ores
-	CREAKING_HEART, // custom blocks
+	VAULT, // custom blocks
 
 	// used for landing gears
 	PISTON,
