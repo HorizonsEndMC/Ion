@@ -46,7 +46,7 @@ class PathCache<T : Any>(val cache: TransportCache) {
 		return result
 	}
 
-	fun invalidatePaths(pos: BlockKey, node: Node) {
+	fun invalidatePaths(pos: BlockKey, node: Node, cacheNewNodes: Boolean = false) {
 		val toRemove = mutableSetOf<Pair<BlockKey, BlockKey>>()
 
 		// If the pos is an origin or destination, there is no need to perform a flood to find the connected rows / destinations
