@@ -209,9 +209,15 @@ object NationsMap : IonServerComponent(true) {
 		if (settlement?.cityState != null) {
 			when (settlement.cityState) {
 				Settlement.CityState.ACTIVE -> {
-					// green when paid
 					fillOpacity = 0.05
-					fillRGB = Color.GREEN.asRGB()
+					if (nation != null) {
+						//nation color
+						val rgb = nation.color
+						fillRGB = rgb
+					} else {
+						//nationless defaults to green
+						fillRGB = Color.GREEN.asRGB()
+					}
 				}
 				// red when unpaid
 				Settlement.CityState.UNPAID -> {
