@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.util.getGlobalNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.BACKWARD
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.FORWARD
@@ -175,7 +176,7 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 					originPos = inputLoc,
 					originNode = node
 				) {
-					getPreviousNodes(itemCacheHolder.nodeProvider, null)
+					getPreviousNodes({ cacheType, world, key -> getGlobalNode(cacheType, world, key) }, null)
 				}
 			}
 
