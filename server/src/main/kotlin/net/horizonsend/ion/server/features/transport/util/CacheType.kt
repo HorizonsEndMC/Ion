@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.util
 
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.ITEM_FILTER
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.transport.nodes.cache.FluidTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
@@ -22,12 +23,21 @@ import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.UNWAXED_CHISELED_COPPER_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import org.bukkit.Material
+import org.bukkit.Material.BARREL
+import org.bukkit.Material.CHEST
 import org.bukkit.Material.CRAFTING_TABLE
+import org.bukkit.Material.DAYLIGHT_DETECTOR
+import org.bukkit.Material.DECORATED_POT
+import org.bukkit.Material.DIAMOND_BLOCK
+import org.bukkit.Material.DISPENSER
+import org.bukkit.Material.DROPPER
 import org.bukkit.Material.END_ROD
 import org.bukkit.Material.FLETCHING_TABLE
+import org.bukkit.Material.FURNACE
 import org.bukkit.Material.GLASS
 import org.bukkit.Material.GLASS_PANE
 import org.bukkit.Material.GRINDSTONE
+import org.bukkit.Material.HOPPER
 import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.LAPIS_BLOCK
 import org.bukkit.Material.NOTE_BLOCK
@@ -35,6 +45,7 @@ import org.bukkit.Material.OBSERVER
 import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.SPONGE
 import org.bukkit.Material.TINTED_GLASS
+import org.bukkit.Material.TRAPPED_CHEST
 import org.bukkit.Material.WAXED_CHISELED_COPPER
 import org.bukkit.Material.WAXED_EXPOSED_CHISELED_COPPER
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
@@ -70,9 +81,9 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 	},
 	SOLAR_PANELS(NamespacedKeys.POWER_TRANSPORT) {
 		override val nodeCacheFactory: NodeCacheFactory = NodeCacheFactory.builder()
-			.addSimpleNode(Material.CRAFTING_TABLE, SolarPanelComponent.CraftingTable)
-			.addSimpleNode(Material.DIAMOND_BLOCK, SolarPanelComponent.DiamondBlock)
-			.addSimpleNode(Material.DAYLIGHT_DETECTOR, SolarPanelComponent.DaylightDetector)
+			.addSimpleNode(CRAFTING_TABLE, SolarPanelComponent.CraftingTable)
+			.addSimpleNode(DIAMOND_BLOCK, SolarPanelComponent.DiamondBlock)
+			.addSimpleNode(DAYLIGHT_DETECTOR, SolarPanelComponent.DaylightDetector)
 			.build()
 
 		override fun get(chunk: IonChunk): SolarPanelCache {
@@ -117,17 +128,17 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 			.addSimpleNode(GLASS, SolidGlassNode(ItemNode.PipeChannel.CLEAR))
 			.addSimpleNode(GLASS_PANE, ItemNode.PaneGlassNode(ItemNode.PipeChannel.CLEAR))
 			.addSimpleNode(TINTED_GLASS, ItemNode.WildcardSolidGlassNode)
-			.addDataHandler<CraftGrindstone>(GRINDSTONE) { _, _, _ -> ItemNode.ItemMergeNode }
-			.addDataHandler<Vault>(CustomBlocks.ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(key, holder.cache as ItemTransportCache, CustomBlocks.ITEM_FILTER.getFace(data)) }
-			.addDataHandler<Hopper>(Material.HOPPER) { data, key, holder -> ItemNode.HopperFilterNode(key, data.facing, holder.cache as ItemTransportCache) }
+			.addDataHandler<CraftGrindstone>(GRINDSTONE) { data, _, _ -> ItemNode.ItemMergeNode(data.facing) }
+			.addDataHandler<Vault>(ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(key, holder.cache as ItemTransportCache, ITEM_FILTER.getFace(data)) }
+			.addDataHandler<Hopper>(HOPPER) { data, key, holder -> ItemNode.HopperFilterNode(key, data.facing, holder.cache as ItemTransportCache) }
 			.addSimpleNode(
-				Material.CHEST,
-				Material.TRAPPED_CHEST,
-				Material.BARREL,
-				Material.FURNACE,
-				Material.DISPENSER,
-				Material.DROPPER,
-				Material.DECORATED_POT
+				CHEST,
+				TRAPPED_CHEST,
+				BARREL,
+				FURNACE,
+				DISPENSER,
+				DROPPER,
+				DECORATED_POT
 			) { key, _, _ -> ItemNode.InventoryNode(key) }
 			.build()
 
@@ -138,9 +149,7 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 		override fun get(ship: ActiveStarship): ItemTransportCache {
 			return ship.transportManager.itemPipeManager.cache
 		}
-	},
-
-	;
+	};
 
 	abstract val nodeCacheFactory: NodeCacheFactory
 
