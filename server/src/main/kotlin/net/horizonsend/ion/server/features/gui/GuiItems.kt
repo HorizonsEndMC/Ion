@@ -228,6 +228,9 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     COMPASS_NEEDLE(NamespacedKeys.packKey("ui/compass_needle")),
     BOOKMARK(NamespacedKeys.packKey("ui/bookmark")),
     SOUND(NamespacedKeys.packKey("ui/sound")),
+    OUTLINE(NamespacedKeys.packKey("ui/outline")),
+    ALIGN(NamespacedKeys.packKey("ui/align")),
+    MATERIALS(NamespacedKeys.packKey("ui/materials")),
 
 	;
 
