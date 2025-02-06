@@ -77,7 +77,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		val state = if (type == null) CacheState.Empty else CacheState.Present(type)
 
 		nodeCache[location] = state
-		type?.let { pathCache.invalidatePaths(location, type) }
+		type?.let { pathCache.invalidatePaths(location, type, cacheNewNodes = false) }
 		return type
 	}
 
@@ -202,13 +202,14 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 
 		val destinations = LongOpenHashSet()
 
-		visitQueue.addAll(originNode.getNextNodes(
-			world = holder.getWorld(),
-			position = originPos,
-			backwards = BlockFace.SELF,
-			holder.nodeProvider,
-			null
+		val nextNodes = nextNodeProvider.invoke(NodePositionData(
+			originNode,
+			holder.getWorld(),
+			originPos,
+			BlockFace.SELF
 		))
+
+		visitQueue.addAll(nextNodes)
 
 		var iterations = 0L
 		val upperBound = 20_000
