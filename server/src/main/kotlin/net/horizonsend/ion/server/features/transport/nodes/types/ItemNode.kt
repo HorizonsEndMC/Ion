@@ -102,9 +102,23 @@ interface ItemNode : Node {
 	}
 
 	data class ItemMergeNode(val direction: BlockFace) : ItemNode {
-		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = offset != direction
-		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = offset == direction
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
+		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(direction)
+
+		override fun filterPositionData(nextNodes: List<NodePositionData>, backwards: BlockFace): List<NodePositionData> {
+			val forward = backwards.oppositeFace
+
+			val filtered = mutableListOf<NodePositionData>()
+			for (node in nextNodes) {
+				if (node.offset == forward) filtered.add(node)
+				if (node.type is InventoryNode) filtered.add(node)
+			}
+
+			if (filtered.isNotEmpty()) return filtered
+
+			return nextNodes
+		}
 
 		override val pathfindingResistance: Double = 1.0
 	}
