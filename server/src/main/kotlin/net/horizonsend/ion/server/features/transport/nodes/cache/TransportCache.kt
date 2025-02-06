@@ -77,6 +77,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		val state = if (type == null) CacheState.Empty else CacheState.Present(type)
 
 		nodeCache[location] = state
+		type?.let { pathCache.invalidatePaths(location, type) }
 		return type
 	}
 
