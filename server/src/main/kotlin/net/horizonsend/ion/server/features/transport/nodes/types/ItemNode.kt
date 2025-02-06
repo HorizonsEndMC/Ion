@@ -104,7 +104,7 @@ interface ItemNode : Node {
 	data class ItemMergeNode(val direction: BlockFace) : ItemNode {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true
-		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(direction)
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 
 		override fun filterPositionData(nextNodes: List<NodePositionData>, backwards: BlockFace): List<NodePositionData> {
 			val forward = backwards.oppositeFace
