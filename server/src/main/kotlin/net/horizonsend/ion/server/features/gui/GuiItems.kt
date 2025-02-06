@@ -229,6 +229,9 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     BOOKMARK(NamespacedKeys.packKey("ui/bookmark")),
     SOUND(NamespacedKeys.packKey("ui/sound")),
     INTERCEPTOR(NamespacedKeys.packKey("ui/interceptor")),
+    OUTLINE(NamespacedKeys.packKey("ui/outline")),
+    ALIGN(NamespacedKeys.packKey("ui/align")),
+    MATERIALS(NamespacedKeys.packKey("ui/materials")),
 
 	;
 
