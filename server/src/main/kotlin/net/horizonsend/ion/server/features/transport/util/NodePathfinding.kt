@@ -20,6 +20,11 @@ fun getOrCacheNode(type: CacheType, world: World, pos: BlockKey): Node? {
 	return type.get(chunk).getOrCache(pos)
 }
 
+fun getGlobalNode(type: CacheType, world: World, pos: BlockKey): Node? {
+	val chunk = IonChunk[world, getX(pos).shr(4), getZ(pos).shr(4)] ?: return null
+	return type.get(chunk).getCached(pos)
+}
+
 const val MAX_PATHFINDS_OVER_BLOCK = 6
 
 /**
