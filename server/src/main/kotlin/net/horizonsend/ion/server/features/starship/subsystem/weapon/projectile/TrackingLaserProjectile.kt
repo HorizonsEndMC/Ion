@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.configuration.starship.StarshipTrackingProjectileBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -51,6 +50,19 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 		getTargetOrigin = {
 			targetShip?.centerOfMass?.toCenterVector() ?: originalTarget
 		}
+
+		/*
+			If the target ship is smaller than 3000 blocks. We target the center of weight.
+			Otherwise, we use the block that was targeted by the player.
+			This maintains the strength of tracked laser projectiles against smaller ships.
+			However, removes their perfect tracking of the core of larger ships.
+		*/
+		val blockCount = targetShip?.currentBlockCount ?: 0
+		if (blockCount>3000) {
+			targetBase = originalTarget.clone().add(getTargetOrigin())
+		}
+		//The zero vector here denotes no change from center of weight.
+		else targetBase = Vector()
 	}
 
 	override fun tick() {
@@ -62,9 +74,13 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 		if (distance < aimDistance) {
 			return
 		}
-
-		if (this.location.toVector().distanceSquared(calculateTarget()) <= 1.5.squared()) {
-			impact(this.location, null, null)
+		/*
+		If our projectile is within x blocks of the targeted block.
+		We prematurely detonate the projectile at the target block
+		this prevents a rotation from screwing up the missiles tracking. Preventing dud impacts.
+		 */
+		if (this.location.toVector().distanceSquared(calculateTarget()) <= balancing.detonationRange) {
+			impact(calculateTarget().toLocation(location.world), null, null)
 			return
 		}
 
