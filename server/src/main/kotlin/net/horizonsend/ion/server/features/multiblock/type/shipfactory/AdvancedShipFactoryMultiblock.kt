@@ -213,16 +213,23 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 		override fun open() {
 			val gui = Gui.normal()
 				.setStructure(
-					". . . . . i . . .",
-					"^ ^ ^ . ^ ^ . . .",
+					"s s s s s i . . .",
+					"^ ^ ^ . ^ ^ . x .",
 					". . . . . . . . .",
 					"v v v . v v . . .",
-					". . . . . . . . .",
-					". . . . . . . . ."
+					"B A M R . . . e .",
+					". 1 3 6 . . . . ."
 				)
+				.addIngredient('s', GuiItems.CustomControlItem(text("search"), GuiItem.EMPTY))
+				.addIngredient('i', GuiItems.CustomControlItem(text("down"), GuiItem.MAGNIFYING_GLASS))
 				.addIngredient('^', GuiItems.CustomControlItem(text("up"), GuiItem.UP))
 				.addIngredient('v', GuiItems.CustomControlItem(text("down"), GuiItem.DOWN))
-				.addIngredient('i', GuiItems.CustomControlItem(text("down"), GuiItem.MAGNIFYING_GLASS))
+				.addIngredient('B', GuiItems.CustomControlItem(text("outline"), GuiItem.OUTLINE))
+				.addIngredient('A', GuiItems.CustomControlItem(text("align"), GuiItem.ALIGN))
+				.addIngredient('M', GuiItems.CustomControlItem(text("materials"), GuiItem.MATERIALS))
+				.addIngredient('R', GuiItems.CustomControlItem(text("reset"), GuiItem.CANCEL))
+				.addIngredient('x', GuiItems.CustomControlItem(text("stop"), GuiItem.EMPTY))
+				.addIngredient('e', GuiItems.CustomControlItem(text("start"), GuiItem.EMPTY))
 
 			Window.single()
 				.setGui(gui)
