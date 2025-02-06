@@ -4,6 +4,7 @@ import com.google.common.collect.TreeBasedTable
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache.PathfindingReport
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
+import net.horizonsend.ion.server.features.transport.util.getGlobalNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.set
 import java.util.Optional
@@ -64,10 +65,12 @@ class PathCache<T : Any>(val cache: TransportCache) {
 			}
 		}
 
+		val nodeProvider = if (cacheNewNodes) cache.holder.nodeProvider else { cacheType, world, key -> getGlobalNode(cacheType, world, key) }
+
 		// Perform a flood fill to find all network destinations, then remove all destination columns
 		cache.getNetworkDestinations(clazz = cache.extractorNodeClass, originPos = pos, originNode = node) {
 			// Traverse network backwards
-			getPreviousNodes(cache.holder.nodeProvider, null)
+			getPreviousNodes(nodeProvider, null)
 		}.forEach { extractorPos ->
 			pathCache.rowMap()[extractorPos]?.keys?.forEach { columnKey ->
 				toRemove.add(extractorPos to columnKey)
