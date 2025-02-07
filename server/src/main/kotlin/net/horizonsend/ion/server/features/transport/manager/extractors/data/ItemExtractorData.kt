@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.manager.extractors.data
 
-import it.unimi.dsi.fastutil.ints.Int2IntRBTreeMap
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap
 import net.horizonsend.ion.server.features.transport.items.SortingOrder
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializers
@@ -22,7 +22,7 @@ class ItemExtractorData(pos: BlockKey, metaData: ItemExtractorMetaData) : Advanc
 
 		private val pathCountLock = Any()
 
-		private val itemPathCounts: MutableMap<Int, Int> = Int2IntRBTreeMap()
+		private val itemPathCounts: MutableMap<Int, Int> = Int2IntOpenHashMap()
 
 		fun markItemPathfind(item: ItemStack) {
 			require(item.amount == 1)
