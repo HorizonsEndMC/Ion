@@ -218,8 +218,8 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 					"^ ^ ^ . ^ ^ . x .",
 					". . . . . . . . .",
 					"v v v . v v . . .",
-					"B A M R . . . e .",
-					". 1 3 6 . . . . ."
+					"B A M R . P . e .",
+					". 1 3 6 . I . . ."
 				)
 				.addIngredient('s', GuiItems.CustomControlItem(text("search"), GuiItem.EMPTY))
 				.addIngredient('i', GuiItems.CustomControlItem(text("down"), GuiItem.MAGNIFYING_GLASS))
@@ -229,6 +229,11 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 				.addIngredient('A', GuiItems.CustomControlItem(text("align"), GuiItem.ALIGN))
 				.addIngredient('M', GuiItems.CustomControlItem(text("materials"), GuiItem.MATERIALS))
 				.addIngredient('R', GuiItems.CustomControlItem(text("reset"), GuiItem.CANCEL))
+				.addIngredient('1', GuiItems.CustomControlItem(text("preview 10s"), GuiItem.ONE_QUARTER))
+				.addIngredient('3', GuiItems.CustomControlItem(text("preview 30s"), GuiItem.TWO_QUARTER))
+				.addIngredient('6', GuiItems.CustomControlItem(text("preview 60s"), GuiItem.THREE_QUARTER))
+				.addIngredient('P', GuiItems.CustomControlItem(text("placement settings"), GuiItem.GEAR))
+				.addIngredient('I', GuiItems.CustomControlItem(text("item settings"), GuiItem.GEAR))
 				.addIngredient('x', GuiItems.CustomControlItem(text("stop"), GuiItem.EMPTY))
 				.addIngredient('e', GuiItems.CustomControlItem(text("start"), GuiItem.EMPTY))
 
@@ -239,7 +244,7 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 				.open()
 		}
 
-		fun setGuiOverlay(): Component = GuiText("Advanced Goon Factory")
+		fun setGuiOverlay(): Component = GuiText("Advanced Ship Factory")
 			.addBackground(GuiText.GuiBackground(
 				backgroundChar = ADVANCED_SHIP_FACTORY_CHARACTER,
 				backgroundWidth = 250 - 9,
