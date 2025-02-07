@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.World
-import org.bukkit.block.Block
 
 class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHolder<*>>() {
 	override val extractorManager: ChunkExtractorManager = ChunkExtractorManager(this)
@@ -66,13 +65,5 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHo
 
 	fun invalidateCache(key: BlockKey) {
 		cacheHolders.forEach { it.cache.invalidate(key) }
-	}
-
-	fun processBlockRemoval(key: BlockKey) {
-		cacheHolders.forEach { it.cache.invalidate(key) }
-	}
-
-	fun processBlockChange(block: Block) {
-		cacheHolders.forEach { it.cache.invalidate(toBlockKey(block.x, block.y, block.z)) }
 	}
 }
