@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.transport.manager.extractors.Extracto
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
-import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -66,9 +65,8 @@ class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTran
 		}
 	}
 
-	override val nodeProvider: (CacheType, World, BlockKey) -> Node? = { _, _, pos ->
-		getInternalNode(pos)
-	}
+	override val nodeCacherGetter: CacheProvider = { _, _, _, pos -> cache to getInternalNode(pos) }
+	override val cachedNodeLookup: CacheProvider = nodeCacherGetter
 
 	override fun getInputManager(): InputManager {
 		return transportManager.inputManager

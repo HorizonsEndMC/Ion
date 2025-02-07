@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.manager
 import kotlinx.serialization.SerializationException
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkageManager
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
@@ -119,5 +120,10 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 		}
 
 		MultiblockTicking.removeMultiblockManager(this)
+	}
+
+	override fun getGlobalMultiblockEntity(world: World, x: Int, y: Int, z: Int): MultiblockEntity? {
+		if (x.shr(4) == chunk.x && z.shr(4) == chunk.z) return get(x, y, z)
+		return super.getGlobalMultiblockEntity(world, x, y, z)
 	}
 }
