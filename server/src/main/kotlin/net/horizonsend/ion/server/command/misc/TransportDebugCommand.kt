@@ -2,10 +2,13 @@ package net.horizonsend.ion.server.command.misc
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import io.papermc.paper.util.StacktraceDeobfuscator
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
+import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
@@ -177,6 +180,57 @@ object TransportDebugCommand : SLCommand() {
 	fun getNodeShip(sender: Player, network: CacheType) {
 		val (node, location) = requireLookingAt(sender) { network.get(getStarshipRiding(sender)) }
 		sender.information("Targeted node: $node at ${toVec3i(location)}")
+	}
+
+
+	@Subcommand("get cached destinations chunk")
+	fun getCachedDestinationsChunk(sender: Player, network: CacheType, @Optional pageNumber: Int?) {
+		var cacheHolder: TransportCache? = null
+		val (node, location) = requireLookingAt(sender) { network.get(it.chunk.ion()).apply { cacheHolder = this } }
+		sender.information("Targeted node: $node at ${toVec3i(location)}")
+
+		val cache = cacheHolder?.destinationCache ?: fail { "Something went wrong" }
+		val destinations = cache.rawCache
+
+		for (key in destinations.keys) {
+			val paths = cache.getCache(key)[location] ?: continue
+			val vectors = paths.map { toVec3i(it) }
+			sender.sendMessage(formatPaginatedMenu(vectors, "/get cached destinations chunk", pageNumber ?: 1) { vec, _ -> vec.toComponent() })
+		}
+	}
+
+	@Subcommand("get cached destinations ship")
+	fun getCachedDestinationsShip(sender: Player, network: CacheType, @Optional pageNumber: Int?) {
+		var cacheHolder: TransportCache? = null
+		val (node, location) = requireLookingAt(sender) { network.get(getStarshipRiding(sender)).apply { cacheHolder = this } }
+		sender.information("Targeted node: $node at ${toVec3i(location)}")
+
+		val cache = cacheHolder?.destinationCache ?: fail { "Something went wrong" }
+		val destinations = cache.rawCache
+
+		for (key in destinations.keys) {
+			val paths = cache.getCache(key)[location] ?: continue
+			val vectors = paths.map { toVec3i(it) }
+			sender.sendMessage(formatPaginatedMenu(vectors, "/get cached destinations ship", pageNumber ?: 1) { vec, _ -> vec.toComponent() })
+		}
+	}
+
+	@Subcommand("get cached paths chunk")
+	fun getCachedPathsChunk(sender: Player, network: CacheType) {
+		var cacheHolder: TransportCache? = null
+		val (node, location) = requireLookingAt(sender) { network.get(it.chunk.ion()).apply { cacheHolder = this } }
+		sender.information("Targeted node: $node at ${toVec3i(location)}")
+		if (cacheHolder == null) fail { "Something went wrong" }
+		sender.information("Contains paths: ${cacheHolder?.pathCache?.containsOriginPoint(location)}")
+	}
+
+	@Subcommand("get cached paths ship")
+	fun getCachedPathsShip(sender: Player, network: CacheType) {
+		var cacheHolder: TransportCache? = null
+		val (node, location) = requireLookingAt(sender) { network.get(getStarshipRiding(sender)).apply { cacheHolder = this } }
+		sender.information("Targeted node: $node at ${toVec3i(location)}")
+		if (cacheHolder == null) fail { "Something went wrong" }
+		sender.information("Contains paths: ${cacheHolder?.pathCache?.containsOriginPoint(location)}")
 	}
 
 	@Subcommand("test extractor")
