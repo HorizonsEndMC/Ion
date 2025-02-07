@@ -1,13 +1,11 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
-import net.horizonsend.ion.server.command.misc.TransportDebugCommand
-import net.horizonsend.ion.server.command.misc.TransportDebugCommand.measureOrFallback
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSettings
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.cache.path.PathCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.util.PathCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
@@ -34,85 +32,81 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		tickPowerExtractor(location, delta)
 	}
 
-	private fun tickPowerExtractor(location: BlockKey, delta: Double) =	NewTransport.runTask { measureOrFallback(TransportDebugCommand.extractorTickTimes) {
-			val world = holder.getWorld()
+	private fun tickPowerExtractor(location: BlockKey, delta: Double) =	NewTransport.runTask {
+		val world = holder.getWorld()
 
-			val sources = getExtractorSourceEntities<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
-			val source = sources.randomOrNull() ?: return@measureOrFallback //TODO take from all
+		val sources = getExtractorSourceEntities<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
+		val source = sources.randomOrNull() ?: return@runTask //TODO take from all
 
-			val originNode = holder.nodeProvider.invoke(type, holder.getWorld(), location) ?: return@measureOrFallback
+		val cacheResult = holder.nodeCacherGetter.invoke(this, type, holder.getWorld(), location) ?: return@runTask
+		val originNode = cacheResult.second ?: return@runTask
 
-			// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-			val destinations: Collection<BlockKey> = measureOrFallback(TransportDebugCommand.floodFillTimes) {
-				getNetworkDestinations<PowerInputNode>(location, originNode) { node ->
-					getInputEntities(node.position).any { entity ->
-						(entity is PoweredMultiblockEntity) && !entity.powerStorage.isFull()
-					}
-				}
+		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
+		val destinations: Collection<BlockKey> = getNetworkDestinations<PowerInputNode>(location, originNode) { node ->
+			getInputEntities(node.position).any { entity ->
+				(entity is PoweredMultiblockEntity) && !entity.powerStorage.isFull()
 			}
+		}
 
-			if (destinations.isEmpty()) return@measureOrFallback
+		if (destinations.isEmpty()) return@runTask
 
-			val transferLimit = (transportSettings().powerConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
-			val transferred = minOf(source.powerStorage.getPower(), transferLimit)
+		val transferLimit = (transportSettings().powerConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
+		val transferred = minOf(source.powerStorage.getPower(), transferLimit)
 
-			// Store this just in case
-			val missing = source.powerStorage.removePower(transferred)
+		// Store this just in case
+		val missing = source.powerStorage.removePower(transferred)
 
-			val remainder = measureOrFallback(TransportDebugCommand.runTransferTimes) {
-				runPowerTransfer(
-					Node.NodePositionData(
-						PowerNode.PowerExtractorNode,
-						world,
-						location,
-						BlockFace.SELF
-					),
-					destinations.take(transportSettings().powerConfiguration.maxExtractorDestinations),
-					(transferred - missing)
-				)
-			}
+		val remainder = runPowerTransfer(
+			NodePositionData(
+				PowerNode.PowerExtractorNode,
+				world,
+				location,
+				BlockFace.SELF,
+				this
+			),
+			destinations.take(transportSettings().powerConfiguration.maxExtractorDestinations),
+			(transferred - missing)
+		)
 
-			if (remainder > 0) {
-				source.powerStorage.addPower(remainder)
-			}
+
+		if (remainder > 0) {
+			source.powerStorage.addPower(remainder)
 		}
 	}
 
 	private fun tickSolarPanel(location: BlockKey, delta: Double, solarCache: SolarPanelCache) = NewTransport.runTask {
-		measureOrFallback(TransportDebugCommand.solarTickTimes) {
-			val transportPower = solarCache.getPower(holder.getWorld(), location, delta)
-			if (transportPower == 0) return@measureOrFallback
+		val transportPower = solarCache.getPower(holder.getWorld(), location, delta)
+		if (transportPower == 0) return@runTask
 
-			val originNode = holder.nodeProvider.invoke(type, holder.getWorld(), location) ?: return@measureOrFallback
+		val cacheResult = holder.nodeCacherGetter.invoke(this, type, holder.getWorld(), location) ?: return@runTask
+		val originNode = cacheResult.second ?: return@runTask
 
-			// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-			val destinations: Collection<BlockKey> = measureOrFallback(TransportDebugCommand.solarFloodFillTimes) {
-				getNetworkDestinations<PowerInputNode>(location, originNode) { node ->
-					getInputEntities(node.position).any { entity ->
-						(entity is PoweredMultiblockEntity) && !entity.powerStorage.isFull()
-					}
-				}
+		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
+		val destinations: Collection<BlockKey> = getNetworkDestinations<PowerInputNode>(location, originNode) { node ->
+			getInputEntities(node.position).any { entity ->
+				(entity is PoweredMultiblockEntity) && !entity.powerStorage.isFull()
 			}
-
-			if (destinations.isEmpty()) return@measureOrFallback
-
-			holder.transportManager.powerNodeManager.cache.runPowerTransfer(
-				Node.NodePositionData(
-					PowerNode.PowerExtractorNode,
-					holder.getWorld(),
-					location,
-					BlockFace.SELF
-				),
-				destinations.take(transportSettings().powerConfiguration.maxSolarDestinations),
-				transportPower
-			)
 		}
+
+		if (destinations.isEmpty()) return@runTask
+
+		holder.transportManager.powerNodeManager.cache.runPowerTransfer(
+			NodePositionData(
+				PowerNode.PowerExtractorNode,
+				holder.getWorld(),
+				location,
+				BlockFace.SELF,
+				this
+			),
+			destinations.take(transportSettings().powerConfiguration.maxSolarDestinations),
+			transportPower
+		)
 	}
 
 	/**
 	 * Runs the power transfer from the source to the destinations. pending rewrite
 	 **/
-	fun runPowerTransfer(source: Node.NodePositionData, rawDestinations: List<BlockKey>, availableTransferPower: Int): Int {
+	fun runPowerTransfer(source: NodePositionData, rawDestinations: List<BlockKey>, availableTransferPower: Int): Int {
 		if (rawDestinations.isEmpty()) return availableTransferPower
 
 		val filteredDestinations = rawDestinations.filter { destinationLoc ->
@@ -123,9 +117,9 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 		val numDestinations = filteredDestinations.size
 
-		val paths: Array<PathfindingReport?> = measureOrFallback(TransportDebugCommand.pathfindTimes) { Array(numDestinations) {
+		val paths: Array<PathfindingReport?> = Array(numDestinations) {
 			findPath(source, filteredDestinations[it])
-		} }
+		}
 
 		var maximumResistance: Double = -1.0
 		var minimumResistance = 0.0
@@ -227,7 +221,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 	fun findPath(origin: NodePositionData, destination: BlockKey, pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null): PathfindingReport? =
 		pathCache.getOrCompute(origin.position, destination) {
-			val path = runCatching { getIdealPath(origin, destination, holder.nodeProvider, pathfindingFilter) }.getOrNull()
+			val path = runCatching { getIdealPath(origin, destination, holder.nodeCacherGetter, pathfindingFilter) }.getOrNull()
 			if (path == null) return@getOrCompute null
 
 			val resistance = calculatePathResistance(path)

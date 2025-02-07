@@ -1,12 +1,13 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
-import it.unimi.dsi.fastutil.longs.Long2IntRBTreeMap
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.cache.path.PathCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.util.DestinationCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.util.PathCache
 import net.horizonsend.ion.server.features.transport.nodes.types.ComplexNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
@@ -34,52 +35,39 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	 * Cache containing a cache state at their corresponding block position.
 	 * The state can either be empty, or present. Empty key / value pairs have not been cached.
 	 **/
-	private var nodeCache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap()
+	private val nodeCache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap(16, 0.5f, 8)
 
 	/**
 	 * A table containing cached paths. The first value is the origin of the path, usually an extractor, and the second is the destination location.
 	 **/
 	abstract val pathCache: PathCache<*>
+	@Suppress("LeakingThis")
+	private val destinationCache = DestinationCache(this)
 
 	abstract val type: CacheType
-	val nodeFactory: NodeCacheFactory get() = type.nodeCacheFactory
+	private val nodeFactory: NodeCacheFactory get() = type.nodeCacheFactory
 
 	abstract fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?)
 
-	fun isCached(at: BlockKey): Boolean = nodeCache.containsKey(at)
+	private fun isCached(at: BlockKey): Boolean = nodeCache.containsKey(at)
 
-	fun getCached(at: BlockKey): Node? {
-		val state = nodeCache[at] ?: return null
-		return when (state) {
-			is CacheState.Empty -> null
-			is CacheState.Present -> state.node
-		}
-	}
+	fun getCached(at: BlockKey): Node? = nodeCache[at]?.get()
 
 	fun getOrCache(location: BlockKey): Node? {
-		if (isCached(location)) return getCached(location)
-			else return cache(location, getBlockIfLoaded(holder.getWorld(), getX(location), getY(location), getZ(location)) ?: return null)
+		return if (isCached(location)) getCached(location)
+		else cache(location)
 	}
 
-	fun cache(location: BlockKey) {
+	fun cache(location: BlockKey): Node? {
 		val world = holder.getWorld()
-		val block = getBlockIfLoaded(world, getX(location), getY(location), getZ(location)) ?: return
-		cache(location, block)
+		val block = getBlockIfLoaded(world, getX(location), getY(location), getZ(location)) ?: return null
+		return cache(location, block)
 	}
 
-	private val mutex = Any()
-
-	fun cache(location: BlockKey, block: Block): Node? = synchronized(mutex)  {
-		// On race conditions
-		nodeCache[location]?.let { return@synchronized (it as? CacheState.Present)?.node }
-
+	fun cache(location: BlockKey, block: Block): Node? = nodeCache.computeIfAbsent(location) { _ ->
 		val type = nodeFactory.cache(block, this.holder)
-		val state = if (type == null) CacheState.Empty else CacheState.Present(type)
-
-		nodeCache[location] = state
-		type?.let { pathCache.invalidatePaths(location, type, cacheNewNodes = false) }
-		return type
-	}
+		return@computeIfAbsent if (type == null) CacheState.Empty else CacheState.Present(type)
+	}.get()
 
 	fun invalidate(x: Int, y: Int, z: Int) {
 		invalidate(toBlockKey(x, y, z))
@@ -89,8 +77,23 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 
 	fun invalidate(key: BlockKey) {
 		val removed = (nodeCache.remove(key) as? CacheState.Present)?.node
-		removed?.onInvalidate() ?: return
+		removed?.onInvalidate()
+
+		if (removed == null) {
+			invalidateSurroundingPaths(key)
+			return
+		}
+
 		pathCache.invalidatePaths(key, removed)
+		destinationCache.invalidatePaths(key, removed)
+	}
+
+	fun invalidateSurroundingPaths(key: BlockKey) {
+		ADJACENT_BLOCK_FACES.forEach {
+			val node = getCached(getRelative(key, it)) ?: return@forEach
+			pathCache.invalidatePaths(key, node)
+			destinationCache.invalidatePaths(key, node)
+		}
 	}
 
 	fun getRawCache() = nodeCache
@@ -127,7 +130,9 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 			}
 		}
 
-		return registered.plus(adjacentBlocks)
+		registered.addAll(adjacentBlocks)
+
+		return registered
 	}
 
 	private val stupidOffsets: Array<Vec3i> = arrayOf(
@@ -183,11 +188,14 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		originPos: BlockKey,
 		originNode: Node,
 		nodeCheck: ((NodePositionData) -> Boolean)? = null,
-		nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.nodeProvider, null) }
+		nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.nodeCacherGetter, null) }
 	): Collection<BlockKey> {
-		val visitQueue = ArrayDeque<NodePositionData>()
+		if (destinationCache.contains(clazz, originPos)) {
+			return destinationCache.get(clazz, originPos)
+		}
 
-		val visited = Long2IntRBTreeMap()
+		val visitQueue = ArrayDeque<NodePositionData>()
+		val visited = Long2IntOpenHashMap()
 
 		fun markVisited(node: NodePositionData) {
 			val pos = node.position
@@ -206,7 +214,8 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 			originNode,
 			holder.getWorld(),
 			originPos,
-			BlockFace.SELF
+			BlockFace.SELF,
+			this
 		))
 
 		visitQueue.addAll(nextNodes)
@@ -225,6 +234,8 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 
 			visitQueue.addAll(nextNodeProvider(current).filterNot { !canVisit(it) || visitQueue.contains(it) })
 		}
+
+		destinationCache.set(clazz, originPos, destinations)
 
 		return destinations
 	}
