@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.transport.nodes.cache
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.cache.path.PathCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.util.PathCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
@@ -38,9 +38,9 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 	}
 
 	fun isSolarPanel(extractorKey: BlockKey): Boolean {
-		if (holder.nodeProvider.invoke(type, holder.getWorld(), extractorKey) !is SolarPanelComponent.CraftingTable) return false
-		if (holder.nodeProvider.invoke(type, holder.getWorld(), getRelative(extractorKey, BlockFace.UP, 1)) !is SolarPanelComponent.DiamondBlock) return false
-		if (holder.nodeProvider.invoke(type, holder.getWorld(), getRelative(extractorKey, BlockFace.UP, 2)) !is SolarPanelComponent.DaylightDetector) return false
+		if (holder.nodeCacherGetter.invoke(this, type, holder.getWorld(), extractorKey)?.second !is SolarPanelComponent.CraftingTable) return false
+		if (holder.nodeCacherGetter.invoke(this, type, holder.getWorld(), getRelative(extractorKey, BlockFace.UP, 1))?.second !is SolarPanelComponent.DiamondBlock) return false
+		if (holder.nodeCacherGetter.invoke(this, type, holder.getWorld(), getRelative(extractorKey, BlockFace.UP, 2))?.second !is SolarPanelComponent.DaylightDetector) return false
 
 		return true
 	}

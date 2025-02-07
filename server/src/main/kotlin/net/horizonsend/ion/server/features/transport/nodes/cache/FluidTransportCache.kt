@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.transport.fluids.Fluid
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.cache.path.PathCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.util.PathCache
 import net.horizonsend.ion.server.features.transport.nodes.types.FluidNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
@@ -31,7 +31,8 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 
 		if (source.getStoredResources().isEmpty()) return@runTask
 
-		val originNode = holder.nodeProvider.invoke(type, holder.getWorld(), location) ?: return@runTask
+		val cacheResult = holder.nodeCacherGetter.invoke(this, type, holder.getWorld(), location) ?: return@runTask
+		val originNode = cacheResult.second ?: return@runTask
 
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
 		val destinations: Collection<BlockKey> = getNetworkDestinations<FluidNode.FluidInputNode>(location, originNode) { node ->
@@ -53,7 +54,8 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 					FluidNode.FluidExtractorNode,
 					world,
 					location,
-					BlockFace.SELF
+					BlockFace.SELF,
+					this
 				),
 				destinations,
 				fluid,

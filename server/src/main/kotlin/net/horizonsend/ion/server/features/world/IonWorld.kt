@@ -43,8 +43,6 @@ class IonWorld private constructor(
 	val multiblockManager = WorldMultiblockManager(this)
 	val inputManager = WorldInputManager(this)
 
-	private val chunkLock = Any()
-
 	/**
 	 * Key: The location of the chunk packed into a long
 	 *
@@ -58,17 +56,17 @@ class IonWorld private constructor(
 	fun getChunk(x: Int, z: Int): IonChunk? {
 		val key = Chunk.getChunkKey(x, z)
 
-		return synchronized(chunkLock) { chunks[key] }
+		return chunks[key]
 	}
 
 	/**
 	 * Gets the IonChunk at the specified key if it is loaded
 	 **/
 	fun getChunk(key: Long): IonChunk? {
-		return synchronized(chunkLock) { chunks[key] }
+		return chunks[key]
 	}
 
-	fun isChunkLoaded(key: Long) = synchronized(chunkLock) { chunks.keys.contains(key) }
+	fun isChunkLoaded(key: Long) = chunks.containsKey(key)
 
 	/**
 	 * Adds the chunk
@@ -78,14 +76,14 @@ class IonWorld private constructor(
 			log.warn("Attempted to add a chunk that was already in the map!")
 		}
 
-		synchronized(chunkLock) { chunks[chunk.locationKey] = chunk }
+		chunks[chunk.locationKey] = chunk
 	}
 
 	/**
 	 * Removes the chunk
 	 ***/
 	fun removeChunk(chunk: Chunk): IonChunk? {
-		val result = synchronized(chunkLock) { chunks.remove(chunk.chunkKey) }
+		val result = chunks.remove(chunk.chunkKey)
 
 		if (result == null) {
 			log.warn("Chunk removed that was not in the map!")
