@@ -42,7 +42,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	 **/
 	abstract val pathCache: PathCache<*>
 	@Suppress("LeakingThis")
-	private val destinationCache = DestinationCache(this)
+	val destinationCache = DestinationCache(this)
 
 	abstract val type: CacheType
 	private val nodeFactory: NodeCacheFactory get() = type.nodeCacheFactory
@@ -90,9 +90,10 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 
 	fun invalidateSurroundingPaths(key: BlockKey) {
 		ADJACENT_BLOCK_FACES.forEach {
-			val node = getCached(getRelative(key, it)) ?: return@forEach
-			pathCache.invalidatePaths(key, node)
-			destinationCache.invalidatePaths(key, node)
+			val relative = getRelative(key, it)
+			val node = getCached(relative) ?: return@forEach
+			pathCache.invalidatePaths(relative, node)
+			destinationCache.invalidatePaths(relative, node)
 		}
 	}
 
