@@ -66,4 +66,12 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHo
 	fun invalidateCache(key: BlockKey) {
 		cacheHolders.forEach { it.cache.invalidate(key) }
 	}
+
+	fun invalidatePathing(x: Int, y: Int, z: Int) {
+		invalidatePathing(toBlockKey(x, y, z))
+	}
+
+	fun invalidatePathing(key: BlockKey) {
+		cacheHolders.forEach { it.cache.invalidateSurroundingPaths(key) }
+	}
 }
