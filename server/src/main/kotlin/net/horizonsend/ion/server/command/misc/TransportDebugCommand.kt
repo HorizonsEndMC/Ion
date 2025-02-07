@@ -33,8 +33,6 @@ import org.slf4j.Logger
 import java.lang.management.ManagementFactory
 import java.lang.management.ThreadInfo
 import java.util.concurrent.LinkedBlockingDeque
-import kotlin.math.roundToInt
-import kotlin.system.measureNanoTime
 
 @CommandPermission("starlegacy.transportdebug")
 @CommandAlias("transportdebug|transportbug")
@@ -210,41 +208,6 @@ object TransportDebugCommand : SLCommand() {
 		val destinations = cache.getNetworkDestinations<PowerInputNode>(location, node) { true }
 		sender.information("${destinations.size} destinations")
 		sender.highlightBlocks(destinations.map(::toVec3i), 50L)
-	}
-
-	const val COLLECT_TRANSPORT_METRICS = false
-
-	val floodFillTimes = LinkedBlockingDeque<Long>(10_000)
-	val solarFloodFillTimes = LinkedBlockingDeque<Long>(10_000)
-	val pathfindTimes = LinkedBlockingDeque<Long>(10_000)
-	val runTransferTimes = LinkedBlockingDeque<Long>(10_000)
-	val extractorTickTimes = LinkedBlockingDeque<Long>(10_000)
-	val solarTickTimes = LinkedBlockingDeque<Long>(10_000)
-
-	fun <T> measureOrFallback(metric: LinkedBlockingDeque<Long>, block: () -> T): T {
-		if (!COLLECT_TRANSPORT_METRICS) return block()
-
-		if (metric.remainingCapacity() == 0) metric.removeFirst()
-
-		var result: T
-
-		metric.addLast(measureNanoTime {
-			result = block()
-		})
-
-		return result
-	}
-
-	@Subcommand("metrics")
-	fun getMetrics(sender: Player) {
-		if (!COLLECT_TRANSPORT_METRICS) fail { "Transport metrics are not enabled" }
-
-		sender.sendMessage("Flood fill average: ${floodFillTimes.average().takeIf { d -> d.isFinite() }?.roundToInt()} ns")
-		sender.sendMessage("Pathfind average: ${pathfindTimes.average().takeIf { d -> d.isFinite() }?.roundToInt()} ns")
-		sender.sendMessage("Transfer average: ${runTransferTimes.average().takeIf { d -> d.isFinite() }?.roundToInt()} ns")
-		sender.sendMessage("Extractor average: ${extractorTickTimes.average().takeIf { d -> d.isFinite() }?.roundToInt()} ns")
-		sender.sendMessage("Solar panel average: ${solarTickTimes.average().takeIf { d -> d.isFinite() }?.roundToInt()} ns")
-		sender.sendMessage("Solar flood average: ${solarFloodFillTimes.average().takeIf { d -> d.isFinite() }?.roundToInt()} ns")
 	}
 
 	val idealNumbers: LinkedBlockingDeque<Int> = LinkedBlockingDeque<Int>()
