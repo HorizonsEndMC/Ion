@@ -1,9 +1,12 @@
 package net.horizonsend.ion.server.features.transport.util
 
-import it.unimi.dsi.fastutil.longs.Long2IntRBTreeMap
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.command.misc.TransportDebugCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.transport.manager.holders.CacheProvider
+import net.horizonsend.ion.server.features.transport.manager.holders.ChunkCacheHolder
+import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -15,14 +18,30 @@ import org.bukkit.block.BlockFace
 import java.util.PriorityQueue
 import kotlin.math.roundToInt
 
-fun getOrCacheNode(type: CacheType, world: World, pos: BlockKey): Node? {
+fun getOrCacheNode(currentCache: TransportCache, type: CacheType, world: World, pos: BlockKey): Pair<TransportCache, Node?>? {
+	val holder = currentCache.holder
+	if (
+		holder is ChunkCacheHolder<*>  &&
+		getX(pos).shr(4) == holder.transportManager.chunk.x &&
+		getZ(pos).shr(4) == holder.transportManager.chunk.z
+	) return holder.cache to holder.cache.getOrCache(pos)
+
 	val chunk = IonChunk[world, getX(pos).shr(4), getZ(pos).shr(4)] ?: return null
-	return type.get(chunk).getOrCache(pos)
+	val cache = type.get(chunk)
+	return cache to cache.getOrCache(pos)
 }
 
-fun getGlobalNode(type: CacheType, world: World, pos: BlockKey): Node? {
+fun getGlobalNode(currentCache: TransportCache, type: CacheType, world: World, pos: BlockKey): Pair<TransportCache, Node?>? {
+	val holder = currentCache.holder
+	if (
+		holder is ChunkCacheHolder<*>  &&
+		getX(pos).shr(4) == holder.transportManager.chunk.x &&
+		getZ(pos).shr(4) == holder.transportManager.chunk.z
+	) return holder.cache to holder.cache.getCached(pos)
+
 	val chunk = IonChunk[world, getX(pos).shr(4), getZ(pos).shr(4)] ?: return null
-	return type.get(chunk).getCached(pos)
+	val cache = type.get(chunk)
+	return cache to cache.getCached(pos)
 }
 
 const val MAX_PATHFINDS_OVER_BLOCK = 6
@@ -33,7 +52,7 @@ const val MAX_PATHFINDS_OVER_BLOCK = 6
 fun getIdealPath(
 	from: Node.NodePositionData,
 	destination: BlockKey,
-	cachedNodeProvider: (CacheType, World, BlockKey) -> Node?,
+	cachedNodeProvider: CacheProvider,
 	pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null
 ): Array<Node.NodePositionData>? {
 	// There are 2 collections here. First the priority queue contains the next nodes, which needs to be quick to iterate.
@@ -58,7 +77,7 @@ fun getIdealPath(
 		f = getHeuristic(from, destination)
 	))
 
-	val visited = Long2IntRBTreeMap()
+	val visited = Long2IntOpenHashMap()
 
 	fun markVisited(node: PathfindingNodeWrapper) {
 		val pos = node.node.position
@@ -117,7 +136,7 @@ fun getIdealPath(
 // Wraps neighbor nodes in a data class to store G and F values for pathfinding. Should probably find a better solution
 fun getNeighbors(
 	current: PathfindingNodeWrapper,
-	cachedNodeProvider: (CacheType, World, BlockKey) -> Node?,
+	cachedNodeProvider: CacheProvider,
 	filter: ((Node, BlockFace) -> Boolean)?
 ): Array<PathfindingNodeWrapper> {
 	val transferable = current.node.getNextNodes(cachedNodeProvider, filter)
