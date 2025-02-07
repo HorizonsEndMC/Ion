@@ -9,13 +9,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.reflect.KClass
 
-class DestinationCache(val cache: TransportCache) {
-	private val pathCache: Object2ObjectOpenHashMap<KClass<out Node>, Long2ObjectOpenHashMap<LongOpenHashSet>> = Object2ObjectOpenHashMap()
+class DestinationCache(private val parentCache: TransportCache) {
+	val rawCache: Object2ObjectOpenHashMap<KClass<out Node>, Long2ObjectOpenHashMap<LongOpenHashSet>> = Object2ObjectOpenHashMap()
 
 	private val lock = ReentrantReadWriteLock(true)
 
-	private fun getCache(nodeType: KClass<out Node>): Long2ObjectOpenHashMap<LongOpenHashSet> {
-		return pathCache.getOrPut(nodeType) { Long2ObjectOpenHashMap() }
+	fun getCache(nodeType: KClass<out Node>): Long2ObjectOpenHashMap<LongOpenHashSet> {
+		return rawCache.getOrPut(nodeType) { Long2ObjectOpenHashMap() }
 	}
 
 	fun contains(nodeType: KClass<out Node>, origin: BlockKey): Boolean {
@@ -70,7 +70,7 @@ class DestinationCache(val cache: TransportCache) {
 		}
 
 		// Perform a flood fill to find all network destinations, then remove all destination columns
-		cache.getNetworkDestinations(clazz = cache.extractorNodeClass, originPos = pos, originNode = node) {
+		parentCache.getNetworkDestinations(clazz = parentCache.extractorNodeClass, originPos = pos, originNode = node) {
 			// Traverse network backwards
 			getPreviousNodes(cache.holder.cachedNodeLookup, null)
 		}.forEach { extractorPos ->
@@ -89,6 +89,6 @@ class DestinationCache(val cache: TransportCache) {
 	}
 
 	fun invalidatePaths(pos: BlockKey, node: Node) {
-		for (nodeClass in pathCache.keys) invalidatePaths(nodeClass, pos, node)
+		for (nodeClass in rawCache.keys) invalidatePaths(nodeClass, pos, node)
 	}
 }
