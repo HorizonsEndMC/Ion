@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.misc
 
-import it.unimi.dsi.fastutil.longs.Long2IntRBTreeMap
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
@@ -95,7 +95,7 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 
 		val firstNode = cacheType.get(firstChunk).getOrCache(firstPoint) ?: return audience.information("There is no node at ${toVec3i(firstPoint)}")
 
-		val path = getIdealPath(audience, Node.NodePositionData(firstNode, world, firstPoint, BlockFace.SELF), secondPoint) ?: return audience.userError("There is no path connecting these nodes")
+		val path = getIdealPath(audience, Node.NodePositionData(firstNode, world, firstPoint, BlockFace.SELF, cacheType.get(firstChunk)), secondPoint) ?: return audience.userError("There is no path connecting these nodes")
 		val resistance = calculatePathResistance(path)
 		audience.information("The resistance from ${firstNode.javaClass.simpleName} at ${toVec3i(firstPoint)} to ${toVec3i(secondPoint)} at ${toVec3i(secondPoint)} is $resistance")
 	}
@@ -140,7 +140,7 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 			f = getHeuristic(fromNode, destination)
 		))
 
-		val visited = Long2IntRBTreeMap()
+		val visited = Long2IntOpenHashMap()
 
 		fun markVisited(node: PathfindingNodeWrapper) {
 			val pos = node.node.position
@@ -167,7 +167,7 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 			queueRemove(current)
 			markVisited(current)
 
-			val neighbors = getNeighbors(current, { cacheType, world, pos -> getOrCacheNode(cacheType, world, pos) }, null)
+			val neighbors = getNeighbors(current, { nodeCache, cacheType, world, pos -> getOrCacheNode(nodeCache, cacheType, world, pos) }, null)
 			audience.userError("Found ${neighbors.size} neighbors")
 
 			for (newNeighbor in neighbors) {
