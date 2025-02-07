@@ -1,14 +1,12 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
-import net.horizonsend.ion.server.command.misc.TransportDebugCommand
-import net.horizonsend.ion.server.command.misc.TransportDebugCommand.measureOrFallback
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.items.transaction.ItemReference
 import net.horizonsend.ion.server.features.transport.items.transaction.ItemTransaction
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData.ItemExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.cache.path.PathCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.util.PathCache
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
@@ -51,9 +49,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		metaData: ExtractorMetaData?,
 	) {
 		NewTransport.runTask {
-			measureOrFallback(TransportDebugCommand.extractorTickTimes) {
-				handleExtractorTick(location, delta, metaData as? ItemExtractorMetaData)
-			}
+			handleExtractorTick(location, delta, metaData as? ItemExtractorMetaData)
 		}
 	}
 
@@ -131,7 +127,8 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 					ItemNode.ItemExtractorNode,
 					holder.getWorld(),
 					originKey,
-					BlockFace.SELF
+					BlockFace.SELF,
+					this
 				),
 				destination = destinations[it],
 				itemStack = singletonItem,
@@ -157,7 +154,12 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 //			debugAudience.information("Selected destination ${toVec3i(destination)}")
 
-			val destinationInventory = destinationInvCache[destination]!!
+			var destinationInventory = destinationInvCache[destination]
+			if (destinationInventory == null) {
+				val lookup = getInventory(destination) ?: continue
+				destinationInventory = lookup
+			}
+
 			val room = LegacyItemUtils.getSpaceFor(destinationInventory, singletonItem)
 
 			if (room == 0) {
@@ -283,7 +285,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		val entry = pathCache.getOrCompute(origin.position, destination) { mutableMapOf() } ?: return null // Should not return null, but handle the possibility
 
 		return entry.getOrPut(itemStack) {
-			val path = runCatching { getIdealPath(origin, destination, holder.nodeProvider, pathfindingFilter) }.getOrNull()
+			val path = runCatching { getIdealPath(origin, destination, holder.nodeCacherGetter, pathfindingFilter) }.getOrNull()
 			if (path == null) return@getOrPut Optional.empty()
 
 			val resistance = calculatePathResistance(path)

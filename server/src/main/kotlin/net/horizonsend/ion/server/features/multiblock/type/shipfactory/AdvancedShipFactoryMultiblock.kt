@@ -168,14 +168,15 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 			val localPipeInputKeys = pipeInputOffsets.map { i -> toBlockKey(getPosRelative(i.x, i.y, i.z)) }
 
 			val allDestinations = localPipeInputKeys.associateWith { inputLoc ->
-				val node = itemCacheHolder.nodeProvider.invoke(CacheType.ITEMS, world, inputLoc) ?: return@associateWith listOf()
+				val cacheResult = itemCacheHolder.nodeCacherGetter.invoke(itemCacheHolder.cache, CacheType.ITEMS, world, inputLoc) ?: return@associateWith listOf()
+				val node = cacheResult.second ?: return@associateWith listOf()
 
 				itemCacheHolder.cache.getNetworkDestinations(
 					clazz = ItemNode.ItemExtractorNode::class,
 					originPos = inputLoc,
 					originNode = node
 				) {
-					getPreviousNodes(itemCacheHolder.nodeProvider, null)
+					getPreviousNodes(itemCacheHolder.nodeCacherGetter, null)
 				}
 			}
 
@@ -194,11 +195,12 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 					ItemNode.ItemExtractorNode,
 					world,
 					destination,
-					BlockFace.SELF
+					BlockFace.SELF,
+					localCacheHolder.cache
 				),
 				destination = sourceLoc,
 				itemStack = singletonItem,
-			) { node, blockFace ->
+			) { node, _ ->
 				if (node !is ItemNode.FilterNode) return@findPath true
 
 				node.matches(singletonItem)

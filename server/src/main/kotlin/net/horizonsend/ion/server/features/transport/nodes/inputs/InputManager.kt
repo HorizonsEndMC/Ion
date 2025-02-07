@@ -22,7 +22,7 @@ abstract class InputManager {
 		getTypeManager(type).remove(location, holder)
 	}
 
-	fun getHolders(type: CacheType, location: BlockKey): Set<MultiblockEntity> {
+	fun getHolders(type: CacheType, location: BlockKey): ObjectOpenHashSet<MultiblockEntity> {
 		return getTypeManager(type).getAllHolders(location)
 	}
 
@@ -54,8 +54,8 @@ abstract class InputManager {
 			}
 		}
 
-		fun getAllHolders(location: BlockKey): Set<MultiblockEntity> {
-			return inputLocations.get(location)?.getHolders() ?: setOf()
+		fun getAllHolders(location: BlockKey): ObjectOpenHashSet<MultiblockEntity> {
+			return inputLocations.get(location)?.getHolders() ?: ObjectOpenHashSet()
 		}
 
 		fun removeAll(location: BlockKey) {
@@ -68,7 +68,7 @@ abstract class InputManager {
 
 		sealed interface InputData {
 			fun contains(holder: MultiblockEntity): Boolean
-			fun getHolders(): Set<MultiblockEntity>
+			fun getHolders(): ObjectOpenHashSet<MultiblockEntity>
 		}
 
 		data class SingleMultiblockInput(val holder: MultiblockEntity) : InputData {
@@ -76,8 +76,8 @@ abstract class InputManager {
 				return this.holder == holder
 			}
 
-			override fun getHolders(): Set<MultiblockEntity> {
-				return setOf(holder)
+			override fun getHolders(): ObjectOpenHashSet<MultiblockEntity> {
+				return ObjectOpenHashSet.of(holder)
 			}
 		}
 
@@ -88,8 +88,8 @@ abstract class InputManager {
 				return holders.contains(holder)
 			}
 
-			override fun getHolders(): Set<MultiblockEntity> {
-				return holders
+			override fun getHolders(): ObjectOpenHashSet<MultiblockEntity> {
+				return ObjectOpenHashSet(holders)
 			}
 
 			fun add(multiblockEntity: MultiblockEntity) {

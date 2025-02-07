@@ -46,5 +46,15 @@ interface CacheHolder<T: TransportCache> {
 
 	fun getCacheHolderAt(key: BlockKey): CacheHolder<T>?
 
-	val nodeProvider: (CacheType, World, BlockKey) -> Node?
+	/** Gets the node at the specified location, caches if needed */
+	val nodeCacherGetter: CacheProvider
+
+	/** Gets the node at the specified location, does not cache */
+	val cachedNodeLookup: CacheProvider
 }
+
+/**
+ * A cache holder specific lookup. Used to differentiate ship and chunk caches.
+ * TransportCache is the transport cache of whatever is performing the lookup. Passing this variable can eliminate costly chunk lookups.
+ **/
+typealias CacheProvider = (TransportCache, CacheType, World, BlockKey) -> Pair<TransportCache, Node?>?
