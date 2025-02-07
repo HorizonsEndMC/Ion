@@ -156,6 +156,10 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 			for (block in event.blocks) {
 				ensureExtractor(block.world, block.x, block.y, block.z)
 				invalidateCache(block.world, block.x, block.y, block.z)
+
+				val relative = block.getRelative(event.direction)
+				ensureExtractor(block.world, relative.x, relative.y, relative.z)
+				invalidateCache(block.world, relative.x, relative.y, relative.z)
 			}
 		}
 	}
@@ -169,6 +173,10 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 			for (block in event.blocks) {
 				ensureExtractor(block.world, block.x, block.y, block.z)
 				invalidateCache(block.world, block.x, block.y, block.z)
+
+				val relative = block.getRelative(event.direction)
+				ensureExtractor(block.world, relative.x, relative.y, relative.z)
+				invalidateCache(block.world, relative.x, relative.y, relative.z)
 			}
 		}
 	}
