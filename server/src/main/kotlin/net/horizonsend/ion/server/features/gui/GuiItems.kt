@@ -232,6 +232,10 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     OUTLINE(NamespacedKeys.packKey("ui/outline")),
     ALIGN(NamespacedKeys.packKey("ui/align")),
     MATERIALS(NamespacedKeys.packKey("ui/materials")),
+    ONE_QUARTER(NamespacedKeys.packKey("ui/one_quarter")),
+    TWO_QUARTER(NamespacedKeys.packKey("ui/two_quarter")),
+    THREE_QUARTER(NamespacedKeys.packKey("ui/three_quarter")),
+    GEAR(NamespacedKeys.packKey("ui/gear")),
 
 	;
 
