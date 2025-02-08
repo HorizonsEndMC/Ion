@@ -162,6 +162,14 @@ object Extractors : IonServerComponent() {
 			if (!isLastChunk) (offset + 1) * chunkLength else extractorLocations.size - 1
 		)
 
+		val maximum = solarTickRange.last
+
+		var modTick = -2
+
+		if(maximum != 0) {
+			modTick = tick % maximum
+		}
+
 		var itr = 0
 
 		extractorLoop@ for (extractorLocation: Vec3i in extractorLocations) {
@@ -213,7 +221,7 @@ object Extractors : IonServerComponent() {
 						wires.add(face)
 					}
 
-					adjacentType == Material.DIAMOND_BLOCK && face == BlockFace.UP && solarTickRange.contains(tick) -> {
+					adjacentType == Material.DIAMOND_BLOCK && face == BlockFace.UP && solarTickRange.contains(modTick) -> {
 						val sensor: BlockData = getBlockDataSafe(world, adjacentX, adjacentY + 1, adjacentZ)
 							?: continue@extractorLoop
 
@@ -233,7 +241,7 @@ object Extractors : IonServerComponent() {
 				handleWire(world, x, y, z, computers, wires)
 			}
 
-			if (solarTickRange.contains(tick) && solarSensor != null) {
+			if (solarTickRange.contains(modTick) && solarSensor != null) {
 				handleSolarPanel(world, x, y, z, wires, solarSensor)
 			}
 		}
