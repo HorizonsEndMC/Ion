@@ -34,7 +34,7 @@ dependencies {
 tasks.build { dependsOn("shadowJar") }
 tasks.shadowJar { archiveFileName.set("../../../build/IonProxy.jar") }
 
-kotlin.jvmToolchain(17)
+kotlin.jvmToolchain(21)
 
 tasks.withType<AbstractArchiveTask>().configureEach {
 	isPreserveFileTimestamps = false
