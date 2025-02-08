@@ -850,11 +850,11 @@ object DataMigrators : IonServerComponent() {
 		player.persistentDataContainer.set(NamespacedKeys.PLAYER_DATA_VERSION, PersistentDataType.INTEGER, lastDataVersion)
 	}
 
-	private fun getVersions(dataVersion: Int): List<DataVersion> {
+	fun getVersions(dataVersion: Int): List<DataVersion> {
 		return dataVersions.subList(dataVersion + 1 /* Inclusive */, lastDataVersion + 1 /* Exclusive */)
 	}
 
-	private fun migrateInventory(inventory: Inventory, versions: List<DataVersion>) {
+	fun migrateInventory(inventory: Inventory, versions: List<DataVersion>) {
 		for (dataVersion in versions) {
 			dataVersion.migrateInventory(inventory)
 		}
