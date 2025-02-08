@@ -51,6 +51,7 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.ItemSplitterMult
 import net.horizonsend.ion.server.features.multiblock.type.misc.LargeTractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblockMirrored
+import net.horizonsend.ion.server.features.multiblock.type.misc.MediumTractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
@@ -388,6 +389,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(AirlockMultiblock)
 		registerMultiblock(ExpandableAirlock)
 		registerMultiblock(TractorBeamMultiblock)
+		registerMultiblock(MediumTractorBeamMultiblock)
 		registerMultiblock(LargeTractorBeamMultiblock)
 
 		registerMultiblock(AntiAirCannonBaseMultiblock)
