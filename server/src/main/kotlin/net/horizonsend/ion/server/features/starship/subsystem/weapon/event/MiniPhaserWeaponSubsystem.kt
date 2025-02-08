@@ -38,11 +38,15 @@ class MiniPhaserWeaponSubsystem(
 		MiniPhaserProjectile(starship, getName(), loc, dir, shooter).fire()
 	}
 
-	override fun getRequiredAmmo(): ItemStack {
-		return ItemStack(Material.EMERALD, 1)
-	}
-
 	override fun getName(): Component {
 		return Component.text("Mini Phaser")
+	}
+
+	override fun isRequiredAmmo(item: ItemStack): Boolean {
+		return requireMaterial(item, Material.EMERALD, 1)
+	}
+
+	override fun consumeAmmo(itemStack: ItemStack) {
+		consumeItem(itemStack, 1)
 	}
 }

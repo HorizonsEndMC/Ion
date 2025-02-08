@@ -155,7 +155,6 @@ object AIDebugCommand : SLCommand() {
 
 
 	@Subcommand("spawner query")
-	@Suppress("unused")
 	fun onQuery(sender: CommandSender) {
 		sender.sendMessage(lineBreakWithCenterText(text("AI Spawners", HEColorScheme.HE_LIGHT_ORANGE)))
 
@@ -175,7 +174,6 @@ object AIDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("spawner points set")
-	@Suppress("unused")
 	fun setPoints(sender: Player, spawner: AISpawner, value: Int) {
 		val scheduler = spawner.scheduler as? AISpawnerTicker ?: fail { "Spawner is not ticked!" }
 		scheduler.points = value
@@ -183,7 +181,6 @@ object AIDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("spawner points add")
-	@Suppress("unused")
 	fun addPoints(sender: Player, spawner: AISpawner, value: Int) {
 		val scheduler = spawner.scheduler as? AISpawnerTicker ?: fail { "Spawner is not ticked!" }
 		scheduler.points = (scheduler.points + value)
@@ -194,7 +191,6 @@ object AIDebugCommand : SLCommand() {
 	data class WeaponSetsCollection(val sets: MutableSet<AIStarshipTemplate.WeaponSet> = mutableSetOf())
 
 	@Subcommand("spawn")
-	@Suppress("unused")
 	fun spawn(sender: Player, spawner: AISpawner, template: SpawnedShip, difficulty: Int) {
 		failIf(difficulty < 0) { "ILLEGAL DIFFICULTY" }
 		template.spawn(log, sender.location,difficulty)

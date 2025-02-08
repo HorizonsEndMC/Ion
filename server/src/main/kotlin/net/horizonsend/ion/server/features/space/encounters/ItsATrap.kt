@@ -10,7 +10,7 @@ object ItsATrap : Encounter(identifier = "its_a_trap") {
 		val targetedBlock = event.clickedBlock!!
 		event.player.alert("it worked")
 		for (count in 0..100) {
-			targetedBlock.location.world.spawnEntity(targetedBlock.location, EntityType.LIGHTNING)
+			targetedBlock.location.world.spawnEntity(targetedBlock.location, EntityType.LIGHTNING_BOLT)
 		}
 	}
 

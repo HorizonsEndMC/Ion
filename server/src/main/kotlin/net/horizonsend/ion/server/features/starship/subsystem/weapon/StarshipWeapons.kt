@@ -135,9 +135,7 @@ object StarshipWeapons {
 		ship: ActiveStarship,
 		boostPower: AtomicDouble
 	): Boolean {
-		if (weapon is AmmoConsumingWeaponSubsystem &&
-			ship.magazines.none { it.isAmmoAvailable(weapon.getRequiredAmmo()) }
-		) {
+		if (weapon is AmmoConsumingWeaponSubsystem && ship.magazines.none { it.isAmmoAvailable(weapon) }) {
 			ship.onlinePassengers.forEach { player ->
 				player.alertActionMessage(
 					"Insufficient ammunition"
@@ -163,7 +161,7 @@ object StarshipWeapons {
 		check(tryConsumePower(weapon, boostPower))
 
 		if (weapon is AmmoConsumingWeaponSubsystem) {
-			check(ship.magazines.any { it.tryConsumeAmmo(weapon.getRequiredAmmo()) })
+			check(ship.magazines.any { it.tryConsumeAmmo(weapon) })
 		}
 	}
 

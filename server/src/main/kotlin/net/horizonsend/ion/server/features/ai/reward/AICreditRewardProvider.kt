@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.ai.reward
 
+import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
@@ -24,7 +25,7 @@ open class AICreditRewardProvider(override val starship: ActiveStarship, overrid
 
 		damager.sendMessage(template(
 			message = text("Received {0} for defeating {1}", NamedTextColor.YELLOW),
-			configuration.creditReward.toCreditComponent(),
+			money.roundToHundredth().toCreditComponent(),
 			starship.getDisplayName()
 		))
 

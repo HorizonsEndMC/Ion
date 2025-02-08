@@ -141,7 +141,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 			if (remaining <= 0) return@forEach
 
 			superCapital.alert("WARNING: Fuel depleted! Shutdown sequence initiated")
-			PilotedStarships.unpilot(superCapital as ActiveControlledStarship)
+			PilotedStarships.unpilot(superCapital)
 		}
 
 		//TODO replace this system with something better

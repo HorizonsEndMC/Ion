@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.listener.misc
 
 import io.papermc.paper.event.player.PlayerItemFrameChangeEvent
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.extensions.informationAction
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.lpHasPermission
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -12,6 +14,7 @@ import net.horizonsend.ion.server.features.player.CombatNPCs
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.CombatTimer.REASON_PVP_GROUND_COMBAT
 import net.horizonsend.ion.server.features.player.CombatTimer.evaluatePvp
+import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -25,6 +28,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.component1
 import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.horizonsend.ion.server.miscellaneous.utils.component3
 import net.horizonsend.ion.server.miscellaneous.utils.component4
+import net.horizonsend.ion.server.miscellaneous.utils.distance
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Location
@@ -63,13 +67,13 @@ object ProtectionListener : SLEventListener() {
 		// Chests, button doors
 		if (event.action != Action.RIGHT_CLICK_BLOCK) return
 
-		if (shouldNotBeChecked(block)) return
+		if (shouldNotBeChecked(event.player, block)) return
 
 		onBlockEdit(event, block.location, event.player)
 	}
 
 	/** Allows exceptions to the onBlockEdit check **/
-	private fun shouldNotBeChecked(clickedBlock: Block): Boolean {
+	private fun shouldNotBeChecked(player: Player, clickedBlock: Block): Boolean {
 		// It is much easier to decide what should be the exception than to make exceptions
 		// If something ends up getting checked that shouldn't
 		// (e.g. clicking the glass in your cockpit), it could break firing weapons.
@@ -82,6 +86,8 @@ object ProtectionListener : SLEventListener() {
 			zone.interactableBlocks.contains(clickedBlock.blockData.material.name)) {
 			return true
 		}
+
+		if (isPlanetOrbitDenied(player, clickedBlock.location, true)) return true
 
 		// Manually check these
 		if (clickedBlock.blockData is Switch) return false
@@ -155,6 +161,8 @@ object ProtectionListener : SLEventListener() {
 
 		if (isLockedShipDenied(player, location)) return true
 
+		if (event is BlockPlaceEvent && isPlanetOrbitDenied(player, location, false)) return true
+
 		return denied
 	}
 
@@ -198,6 +206,51 @@ object ProtectionListener : SLEventListener() {
 		return denied
 	}
 
+	fun isPlanetOrbitDenied(player: Player, location: Location, silent: Boolean): Boolean {
+		val (world, x, y, z) = location
+		val padding = 500
+		var inOwnStation = false
+
+		for (planet in Space.getOrbitingPlanets().filter { it.spaceWorld == world }) {
+			val minDistance = planet.orbitDistance - padding
+			val maxDistance = planet.orbitDistance + padding
+			val distance = distance(x.toInt(), y.toInt(), z.toInt(), planet.sun.location.x, y.toInt(), planet.sun.location.z).toInt()
+
+			// Within planet orbit
+			if (distance in minDistance..maxDistance) {
+
+				if (player.hasPermission("dutymode")) {
+					player.informationAction("Bypassed planet orbit protection in dutymode")
+					return false
+				}
+
+				// Check if they are in a station
+				for (region in Regions.find(location).sortedByDescending { it.priority }) {
+					// They have build permissions in this region
+					if (region.isCached(player)) {
+						Tasks.async {
+							if (!player.isOnline) {
+								return@async
+							}
+
+							region.cacheAccess(player)
+						}
+
+						inOwnStation = true
+						continue
+					}
+				}
+
+				if (!inOwnStation) {
+					if (!silent) player.userError("You cannot build in the way of ${planet.name}'s orbit")
+					return true
+				}
+			}
+		}
+
+		return false
+	}
+
 	private fun isLockedShipDenied(player: Player, location: Location): Boolean {
 		if (location.world.ion.hasFlag(WorldFlag.NO_SHIP_LOCKS)) return false
 		if (player.uniqueId.lpHasPermission("ion.bypass-locks")) return false
@@ -233,7 +286,7 @@ object ProtectionListener : SLEventListener() {
 
 		blocks.forEach { block ->
 			if (Math.random() < 0.25) {
-				val heart = if (Math.random() > 0.5) Particle.HEART else Particle.VILLAGER_ANGRY
+				val heart = if (Math.random() > 0.5) Particle.HEART else Particle.ANGRY_VILLAGER
 				val particleLoc = block.location.add(Math.random(), 1 + Math.random(), Math.random())
 
 				block.world.spawnParticle(heart, particleLoc, 1)

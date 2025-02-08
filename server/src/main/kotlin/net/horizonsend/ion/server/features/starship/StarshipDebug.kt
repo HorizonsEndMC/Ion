@@ -7,7 +7,7 @@ object StarshipDebug {
 		println("Current CoM : ${starship.centerOfMass}")
 		println("Estimated CoM : ${starship.forecast(System.currentTimeMillis(), 0)}")
 		println("Estimated velocity : ${starship.velocity}")
-		println("Estimated accel : ${starship.accel}")
+		//println("Estimated accel : ${starship.accel}")
 		println("Estimated Pos in 2 seconds : ${starship.forecast(System.currentTimeMillis() + 2000, 0)}")
 	}
 }

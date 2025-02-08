@@ -50,7 +50,7 @@ data class CompletedSection(val y: Int, val palette: MutableList<BlockData>, val
     }
 
 	fun place(levelChunk: LevelChunk) {
-		val worldMin = levelChunk.level.minBuildHeight.shr(4)
+		val worldMin = levelChunk.level.minSectionY
 
 		val section = levelChunk.sections[y - worldMin]
 
@@ -77,13 +77,14 @@ data class CompletedSection(val y: Int, val palette: MutableList<BlockData>, val
 					val blockPos = BlockPos(absoluteX, absoluteY, absoluteZ)
 
 					section.setBlockState(x, y, z, blockData.blockState)
-					levelChunk.playerChunk?.blockChanged(blockPos)
+					levelChunk.level.chunkSource.chunkMap.getVisibleChunkIfPresent(levelChunk.pos.toLong())?.blockChanged(blockPos)
 
 					blockData.blockEntityTag?.let {
 						val blockEntity = BlockEntity.loadStatic(
 							blockPos,
 							blockData.blockState,
-							it
+							it,
+							levelChunk.level.registryAccess()
 						) ?: return@let
 
 						levelChunk.addAndRegisterBlockEntity(blockEntity)

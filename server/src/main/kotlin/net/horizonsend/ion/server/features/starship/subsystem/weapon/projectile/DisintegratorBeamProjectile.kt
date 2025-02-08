@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -30,7 +31,7 @@ class DisintegratorBeamProjectile(
         private const val RESET_STACK_TIME_MILLIS = 4000L
     }
 
-    override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.disintegratorBeam ?: IonServer.starshipBalancing.nonStarshipFired.disintegratorBeam
+    override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.disintegratorBeam ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.disintegratorBeam
     override val speed: Double = balancing.speed
     override val starshipShieldDamageMultiplier = damage
     override val areaShieldDamageMultiplier: Double = balancing.areaShieldDamageMultiplier
@@ -77,7 +78,7 @@ class DisintegratorBeamProjectile(
         )
 
         newLoc.world.spawnParticle(
-            Particle.SMOKE_LARGE,
+            Particle.LARGE_SMOKE,
             newLoc.x,
             newLoc.y,
             newLoc.z,

@@ -1,13 +1,21 @@
 package net.horizonsend.ion.common.utils.text
 
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -37,7 +45,7 @@ fun lineBreak(width: Int, color: TextColor = HE_DARK_GRAY, vararg decorations: T
  *
  * @sample
  * 	Takes: Value
- * 	Returns [Value]
+ * 	Returns "[value]"
  **/
 fun bracketed(value: ComponentLike, leftBracket: Char = '[', rightBracket: Char = ']', bracketColor: TextColor = HE_DARK_GRAY) =
 	bracketed(value, leftBracket.toComponent(bracketColor), rightBracket.toComponent(bracketColor))
@@ -47,7 +55,7 @@ fun bracketed(value: ComponentLike, leftBracket: Char = '[', rightBracket: Char 
  *
  * @sample
  * 	Takes: Value
- * 	Returns [Value]
+ * 	Returns "[value]"
  **/
 fun bracketed(value: ComponentLike, leftBracket: ComponentLike, rightBracket: ComponentLike) = ofChildren(leftBracket, value, rightBracket)
 
@@ -138,7 +146,7 @@ fun formatPageFooter(
 	currentPage: Int,
 	maxPage: Int,
 	color: TextColor = HEColorScheme.HE_MEDIUM_GRAY,
-	paramColor: TextColor = HEColorScheme.HE_LIGHT_GRAY
+	paramColor: TextColor = HE_LIGHT_GRAY
 ): Component {
 	val ratio = template(text("Page {0}/{1}", color), paramColor = paramColor, currentPage, maxPage)
 
@@ -216,7 +224,7 @@ inline fun formatPaginatedMenu(
 	currentPage: Int,
 	maxPerPage: Int = 10,
 	color: TextColor = HEColorScheme.HE_MEDIUM_GRAY,
-	paramColor: TextColor = HEColorScheme.HE_LIGHT_GRAY,
+	paramColor: TextColor = HE_LIGHT_GRAY,
 	footerSeparator: Component? = null,
 	entryProvider: (Int) -> Component
 ): Component {
@@ -256,7 +264,7 @@ fun formatPaginatedMenu(
 	currentPage: Int,
 	maxPerPage: Int = 10,
 	color: TextColor = HEColorScheme.HE_MEDIUM_GRAY,
-	paramColor: TextColor = HEColorScheme.HE_LIGHT_GRAY,
+	paramColor: TextColor = HE_LIGHT_GRAY,
 	footerSeparator: Component? = null,
 ): Component = formatPaginatedMenu(
 	entries.size,
@@ -277,4 +285,22 @@ fun commandPrompt(shownText: String, color: TextColor, command: String): Compone
 	return bracketed(text(shownText, color, ITALIC))
 		.hoverEvent(text(command))
 		.clickEvent(ClickEvent.runCommand(command))
+}
+
+fun formatNationName(id: Oid<Nation>): Component {
+	val cached = NationCache[id]
+	return text(cached.name, TextColor.color(cached.color))
+}
+
+fun formatSettlementName(id: Oid<Settlement>): Component {
+	val cached = SettlementCache[id]
+	return text(cached.name, NamedTextColor.AQUA)
+}
+
+fun formatException(throwable: Throwable): Component {
+	val stackTrace = "$throwable\n" + throwable.stackTrace.joinToString(separator = "\n")
+
+	return ofChildren(text(throwable.message ?: "No message provided", RED), space(), bracketed(text("Hover for info", HE_LIGHT_GRAY)))
+		.hoverEvent(text(stackTrace))
+		.clickEvent(ClickEvent.copyToClipboard(stackTrace))
 }

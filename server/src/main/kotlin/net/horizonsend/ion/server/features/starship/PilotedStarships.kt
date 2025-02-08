@@ -37,11 +37,11 @@ import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.subsystem.misc.LandingGearSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
-import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
@@ -422,14 +422,8 @@ object PilotedStarships : IonServerComponent() {
 				return@activateAsync
 			}
 
-			if (activePlayerStarship.type == StarshipType.BATTLECRUISER && (!activePlayerStarship.world.ion.hasFlag(WorldFlag.SPACE_WORLD) && !Hyperspace.isHyperspaceWorld(activePlayerStarship.world))) {
-				player.userError("Battlecruisers can only be piloted in space!")
-				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
-				return@activateAsync
-			}
-
-			if (activePlayerStarship.type == StarshipType.BARGE && (!activePlayerStarship.world.ion.hasFlag(WorldFlag.SPACE_WORLD) && !Hyperspace.isHyperspaceWorld(activePlayerStarship.world))) {
-				player.userError("Barges can only be piloted in space!")
+			if (!activePlayerStarship.type.canPilotIn(world.ion)) {
+				player.userError("${activePlayerStarship.type} can't be piloted in this world!")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
 			}
@@ -463,6 +457,10 @@ object PilotedStarships : IonServerComponent() {
 					.append(activePlayerStarship.getDisplayName())
 					.append(Component.text(" with ${activePlayerStarship.initialBlockCount} blocks."))
 			)
+
+			if (activePlayerStarship.isOversized()) {
+				player.userError("Ship is over max block count! Power output reduced by ${(ReactorSubsystem.OVERSIZE_POWER_PENALTY * 100).toInt()}%!")
+			}
 
 			if (carriedShips.any()) {
 				player.information(
@@ -556,4 +554,5 @@ object PilotedStarships : IonServerComponent() {
 	}
 
 	fun getDisplayName(data: StarshipData): Component = data.name?.let { MiniMessage.miniMessage().deserialize(it) } ?: data.starshipType.actualType.displayNameComponent
+
 }

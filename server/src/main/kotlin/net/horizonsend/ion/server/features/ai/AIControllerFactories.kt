@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.ai
 
 import SteeringModule
-import net.horizonsend.ion.server.IonServer.aiSteeringConfig
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.module.combat.CombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.DefensiveCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.FrigateCombatModule
@@ -34,11 +34,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.distanceToVector
 import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import java.util.Optional
+import java.util.function.Supplier
 import kotlin.random.Random
 
 @Suppress("unused") // Entry points
 object AIControllerFactories : IonServerComponent() {
 	val presetControllers = mutableMapOf<String, AIControllerFactory>()
+	val aiSteeringConfig get() = ConfigurationFiles.aiSteeringConfiguration()
 
 	val starfighter = registerFactory("STARFIGHTER") {
 		setCoreModuleBuilder { controller: AIController, difficulty ->
@@ -235,7 +237,7 @@ object AIControllerFactories : IonServerComponent() {
 				difficultyManager,
 				targeting::findTarget,
 				distance::calcDistance,
-				config = aiSteeringConfig.corvetteBasicSteeringConfiguration
+				configSupplier = Supplier(ConfigurationFiles.aiSteeringConfiguration()::corvetteBasicSteeringConfiguration)
 			))
 
 			builder.addModule(
@@ -271,7 +273,7 @@ object AIControllerFactories : IonServerComponent() {
 				difficultyManager,
 				targeting::findTarget,
 				distance::calcDistance,
-				config = aiSteeringConfig.corvetteBasicSteeringConfiguration
+				configSupplier = Supplier(ConfigurationFiles.aiSteeringConfiguration()::corvetteBasicSteeringConfiguration)
 			))
 
 			builder.addModule(
@@ -308,7 +310,7 @@ object AIControllerFactories : IonServerComponent() {
 				difficultyManager,
 				targeting::findTarget,
 				distance::calcDistance,
-				config = aiSteeringConfig.corvetteBasicSteeringConfiguration
+				configSupplier = Supplier(ConfigurationFiles.aiSteeringConfiguration()::corvetteBasicSteeringConfiguration)
 			))
 
 			builder.addModule(
@@ -345,7 +347,7 @@ object AIControllerFactories : IonServerComponent() {
 				difficultyManager,
 				targeting::findTarget,
 				distance::calcDistance,
-				config = aiSteeringConfig.miniFrigateBasicSteeringConfiguration
+				configSupplier = Supplier(ConfigurationFiles.aiSteeringConfiguration()::miniFrigateBasicSteeringConfiguration)
 			))
 
 			builder.addModule(
@@ -450,7 +452,7 @@ object AIControllerFactories : IonServerComponent() {
 				difficultyManager,
 				targeting::findTarget,
 				distance::calcDistance,
-				config = aiSteeringConfig.destroyerBasicSteeringConfiguration
+				configSupplier = Supplier(ConfigurationFiles.aiSteeringConfiguration()::destroyerBasicSteeringConfiguration)
 			))
 
 			builder.addModule(
@@ -485,7 +487,7 @@ object AIControllerFactories : IonServerComponent() {
 				difficultyManager,
 				targeting::findTarget,
 				distance::calcDistance,
-				config = aiSteeringConfig.destroyerBasicSteeringConfiguration
+				configSupplier = Supplier(ConfigurationFiles.aiSteeringConfiguration()::destroyerBasicSteeringConfiguration)
 			))
 
 			builder.addModule(
@@ -522,7 +524,7 @@ object AIControllerFactories : IonServerComponent() {
 				difficultyManager,
 				targeting::findTarget,
 				distance::calcDistance,
-				config = aiSteeringConfig.battlecruiserBasicSteeringConfiguration
+				configSupplier = Supplier(ConfigurationFiles.aiSteeringConfiguration()::battlecruiserBasicSteeringConfiguration)
 			))
 
 			builder.addModule(SteeringSolverModule::class, SteeringSolverModule(
@@ -560,7 +562,7 @@ object AIControllerFactories : IonServerComponent() {
 				val endPointZ = Random.nextInt(minZ, maxZ)
 				val endPoint = Vec3i(endPointX, origin.y, endPointZ)
 
-				val planets = Space.getPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
+				val planets = Space.getAllPlanets().filter { it.spaceWorld == world }.map { it.location.toVector() }
 
 				val minDistance = planets.minOfOrNull {
 					val direction = endPoint.minus(origin)

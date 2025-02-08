@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.controllers
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.movement.MovementHandler
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
@@ -10,22 +11,17 @@ import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockState
-import org.bukkit.util.Vector
 
 abstract class Controller(
 	val damager: Damager,
 	val starship: ActiveStarship,
 	val name: String
 ) : ForwardingAudience.Single {
-	/** Current vertical direction **/
-	abstract val pitch: Float
-	/** Current horizontal direction **/
-	abstract val yaw: Float
 
-	abstract val selectedDirectControlSpeed: Int
 	override fun audience(): Audience = Audience.empty()
+
+	abstract var movementHandler: MovementHandler
 
 	/** The color used for this controller. Currently, applies weapon color **/
 	open fun getColor(): Color {
@@ -55,10 +51,4 @@ abstract class Controller(
 
 	/** Return the display name of the controller */
 	abstract val pilotName: Component
-
-	/** Checks whether the controller is sneak flying */
-	abstract val isSneakFlying: Boolean
-
-	/** gets the relative movement vector for controlling direct control*/
-	abstract fun directControlMovementVector(direction : BlockFace): Vector
 }

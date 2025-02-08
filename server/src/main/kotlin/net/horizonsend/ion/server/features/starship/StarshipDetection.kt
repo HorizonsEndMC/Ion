@@ -42,6 +42,8 @@ import kotlin.math.min
 import kotlin.math.sqrt
 
 object StarshipDetection : IonServerComponent() {
+	const val OVERSIZE_MODIFIER = 1.1
+
 	class DetectionFailedException(message: String) : Exception(message)
 
 	private val activeTasks = ConcurrentHashMap<Player, BukkitTask>()
@@ -199,9 +201,10 @@ object StarshipDetection : IonServerComponent() {
 			)
 		}
 
-		if (size > type.maxSize) {
+		// Allow ships that are slightly larger to detect. Changed to allow ships to tow 10% more than their detect capacity
+		if (size > (type.maxSize * OVERSIZE_MODIFIER).toInt()) {
 			throw DetectionFailedException(
-				"The ship's too big! Maximum size for '${type.displayName}' is ${type.maxSize}, " +
+				"The ship's too big! Maximum size for '${type.displayName}' is ${type.maxSize} (oversized ${(type.maxSize * OVERSIZE_MODIFIER).toInt()}), " +
 					"but there were $size blocks. Consider changing the ship's class."
 			)
 		}

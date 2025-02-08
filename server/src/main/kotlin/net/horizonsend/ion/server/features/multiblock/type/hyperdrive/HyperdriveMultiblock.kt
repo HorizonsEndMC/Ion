@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.type.hyperdrive
 
+import net.horizonsend.ion.server.features.gui.custom.navigation.NavigationSystemMapGui
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.add
@@ -14,8 +16,9 @@ import org.bukkit.block.Hopper
 import org.bukkit.block.Sign
 import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 
-abstract class HyperdriveMultiblock : Multiblock() {
+abstract class HyperdriveMultiblock : Multiblock(), InteractableMultiblock {
 	override val name = "hyperdrive"
 
 	abstract val maxPower: Int
@@ -47,7 +50,11 @@ abstract class HyperdriveMultiblock : Multiblock() {
 
 	override fun onTransformSign(player: Player, sign: Sign) {
 		super.onTransformSign(player, sign)
-		sign.getSide(Side.FRONT).line(3, text("/jump <planet>", NamedTextColor.RED))
+		sign.getSide(Side.FRONT).line(3, text("Select Destination", NamedTextColor.RED))
 		sign.update()
+	}
+
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
+		NavigationSystemMapGui(player, player.world).openMainWindow()
 	}
 }

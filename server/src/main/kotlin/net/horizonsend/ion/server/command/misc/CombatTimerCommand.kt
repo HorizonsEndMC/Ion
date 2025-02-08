@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.player.CombatTimer
+import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
 import org.litote.kmongo.setValue
@@ -19,7 +20,6 @@ import org.litote.kmongo.setValue
 object CombatTimerCommand : SLCommand() {
 
     @Subcommand("toggle")
-    @Suppress("unused")
     @CommandCompletion("true|false")
     @Description("Toggle combat timer alerts")
     fun onToggle(sender: Player, @Optional toggle: Boolean?) {
@@ -35,7 +35,6 @@ object CombatTimerCommand : SLCommand() {
     }
 
     @Subcommand("npc give")
-    @Suppress("unused")
     @CommandPermission("ion.combattimer")
     @CommandCompletion("@players")
     @Description("Apply an NPC combat tag to a player")
@@ -47,7 +46,6 @@ object CombatTimerCommand : SLCommand() {
     }
 
     @Subcommand("npc remove")
-    @Suppress("unused")
     @CommandPermission("ion.combattimer")
     @CommandCompletion("@players")
     @Description("Remove an NPC combat tag from a player")
@@ -59,7 +57,6 @@ object CombatTimerCommand : SLCommand() {
     }
 
     @Subcommand("pvp give")
-    @Suppress("unused")
     @CommandPermission("ion.combattimer")
     @CommandCompletion("@players")
     @Description("Apply a PvP combat tag to a player")
@@ -71,7 +68,6 @@ object CombatTimerCommand : SLCommand() {
     }
 
     @Subcommand("pvp remove")
-    @Suppress("unused")
     @CommandPermission("ion.combattimer")
     @CommandCompletion("@players")
     @Description("Remove a PvP combat tag from a player")
@@ -80,5 +76,53 @@ object CombatTimerCommand : SLCommand() {
 
         CombatTimer.removePvpCombatTag(player)
         sender.success("Removed PvP combat tag from $target")
+    }
+
+    @Subcommand("enterplanet give")
+    @Suppress("unused")
+    @CommandPermission("ion.combattimer")
+    @CommandCompletion("@players")
+    @Description("Restrict a player from entering planets")
+    fun onGiveEnterPlanetRestriction(sender: Player, target: String) {
+        val player = resolveOfflinePlayer(target)
+
+        PlanetTeleportCooldown.addEnterPlanetCooldown(player)
+        sender.success("Gave $target a planet entry cooldown")
+    }
+
+    @Subcommand("enterplanet remove")
+    @Suppress("unused")
+    @CommandPermission("ion.combattimer")
+    @CommandCompletion("@players")
+    @Description("Lift a restriction preventing a player from entering planets")
+    fun onRemoveEnterPlanetRestriction(sender: Player, target: String) {
+        val player = resolveOfflinePlayer(target)
+
+        PlanetTeleportCooldown.removeEnterPlanetCooldown(player)
+        sender.success("Removed planet entry cooldown from $target")
+    }
+
+    @Subcommand("exitplanet give")
+    @Suppress("unused")
+    @CommandPermission("ion.combattimer")
+    @CommandCompletion("@players")
+    @Description("Restrict a player from exiting planets")
+    fun onGiveExitPlanetRestriction(sender: Player, target: String) {
+        val player = resolveOfflinePlayer(target)
+
+        PlanetTeleportCooldown.addExitPlanetCooldown(player)
+        sender.success("Gave $target a planet exit cooldown")
+    }
+
+    @Subcommand("exitplanet remove")
+    @Suppress("unused")
+    @CommandPermission("ion.combattimer")
+    @CommandCompletion("@players")
+    @Description("Lift a restriction preventing a player from exiting planets")
+    fun onRemoveExitPlanetRestriction(sender: Player, target: String) {
+        val player = resolveOfflinePlayer(target)
+
+        PlanetTeleportCooldown.removeExitPlanetCooldown(player)
+        sender.success("Removed planet exit cooldown from $target")
     }
 }

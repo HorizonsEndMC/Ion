@@ -8,24 +8,28 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.schema.space.Moon
 import net.horizonsend.ion.common.database.schema.space.Planet
+import net.horizonsend.ion.common.database.schema.space.RoguePlanet
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.space.CachedPlanet
-import net.horizonsend.ion.server.features.space.CachedStar
+import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.space.Orbits
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceMap
+import net.horizonsend.ion.server.features.space.body.CachedMoon
+import net.horizonsend.ion.server.features.space.body.CachedStar
+import net.horizonsend.ion.server.features.space.body.OrbitingCelestialBody
+import net.horizonsend.ion.server.features.space.body.planet.CachedOrbitingPlanet
+import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
+import net.horizonsend.ion.server.features.space.body.planet.CachedRoguePlanet
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
-import net.kyori.adventure.text.Component.newline
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.event.ClickEvent
-import net.kyori.adventure.text.format.NamedTextColor.AQUA
-import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
-import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.Material
+import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.util.*
@@ -34,7 +38,7 @@ import kotlin.system.measureNanoTime
 
 @CommandAlias("planet")
 @CommandPermission("space.planet")
-object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
+object PlanetCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandContexts.registerContext(CachedPlanet::class.java) { c: BukkitCommandExecutionContext ->
 			Space.planetNameCache[c.popFirstArg().uppercase(Locale.getDefault())].orNull()
@@ -42,21 +46,18 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		registerAsyncCompletion(manager, "stars") { _ -> Space.getStars().map(CachedStar::name) }
-		registerAsyncCompletion(manager, "planets") { _ -> Space.getPlanets().map(CachedPlanet::name) }
-		registerAsyncCompletion(manager, "planetsInWorld") { e -> Space.getPlanets()
+		registerAsyncCompletion(manager, "planets") { _ -> Space.getAllPlanets().map(CachedPlanet::name) }
+		registerAsyncCompletion(manager, "planetsInWorld") { e -> Space.getAllPlanets()
 			.filter { planet -> planet.spaceWorldName == e.player.world.name }
 			.map(CachedPlanet::name)
 		}
 	}
 
-	@Subcommand("create")
-	@CommandCompletion("@nothing true|false x z @stars @worlds 1000|2000|3000|4000|5000 1|2|3|4|5 0.5|0.75|1.0")
-	fun onCreate(
+	@Subcommand("create normal")
+	@CommandCompletion("@nothing @stars @worlds 1000|2000|3000|4000|5000 1|2|3|4|5 0.5|0.75|1.0")
+	fun onCreateNormal(
 		sender: CommandSender,
 		name: String,
-		rogue: Boolean,
-		x: Int,
-		z: Int,
 		sun: CachedStar,
 		planetWorldName: String,
 		orbitDistance: Int,
@@ -70,19 +71,12 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 		if (Space.getPlanet(name) != null) {
 			throw InvalidCommandArgument("A star with that name already exists!")
 		}
-		if (Space.getPlanet(name)?.rogue == true) {
-			val planet: CachedPlanet = Space.planetNameCache[name].get()
-			planet.setLocation(true)
-		}
 
 		val seed: Long = name.hashCode().toLong()
 		val orbitProgress: Double = randomDouble(0.0, 360.0)
 
 		Planet.create(
 			name,
-			rogue,
-			x,
-			z,
 			sun.databaseId,
 			planetWorldName,
 			size,
@@ -99,11 +93,97 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 		sender.success("Created planet $name at ${planet.location}")
 	}
 
+	@Subcommand("create rogue")
+	@CommandCompletion("@nothing x y z @worlds 1000|2000|3000|4000|5000 1|2|3|4|5 0.5|0.75|1.0")
+	fun onCreateRogue(
+		sender: CommandSender,
+		name: String,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		planetWorldName: String,
+		orbitDistance: Int,
+		orbitSpeed: Double,
+		size: Double
+	) {
+		if (size <= 0 || size > 1) {
+			throw InvalidCommandArgument("Size must be more than 0 and no more than 1")
+		}
+
+		if (Space.getPlanet(name) != null) {
+			throw InvalidCommandArgument("A star with that name already exists!")
+		}
+
+		val seed: Long = name.hashCode().toLong()
+
+		if (!world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
+			throw InvalidCommandArgument("Not a space world!")
+		}
+
+		RoguePlanet.create(
+			name,
+			x,
+			y,
+			z,
+			world.name,
+			planetWorldName,
+			size,
+			seed
+		)
+
+		Space.reload()
+
+		val planet: CachedPlanet = Space.planetNameCache[name].get()
+
+		sender.success("Created planet $name at ${planet.location}")
+	}
+
+	@Subcommand("create moon")
+	@CommandCompletion("@nothing @planets @worlds 1000|2000|3000|4000|5000 1|2|3|4|5 0.5|0.75|1.0")
+	fun onCreateMoon(
+		sender: CommandSender,
+		name: String,
+		parent: CachedPlanet,
+		planetWorldName: String,
+		orbitDistance: Int,
+		orbitSpeed: Double,
+		size: Double
+	) {
+		if (size <= 0 || size > 1) {
+			throw InvalidCommandArgument("Size must be more than 0 and no more than 1")
+		}
+
+		if (Space.getPlanet(name) != null) {
+			throw InvalidCommandArgument("A star with that name already exists!")
+		}
+
+		val seed: Long = name.hashCode().toLong()
+		val orbitProgress: Double = randomDouble(0.0, 360.0)
+
+		Moon.create(
+			name,
+			parent.databaseId,
+			planetWorldName,
+			size,
+			orbitDistance,
+			orbitSpeed,
+			orbitProgress,
+			seed
+		)
+
+		Space.reload()
+
+		val planet: CachedPlanet = Space.planetNameCache[name].get()
+
+		sender.success("Created moon $name at ${planet.location}")
+	}
+
 	@Suppress("Unused")
 	@Subcommand("set seed")
 	@CommandCompletion("@planets 0")
 	fun onSetSeed(sender: CommandSender, planet: CachedPlanet, newSeed: Long) {
-		Planet.setSeed(planet.databaseId, newSeed)
+		planet.setSeed(newSeed)
 
 		val planetName: String = planet.name
 		Space.reload()
@@ -126,7 +206,7 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 			throw InvalidCommandArgument("An error occurred parsing materials, try again")
 		}
 
-		Planet.setCloudMaterials(planet.databaseId, materials)
+		planet.setCloudMaterials(materials)
 
 		val planetName: String = planet.name
 		Space.reload()
@@ -141,7 +221,7 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("set atmosphere density")
 	@CommandCompletion("@planets 0.1|0.2|0.3|0.4|0.5")
 	fun onSetAtmosphereDensity(sender: CommandSender, planet: CachedPlanet, newDensity: Double) {
-		Planet.setCloudDensity(planet.databaseId, newDensity)
+		planet.setCloudDensity(newDensity)
 
 		val planetName = planet.name
 		Space.reload()
@@ -156,7 +236,7 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("set atmosphere noise")
 	@CommandCompletion("@planets 0.1|0.2|0.3|0.4|0.5")
 	fun onSetAtmosphereNoise(sender: CommandSender, planet: CachedPlanet, newNoise: Double) {
-		Planet.setCloudDensityNoise(planet.databaseId, newNoise)
+		planet.setCloudNoise(newNoise)
 
 		val planetName = planet.name
 		Space.reload()
@@ -171,7 +251,7 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("set cloud threshold")
 	@CommandCompletion("@planets 0.1|0.2|0.3|0.4|0.5")
 	fun onSetCloudThreshold(sender: CommandSender, planet: CachedPlanet, newThreshold: Double) {
-		Planet.setCloudThreshold(planet.databaseId, newThreshold)
+		planet.setCloudThreshold(newThreshold)
 
 		val planetName = planet.name
 		Space.reload()
@@ -186,7 +266,7 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("set cloud noise")
 	@CommandCompletion("@planets 0.1|0.2|0.3|0.4|0.5")
 	fun onSetCloudNoise(sender: CommandSender, planet: CachedPlanet, newNoise: Double) {
-		Planet.setCloudNoise(planet.databaseId, newNoise)
+		planet.setCloudNoise(newNoise)
 
 		val planetName = planet.name
 		Space.reload()
@@ -201,15 +281,13 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("set crust noise")
 	@CommandCompletion("@planets 0.1|0.2|0.3|0.4|0.5")
 	fun onSetCrustNoise(sender: CommandSender, planet: CachedPlanet, newNoise: Double) {
-		Planet.setCrustNoise(planet.databaseId, newNoise)
+		planet.setCrustNoise(newNoise)
 
 		val planetName = planet.name
 		Space.reload()
 		Space.planetNameCache[planetName].get().generate()
 
-		sender.success(
-			"Updated crust noise in database, reloaded systems, and regenerated planet."
-		)
+		sender.success("Updated crust noise in database, reloaded systems, and regenerated planet.")
 	}
 
 	@Suppress("Unused")
@@ -224,7 +302,7 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 			throw InvalidCommandArgument("An error occurred parsing materials, try again")
 		}
 
-		Planet.setCrustMaterials(planet.databaseId, materials)
+		planet.setCrustMaterials(materials)
 
 		val planetName = planet.name
 		Space.reload()
@@ -239,6 +317,9 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("set sun")
 	@CommandCompletion("@planets @stars")
 	fun onSetSun(sender: CommandSender, planet: CachedPlanet, newSun: CachedStar) {
+		failIf(planet !is CachedOrbitingPlanet) { "$planet doesn't orbit a star!" }
+		planet as CachedOrbitingPlanet
+
 		val oldSun = planet.sun
 		planet.changeSun(newSun)
 		sender.success(
@@ -247,25 +328,28 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Suppress("Unused")
-	@Subcommand("set rogue")
-	@CommandCompletion("@planets true|false")
-	fun onSetRogue(sender: CommandSender, planet: CachedPlanet, newValue: Boolean) {
-		val oldValue = planet.rogue
-		val spaceWorld = planet.spaceWorld ?: throw InvalidCommandArgument("That planet's space world isn't loaded!")
+	@Subcommand("set sun")
+	@CommandCompletion("@planets @planets")
+	fun onSetParent(sender: CommandSender, planet: CachedPlanet, newSun: CachedPlanet) {
+		failIf(planet !is CachedMoon) { "$planet doesn't orbit a star!" }
+		planet as CachedMoon
 
-		planet.toggleRogue(newValue)
+		failIf(planet == newSun) { "A planet can't orbit itself!" }
+
+		val oldSun = planet.parent
+		planet.changeSun(newSun)
 		sender.success(
-			"Updated ${planet.name} rogue to $newValue from $oldValue"
+			"Updated sun from ${oldSun.name} to ${newSun.name}, moved the planet, and updated database"
 		)
-		planet.setLocation(true)
-		spaceWorld.save()
-		SpaceMap.refresh()
 	}
 
 	@Suppress("Unused")
 	@Subcommand("set orbitpos")
 	@CommandCompletion("@planets position")
 	fun onSetOrbitPos(sender: CommandSender, planet: CachedPlanet, newValue: Double) {
+		failIf(planet !is OrbitingCelestialBody) { "Planet $planet doesn't orbit!" }
+		planet as OrbitingCelestialBody
+
 		val oldValue = planet.orbitProgress
 		val spaceWorld = planet.spaceWorld ?: throw InvalidCommandArgument("That planet's space world isn't loaded!")
 
@@ -281,13 +365,13 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("set location")
 	@CommandCompletion("@planets x z")
-	fun onSetLocation(sender: CommandSender, planet: CachedPlanet, x: Int, z: Int) {
+	fun onSetLocation(sender: CommandSender, planet: CachedPlanet, x: Int, y: Int, z: Int) {
 		val spaceWorld = planet.spaceWorld ?: throw InvalidCommandArgument("That planet's space world isn't loaded!")
+		failIf(planet !is CachedRoguePlanet) { "Planet isn't rogue!" }
+		planet as CachedRoguePlanet
 
-		planet.changeX(x)
-		planet.changeZ(z)
+		planet.setLocation(Vec3i(x, y, z))
 		sender.success("Moved ${planet.name} to $x, $z")
-		planet.setLocation(updateDb = true)
 		spaceWorld.save()
 		SpaceMap.refresh()
 	}
@@ -296,6 +380,9 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("set orbit distance")
 	@CommandCompletion("@planets @nothing")
 	fun onSetOrbitDistance(sender: CommandSender, planet: CachedPlanet, newDistance: Int) {
+		failIf(planet !is OrbitingCelestialBody) { "Planet $planet doesn't orbit!" }
+		planet as OrbitingCelestialBody
+
 		val oldDistance = planet.orbitDistance
 		planet.changeOrbitDistance(newDistance)
 		sender.success(
@@ -320,7 +407,7 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	fun onGetPos(sender: CommandSender, planet: CachedPlanet) {
 		sender.information(
 			"${planet.name} is at ${planet.location} in ${planet.spaceWorldName}. " +
-				"Its planet world is ${planet.planetWorldName}"
+				"Its planet world is ${planet.enteredWorldName}"
 		)
 	}
 
@@ -328,23 +415,7 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("info")
 	@CommandCompletion("@planets")
 	fun onInfo(sender: CommandSender, planet: CachedPlanet) {
-		sender.sendMessage(ofChildren(
-			text(planet.name, DARK_GREEN), newline(),
-			text("  Sun: ", GRAY), text(planet.sun.name, AQUA), newline(),
-			text("  Space World: ", GRAY), text(planet.spaceWorldName, AQUA), newline(),
-			text("  Planet World: ", GRAY), text(planet.planetWorldName, AQUA), newline(),
-			text("  Rogue: ", GRAY), text(planet.rogue, AQUA), newline(),
-			text("  Fixed location: ", GRAY), text("${planet.x}, ${planet.z}", AQUA), newline(),
-			text("  Size: ", GRAY), text(planet.size, AQUA), newline(),
-			text("  Atmosphere Density: ", GRAY), text(planet.cloudDensity, AQUA), newline(),
-			text("  Atmosphere Radius: ", GRAY), text(planet.atmosphereRadius, AQUA), newline(),
-			text("  Atmosphere Materials: ", GRAY), text(planet.cloudMaterials.map { it.material }.joinToString { it.toString() }, AQUA), newline(),
-			text("  Crust Radius: ", GRAY), text(planet.crustRadius, AQUA), newline(),
-			text("  Crust Materials: ", GRAY), text(planet.crustMaterials.map { it.material }.joinToString { it.toString() }, AQUA), newline(),
-			text("  Description: ", GRAY), text(planet.description, AQUA)
-				.hoverEvent(text(planet.description))
-				.clickEvent(ClickEvent.copyToClipboard(planet.description))
-		))
+		sender.sendMessage(planet.formatInformation())
 	}
 
 	@Suppress("Unused")
@@ -352,14 +423,12 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandCompletion("@planets")
 	fun onOrbit(sender: CommandSender, planet: CachedPlanet) {
 		val spaceWorld = planet.spaceWorld ?: throw InvalidCommandArgument("That planet's space world isn't loaded!")
+		failIf(planet !is OrbitingCelestialBody) { "Planet ${planet.name} can't orbit!" }
 
 		val elapsedNanos = measureNanoTime {
-			if (planet.rogue) {
-				planet.setLocation(true)
-			} else {
-				planet.orbit(true)
-			}
+			(planet as OrbitingCelestialBody).orbit(true)
 		}
+
 		spaceWorld.save()
 		SpaceMap.refresh()
 
@@ -419,7 +488,9 @@ object PlanetCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandCompletion("@planets")
 	fun onDelete(sender: CommandSender, planet: CachedPlanet) {
 		planet.erase()
-		Planet.delete(planet.databaseId)
+
+		planet.delete()
+
 		Space.reload()
 		sender.success("Deleted planet ${planet.name}")
 	}

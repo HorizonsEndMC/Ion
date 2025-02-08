@@ -16,8 +16,8 @@ import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
@@ -47,7 +47,7 @@ object StarshipsCommand : SLCommand() {
 			PlayerStarshipData::captain eq sender.slPlayerId,
 			or(
 				PlayerStarshipData::serverName eq null,
-				PlayerStarshipData::serverName eq IonServer.configuration.serverName
+				PlayerStarshipData::serverName eq ConfigurationFiles.serverConfiguration().serverName
 			))
 		).toList()
 
@@ -62,7 +62,7 @@ object StarshipsCommand : SLCommand() {
 			PlayerStarshipData::levelName eq world.name,
 			or(
 				PlayerStarshipData::serverName eq null,
-				PlayerStarshipData::serverName eq IonServer.configuration.serverName
+				PlayerStarshipData::serverName eq ConfigurationFiles.serverConfiguration().serverName
 			))
 		).toList()
 
@@ -78,7 +78,7 @@ object StarshipsCommand : SLCommand() {
 			PlayerStarshipData::captain eq user,
 			or(
 				PlayerStarshipData::serverName eq null,
-				PlayerStarshipData::serverName eq IonServer.configuration.serverName
+				PlayerStarshipData::serverName eq ConfigurationFiles.serverConfiguration().serverName
 			))
 		).toList()
 

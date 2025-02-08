@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
-import net.horizonsend.ion.server.features.custom.items.CustomItems.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.GameMode
@@ -24,8 +25,8 @@ object CustomBlockListeners : SLEventListener() {
 
         val hand = event.hand
         val itemStack = player.inventory.getItem(hand).clone()
-        val item: net.horizonsend.ion.server.features.custom.items.CustomBlockItem = itemStack.customItem as? net.horizonsend.ion.server.features.custom.items.CustomBlockItem ?: return
-        val blockData: BlockData = item.getCustomBlock()?.blockData ?: return
+        val item: CustomBlockItem = itemStack.customItem as? CustomBlockItem ?: return
+        val blockData: BlockData = item.getCustomBlock().blockData
 
         event.block.location.block.setBlockData(blockData, true)
     }

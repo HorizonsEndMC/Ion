@@ -7,8 +7,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.utils.configuration.Configuration
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.server.command.SLCommand
 import org.bukkit.command.CommandSender
 import kotlin.reflect.KMutableProperty
@@ -18,7 +17,6 @@ import kotlin.reflect.jvm.javaType
 
 @CommandAlias("ion")
 @CommandPermission("ion.config")
-@Suppress("unused")
 object ConfigurationCommands : SLCommand() {
 	private val starshipTypes = StarshipTypeBalancing::class.memberProperties
 	private val starshipBalancingOptions = StarshipBalancing::class.memberProperties
@@ -61,7 +59,7 @@ object ConfigurationCommands : SLCommand() {
 			return
 		}
 
-		val starshipBalancing = starshipType.get(IonServer.starshipBalancing) as? StarshipBalancing ?: return sender.userError("$starshipType is not StarshipBalancing!")
+		val starshipBalancing = starshipType.get(ConfigurationFiles.starshipBalancing()) as? StarshipBalancing ?: return sender.userError("$starshipType is not StarshipBalancing!")
 
 		try { setField(field, starshipBalancing, value) } catch (e: Throwable) { return sender.userError("Error: ${e.message}") }
 
@@ -86,7 +84,7 @@ object ConfigurationCommands : SLCommand() {
 			return
 		}
 
-		val starshipBalancing = (starshipType.get(IonServer.starshipBalancing) as? StarshipBalancing)?.weapons ?: return sender.userError("$starshipType is not StarshipBalancing!")
+		val starshipBalancing = (starshipType.get(ConfigurationFiles.starshipBalancing()) as? StarshipBalancing)?.weapons ?: return sender.userError("$starshipType is not StarshipBalancing!")
 		val weapon = weaponType.get(starshipBalancing) as? StarshipWeapons.StarshipWeapon  ?: return sender.userError("$starshipType is not StarshipBalancing!")
 
 		try { setField(field, weapon, value) } catch (e: Throwable) { return sender.userError("Error: ${e.message}") }
@@ -138,7 +136,7 @@ object ConfigurationCommands : SLCommand() {
 			return
 		}
 
-		val starshipBalancing = starshipType.get(IonServer.starshipBalancing) as? StarshipBalancing ?: return sender.userError("$starshipType is not StarshipBalancing!")
+		val starshipBalancing = starshipType.get(ConfigurationFiles.starshipBalancing()) as? StarshipBalancing ?: return sender.userError("$starshipType is not StarshipBalancing!")
 
 		val fieldValue = field.getter.call(starshipBalancing)
 		sender.success("$starshipTypeName's $fieldName is $fieldValue")
@@ -162,7 +160,7 @@ object ConfigurationCommands : SLCommand() {
 			return
 		}
 
-		val starshipBalancing = (starshipType.get(IonServer.starshipBalancing) as? StarshipBalancing)?.weapons ?: return sender.userError("$starshipType is not StarshipBalancing!")
+		val starshipBalancing = (starshipType.get(ConfigurationFiles.starshipBalancing()) as? StarshipBalancing)?.weapons ?: return sender.userError("$starshipType is not StarshipBalancing!")
 		val weapon = weaponType.get(starshipBalancing) as? StarshipWeapons.StarshipWeapon  ?: return sender.userError("$starshipType is not StarshipBalancing!")
 
 		val fieldValue = field.getter.call(weapon)
@@ -171,23 +169,14 @@ object ConfigurationCommands : SLCommand() {
 
 	@Subcommand("config save")
 	fun configSave(sender: CommandSender) {
-		Configuration.save(IonServer.configuration, IonServer.configurationFolder, "server.json")
-		Configuration.save(IonServer.pvpBalancing, IonServer.configurationFolder, "pvpbalancing.json")
-		Configuration.save(IonServer.starshipBalancing, IonServer.configurationFolder, "starshipbalancing.json")
+		ConfigurationFiles.saveToDisk()
 
 		sender.success("Saved configs with current runtime values.")
 	}
 
 	@Subcommand("config reload")
 	fun onConfigReload(sender: CommandSender) {
-		IonServer.configuration = Configuration.load(IonServer.configurationFolder, "server.json")
-		IonServer.globalGassesConfiguration = Configuration.load(IonServer.configurationFolder, "gasses.json")
-		IonServer.tradeConfiguration = Configuration.load(IonServer.configurationFolder, "trade.json")
-		IonServer.aiSpawningConfiguration = Configuration.load(IonServer.configurationFolder, "aiships.json")
-		IonServer.pvpBalancing = Configuration.load(IonServer.configurationFolder, "pvpbalancing.json")
-		IonServer.starshipBalancing = Configuration.load(IonServer.configurationFolder, "starshipbalancing.json")
-		IonServer.aiContextConfig = Configuration.load(IonServer.configurationFolder, "aiContexts.json")
-		IonServer.aiSteeringConfig= Configuration.load(IonServer.configurationFolder, "aiSteering.json")
+		kotlin.runCatching { ConfigurationFiles.reload() }.onFailure { sender.sendMessage(formatException(it)) }
 
 		reloadOthers()
 

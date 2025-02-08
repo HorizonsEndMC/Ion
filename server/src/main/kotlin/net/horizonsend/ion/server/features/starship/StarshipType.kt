@@ -1,14 +1,22 @@
 package net.horizonsend.ion.server.features.starship
 
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipBalancing
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
-import net.horizonsend.ion.server.miscellaneous.utils.setDisplayNameAndGet
-import net.horizonsend.ion.server.miscellaneous.utils.setLoreAndGet
+import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
+import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -31,10 +39,16 @@ enum class StarshipType(
 	val concretePercent: Double = 0.3,
 	val crateLimitMultiplier: Double,
 
-	menuItemMaterial: Material,
-	val isWarship: Boolean,
-	val eventship: Boolean = false,
-	val poweroverrider: Double = 1.0,
+	val menuItemRaw: Supplier<ItemStack>,
+	val displayInMainMenu: Boolean = true,
+	val menuSubclasses: Supplier<List<StarshipType>> = Supplier { listOf() },
+	val typeCategory: TypeCategory,
+
+	val eventShip: Boolean = false,
+	val powerOverrider: Double = 1.0,
+
+	val requiredWorldFlags: Set<WorldFlag> = setOf(),
+	val disallowedWorldFlags: Set<WorldFlag> = setOf(),
 
 	val maxMiningLasers: Int = 0,
 	val miningLaserTier: Int = 0,
@@ -51,12 +65,13 @@ enum class StarshipType(
 		containerPercent = 0.25,
 		concretePercent = 0.0,
 		crateLimitMultiplier = 0.125,
-		menuItemMaterial = Material.DEAD_BUSH,
-		isWarship = false,
+		menuItemRaw = { ItemStack(Material.DEAD_BUSH) },
+		menuSubclasses = { listOf(AI_SPEEDER) },
+		typeCategory = TypeCategory.SPECIALTY,
 		color = "#ffff32",
 		overridePermission = "ion.ships.override.1",
-		poweroverrider = 0.0,
-		balancingSupplier = IonServer.starshipBalancing::speeder
+		powerOverrider = 0.0,
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::speeder
 	),
 	AI_SPEEDER(
 		displayName = "Speeder",
@@ -65,13 +80,14 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.5,
 		crateLimitMultiplier = 0.125,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = false,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.SPECIALTY,
 		color = "#ffff32",
-		poweroverrider = 0.0,
+		powerOverrider = 0.0,
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.speeder",
-		balancingSupplier = IonServer.starshipBalancing::speeder
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::speeder
 	),
 	STARFIGHTER(
 		displayName = "Starfighter",
@@ -81,12 +97,13 @@ enum class StarshipType(
 		minLevel = 1,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.IRON_NUGGET,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.IRON_NUGGET) },
+		menuSubclasses = { listOf(AI_STARFIGHTER) },
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#ff8000",
 		overridePermission = "ion.ships.override.1",
 		dynmapIcon = "starfighter",
-		balancingSupplier = IonServer.starshipBalancing::starfighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::starfighter
 	),
 	AI_STARFIGHTER(
 		displayName = "Starfighter",
@@ -96,13 +113,14 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.5,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#ff8000",
 		dynmapIcon = "starfighter",
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.starfighter",
-		balancingSupplier = IonServer.starshipBalancing::aiStarfighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiStarfighter
 	),
 	GUNSHIP(
 		displayName = "Gunship",
@@ -112,12 +130,13 @@ enum class StarshipType(
 		minLevel = 10,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.IRON_INGOT,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.IRON_INGOT) },
+		menuSubclasses = { listOf(AI_GUNSHIP) },
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#ff4000",
 		overridePermission = "ion.ships.override.10",
 		dynmapIcon = "gunship",
-		balancingSupplier = IonServer.starshipBalancing::gunship
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::gunship
 	),
 	AI_GUNSHIP(
 		displayName = "Gunship",
@@ -127,13 +146,14 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.5,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#ff4000",
 		dynmapIcon = "gunship",
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.gunship",
-		balancingSupplier = IonServer.starshipBalancing::aiGunship
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiGunship
 	),
 	CORVETTE(
 		displayName = "Corvette",
@@ -143,14 +163,15 @@ enum class StarshipType(
 		minLevel = 20,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.IRON_BLOCK,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.IRON_TRAPDOOR) },
+		menuSubclasses = { listOf(AI_CORVETTE, AI_CORVETTE_LOGISTIC) },
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#ff0000",
 		overridePermission = "ion.ships.override.20",
 		dynmapIcon = "corvette",
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
-		balancingSupplier = IonServer.starshipBalancing::corvette
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::corvette
 	),
 	AI_CORVETTE(
 		displayName = "Corvette",
@@ -160,15 +181,16 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.5,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#ff0000",
 		dynmapIcon = "corvette",
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.corvette",
-		balancingSupplier = IonServer.starshipBalancing::aiCorvette
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiCorvette
 	),
 	AI_CORVETTE_LOGISTIC(
 		displayName = "Logistic Corvette",
@@ -178,15 +200,16 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.5,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.IRON_DOOR) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#ff0000",
 		dynmapIcon = "corvette",
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.corvette",
-		balancingSupplier = IonServer.starshipBalancing::aiCorvetteLogistic
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiCorvetteLogistic
 	),
 	FRIGATE(
 		displayName = "Frigate",
@@ -196,14 +219,15 @@ enum class StarshipType(
 		minLevel = 40,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.LAPIS_BLOCK,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.IRON_DOOR) },
+		menuSubclasses = { listOf(AI_FRIGATE, AI_CORVETTE_LOGISTIC) },
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#c00000",
 		overridePermission = "ion.ships.override.40",
 		dynmapIcon = "frigate",
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
-		balancingSupplier = IonServer.starshipBalancing::frigate
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::frigate
 	),
 	AI_FRIGATE(
 		displayName = "Frigate",
@@ -213,15 +237,16 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.5,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#c00000",
 		dynmapIcon = "frigate",
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.frigate",
-		balancingSupplier = IonServer.starshipBalancing::aiFrigate
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiFrigate
 	),
 	DESTROYER(
 		displayName = "Destroyer",
@@ -231,14 +256,15 @@ enum class StarshipType(
 		minLevel = 60,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.GOLD_BLOCK,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.IRON_BLOCK) },
+		menuSubclasses = { listOf(AI_DESTROYER) },
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#800000",
 		overridePermission = "ion.ships.override.60",
 		dynmapIcon = "destroyer",
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
-		balancingSupplier = IonServer.starshipBalancing::destroyer
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::destroyer
 	),
 	AI_DESTROYER(
 		displayName = "Destroyer",
@@ -248,15 +274,16 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.5,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#800000",
 		dynmapIcon = "destroyer",
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.destroyer",
-		balancingSupplier = IonServer.starshipBalancing::aiDestroyer
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiDestroyer
 	),
 	CRUISER(
 		displayName = "Cruiser",
@@ -266,15 +293,16 @@ enum class StarshipType(
 		minLevel = 70,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.COPPER_BLOCK,
-		isWarship = true,
+		menuItemRaw = { CustomItemRegistry.STEEL_PLATE.constructItemStack() },
+		menuSubclasses = { listOf(AI_CRUISER) },
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#FFD700",
 		overridePermission = "ion.ships.override.70",
 		dynmapIcon = "cruiser",
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.CRUISER,
-		balancingSupplier = IonServer.starshipBalancing::cruiser,
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::cruiser,
 	),
 	AI_CRUISER(
 		displayName = "Cruiser",
@@ -284,8 +312,9 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.5,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#FFD700",
 		dynmapIcon = "cruiser",
 		maxMiningLasers = 1,
@@ -293,7 +322,7 @@ enum class StarshipType(
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.cruiser",
 		sinkProvider = SinkProvider.SinkProviders.CRUISER,
-		balancingSupplier = IonServer.starshipBalancing::aiCruiser
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiCruiser
 	),
 	BATTLECRUISER(
 		displayName = "Battlecruiser",
@@ -303,15 +332,17 @@ enum class StarshipType(
 		minLevel = 80,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.0,
-		menuItemMaterial = Material.DIAMOND_BLOCK,
-		isWarship = true,
+		menuItemRaw = { CustomItemRegistry.STEEL_BLOCK.constructItemStack() },
+		menuSubclasses = { listOf(AI_BATTLECRUISER) },
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#0c5ce8",
 		dynmapIcon = "battlecruiser",
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		overridePermission = "ion.ships.override.80",
 		sinkProvider = SinkProvider.SinkProviders.BATTLECRUISER,
-		balancingSupplier = IonServer.starshipBalancing::battlecruiser
+		requiredWorldFlags = setOf(WorldFlag.SPACE_WORLD),
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::battlecruiser
 	),
 	AI_BATTLECRUISER(
 		displayName = "Battlecruiser",
@@ -321,8 +352,9 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.5,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#0c5ce8",
 		dynmapIcon = "battlecruiser",
 		maxMiningLasers = 1,
@@ -330,7 +362,7 @@ enum class StarshipType(
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.battlecruiser",
 		sinkProvider = SinkProvider.SinkProviders.BATTLECRUISER,
-		balancingSupplier = IonServer.starshipBalancing::aiBattlecruiser
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiBattlecruiser
 	),
 	BATTLESHIP(
 		displayName = "Battleship",
@@ -340,11 +372,12 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.015,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.EMERALD_BLOCK,
-		isWarship = true,
+		menuItemRaw = { CustomItemRegistry.STEEL_MODULE.constructItemStack() },
+		menuSubclasses = { listOf(AI_BATTLESHIP) },
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#0c1cff",
 		overridePermission = "ion.ships.override.battleship",
-		balancingSupplier = IonServer.starshipBalancing::battleship
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::battleship
 	),
 	AI_BATTLESHIP(
 		displayName = "Battleship",
@@ -354,12 +387,13 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.5,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#0c1cff",
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.battleship",
-		balancingSupplier = IonServer.starshipBalancing::aiBattleship
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiBattleship
 	),
 	DREADNOUGHT(
 		displayName = "Dreadnought",
@@ -369,11 +403,12 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.015,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.NETHERITE_BLOCK,
-		isWarship = true,
+		menuItemRaw = { CustomItemRegistry.STEEL_ASSEMBLY.constructItemStack() },
+		menuSubclasses = { listOf(AI_DREADNOUGHT) },
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#320385",
 		overridePermission = "ion.ships.override.dreadnought",
-		balancingSupplier = IonServer.starshipBalancing::dreadnought
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::dreadnought
 	),
 	AI_DREADNOUGHT(
 		displayName = "Dreadnought",
@@ -383,12 +418,29 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.5,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#320385",
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.dreadnought",
-		balancingSupplier = IonServer.starshipBalancing::aiDreadnought
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiDreadnought
+	),
+	TANK(
+		displayName = "Tank",
+		icon = SidebarIcon.STARFIGHTER_ICON.text,
+		minSize = 50,
+		maxSize = 500,
+		minLevel = 100,
+		containerPercent = 0.025,
+		crateLimitMultiplier = 0.0,
+		concretePercent = 0.0,
+		menuItemRaw = { CustomItemRegistry.GAS_CANISTER_EMPTY.constructItemStack() },
+		typeCategory = TypeCategory.SPECIALTY,
+		color = "#ff8000",
+		overridePermission = "ion.ships.tank",
+		dynmapIcon = "starfighter",
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::tank
 	),
 	SHUTTLE(
 		displayName = "Shuttle",
@@ -398,15 +450,16 @@ enum class StarshipType(
 		minLevel = 1,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
-		menuItemMaterial = Material.PRISMARINE_SHARD,
-		isWarship = false,
+		menuItemRaw = { ItemStack(Material.PRISMARINE_SHARD) },
+		menuSubclasses = { listOf(AI_SHUTTLE) },
+		typeCategory = TypeCategory.TRADE_SHIP,
 		color = "#008033",
 		overridePermission = "ion.ships.override.1",
-		poweroverrider = 0.7,
+		powerOverrider = 0.7,
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		dynmapIcon = "shuttle",
-		balancingSupplier = IonServer.starshipBalancing::shuttle
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::shuttle
 	),
 	AI_SHUTTLE(
 		displayName = "Shuttle",
@@ -416,16 +469,17 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = false,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.TRADE_SHIP,
 		color = "#008033",
-		poweroverrider = 0.7,
+		powerOverrider = 0.7,
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		dynmapIcon = "shuttle",
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.shuttle",
-		balancingSupplier = IonServer.starshipBalancing::aiShuttle
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiShuttle
 	),
 	TRANSPORT(
 		displayName = "Transport",
@@ -435,15 +489,16 @@ enum class StarshipType(
 		minLevel = 10,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
-		menuItemMaterial = Material.PRISMARINE_CRYSTALS,
-		isWarship = false,
+		menuItemRaw = { ItemStack(Material.PRISMARINE_CRYSTALS) },
+		menuSubclasses = { listOf(AI_TRANSPORT) },
+		typeCategory = TypeCategory.TRADE_SHIP,
 		color = "#008066",
 		overridePermission = "ion.ships.override.10",
-		poweroverrider = 0.7,
+		powerOverrider = 0.7,
 		maxMiningLasers = 1,
 		miningLaserTier = 2,
 		dynmapIcon = "transport",
-		balancingSupplier = IonServer.starshipBalancing::transport
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::transport
 	),
 	AI_TRANSPORT(
 		displayName = "Transport",
@@ -453,16 +508,17 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = false,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.TRADE_SHIP,
 		color = "#008066",
-		poweroverrider = 0.7,
+		powerOverrider = 0.7,
 		maxMiningLasers = 1,
 		miningLaserTier = 2,
 		dynmapIcon = "transport",
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.transport",
-		balancingSupplier = IonServer.starshipBalancing::aiTransport
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiTransport
 	),
 	LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
@@ -472,15 +528,16 @@ enum class StarshipType(
 		minLevel = 20,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
-		menuItemMaterial = Material.PRISMARINE_SLAB,
-		isWarship = false,
+		menuItemRaw = { ItemStack(Material.PRISMARINE_SLAB) },
+		menuSubclasses = { listOf(AI_LIGHT_FREIGHTER) },
+		typeCategory = TypeCategory.TRADE_SHIP,
 		color = "#008099",
 		overridePermission = "ion.ships.override.20",
-		poweroverrider = 0.7,
+		powerOverrider = 0.7,
 		maxMiningLasers = 2,
 		miningLaserTier = 2,
 		dynmapIcon = "light_freighter",
-		balancingSupplier = IonServer.starshipBalancing::lightFreighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::lightFreighter
 	),
 	AI_LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
@@ -490,16 +547,17 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = false,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.TRADE_SHIP,
 		color = "#008099",
-		poweroverrider = 0.7,
+		powerOverrider = 0.7,
 		maxMiningLasers = 2,
 		miningLaserTier = 2,
 		dynmapIcon = "light_freighter",
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.light_freighter",
-		balancingSupplier = IonServer.starshipBalancing::aiLightFreighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiLightFreighter
 	),
 	MEDIUM_FREIGHTER(
 		displayName = "Medium Freighter",
@@ -509,15 +567,15 @@ enum class StarshipType(
 		minLevel = 40,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
-		menuItemMaterial = Material.PRISMARINE_STAIRS,
-		isWarship = false,
+		menuItemRaw = { ItemStack(Material.PRISMARINE_STAIRS) },
+		typeCategory = TypeCategory.TRADE_SHIP,
 		color = "#0080cc",
-		poweroverrider = 0.7,
+		powerOverrider = 0.7,
 		maxMiningLasers = 4,
 		miningLaserTier = 3,
 		dynmapIcon = "medium_freighter",
 		overridePermission = "ion.ships.ai.medium_freighter",
-		balancingSupplier = IonServer.starshipBalancing::mediumFreighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::mediumFreighter
 	),
 	HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
@@ -527,15 +585,16 @@ enum class StarshipType(
 		minLevel = 60,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
-		menuItemMaterial = Material.PRISMARINE,
-		isWarship = false,
+		menuItemRaw = { ItemStack(Material.PRISMARINE) },
+		menuSubclasses = { listOf(AI_HEAVY_FREIGHTER) },
+		typeCategory = TypeCategory.TRADE_SHIP,
 		color = "#0080ff",
 		overridePermission = "ion.ships.override.60",
-		poweroverrider = 0.7,
+		powerOverrider = 0.7,
 		maxMiningLasers = 6,
 		miningLaserTier = 3,
 		dynmapIcon = "heavy_freighter",
-		balancingSupplier = IonServer.starshipBalancing::heavyFreighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::heavyFreighter
 	),
 	AI_HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
@@ -545,16 +604,17 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.045,
 		crateLimitMultiplier = 1.0,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = false,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.TRADE_SHIP,
 		color = "#0080ff",
-		poweroverrider = 0.7,
+		powerOverrider = 0.7,
 		maxMiningLasers = 6,
 		miningLaserTier = 3,
 		dynmapIcon = "heavy_freighter",
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.heavy_freighter",
-		balancingSupplier = IonServer.starshipBalancing::aiHeavyFreighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiHeavyFreighter
 	),
 	BARGE(
 		displayName = "Barge",
@@ -564,15 +624,17 @@ enum class StarshipType(
 		minLevel = 80,
 		containerPercent = 0.075,
 		crateLimitMultiplier = 0.0,
-		menuItemMaterial = Material.SEA_LANTERN,
-		isWarship = false,
+		menuItemRaw = { ItemStack(Material.SEA_LANTERN) },
+		menuSubclasses = { listOf(AI_BARGE) },
+		typeCategory = TypeCategory.TRADE_SHIP,
 		color = "#0c5ce8",
 		dynmapIcon = "barge",
 		maxMiningLasers = 10,
 		miningLaserTier = 4,
 		overridePermission = "ion.ships.override.80",
 		sinkProvider = SinkProvider.SinkProviders.BARGE,
-		balancingSupplier = IonServer.starshipBalancing::barge
+		requiredWorldFlags = setOf(WorldFlag.SPACE_WORLD),
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::barge
 	),
 	AI_BARGE(
 		displayName = "Barge",
@@ -582,8 +644,9 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.075,
 		crateLimitMultiplier = 0.0,
-		menuItemMaterial = Material.SPONGE,
-		isWarship = false,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.TRADE_SHIP,
 		color = "#0c5ce8",
 		dynmapIcon = "barge",
 		maxMiningLasers = 10,
@@ -591,7 +654,7 @@ enum class StarshipType(
 		concretePercent = 0.0,
 		overridePermission = "ion.ships.ai.barge",
 		sinkProvider = SinkProvider.SinkProviders.BARGE,
-		balancingSupplier = IonServer.starshipBalancing::barge
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::barge
 	),
 	PLATFORM(
 		displayName = "Platform",
@@ -601,12 +664,12 @@ enum class StarshipType(
 		containerPercent = 100.0,
 		crateLimitMultiplier = 100.0,
 		concretePercent = 0.0,
-		menuItemMaterial = Material.BEDROCK,
-		isWarship = false,
-			color = "#ffffff",
-			overridePermission = "ion.ships.override.1",
-			poweroverrider = 0.0,
-			balancingSupplier = IonServer.starshipBalancing::platformBalancing
+		menuItemRaw = { ItemStack(Material.BEDROCK) },
+		typeCategory = TypeCategory.MISC,
+		color = "#ffffff",
+		overridePermission = "ion.ships.platform",
+		powerOverrider = 0.0,
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::platformBalancing
 	),
 	UNIDENTIFIEDSHIP(
 		displayName = "UnidentifiedShip",
@@ -616,13 +679,13 @@ enum class StarshipType(
 		containerPercent = 100.0,
 		concretePercent = 0.0,
 		crateLimitMultiplier = 100.0,
-		menuItemMaterial = Material.MUD_BRICKS,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.MUD_BRICKS) },
+		typeCategory = TypeCategory.MISC,
 		color = "#d0e39d",
 		overridePermission = "ion.ships.eventship",
-		eventship = true,
-		poweroverrider = 2.0,
-		balancingSupplier = IonServer.starshipBalancing::eventShipBalancing
+		eventShip = true,
+		powerOverrider = 2.0,
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::eventShipBalancing
 	),
 	AI_SHIP(
 		displayName = "AI Ship",
@@ -632,38 +695,43 @@ enum class StarshipType(
 		containerPercent = 0.025,
 		concretePercent = 0.0,
 		crateLimitMultiplier = 0.5,
-		menuItemMaterial = Material.SCULK,
-		isWarship = true,
+		menuItemRaw = { ItemStack(Material.SCULK) },
+		typeCategory = TypeCategory.MISC,
 		color = "#d000d0",
 		overridePermission = "ion.ships.aiship",
-		balancingSupplier = IonServer.starshipBalancing::eventShipBalancing
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::eventShipBalancing
 	);
 
 	val displayNameMiniMessage: String get() = "<$color>$displayName</$color>"
 	val displayNameComponent: Component get() = text(displayName, TextColor.fromHexString(color))
 
-	val menuItem: ItemStack = ItemStack(menuItemMaterial)
-		.setDisplayNameAndGet(displayNameComponent)
-		.setLoreAndGet(listOf(
-			"Min Block Count: $minSize",
-			"Max Block Count: $maxSize",
-			"Min Level: $minLevel",
-			"Max Container:Total Blocks Ratio: $containerPercent",
-			"Crate Limit Multiplier: $crateLimitMultiplier",
-			"Sneak Fly Accel Distance: ${balancingSupplier.get().sneakFlyAccelDistance}",
-			"Max Sneak Fly Accel: ${balancingSupplier.get().maxSneakFlyAccel}",
-			"Interdiction Range: ${balancingSupplier.get().interdictionRange}",
-			"Hyperspace Range Multiplier: ${balancingSupplier.get().hyperspaceRangeMultiplier}",
-			"Warship: $isWarship"
+	val menuItem: ItemStack get() = menuItemRaw.get()
+		.updateDisplayName(displayNameComponent)
+		.updateLore(listOf(
+			ofChildren(text("Minimum Block Count: ", HE_MEDIUM_GRAY), text(minSize, AQUA), newline()),
+			ofChildren(text("Maximum Block Count: ", HE_MEDIUM_GRAY), text(maxSize, AQUA), newline()),
+			empty(),
+			text("Right click to view subclasses", AQUA),
+			text("Left click to select", AQUA),
 		))
 
 	fun canUse(player: Player): Boolean =
-			player.hasPermission("starships.anyship") || player.hasPermission(overridePermission) || Levels[player] >= minLevel
+		player.hasPermission("starships.anyship") ||
+			player.hasPermission(overridePermission) ||
+			Levels[player] >= minLevel
+
+	fun canPilotIn(world: IonWorld): Boolean {
+		val flags = world.configuration.flags
+
+		if (requiredWorldFlags.toMutableSet().subtract(flags).isNotEmpty()) return false
+		return disallowedWorldFlags.none { flags.contains(it) }
+	}
 
 	companion object {
 		fun getUnlockedTypes(player: Player): List<StarshipType> = entries
 			.filter { it.canUse(player) }
-			.filter { !it.eventship.and(!player.hasPermission("ion.ships.eventship")) }
+			.filter { !it.eventShip.and(!player.hasPermission("ion.ships.eventship")) }
 			.sortedBy { it.minLevel }
+
 	}
 }

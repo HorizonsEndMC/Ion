@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai
 
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
@@ -11,6 +12,9 @@ import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.input.AIShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.movement.MovementHandler
+import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
@@ -38,6 +42,13 @@ import kotlin.reflect.KClass
 class AIController private constructor(starship: ActiveStarship, damager: Damager) : Controller(damager, starship, "AIController") {
 	override var pilotName: Component = text("AI Controller")
 	private var color: Color = super.getColor()
+	override var movementHandler: MovementHandler = ShiftFlightHandler(this,AIShiftFlightInput(this))
+		set(value) {
+			field.destroy()
+			field = value
+			value.create()
+			information("Updated control mode to ${value.name}")
+		}
 
 	fun setColor(color: Color) { this.color = color }
 
@@ -59,7 +70,6 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 		this.manualWeaponSets.addAll(manualWeaponSets)
 		this.autoWeaponSets.addAll(autoWeaponSets)
 	}
-
 	/** AI modules are a collection of classes that are ticked along with the starship. These can control movement, positioning, pathfinding, or more. */
 	val coreModules: MutableMap<KClass<out AIModule>, AIModule> = mutableMapOf()
 
@@ -69,14 +79,6 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 	fun addUtilModule(module: AIModule) = utilModules.add(module)
 
 	fun <T: AIModule> getUtilModule(clazz: Class<T>) = utilModules.filterIsInstance(clazz).firstOrNull()
-
-	// Control variables
-	override var isSneakFlying: Boolean = false
-
-	override var pitch: Float = 0f
-	override var yaw: Float = 0f
-
-	override var selectedDirectControlSpeed: Int = 1
 
 	var lastRotation: Long = 0L
 
@@ -189,10 +191,6 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 
 	override fun toString(): String {
 		return "AI Controller[Display Name: ${pilotName.plainText()} Starship: ${starship.identifier}]"
-	}
-
-	override fun directControlMovementVector(direction: BlockFace): Vector {
-		return getCoreModuleByType<SteeringSolverModule>()?.directControlMovementVector(direction) ?: Vector(0.0,0.0,0.0)
 	}
 
 	fun <T: AIModule> getCoreModuleSupplier(identifier: KClass<out AIModule>): Supplier<T> = Supplier {

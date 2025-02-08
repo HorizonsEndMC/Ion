@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
-import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.megavex.scoreboardlibrary.api.sidebar.component.LineDrawable
 import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import org.bukkit.entity.Player
@@ -26,7 +26,7 @@ class LocationSidebarComponent(player: Player) : SidebarComponent {
     override fun draw(drawable: LineDrawable) {
         val line = ofChildren(
             text(playerPosition, AQUA),
-            text(playerDirection, GRAY),
+            text(playerDirection, WHITE),
             text(padding)
         )
         drawable.drawLine(line)

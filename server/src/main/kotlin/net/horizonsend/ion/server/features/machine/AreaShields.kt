@@ -31,7 +31,7 @@ import kotlin.math.min
 import kotlin.math.sqrt
 
 object AreaShields : IonServerComponent() {
-	val bypassShieldEvents = ConcurrentHashMap.newKeySet<BlockExplodeEvent>()
+	val bypassShieldEvents = ConcurrentHashMap.newKeySet<EntityExplodeEvent>()
 	private var explosionPowerOverride: Double? = null
 
 	override fun onEnable() {
@@ -117,13 +117,12 @@ object AreaShields : IonServerComponent() {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	fun onBlockExplode(event: BlockExplodeEvent) {
-		if (bypassShieldEvents.remove(event)) return
-
 		handleExplosion(event.block.location, event.blockList(), event.yield, event)
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	fun onEntityExplode(event: EntityExplodeEvent) {
+		if (bypassShieldEvents.remove(event)) return
 		handleExplosion(event.location, event.blockList(), event.yield, event)
 	}
 
@@ -184,7 +183,7 @@ object AreaShields : IonServerComponent() {
 
 			val center = location.toCenterLocation()
 
-			val particle = Particle.REDSTONE
+			val particle = Particle.DUST
 			val dustOptions = Particle.DustOptions(color, 100f)
 			center.world.spawnParticle(particle, location, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
 			shielded = true

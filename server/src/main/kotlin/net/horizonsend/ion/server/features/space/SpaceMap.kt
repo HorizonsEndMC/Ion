@@ -2,8 +2,9 @@ package net.horizonsend.ion.server.features.space
 
 import net.horizonsend.ion.common.utils.text.createHtmlLink
 import net.horizonsend.ion.common.utils.text.wrapStyle
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.space.body.OrbitingCelestialBody
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit.getPluginManager
@@ -63,13 +64,12 @@ object SpaceMap : IonServerComponent(true) {
 			)?.run {
 				setFillStyle(0.25, Color.fromRGB(128, 128, 128).asRGB()) // translucent gray fill
 				setLineStyle(0, 0.0, 0) // no line weight, zero opacity, and black color
-
 			}
 		}
 
-		for (planet in Space.getPlanets()) {
-			val serverName = IonServer.configuration.serverName
-			val link = "https://$serverName.horizonsend.net/?worldname=${planet.planetWorldName}"
+		for (planet in Space.getAllPlanets()) {
+			val serverName = ConfigurationFiles.serverConfiguration().serverName
+			val link = "https://$serverName.horizonsend.net/?worldname=${planet.enteredWorldName}"
 
 			val planetDescription = "${planet.name} \n \n ${planet.description}"
 
@@ -88,27 +88,31 @@ object SpaceMap : IonServerComponent(true) {
 
 			planetMarker.description = planetDescription
 
-			// planet ring
-			markerSet.createCircleMarker(
-				"${planet.id}_orbit",
-				"${planet.name}'s orbit path",
-				false, // Allow html markup in icon labels
-				planet.spaceWorldName,
-				planet.sun.location.x.toDouble(),
-				planet.sun.location.y.toDouble(),
-				planet.sun.location.z.toDouble(),
-				planet.orbitDistance.toDouble(),
-				planet.orbitDistance.toDouble(),
-				false // persistent
-			)?.run {
-				setFillStyle(0.0, 0) // make the inside empty
+			if (planet is OrbitingCelestialBody) {
+				val parent = planet.getParentLocation()
 
-				val random = Random(planet.name.hashCode())
-				val r = random.nextInt(128, 255)
-				val g = random.nextInt(1, 20)
-				val b = random.nextInt(128, 255)
-				val color = Color.fromRGB(r, g, b)
-				setLineStyle(lineWeight, lineOpacity, color.asRGB())
+				// planet ring
+				markerSet.createCircleMarker(
+					"${planet.id}_orbit",
+					"${planet.name}'s orbit path",
+					false, // Allow html markup in icon labels
+					planet.spaceWorldName,
+					parent.x.toDouble(),
+					parent.y.toDouble(),
+					parent.z.toDouble(),
+					planet.orbitDistance.toDouble(),
+					planet.orbitDistance.toDouble(),
+					false // persistent
+				)?.run {
+					setFillStyle(0.0, 0) // make the inside empty
+
+					val random = Random(planet.name.hashCode())
+					val r = random.nextInt(128, 255)
+					val g = random.nextInt(1, 20)
+					val b = random.nextInt(128, 255)
+					val color = Color.fromRGB(r, g, b)
+					setLineStyle(lineWeight, lineOpacity, color.asRGB())
+				}
 			}
 
 			// gravity well indicator
@@ -135,7 +139,7 @@ object SpaceMap : IonServerComponent(true) {
 				"${planet.id}_escape",
 				wrapStyle(createHtmlLink("View Space", escapeLink, "#FFFFFF"), "h3", "font-size:50"),
 				true,
-				planet.planetWorldName,
+				planet.enteredWorldName,
 				-100.0,
 				384.0,
 				-100.0,

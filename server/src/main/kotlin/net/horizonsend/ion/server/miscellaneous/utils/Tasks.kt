@@ -5,6 +5,7 @@ import org.bukkit.Bukkit
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import java.time.ZonedDateTime
+import java.util.Date
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 import java.util.concurrent.ThreadFactory
@@ -12,8 +13,8 @@ import java.util.concurrent.ThreadFactory
 object Tasks {
 	fun checkMainThread() = check(Bukkit.isPrimaryThread()) { "Attempted to call non-thread-safe method async!" }
 
-	fun asyncOrImmediate(immediate: Boolean = false, block: () -> Unit) = if (immediate) block() else async(block)
-	fun syncOrImmediate(immediate: Boolean = false, block: () -> Unit) = if (immediate) block() else sync(block)
+	fun asyncOrImmediate(immediate: Boolean = false, block: () -> Unit) = if (immediate) syncBlocking(block) else async(block)
+	fun syncOrImmediate(immediate: Boolean = false, block: () -> Unit) = if (immediate) syncBlocking(block) else sync(block)
 
 	fun async(block: () -> Unit) {
 		Bukkit.getScheduler().runTaskAsynchronously(IonServer, block)
@@ -63,6 +64,24 @@ object Tasks {
 		IonServer.slF4JLogger.info("SCHEDULED TASK FOR $time, SUPPLIED HOUR OF DAY $hour, ACTUAL HOUR OF DAY ${time.hour}")
 
 		asyncDelay(delay / 50L, block)
+	}
+
+	fun asyncAt(time: Date, block: () -> Unit) {
+		val now = System.currentTimeMillis()
+		require(time.time > now)
+
+		val delay = time.time - now
+
+		asyncDelay(delay / 50L, block)
+	}
+
+	fun asyncAt(time: Date, runnable: BukkitRunnable) {
+		val now = System.currentTimeMillis()
+		require(time.time > now)
+
+		val delay = time.time - now
+
+		runnable.runTaskLaterAsynchronously(IonServer, delay / 50L)
 	}
 
 	fun bukkitRunnable(block: BukkitRunnable.() -> Unit): BukkitRunnable = object : BukkitRunnable() {

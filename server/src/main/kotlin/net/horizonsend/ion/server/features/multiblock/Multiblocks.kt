@@ -93,6 +93,7 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.LandingGearMulti
 import net.horizonsend.ion.server.features.multiblock.type.misc.LargeTractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblockMirrored
+import net.horizonsend.ion.server.features.multiblock.type.misc.MediumTractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.type.misc.OdometerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ShipFactoryMultiblock
@@ -160,6 +161,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TopLightTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TopQuadTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TopTriTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TurretBaseMultiblock
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
@@ -248,6 +250,7 @@ object Multiblocks : IonServerComponent() {
 			AirlockMultiblock,
 			ExpandableAirlock,
 			TractorBeamMultiblock,
+			MediumTractorBeamMultiblock,
 			LargeTractorBeamMultiblock,
 
 			ShipFactoryMultiblock,
@@ -293,6 +296,7 @@ object Multiblocks : IonServerComponent() {
 			BottomIonTurretMultiblock,
 			TopQuadTurretMultiblock,
 			BottomQuadTurretMultiblock,
+			TurretBaseMultiblock,
 			HorizontalRocketStarshipWeaponMultiblock,
 			UpwardRocketStarshipWeaponMultiblock,
 			DownwardRocketStarshipWeaponMultiblock,

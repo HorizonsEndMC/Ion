@@ -5,8 +5,8 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.subStringBetween
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
@@ -15,31 +15,27 @@ import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 @CommandPermission("ion.broadcast")
 object IonBroadcastCommand : SLCommand() {
 	@Subcommand("global chat")
-	@Suppress("unused")
-	fun onNotifyGlobal(message: String) {
+    fun onNotifyGlobal(message: String) {
 		Notify.chatAndGlobal(miniMessage().deserialize(message))
 	}
 
 	@Subcommand("global embed")
-	@Suppress("unused")
-	fun onNotifyGlobalEmbed(message: String) {
+    fun onNotifyGlobalEmbed(message: String) {
 		val embed = processString(message)
 
-		Discord.sendEmbed(IonServer.discordSettings.globalChannel, embed)
+		Discord.sendEmbed(ConfigurationFiles.discordSettings().globalChannel, embed)
 	}
 
 	@Subcommand("events embed")
-	@Suppress("unused")
-	fun onNotifyEventsEmbed(message: String) {
+    fun onNotifyEventsEmbed(message: String) {
 		val embed = processString(message)
 
-		Discord.sendEmbed(IonServer.discordSettings.eventsChannel, embed)
+		Discord.sendEmbed(ConfigurationFiles.discordSettings().eventsChannel, embed)
 	}
 
 	@Subcommand("events message")
-	@Suppress("unused")
-	fun onNotifyEventsMessage(message: String) {
-		Discord.sendMessage(IonServer.discordSettings.eventsChannel, message)
+    fun onNotifyEventsMessage(message: String) {
+		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, message)
 	}
 
 	/**

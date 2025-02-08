@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.ai.configuration
 
 import kotlinx.serialization.Serializable
-import net.horizonsend.ion.server.configuration.IntegerAmount
+import net.horizonsend.ion.server.configuration.util.IntegerAmount
 import net.horizonsend.ion.server.features.ai.reward.AICreditRewardProvider
 import net.horizonsend.ion.server.features.ai.reward.AIItemRewardProvider
 import net.horizonsend.ion.server.features.ai.reward.AIXPRewardProvider

@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.starship.hyperspace
 
 import net.horizonsend.ion.common.utils.text.createHtmlLink
 import net.horizonsend.ion.common.utils.text.wrapStyle
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.miscellaneous.utils.isDynmapEnabled
 import net.horizonsend.ion.server.miscellaneous.utils.markerAPI
 import net.horizonsend.ion.server.miscellaneous.utils.registerIcon
@@ -25,8 +25,8 @@ object HyperspaceBeacons : IonServerComponent(true) {
 
 		set = markerAPI.createMarkerSet("beacons", "Beacons", null, false)
 
-		for (beacon in IonServer.configuration.beacons) {
-			val serverName = IonServer.configuration.serverName
+		for (beacon in ConfigurationFiles.serverConfiguration().beacons) {
+			val serverName = ConfigurationFiles.serverConfiguration().serverName
 			val link = "https://$serverName.horizonsend.net/?worldname=${beacon.destination.world}&x=${beacon.destination.x}&z=${beacon.destination.z}"
 
 			set.createMarker(

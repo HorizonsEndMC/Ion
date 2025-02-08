@@ -2,18 +2,22 @@ package net.horizonsend.ion.server.features.player
 
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
+import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.lineBreak
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -21,6 +25,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.U
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -37,8 +43,7 @@ import java.time.Duration
 import java.util.UUID
 
 object CombatTimer : IonServerComponent() {
-
-	private val PVP_TIMER_MINS = Duration.ofMinutes(10)
+	private val PVP_TIMER_MINS = Duration.ofMinutes(5)
 	private val NPC_TIMER_MINS = Duration.ofMinutes(2).plusSeconds(30)
 	private const val SVP_ENTER_COMBAT_DIST = 500.0
 	private const val MAINTAIN_COMBAT_DIST = 1000.0
@@ -54,7 +59,7 @@ object CombatTimer : IonServerComponent() {
 	private val pvpTimer = mutableMapOf<UUID, Long>()
 
 	override fun onEnable() {
-		enabled = IonServer.featureFlags.combatTimers
+		enabled = ConfigurationFiles.featureFlags().combatTimers
 
 		if (!enabled) return
 
@@ -80,12 +85,12 @@ object CombatTimer : IonServerComponent() {
 
 				// Only actively controlled warships can cause proximity triggered combat tags
 				if (pilotedStarship != null && pilotedStarship.controller !is UnpilotedController &&
-					pilotedStarship.type.isWarship) {
+					pilotedStarship.type.typeCategory == TypeCategory.WAR_SHIP) {
 					val starshipCom  = pilotedStarship.centerOfMass.toLocation(player.world)
 
-					if (pilotedStarship.isInterdicting) {
+					if (pilotedStarship.isInterdicting && pilotedStarship.world.hasFlag(WorldFlag.SPACE_WORLD)) {
 						// Interdicting ships will place combat tags on other player starships that are within the well range, are less than neutral, and not in a protected city
-						toPlayersInRadius(starshipCom, pilotedStarship.interdictionRange.toDouble()) { otherPlayer ->
+						toPlayersInRadius(starshipCom, Interdiction.starshipInterdictionRangeEquation(pilotedStarship)) { otherPlayer ->
 							val otherStarship = PilotedStarships[otherPlayer]
 							if (otherStarship != null &&
 								!ProtectionListener.isProtectedCity(otherStarship.centerOfMass.toLocation(otherPlayer.world))) {
@@ -151,6 +156,7 @@ object CombatTimer : IonServerComponent() {
 		if (!enabled) return
 
 		if (!isNpcCombatTagged(player) && PlayerCache[player].enableCombatTimerAlerts) {
+			player.alert("You are now in combat (NPC)")
 			player.sendMessage(npcTimerAlertComponent(reason))
 		}
 
@@ -164,6 +170,7 @@ object CombatTimer : IonServerComponent() {
 		if (!enabled) return
 
 		if (!isPvpCombatTagged(player) && PlayerCache[player].enableCombatTimerAlerts) {
+			player.alert("You are now in combat (PVP)")
 			player.sendMessage(pvpTimerAlertComponent(reason))
 		}
 
@@ -179,6 +186,8 @@ object CombatTimer : IonServerComponent() {
 	fun evaluatePvp(attacker: Player, defender: Player, reason: String, neutralTriggersCombat: Boolean = true, tagAttacker: Boolean = true) {
 		if (!enabled) return
 		if (attacker == defender) return
+
+		if (attacker.hasPermission("group.dutymode") || defender.hasPermission("group.dutymode")) return
 
 		// don't run for combat NPCs
 		if (defender.hasMetadata("NPC")) return
@@ -218,6 +227,8 @@ object CombatTimer : IonServerComponent() {
 	 */
 	fun evaluateSvs(shooter: Damager, defendingStarship: ActiveStarship) {
 		if (!enabled) return
+		if (shooter is PlayerDamager && shooter.player.hasPermission("group.dutymode")) return
+		if (defendingStarship.playerPilot?.hasPermission("group.dutymode") == true) return
 
 		if (shooter is AIShipDamager && defendingStarship.controller is PlayerController) {
 			// refresh NPC combat timer if attacker is AI and defender is player
@@ -303,27 +314,25 @@ object CombatTimer : IonServerComponent() {
 	 * Constructor for the alert message received when obtaining an NPC combat tag
 	 */
 	private fun npcTimerAlertComponent(reason: String): Component {
-		return ofChildren(
+		return template(text("""
+			{0}
+			{1}
+			Reason: {2}
+			Expiry: {3}
+			Consequences: {4}
+			{5}
+		""".trimIndent(), HE_MEDIUM_GRAY),
 			lineBreak(45),
-			newline(),
 			text(repeatString(" ", 8) + "YOU ARE NOW IN COMBAT (NPC)", GOLD).decorate(BOLD),
-			newline(),
-			text("Reason: ", HE_MEDIUM_GRAY),
 			text(reason, HE_LIGHT_BLUE),
-			newline(),
-			text("Expiry: ", HE_MEDIUM_GRAY),
 			text("${NPC_TIMER_MINS.toMinutesPart()}m ${NPC_TIMER_MINS.toSecondsPart().toString().padStart(2, '0')}s", GOLD),
-			newline(),
-			text("Consequences: ", HE_MEDIUM_GRAY),
-			text("[Hover]", HE_LIGHT_BLUE)
-				.hoverEvent(ofChildren(
-					text("- You cannot release your ship", HE_LIGHT_BLUE),
-					newline(),
-					text("- You cannot claim territories, create settlements, or create space stations", HE_LIGHT_BLUE),
-					newline(),
-					text("- You cannot kill yourself", HE_LIGHT_BLUE),
-					)),
-			newline(),
+			text("[Hover]", HE_LIGHT_BLUE).hoverEvent(ofChildren(
+				text("- You cannot release your ship", HE_LIGHT_BLUE),
+				newline(),
+				text("- You cannot claim territories, create settlements, or create space stations", HE_LIGHT_BLUE),
+				newline(),
+				text("- You cannot kill yourself", HE_LIGHT_BLUE),
+			)),
 			lineBreak(45),
 		)
 	}
@@ -357,6 +366,8 @@ object CombatTimer : IonServerComponent() {
 					text("- You or your Combat NPC can be killed within safe zones", HE_LIGHT_BLUE),
 					newline(),
 					text("- Combat NPCs created when you log off will last for the duration of your combat tag", HE_LIGHT_BLUE),
+					newline(),
+					text("- Cannot use Power Drill, Drill, Mining Laser, Decomposer, or Ship Factory", HE_LIGHT_BLUE),
 					newline(),
 					text("- Remaining within ${MAINTAIN_COMBAT_DIST.toInt()} blocks of unfriendly and enemy starships will refresh your combat tag", HE_LIGHT_BLUE),
 					)),

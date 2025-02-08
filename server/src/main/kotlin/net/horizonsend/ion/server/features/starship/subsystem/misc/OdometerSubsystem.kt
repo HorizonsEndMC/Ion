@@ -34,7 +34,8 @@ class OdometerSubsystem(
 
 	private fun getSign() = getBlockIfLoaded(starship.world, pos.x, pos.y, pos.z)?.state as? Sign
 
-	override fun onMovement(movement: StarshipMovement) = Tasks.sync {
+	override fun onMovement(movement: StarshipMovement, success: Boolean) = Tasks.sync {
+		if (!success) return@sync
 		if (movement.newWorld != null) return@sync
 		if (movement is RotationMovement) return@sync
 

@@ -120,7 +120,7 @@ class LocusScheduler(
 		val world = Bukkit.getWorld(worlds.random())!!
 		val border = world.worldBorder
 
-		val planets = Space.getPlanets()
+		val planets = Space.getAllPlanets()
 			.filter { it.spaceWorld?.uid == world.uid }
 			.plus(Space.getStars().filter { it.spaceWorld?.uid == world.uid })
 

@@ -7,8 +7,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.megavex.scoreboardlibrary.api.sidebar.component.LineDrawable
 import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import org.bukkit.entity.Player
@@ -20,7 +20,7 @@ class StarshipsSidebarComponent2(starship: ActiveControlledStarship, player: Pla
     private val pmThruster = starship.reactor.powerDistributor.thrusterPortion
     private val acceleration = starship.cruiseData.getRealAccel(pmThruster).roundToHundredth()
     private val isDirectControlEnabled = starship.isDirectControlEnabled
-    private val isCruising = StarshipCruising.isCruising(starship)
+    private val isCruising = StarshipCruising.isCruisingAndAccelerating(starship)
     private val isStopped = starship.cruiseData.velocity.lengthSquared() == 0.0
     private val isBlocked = starship.lastBlockedTime > (System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(StarshipCruising.SECONDS_PER_CRUISE.toLong()))
     private val compassComponent = StarshipsSidebar.compassComponent(starship, player)
@@ -32,10 +32,10 @@ class StarshipsSidebarComponent2(starship: ActiveControlledStarship, player: Pla
             compassComponent[1][1],
             space(),
             compassComponent[1][2],
-            text(" | ", DARK_GRAY),
+            text(" | ", GRAY),
 
             // Speed
-            text("SPD: ", GRAY),
+            text("SPD: ", WHITE),
             StarshipsSidebar.speedComponent(isDirectControlEnabled, isCruising, isStopped, isBlocked),
             space(),
             StarshipsSidebar.maxSpeedComponent(currentVelocity, maxVelocity, acceleration)

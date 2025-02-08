@@ -7,6 +7,8 @@ import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.input.AIInput
+import net.horizonsend.ion.server.features.starship.control.input.DirectControlInput
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -47,7 +49,7 @@ class SteeringSolverModule(
 		if (!AIDebugModule.canShipsMove) {
 			controller.starship.setDirectControlEnabled(false)
 			StarshipCruising.stopCruising(controller,starship)
-			controller.isSneakFlying = false
+			AIControlUtils.shiftFlyInDirection(controller, null)
 			return
 		}
 
@@ -61,40 +63,15 @@ class SteeringSolverModule(
 		}
     }
 
-    private fun shiftFlyInDirection(direction: Vector) = Tasks.sync {
-        AIControlUtils.shiftFlyInDirection(controller, direction)
-    }
-
 	private fun updateDirectControl() {
-		if (!controller.starship.isDirectControlEnabled)	controller.starship.setDirectControlEnabled(true)
-		controller.isSneakFlying = !difficulty.speedDebuff
+		if (!controller.starship.isDirectControlEnabled)  controller.starship.setDirectControlEnabled(true)
+		val isBoosting = !difficulty.speedDebuff
 
 		//map onto player slots
-		controller.selectedDirectControlSpeed = round(throttle * 8.0).toInt() + 1
-		if (thrust.dot(ship.forward.direction) < 0.0) controller.selectedDirectControlSpeed = 0 //ship wants to go backwards
-	}
-
-	fun directControlMovementVector(direction: BlockFace) : Vector {
-		val thrust = steeringModule.thrustOut
-
-		val rotated = thrust.clone()//.multiply(-1.0)
-		rotated.y *= 1.5 //stretch y a little so that ship can strafe up and down more easily
-		when (direction) {
-			BlockFace.NORTH -> rotated.rotateAroundX(PI/2)
-			BlockFace.SOUTH -> rotated.rotateAroundX(-PI/2)
-			BlockFace.WEST -> rotated.rotateAroundZ(-PI/2)
-			BlockFace.EAST -> rotated.rotateAroundZ(PI/2)
-			else ->rotated.rotateAroundX(0.0)
-		}
-		rotated.setY(0)
-		//if (forwardX) rotated.rotateAroundY(PI/4) // Z -> X
-		if (rotated.lengthSquared() < 1e-2) return Vector(0.0,0.0,0.0)
-		rotated.normalize()
-
-		rotated.x = round(rotated.x)
-		rotated.z = round(rotated.z)
-
-		return rotated
+		var selectedSpeed = round(throttle * 8.0).toInt() + 1
+		if (thrust.dot(ship.forward.direction) < -0.01) selectedSpeed = 0 //ship wants to go backwards
+		val data = DirectControlInput.DirectControlData(thrust,selectedSpeed,isBoosting)
+		(controller.movementHandler.input as? AIInput)?.updateInput(data)
 	}
 
 	private fun handleCruise() {
@@ -112,7 +89,9 @@ class SteeringSolverModule(
 
 		if (dx == 0 && dz == 0) { // moving up or down
 			StarshipCruising.stopCruising(controller,starship)
-			if (throttle > 0.5) shiftFlyInDirection(thrust) else AIControlUtils.shiftFlyInDirection(controller,null)
+			if (throttle > 0.5) {
+				AIControlUtils.shiftFlyInDirection(controller,thrust)
+			} else {AIControlUtils.shiftFlyInDirection(controller,null)}
 			return
 		}
 
@@ -129,7 +108,7 @@ class SteeringSolverModule(
 
 		StarshipCruising.startCruising(controller, starship,onPlane)
 
-		if (finalSpeed > starship.balancing.maxSneakFlyAccel) shiftFlyInDirection(thrust)
+		if (finalSpeed > starship.balancing.maxSneakFlyAccel) AIControlUtils.shiftFlyInDirection(controller,thrust)
 	}
 
 	/** to prevent overloading the rotation queue on diagonals fix the diagonal slightly

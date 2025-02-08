@@ -2,36 +2,30 @@ package net.horizonsend.ion.server.features.starship.subsystem.misc
 
 import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractMagazineMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.subsystem.AbstractMultiblockSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.block.Sign
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
-import org.bukkit.inventory.ItemStack
 
-class MagazineSubsystem(starship: ActiveStarship, sign: Sign, multiblock: AbstractMagazineMultiblock) :
-	AbstractMultiblockSubsystem<AbstractMagazineMultiblock>(starship, sign, multiblock) {
-	fun isAmmoAvailable(itemStack: ItemStack): Boolean {
-		val inventory = getInventory()
-			?: return false
-
-		return inventory.containsAtLeast(itemStack, itemStack.amount)
+class MagazineSubsystem(starship: ActiveStarship, sign: Sign, multiblock: AbstractMagazineMultiblock) : AbstractMultiblockSubsystem<AbstractMagazineMultiblock>(starship, sign, multiblock) {
+	fun isAmmoAvailable(subsystem: AmmoConsumingWeaponSubsystem): Boolean {
+		if (starship.controller is AIController) return true
+		val inventory = getInventory() ?: return false
+		return inventory.filterNotNull().any(subsystem::isRequiredAmmo)
 	}
 
-	fun tryConsumeAmmo(itemStack: ItemStack): Boolean {
+	fun tryConsumeAmmo(subsystem: AmmoConsumingWeaponSubsystem): Boolean {
+		if (starship.controller is AIController) return true
 		val inventory = getInventory()
 			?: return false
 
-		if (!inventory.containsAtLeast(itemStack, itemStack.amount)) {
-			return false
-		}
+		val ammoItem = inventory.filterNotNull().firstOrNull(subsystem::isRequiredAmmo) ?: return false
+		subsystem.consumeAmmo(ammoItem)
 
-		// clone bc:
-		// "It is known that in some implementations this method will also set the
-		// inputted argument amount to the number of that item not removed from slots."
-		// - javadoc for this method
-		inventory.removeItemAnySlot(itemStack.clone())
 		return true
 	}
 

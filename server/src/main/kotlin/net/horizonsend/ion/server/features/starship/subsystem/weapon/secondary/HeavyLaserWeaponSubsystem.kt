@@ -34,15 +34,18 @@ class HeavyLaserWeaponSubsystem(
 	override val aimDistance: Int = balancing.aimDistance
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
-		checkNotNull(target)
 		HeavyLaserProjectile(starship, getName(), loc, dir, shooter, target, aimDistance, sound).fire()
-	}
-
-	override fun getRequiredAmmo(): ItemStack {
-		return ItemStack(Material.REDSTONE, 2)
 	}
 
 	override fun getName(): Component {
 		return Component.text("Heavy Laser")
+	}
+
+	override fun isRequiredAmmo(item: ItemStack): Boolean {
+		return requireMaterial(item, Material.REDSTONE, 2)
+	}
+
+	override fun consumeAmmo(itemStack: ItemStack) {
+		consumeItem(itemStack, 2)
 	}
 }

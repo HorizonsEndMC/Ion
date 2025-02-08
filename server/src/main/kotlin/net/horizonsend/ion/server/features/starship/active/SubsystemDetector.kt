@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.checklist.BargeReactorMultiBlock
 import net.horizonsend.ion.server.features.multiblock.type.checklist.BattleCruiserReactorMultiblock
@@ -19,6 +21,7 @@ import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventS
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.SphereShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.SubsystemMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TurretBaseMultiblock
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
@@ -48,8 +51,18 @@ import net.kyori.adventure.audience.Audience
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.block.BlockFace.EAST
+import org.bukkit.block.BlockFace.NORTH
+import org.bukkit.block.BlockFace.NORTH_EAST
+import org.bukkit.block.BlockFace.NORTH_WEST
+import org.bukkit.block.BlockFace.SOUTH
+import org.bukkit.block.BlockFace.SOUTH_EAST
+import org.bukkit.block.BlockFace.SOUTH_WEST
+import org.bukkit.block.BlockFace.WEST
 import org.bukkit.block.HangingSign
 import org.bukkit.block.Sign
+import org.bukkit.block.data.Directional
+import java.util.EnumSet
 import java.util.LinkedList
 import java.util.Locale
 
@@ -61,6 +74,7 @@ object SubsystemDetector {
 		val potentialWeaponBlocks = LinkedList<Block>()
 		val potentialSignBlocks = LinkedList<Block>()
 		val potentialLandingGearBlocks = LinkedList<Block>()
+		val potentialTurretBases = LinkedList<Block>()
 
 		starship.iterateBlocks { x, y, z ->
 			val block = starship.world.getBlockAt(x, y, z)
@@ -81,9 +95,12 @@ object SubsystemDetector {
 			}
 
 			if (type == Material.OBSERVER) potentialLandingGearBlocks.add(block)
+
+			if (type == Material.LOOM) potentialTurretBases.add(block)
 		}
 
-		starship.reactor = ReactorSubsystem(starship)
+		val oversizeModifier = if (starship.initialBlockCount > starship.type.maxSize) ReactorSubsystem.OVERSIZE_POWER_PENALTY else 1.0
+		starship.reactor = ReactorSubsystem(starship, oversizeModifier)
 		starship.subsystems += starship.reactor
 
 		for (block in potentialThrusterBlocks) {
@@ -95,6 +112,9 @@ object SubsystemDetector {
 		for (block in potentialLandingGearBlocks) {
 			detectLandingGear(starship, block)
 		}
+//		for (block in potentialTurretBases) {
+//			detectCustomTurretBase(starship, block)
+//		}
 		for (block in potentialSignBlocks) {
 			try {
 				detectSign(starship, block)
@@ -105,6 +125,9 @@ object SubsystemDetector {
 		}
 
 		filterSubsystems(starship)
+
+		// Do this after all subsystems are detected so that they can be captured
+		starship.customTurrets.forEach { it.detectTurret() }
 	}
 
 	private fun detectSign(starship: ActiveControlledStarship, block: Block) {
@@ -229,11 +252,23 @@ object SubsystemDetector {
 	}
 
 	fun detectLandingGear(starship: ActiveControlledStarship, block: Block) {
-		val matches = LandingGearMultiblock.blockMatchesStructure(block, BlockFace.NORTH)
+		val matches = LandingGearMultiblock.blockMatchesStructure(block, NORTH)
 
 		if (!matches) return
 
-		starship.subsystems += LandingGearMultiblock.createSubsystem(starship, Vec3i(block.location), BlockFace.NORTH)
+		starship.subsystems += LandingGearMultiblock.createSubsystem(starship, Vec3i(block.location), NORTH)
+	}
+
+	fun detectCustomTurretBase(starship: ActiveControlledStarship, block: Block) {
+		val matches = EnumSet.of(NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST).map { block.getRelative(it) }.all {
+			it.customBlock == CustomBlocks.TITANIUM_BLOCK
+		}
+
+		if (!matches) return
+
+		val facing = (block.blockData as Directional).facing
+
+		starship.subsystems += TurretBaseMultiblock.createSubsystem(starship, Vec3i(block.x, block.y, block.z), facing)
 	}
 
 	private fun isDuplicate(starship: ActiveControlledStarship, subsystem: StarshipSubsystem): Boolean {
@@ -285,5 +320,6 @@ object SubsystemDetector {
 		starship.subsystems.filterIsInstanceTo(starship.gravityWells)
 		starship.subsystems.filterIsInstanceTo(starship.drills)
 		starship.subsystems.filterIsInstanceTo(starship.fuelTanks)
+		starship.subsystems.filterIsInstanceTo(starship.customTurrets)
 	}
 }

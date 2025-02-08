@@ -69,11 +69,15 @@ class PhaserWeaponSubsystem(
 		hopper.setBlockData(hopperData, false)
 	}
 
-	override fun getRequiredAmmo(): ItemStack {
-		return ItemStack(Material.PRISMARINE_CRYSTALS, 4)
-	}
-
 	override fun getName(): Component {
 		return Component.text("Phaser")
+	}
+
+	override fun isRequiredAmmo(item: ItemStack): Boolean {
+		return requireMaterial(item, Material.PRISMARINE_CRYSTALS, 4)
+	}
+
+	override fun consumeAmmo(itemStack: ItemStack) {
+		consumeItem(itemStack, 4)
 	}
 }

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.ai.module.steering
 
-import net.horizonsend.ion.server.IonServer.aiContextConfig
-import net.horizonsend.ion.server.IonServer.aiSteeringConfig
+
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.steering.context.AvoidIlliusContext
@@ -25,9 +25,8 @@ class CapitalSteeringModule(
 	difficulty : DifficultyModule,
 	generalTarget: Supplier<AITarget?>,
 	orbitDist : Supplier<Double>,
-	override val config: AISteeringConfiguration.BasicSteeringConfiguration = aiSteeringConfig.frigateBasicSteeringConfiguration
+	override val configSupplier: Supplier<AISteeringConfiguration.BasicSteeringConfiguration> = Supplier(ConfigurationFiles.aiSteeringConfiguration()::frigateBasicSteeringConfiguration)
 ) : BasicSteeringModule(controller,difficulty, generalTarget){
-
 
 	init {
 		/**
@@ -52,11 +51,13 @@ class CapitalSteeringModule(
 		 */
 		contexts["danger"]= BlankContext()
 		contexts["wander"] = WanderContext(ship,offset)
-		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this, aiContextConfig.capitalOffsetSeekContextConfiguration, offsetSupplier = orbitDist)
+		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this,
+			Supplier(ConfigurationFiles.aiContextConfiguration()::capitalOffsetSeekContextConfiguration), offsetSupplier = orbitDist)
 		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty)
 		contexts["fleetGravity"] = FleetGravityContext(ship)
 		contexts["avoidIllius"] = AvoidIlliusContext(ship)
-		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty, aiContextConfig.capitalShieldAwarenessContextConfiguration)
+		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty,
+			Supplier(ConfigurationFiles.aiContextConfiguration()::capitalShieldAwarenessContextConfiguration))
 		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed },this)
 		contexts["borderDanger"]= BorderDangerContext(ship)
 		contexts["worldBlockDanger"]= WorldBlockDangerContext(ship)

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.ai.module.steering
 
-import net.horizonsend.ion.server.IonServer.aiSteeringConfig
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.steering.context.AvoidIlliusContext
@@ -24,7 +24,7 @@ class GunshipSteeringModule(
 	difficulty : DifficultyModule,
 	generalTarget: Supplier<AITarget?>,
 	orbitDist : Supplier<Double>,
-	override val config: AISteeringConfiguration.BasicSteeringConfiguration = aiSteeringConfig.gunshipBasicSteeringConfiguration
+	override val configSupplier: Supplier<AISteeringConfiguration.BasicSteeringConfiguration> = Supplier(ConfigurationFiles.aiSteeringConfiguration()::gunshipBasicSteeringConfiguration)
 ) : BasicSteeringModule(controller,difficulty, generalTarget){
 
 	init {
@@ -50,7 +50,7 @@ class GunshipSteeringModule(
 		 */
 		contexts["danger"]= BlankContext()
 		contexts["wander"] = WanderContext(ship,offset)
-		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this)
+		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this,offsetSupplier = orbitDist)
 		contexts["faceSeek"]= FaceSeekContext(ship, generalTarget,difficulty)
 		contexts["fleetGravity"] = FleetGravityContext(ship)
 		contexts["avoidIllius"] = AvoidIlliusContext(ship)

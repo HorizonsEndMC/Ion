@@ -6,7 +6,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.Style.style
 import net.kyori.adventure.text.format.TextDecoration.BOLD
@@ -22,7 +21,7 @@ class CombatTagSidebarComponent(player: Player) : SidebarComponent {
 	private fun headerComponent() : Component {
 		return ofChildren(
 			text("Combat").style(style(BOLD).color(YELLOW)),
-			text(" | ", DARK_GRAY)
+			text(" | ", NamedTextColor.GRAY)
 		)
 	}
 
@@ -37,7 +36,7 @@ class CombatTagSidebarComponent(player: Player) : SidebarComponent {
 			headerComponent(),
 			if (npcCombatTagTime > 0) {
 				ofChildren(
-					text("NPC: ", NamedTextColor.GRAY),
+					text("NPC: ", NamedTextColor.WHITE),
 					timeComponent(npcCombatTagTime, NamedTextColor.GOLD),
 					Component.space()
 				)
@@ -45,7 +44,7 @@ class CombatTagSidebarComponent(player: Player) : SidebarComponent {
 
 			if (pvpCombatTagTime > 0) {
 				ofChildren(
-					text("PvP: ", NamedTextColor.GRAY),
+					text("PvP: ", NamedTextColor.WHITE),
 					timeComponent(pvpCombatTagTime, NamedTextColor.DARK_RED),
 				)
 			} else Component.empty()

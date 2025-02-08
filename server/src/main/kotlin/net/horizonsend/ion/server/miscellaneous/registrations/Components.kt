@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.redis.RedisActions
+import net.horizonsend.ion.server.data.migrator.DataMigrators
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.cache.Caches
@@ -10,7 +11,9 @@ import net.horizonsend.ion.server.features.chat.ChannelSelections
 import net.horizonsend.ion.server.features.chat.ChatChannel
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.HudIcons
-import net.horizonsend.ion.server.features.client.networking.serverbound.PacketHandler
+import net.horizonsend.ion.server.features.client.display.modular.MultiBlockDisplay
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.SwordListener
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.cargotrade.CrateRestrictions
@@ -22,7 +25,6 @@ import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.collectors.CollectionMissions
 import net.horizonsend.ion.server.features.economy.collectors.Collectors
 import net.horizonsend.ion.server.features.gas.Gasses
-import net.horizonsend.ion.server.features.gear.Gear
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.machine.PowerMachines
@@ -35,12 +37,12 @@ import net.horizonsend.ion.server.features.misc.Shuttles
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.multiblock.Multiblocks
 import net.horizonsend.ion.server.features.multiblock.type.crafting.MultiblockRecipes
-import net.horizonsend.ion.server.features.multiblock.type.misc.Halloweeeeeen
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.NationsMasterTasks
-import net.horizonsend.ion.server.features.nations.StationSieges
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
+import net.horizonsend.ion.server.features.nations.sieges.StationSieges
 import net.horizonsend.ion.server.features.npcs.StarshipDealers
 import net.horizonsend.ion.server.features.npcs.TutorialNPCs
 import net.horizonsend.ion.server.features.npcs.traits.NPCTraits
@@ -49,6 +51,7 @@ import net.horizonsend.ion.server.features.player.CombatNPCs
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.DutyModeMonitor
 import net.horizonsend.ion.server.features.player.EventLogger
+import net.horizonsend.ion.server.features.player.NMSAchievements
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -79,6 +82,7 @@ import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeacons
+import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCooldown
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.transport.TransportConfig
@@ -109,8 +113,11 @@ val components: List<IonComponent> = listOf(
 	NPCTraits,
 	CombatNPCs,
 
+	CustomItemRegistry,
+	DataMigrators,
 	CustomRecipes,
 	Crafting,
+	NMSAchievements,
 
 	Space,
 	Orbits,
@@ -119,6 +126,7 @@ val components: List<IonComponent> = listOf(
 	Regions,
 
 	StationSieges,
+	SolarSieges,
 
 	Multiblocks,
 	MultiblockRecipes,
@@ -131,7 +139,7 @@ val components: List<IonComponent> = listOf(
 	Filters,
 	Wires,
 
-	Gear,
+	SwordListener,
 
 	TradeCities,
 
@@ -184,7 +192,6 @@ val components: List<IonComponent> = listOf(
 	DutyModeMonitor,
 	EventLogger,
 	Sidebar,
-	PacketHandler,
 
 	SpaceMap,
 	NationsMap,
@@ -210,5 +217,6 @@ val components: List<IonComponent> = listOf(
 	Fleets,
 	ContactsJammingSidebar,
 	CombatTimer,
-	Halloweeeeeen,
+	PlanetTeleportCooldown,
+	MultiBlockDisplay,
 )

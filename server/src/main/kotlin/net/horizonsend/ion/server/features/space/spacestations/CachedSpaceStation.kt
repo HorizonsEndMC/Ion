@@ -50,6 +50,7 @@ abstract class CachedSpaceStation<T: SpaceStationInterface<O>, O: DbObject, C: S
 	abstract val ownershipType: String
 
 	abstract val color: Int
+	abstract val borderColor: Int
 
 	abstract fun hasPermission(player: SLPlayerId, permission: SpaceStationPermission): Boolean
 
@@ -117,6 +118,7 @@ class CachedNationSpaceStation(
 	override val ownershipType: String = "Nation"
 
 	override val color: Int get() = NationCache[owner].color
+	override val borderColor: Int get() = color
 
 	override fun hasPermission(player: SLPlayerId, permission: SpaceStationPermission) =
 		NationRole.hasPermission(player, permission.nation)
@@ -144,7 +146,10 @@ class CachedSettlementSpaceStation(
 	override val ownerName: String get() = SettlementCache[owner].name
 	override val ownershipType: String = "Settlement"
 
-	override val color: Int = Color.BLUE.asRGB()
+	override val color: Int = if (SettlementCache[owner].nation != null)
+		NationCache[SettlementCache[owner].nation!!].color
+	else Color.BLUE.asRGB()
+	override val borderColor: Int = Color.BLUE.asRGB()
 
 	override fun hasPermission(player: SLPlayerId, permission: SpaceStationPermission) =
 		SettlementRole.hasPermission(player, permission.settlement)
@@ -172,7 +177,11 @@ class CachedPlayerSpaceStation(
 	override val ownerName = Bukkit.getPlayer(owner.uuid)?.name ?: SLPlayer.getName(owner) ?: error("No such player $owner")
 	override val ownershipType: String = "Player"
 
-	override val color: Int = Color.WHITE.asRGB()
+	override val color: Int = if (SLPlayer[owner]?.nation != null) NationCache[SLPlayer[owner]?.nation!!].color
+	else if (SLPlayer[owner]?.settlement != null) Color.BLUE.asRGB()
+	else Color.WHITE.asRGB()
+
+	override val borderColor: Int = Color.WHITE.asRGB()
 
 	override fun hasPermission(player: SLPlayerId, permission: SpaceStationPermission) = owner == player
 

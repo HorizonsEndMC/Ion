@@ -3,63 +3,36 @@ package net.horizonsend.ion.server
 import co.aikar.commands.PaperCommandManager
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
+import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.configuration.CommonConfig
-import net.horizonsend.ion.common.utils.configuration.Configuration
-import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.common.utils.getUpdateMessage
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.configuration.FeatureFlags
-import net.horizonsend.ion.server.configuration.GlobalGassesConfiguration
-import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
-import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.configuration.StarshipTypeBalancing
-import net.horizonsend.ion.server.configuration.TradeConfiguration
-import net.horizonsend.ion.server.features.ai.configuration.AISpawningConfiguration
-import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextConfiguration
-import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.ConfigurationFiles.configurationFolder
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.generators.bukkit.EmptyChunkGenerator
 import net.horizonsend.ion.server.features.world.generation.generators.bukkit.SpaceBiomeProvider
 import net.horizonsend.ion.server.listener.SLEventListener
-import net.horizonsend.ion.server.miscellaneous.LegacyConfig
 import net.horizonsend.ion.server.miscellaneous.registrations.commands
 import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.horizonsend.ion.server.miscellaneous.registrations.listeners
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.loadConfig
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.generator.BiomeProvider
 import org.bukkit.generator.ChunkGenerator
 import org.bukkit.plugin.java.JavaPlugin
-import java.io.File
+import org.litote.kmongo.setValue
+import xyz.xenondevs.invui.InvUI
 import kotlin.system.measureTimeMillis
 
-val LegacySettings get() = IonServer.legacySettings
-val ServerConfiguration get() = IonServer.configuration
-
-val sharedDataFolder by lazy { File(LegacySettings.sharedFolder).apply { mkdirs() } }
-
 object IonServer : JavaPlugin() {
-	val configurationFolder = dataFolder.resolve("configuration").apply { mkdirs() }
-
-	var featureFlags: FeatureFlags = Configuration.load(configurationFolder, "features.json")
-	var pvpBalancing: PVPBalancingConfiguration = Configuration.load(configurationFolder, "pvpbalancing.json")
-	var starshipBalancing: StarshipTypeBalancing = Configuration.load(configurationFolder, "starshipbalancing.json")
-
-	var configuration: ServerConfiguration = Configuration.load(configurationFolder, "server.json")
-	var globalGassesConfiguration: GlobalGassesConfiguration = Configuration.load(configurationFolder, "gasses.json")
-	var tradeConfiguration: TradeConfiguration = Configuration.load(configurationFolder, "trade.json")
-	var aiSpawningConfiguration: AISpawningConfiguration = Configuration.load(configurationFolder, "aiSpawning.json")
-	var discordSettings: DiscordConfiguration = Configuration.load(configurationFolder, "discord.json")
-	var legacySettings: LegacyConfig = loadConfig(configurationFolder, "config") // Setting
-	var aiContextConfig: AIContextConfiguration = Configuration.load(configurationFolder, "aiContexts.json")
-	var aiSteeringConfig: AISteeringConfiguration = Configuration.load(configurationFolder, "aiSteering.json")
+	val configProvider = ConfigurationFiles // Ensure initialization
 
 	override fun onEnable(): Unit =
 		runCatching(::internalEnable).fold(
@@ -69,7 +42,7 @@ object IonServer : JavaPlugin() {
 					slF4JLogger.info(message)
 
 					try {
-						Discord.sendMessage(discordSettings.changelogChannel,"${configuration.serverName} $message")
+						Discord.sendMessage(ConfigurationFiles.discordSettings().changelogChannel,"${ConfigurationFiles.serverConfiguration().serverName} $message")
 					} catch (e: Exception) {
 						slF4JLogger.error(e.message)
 						e.printStackTrace()
@@ -84,6 +57,7 @@ object IonServer : JavaPlugin() {
 
 	private fun internalEnable() {
 		CommonConfig.init(configurationFolder) // DB Configs
+		InvUI.getInstance().setPlugin(IonServer)
 
 		prefixProvider = { // Audience extensions
 			when (it) {
@@ -108,6 +82,35 @@ object IonServer : JavaPlugin() {
 
 				server.pluginManager.registerEvents(component, IonServer)
 			} else startAndMeasureTime(component)
+		}
+
+		BazaarItem.all().forEach { t -> //TODO Remove this after it does its thing
+			val new = when (t.itemString) {
+				"battery_a" -> "BATTERY_A"
+				"battery_m" -> "BATTERY_M"
+				"battery_g" -> "BATTERY_G"
+				"energy_sword_blue" -> "ENERGY_SWORD_BLUE"
+				"energy_sword_red" -> "ENERGY_SWORD_RED"
+				"energy_sword_yellow" -> "ENERGY_SWORD_YELLOW"
+				"energy_sword_green" -> "ENERGY_SWORD_GREEN"
+				"energy_sword_purple" -> "ENERGY_SWORD_PURPLE"
+				"energy_sword_orange" -> "ENERGY_SWORD_ORANGE"
+				"energy_sword_pink" -> "ENERGY_SWORD_PINK"
+				"energy_sword_black" -> "ENERGY_SWORD_BLACK"
+				"power_module_enviornment" -> "ARMOR_MODIFICATION_ENVIORNMENT"
+				"power_module_night_vision" -> "ARMOR_MODIFICATION_NIGHT_VISION"
+				"power_module_pressure_field" -> "ARMOR_MODIFICATION_PRESSURE_FIELD"
+				"power_module_rocket_boosting" -> "ARMOR_MODIFICATION_ROCKET_BOOSTING"
+				"power_module_shock_absorbing" -> "ARMOR_MODIFICATION_SHOCK_ABSORBING"
+				"power_module_speed_boosting" -> "ARMOR_MODIFICATION_SPEED_BOOSTING"
+				"power_armor_helmet" -> "POWER_ARMOR_HELMET"
+				"power_armor_chestplate" -> "POWER_ARMOR_CHESTPLATE"
+				"power_armor_leggings" -> "POWER_ARMOR_LEGGINGS"
+				"power_armor_boots" -> "POWER_ARMOR_BOOTS"
+				else -> return@forEach
+			}
+
+			BazaarItem.updateById(t._id, setValue(BazaarItem::itemString, new))
 		}
 
 		// The listeners are defined in a separate file for the sake of keeping the main class clean.

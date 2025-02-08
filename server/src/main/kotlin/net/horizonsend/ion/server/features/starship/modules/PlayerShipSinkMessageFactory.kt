@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -50,26 +51,27 @@ class PlayerShipSinkMessageFactory(private val sunkShip: ActiveStarship) : Messa
 
 	private fun sendSinkMessage(killerDamager: Damager, sortedByTime: Iterator<MutableMap.MutableEntry<Damager, ShipKillXP.ShipDamageData>>) {
 		val arena = sunkShip.world.ion.hasFlag(WorldFlag.ARENA)
-		val assists = getAssists(sortedByTime)
+		val assistsData = getAssists(sortedByTime)
 
 		val message = template(
-			text("{0} was sunk by {1} using {2}{3}", RED),
+			text("{0} was sunk by {1} using {2}", RED),
 			formatName(sunkShip),
 			formatName(killerDamager),
 			sunkShip.lastWeaponName ?: text("Unknown Weapon"),
-			formatAssists(assists)
 		)
 
-		if (arena) return IonServer.server.sendMessage(ofChildren(ARENA_PREFIX, message))
+		val assistsMessage = formatAssists(assistsData)
+
+		if (arena) return IonServer.server.sendMessage(ofChildren(ARENA_PREFIX, message, assistsMessage))
 		// The rest is necessary
 
-		Notify.chatAndGlobal(message)
+		Notify.chatAndGlobal(ofChildren(message, assistsMessage))
 
 		val headURL = (sunkShip.controller as? PlayerController)?.player?.name?.let { "https://minotar.net/avatar/$it" }
 		val killedNationColor = sunkShip.controller.damager.color.asRGB()
 
 		val fields = mutableListOf(Field(name = asDiscord(message), value = "", inline = false))
-		if (assists.isNotEmpty()) fields.add(Field("Assisted By:", assists.entries.joinToString("\n") { asDiscord(formatName(it.key)) }))
+		if (assistsData.isNotEmpty()) fields.add(Field("Assisted By:", assistsData.entries.joinToString("\n") { asDiscord(formatName(it.key)) }))
 
 		val embed = Embed(
 			title = "Starship Kill",
@@ -79,8 +81,8 @@ class PlayerShipSinkMessageFactory(private val sunkShip: ActiveStarship) : Messa
 			fields = fields
 		)
 
-		Discord.sendEmbed(IonServer.discordSettings.eventsChannel, embed)
-		Discord.sendEmbed(IonServer.discordSettings.globalChannel, embed)
+		Discord.sendEmbed(ConfigurationFiles.discordSettings().eventsChannel, embed)
+		Discord.sendEmbed(ConfigurationFiles.discordSettings().globalChannel, embed)
 	}
 
 	private fun sendPilotKilledMessage(killer: Damager, sortedByTime: Iterator<MutableMap.MutableEntry<Damager, ShipKillXP.ShipDamageData>>) {
@@ -110,8 +112,8 @@ class PlayerShipSinkMessageFactory(private val sunkShip: ActiveStarship) : Messa
 			fields = fields
 		)
 
-		Discord.sendEmbed(IonServer.discordSettings.eventsChannel, embed)
-		Discord.sendEmbed(IonServer.discordSettings.globalChannel, embed)
+		Discord.sendEmbed(ConfigurationFiles.discordSettings().eventsChannel, embed)
+		Discord.sendEmbed(ConfigurationFiles.discordSettings().globalChannel, embed)
 	}
 
 	private fun getAssists(sortedByTime: Iterator<MutableMap.MutableEntry<Damager, ShipKillXP.ShipDamageData>>): Map<Damager, Component> {

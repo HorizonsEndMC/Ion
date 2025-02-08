@@ -40,7 +40,7 @@ services:
       JVM_XX_OPTS: "-XX:+UseG1GC -XX:G1HeapRegionSize=4M -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch"
 
   paper:
-    image: "itzg/minecraft-server"
+    image: "itzg/minecraft-server:java21"
     container_name: "paper"
     depends_on:
       - "mongo"
@@ -55,9 +55,11 @@ services:
       - ./config/paper:/config
     environment:
       TYPE: "PAPER"
-      VERSION: "1.20.4"
+      VERSION: "1.21.3"
       EULA: "TRUE"
       USE_AIKAR_FLAGS: "TRUE"
       COPY_CONFIG_DEST: "/data"
       SYNC_SKIP_NEWER_IN_DESTINATION: "FALSE"
       JVM_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      CREATE_CONSOLE_IN_PIPE: "TRUE"
+

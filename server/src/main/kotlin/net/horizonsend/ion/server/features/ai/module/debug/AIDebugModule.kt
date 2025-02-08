@@ -4,7 +4,7 @@ package net.horizonsend.ion.server.features.ai.module.debug
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.steering.BasicSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.context.ContextMap
-import net.horizonsend.ion.server.features.custom.items.CustomItems
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import org.bukkit.Color
@@ -92,7 +92,7 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 		val mod = controller.getCoreModuleByType<BasicSteeringModule>()?:return
 		for (player in controller.starship.world.players) {
 
-			val particle = Particle.REDSTONE
+			val particle = Particle.DUST
 			val dustOptions = Particle.DustOptions(Color.BLUE, 4f,)
 			val orbitTarget = mod.orbitTarget
 			if (orbitTarget != null) {
@@ -103,10 +103,10 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 
 	private fun mapColor(color : DebugColor) : ItemStack{
 		 return when (color) {
-			 DebugColor.RED -> CustomItems.DEBUG_LINE_RED.constructItemStack()
-			 DebugColor.GREEN -> CustomItems.DEBUG_LINE_GREEN.constructItemStack()
-			 DebugColor.BLUE -> CustomItems.DEBUG_LINE_BLUE.constructItemStack()
-			 DebugColor.WHITE -> CustomItems.DEBUG_LINE.constructItemStack()
+			 DebugColor.RED -> CustomItemRegistry.DEBUG_LINE_RED.constructItemStack()
+			 DebugColor.GREEN -> CustomItemRegistry.DEBUG_LINE_GREEN.constructItemStack()
+			 DebugColor.BLUE -> CustomItemRegistry.DEBUG_LINE_BLUE.constructItemStack()
+			 DebugColor.WHITE -> CustomItemRegistry.DEBUG_LINE.constructItemStack()
 		}
 	}
 

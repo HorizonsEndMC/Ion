@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.type.misc
 
-import org.bukkit.Sound as SoundType
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.common.utils.text.colors.Colors
@@ -27,6 +26,7 @@ import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.format.TextColor.color
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.Sound as SoundType
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -119,7 +119,7 @@ abstract class AbstractTractorBeam : Multiblock(), InteractableMultiblock {
 			val (x, originY, z) = Vec3i(player.location)
 			val world = player.world
 
-			for (y in originY + 1..player.world.maxHeight) {
+			for (y in originY + 1..<player.world.maxHeight) {
 				val block = getBlockIfLoaded(world, x, y, z) ?: return player.debug("Block not loaded, cancelled")
 
 				if (block.getTypeSafe()?.isAir == true) {
@@ -146,8 +146,7 @@ abstract class AbstractTractorBeam : Multiblock(), InteractableMultiblock {
 			player.teleport(
 				location,
 				TeleportCause.PLUGIN,
-				TeleportFlag.Relative.PITCH,
-				TeleportFlag.Relative.YAW,
+				TeleportFlag.Relative.VELOCITY_ROTATION
 			)
 
 			event?.isCancelled = true
@@ -167,7 +166,7 @@ abstract class AbstractTractorBeam : Multiblock(), InteractableMultiblock {
 		private fun checkMultiblock(block: Block): Boolean {
 			if (!block.type.isGlass) return false
 
-			return TractorBeamMultiblock.isInteriorBlock(block) || LargeTractorBeamMultiblock.isInteriorBlock(block)
+			return TractorBeamMultiblock.isInteriorBlock(block) || MediumTractorBeamMultiblock.isInteriorBlock(block) || LargeTractorBeamMultiblock.isInteriorBlock(block)
 		}
 	}
 }
@@ -190,6 +189,54 @@ object TractorBeamMultiblock : AbstractTractorBeam() {
 			if (!blockMatchesStructure(slabEdge, face.oppositeFace)) continue
 
 			return true
+		}
+
+		return false
+	}
+}
+
+object MediumTractorBeamMultiblock : AbstractTractorBeam() {
+	override fun MultiblockShape.buildStructure() {
+		z(0) {
+			y(0) {
+				x(+0).anySlabOrStairs()
+				x(+1).anySlabOrStairs()
+			}
+		}
+		z(1) {
+			y(0) {
+				x(-1).anySlabOrStairs()
+				x(+0).anyGlass()
+				x(+1).anyGlass()
+				x(+2).anySlabOrStairs()
+			}
+		}
+		z(2) {
+			y(0) {
+				x(-1).anySlabOrStairs()
+				x(+0).anyGlass()
+				x(+1).anyGlass()
+				x(+2).anySlabOrStairs()
+			}
+		}
+		z(3) {
+			y(0) {
+				x(+0).anySlabOrStairs()
+				x(+1).anySlabOrStairs()
+			}
+		}
+	}
+
+	override fun isInteriorBlock(block: Block): Boolean {
+		for (x in -1..+2) for (z in -1..+2) {
+			val edgeBlock = block.getRelativeIfLoaded(x, 0, z) ?: continue
+			debugAudience.highlightBlock(Vec3i(edgeBlock.location), 10L)
+			if (!(edgeBlock.type.isSlab || edgeBlock.type.isStairs)) continue
+
+			for (face in CARDINAL_BLOCK_FACES) {
+				if (!blockMatchesStructure(edgeBlock, face)) continue
+				return true
+			}
 		}
 
 		return false

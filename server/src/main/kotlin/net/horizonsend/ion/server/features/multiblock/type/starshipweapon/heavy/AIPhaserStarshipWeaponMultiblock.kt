@@ -15,7 +15,7 @@ object AIPhaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<AIPha
 				x(+0).copperBlock()
 			}
 			z(+1..+3 step 2) {
-				x(+0).type(Material.BELL)
+				x(+0).anyFroglight()
 			}
 			z(+5) { x(+0).anyDoubleSlab() }
 			z(+6) { x(+0).hopper() }

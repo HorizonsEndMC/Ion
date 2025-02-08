@@ -27,7 +27,7 @@ abstract class IonPacketHandler {
 	) {
 	}
 
-	fun id(s: String) = ResourceLocation("ion", s)
+	fun id(s: String) = ResourceLocation.fromNamespaceAndPath("ion", s)
 }
 
 enum class Packets(

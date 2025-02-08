@@ -1,12 +1,14 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
 import org.bukkit.Material
+import org.bukkit.Registry
+import org.bukkit.block.data.Bisected
 import java.util.EnumSet
 
 /**
  * This should be used instead of Material.values() to avoid encountering legacy materials
  */
-val MATERIALS = Material.values().filterNot { it.isLegacy }
+val MATERIALS: Registry<Material> = Registry.MATERIAL
 
 fun getMatchingMaterials(filter: (Material) -> Boolean): EnumSet<Material> =
 	MATERIALS.filterTo(EnumSet.noneOf(Material::class.java), filter)
@@ -32,6 +34,7 @@ val BUTTON_TYPES = getMatchingMaterials { it.name.endsWith("_BUTTON") }
 val Material.isButton: Boolean get() = BUTTON_TYPES.contains(this)
 
 val CANDLE_TYPES = getMatchingMaterials { it.name.endsWith("CANDLE") }
+val Material.isCandle get() = CANDLE_TYPES.contains(this)
 
 val CAKE_TYPES = getMatchingMaterials { it.name.endsWith("CAKE") }
 
@@ -120,3 +123,7 @@ val COPPER_TYPES = getMatchingMaterials { it.name.contains("COPPER") }
 val Material.isCopper: Boolean get() = COPPER_TYPES.contains(this)
 
 val SAPLING_TYPES = getMatchingMaterials { it.name.endsWith("_SAPLING") }
+val Material.isTankPassable: Boolean get() = TANK_PASSABLE_TYPES.contains(this)
+
+// Bisected is double plants
+val TANK_PASSABLE_TYPES = getMatchingMaterials { it.isAir || it.data == Bisected::class.java }

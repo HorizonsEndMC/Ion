@@ -60,7 +60,7 @@ object ChannelSelections : IonServerComponent() {
 			val args: List<String> = message.removePrefix("/").split(" ")
 			val command: String = args[0].lowercase(Locale.getDefault())
 
-			ChatChannel.values().firstOrNull { it.commandAliases.contains(command) }?.let { channel ->
+			ChatChannel.entries.firstOrNull { it.commandAliases.contains(command) }?.let { channel ->
 				event.isCancelled = true
 
 				val playerID: UUID = player.uniqueId
@@ -79,34 +79,52 @@ object ChannelSelections : IonServerComponent() {
 					return@let
 				}
 
-				if (oldChannel == channel) {
-					player.sendActionBar(template(
-						message = ofChildren(text("You're already in chat {0}! ", RED), text("(Hint: To get back to global, use /global)", RED, TextDecoration.ITALIC)),
-						paramColor = WHITE,
-						useQuotesAroundObjects = true,
-						channel.displayName
-					))
-
-					return@listen
-				} else {
-					localCache[playerID] = channel
-
-					player.sendActionBar(template(
-						message = text("Switched to {0} chat! To switch back to your previous chat, use '/${oldChannel.commandAliases.first()}'", WHITE, TextDecoration.BOLD),
-						paramColor = WHITE,
-						useQuotesAroundObjects = true,
-						channel.displayName
-					))
-				}
-
-				Tasks.async {
-					redis {
-						set(redisKey(playerID), channel.name)
-						return@redis
-					}
-				}
+				if (switchChannel(oldChannel, channel, player)) return@listen
 			}
 		}
+	}
+
+	fun switchChannel(oldChannel: ChatChannel, channel: ChatChannel, player: Player): Boolean {
+		val playerId = player.uniqueId
+
+		if (oldChannel == channel) {
+			player.sendActionBar(
+				template(
+					message = ofChildren(
+						text("You're already in chat {0}! ", RED),
+						text("(Hint: To get back to global, use /global)", RED, TextDecoration.ITALIC)
+					),
+					paramColor = WHITE,
+					useQuotesAroundObjects = true,
+					channel.displayName
+				)
+			)
+
+			return true
+		} else {
+			localCache[playerId] = channel
+
+			player.sendActionBar(
+				template(
+					message = text(
+						"Switched to {0} chat! To switch back to your previous chat, use '/${oldChannel.commandAliases.first()}'",
+						WHITE,
+						TextDecoration.BOLD
+					),
+					paramColor = WHITE,
+					useQuotesAroundObjects = true,
+					channel.displayName
+				)
+			)
+		}
+
+		Tasks.async {
+			redis {
+				set(redisKey(playerId), channel.name)
+				return@redis
+			}
+		}
+		return false
 	}
 
 	operator fun get(player: Player): ChatChannel = localCache[player.uniqueId] ?: ChatChannel.GLOBAL

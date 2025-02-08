@@ -3,7 +3,9 @@ package net.horizonsend.ion.server.features.space.encounters
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.utils.text.toComponent
-import net.horizonsend.ion.server.features.nations.gui.anvilInput
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
@@ -75,53 +77,48 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 			failed = true
 		}
 
-		event.player.anvilInput("What is your name?".toComponent()) { player, response ->
-			if (response == player.name) return@anvilInput null
-			fail()
-
-			null
+		event.player.anvilInputText(
+			prompt = "What is your name?".toComponent(),
+			inputValidator = InputValidator { ValidatorResult.SuccessResult }
+		) { response ->
+			if (response != event.player.name) return@anvilInputText fail()
 		}
 
 		if (failed) return
 
-		event.player.anvilInput("What is your quest?".toComponent()) { _, _ ->
+		event.player.anvilInputText(prompt = "What is your quest?".toComponent(), inputValidator = InputValidator { ValidatorResult.SuccessResult }) { _ ->
 			null
 		}
 
 		var promptNation: NationCache.NationData? = null
-		val (id, prompt) =
-			when (Random(System.currentTimeMillis()).nextInt(0, 2)) {
-				0 -> 0 to "What is your favorite color?"
-				1 -> {
-					promptNation = NationCache.all().randomOrNull()
-					1 to "What is the capital of ${promptNation?.name}"
-				}
-
-				2 -> 2 to "When was the Star Legacy reset released?"
-
-				else -> 0 to "What is your favorite color?"
+		val (id, prompt) = when (Random(System.currentTimeMillis()).nextInt(0, 2)) {
+			0 -> 0 to "What is your favorite color?"
+			1 -> {
+				promptNation = NationCache.all().randomOrNull()
+				1 to "What is the capital of ${promptNation?.name}"
 			}
 
-		event.player.anvilInput(prompt.toComponent()) { _, answer ->
+			2 -> 2 to "When was the Star Legacy reset released?"
+
+			else -> 0 to "What is your favorite color?"
+		}
+
+		event.player.anvilInputText(prompt.toComponent(), inputValidator = InputValidator { ValidatorResult.SuccessResult }) { answer ->
 			when (id) {
 				2 ->
-					if (answer.contains("august", true) || answer.contains("2022", true))
-						return@anvilInput null
-
+					if (answer.contains("august", true) || answer.contains("2021", true)) return@anvilInputText
 				1 -> {
-					val data = promptNation ?: return@anvilInput null
+					val data = promptNation ?: return@anvilInputText
 					val settlementName = SettlementCache[data.capital].name
 
-					if (answer.contains(settlementName, true))
-						return@anvilInput null
+					if (answer.contains(settlementName, true)) return@anvilInputText
 				}
 
 				0 -> {
 					val filteredSpace = answer.substringBefore(" ")
 
 					val names = NamedTextColor.NAMES.keys().map { it.lowercase() }
-					if (names.any { it.contains(filteredSpace, true) })
-						return@anvilInput null
+					if (names.any { it.contains(filteredSpace, true) }) return@anvilInputText
 				}
 			}
 

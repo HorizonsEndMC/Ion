@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.waypoint
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.utils.text.repeatString
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
@@ -167,7 +167,7 @@ object WaypointManager : IonServerComponent() {
      */
     private fun populateMainGraphVertices() {
         // add all planets as vertices to mainGraph
-        for (planet in Space.getPlanets()) {
+        for (planet in Space.getAllPlanets()) {
             val vertex = WaypointVertex(
                 name = planet.name,
                 icon = SidebarIcon.PLANET_ICON.text.first(),
@@ -177,7 +177,7 @@ object WaypointManager : IonServerComponent() {
         }
 
         // add all beacons as vertices to mainGraph
-        for (beacon in IonServer.configuration.beacons) {
+        for (beacon in ConfigurationFiles.serverConfiguration().beacons) {
             // 2 vertices for each beacon's entry and exit point
             val vertexEntry = WaypointVertex(
                 name = beacon.name.replace(" ", "_"),
@@ -342,6 +342,34 @@ object WaypointManager : IonServerComponent() {
             return shortestPaths
         }
     }
+
+	/**
+	 * Helper function for finding a distance between two locations in space
+	 */
+	fun findShortestPathBetweenLocations(loc1: Location, loc2: Location): GraphPath<WaypointVertex, WaypointEdge>? {
+		val tempGraph = SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>(WaypointEdge::class.java)
+		clonePlayerGraphFromMain(tempGraph)
+
+		val loc1Vertex = WaypointVertex(
+			name = "Location 1",
+			icon = SidebarIcon.PLUS_CROSS_ICON.text.first(),
+			loc = loc1,
+			linkedWaypoint = null
+		)
+		tempGraph.addVertex(loc1Vertex)
+		connectVerticesInSameWorld(tempGraph, loc1Vertex)
+
+		val loc2Vertex = WaypointVertex(
+			name = "Location 2",
+			icon = SidebarIcon.PLUS_CROSS_ICON.text.first(),
+			loc = loc2,
+			linkedWaypoint = null
+		)
+		tempGraph.addVertex(loc2Vertex)
+		connectVerticesInSameWorld(tempGraph, loc2Vertex)
+
+		return DijkstraShortestPath.findPathBetween(tempGraph, loc1Vertex, loc2Vertex)
+	}
 
     fun updatePlayerPaths(player: Player) {
         val pathList = findShortestPath(player)

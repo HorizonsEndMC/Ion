@@ -22,6 +22,7 @@ import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStat
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -34,31 +35,60 @@ import net.horizonsend.ion.server.features.cache.trade.EcoStations
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.player.CombatTimer
-import net.horizonsend.ion.server.features.space.CachedPlanet
-import net.horizonsend.ion.server.features.space.CachedStar
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.space.body.CachedMoon
+import net.horizonsend.ion.server.features.space.body.CachedStar
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation.Companion.calculateCost
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
+import net.horizonsend.ion.server.miscellaneous.utils.distance
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
+import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.setValue
+import java.time.Duration
+import java.util.UUID
 
 @CommandAlias("spacestation|nspacestation|nstation|sstation|station|nationspacestation")
 object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
+
+	private val lastStationFormedTimeMs = mutableMapOf<UUID, Long>()
+	private val STATION_FORMATION_COOLDOWN = Duration.ofMinutes(30L)
+
+	/**
+	 * Checks if the player is in station creation cooldown
+	 * @return true if the player has formed a station within STATION_FORMATION_COOLDOWN false otherwise
+	 * @param player the player to check the station creation cooldown
+	 */
+	private fun checkStationCreationCooldown(player: Player): Boolean {
+		val lastTime = lastStationFormedTimeMs[player.uniqueId]
+		return lastTime != null && System.currentTimeMillis() < lastTime + STATION_FORMATION_COOLDOWN.toMillis()
+	}
+
+	/**
+	 * Records the time that a player created a station
+	 * @param player the player to set the station creation cooldown
+	 */
+	private fun setStationCreationCooldown(player: Player) {
+		lastStationFormedTimeMs[player.uniqueId] = System.currentTimeMillis()
+	}
+
 	private fun formatSpaceStationMessage(message: String, vararg params: Any) = template(
 		text(message, GRAY),
 		paramColor = AQUA,
@@ -98,20 +128,32 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 	}
 
-	private fun checkDimensions(world: World, x: Int, z: Int, radius: Int, cachedStation: CachedSpaceStation<*, *, *>?) {
+	private fun checkDimensions(world: World, x: Int, z: Int, radius: Int, cachedStation: CachedSpaceStation<*, *, *>?, sender: Player) {
 		failIf(radius !in 15..10_000) { "Radius must be at least 15 and at most 10,000 blocks" }
 
 		val y = 128 // we don't care about comparing height here
 
 		// Check conflicts with planet orbits
-		for (planet: CachedPlanet in Space.getPlanets().filter { it.spaceWorld == world }) {
-			val padding = 130
+		for (planet in Space.getOrbitingPlanets().filter { it.spaceWorld == world }) {
+			val padding = 500
 			val minDistance = planet.orbitDistance - padding - radius
 			val maxDistance = planet.orbitDistance + padding + radius
 			val distance = distance(x, y, z, planet.sun.location.x, y, planet.sun.location.z).toInt()
 
 			failIf(distance in minDistance..maxDistance) {
 				"This claim would be in the way of ${planet.name}'s orbit"
+			}
+		}
+
+		// Check conflicts with moon orbits
+		for (moon: CachedMoon in Space.getMoons().filter { it.spaceWorld == world }) {
+			val padding = 500
+			val minDistance = moon.orbitDistance - padding - radius
+			val maxDistance = moon.orbitDistance + padding + radius
+			val distance = distance(x, y, z, moon.parent.location.x, y, moon.parent.location.z).toInt()
+
+			failIf(distance in minDistance..maxDistance) {
+				"This claim would be in the way of ${moon.name}'s orbit"
 			}
 		}
 
@@ -144,7 +186,12 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			if (other.databaseId == cachedStation?.databaseId) continue
 			if (other.world != world.name) continue
 
-			val minDistance = other.radius + radius
+			var padding = 0
+			if(!other.hasOwnershipContext(sender.slPlayerId)){
+				padding = 200
+			}
+
+			val minDistance = other.radius + radius + padding
 			val distance = distance(x, y, z, other.x, y, other.z)
 
 			failIf(distance < minDistance) {
@@ -153,8 +200,6 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		// Check conflicts with eco stations
-		// (use the database directly, in order to avoid people making
-		// another one in the same location before the cache updates)
 		for (other in EcoStations.getAll()) {
 			if (other.world != world.name) continue
 			val minDistance = 5000
@@ -166,7 +211,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		// Check conflicts with capturable stations
-		for (station in Regions.getAllOf<RegionCapturableStation>().filter { it.bukkitWorld == world }) {
+		for (station in Regions.getAllOfInWorld<RegionCapturableStation>(world)) {
 			val minDistance = maxOf((NATIONS_BALANCE.capturableStation.radius + radius), 2500)
 			val distance = distance(x, y, z, station.x, y, station.z)
 
@@ -174,15 +219,31 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 				"This claim would be too close to the capturable station ${station.name}"
 			}
 		}
+
+		// Check conflicts with solar siege zones
+		for (station in Regions.getAllOfInWorld<RegionSolarSiegeZone>(world)) {
+			val minDistance = maxOf((RegionSolarSiegeZone.RADIUS + radius), 3500)
+			val distance = distance(x, y, z, station.x, y, station.z)
+
+			failIf(distance < minDistance) {
+				"This claim would be too close to the solar siege zone ${station.name}"
+			}
+		}
 	}
 
 	@Subcommand("create nation")
-	@Suppress("unused")
-	fun createNation(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
+    fun createNation(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
+		if (checkStationCreationCooldown(sender)) {
+			sender.userError("You must wait ${STATION_FORMATION_COOLDOWN.toMinutes() - Duration.ofMillis(System.currentTimeMillis() - 
+					lastStationFormedTimeMs[sender.uniqueId]!!).toMinutes()} minutes before you can claim another station")
+			return
+		}
+
 		val nation: Oid<Nation> = requireNationIn(sender)
 		requireNationPermission(sender, nation, SpaceStationCache.SpaceStationPermission.CREATE_STATION.nation)
 
 		create(sender, name, radius, cost, nation, NationSpaceStation.Companion)
+		setStationCreationCooldown(sender)
 
 		Notify.chatAndEvents(formatSpaceStationMessage(
 			"{0} established space station {1}, for their nation, {2}, in {3}",
@@ -194,12 +255,18 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Subcommand("create settlement")
-	@Suppress("unused")
-	fun createSettlement(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
+    fun createSettlement(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
+		if (checkStationCreationCooldown(sender)) {
+			sender.userError("You must wait ${STATION_FORMATION_COOLDOWN.toMinutes() - Duration.ofMillis(System.currentTimeMillis() -
+					lastStationFormedTimeMs[sender.uniqueId]!!).toMinutes()} minutes before you can claim another station")
+			return
+		}
+
 		val nation: Oid<Settlement> = requireSettlementIn(sender)
 		requireSettlementPermission(sender, nation, SpaceStationCache.SpaceStationPermission.CREATE_STATION.settlement)
 
 		create(sender, name, radius, cost, nation, SettlementSpaceStation.Companion)
+		setStationCreationCooldown(sender)
 
 		Notify.chatAndEvents(formatSpaceStationMessage(
 			"{0} established space station {1}, for their settlement, {2}, in {3}",
@@ -211,9 +278,15 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Subcommand("create personal")
-	@Suppress("unused")
-	fun createPersonal(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
+    fun createPersonal(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
+		if (checkStationCreationCooldown(sender)) {
+			sender.userError("You must wait ${STATION_FORMATION_COOLDOWN.toMinutes() - Duration.ofMillis(System.currentTimeMillis() - 
+					lastStationFormedTimeMs[sender.uniqueId]!!).toMinutes()} minutes before you can claim another station")
+			return
+		}
+
 		create(sender, name, radius, cost, sender.slPlayerId, PlayerSpaceStation.Companion)
+		setStationCreationCooldown(sender)
 
 		Notify.chatAndEvents(formatSpaceStationMessage(
 			"{0} established the personal space station {1} in {2}",
@@ -248,7 +321,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val world = location.world
 		val x = location.blockX
 		val z = location.blockZ
-		checkDimensions(world, x, z, radius, null)
+		checkDimensions(world, x, z, radius, null, sender)
 
 		val realCost = calculateCost(0, radius)
 		requireMoney(sender, realCost, "create a space station")
@@ -286,12 +359,12 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("abandon")
 	@Description("Delete a space station")
-	@Suppress("unused")
-	fun onAbandon(sender: Player, station: CachedSpaceStation<*, *, *>) = asyncCommand(sender) {
+    fun onAbandon(sender: Player, station: CachedSpaceStation<*, *, *>) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
 		requirePermission(sender.slPlayerId, station, SpaceStationCache.SpaceStationPermission.DELETE_STATION)
 
 		station.abandon()
+		lastStationFormedTimeMs[sender.uniqueId] = 0L
 
 		Notify.chatAndEvents(formatSpaceStationMessage(
 			"{0} {1} abandoned space station {2}",
@@ -303,19 +376,17 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("resize")
 	@Description("Resize the station")
-	@Suppress("unused")
-	fun onResize(sender: Player, station: CachedSpaceStation<*, *, *>, newRadius: Int, @Optional cost: Int?) {
+    fun onResize(sender: Player, station: CachedSpaceStation<*, *, *>, newRadius: Int, @Optional cost: Int?) {
 		requireEconomyEnabled()
 
 		requireStationOwnership(sender.slPlayerId, station)
 		requirePermission(sender.slPlayerId, station, SpaceStationCache.SpaceStationPermission.MANAGE_STATION)
 		val stationName = station.name
 
-		val location = sender.location
-		val world = location.world
-		val x = location.blockX
-		val z = location.blockZ
-		checkDimensions(world, x, z, newRadius, station)
+		val world = Bukkit.getWorld(station.world) ?: fail { "Could not find station world; please contact staff" }
+		val x = station.x
+		val z = station.z
+		checkDimensions(world, x, z, newRadius, station, sender)
 
 		val realCost = calculateCost(station.radius, newRadius)
 		requireMoney(sender, realCost, "create a space station")
@@ -344,8 +415,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("set trustlevel")
 	@CommandCompletion("MANUAL|NATION|ALLY")
 	@Description("Change the setting for can build in the station")
-	@Suppress("unused")
-	fun onSetTrustLevel(sender: Player, station: CachedSpaceStation<*, *, *>, trustLevel: SpaceStationCompanion.TrustLevel) {
+    fun onSetTrustLevel(sender: Player, station: CachedSpaceStation<*, *, *>, trustLevel: SpaceStationCompanion.TrustLevel) {
 		requireStationOwnership(sender.slPlayerId, station)
 		val stationName = station.name
 		failIf(station.trustLevel == trustLevel) { "$stationName's trust level is already $trustLevel" }
@@ -360,8 +430,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Subcommand("trusted list")
-	@Suppress("unused")
-	fun onTrustedList(sender: Player, station: CachedSpaceStation<*, *, *>) {
+    fun onTrustedList(sender: Player, station: CachedSpaceStation<*, *, *>) {
 		requireStationOwnership(sender.slPlayerId, station)
 		val stationName: String = station.name
 
@@ -378,8 +447,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("trusted add player")
 	@Description("Give a player build access to the station")
 	@CommandCompletion("@players")
-	@Suppress("unused")
-	fun onTrustedAddPlayer(sender: Player, station: CachedSpaceStation<*, *, *>, player: String) = asyncCommand(sender) {
+    fun onTrustedAddPlayer(sender: Player, station: CachedSpaceStation<*, *, *>, player: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
 		val stationName = station.name
 
@@ -405,8 +473,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("trusted add settlement")
 	@Description("Give a settlement build access to the station")
 	@CommandCompletion("@settlements")
-	@Suppress("unused")
-	fun onTrustedAddSettlement(sender: Player, station: CachedSpaceStation<*, *, *>, settlement: String) = asyncCommand(sender) {
+    fun onTrustedAddSettlement(sender: Player, station: CachedSpaceStation<*, *, *>, settlement: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
 		val stationName = station.name
 
@@ -433,8 +500,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("trusted add nation")
 	@Description("Give a nation build access to the station")
 	@CommandCompletion("@nations")
-	@Suppress("unused")
-	fun onTrustedAddNation(sender: Player, station: CachedSpaceStation<*, *, *>, nation: String) = asyncCommand(sender) {
+    fun onTrustedAddNation(sender: Player, station: CachedSpaceStation<*, *, *>, nation: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
 		val stationName = station.name
 
@@ -461,8 +527,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("trusted remove player")
 	@Description("Revoke a player's build access to the station")
 	@CommandCompletion("@players")
-	@Suppress("unused")
-	fun onTrustedRemovePlayer(sender: Player, station: CachedSpaceStation<*, *, *>, player: String) = asyncCommand(sender) {
+    fun onTrustedRemovePlayer(sender: Player, station: CachedSpaceStation<*, *, *>, player: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
 		val stationName = station.name
 
@@ -489,8 +554,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("trusted remove settlement")
 	@Description("Give a settlement build access to the station")
 	@CommandCompletion("@settlements")
-	@Suppress("unused")
-	fun onTrustedRemoveSettlement(sender: Player, station: CachedSpaceStation<*, *, *>, settlement: String) = asyncCommand(sender) {
+    fun onTrustedRemoveSettlement(sender: Player, station: CachedSpaceStation<*, *, *>, settlement: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
 		val stationName = station.name
 
@@ -517,8 +581,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("trusted remove nation")
 	@Description("Give a nation build access to the station")
 	@CommandCompletion("@nations")
-	@Suppress("unused")
-	fun onTrustedRemoveNation(sender: Player, station: CachedSpaceStation<*, *, *>, nation: String) = asyncCommand(sender) {
+    fun onTrustedRemoveNation(sender: Player, station: CachedSpaceStation<*, *, *>, nation: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
 		val stationName = station.name
 
@@ -545,8 +608,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("set name")
 	@Description("Rename the station")
 	@CommandCompletion("@nothing")
-	@Suppress("unused")
-	fun onRename(sender: Player, station: CachedSpaceStation<*, *, *>, newName: String) = asyncCommand(sender) {
+    fun onRename(sender: Player, station: CachedSpaceStation<*, *, *>, newName: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
 
 		validateName(newName)

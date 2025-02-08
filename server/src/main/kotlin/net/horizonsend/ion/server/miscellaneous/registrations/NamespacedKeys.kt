@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
 import net.horizonsend.ion.server.IonServer
+import net.kyori.adventure.key.Key
 import org.bukkit.NamespacedKey
 
 object NamespacedKeys {
@@ -68,6 +69,7 @@ object NamespacedKeys {
 	val ORE_REPLACED_INDEXES = key("ore_replaced_indexes")
 	val ORE_REPLACED = key("ore_replaced")
 
+	val PLAYER_DATA_VERSION = key("player_data_version")
 	val DATA_VERSION = key("data_version")
 	val BLOCKS_TRAVELED = key("blocks_traveled")
 	val HYPERSPACE_BLOCKS_TRAVELED = key("hyperspace_blocks_traveled")
@@ -75,6 +77,12 @@ object NamespacedKeys {
 	val TOOL_MODIFICATIONS = key("tool_modifications")
 
 	val FORBIDDEN_BLOCKS = key("forbidden_blocks")
+	val CARGO_CRATE = key("cargo_crate")
 
 	fun key(key: String) = NamespacedKey(IonServer, key)
+
+	// Used for datapacks and resource packs
+	const val HORIZONSEND_NAMESPACE = "horizonsend"
+
+	fun packKey(key: String) = Key.key(HORIZONSEND_NAMESPACE, key)
 }

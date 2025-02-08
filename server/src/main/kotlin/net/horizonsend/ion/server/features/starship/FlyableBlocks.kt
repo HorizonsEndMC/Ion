@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.WALL_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WOOL_TYPES
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
+import org.bukkit.Material.ACTIVATOR_RAIL
 import org.bukkit.Material.ANVIL
 import org.bukkit.Material.BARREL
 import org.bukkit.Material.BEEHIVE
@@ -42,6 +43,7 @@ import org.bukkit.Material.CAULDRON
 import org.bukkit.Material.CHAIN
 import org.bukkit.Material.CHEST
 import org.bukkit.Material.CHIPPED_ANVIL
+import org.bukkit.Material.COAL_BLOCK
 import org.bukkit.Material.COMPARATOR
 import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COPPER_BLOCK
@@ -51,6 +53,7 @@ import org.bukkit.Material.CREEPER_WALL_HEAD
 import org.bukkit.Material.DAMAGED_ANVIL
 import org.bukkit.Material.DAYLIGHT_DETECTOR
 import org.bukkit.Material.DECORATED_POT
+import org.bukkit.Material.DETECTOR_RAIL
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.DISPENSER
 import org.bukkit.Material.DRAGON_HEAD
@@ -78,6 +81,7 @@ import org.bukkit.Material.JUKEBOX
 import org.bukkit.Material.LADDER
 import org.bukkit.Material.LANTERN
 import org.bukkit.Material.LAPIS_BLOCK
+import org.bukkit.Material.LAVA_CAULDRON
 import org.bukkit.Material.LECTERN
 import org.bukkit.Material.LEVER
 import org.bukkit.Material.LIGHTNING_ROD
@@ -125,6 +129,9 @@ import org.bukkit.Material.POTTED_WARPED_FUNGUS
 import org.bukkit.Material.POTTED_WARPED_ROOTS
 import org.bukkit.Material.POTTED_WHITE_TULIP
 import org.bukkit.Material.POTTED_WITHER_ROSE
+import org.bukkit.Material.POWDER_SNOW_CAULDRON
+import org.bukkit.Material.POWERED_RAIL
+import org.bukkit.Material.RAIL
 import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.REDSTONE_LAMP
 import org.bukkit.Material.REDSTONE_TORCH
@@ -151,6 +158,7 @@ import org.bukkit.Material.TORCH
 import org.bukkit.Material.TRAPPED_CHEST
 import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.WALL_TORCH
+import org.bukkit.Material.WATER_CAULDRON
 import org.bukkit.Material.WAXED_COPPER_BLOCK
 import org.bukkit.Material.WAXED_EXPOSED_COPPER
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
@@ -189,6 +197,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	LAPIS_BLOCK,
 	IRON_BLOCK,
 	EMERALD_BLOCK,
+	COAL_BLOCK,
 	BROWN_MUSHROOM_BLOCK, // custom ores
 
 	// used for landing gears
@@ -214,11 +223,19 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	LEVER,
 	FLOWER_POT,
 	CAULDRON,
+	WATER_CAULDRON,
+	LAVA_CAULDRON,
+	POWDER_SNOW_CAULDRON,
 	ANVIL,
 	BOOKSHELF,
 	LADDER,
 	DAYLIGHT_DETECTOR,
 	NETHER_PORTAL,
+
+	RAIL,
+	POWERED_RAIL,
+	DETECTOR_RAIL,
+	ACTIVATOR_RAIL,
 
 	OBSERVER,
 	REPEATER,

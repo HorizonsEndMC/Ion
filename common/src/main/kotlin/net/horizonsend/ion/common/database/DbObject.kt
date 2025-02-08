@@ -86,6 +86,9 @@ abstract class DbObjectCompanion<T : DbObject, ID : Id<T>>(
 	inline fun <reified R> findPropById(id: ID, property: KProperty<R>): R? =
 		col.findOneValue(Filters.eq("_id", id), property)?.get(property)
 
+	fun <R : Any> findPropById(id: ID, clazz: KClass<R>, property: KProperty<R>): R? =
+		col.findOneValue(Filters.eq("_id", id), property)?.get(clazz, property)
+
 	@Suppress("UNCHECKED_CAST")
 	fun allIds(): MongoIterable<ID> = findProp(EMPTY_BSON, DbObject::_id) as MongoIterable<ID>
 

@@ -9,8 +9,8 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.megavex.scoreboardlibrary.api.sidebar.component.LineDrawable
 import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import org.bukkit.entity.Player
@@ -26,18 +26,18 @@ class StarshipsSidebarComponent4(private val starship: ActiveControlledStarship,
         return if (advancedStarshipInfo) {
             ofChildren(
                 // Capacitor
-                text("CAP: ", GRAY),
+                text("CAP: ", WHITE),
                 StarshipsSidebar.capacitorComponent(capacitor),
-                text("%", DARK_GRAY),
+                text("%", GRAY),
                 space(),
 
                 // Heavy weapons charge time
-                text("HVY: ", GRAY),
+                text("HVY: ", WHITE),
                 StarshipsSidebar.heavyWeaponChargeComponent(boostTime),
                 space(),
 
                 // Active modules
-                text("ACTIVE: ", GRAY),
+                text("ACTIVE: ", WHITE),
                 StarshipsSidebar.activeModulesComponent(
                     StarshipsSidebar.weaponsetActiveComponent(weaponset),
                     StarshipsSidebar.interdictionActiveComponent(starship.isInterdicting)

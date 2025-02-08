@@ -14,6 +14,13 @@ import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
+import net.horizonsend.ion.server.features.starship.control.movement.DirecterControlHandler
+import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectControlInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerDirecterControlInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
+import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VariableVisualProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
@@ -195,23 +202,32 @@ object StarshipDebugCommand : SLCommand() {
 		UnusedSoldShipPurge.purgeNoobShuttles()
 	}
 
-	@Suppress("Unused")
-	@Subcommand("togglestats")
-	@CommandCompletion("@autoTurretTargets")
-	fun toggleStats(sender: Player, identifier: String) {
-		val formatted = if (identifier.contains(":".toRegex())) identifier.substringAfter(":") else identifier
-		val ship = ActiveStarships[formatted] ?: fail { "$identifier is not a starship" }
-		ship.statsEnabled = !ship.statsEnabled
-		sender.information("Toggled stats for $identifier to ${ship.statsEnabled}")
+	@Subcommand("set movement")
+	fun onSetMovement(sender: Player, type: MovementType) {
+		val ship = getStarshipPiloting(sender)
+		val controller = ship.controller as? ActivePlayerController ?: fail { "bruh" }
+		type.apply(controller)
 	}
+	@Suppress("unused") // entrypoints
+	enum class MovementType {
+		SHIFT_FLIGHT {
+			override fun apply(controller: ActivePlayerController) {
+				controller.movementHandler = ShiftFlightHandler(controller, PlayerShiftFlightInput(controller))
+			}
+		},
+		DIRECT_CONTROL {
+			override fun apply(controller: ActivePlayerController) {
+				controller.movementHandler = DirectControlHandler(controller, PlayerDirectControlInput(controller))
+			}
+		},
+		DIRECTER_CONTROL {
+			override fun apply(controller: ActivePlayerController) {
+				controller.movementHandler = DirecterControlHandler(controller, PlayerDirecterControlInput(controller))
+			}
+		},
 
-	@Suppress("Unused")
-	@Subcommand("toggleforecast")
-	@CommandCompletion("@autoTurretTargets")
-	fun toggleForecast(sender: Player, identifier: String) {
-		val formatted = if (identifier.contains(":".toRegex())) identifier.substringAfter(":") else identifier
-		val ship = ActiveStarships[formatted] ?: fail { "$identifier is not a starship" }
-		ship.forecastEnabled = !ship.forecastEnabled
-		sender.information("Toggled forecast for $identifier to ${ship.statsEnabled}")
+		;
+
+		abstract fun apply(controller: ActivePlayerController)
 	}
 }

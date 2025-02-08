@@ -14,8 +14,8 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_L
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -36,6 +36,8 @@ object LocatorCommands : SLCommand() {
 	@Suppress("Unused")
 	fun onGetPos(sender: CommandSender, name: String) = asyncCommand(sender) {
 		val target = Bukkit.getPlayer(name) ?: fail { "Player $name not found!" }
+
+		failIf(target.hasPermission("group.dutymode")) { "Player $name not found!" }
 
 		var relation: NationRelation.Level = NationRelation.Level.NONE
 		var distance = 0.0
@@ -59,10 +61,8 @@ object LocatorCommands : SLCommand() {
 			val gates = HyperspaceBeaconManager.beaconWorlds[target.world]
 			val gateDistance = gates?.let { it.minOfOrNull { gate -> gate.spaceLocation.toLocation().distance(target.location) } }
 
-			println("Relation: $relation")
-
 			if (relation < NationRelation.Level.ALLY) failIf(
-				distance > IonServer.configuration.getPosMaxRange &&
+				distance > ConfigurationFiles.serverConfiguration().getPosMaxRange &&
 				(gateDistance != null && gateDistance > 2000)
 			) {
 				"You need to be closer to ${target.name} to do that!"
@@ -83,7 +83,7 @@ object LocatorCommands : SLCommand() {
 	@CommandAlias("near")
 	@Suppress("Unused")
 	fun onNear(sender: Player) {
-		val players = sender.location.getNearbyPlayers(IonServer.configuration.nearMaxRange) {
+		val players = sender.location.getNearbyPlayers(ConfigurationFiles.serverConfiguration().nearMaxRange) {
 			it.uniqueId != sender.uniqueId
 		}.toList()
 
@@ -99,6 +99,7 @@ object LocatorCommands : SLCommand() {
 
 		val body = players.mapNotNull { player ->
 			val cached = PlayerCache.getIfOnline(player) ?: return@mapNotNull null
+			if (player.hasPermission("group.dutymode")) return@mapNotNull null
 			val nation = cached.nationOid
 
 			var nameColor = NamedTextColor.WHITE

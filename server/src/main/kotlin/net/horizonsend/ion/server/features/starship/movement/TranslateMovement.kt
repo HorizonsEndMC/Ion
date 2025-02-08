@@ -4,11 +4,14 @@ import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.add
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.minecraft.world.entity.Relative
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Entity
+import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.util.Vector
 import java.util.concurrent.CompletableFuture
@@ -89,13 +92,32 @@ class TranslateMovement(starship: ActiveStarship,
 			location.world = newWorld
 		}
 
-		@Suppress("UnstableApiUsage")
-		passenger.teleport(
-			location,
-			PlayerTeleportEvent.TeleportCause.PLUGIN,
-			*TeleportFlag.Relative.values(),
-			TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY
-		)
+		if (passenger is Player) {
+			val yaw = if (newWorld != null) passenger.yaw else 0f
+			val pitch = if (newWorld != null) passenger.pitch else 0f
+
+			passenger.minecraft.teleportTo(
+				location.world.minecraft,
+				location.x,
+				location.y,
+				location.z,
+				setOf(Relative.X_ROT, Relative.Y_ROT, Relative.DELTA_X, Relative.DELTA_Y, Relative.DELTA_Z),
+				yaw,
+				pitch,
+				true,
+				PlayerTeleportEvent.TeleportCause.PLUGIN
+			)
+
+			return
+		}
+
+        passenger.teleport(
+            location,
+            PlayerTeleportEvent.TeleportCause.PLUGIN,
+            *TeleportFlag.Relative.entries.toTypedArray(),
+            TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY,
+			TeleportFlag.EntityState.RETAIN_VEHICLE
+        )
 	}
 
 	override fun onComplete() {

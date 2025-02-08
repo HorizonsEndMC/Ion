@@ -1,11 +1,13 @@
 package net.horizonsend.ion.server.features.chat.messages
 
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.server.features.chat.ChatChannel
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 
-data class NormalChatMessage(
-	override val ionPrefix: Component?,
+class NormalChatMessage(
+	senderLevel: Int,
+	channel: ChatChannel,
 	override val luckPermsPrefix: Component?,
 	override val playerDisplayName: Component,
 	override val luckPermsSuffix: Component?,
@@ -15,4 +17,4 @@ data class NormalChatMessage(
 	override val color: TextColor,
 
 	val sender: SLPlayerId
-) : ChatMessage()
+) : ChatMessage(senderLevel, channel.name)

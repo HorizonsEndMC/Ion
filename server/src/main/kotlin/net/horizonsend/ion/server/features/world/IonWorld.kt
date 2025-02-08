@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.world
 import com.destroystokyo.paper.event.server.ServerTickStartEvent
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.configuration.Configuration
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.entity.CreatureSpawnEvent
 import org.bukkit.event.world.WorldInitEvent
 import org.bukkit.event.world.WorldSaveEvent
 import org.bukkit.event.world.WorldUnloadEvent
@@ -68,7 +69,7 @@ class IonWorld private constructor(
 	// -
 
 	companion object : SLEventListener() {
-		private val WORLD_CONFIGURATION_DIRECTORY = IonServer.configurationFolder.resolve("worlds").apply { mkdirs() }
+		private val WORLD_CONFIGURATION_DIRECTORY = ConfigurationFiles.configurationFolder.resolve("worlds").apply { mkdirs() }
 
 		private val ionWorlds = mutableMapOf<World, IonWorld>()
 
@@ -122,6 +123,11 @@ class IonWorld private constructor(
 				val result = runCatching(starship::tick).exceptionOrNull() ?: continue
 				log.warn("Exception while ticking starship!", result)
 			}
+		}
+
+		@EventHandler
+		fun onMobSpawn(event: CreatureSpawnEvent) {
+			event.location.world.ion.customMonSpawner.handleSpawnEvent(event)
 		}
 
 		@EventHandler

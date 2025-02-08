@@ -23,8 +23,6 @@ abstract class PlayerController(
 	val player: Player,
 	starship: ActiveStarship, name: String
 ) : Controller(player.damager(), starship, name) {
-	override val yaw: Float get() = player.location.yaw
-	override val pitch: Float get() = player.location.pitch
 
 	override fun getColor(): Color {
 		if (starship.rainbowToggle) {
@@ -43,40 +41,6 @@ abstract class PlayerController(
 	override fun audience(): Audience = player
 
 	override val pilotName: Component get() = player.displayName()
-
-	override fun directControlMovementVector(direction : BlockFace): Vector {
-		// Use the player's location
-		val pilotLocation = player.location
-
-		var center = starship.directControlCenter
-		if (center == null) {
-			center = pilotLocation.toBlockLocation().add(0.5, 0.0, 0.5)
-			starship.directControlCenter = center
-		}
-
-		// Calculate the movement vector
-		var vector = pilotLocation.toVector().subtract(center.toVector())
-		vector.setY(0)
-		vector.normalize()
-
-		// Clone the vector to do some additional math
-		val directionWrapper = center.clone()
-		directionWrapper.direction = Vector(direction.modX, direction.modY, direction.modZ)
-
-		val playerDirectionWrapper = center.clone()
-		playerDirectionWrapper.direction = pilotLocation.direction
-
-		val vectorWrapper = center.clone()
-		vectorWrapper.direction = vector
-
-		vectorWrapper.yaw = vectorWrapper.yaw - (playerDirectionWrapper.yaw - directionWrapper.yaw)
-		vector = vectorWrapper.direction
-
-		vector.x = round(vector.x)
-		vector.setY(0)
-		vector.z = round(vector.z)
-		return  vector
-	}
 
 	override fun toString(): String {
 		return "$name [${player.name}]"

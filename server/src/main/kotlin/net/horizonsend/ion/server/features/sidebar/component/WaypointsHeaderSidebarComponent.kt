@@ -9,9 +9,9 @@ import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
-import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.Style.style
 import net.kyori.adventure.text.format.TextDecoration.BOLD
@@ -35,10 +35,10 @@ class WaypointsHeaderSidebarComponent(player: Player) : SidebarComponent {
     override fun draw(drawable: LineDrawable) {
         val line = ofChildren(
             text("Route").style(style(BOLD).color(YELLOW)),
-            text(" | ", DARK_GRAY),
+            text(" | ", GRAY),
             text(ROUTE_SEGMENT_ICON.text, getColor(compactWaypoints)).font(Sidebar.fontKey),
-            text(" | ", DARK_GRAY),
-            text("Jumps: ", GRAY),
+            text(" | ", GRAY),
+            text("Jumps: ", WHITE),
             numJumpsComponent
         )
         drawable.drawLine(line)

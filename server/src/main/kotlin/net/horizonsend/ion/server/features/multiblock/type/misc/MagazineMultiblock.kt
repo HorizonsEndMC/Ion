@@ -12,7 +12,7 @@ abstract class AbstractMagazineMultiblock : Multiblock() {
 		"&0Magazine",
 		"&7-=[&c=&a=&b=&7]=-"
 	)
-	abstract val mirrored: Boolean;
+	abstract val mirrored: Boolean
 }
 
 object MagazineMultiblock : AbstractMagazineMultiblock() {

@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.input.AIInput
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
@@ -18,19 +19,9 @@ import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 object AIControlUtils {
-	/** Will stop moving if provided a null vector **/
+	/** Direct an AI ship to shift fly in a direction. Will stop moving if provided a null vector **/
 	fun shiftFlyInDirection(controller: AIController, direction: Vector?) {
-		if (direction == null) {
-			controller.isSneakFlying = false
-			return
-		}
-
-		val (pitch, yaw) = vectorToPitchYaw(direction)
-
-		controller.pitch = pitch
-		controller.yaw = yaw
-
-		controller.isSneakFlying = true
+		(controller.movementHandler.input as? AIInput)?.updateInput(direction)
 	}
 
 	/** Will stop moving if provided a null location **/
@@ -40,7 +31,7 @@ object AIControlUtils {
 
 	fun shiftFlyToLocation(controller: AIController, starshipLocation: Vec3i, location: Vec3i?) = Tasks.async {
 		if (location == null) {
-			controller.isSneakFlying = false
+			(controller.movementHandler.input as? AIInput)?.updateInput(null)
 			return@async
 		}
 

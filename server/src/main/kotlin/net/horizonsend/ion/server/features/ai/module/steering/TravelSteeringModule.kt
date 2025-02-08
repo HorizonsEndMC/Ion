@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.ai.module.steering
 
 import SteeringModule
-import net.horizonsend.ion.server.IonServer.aiSteeringConfig
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.steering.context.AvoidIlliusContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.BlankContext
@@ -28,10 +29,12 @@ open class TravelSteeringModule(
 	difficulty: DifficultyModule,
 	generalTarget : Supplier<AITarget?>,
 	orbitDist : Supplier<Double>,
-	goalPoint : Vec3i
+	goalPoint : Vec3i,
+	val configSupplier: Supplier<AISteeringConfiguration.BasicSteeringConfiguration> = Supplier(
+		ConfigurationFiles.aiSteeringConfiguration()::gunshipBasicSteeringConfiguration),
 ) : SteeringModule(controller, difficulty) {
 
-	open val config = aiSteeringConfig.gunshipBasicSteeringConfiguration
+	open val config get() = configSupplier.get()
 
 	init {
 		/**
@@ -56,7 +59,7 @@ open class TravelSteeringModule(
 		 */
 		contexts["danger"]= BlankContext()
 		contexts["wander"] = WanderContext(ship,offset)
-		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this)
+		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this, offsetSupplier = orbitDist)
 		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty)
 		contexts["goalSeek"] = GoalSeekContext(ship,goalPoint)
 		contexts["fleetGravity"] = FleetGravityContext(ship)

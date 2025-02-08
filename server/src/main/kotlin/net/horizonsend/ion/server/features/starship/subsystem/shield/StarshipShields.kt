@@ -378,7 +378,7 @@ object StarshipShields : IonServerComponent() {
 
 			val pos = BlockPos(bx, by, bz)
 			val packet = ClientboundBlockUpdatePacket(pos, flare)
-			nmsLevel.getChunkAt(pos).playerChunk?.broadcast(packet, false)
+			nmsLevel.getChunkAt(pos).`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false).forEach { it.connection.send(packet) }
 		}
 	}
 
@@ -413,7 +413,7 @@ object StarshipShields : IonServerComponent() {
 
 				val pos = BlockPos(blockKeyX(key), blockKeyY(key), blockKeyZ(key))
 				val packet = ClientboundBlockUpdatePacket(pos, data)
-				nmsLevel.getChunkAt(pos).playerChunk?.broadcast(packet, false)
+				nmsLevel.getChunkAt(pos).`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false).forEach { it.connection.send(packet) }
 			}
 		}
 	}

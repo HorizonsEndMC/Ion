@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -75,6 +76,7 @@ object NationsMap : IonServerComponent(true) {
 		Tasks.sync {
 			Regions.getAllOf<RegionTerritory>().forEach(::addTerritory)
 			Regions.getAllOf<RegionCapturableStation>().forEach(::addCapturableStation)
+			Regions.getAllOf<RegionSolarSiegeZone>().forEach(::addSolarSiege)
 			Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(::addSpaceStation)
 		}
 	}
@@ -289,6 +291,43 @@ object NationsMap : IonServerComponent(true) {
 		""".trimIndent()
 	}
 
+	fun addSolarSiege(station: RegionSolarSiegeZone): Unit = syncOnly {
+		removeSolarSiege(station)
+
+		val name = station.name
+		val world = station.world
+		val x = station.x.toDouble()
+		val y = 128.0
+		val z = station.z.toDouble()
+		val radius = NATIONS_BALANCE.capturableStation.radius.toDouble()
+
+		markerSet.createCircleMarker(name, name, false, world, x, y, z, radius, radius, false)
+
+		updateSolarSiege(station)
+	}
+
+	fun removeSolarSiege(station: RegionSolarSiegeZone) = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		markerSet.findAreaMarker(station.name)?.deleteMarker()
+	}
+
+	fun updateSolarSiege(station: RegionSolarSiegeZone): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		val marker: CircleMarker = markerSet.findCircleMarker(station.name) ?: return@syncOnly addSolarSiege(station)
+
+		val nation = station.nation?.let(NationCache::get)
+
+		val rgb = nation?.color ?: Color.WHITE.asRGB()
+		marker.setFillStyle(0.4, rgb)
+		marker.setLineStyle(5, 0.8, rgb)
+	}
+
 	fun addSpaceStation(station: RegionSpaceStation<*, *>): Unit = syncOnly {
 		if (!dynmapLoaded) {
 			return@syncOnly
@@ -310,9 +349,10 @@ object NationsMap : IonServerComponent(true) {
 		val marker: CircleMarker = markerSet.findCircleMarker(id)
 
 		val rgb = station.color
+		val borderRgb = station.borderColor
 
 		marker.setFillStyle(0.2, rgb)
-		marker.setLineStyle(5, 0.4, rgb)
+		marker.setLineStyle(5, 0.4, borderRgb)
 
 		marker.description = """
 		<p><h2>${station.name}</h2></p>

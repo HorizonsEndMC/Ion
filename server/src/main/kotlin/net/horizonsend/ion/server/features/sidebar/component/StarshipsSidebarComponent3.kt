@@ -8,8 +8,8 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.megavex.scoreboardlibrary.api.sidebar.component.LineDrawable
 import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import org.bukkit.entity.Player
@@ -24,7 +24,7 @@ class StarshipsSidebarComponent3(starship: ActiveControlledStarship, player: Pla
     private fun displayPowerMode() : TextComponent {
         return if (advancedStarshipInfo) {
             ofChildren(
-                text("PM: ", GRAY),
+                text("PM: ", WHITE),
                 StarshipsSidebar.powerModeComponent(pmShield, pmWeapon, pmThruster)
             )
         } else Component.empty()
@@ -37,7 +37,7 @@ class StarshipsSidebarComponent3(starship: ActiveControlledStarship, player: Pla
             compassComponent[2][1],
             space(),
             compassComponent[2][2],
-            text(" | ", DARK_GRAY),
+            text(" | ", GRAY),
 
             // Power modes
             displayPowerMode()

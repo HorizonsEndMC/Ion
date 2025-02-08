@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.ai.module.steering
 
-import net.horizonsend.ion.server.IonServer.aiContextConfig
-import net.horizonsend.ion.server.IonServer.aiSteeringConfig
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.steering.context.AvoidIlliusContext
@@ -25,7 +24,7 @@ class StarfighterSteeringModule(
 	difficulty : DifficultyModule,
 	generalTarget: Supplier<AITarget?>,
 	orbitDist : Supplier<Double>,
-	override val config: AISteeringConfiguration.BasicSteeringConfiguration = aiSteeringConfig.starfighterBasicSteeringConfiguration
+	override val configSupplier: Supplier<AISteeringConfiguration.BasicSteeringConfiguration> = Supplier(ConfigurationFiles.aiSteeringConfiguration()::starfighterBasicSteeringConfiguration)
 ) : BasicSteeringModule(controller, difficulty ,generalTarget){
 
 
@@ -52,8 +51,10 @@ class StarfighterSteeringModule(
 		 */
 		contexts["danger"]= BlankContext()
 		contexts["wander"] = WanderContext(ship,offset)
-		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this,aiContextConfig.starfighterOffsetSeekContextConfiguration, offsetSupplier = orbitDist)
-		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty, aiContextConfig.starfighterFaceSeekContextConfiguration)
+		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this,
+			Supplier(ConfigurationFiles.aiContextConfiguration()::starfighterOffsetSeekContextConfiguration), offsetSupplier = orbitDist)
+		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty,
+			Supplier(ConfigurationFiles.aiContextConfiguration()::starfighterFaceSeekContextConfiguration))
 		contexts["fleetGravity"] = FleetGravityContext(ship)
 		contexts["avoidIllius"] = AvoidIlliusContext(ship)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty)

@@ -47,6 +47,7 @@ class RegionSpaceStation<T: SpaceStationInterface<Owner>, Owner: DbObject>(space
 	var trustedNations: Set<Oid<Nation>> = spaceStation.trustedNations; private set
 
 	val color: Int get() = SpaceStationCache[name]?.color ?: error("$name wasn't cached!")
+	val borderColor: Int get() = SpaceStationCache[name]?.borderColor ?: error("$name wasn't cached!")
 	val ownerName: String get() = SpaceStationCache[name]?.ownerName ?: error("$name wasn't cached!")
 	val ownerType: String get() = SpaceStationCache[name]?.ownershipType ?: error("$name wasn't cached!")
 

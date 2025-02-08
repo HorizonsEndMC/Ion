@@ -30,7 +30,8 @@ import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.ServerConfiguration.Pos
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.util.Pos
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
@@ -63,7 +64,13 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.A
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.distance
+import net.horizonsend.ion.server.miscellaneous.utils.normalize
+import net.horizonsend.ion.server.miscellaneous.utils.parseData
+import net.horizonsend.ion.server.miscellaneous.utils.uploadAsync
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -92,10 +99,10 @@ import kotlin.math.roundToInt
 object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerCompletion("hyperspaceGates") {
-			IonServer.configuration.beacons.map { it.name.replace(" ", "_") }
+			ConfigurationFiles.serverConfiguration().beacons.map { it.name.replace(" ", "_") }
 		}
 		manager.commandCompletions.registerCompletion("hyperspaceGatesInWorld") { e ->
-			IonServer.configuration.beacons
+			ConfigurationFiles.serverConfiguration().beacons
 				.filter { beacon -> beacon.spaceLocation.world == e.player.world.name }
 				.map { it.name.replace(" ", "_") }
 		}
@@ -193,7 +200,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 	}
 
-	@Suppress("unused")
 	@CommandAlias("jump")
 	@CommandCompletion("x|z")
 	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
@@ -203,8 +209,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val navComp: NavCompSubsystem? = Hyperspace.findNavComp(starship) ?: if (starship.type != StarshipType.SHUTTLE) fail { "Intact Navigation Computer not found!" } else null
 		val maxRange: Int = if (navComp == null)
 		// if the ship is a shuttle without a navcomp, just give half range instead of failing entirely
-			NavigationComputerMultiblockBasic.baseRange * (starship.balancing.hyperspaceRangeMultiplier * 0.5).roundToInt()
+			(NavigationComputerMultiblockBasic.baseRange * starship.balancing.hyperspaceRangeMultiplier * 0.5).roundToInt()
 		else (navComp.multiblock.baseRange * starship.balancing.hyperspaceRangeMultiplier).roundToInt()
+
+		if (navComp == null) sender.userError("Navigation Computer not found; jump range halved")
 
 		val x = parseNumber(xCoordinate, starship.centerOfMass.x)
 		val z = parseNumber(zCoordinate, starship.centerOfMass.z)
@@ -220,7 +228,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		else -> string.toIntOrNull() ?: fail { "&cInvalid X or Z coordinate! Must be a number." }
 	}
 
-	@Suppress("unused")
 	@CommandAlias("jump")
 	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks")
 	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
@@ -236,7 +243,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val navComp: NavCompSubsystem? = Hyperspace.findNavComp(starship) ?: if (starship.type != StarshipType.SHUTTLE) fail { "Intact Navigation Computer not found!" } else null
 		val maxRange: Int = if (navComp == null)
 			// if the ship is a shuttle without a navcomp, just give half range instead of failing entirely
-			NavigationComputerMultiblockBasic.baseRange * (starship.balancing.hyperspaceRangeMultiplier * 0.5).roundToInt()
+			(NavigationComputerMultiblockBasic.baseRange * starship.balancing.hyperspaceRangeMultiplier * 0.5).roundToInt()
 		else (navComp.multiblock.baseRange * starship.balancing.hyperspaceRangeMultiplier).roundToInt()
 
 		if (navComp == null) sender.userError("Navigation Computer not found; jump range halved")
@@ -265,7 +272,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				192,
 				it.location.z
 			)
-		} ?: IonServer.configuration.beacons.firstOrNull {
+		} ?: ConfigurationFiles.serverConfiguration().beacons.firstOrNull {
 			it.name.replace(" ", "_") == destination
 		}?.spaceLocation
 		?: BookmarkCommand.getBookmarks(sender).firstOrNull { it.name.replace(' ', '_') == destination }?.let {
@@ -329,7 +336,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		}
 
 		failIf(!destinationWorld.worldBorder.isInside(Location(destinationWorld, x.toDouble(), 128.0, z.toDouble()))) {
-			"Destination coordinates are outside the world order"
+			"Destination coordinates are outside the world border!"
 		}
 
 		val massShadowInfo = MassShadows.find(
@@ -518,7 +525,6 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		StarshipDestruction.vanish(ship)
 	}
 
-	@Suppress("unused")
 	@CommandAlias("directcontrol|dc|DC")
 	fun onDirectControl(sender: Player) {
 		val starship = getStarshipPiloting(sender)
@@ -532,6 +538,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			)
 			return
 		}
+
 		starship.setDirectControlEnabled(!starship.isDirectControlEnabled)
 	}
 
@@ -541,7 +548,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		val ship = getStarshipPiloting(sender)
 		val controller = ActiveStarships.findByPilot(sender)?.controller ?: return
 
-		if (!StarshipCruising.isCruising(ship)) {
+		if (!StarshipCruising.isCruisingAndAccelerating(ship)) {
 			val dir = sender.location.direction.setY(0).normalize()
 
 			StarshipCruising.startCruising(controller, ship, dir)

@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
-import net.horizonsend.ion.server.configuration.WeightedIntegerAmount
+import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip

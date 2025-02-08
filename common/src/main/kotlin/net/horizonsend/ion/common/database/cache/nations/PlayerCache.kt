@@ -91,6 +91,12 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var enableAdditionalSounds: Boolean = true,
 		var soundCruiseIndicator: Int = 0,
 		var enableCombatTimerAlerts: Boolean = true,
+		var hitmarkerOnHull: Boolean = true,
+
+		var shortenChatChannels: Boolean = false,
+
+		var hideUserPrefixes: Boolean = false,
+		var hideGlobalPrefixes: Boolean = false,
 
 		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	)
@@ -606,6 +612,15 @@ abstract class AbstractPlayerCache : ManualCache() {
 					data.enableCombatTimerAlerts = enableCombatTimerAlerts
 				}
 			}
+
+			change[SLPlayer::hitmarkerOnHull]?.let {
+				synced {
+					val data = PLAYER_DATA[id.uuid] ?: return@synced
+
+					val hitmarkerOnHull = it.boolean()
+					data.hitmarkerOnHull = hitmarkerOnHull
+				}
+			}
 		}
 
 		val mutex = Any()
@@ -708,6 +723,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			enableAdditionalSounds = data.enableAdditionalSounds,
 			soundCruiseIndicator = data.soundCruiseIndicator,
 			enableCombatTimerAlerts = data.enableCombatTimerAlerts,
+			hitmarkerOnHull = data.hitmarkerOnHull,
 		)
 	}
 

@@ -64,16 +64,17 @@ fun distanceSquared(fromX: Double, fromY: Double, fromZ: Double, toX: Double, to
 	(fromX - toX).squared() + (fromY - toY).squared() + (fromZ - toZ).squared()
 
 
-fun distanceSquared(from: Vec3i, to: Vec3i): Int {
+fun distanceSquared(from: Vec3i, to: Vec3i): Long {
 	val (fromX, fromY, fromZ) = from
 	val (toX, toY, toZ) = to
 
 	return distanceSquared(fromX, fromY, fromZ, toX, toY, toZ)
 }
-fun distanceSquared(fromX: Int, fromY: Int, fromZ: Int, toX: Int, toY: Int, toZ: Int): Int {
-	val x = fromX - toX
-	val y = fromY - toY
-	val z = fromZ - toZ
+
+fun distanceSquared(fromX: Int, fromY: Int, fromZ: Int, toX: Int, toY: Int, toZ: Int): Long {
+	val x: Long = fromX.toLong() - toX.toLong()
+	val y: Long = fromY.toLong() - toY.toLong()
+	val z: Long = fromZ.toLong() - toZ.toLong()
 
 	return (x * x) + (y * y) + (z * z)
 }
@@ -528,6 +529,8 @@ fun helixAroundVector(
 		consumer.accept(Location(origin.world, x, y, z))
 	}
 }
+
+
 
 fun Collection<Vector>.average(): Vector {
 	if (isEmpty()) return Vector()

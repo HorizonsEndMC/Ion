@@ -15,10 +15,21 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.core.BlockPos
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.world.level.block.BambooSaplingBlock
+import net.minecraft.world.level.block.BambooStalkBlock
+import net.minecraft.world.level.block.BaseCoralPlantTypeBlock
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.BushBlock
+import net.minecraft.world.level.block.DoublePlantBlock
+import net.minecraft.world.level.block.FungusBlock
+import net.minecraft.world.level.block.GlowLichenBlock
+import net.minecraft.world.level.block.GrowingPlantBlock
+import net.minecraft.world.level.block.LeavesBlock
+import net.minecraft.world.level.block.LiquidBlock
 import net.minecraft.world.level.block.NetherPortalBlock
 import net.minecraft.world.level.block.StainedGlassBlock
+import net.minecraft.world.level.block.VineBlock
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
@@ -130,7 +141,20 @@ object OptimizedMovement {
 		}
 	}
 
-	private fun isHangar(newBlockData: BlockState) = newBlockData.block is StainedGlassBlock || newBlockData.block is NetherPortalBlock
+	private fun isHangar(newBlockData: BlockState) =
+		newBlockData.block is StainedGlassBlock ||
+			newBlockData.block is NetherPortalBlock ||
+			newBlockData.block is LiquidBlock ||
+			newBlockData.block is BushBlock || // most types of crop/grass blocks
+			newBlockData.block is VineBlock || // normal vines
+			newBlockData.block is GrowingPlantBlock || // twisted vines on Luxiterna, kelp, etc.
+			newBlockData.block is LeavesBlock ||
+			newBlockData.block is BaseCoralPlantTypeBlock ||
+			newBlockData.block is BambooSaplingBlock ||
+			newBlockData.block is BambooStalkBlock ||
+			newBlockData.block is FungusBlock ||
+			newBlockData.block is DoublePlantBlock ||
+			newBlockData.block is GlowLichenBlock
 
 	private fun dissipateHangarBlocks(world2: World, hangars: LinkedList<Long>) {
 		for (blockKey in hangars.iterator()) {
@@ -173,7 +197,7 @@ object OptimizedMovement {
 					}
 
 					val blockPos = BlockPos(x, y, z)
-					nmsChunk.playerChunk?.blockChanged(blockPos)
+					nmsChunk.`moonrise$getChunkAndHolder`().holder.blockChanged(blockPos)
 					nmsChunk.level.onBlockStateChange(blockPos, type, AIR)
 
 					section.setBlockState(localX, localY, localZ, AIR, false)
@@ -183,7 +207,7 @@ object OptimizedMovement {
 			}
 
 			updateHeightMaps(nmsChunk)
-			nmsChunk.isUnsaved = true
+			nmsChunk.markUnsaved()
 		}
 	}
 
@@ -218,7 +242,7 @@ object OptimizedMovement {
 					val data = blockDataTransform(capturedStates[index])
 
 					val blockPos = BlockPos(x, y, z)
-					nmsChunk.playerChunk?.blockChanged(blockPos)
+					nmsChunk.`moonrise$getChunkAndHolder`().holder.blockChanged(blockPos)
 					nmsChunk.level.onBlockStateChange(blockPos, AIR /*TODO hangars */, data)
 
 					section.setBlockState(localX, localY, localZ, data, false)
@@ -227,7 +251,7 @@ object OptimizedMovement {
 			}
 
 			updateHeightMaps(nmsChunk)
-			nmsChunk.isUnsaved = true
+			nmsChunk.markUnsaved()
 		}
 
 		for ((index, tile) in capturedTiles) {
@@ -241,7 +265,7 @@ object OptimizedMovement {
 
 			val data = blockDataTransform(tile.first)
 
-			val blockEntity = BlockEntity.loadStatic(newPos, data, tile.second) ?: continue
+			val blockEntity = BlockEntity.loadStatic(newPos, data, tile.second, world2.minecraft.registryAccess()) ?: continue
 			chunk.minecraft.addAndRegisterBlockEntity(blockEntity)
 		}
 	}
@@ -265,7 +289,7 @@ object OptimizedMovement {
 		)
 
 		val blockEntity = chunk.getBlockEntity(blockPos) ?: return
-		capturedTiles[index] = Pair(blockEntity.blockState, blockEntity.saveWithFullMetadata())
+		capturedTiles[index] = Pair(blockEntity.blockState, blockEntity.saveWithFullMetadata(chunk.level.registryAccess()))
 
 		chunk.removeBlockEntity(blockPos)
 	}
@@ -319,7 +343,7 @@ object OptimizedMovement {
 		for ((chunkMap, world) in listOf(oldChunkMap to world1.uid, newChunkMap to world2.uid)) {
 			for ((chunkKey, _) in chunkMap) {
 				val nmsChunk = Bukkit.getWorld(world)!!.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft
-				nmsChunk.playerChunk?.broadcastChanges(nmsChunk)
+				nmsChunk.`moonrise$getChunkAndHolder`().holder.broadcastChanges(nmsChunk)
 			}
 		}
 	}

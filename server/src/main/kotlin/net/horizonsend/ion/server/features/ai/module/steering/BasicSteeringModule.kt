@@ -1,8 +1,7 @@
 package net.horizonsend.ion.server.features.ai.module.steering
 
 import SteeringModule
-import net.horizonsend.ion.server.IonServer.aiSteeringConfig
-import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextConfiguration
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.steering.context.AvoidIlliusContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.BlankContext
@@ -28,7 +27,8 @@ open class BasicSteeringModule(
 	generalTarget : Supplier<AITarget?>
 ) : SteeringModule(controller, difficulty) {
 
-	open val config = aiSteeringConfig.defaultBasicSteeringConfiguration
+	open val configSupplier = Supplier(ConfigurationFiles.aiSteeringConfiguration()::defaultBasicSteeringConfiguration)
+	val config get() = configSupplier.get()
 
 	init {
 		/**

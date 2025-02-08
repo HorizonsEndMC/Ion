@@ -10,8 +10,8 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.TextComponent
-import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.megavex.scoreboardlibrary.api.sidebar.component.LineDrawable
 import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import org.bukkit.entity.Player
@@ -26,9 +26,9 @@ class StarshipsSidebarComponent1(starship: ActiveControlledStarship, player: Pla
     private fun displayHullIntegrity() : TextComponent {
         return if (advancedStarshipInfo) {
             ofChildren(
-                text("HULL: ", GRAY),
+                text("HULL: ", WHITE),
                 hullIntegrityComponent(hullIntegrity),
-                text("%", DARK_GRAY),
+                text("%", GRAY),
                 space(),
                 blockCountComponent(currentBlockCount, initialBlockCount)
             )
@@ -42,7 +42,7 @@ class StarshipsSidebarComponent1(starship: ActiveControlledStarship, player: Pla
             compassComponent[0][1],
             space(),
             compassComponent[0][2],
-            text(" | ", DARK_GRAY),
+            text(" | ", GRAY),
 
             // Hull integrity
             displayHullIntegrity()

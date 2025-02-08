@@ -64,11 +64,13 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 		if (passenger is Player) {
 			newLoc.pitch = passenger.location.pitch
 			newLoc.yaw += passenger.location.yaw
+
 			passenger.teleport(
 				newLoc,
 				TeleportCause.PLUGIN,
 				*TeleportFlag.Relative.values(),
-				TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY
+				TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY,
+				TeleportFlag.EntityState.RETAIN_VEHICLE
 			)
 		} else {
 			passenger.teleport(newLoc)
