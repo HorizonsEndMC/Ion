@@ -202,6 +202,9 @@ object TractorBeamMultiblock : AbstractTractorBeam() {
 }
 
 object MediumTractorBeamMultiblock : AbstractTractorBeam() {
+	override val displayName: Component get() = text("Medium Tractor Beam")
+	override val description: Component get() = text("Allows players to ascend or descend between floors, or between a starship and planet surface. 2x2 area.")
+
 	override fun MultiblockShape.buildStructure() {
 		z(0) {
 			y(0) {
