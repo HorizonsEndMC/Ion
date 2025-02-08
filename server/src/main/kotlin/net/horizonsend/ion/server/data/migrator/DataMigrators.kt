@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
 import net.horizonsend.ion.server.data.migrator.types.item.legacy.LegacyCustomItemMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.AspectMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.LegacyNameFixer
+import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.ReplacementMigrator
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.MOD_MANAGER
@@ -773,6 +774,45 @@ object DataMigrators : IonServerComponent() {
 			)
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.SMOKE_GRENADE))
 			.addMigrator(AspectMigrator.fixModel(CustomItemRegistry.DETONATOR))
+			.build()
+		)
+
+		registerDataVersion(DataVersion
+			.builder(4)
+			.addMigrator(ReplacementMigrator(
+				CustomItemRegistry.GUN_BARREL, CustomItemRegistry.CIRCUITRY,
+				CustomItemRegistry.PISTOL_RECEIVER, CustomItemRegistry.RIFLE_RECEIVER,
+				CustomItemRegistry.SMB_RECEIVER, CustomItemRegistry.SNIPER_RECEIVER,
+				CustomItemRegistry.SHOTGUN_RECEIVER, CustomItemRegistry.CANNON_RECEIVER
+			))
+			.addMigrator(ReplacementMigrator(
+				CustomItemRegistry.ALUMINUM_INGOT, CustomItemRegistry.RAW_ALUMINUM, CustomItemRegistry.ALUMINUM_ORE,
+				CustomItemRegistry.ALUMINUM_BLOCK, CustomItemRegistry.RAW_ALUMINUM_BLOCK,
+				CustomItemRegistry.CHETHERITE, CustomItemRegistry.CHETHERITE_ORE, CustomItemRegistry.CHETHERITE_BLOCK,
+				CustomItemRegistry.TITANIUM_INGOT, CustomItemRegistry.RAW_TITANIUM, CustomItemRegistry.TITANIUM_ORE,
+				CustomItemRegistry.TITANIUM_BLOCK, CustomItemRegistry.RAW_TITANIUM_BLOCK,
+				CustomItemRegistry.URANIUM, CustomItemRegistry.RAW_URANIUM, CustomItemRegistry.URANIUM_ORE,
+				CustomItemRegistry.URANIUM_BLOCK, CustomItemRegistry.RAW_URANIUM_BLOCK
+			))
+			.addMigrator(ReplacementMigrator(
+				CustomItemRegistry.REACTIVE_COMPONENT, CustomItemRegistry.REACTIVE_HOUSING, CustomItemRegistry.REACTIVE_PLATING,
+				CustomItemRegistry.REACTIVE_CHASSIS, CustomItemRegistry.REACTIVE_MEMBRANE, CustomItemRegistry.REACTIVE_ASSEMBLY,
+				CustomItemRegistry.FABRICATED_ASSEMBLY, CustomItemRegistry.CIRCUIT_BOARD, CustomItemRegistry.MOTHERBOARD,
+				CustomItemRegistry.REACTOR_CONTROL
+			))
+			.addMigrator(ReplacementMigrator(
+				CustomItemRegistry.SUPERCONDUCTOR, CustomItemRegistry.SUPERCONDUCTOR_BLOCK, CustomItemRegistry.SUPERCONDUCTOR_CORE
+			))
+			.addMigrator(ReplacementMigrator(
+				CustomItemRegistry.STEEL_INGOT, CustomItemRegistry.STEEL_BLOCK, CustomItemRegistry.STEEL_PLATE,
+				CustomItemRegistry.STEEL_CHASSIS, CustomItemRegistry.STEEL_MODULE, CustomItemRegistry.STEEL_ASSEMBLY,
+				CustomItemRegistry.REINFORCED_FRAME, CustomItemRegistry.REACTOR_FRAME
+			))
+			.addMigrator(ReplacementMigrator(
+				CustomItemRegistry.UNLOADED_SHELL, CustomItemRegistry.LOADED_SHELL, CustomItemRegistry.UNCHARGED_SHELL,
+				CustomItemRegistry.CHARGED_SHELL, CustomItemRegistry.ARSENAL_MISSILE, CustomItemRegistry.UNLOADED_ARSENAL_MISSILE,
+				CustomItemRegistry.ACTIVATED_ARSENAL_MISSILE
+			))
 			.build()
 		)
 	}
