@@ -213,7 +213,7 @@ object Extractors : IonServerComponent() {
 						wires.add(face)
 					}
 
-					adjacentType == Material.DIAMOND_BLOCK && face == BlockFace.UP && solarTickRange.contains(tick) -> {
+					adjacentType == Material.DIAMOND_BLOCK && face == BlockFace.UP && solarTickRange.contains(itr) -> {
 						val sensor: BlockData = getBlockDataSafe(world, adjacentX, adjacentY + 1, adjacentZ)
 							?: continue@extractorLoop
 
@@ -233,7 +233,7 @@ object Extractors : IonServerComponent() {
 				handleWire(world, x, y, z, computers, wires)
 			}
 
-			if (solarTickRange.contains(tick) && solarSensor != null) {
+			if (solarTickRange.contains(itr) && solarSensor != null) {
 				handleSolarPanel(world, x, y, z, wires, solarSensor)
 			}
 		}
