@@ -50,10 +50,10 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 	protected abstract val tierMaterial: Material
 
 	override val signText = createSignText(
-		line1 = "&6Power",
+		line1 = "$tierText &6Power",
 		line2 = "&4Furnace",
 		line3 = null,
-		line4 = tierText
+		line4 = null
 	)
 
 	override val displayName: Component = ofChildren(legacyAmpersand.deserialize(tierText), text(" Power Furnace"))
@@ -149,6 +149,7 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 
 		override fun loadFromSign(sign: Sign) {
 			migrateLegacyPower(sign)
+			resetSign(sign, multiblock)
 		}
 
 		companion object {
