@@ -39,10 +39,10 @@ abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: M
 	override val description: Component get() = text("Burns a fuel to generate to be used by other machines.")
 
 	override val signText = createSignText(
-		line1 = "&2Power",
+		line1 = "$tierText &2Power",
 		line2 = "&8Generator",
 		line3 = null,
-		line4 = tierText
+		line4 = null
 	)
 
 	override fun MultiblockShape.buildStructure() {
@@ -111,6 +111,7 @@ abstract class GeneratorMultiblock(tierText: String, private val tierMaterial: M
 
 		override fun loadFromSign(sign: Sign) {
 			migrateLegacyPower(sign)
+			resetSign(sign, multiblock)
 		}
 	}
 }
