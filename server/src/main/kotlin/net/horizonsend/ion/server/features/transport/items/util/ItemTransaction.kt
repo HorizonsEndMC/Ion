@@ -1,12 +1,12 @@
-package net.horizonsend.ion.server.features.transport.items.transaction
+package net.horizonsend.ion.server.features.transport.items.util
 
-import org.bukkit.inventory.Inventory
+import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.ItemStack
 
-class ItemTransaction() {
-	val transactions = mutableListOf<BackedItemTransaction>()
+class ItemTransaction {
+	private val transactions = mutableListOf<BackedItemTransaction>()
 
-	fun addTransfer(sourceReference: ItemReference, destinationInventory: Inventory, transferredItem: ItemStack, transferredAmount: Int) {
+	fun addTransfer(sourceReference: ItemReference, destinationInventory: CraftInventory, transferredItem: ItemStack, transferredAmount: Int) {
 		transactions += BackedItemTransaction(sourceReference, transferredItem, transferredAmount, destinationInventory)
 	}
 
