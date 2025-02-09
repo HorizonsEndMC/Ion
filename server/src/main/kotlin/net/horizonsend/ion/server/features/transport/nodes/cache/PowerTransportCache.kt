@@ -42,7 +42,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		val originNode = cacheResult.second ?: return@runTask
 
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: Collection<BlockKey> = getNetworkDestinations<PowerInputNode>(location, originNode) { node ->
+		val destinations: Collection<BlockKey> = getOrCacheDestination<PowerInputNode>(location, originNode) { node ->
 			getInputEntities(node.position).any { entity ->
 				(entity is PoweredMultiblockEntity) && !entity.powerStorage.isFull()
 			}
@@ -82,7 +82,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		val originNode = cacheResult.second ?: return@runTask
 
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: Collection<BlockKey> = getNetworkDestinations<PowerInputNode>(location, originNode) { node ->
+		val destinations: Collection<BlockKey> = getOrCacheDestination<PowerInputNode>(location, originNode) { node ->
 			getInputEntities(node.position).any { entity ->
 				(entity is PoweredMultiblockEntity) && !entity.powerStorage.isFull()
 			}

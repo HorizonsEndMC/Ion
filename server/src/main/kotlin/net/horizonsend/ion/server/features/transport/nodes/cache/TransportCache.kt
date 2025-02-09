@@ -178,11 +178,26 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		return sources
 	}
 
+	inline fun <reified T: Node> getOrCacheDestination(
+		originPos: BlockKey,
+		originNode: Node,
+		noinline check: ((NodePositionData) -> Boolean)? = null
+	): Collection<BlockKey> {
+		val clazz = T::class
+		val cachedEntry = destinationCache.get(clazz, originPos)
+		if (cachedEntry != null) return cachedEntry
+
+		val destinations = getNetworkDestinations(T::class, originPos, originNode, check)
+
+		destinationCache.set(clazz, originPos, destinations)
+		return destinations
+	}
+
 	inline fun <reified T: Node> getNetworkDestinations(
 		originPos: BlockKey,
 		originNode: Node,
 		noinline check: ((NodePositionData) -> Boolean)? = null
-	): Collection<BlockKey> = getNetworkDestinations(T::class, originPos, originNode, check)
+	): Set<BlockKey> = getNetworkDestinations(T::class, originPos, originNode, check)
 
 	fun getNetworkDestinations(
 		clazz: KClass<out Node>,
@@ -190,11 +205,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		originNode: Node,
 		nodeCheck: ((NodePositionData) -> Boolean)? = null,
 		nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.nodeCacherGetter, null) }
-	): Collection<BlockKey> {
-		if (destinationCache.contains(clazz, originPos)) {
-			return destinationCache.get(clazz, originPos)
-		}
-
+	): Set<BlockKey> {
 		val visitQueue = ArrayDeque<NodePositionData>()
 		val visited = Long2IntOpenHashMap()
 
@@ -235,8 +246,6 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 
 			visitQueue.addAll(nextNodeProvider(current).filterNot { !canVisit(it) || visitQueue.contains(it) })
 		}
-
-		destinationCache.set(clazz, originPos, destinations)
 
 		return destinations
 	}
