@@ -4,6 +4,10 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
+import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
+import net.horizonsend.ion.server.features.custom.items.util.serialization.SerializationManager
+import net.horizonsend.ion.server.features.custom.items.util.serialization.token.StringToken
+import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.PrePackaged
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDescription
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
@@ -35,5 +39,17 @@ object StoredMultiblock : CustomItemComponent, LoreManager {
 
 	override fun shouldIncludeSeparator(): Boolean {
 		return false
+	}
+
+	override fun registerSerializers(serializationManager: SerializationManager) {
+		serializationManager.addSerializedData(
+			"multiblock",
+			StringToken(),
+			{ _, itemStack -> PrePackaged.getTokenData(itemStack)!!.javaClass.simpleName },
+			{ _: CustomItem, itemStack: ItemStack, data: String ->
+				val multiblock = MultiblockRegistration.getByStorageName(data)!!
+				MultiblockToken.applyMultiblockProperties(itemStack, multiblock)
+			}
+		)
 	}
 }
