@@ -250,7 +250,7 @@ object TransportDebugCommand : SLCommand() {
 		val grid = CacheType.ITEMS.get(chunk) as ItemTransportCache
 		if (grid.holder.getExtractorManager().isExtractorPresent(location)) fail { "Extractor not targeted" }
 
-		grid.handleExtractorTick(location, 1.0, (grid.holder.getExtractorManager().getExtractorData(location) as? ItemExtractorData)?.metaData)
+		grid.handleExtractorTick(location, (grid.holder.getExtractorManager().getExtractorData(location) as? ItemExtractorData)?.metaData)
 	}
 
 	@Subcommand("test flood")

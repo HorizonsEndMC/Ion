@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.items.transaction
+package net.horizonsend.ion.server.features.transport.items.util
 
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.ItemStack
