@@ -6,15 +6,25 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 
 class DestinationCache(private val parentCache: TransportCache) {
-	val rawCache: Object2ObjectOpenHashMap<KClass<out Node>, Long2ObjectOpenHashMap<LongOpenHashSet>> = Object2ObjectOpenHashMap()
+	companion object {
+		val EXPIRES_AFTER = TimeUnit.SECONDS.toMillis(15)
+	}
+
+	data class CacedDestinations(val cachTimestamp: Long, val destinations: LongOpenHashSet) {
+		fun isExpired(): Boolean = (cachTimestamp + EXPIRES_AFTER) < System.currentTimeMillis()
+	}
+
+	val rawCache: Object2ObjectOpenHashMap<KClass<out Node>, Long2ObjectOpenHashMap<CacedDestinations>> = Object2ObjectOpenHashMap()
 
 	private val lock = ReentrantReadWriteLock(true)
 
-	fun getCache(nodeType: KClass<out Node>): Long2ObjectOpenHashMap<LongOpenHashSet> {
+	fun getCache(nodeType: KClass<out Node>): Long2ObjectOpenHashMap<CacedDestinations> {
 		return rawCache.getOrPut(nodeType) { Long2ObjectOpenHashMap() }
 	}
 
@@ -27,39 +37,35 @@ class DestinationCache(private val parentCache: TransportCache) {
 		}
 	}
 
-	fun get(nodeType: KClass<out Node>, origin: BlockKey): Set<Long> {
-		lock.readLock().lock()
-		try {
-			return getCache(nodeType).getOrDefault(origin, setOf())
-		} finally {
-			lock.readLock().unlock()
-		}
+	fun getOrPut(nodeType: KClass<out Node>, origin: BlockKey, cachingFunction: () -> Set<Long>?): Set<Long>? {
+		val entries = get(nodeType, origin)
+		if (entries != null) return entries
+
+		val new = cachingFunction.invoke() ?: return null
+		set(nodeType, origin, new)
+		return new
+	}
+
+	fun get(nodeType: KClass<out Node>, origin: BlockKey): Set<Long>? {
+		return lock.readLock().withLock { getCache(nodeType)[origin] }?.takeIf { !it.isExpired() }?.destinations
 	}
 
 	fun set(nodeType: KClass<out Node>, origin: BlockKey, value: Set<Long>) {
 		lock.writeLock().lock()
 		try {
-			getCache(nodeType)[origin] = LongOpenHashSet(value)
+			getCache(nodeType)[origin] = CacedDestinations(System.currentTimeMillis(), LongOpenHashSet(value))
 		} finally {
 			lock.writeLock().unlock()
 		}
 	}
 
-	fun remove(nodeType: KClass<out Node>, origin: BlockKey): Set<Long> {
+	fun remove(nodeType: KClass<out Node>, origin: BlockKey): Set<Long>? {
 		lock.writeLock().lock()
 		try {
-			return getCache(nodeType).remove(origin)
+			return getCache(nodeType).remove(origin)?.destinations
 		} finally {
 			lock.writeLock().unlock()
 		}
-	}
-
-	fun getOrCompute(nodeType: KClass<out Node>, origin: BlockKey, provier: () -> Set<Long>): Set<Long> {
-		if (contains(nodeType, origin)) return get(nodeType, origin)
-
-		val result = provier()
-		set(nodeType, origin, result)
-		return result
 	}
 
 	fun invalidatePaths(nodeType: KClass<out Node>, pos: BlockKey, node: Node) {

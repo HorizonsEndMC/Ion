@@ -194,7 +194,7 @@ object TransportDebugCommand : SLCommand() {
 
 		for (key in destinations.keys) {
 			val paths = cache.getCache(key)[location] ?: continue
-			val vectors = paths.map { toVec3i(it) }
+			val vectors = paths.destinations.map { toVec3i(it) }
 			sender.sendMessage(formatPaginatedMenu(vectors, "/get cached destinations chunk", pageNumber ?: 1) { vec, _ -> vec.toComponent() })
 		}
 	}
@@ -210,7 +210,7 @@ object TransportDebugCommand : SLCommand() {
 
 		for (key in destinations.keys) {
 			val paths = cache.getCache(key)[location] ?: continue
-			val vectors = paths.map { toVec3i(it) }
+			val vectors = paths.destinations.map { toVec3i(it) }
 			sender.sendMessage(formatPaginatedMenu(vectors, "/get cached destinations ship", pageNumber ?: 1) { vec, _ -> vec.toComponent() })
 		}
 	}

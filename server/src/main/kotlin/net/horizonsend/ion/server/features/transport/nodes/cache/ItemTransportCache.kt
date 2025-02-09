@@ -97,13 +97,13 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 	) {
 //		debugAudience.information("Checking ${singletonItem.type} [$count]")
 
-		val destinations: List<BlockKey> = getNetworkDestinations<ItemNode.InventoryNode>(originKey, originNode) { node ->
+		val destinations: List<BlockKey> = getOrCacheDestination<ItemNode.InventoryNode>(originKey, originNode) { node ->
 			val destinationInventory = destinationInvCache.getOrPut(node.position) {
-				getInventory(node.position) ?: return@getNetworkDestinations false
+				getInventory(node.position) ?: return@getOrCacheDestination false
 			}
 
 			if (!LegacyItemUtils.canFit(destinationInventory, singletonItem, 1)) {
-				return@getNetworkDestinations false
+				return@getOrCacheDestination false
 			}
 
 			availableItemReferences.none { itemReference ->
