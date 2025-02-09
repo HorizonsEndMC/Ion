@@ -1,9 +1,9 @@
-package net.horizonsend.ion.server.features.transport.items.transaction
+package net.horizonsend.ion.server.features.transport.items.util
 
-import org.bukkit.inventory.Inventory
+import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.ItemStack
 
-class BackedItemTransaction(val source: ItemReference, val item: ItemStack, val amount: Int, val destination: Inventory) {
+class BackedItemTransaction(val source: ItemReference, val item: ItemStack, val amount: Int, val destination: CraftInventory) {
 	fun check(): Boolean {
 		return true
 	}
@@ -23,25 +23,23 @@ class BackedItemTransaction(val source: ItemReference, val item: ItemStack, val 
 	}
 
 	// Returns amount that could not be removed
-	fun tryRemove(): Int {
-		val stack = source.inventory.getItem(source.index)
-		if (stack == null) return amount
-
-		val removeAmount = minOf(amount, stack.amount)
+	private fun tryRemove(): Int {
+		val sourceStack = source.inventory.getItem(source.index) ?: return amount
+		val removeAmount = minOf(amount, sourceStack.amount)
 
 		return if (amount == removeAmount) {
 			source.inventory.setItem(source.index, null)
 
 			0
 		} else {
-			source.inventory.getItem(source.index)?.amount -= removeAmount
+			sourceStack.amount -= removeAmount
 
 			amount - removeAmount
 		}
 	}
 
 	// Returns amount that did not fit
-	fun addToDestination(limit: Int): Int {
-		return destination.addItem(item.asQuantity(limit)).values.firstOrNull()?.amount ?: 0
+	private fun addToDestination(limit: Int): Int {
+		return addToInventory(destination, item.asQuantity(limit))
 	}
 }
