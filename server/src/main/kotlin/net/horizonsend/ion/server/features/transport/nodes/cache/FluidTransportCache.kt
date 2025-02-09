@@ -35,7 +35,7 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 		val originNode = cacheResult.second ?: return@runTask
 
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: Collection<BlockKey> = getNetworkDestinations<FluidNode.FluidInputNode>(location, originNode) { node ->
+		val destinations: Collection<BlockKey> = getOrCacheDestination<FluidNode.FluidInputNode>(location, originNode) { node ->
 			world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is FluidStoringEntity && !entity.isFull() }
 		}
 
