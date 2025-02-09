@@ -38,6 +38,7 @@ object WaypointManager : IonServerComponent() {
 
     const val MAX_DESTINATIONS = 5
     private const val WAYPOINT_REACHED_DISTANCE = 500
+    private const val MAX_ROUTE_SEGMENTS = 50
 
     /**
      * server component handlers
@@ -441,7 +442,7 @@ object WaypointManager : IonServerComponent() {
             for (edge in path.edgeList) {
                 val jumps = getNumJumps(player, edge)
                 if (compactWaypoints && jumps != -1) {
-                    str.append(repeatString(SidebarIcon.ROUTE_SEGMENT_ICON.text, jumps - 1))
+                    str.append(repeatString(SidebarIcon.ROUTE_SEGMENT_ICON.text, (jumps - 1).coerceAtMost(MAX_ROUTE_SEGMENTS)))
                 }
                 str.append(edge.target.icon)
             }

@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
+import net.horizonsend.ion.server.features.waypoint.WaypointVertex
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.kyori.adventure.key.Key
@@ -54,15 +55,8 @@ object WaypointCommand : SLCommand() {
             sender.userError("Last waypoint already set to this destination")
             return
         }
-        if (WaypointManager.addDestination(sender, vertex)) {
-            WaypointManager.updatePlayerGraph(sender)
-            WaypointManager.updatePlayerPaths(sender)
-            WaypointManager.updateNumJumps(sender)
-            sender.success("Vertex ${vertex.name} added to route. \"/jump auto\" to start jumping, " +
-                    "\"/route add\" to add more waypoints, or \"/route clear\" to clear all waypoints")
-        } else {
-            sender.userError("Too many destinations added (maximum of ${WaypointManager.MAX_DESTINATIONS})")
-        }
+
+        addVertexToRoute(sender, vertex)
     }
 
     @Suppress("unused")
@@ -89,6 +83,13 @@ object WaypointCommand : SLCommand() {
         val z = MiscStarshipCommands.parseNumber(zCoordinate, sender.location.z.toInt()).toDouble()
         val vertex = WaypointManager.addTempVertex(Location(getWorld, x, 192.0, z))
 
+        addVertexToRoute(sender, vertex)
+    }
+
+    private fun addVertexToRoute(
+        sender: Player,
+        vertex: WaypointVertex
+    ) {
         if (WaypointManager.addDestination(sender, vertex)) {
             WaypointManager.updatePlayerGraph(sender)
             WaypointManager.updatePlayerPaths(sender)
