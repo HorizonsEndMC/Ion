@@ -36,7 +36,7 @@ object GlobalCompletions {
 
 	fun stringToItem(string: String): ItemStack? {
 		// if a custom item is found, use that
-		CustomItemRegistry.getByIdentifier(string)?.let { return it.fromBazaarString(string) }
+		CustomItemRegistry.getByIdentifier(string.substringBefore('['))?.let { return it.fromBazaarString(string) }
 
 		val material: Material = try { Material.valueOf(string) } catch (e: Throwable) { return null }
 
