@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import net.horizonsend.ion.server.features.transport.NewTransport
-import net.horizonsend.ion.server.features.transport.items.transaction.ItemReference
-import net.horizonsend.ion.server.features.transport.items.transaction.ItemTransaction
+import net.horizonsend.ion.server.features.transport.items.util.ItemReference
+import net.horizonsend.ion.server.features.transport.items.util.ItemTransaction
+import net.horizonsend.ion.server.features.transport.items.util.getRemovableItems
+import net.horizonsend.ion.server.features.transport.items.util.getTransferSpaceFor
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData.ItemExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
@@ -49,11 +51,11 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		metaData: ExtractorMetaData?,
 	) {
 		NewTransport.runTask {
-			handleExtractorTick(location, delta, metaData as? ItemExtractorMetaData)
+			handleExtractorTick(location, metaData as? ItemExtractorMetaData)
 		}
 	}
 
-	fun handleExtractorTick(location: BlockKey, delta: Double, meta: ItemExtractorMetaData?) {
+	fun handleExtractorTick(location: BlockKey, meta: ItemExtractorMetaData?) {
 		val sources = getSources(location)
 		if (sources.isEmpty()) {
 			return
@@ -62,11 +64,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		val references = mutableMapOf<ItemStack, ArrayDeque<ItemReference>>()
 
 		for (inventory in sources) {
-			val items = inventory.contents.withIndex()
-
-			for ((index, item: ItemStack?) in items) {
-				if (item == null) continue
-
+			for ((index, item: ItemStack) in getRemovableItems(inventory)) {
 				references.getOrPut(item.asOne()) { ArrayDeque() }.add(ItemReference(inventory, index))
 			}
 		}
@@ -87,7 +85,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		)
 	}
 
-	fun transferItemType(
+	private fun transferItemType(
 		originKey: BlockKey,
 		originNode: Node,
 		meta: ItemExtractorMetaData?,
@@ -145,14 +143,10 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		}
 		if (validDestinations.isEmpty()) return
 
-//		meta?.markItemPathfind(item) TODO path caching for items
-
 		val transaction = ItemTransaction()
 
 		for (reference in availableItemReferences) {
 			var destination = getDestination(meta, originKey, validDestinations)
-
-//			debugAudience.information("Selected destination ${toVec3i(destination)}")
 
 			var destinationInventory = destinationInvCache[destination]
 			if (destinationInventory == null) {
@@ -160,7 +154,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 				destinationInventory = lookup
 			}
 
-			val room = LegacyItemUtils.getSpaceFor(destinationInventory, singletonItem)
+			val room = getTransferSpaceFor(destinationInventory, singletonItem)
 
 			if (room == 0) {
 				validDestinations.remove(destination)
@@ -292,4 +286,6 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 			Optional.of(PathfindingReport(path, resistance))
 		}.getOrNull()
 	}
+
+	fun selectDestinationInventory(): Nothing = TODO()
 }
