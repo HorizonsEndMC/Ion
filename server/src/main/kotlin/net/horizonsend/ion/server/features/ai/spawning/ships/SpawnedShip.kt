@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.ai.spawning.ships
 
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.spawning.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -15,20 +16,22 @@ interface SpawnedShip {
 	val template: AITemplate
 	val offsets: MutableList<Supplier<Vector>>
 	var absoluteHeight: Double?
+	var pilotName : Component?
 
-	fun createController(logger: Logger, starship: ActiveStarship): AIController
+	fun createController(logger: Logger, starship: ActiveStarship, difficulty: Int): AIController
 
-	fun getName(): Component
+	fun getName(difficulty: Int): Component
 
-	fun spawn(logger: Logger, location: Location, modifyController: AIController.() -> Unit = {}) = createAIShipFromTemplate(
+	fun spawn(logger: Logger, location: Location,difficulty : Int, modifyController: AIController.() -> Unit = {}) = createAIShipFromTemplate(
 		logger,
 		template,
 		location,
 		{
-			val controller = createController(logger, it)
+			val controller = createController(logger, it,difficulty)
 			modifyController.invoke(controller)
 			controller
-		}
+		},
+		getName(difficulty).plainText()
 	)
 
 	fun withRandomRadialOffset(minDistance: Double, maxDistance: Double, y: Double, absoluteHeight: Double? = null): SpawnedShip {

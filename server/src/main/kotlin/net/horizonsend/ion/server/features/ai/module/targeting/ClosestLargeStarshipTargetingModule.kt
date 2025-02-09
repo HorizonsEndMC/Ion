@@ -13,14 +13,11 @@ class ClosestLargeStarshipTargetingModule(
     private val targetAI: Boolean = false,
     private val focusRange: Double = 0.0
 ) : TargetingModule(controller) {
-    private var lastDamaged: Long = 0
-
     init {
         lastTarget = existingTarget
     }
 
     override fun onDamaged(damager: Damager) {
-        lastDamaged = System.currentTimeMillis()
         if (lastTarget == null) lastTarget = damager.getAITarget()
     }
 
@@ -32,9 +29,7 @@ class ClosestLargeStarshipTargetingModule(
         val map = if (!targetAI) sortMap else aiSortMap
 
         return controller.getNearbyTargetsInRadius(0.0, maxRange) {
-            if (it is StarshipTarget) {
-                if (!targetAI) it.ship.controller !is AIController else it.ship.controller is AIController && starship.controller != it.ship.controller
-            } else true
+            targetFilter(it,targetAI)
         }.sortedWith(
             Comparator<AITarget> { o1, o2 ->
                 // if both objects are not StarshipTargets, maintain order

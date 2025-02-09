@@ -9,19 +9,20 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockState
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.math.round
 
 abstract class PlayerController(
 	val player: Player,
 	starship: ActiveStarship, name: String
 ) : Controller(player.damager(), starship, name) {
-	override val yaw: Float get() = player.location.yaw
-	override val pitch: Float get() = player.location.pitch
 
 	override fun getColor(): Color {
 		if (starship.rainbowToggle) {
@@ -39,9 +40,9 @@ abstract class PlayerController(
 
 	override fun audience(): Audience = player
 
+	override val pilotName: Component get() = player.displayName()
+
 	override fun toString(): String {
 		return "$name [${player.name}]"
 	}
-
-	override fun getPilotName(): Component = player.displayName()
 }

@@ -30,44 +30,6 @@ import kotlin.math.sin
 object StarshipControl : IonServerComponent() {
 	val CONTROLLER_TYPE = Material.CLOCK
 
-	override fun onEnable() {
-		Tasks.syncRepeat(1, 1, ::moveAIShips)
-	}
-
-	private fun moveAIShips() {
-		val aIShips = ActiveStarships.all().filter { it.controller is AIController }
-
-		for (starship in aIShips) {
-			val controller = starship.controller as? AIController ?: continue
-			val sneakMovements = controller.sneakMovements
-
-			if (Hyperspace.isWarmingUp(starship)) return
-			if (!controller.isSneakFlying()) return
-
-			val now = System.currentTimeMillis()
-			if (now - starship.lastManualMove < starship.manualMoveCooldownMillis) return
-			starship.lastManualMove = now
-
-			val maxAccel = starship.balancing.maxSneakFlyAccel
-			val accelDistance = starship.balancing.sneakFlyAccelDistance
-
-			val yawRadians = Math.toRadians(controller.yaw.toDouble())
-			val pitchRadians = Math.toRadians(controller.pitch.toDouble())
-
-			val distance = max(min(maxAccel, sneakMovements / min(1, accelDistance)), 1)
-
-			val vertical = abs(pitchRadians) >= PI * 5 / 12 // 75 degrees
-
-			val dx = if (vertical) 0 else sin(-yawRadians).roundToInt() * distance
-			val dy = sin(-pitchRadians).roundToInt() * distance
-			val dz = if (vertical) 0 else cos(yawRadians).roundToInt() * distance
-
-			if (locationCheck(starship, dx, dy, dz)) return
-
-			TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
-		}
-	}
-
 	fun locationCheck(starship: ActiveControlledStarship, dx: Int, dy: Int, dz: Int): Boolean {
 		val world = starship.world
 		val newCenter = starship.centerOfMass.toLocation(world).add(dx.d(), dy.d(), dz.d())

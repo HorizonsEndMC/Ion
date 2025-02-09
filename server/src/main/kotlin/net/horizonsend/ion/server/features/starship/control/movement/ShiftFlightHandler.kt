@@ -1,10 +1,13 @@
-package net.horizonsend.ion.server.features.starship.control.input
+package net.horizonsend.ion.server.features.starship.control.movement
 
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
-import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
+import net.horizonsend.ion.server.features.starship.control.input.InputHandler
+import net.horizonsend.ion.server.features.starship.control.input.PlayerMovementInputHandler
+import net.horizonsend.ion.server.features.starship.control.input.ShiftFlightInput
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
@@ -20,19 +23,19 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-class ShiftFlightHandler(controller: PlayerController) : PlayerMovementInputHandler(controller, "Shift Flight") {
+class ShiftFlightHandler(controller: Controller,
+						 override val input: ShiftFlightInput
+) : MovementHandler(controller, "Shift Flight", input) {
 	private var sneakMovements = 0
 
-	override fun handleSneak(event: PlayerToggleSneakEvent) {
-		sneakMovements = 0
-	}
 
 	override fun onBlocked(reason: StarshipMovementException) {
 		sneakMovements = 0
 	}
 
 	override fun tick() {
-		if (!controller.isSneakFlying()) return
+		val (pitch, yaw, isSneakFlying, toggledSneak) = input.getData()
+		if (!isSneakFlying) return
 
 		if (starship.type == StarshipType.PLATFORM) {
 			controller.userErrorAction("This ship type is not capable of moving.")
@@ -47,6 +50,9 @@ class ShiftFlightHandler(controller: PlayerController) : PlayerMovementInputHand
 		val now = System.currentTimeMillis()
 		if (now - starship.lastManualMove < starship.manualMoveCooldownMillis) return
 
+
+		if (toggledSneak) {sneakMovements = 0}
+
 		starship.lastManualMove = now
 		sneakMovements++
 
@@ -55,8 +61,8 @@ class ShiftFlightHandler(controller: PlayerController) : PlayerMovementInputHand
 		val maxAccel = starship.balancing.maxSneakFlyAccel
 		val accelDistance = starship.balancing.sneakFlyAccelDistance
 
-		val yawRadians = Math.toRadians(controller.yaw.toDouble())
-		val pitchRadians = Math.toRadians(controller.pitch.toDouble())
+		val yawRadians = Math.toRadians(yaw.toDouble())
+		val pitchRadians = Math.toRadians(pitch.toDouble())
 
 		val distance = max(min(maxAccel, sneakMovements / min(1, accelDistance)), 1)
 

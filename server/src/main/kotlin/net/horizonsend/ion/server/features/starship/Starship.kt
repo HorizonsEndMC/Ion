@@ -20,6 +20,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.gui.custom.starship.RenameButton.Companion.starshipNameSerializer
 import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
@@ -33,8 +34,12 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.UnpilotedController
-import net.horizonsend.ion.server.features.starship.control.input.DirectControlHandler
-import net.horizonsend.ion.server.features.starship.control.input.ShiftFlightHandler
+import net.horizonsend.ion.server.features.starship.control.input.AIDirectControlInput
+import net.horizonsend.ion.server.features.starship.control.input.AIShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectControlInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
+import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -43,6 +48,7 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotat
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.modules.PlayerShipSinkMessageFactory
 import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
+import net.horizonsend.ion.server.features.starship.movement.DynamicEstimator
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipBlockedException
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -140,6 +146,11 @@ class Starship (
 		controller.tick()
 
 		subsystems.forEach { it.tick() }
+		shiftDynamicEstimator.removeData()
+		cruiseDynamicEstimator.removeData()
+		if (forecastEnabled) {
+			displayForecast()
+		}
 	}
 
 	/** Called when a starship is removed. Any cleanup logic should be done here. */
@@ -301,6 +312,25 @@ class Starship (
 	// manual move is sneak/direct control
 	var lastManualMove = System.nanoTime() / 1_000_000
 
+
+	val shiftDynamicEstimator = DynamicEstimator(this, manualMoveCooldownMillis * 10)
+	val cruiseDynamicEstimator = DynamicEstimator(this, 20000L)
+
+	/** used for estimating a ships pos, vel and accel at any time t*/
+	fun forecast(time : Long, order : Int) : Vector{
+		val shiftForecast = shiftDynamicEstimator.getDerivative(time,order)
+		val cruiseForecast = cruiseDynamicEstimator.getDerivative(time,order)
+
+		if (order == 0) {
+			shiftForecast.add(shiftDynamicEstimator.referncePos)
+			val offsetPos = cruiseDynamicEstimator.referncePos.clone().add(
+				shiftDynamicEstimator.referncePos.clone().multiply(-1))
+			cruiseForecast.add(offsetPos)
+		}
+		val forecast = shiftForecast.clone().add(cruiseForecast)
+		return forecast
+	}
+
 	/**
 	 * Non-normalized vector containing the ships velocity
 	 * Used for target lead / speed estimations
@@ -365,7 +395,7 @@ class Starship (
 	//region Direct Control
 	val isDirectControlEnabled: Boolean get() {
 		return controller is ActivePlayerController &&
-			(controller as ActivePlayerController).inputHandler is DirectControlHandler
+			(controller as ActivePlayerController).movementHandler is DirectControlHandler
 	}
 
 	var directControlCenter: Location? = null
@@ -386,11 +416,19 @@ class Starship (
 	var directControlSlowExpiryFromHeavyLasers = 0L
 
 	fun setDirectControlEnabled(enabled: Boolean) {
-		if (controller !is ActivePlayerController) return
-		val controller = controller as ActivePlayerController
-
-		if (enabled) controller.inputHandler = DirectControlHandler(controller) else
-			controller.inputHandler = ShiftFlightHandler(controller)
+		when(controller) {
+			is ActivePlayerController -> {
+				val controller = controller as ActivePlayerController
+				if (enabled) controller.movementHandler = DirectControlHandler(controller, PlayerDirectControlInput(controller)) else
+					controller.movementHandler = ShiftFlightHandler(controller, PlayerShiftFlightInput(controller))
+			}
+			is AIController -> {
+				val controller = controller as AIController
+				if (enabled) controller.movementHandler = DirectControlHandler(controller, AIDirectControlInput(controller)) else
+					controller.movementHandler = ShiftFlightHandler(controller, AIShiftFlightInput(controller))
+			}
+			else -> return
+		}
 	}
 
 	//endregion
@@ -625,6 +663,30 @@ class Starship (
 	//endregion
 
 	fun isOversized() = this.initialBlockCount > this.type.maxSize && (this.initialBlockCount <= (this.type.maxSize * StarshipDetection.OVERSIZE_MODIFIER).toInt())
+
+	//Debugging tools
+	//var statsEnabled = false
+	//private fun logStatistics() {
+	//	println("---Stats for ${getDisplayNamePlain()}---")
+	//	println("Current CoM : $centerOfMass")
+	//	println("Estimated CoM : ${forecast(System.currentTimeMillis(), 0)}")
+	//	println("Estimated velocity : $velocity")
+	//	//println("Estimated accel : $accel")
+	//	println("Estimated Pos in 2 seconds : ${forecast(System.currentTimeMillis() + 2000, 0)}")
+	//}
+
+	var forecastEnabled = false
+
+	private fun displayForecast() {
+		val endpoint = 5000
+		val interval = 1000
+		for (t in 0 .. endpoint step interval) {
+			val pos = forecast(System.currentTimeMillis() + t, 0)
+			ClientDisplayEntities.debugHighlightBlock(Vec3i(pos), duration = 50)
+		}
+	}
+	//end Debug
+
 
 	init {
 		IonWorld[world].starships.add(this)

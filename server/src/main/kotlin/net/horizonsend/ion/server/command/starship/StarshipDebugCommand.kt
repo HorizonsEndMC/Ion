@@ -15,9 +15,12 @@ import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
-import net.horizonsend.ion.server.features.starship.control.input.DirectControlHandler
-import net.horizonsend.ion.server.features.starship.control.input.DirecterControlHandler
-import net.horizonsend.ion.server.features.starship.control.input.ShiftFlightHandler
+import net.horizonsend.ion.server.features.starship.control.movement.DirecterControlHandler
+import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectControlInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerDirecterControlInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
+import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VariableVisualProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
@@ -190,7 +193,7 @@ object StarshipDebugCommand : SLCommand() {
 		val ship = ActiveStarships[formatted] ?: fail { "$shipIdentifier is not a starship" }
 		sender.information(ship.controller.toString())
 
-		(ship.controller as? AIController)?.let { sender.userError("Target: ${(it.modules["targeting"] as? TargetingModule)?.findTarget()}") }
+		(ship.controller as? AIController)?.let { sender.userError("Target: ${(it.coreModules[TargetingModule::class] as? TargetingModule)?.findTarget()}") }
 	}
 
 	@Subcommand("purge now")
@@ -209,17 +212,17 @@ object StarshipDebugCommand : SLCommand() {
 	enum class MovementType {
 		SHIFT_FLIGHT {
 			override fun apply(controller: ActivePlayerController) {
-				controller.inputHandler = ShiftFlightHandler(controller)
+				controller.movementHandler = ShiftFlightHandler(controller, PlayerShiftFlightInput(controller))
 			}
 		},
 		DIRECT_CONTROL {
 			override fun apply(controller: ActivePlayerController) {
-				controller.inputHandler = DirectControlHandler(controller)
+				controller.movementHandler = DirectControlHandler(controller, PlayerDirectControlInput(controller))
 			}
 		},
 		DIRECTER_CONTROL {
 			override fun apply(controller: ActivePlayerController) {
-				controller.inputHandler = DirecterControlHandler(controller)
+				controller.movementHandler = DirecterControlHandler(controller, PlayerDirecterControlInput(controller))
 			}
 		},
 

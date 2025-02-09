@@ -19,7 +19,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
-import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPositioningModule
+import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
@@ -69,6 +69,14 @@ object AIDebugCommand : SLCommand() {
 		manager.commandCompletions.registerAsyncCompletion("controllerFactories") { _ ->
 			AIControllerFactories.presetControllers.keys
 		}
+
+		manager.commandCompletions.registerAsyncCompletion("AIDebugColors") { _ ->
+			AIDebugModule.Companion.DebugColor.entries.map { it.name }
+		}
+		manager.commandCompletions.registerAsyncCompletion("AIContexts") { _ ->
+			AIDebugModule.contextMapTypes
+		}
+
 	}
 
 	@Suppress("Unused")
@@ -84,26 +92,67 @@ object AIDebugCommand : SLCommand() {
 	fun ai(
 		sender: Player,
 		controller: AIControllerFactory,
-		standoffDistance: Double,
+		@Optional difficulty: Int?,
 		@Optional manualSets: String?,
 		@Optional autoSets: String?,
 	) {
 		val starship = getStarshipRiding(sender)
+
+		failIf(difficulty != null && difficulty < 0) { "ILLEGAL DIFFICULTY" }
 
 		val newController = controller(
 			starship,
 			text("Player Created AI Ship"),
 			Configuration.parse<WeaponSetsCollection>(manualSets ?: "{}").sets,
 			Configuration.parse<WeaponSetsCollection>(autoSets ?: "{}").sets,
-		).apply {
-			val positioningEngine = modules["positioning"]
-			(positioningEngine as? AxisStandoffPositioningModule)?.let { it.standoffDistance = standoffDistance }
-		}
+			difficulty ?: 3
+		)
 
 		starship.setController(newController)
 
 		starship.removePassenger(sender.uniqueId)
 	}
+
+	@Subcommand("debug show")
+	@CommandCompletion("@AIContexts @AIDebugColors")
+	@Suppress("unused")
+	fun debugShow(
+		sender: Player,
+		context: String,
+		color: String
+	) {
+		if (context !in AIDebugModule.contextMapTypes) throw InvalidCommandArgument("not a context")
+		AIDebugModule.shownContexts.add(Pair(context,AIDebugModule.Companion.DebugColor.valueOf(color)))
+	}
+
+	@Subcommand("debug hide")
+	@CommandCompletion("@AIContexts @AIDebugColors")
+	@Suppress("unused")
+	fun debugHide(
+		sender: Player,
+		context: String,
+		color: String
+	) {
+		if (context !in AIDebugModule.contextMapTypes) throw InvalidCommandArgument("not a context")
+		AIDebugModule.shownContexts.remove(Pair(context,AIDebugModule.Companion.DebugColor.valueOf(color)))
+	}
+
+	@Subcommand("toggle movement")
+	@Suppress("unused")
+	fun toggleMovement(
+		sender: Player,
+	) {
+		AIDebugModule.canShipsMove = !AIDebugModule.canShipsMove
+	}
+
+	@Subcommand("toggle rotation")
+	@Suppress("unused")
+	fun toggleRotation(
+		sender: Player,
+	) {
+		AIDebugModule.canShipsRotate = !AIDebugModule.canShipsRotate
+	}
+
 
 	@Subcommand("spawner query")
 	fun onQuery(sender: CommandSender) {
@@ -142,8 +191,9 @@ object AIDebugCommand : SLCommand() {
 	data class WeaponSetsCollection(val sets: MutableSet<AIStarshipTemplate.WeaponSet> = mutableSetOf())
 
 	@Subcommand("spawn")
-	fun spawn(sender: Player, spawner: AISpawner, template: SpawnedShip) {
-		template.spawn(log, sender.location)
+	fun spawn(sender: Player, spawner: AISpawner, template: SpawnedShip, difficulty: Int) {
+		failIf(difficulty < 0) { "ILLEGAL DIFFICULTY" }
+		template.spawn(log, sender.location,difficulty)
 
 		sender.success("Spawned ship")
 	}
@@ -157,7 +207,7 @@ object AIDebugCommand : SLCommand() {
 		val ship = ActiveStarships[formatted] ?: fail { "$shipIdentifier is not a starship" }
 		sender.information(ship.controller.toString())
 
-		(ship.controller as? AIController)?.let { sender.userError(it.modules.entries.joinToString(separator = "\n") { mod ->
+		(ship.controller as? AIController)?.let { sender.userError(it.coreModules.entries.joinToString(separator = "\n") { mod ->
 			"[${mod.key}] = ${mod.value}" })
 		}
 	}
