@@ -131,13 +131,14 @@ enum class ChatChannel(
 
 			for (other in player.world.players) {
 				if (other.location.distanceSquared(player.location) > distanceSquared) continue
-				if (PlayerCache[other].blockedPlayerIDs.contains(player.slPlayerId)) continue
+				val cached = PlayerCache.getIfOnline(other) ?: continue
+				if (cached.blockedPlayerIDs.contains(player.slPlayerId)) continue
 
 				other.sendMessage(message.buildChatComponent(
-					useChannelPrefix = false,
+					useChannelPrefix = true,
 					useLevelsPrefix = true,
-					useShortenedPrefix = PlayerCache[other].shortenChatChannels,
-					showLuckPermsPrefix = !PlayerCache[player].hideGlobalPrefixes
+					useShortenedPrefix = cached.shortenChatChannels,
+					showLuckPermsPrefix = !cached.hideGlobalPrefixes
 				))
 			}
 		}
@@ -160,13 +161,14 @@ enum class ChatChannel(
 			val message = formatChatMessage(this, event, messageColor)
 
 			for (other in player.world.players) {
-				if (PlayerCache[other].blockedPlayerIDs.contains(player.slPlayerId)) continue
+				val cached = PlayerCache.getIfOnline(other) ?: continue
+				if (cached.blockedPlayerIDs.contains(player.slPlayerId)) continue
 
 				other.sendMessage(message.buildChatComponent(
 					useLevelsPrefix = true,
 					useChannelPrefix = true,
-					useShortenedPrefix = PlayerCache[other].shortenChatChannels,
-					showLuckPermsPrefix = !PlayerCache[player].hideGlobalPrefixes
+					useShortenedPrefix = cached.shortenChatChannels,
+					showLuckPermsPrefix = !cached.hideGlobalPrefixes
 				))
 			}
 		}
@@ -443,7 +445,7 @@ enum class ChatChannel(
 	ALLY(
 		displayName = text("Ally", DARK_PURPLE),
 		channelPrefix = text("Ally", DARK_PURPLE, BOLD),
-		shortenedChannelPrefix = bracketed(text("Ally", DARK_PURPLE, BOLD)),
+		shortenedChannelPrefix = bracketed(text("A", DARK_PURPLE, BOLD)),
 		commandAliases = listOf("achat", "ac", "allychat"),
 		messageColor = LIGHT_PURPLE
 	) {
