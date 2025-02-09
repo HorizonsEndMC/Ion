@@ -36,7 +36,7 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 		z(-3) {
 			y(getSign() * 3) {
 				x(-1).anyStairs()
-				x(+0).terracottaOrDoubleslab()
+				x(+0).terracottaOrDoubleSlab()
 				x(+1).anyStairs()
 			}
 		}
@@ -50,7 +50,7 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign() * 4) {
 				x(-1).anyStairs()
-				x(+0).terracottaOrDoubleslab()
+				x(+0).terracottaOrDoubleSlab()
 				x(+1).anyStairs()
 			}
 		}
@@ -69,9 +69,9 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 			}
 			y(getSign() * 4) {
 				x(-2).anySlab()
-				x(-1).terracottaOrDoubleslab()
-				x(+0).terracottaOrDoubleslab()
-				x(+1).terracottaOrDoubleslab()
+				x(-1).terracottaOrDoubleSlab()
+				x(+0).terracottaOrDoubleSlab()
+				x(+1).terracottaOrDoubleSlab()
 				x(+2).anySlab()
 			}
 		}
@@ -81,13 +81,13 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 				x(+1).sponge()
 			}
 			y(getSign() * 3) {
-				x(-3).terracottaOrDoubleslab()
+				x(-3).terracottaOrDoubleSlab()
 				x(-2).anyConcrete()
-				x(-1).terracottaOrDoubleslab()
+				x(-1).terracottaOrDoubleSlab()
 				x(+0).anyCopperVariant()
-				x(+1).terracottaOrDoubleslab()
+				x(+1).terracottaOrDoubleSlab()
 				x(+2).anyConcrete()
-				x(+3).terracottaOrDoubleslab()
+				x(+3).terracottaOrDoubleSlab()
 			}
 			y(getSign() * 4) {
 				x(-2).anySlab()
@@ -104,9 +104,9 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 			y(getSign() * 3) {
 				x(-3).anyStairs()
 				x(-2).anyConcrete()
-				x(-1).terracottaOrDoubleslab()
+				x(-1).terracottaOrDoubleSlab()
 				x(+0).anyCopperVariant()
-				x(+1).terracottaOrDoubleslab()
+				x(+1).terracottaOrDoubleSlab()
 				x(+2).anyConcrete()
 				x(+3).anyStairs()
 			}
@@ -121,9 +121,9 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 		z(+2) {
 			y(getSign() * 3) {
 				x(-2).ironBlock()
-				x(-1).terracottaOrDoubleslab()
+				x(-1).terracottaOrDoubleSlab()
 				x(+0).anyConcrete()
-				x(+1).terracottaOrDoubleslab()
+				x(+1).terracottaOrDoubleSlab()
 				x(+2).ironBlock()
 			}
 			y(getSign() * 4) {
@@ -135,7 +135,7 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 		z(+3) {
 			y(getSign() * 3) {
 				x(-1).anyStairs()
-				x(+0).terracottaOrDoubleslab()
+				x(+0).terracottaOrDoubleSlab()
 				x(+1).anyStairs()
 			}
 		}
