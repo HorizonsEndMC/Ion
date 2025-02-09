@@ -37,12 +37,15 @@ object MultiblockToken : CustomItem(
 	}
 
 	fun constructFor(multiblock: Multiblock): ItemStack {
-		return constructItemStack()
-			.updateDisplayName(ofChildren(text("Packaged "), multiblock.getDisplayName()))
-			.updatePersistentDataContainer { PrePackaged.setTokenData(multiblock, this) }
-			.updateData(DataComponentTypes.ITEM_MODEL, multiblock.getModel())
-			.apply(::refreshLore)
+		return constructItemStack().apply { applyMultiblockProperties(this, multiblock) }
 	}
+
+	fun applyMultiblockProperties(itemStack: ItemStack, multiblock: Multiblock) = itemStack
+		.updateDisplayName(ofChildren(text("Packaged "), multiblock.getDisplayName()))
+		.updatePersistentDataContainer { PrePackaged.setTokenData(multiblock, this) }
+		.updateData(DataComponentTypes.ITEM_MODEL, multiblock.getModel())
+		.apply(::refreshLore)
+
 
 	private fun handleSecondaryInteract(livingEntity: Player, itemStack: ItemStack, event: PlayerInteractEvent) {
 		if (itemStack.type.isAir) return
@@ -71,5 +74,13 @@ object MultiblockToken : CustomItem(
 		if (event.player.gameMode != GameMode.CREATIVE) {
 			itemStack.amount--
 		}
+	}
+
+	override fun fromBazaarString(string: String): ItemStack {
+		return serializationManager.deserialize(this, string.substringAfter(identifier))
+	}
+
+	override fun getBazaarString(itemStack: ItemStack): String {
+		return "$identifier${serializationManager.serialize(this, itemStack)}"
 	}
 }
