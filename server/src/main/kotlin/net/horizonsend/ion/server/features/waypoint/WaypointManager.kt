@@ -13,6 +13,8 @@ import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.Bukkit
@@ -275,10 +277,12 @@ object WaypointManager : IonServerComponent() {
         // Bookmarks may share the same name as a planet/gate/other object, but because those are loaded first,
         // getVertex() will default to the object instead of the bookmark
         for (bookmark in bookmarks) {
+            val world = Bukkit.getWorld(bookmark.worldName)
+            if (world == null || !world.hasFlag(WorldFlag.SPACE_WORLD)) continue
             val newVertex = WaypointVertex(
                 name = bookmark.name,
                 icon = SidebarIcon.BOOKMARK_ICON.text.first(),
-                loc = Location(Bukkit.getWorld(bookmark.worldName) ?: continue, bookmark.x.toDouble(), bookmark.y.toDouble(), bookmark.z.toDouble()),
+                loc = Location(world, bookmark.x.toDouble(), bookmark.y.toDouble(), bookmark.z.toDouble()),
                 linkedWaypoint = null
             )
             graph.addVertex(newVertex)
