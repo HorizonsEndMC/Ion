@@ -102,9 +102,7 @@ class PathCache<T : Any>(val cache: TransportCache) {
 			// Traverse network backwards
 			getPreviousNodes(nodeProvider, null)
 		}.forEach { extractorPos ->
-			pathCache.rowMap()[extractorPos]?.keys?.forEach { columnKey ->
-				toRemove.add(extractorPos to columnKey)
-			}
+			pathCache.rowMap()[extractorPos]?.keys?.forEach { columnKey -> toRemove.add(extractorPos to columnKey) }
 		}
 
 		// Remove all the paths after being found
