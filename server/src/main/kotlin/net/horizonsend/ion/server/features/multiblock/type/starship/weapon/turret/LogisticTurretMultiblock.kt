@@ -35,7 +35,7 @@ sealed class LogisticTurretMultiblock : TurretMultiblock() {
         z(-1) {
             y(getSign() * 3) {
                 x(-1).anyStairs()
-                x(+0).terracottaOrDoubleslab()
+                x(+0).terracottaOrDoubleSlab()
                 x(+1).anyStairs()
             }
             y(getSign() * 4) {
@@ -47,9 +47,9 @@ sealed class LogisticTurretMultiblock : TurretMultiblock() {
                 x(+0).sponge()
             }
             y(getSign() * 3) {
-                x(-1).terracottaOrDoubleslab()
+                x(-1).terracottaOrDoubleSlab()
                 x(+0).emeraldBlock()
-                x(+1).terracottaOrDoubleslab()
+                x(+1).terracottaOrDoubleSlab()
             }
             y(getSign() * 4) {
                 x(-1).anySlab()
@@ -60,7 +60,7 @@ sealed class LogisticTurretMultiblock : TurretMultiblock() {
         z(+1) {
             y(getSign() * 3) {
                 x(-1).anyStairs()
-                x(+0).terracottaOrDoubleslab()
+                x(+0).terracottaOrDoubleSlab()
                 x(+1).anyStairs()
             }
             y(getSign() * 4) {
