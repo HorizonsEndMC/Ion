@@ -34,6 +34,8 @@ fun getTransferSpaceFor(inventory: CraftInventory, itemStack: ItemStack): Int {
 		} else if (itemStack.isSimilar(smelting)) {
 			space += maxStackSize - smelting.amount
 		}
+
+		return space
 	}
 
 	return LegacyItemUtils.getSpaceFor(inventory, itemStack)
