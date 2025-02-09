@@ -101,4 +101,7 @@ open class CustomItem(
 	fun getParamaterKeys() = serializationManager.parameterKeys()
 
 	fun getItemFactory() = baseItemFactory
+
+	open fun getBazaarString(itemStack: ItemStack): String = identifier
+	open fun fromBazaarString(string: String): ItemStack = constructItemStack(1)
 }

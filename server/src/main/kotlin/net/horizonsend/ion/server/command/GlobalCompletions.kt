@@ -25,7 +25,7 @@ object GlobalCompletions {
 	}
 
 	fun toItemString(item: ItemStack): String {
-		return item.customItem?.identifier ?: item.type.toString()
+		return item.customItem?.getBazaarString(item) ?: item.type.toString()
 	}
 
 	val stringItemCache: LoadingCache<String, Optional<ItemStack>> = CacheBuilder.newBuilder().build(
@@ -36,7 +36,7 @@ object GlobalCompletions {
 
 	fun stringToItem(string: String): ItemStack? {
 		// if a custom item is found, use that
-		CustomItemRegistry.getByIdentifier(string)?.let { return it.constructItemStack() }
+		CustomItemRegistry.getByIdentifier(string)?.let { return it.fromBazaarString(string) }
 
 		val material: Material = try { Material.valueOf(string) } catch (e: Throwable) { return null }
 
