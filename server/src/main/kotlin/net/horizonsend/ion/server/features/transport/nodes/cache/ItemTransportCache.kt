@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.features.transport.items.util.ItemTransaction
@@ -22,14 +23,15 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockSateSafe
 import net.minecraft.world.CompoundContainer
 import net.minecraft.world.Container
 import net.minecraft.world.level.block.ChestBlock
-import net.minecraft.world.level.block.DoubleBlockCombiner
-import net.minecraft.world.level.block.entity.ChestBlockEntity
+import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.properties.ChestType
 import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.inventory.CraftInventory
@@ -95,13 +97,13 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 	) {
 //		debugAudience.information("Checking ${singletonItem.type} [$count]")
 
-		val destinations: List<BlockKey> = getOrCacheDestination<ItemNode.InventoryNode>(originKey, originNode) { node ->
+		val destinations: List<BlockKey> = getNetworkDestinations<ItemNode.InventoryNode>(originKey, originNode) { node ->
 			val destinationInventory = destinationInvCache.getOrPut(node.position) {
-				getInventory(node.position) ?: return@getOrCacheDestination false
+				getInventory(node.position) ?: return@getNetworkDestinations false
 			}
 
 			if (!LegacyItemUtils.canFit(destinationInventory, singletonItem, 1)) {
-				return@getOrCacheDestination false
+				return@getNetworkDestinations false
 			}
 
 			availableItemReferences.none { itemReference ->
@@ -130,39 +132,35 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 				),
 				destination = destinations[it],
 				itemStack = singletonItem,
-			) { node, blockFace ->
+			) { node, _ ->
 				if (node !is ItemNode.FilterNode) return@findPath true
 
 				node.matches(singletonItem)
 			}
 		}
 
-		val validDestinations = destinations.filterIndexedTo(mutableListOf()) { index, destination ->
+		val validDestinations = destinations.filterIndexedTo(mutableListOf()) { index, _ ->
 			val path = paths[index]
 			path != null
 		}
+
 		if (validDestinations.isEmpty()) return
 
 		val transaction = ItemTransaction()
 
 		for (reference in availableItemReferences) {
-			var destination = getDestination(meta, originKey, validDestinations)
+			val destinationInventory = selectDestination(
+				singletonItem,
+				destinationInvCache,
+				validDestinations,
+				meta,
+				originKey
+			) ?: break // If no destinations could be found, it is likely that no more will be, since all transfers are of the same item
 
-			var destinationInventory = destinationInvCache[destination]
-			if (destinationInventory == null) {
-				val lookup = getInventory(destination) ?: continue
-				destinationInventory = lookup
-			}
+			val holder = (destinationInventory.inventory as BlockEntity)
+			debugAudience.highlightBlock(Vec3i(holder.blockPos.x, holder.blockPos.y, holder.blockPos.z), 40L)
 
 			val room = getTransferSpaceFor(destinationInventory, singletonItem)
-
-			if (room == 0) {
-				validDestinations.remove(destination)
-				if (validDestinations.isEmpty()) return
-
-				destination = getDestination(meta, originKey, validDestinations)
-				continue
-			}
 
 			val amount = minOf(reference.get()?.amount ?: 0, room)
 			if (amount == 0) continue
@@ -173,13 +171,47 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 				singletonItem,
 				amount
 			)
-
-//			debugAudience.highlightBlock(toVec3i(destination), 40L)
 		}
 
 		Tasks.sync {
 			transaction.commit()
 		}
+	}
+
+	private fun selectDestination(
+		singletonItem: ItemStack,
+		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
+		validDestinations: MutableList<BlockKey>,
+		meta: ItemExtractorMetaData?,
+		extractorKey: BlockKey
+	): CraftInventory? {
+		var destination: CraftInventory? = null
+
+		var remainingIterations = validDestinations.size
+		while (destination == null && remainingIterations > 0) {
+			remainingIterations--
+
+			val newLocation: BlockKey = getDestination(meta, extractorKey, validDestinations)
+			val destinationInventory = destinationInvCache[newLocation]
+
+			if (destinationInventory == null) {
+				validDestinations.remove(newLocation)
+				if (validDestinations.isEmpty()) break
+
+				continue
+			}
+
+			if (getTransferSpaceFor(destinationInventory, singletonItem) == 0) {
+				validDestinations.remove(newLocation)
+				if (validDestinations.isEmpty()) break
+
+				continue
+			}
+
+			destination = destinationInventory
+		}
+
+		return destination
 	}
 
 	fun getDestination(meta: ItemExtractorMetaData?, extractorKey: BlockKey, destinations: List<BlockKey>): BlockKey {
@@ -189,22 +221,6 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 		val extractorPosition = toVec3i(extractorKey)
 		return destinations.minBy { key -> extractorPosition.distance(toVec3i(key)) }
-	}
-
-	companion object {
-		private val CHEST_COMBINER = object  : DoubleBlockCombiner.Combiner<ChestBlockEntity, Int> {
-			override fun acceptDouble(p0: ChestBlockEntity, p1: ChestBlockEntity): Int {
-				return 2
-			}
-
-			override fun acceptSingle(p0: ChestBlockEntity): Int {
-				return 1
-			}
-
-			override fun acceptNone(): Int {
-				return 0
-			}
-		}
 	}
 
 	/**
