@@ -55,7 +55,7 @@ object MiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
 
 			y(+1) {
 				x(-1).anyStairs()
-				x(+0).terracottaOrDoubleslab()
+				x(+0).terracottaOrDoubleSlab()
 				x(+1).anyStairs()
 			}
 
@@ -77,9 +77,9 @@ object MiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
 				x(+1).titaniumBlock()
 			}
 			y(+1) {
-				x(-1).terracottaOrDoubleslab()
+				x(-1).terracottaOrDoubleSlab()
 				x(+0).emeraldBlock()
-				x(+1).terracottaOrDoubleslab()
+				x(+1).terracottaOrDoubleSlab()
 			}
 			y(+2) {
 				x(-1).anyGlassPane()
@@ -103,7 +103,7 @@ object MiningLaserMultiblockTier1Top : MiningLaserMultiblockTier1() {
 
 			y(+1) {
 				x(-1).anyStairs()
-				x(+0).terracottaOrDoubleslab()
+				x(+0).terracottaOrDoubleSlab()
 				x(+1).anyStairs()
 			}
 
@@ -136,7 +136,7 @@ object MiningLaserMultiblockTier1TopMirrored : MiningLaserMultiblockTier1() {
 
 			y(+1) {
 				x(-1).anyStairs()
-				x(+0).terracottaOrDoubleslab()
+				x(+0).terracottaOrDoubleSlab()
 				x(+1).anyStairs()
 			}
 
@@ -158,9 +158,9 @@ object MiningLaserMultiblockTier1TopMirrored : MiningLaserMultiblockTier1() {
 				x(+1).titaniumBlock()
 			}
 			y(+1) {
-				x(-1).terracottaOrDoubleslab()
+				x(-1).terracottaOrDoubleSlab()
 				x(+0).emeraldBlock()
-				x(+1).terracottaOrDoubleslab()
+				x(+1).terracottaOrDoubleSlab()
 			}
 			y(+2) {
 				x(-1).anyGlassPane()
@@ -184,7 +184,7 @@ object MiningLaserMultiblockTier1TopMirrored : MiningLaserMultiblockTier1() {
 
 			y(+1) {
 				x(-1).anyStairs()
-				x(+0).terracottaOrDoubleslab()
+				x(+0).terracottaOrDoubleSlab()
 				x(+1).anyStairs()
 			}
 
@@ -218,7 +218,7 @@ object MiningLaserMultiblockTier1Bottom : MiningLaserMultiblockTier1() {
 
 			y(-1) {
 				x(-1).anyStairs()
-				x(+0).terracottaOrDoubleslab()
+				x(+0).terracottaOrDoubleSlab()
 				x(+1).anyStairs()
 			}
 
@@ -240,9 +240,9 @@ object MiningLaserMultiblockTier1Bottom : MiningLaserMultiblockTier1() {
 				x(+1).titaniumBlock()
 			}
 			y(-1) {
-				x(-1).terracottaOrDoubleslab()
+				x(-1).terracottaOrDoubleSlab()
 				x(+0).emeraldBlock()
-				x(+1).terracottaOrDoubleslab()
+				x(+1).terracottaOrDoubleSlab()
 			}
 			y(-2) {
 				x(-1).anyGlassPane()
@@ -266,7 +266,7 @@ object MiningLaserMultiblockTier1Bottom : MiningLaserMultiblockTier1() {
 
 			y(-1) {
 				x(-1).anyStairs()
-				x(+0).terracottaOrDoubleslab()
+				x(+0).terracottaOrDoubleSlab()
 				x(+1).anyStairs()
 			}
 
@@ -300,7 +300,7 @@ object MiningLaserMultiblockTier1BottomMirrored : MiningLaserMultiblockTier1() {
 
 			y(-1) {
 				x(-1).anyStairs()
-				x(+0).terracottaOrDoubleslab()
+				x(+0).terracottaOrDoubleSlab()
 				x(+1).anyStairs()
 			}
 
@@ -322,9 +322,9 @@ object MiningLaserMultiblockTier1BottomMirrored : MiningLaserMultiblockTier1() {
 				x(+1).titaniumBlock()
 			}
 			y(-1) {
-				x(-1).terracottaOrDoubleslab()
+				x(-1).terracottaOrDoubleSlab()
 				x(+0).emeraldBlock()
-				x(+1).terracottaOrDoubleslab()
+				x(+1).terracottaOrDoubleSlab()
 			}
 			y(-2) {
 				x(-1).anyGlassPane()
@@ -348,7 +348,7 @@ object MiningLaserMultiblockTier1BottomMirrored : MiningLaserMultiblockTier1() {
 
 			y(-1) {
 				x(-1).anyStairs()
-				x(+0).terracottaOrDoubleslab()
+				x(+0).terracottaOrDoubleSlab()
 				x(+1).anyStairs()
 			}
 
@@ -410,19 +410,19 @@ object MiningLaserMultiblockTier1Side : MiningLaserMultiblockTier1() {
 		z(+2) {
 			y(-1) {
 				x(+1).anyStairs()
-				x(+0).terracottaOrDoubleslab()
+				x(+0).terracottaOrDoubleSlab()
 				x(-1).anyStairs()
 			}
 
 			y(+0) {
-				x(+1).terracottaOrDoubleslab()
+				x(+1).terracottaOrDoubleSlab()
 				x(+0).emeraldBlock()
-				x(-1).terracottaOrDoubleslab()
+				x(-1).terracottaOrDoubleSlab()
 			}
 
 			y(+1) {
 				x(+1).anyStairs()
-				x(+0).terracottaOrDoubleslab()
+				x(+0).terracottaOrDoubleSlab()
 				x(-1).anyStairs()
 			}
 		}
@@ -495,19 +495,19 @@ object MiningLaserMultiblockTier1SideMirrored : MiningLaserMultiblockTier1() {
 		z(+2) {
 			y(-1) {
 				x(+1).anyStairs()
-				x(+0).terracottaOrDoubleslab()
+				x(+0).terracottaOrDoubleSlab()
 				x(-1).anyStairs()
 			}
 
 			y(+0) {
-				x(+1).terracottaOrDoubleslab()
+				x(+1).terracottaOrDoubleSlab()
 				x(+0).emeraldBlock()
-				x(-1).terracottaOrDoubleslab()
+				x(-1).terracottaOrDoubleSlab()
 			}
 
 			y(+1) {
 				x(+1).anyStairs()
-				x(+0).terracottaOrDoubleslab()
+				x(+0).terracottaOrDoubleSlab()
 				x(-1).anyStairs()
 			}
 		}

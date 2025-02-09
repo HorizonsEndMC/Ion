@@ -332,32 +332,30 @@ class MultiblockShape {
 
 		fun anySlabOrStairs() = filteredTypes("any slab or stairs", { setExample(Material.STONE_BRICK_SLAB) }) { it.isSlab || it.isStairs }
 
-		fun terracottaOrDoubleslab() {
-			BlockRequirement(
-				alias = "any double slab or terracotta block",
-				example = Material.CYAN_TERRACOTTA.createBlockData(),
-				syncCheck = { block, _, loadChunks ->
-					val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
-					val blockType = if (loadChunks) block.type else block.getTypeSafe()
+		fun terracottaOrDoubleSlab() = complete(BlockRequirement(
+			alias = "any double slab or terracotta block",
+			example = Material.CYAN_TERRACOTTA.createBlockData(),
+			syncCheck = { block, _, loadChunks ->
+				val blockData: BlockData? = if (loadChunks) block.blockData else getBlockDataSafe(block.world, block.x, block.y, block.z)
+				val blockType = if (loadChunks) block.type else block.getTypeSafe()
 
-					(blockData is Slab && blockData.type == DOUBLE) || TERRACOTTA_TYPES.contains(blockType)
+				(blockData is Slab && blockData.type == DOUBLE) || TERRACOTTA_TYPES.contains(blockType)
+			},
+			itemRequirement = BlockRequirement.ItemRequirement(
+				itemCheck = { (it.type.isSlab && it.amount >= 2) || it.type.isTerracotta  },
+				amountConsumed = { if (it.type.isSlab) 2 else 1 },
+				toBlock = { item ->
+					val type = item.type
+					if (type.isSlab) {
+						(type.createBlockData() as Slab).apply { this.type = DOUBLE }
+					} else type.createBlockData()
 				},
-				itemRequirement = BlockRequirement.ItemRequirement(
-					itemCheck = { (it.type.isSlab && it.amount >= 2) || it.type.isTerracotta  },
-					amountConsumed = { if (it.type.isSlab) 2 else 1 },
-					toBlock = { item ->
-						val type = item.type
-						if (type.isSlab) {
-							(type.createBlockData() as Slab).apply { this.type = DOUBLE }
-						} else type.createBlockData()
-					},
-					{ block ->
-						val type = block.material
-						if (type.isSlab) ItemStack(type, 2) else ItemStack(type)
-					}
-				),
+				{ block ->
+					val type = block.material
+					if (type.isSlab) ItemStack(type, 2) else ItemStack(type)
+				}
 			)
-		}
+		))
 
 		fun sculkCatalyst() = type(Material.SCULK_CATALYST)
 
