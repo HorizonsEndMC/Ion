@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.features.transport.items.util.ItemTransaction
@@ -23,15 +22,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockSateSafe
 import net.minecraft.world.CompoundContainer
 import net.minecraft.world.Container
 import net.minecraft.world.level.block.ChestBlock
-import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.properties.ChestType
 import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.inventory.CraftInventory
@@ -156,9 +152,6 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 				meta,
 				originKey
 			) ?: break // If no destinations could be found, it is likely that no more will be, since all transfers are of the same item
-
-			val holder = (destinationInventory.inventory as BlockEntity)
-			debugAudience.highlightBlock(Vec3i(holder.blockPos.x, holder.blockPos.y, holder.blockPos.z), 40L)
 
 			val room = getTransferSpaceFor(destinationInventory, singletonItem)
 
