@@ -1,14 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
-import net.horizonsend.ion.common.utils.text.ADVANCED_SHIP_FACTORY_CHARACTER
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
-import net.horizonsend.ion.server.features.gui.GuiItem
-import net.horizonsend.ion.server.features.gui.GuiItems
-import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.GuiWrapper
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
@@ -30,7 +25,6 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.World
-import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.Bisected
@@ -39,9 +33,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
-import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
-import xyz.xenondevs.invui.gui.Gui
-import xyz.xenondevs.invui.window.Window
 
 object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShipFactoryEntity>() {
 	override val signText = createSignText(
@@ -118,7 +109,7 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		AdvancedShipFactoryGui(player, sign.block).open()
+		getMultiblockEntity(sign)?.openMenu(player)
 	}
 
 	class AdvancedShipFactoryEntity(
@@ -143,15 +134,10 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 			.addPowerInput(0, -1, 0)
 			.build()
 
-		override fun tick() {
-			if (!userManager.currentlyUsed()) return
-			println("Toggled on")
-		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
-			userManager.saveUserData(store)
+			super.storeAdditionalData(store, adapterContext)
 			savePowerData(store)
-			settings.save(store)
 		}
 
 		private val pipeInputOffsets = arrayOf(
@@ -210,46 +196,4 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 		}
 	}
 
-	class AdvancedShipFactoryGui(val viewer: Player, val block: Block) : GuiWrapper {
-		override fun open() {
-			val gui = Gui.normal()
-				.setStructure(
-					"s s s s s i . . .",
-					"^ ^ ^ . ^ ^ . x .",
-					". . . . . . . . .",
-					"v v v . v v . . .",
-					"B A M R . P . e .",
-					". 1 3 6 . I . . ."
-				)
-				.addIngredient('s', GuiItems.CustomControlItem(text("search"), GuiItem.EMPTY))
-				.addIngredient('i', GuiItems.CustomControlItem(text("down"), GuiItem.MAGNIFYING_GLASS))
-				.addIngredient('^', GuiItems.CustomControlItem(text("up"), GuiItem.UP))
-				.addIngredient('v', GuiItems.CustomControlItem(text("down"), GuiItem.DOWN))
-				.addIngredient('B', GuiItems.CustomControlItem(text("outline"), GuiItem.OUTLINE))
-				.addIngredient('A', GuiItems.CustomControlItem(text("align"), GuiItem.ALIGN))
-				.addIngredient('M', GuiItems.CustomControlItem(text("materials"), GuiItem.MATERIALS))
-				.addIngredient('R', GuiItems.CustomControlItem(text("reset"), GuiItem.CANCEL))
-				.addIngredient('1', GuiItems.CustomControlItem(text("preview 10s"), GuiItem.ONE_QUARTER))
-				.addIngredient('3', GuiItems.CustomControlItem(text("preview 30s"), GuiItem.TWO_QUARTER))
-				.addIngredient('6', GuiItems.CustomControlItem(text("preview 60s"), GuiItem.THREE_QUARTER))
-				.addIngredient('P', GuiItems.CustomControlItem(text("placement settings"), GuiItem.GEAR))
-				.addIngredient('I', GuiItems.CustomControlItem(text("item settings"), GuiItem.GEAR))
-				.addIngredient('x', GuiItems.CustomControlItem(text("stop"), GuiItem.EMPTY))
-				.addIngredient('e', GuiItems.CustomControlItem(text("start"), GuiItem.EMPTY))
-
-			Window.single()
-				.setGui(gui)
-				.setTitle(AdventureComponentWrapper(setGuiOverlay()))
-				.build(viewer)
-				.open()
-		}
-
-		fun setGuiOverlay(): Component = GuiText("Advanced Ship Factory")
-			.addBackground(GuiText.GuiBackground(
-				backgroundChar = ADVANCED_SHIP_FACTORY_CHARACTER,
-				backgroundWidth = 250 - 9,
-				verticalShift = 10
-			))
-			.build()
-	}
 }
