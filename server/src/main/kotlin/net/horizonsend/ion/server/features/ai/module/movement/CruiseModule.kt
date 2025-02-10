@@ -6,8 +6,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import java.util.function.Supplier
@@ -21,11 +21,11 @@ import kotlin.math.abs
  * @param maximumCruiseDistanceSquared Does not cruise if the target is within this distance (squared).
  **/
 class CruiseModule(
-	controller: AIController,
-	pathfindingModule: PathfindingModule,
-	val cruiseDestination: Supplier<Vec3i?>,
-	var shiftFlightType: ShiftFlightType,
-	var maximumCruiseDistanceSquared: Double = 90000.0,
+    controller: AIController,
+    pathfindingModule: PathfindingModule,
+    val cruiseDestination: Supplier<Vec3i?>,
+    var shiftFlightType: ShiftFlightType,
+    var maximumCruiseDistanceSquared: Double = 90000.0,
 ) : MovementModule(controller, pathfindingModule) {
 	// The pathfinding controller will change the destination, so store the eventual destination in a seperate variable.
 	var speedLimit = -1

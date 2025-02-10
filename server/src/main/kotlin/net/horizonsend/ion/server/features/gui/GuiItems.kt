@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
 import net.horizonsend.ion.server.features.nations.gui.skullItem
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
@@ -228,6 +228,13 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     COMPASS_NEEDLE(NamespacedKeys.packKey("ui/compass_needle")),
     BOOKMARK(NamespacedKeys.packKey("ui/bookmark")),
     SOUND(NamespacedKeys.packKey("ui/sound")),
+    OUTLINE(NamespacedKeys.packKey("ui/outline")),
+    ALIGN(NamespacedKeys.packKey("ui/align")),
+    MATERIALS(NamespacedKeys.packKey("ui/materials")),
+    ONE_QUARTER(NamespacedKeys.packKey("ui/one_quarter")),
+    TWO_QUARTER(NamespacedKeys.packKey("ui/two_quarter")),
+    THREE_QUARTER(NamespacedKeys.packKey("ui/three_quarter")),
+    GEAR(NamespacedKeys.packKey("ui/gear")),
 
 	;
 

@@ -1,0 +1,57 @@
+package net.horizonsend.ion.server.features.transport.items.util
+
+import org.bukkit.craftbukkit.inventory.CraftInventory
+import org.bukkit.inventory.ItemStack
+
+class BackedItemTransaction(val source: ItemReference, val item: ItemStack, val amount: Int, val destinations: MutableList<CraftInventory>) {
+	fun check(): Boolean {
+		return true
+	}
+
+	fun execute() {
+		val cloned = source.inventory.getItem(source.index)?.clone() ?: return
+		val notRemoved = tryRemove()
+
+		val limit = amount - notRemoved
+
+		if (limit <= 0) return
+
+		val notAdded = addToDestination(limit)
+		if (notAdded <= 0) return
+
+		source.inventory.setItem(source.index, cloned.asQuantity(notAdded))
+	}
+
+	// Returns amount that could not be removed
+	private fun tryRemove(): Int {
+		val sourceStack = source.inventory.getItem(source.index) ?: return amount
+		val removeAmount = minOf(amount, sourceStack.amount)
+
+		return if (amount == removeAmount) {
+			source.inventory.setItem(source.index, null)
+
+			0
+		} else {
+			sourceStack.amount -= removeAmount
+
+			amount - removeAmount
+		}
+	}
+
+	// Returns amount that did not fit
+	private fun addToDestination(limit: Int): Int {
+		var remaining = limit
+
+		val invIterator = destinations.iterator()
+		while (remaining > 0 && invIterator.hasNext()) {
+			val destination = invIterator.next()
+			val remainder = addToInventory(destination, item.asQuantity(remaining))
+
+			if (remainder == 0) return 0
+			remaining -= (remaining - remainder)
+			invIterator.remove()
+		}
+
+		return remaining
+	}
+}

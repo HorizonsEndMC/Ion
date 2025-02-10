@@ -57,6 +57,11 @@ class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> pr
 		val SMELTABLE = newComponentType<Smeltable, OnlyOne<Smeltable>>(ComponentType.ONLY_ONE)
 
 		/**
+		 * Specifiies a result from smelting this item
+		 **/
+		val MULTIBLOCK_TYPE = newComponentType<StoredMultiblock, OnlyOne<StoredMultiblock>>(ComponentType.ONLY_ONE)
+
+		/**
 		 * General interact listener
 		 **/
 		val LISTENER_PLAYER_INTERACT = newComponentType<Listener<PlayerInteractEvent, *>, AllowMultiple<Listener<PlayerInteractEvent, *>>>(ComponentType.ALLOW_MULTIPLE)
