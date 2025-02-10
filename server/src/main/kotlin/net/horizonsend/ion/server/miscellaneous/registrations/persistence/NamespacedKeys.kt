@@ -128,6 +128,9 @@ object NamespacedKeys {
 	val LEAVE_ITEM_REMAINING = key("leave_item_remaining")
 	val GRAB_NETWORKED_INVENTORIES = key("grab_networked_inventories")
 
+	val BLUEPRINT_NAME = key("blueprint_name")
+	val BLUEPRINT_ID = key("blueprint_id")
+
 	fun key(key: String) = NamespacedKey(IonServer, key)
 
 	// Used for datapacks and resource packs
