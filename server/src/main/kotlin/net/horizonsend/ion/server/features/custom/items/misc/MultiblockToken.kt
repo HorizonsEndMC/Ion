@@ -41,7 +41,7 @@ object MultiblockToken : CustomItem(
 	}
 
 	fun applyMultiblockProperties(itemStack: ItemStack, multiblock: Multiblock) = itemStack
-		.updateDisplayName(ofChildren(text("Packaged "), multiblock.getDisplayName()))
+		.updateDisplayName(ofChildren(multiblock.getDisplayName(), text(" Token")))
 		.updatePersistentDataContainer { PrePackaged.setTokenData(multiblock, this) }
 		.updateData(DataComponentTypes.ITEM_MODEL, multiblock.getModel())
 		.apply(::refreshLore)
