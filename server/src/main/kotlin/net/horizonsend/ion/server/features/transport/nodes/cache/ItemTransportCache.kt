@@ -144,23 +144,23 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 		val transaction = ItemTransaction()
 
+		val destinationInventories = getDestinations(
+			singletonItem,
+			destinationInvCache,
+			validDestinations,
+			meta,
+			originKey
+		)
+
+		val room = getTransferSpaceFor(destinationInventories, singletonItem)
+
 		for (reference in availableItemReferences) {
-			val destinationInventory = selectDestination(
-				singletonItem,
-				destinationInvCache,
-				validDestinations,
-				meta,
-				originKey
-			) ?: break // If no destinations could be found, it is likely that no more will be, since all transfers are of the same item
-
-			val room = getTransferSpaceFor(destinationInventory, singletonItem)
-
 			val amount = minOf(reference.get()?.amount ?: 0, room)
 			if (amount == 0) continue
 
 			transaction.addTransfer(
 				reference,
-				destinationInventory,
+				destinationInventories,
 				singletonItem,
 				amount
 			)
@@ -171,19 +171,16 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		}
 	}
 
-	private fun selectDestination(
+	private fun getDestinations(
 		singletonItem: ItemStack,
 		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
 		validDestinations: MutableList<BlockKey>,
 		meta: ItemExtractorMetaData?,
 		extractorKey: BlockKey
-	): CraftInventory? {
-		var destination: CraftInventory? = null
+	): MutableList<CraftInventory> {
+		val foundDestinationInventories = mutableListOf<CraftInventory>()
 
-		var remainingIterations = validDestinations.size
-		while (destination == null && remainingIterations > 0) {
-			remainingIterations--
-
+		for (n in validDestinations.indices) {
 			val newLocation: BlockKey = getDestination(meta, extractorKey, validDestinations)
 			val destinationInventory = destinationInvCache[newLocation]
 
@@ -201,10 +198,12 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 				continue
 			}
 
-			destination = destinationInventory
+			foundDestinationInventories += destinationInventory
+			validDestinations.remove(newLocation)
+			if (validDestinations.isEmpty()) break
 		}
 
-		return destination
+		return foundDestinationInventories
 	}
 
 	fun getDestination(meta: ItemExtractorMetaData?, extractorKey: BlockKey, destinations: List<BlockKey>): BlockKey {

@@ -14,6 +14,10 @@ import org.bukkit.craftbukkit.inventory.CraftInventoryFurnace
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
 
+fun getTransferSpaceFor(inventory: Collection<CraftInventory>, itemStack: ItemStack): Int = inventory.sumOf {
+	getTransferSpaceFor(it, itemStack)
+}
+
 fun getTransferSpaceFor(inventory: CraftInventory, itemStack: ItemStack): Int {
 	val nmsContainer = inventory.inventory
 	val maxStackSize = itemStack.maxStackSize

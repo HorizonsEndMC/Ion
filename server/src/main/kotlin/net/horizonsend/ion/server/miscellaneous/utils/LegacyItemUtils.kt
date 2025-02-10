@@ -24,6 +24,7 @@ object LegacyItemUtils {
 	fun getSpaceFor(inventory: Inventory, item: ItemStack): Int {
 		var space = 0
 		val maxStackSize = item.maxStackSize
+
 		if (inventory is FurnaceInventory) {
 			val furnaceInventory = inventory
 			val fuel = furnaceInventory.fuel
@@ -41,7 +42,7 @@ object LegacyItemUtils {
 			}
 		} else {
 			for (stack in inventory.storageContents)
-				if (stack == null) {
+				if (stack == null || stack.isEmpty) {
 					space += maxStackSize
 				} else if (stack.isSimilar(item)) {
 					space += maxStackSize - stack.amount
