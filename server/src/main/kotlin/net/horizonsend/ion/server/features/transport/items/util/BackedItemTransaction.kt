@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.transport.items.util
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.ItemStack
 
-class BackedItemTransaction(val source: ItemReference, val item: ItemStack, val amount: Int, val destination: CraftInventory) {
+class BackedItemTransaction(val source: ItemReference, val item: ItemStack, val amount: Int, val destinations: MutableList<CraftInventory>) {
 	fun check(): Boolean {
 		return true
 	}
@@ -40,6 +40,18 @@ class BackedItemTransaction(val source: ItemReference, val item: ItemStack, val 
 
 	// Returns amount that did not fit
 	private fun addToDestination(limit: Int): Int {
-		return addToInventory(destination, item.asQuantity(limit))
+		var remaining = limit
+
+		val invIterator = destinations.iterator()
+		while (remaining > 0 && invIterator.hasNext()) {
+			val destination = invIterator.next()
+			val remainder = addToInventory(destination, item.asQuantity(remaining))
+
+			if (remainder == 0) return 0
+			remaining -= (remaining - remainder)
+			invIterator.remove()
+		}
+
+		return remaining
 	}
 }
