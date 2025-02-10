@@ -17,10 +17,7 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
-import net.horizonsend.ion.common.utils.text.miniMessage
-import net.horizonsend.ion.server.features.gui.GuiItems
-import net.horizonsend.ion.server.features.gui.item.AsyncItem
-import net.horizonsend.ion.server.features.nations.gui.playerClicker
+import net.horizonsend.ion.server.features.gui.custom.blueprint.BlueprintMenu
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -34,31 +31,23 @@ import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.createData
 import net.horizonsend.ion.server.miscellaneous.utils.loadClipboard
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
-import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
-import net.horizonsend.ion.server.miscellaneous.utils.updateLore
-import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.world.level.block.BaseEntityBlock
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.and
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq
 import org.litote.kmongo.save
-import xyz.xenondevs.invui.gui.PagedGui
-import xyz.xenondevs.invui.gui.structure.Markers
-import xyz.xenondevs.invui.item.ItemProvider
-import xyz.xenondevs.invui.window.Window
 import java.util.LinkedList
 import java.util.Locale
 import java.util.UUID
@@ -148,7 +137,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		sender.success("Deleted blueprint ${blueprint.name}")
 	}
 
-	private fun blueprintInfo(blueprint: Blueprint): List<String> {
+	fun blueprintInfo(blueprint: Blueprint): List<String> {
 		val list = LinkedList<String>()
 		val cost = calculateBlueprintCost(blueprint)
 		list.add("<gray>Size<dark_gray>: <gold>${blueprint.size}")
@@ -174,7 +163,6 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("list")
 	fun onList(sender: Player) {
-		// Use a task as to not hog the command thread
 		val slPlayerId = sender.slPlayerId
 
 		Tasks.async {
@@ -187,43 +175,10 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 				"You have no blueprints"
 			}
 
-			val items = blueprints.map { blueprint ->
-				AsyncItem(
-					{
-						blueprint.type.actualType.menuItem.clone()
-							.updateDisplayName(text(blueprint.name))
-							.updateLore(blueprintInfo(blueprint).map(String::miniMessage))
-					},
-					{ event ->
-						event.playerClicker.closeInventory()
-						Tasks.async { showMaterials(event.playerClicker, blueprint) }
-					}
-				)
-			}
-
-			val gui = PagedGui.items()
-				.setStructure(
-					"x x x x x x x x x",
-					"x x x x x x x x x",
-					"x x x x x x x x x",
-					"x x x x x x x x x",
-					"< # # # # # # # >",
-				)
-				.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
-				.addIngredient('#', ItemProvider { ItemStack(Material.BLACK_STAINED_GLASS) })
-				.addIngredient('<', GuiItems.PageLeftItem())
-				.addIngredient('>', GuiItems.PageRightItem())
-				.setContent(items)
-				.build()
-
-			Tasks.sync {
-				Window
-					.single()
-					.setGui(gui)
-					.setTitle("All Multiblocks")
-					.build(sender)
-					.open()
-			}
+			BlueprintMenu(sender) { blueprint, player ->
+				player.closeInventory()
+				Tasks.async { showMaterials(player, blueprint) }
+			}.open()
 		}
 	}
 
