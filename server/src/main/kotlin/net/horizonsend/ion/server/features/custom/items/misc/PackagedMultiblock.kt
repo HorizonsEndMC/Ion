@@ -114,4 +114,12 @@ object PackagedMultiblock : CustomItem(
 		val locations = packagedData.shape.getLocations(livingEntity.facing).map { Vec3i(origin.x, origin.y, origin.z).plus(it) }
 		livingEntity.highlightBlocks(locations, 100L)
 	}
+
+	override fun getBazaarString(itemStack: ItemStack): String {
+		throw NotImplementedError("Packaged multiblocks may not be listed on bazaar")
+	}
+
+	override fun fromBazaarString(string: String): ItemStack {
+		throw NotImplementedError("Packaged multiblocks may not be listed on bazaar")
+	}
 }

@@ -3,6 +3,9 @@ package net.horizonsend.ion.server.features.multiblock
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemContainerContents
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.loadFromData
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.setMultiblockEntity
@@ -13,6 +16,7 @@ import net.horizonsend.ion.server.features.multiblock.shape.BlockRequirement
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
+import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
@@ -36,8 +40,10 @@ import org.bukkit.block.data.Directional
 import org.bukkit.block.data.type.WallSign
 import org.bukkit.block.sign.Side
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
@@ -47,7 +53,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.persistence.PersistentDataType.STRING
 
-object PrePackaged {
+object PrePackaged : SLEventListener() {
 	fun getOriginFromPlacement(clickedBlock: Block, direction: BlockFace, shape: MultiblockShape): Block {
 		val requirements = shape.getRequirementMap(direction)
 		val minY = requirements.entries.minOfOrNull { it.key.y } ?: throw NullPointerException("Multiblock has no shape!")
@@ -352,5 +358,17 @@ object PrePackaged {
 		if (material.isSign && !material.isWallSign) return material
 		val variant = material.name.removeSuffix("_WALL_SIGN")
 		return runCatching { Material.valueOf(variant + "_SIGN") }.getOrDefault(Material.OAK_SIGN)
+	}
+
+	@EventHandler
+	fun onCraftToken(event: PrepareItemCraftEvent) {
+		val contents = event.inventory.contents.filterNot { it == null || it.isEmpty }
+		if (contents.size != 1) return
+
+		val item = contents.first() ?: return
+		if (item.customItem != CustomItemRegistry.PACKAGED_MULTIBLOCK) return
+
+		val multiblock = getTokenData(item) ?: return
+		event.inventory.result = MultiblockToken.constructFor(multiblock)
 	}
 }
