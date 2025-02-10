@@ -6,8 +6,8 @@ import org.bukkit.inventory.ItemStack
 class ItemTransaction {
 	private val transactions = mutableListOf<BackedItemTransaction>()
 
-	fun addTransfer(sourceReference: ItemReference, destinationInventory: CraftInventory, transferredItem: ItemStack, transferredAmount: Int) {
-		transactions += BackedItemTransaction(sourceReference, transferredItem, transferredAmount, destinationInventory)
+	fun addTransfer(sourceReference: ItemReference, destinationInventories: MutableList<CraftInventory>, transferredItem: ItemStack, transferredAmount: Int) {
+		transactions += BackedItemTransaction(sourceReference, transferredItem, transferredAmount, destinationInventories)
 	}
 
 	fun commit() {
