@@ -8,10 +8,10 @@ import org.bukkit.inventory.ItemStack
 import java.util.function.Consumer
 import java.util.function.Supplier
 
-class ValueScrollButton(
+open class ValueScrollButton(
 	item: ItemStack,
 	private val wrap: Boolean,
-	private val value: Supplier<Int>,
+	protected val value: Supplier<Int>,
 	private val increment: Int,
 	private val valueRange: IntRange,
 	private val valueConsumer: Consumer<Int>
