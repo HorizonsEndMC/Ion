@@ -1,9 +1,17 @@
 package net.horizonsend.ion.server.features.transport.items.util
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.ItemStack
 
-class BackedItemTransaction(val source: ItemReference, val item: ItemStack, val amount: Int, val destinations: MutableList<CraftInventory>) {
+class BackedItemTransaction(
+	val source: ItemReference,
+	val item: ItemStack,
+	val amount: Int,
+	val destinations: Long2ObjectRBTreeMap<CraftInventory>,
+	val destinationSelector: (Long2ObjectRBTreeMap<CraftInventory>) -> Pair<BlockKey, CraftInventory>
+) {
 	fun check(): Boolean {
 		return true
 	}
@@ -42,14 +50,16 @@ class BackedItemTransaction(val source: ItemReference, val item: ItemStack, val 
 	private fun addToDestination(limit: Int): Int {
 		var remaining = limit
 
-		val invIterator = destinations.iterator()
-		while (remaining > 0 && invIterator.hasNext()) {
-			val destination = invIterator.next()
-			val remainder = addToInventory(destination, item.asQuantity(remaining))
+		var destinationsRemaining = destinations.size
+
+		while (remaining > 0 && destinationsRemaining >= 1) {
+			destinationsRemaining--
+			val destination = destinationSelector(destinations)
+			val remainder = addToInventory(destination.second, item.asQuantity(remaining))
 
 			if (remainder == 0) return 0
 			remaining -= (remaining - remainder)
-			invIterator.remove()
+			destinations.remove(destination.first)
 		}
 
 		return remaining

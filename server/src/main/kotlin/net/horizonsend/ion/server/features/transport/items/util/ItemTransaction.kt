@@ -1,13 +1,21 @@
 package net.horizonsend.ion.server.features.transport.items.util
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.ItemStack
 
 class ItemTransaction {
 	private val transactions = mutableListOf<BackedItemTransaction>()
 
-	fun addTransfer(sourceReference: ItemReference, destinationInventories: MutableList<CraftInventory>, transferredItem: ItemStack, transferredAmount: Int) {
-		transactions += BackedItemTransaction(sourceReference, transferredItem, transferredAmount, destinationInventories)
+	fun addTransfer(
+		sourceReference: ItemReference,
+		destinationInventories: Long2ObjectRBTreeMap<CraftInventory>,
+		transferredItem: ItemStack,
+		transferredAmount: Int,
+		destinationSelector: (Long2ObjectRBTreeMap<CraftInventory>) -> Pair<BlockKey, CraftInventory>
+	) {
+		transactions += BackedItemTransaction(sourceReference, transferredItem, transferredAmount, destinationInventories, destinationSelector)
 	}
 
 	fun commit() {
