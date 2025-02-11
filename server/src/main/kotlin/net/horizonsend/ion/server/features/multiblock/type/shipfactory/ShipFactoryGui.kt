@@ -16,11 +16,14 @@ import net.horizonsend.ion.server.features.gui.item.FeedbackItem
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem.FeedbackItemResult
 import net.horizonsend.ion.server.features.gui.item.ValueScrollButton
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.ShadowColor
 import net.minecraft.world.level.block.Rotation
+import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.eq
 import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
@@ -110,7 +113,7 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 		.build()
 
 	private val blueprintMenuBotton = GuiItems.createButton(GuiItem.MAGNIFYING_GLASS.makeItem(Component.text("Open Blueprint Menu"))) { _, player, _ ->
-		BlueprintMenu(player) { blueprint, _ ->
+		BlueprintMenu(player, GuiItems.createButton(ItemStack(Material.BARRIER).updateDisplayName(Component.text("Go back"))) { _, _, _ -> entity.openMenu(player) }) { blueprint, _ ->
 			entity.blueprintName = blueprint.name
 			entity.ensureBlueprintLoaded(player)
 			entity.openMenu(player)
