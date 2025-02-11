@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.features.transport.items.util.ItemTransaction
@@ -34,6 +35,7 @@ import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest
 import org.bukkit.inventory.ItemStack
 import java.util.Optional
+import java.util.SequencedCollection
 import kotlin.jvm.optionals.getOrNull
 import kotlin.reflect.KClass
 
@@ -152,7 +154,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 			originKey
 		)
 
-		val room = getTransferSpaceFor(destinationInventories, singletonItem)
+		val room = getTransferSpaceFor(destinationInventories.values, singletonItem)
 
 		for (reference in availableItemReferences) {
 			val amount = minOf(reference.get()?.amount ?: 0, room)
@@ -163,7 +165,15 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 				destinationInventories,
 				singletonItem,
 				amount
-			)
+			) { invs ->
+				val key = getDestination(
+					meta,
+					originKey,
+					invs.keys
+				)
+
+				key to invs[key]!!
+			}
 		}
 
 		Tasks.sync {
@@ -177,11 +187,12 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		validDestinations: MutableList<BlockKey>,
 		meta: ItemExtractorMetaData?,
 		extractorKey: BlockKey
-	): MutableList<CraftInventory> {
-		val foundDestinationInventories = mutableListOf<CraftInventory>()
+	): Long2ObjectRBTreeMap<CraftInventory> {
+		// Ordered map to preserve order
+		val foundDestinationInventories = Long2ObjectRBTreeMap<CraftInventory>()
 
 		for (n in validDestinations.indices) {
-			val newLocation: BlockKey = getDestination(meta, extractorKey, validDestinations)
+			val newLocation: BlockKey = getDestination(meta, extractorKey, validDestinations.toSortedSet())
 			val destinationInventory = destinationInvCache[newLocation]
 
 			if (destinationInventory == null) {
@@ -198,7 +209,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 				continue
 			}
 
-			foundDestinationInventories += destinationInventory
+			foundDestinationInventories[newLocation] = destinationInventory
 			validDestinations.remove(newLocation)
 			if (validDestinations.isEmpty()) break
 		}
@@ -206,7 +217,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		return foundDestinationInventories
 	}
 
-	fun getDestination(meta: ItemExtractorMetaData?, extractorKey: BlockKey, destinations: List<BlockKey>): BlockKey {
+	fun getDestination(meta: ItemExtractorMetaData?, extractorKey: BlockKey, destinations: SequencedCollection<BlockKey>): BlockKey {
 		if (meta != null) {
 			return meta.sortingOrder.getDestination(meta, destinations)
 		}
@@ -294,6 +305,4 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 			Optional.of(PathfindingReport(path, resistance))
 		}.getOrNull()
 	}
-
-	fun selectDestinationInventory(): Nothing = TODO()
 }
