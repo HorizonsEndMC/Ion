@@ -18,7 +18,7 @@ data class ShipFactorySettings(
 	var offsetX: Int,
 	var offsetY: Int,
 	var offsetZ: Int,
-	var rotation: Rotation,
+	var rotation: Int,
 	var placeInFluids: Boolean,
 	var markObstrcutedBlocksAsComplete: Boolean,
 	var leaveItemRemaining: Boolean,
@@ -32,7 +32,7 @@ data class ShipFactorySettings(
 				offsetX = data.getAdditionalDataOrDefault(X, INTEGER, 0),
 				offsetY = data.getAdditionalDataOrDefault(Y, INTEGER, 0),
 				offsetZ = data.getAdditionalDataOrDefault(Z, INTEGER, 0),
-				rotation = data.getAdditionalDataOrDefault(ROTATION, enumType, Rotation.NONE),
+				rotation = data.getAdditionalDataOrDefault(ROTATION, INTEGER, 0),
 				placeInFluids = data.getAdditionalDataOrDefault(FLUID_PACEMENT, BOOLEAN, false),
 				markObstrcutedBlocksAsComplete = data.getAdditionalDataOrDefault(COMPLETE_OBSTRUCTIONS, BOOLEAN, true),
 				leaveItemRemaining = data.getAdditionalDataOrDefault(LEAVE_ITEM_REMAINING, BOOLEAN, false),
@@ -47,7 +47,7 @@ data class ShipFactorySettings(
 		store.addAdditionalData(X, INTEGER, offsetX)
 		store.addAdditionalData(Y, INTEGER, offsetY)
 		store.addAdditionalData(Z, INTEGER, offsetZ)
-		store.addAdditionalData(ROTATION, enumType, rotation)
+		store.addAdditionalData(ROTATION, INTEGER, rotation)
 		store.addAdditionalData(FLUID_PACEMENT, BOOLEAN, placeInFluids)
 		store.addAdditionalData(COMPLETE_OBSTRUCTIONS, BOOLEAN, markObstrcutedBlocksAsComplete)
 		store.addAdditionalData(LEAVE_ITEM_REMAINING, BOOLEAN, leaveItemRemaining)

@@ -31,7 +31,7 @@ class NewShipFactoryTask(
 			}
 		}
 
-		if (blockMap.isEmpty()) disable()
+		if (blockMap.isEmpty()) entity.disable()
 	}
 
 	fun onEnable() {
@@ -39,11 +39,6 @@ class NewShipFactoryTask(
 	}
 
 	private var isDisabled: Boolean = false
-
-	fun disable() {
-		entity.task = null
-		onDisable()
-	}
 
 	fun onDisable() {
 		println("Disabled task")
