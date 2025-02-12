@@ -4,18 +4,18 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.ItemStack
+import xyz.xenondevs.invui.item.ItemProvider
 import java.util.function.Consumer
 import java.util.function.Supplier
 
 open class ValueScrollButton(
-	item: ItemStack,
+	providedItem: ItemProvider,
 	private val wrap: Boolean,
 	protected val value: Supplier<Int>,
 	private val increment: Int,
 	private val valueRange: IntRange,
 	private val valueConsumer: Consumer<Int>
-) : FeedbackItem(item, listOf(Component.text("Current value: ${value.get()}"))) {
+) : FeedbackItem(providedItem, listOf(Component.text("Current value: ${value.get()}"))) {
 		override fun getResult(event: InventoryClickEvent, player: Player): FeedbackItemResult {
 		val nextValueRaw = value.get() + increment
 		val range = valueRange.last - valueRange.first
