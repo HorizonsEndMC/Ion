@@ -12,11 +12,13 @@ import java.util.function.Supplier
 class EnumScrollButton<T : Enum<T>>(
 	item: ItemStack,
 	increment: Int,
-	value: Supplier<Int>,
+	value: Supplier<T>,
 	private val enum: Class<T>,
 	val nameFormatter: (T) -> Component,
-	valueConsumer: Consumer<Int>
-) : ValueScrollButton(item, true, value, increment, 0..enum.enumConstants.lastIndex, valueConsumer) {
+	valueConsumer: Consumer<T>
+) : ValueScrollButton(item, true, { value.get().ordinal }, increment, 0..enum.enumConstants.lastIndex, { valueConsumer.accept(enum.enumConstants[it]) }) {
+	override var currentLore: List<Component> = listOf(ofChildren(Component.text("Current value: "), nameFormatter.invoke(value.get())))
+
 	override fun getResult(event: InventoryClickEvent, player: Player): FeedbackItemResult {
 		val parentResult = super.getResult(event, player)
 
