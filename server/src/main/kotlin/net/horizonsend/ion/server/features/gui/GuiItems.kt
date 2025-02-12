@@ -168,6 +168,8 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     RIGHT(NamespacedKeys.packKey("ui/right")),
     DOWN(NamespacedKeys.packKey("ui/down")),
     LEFT(NamespacedKeys.packKey("ui/left")),
+    CLOCKWISE(NamespacedKeys.packKey("ui/clockwise")),
+	COUNTERCLOCKWISE(NamespacedKeys.packKey("ui/counterclockwise")),
     CHECKMARK(NamespacedKeys.packKey("ui/checkmark")),
     CANCEL(NamespacedKeys.packKey("ui/cancel")),
     ROUTE_CANCEL(NamespacedKeys.packKey("ui/route_cancel")),
