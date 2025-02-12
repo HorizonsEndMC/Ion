@@ -69,9 +69,9 @@ abstract class FeedbackItem(
 	}
 
 	class Builder(val providedItem: ItemProvider, val resultProvier: (InventoryClickEvent, Player) -> FeedbackItemResult) {
-		var fallbackLore: List<Component> = listOf()
-		var onSuccess: (FeedbackItem.(InventoryClickEvent, Player) -> Unit)? = null
-		var onFailure: (FeedbackItem.(InventoryClickEvent, Player) -> Unit)? = null
+		private var fallbackLore: List<Component> = listOf()
+		private var onSuccess: (FeedbackItem.(InventoryClickEvent, Player) -> Unit)? = null
+		private var onFailure: (FeedbackItem.(InventoryClickEvent, Player) -> Unit)? = null
 
 		fun build(): FeedbackItem = object : FeedbackItem(providedItem, fallbackLore) {
 			override fun getResult(event: InventoryClickEvent, player: Player): FeedbackItemResult {
