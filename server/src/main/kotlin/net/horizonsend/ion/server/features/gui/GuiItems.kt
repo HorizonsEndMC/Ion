@@ -238,6 +238,7 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     TWO_QUARTER(NamespacedKeys.packKey("ui/two_quarter")),
     THREE_QUARTER(NamespacedKeys.packKey("ui/three_quarter")),
     GEAR(NamespacedKeys.packKey("ui/gear")),
+	SHIP_FACTORY_RUNNING(NamespacedKeys.packKey("ui/ship_factory_running")),
 
 	;
 
