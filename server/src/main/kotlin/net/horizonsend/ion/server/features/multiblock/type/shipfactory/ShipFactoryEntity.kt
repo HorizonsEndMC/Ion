@@ -54,6 +54,8 @@ abstract class ShipFactoryEntity(
 		ShipFactoryGui(player, this).open()
 	}
 
+	val isRunning get() = userManager.currentlyUsed()
+
 	var blueprintName: String = data.getAdditionalDataOrDefault(NamespacedKeys.BLUEPRINT_NAME, PersistentDataType.STRING, "?")
 	protected var currentBlueprint: Oid<Blueprint>? = null
 

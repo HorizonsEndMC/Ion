@@ -44,14 +44,14 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 			)
 			.addIngredient('s', searchMenuBotton)
 			.addIngredient('i', blueprintMenuBotton)
-			.addIngredient('x', ValueScrollButton(GuiItem.UP.makeItem(Component.text("Increase X offset")), false, { entity.settings.offsetX },+1, -100..100) { entity.settings.offsetX = it })
-			.addIngredient('y', ValueScrollButton(GuiItem.UP.makeItem(Component.text("Increase Y offset")), false, { entity.settings.offsetY },+1, -100..100) { entity.settings.offsetY = it })
-			.addIngredient('z', ValueScrollButton(GuiItem.UP.makeItem(Component.text("Increase Z offset")), false, { entity.settings.offsetZ },+1, -100..100) { entity.settings.offsetZ = it })
-			.addIngredient('X', ValueScrollButton(GuiItem.UP.makeItem(Component.text("Decrease X offset")), false, { entity.settings.offsetX },-1, -100..100) { entity.settings.offsetX = it })
-			.addIngredient('Y', ValueScrollButton(GuiItem.UP.makeItem(Component.text("Decrease Y offset")), false, { entity.settings.offsetY },-1, -100..100) { entity.settings.offsetY = it })
-			.addIngredient('Z', ValueScrollButton(GuiItem.UP.makeItem(Component.text("Decrease Z offset")), false, { entity.settings.offsetZ },-1, -100..100) { entity.settings.offsetZ = it })
-			.addIngredient('c', EnumScrollButton(GuiItem.CLOCKWISE.makeItem(Component.text("Rotate 90 degrees clockwise")), 1, { entity.settings.rotation }, Rotation::class.java, { it.name.toComponent() }) { entity.settings.rotation = it })
-			.addIngredient('C', EnumScrollButton(GuiItem.COUNTERCLOCKWISE.makeItem(Component.text("Rotate 90 degrees counterclockwise")), 1, { entity.settings.rotation }, Rotation::class.java, { it.name.toComponent() }) { entity.settings.rotation = it })
+			.addIngredient('x', ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Increase X offset")) }, false, { entity.settings.offsetX },+1, -100..100) { entity.settings.offsetX = it })
+			.addIngredient('y', ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Increase Y offset")) }, false, { entity.settings.offsetY },+1, -100..100) { entity.settings.offsetY = it })
+			.addIngredient('z', ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Increase Z offset")) }, false, { entity.settings.offsetZ },+1, -100..100) { entity.settings.offsetZ = it })
+			.addIngredient('X', ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Decrease X offset")) }, false, { entity.settings.offsetX },-1, -100..100) { entity.settings.offsetX = it })
+			.addIngredient('Y', ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Decrease Y offset")) }, false, { entity.settings.offsetY },-1, -100..100) { entity.settings.offsetY = it })
+			.addIngredient('Z', ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Decrease Z offset")) }, false, { entity.settings.offsetZ },-1, -100..100) { entity.settings.offsetZ = it })
+			.addIngredient('c', EnumScrollButton({ GuiItem.CLOCKWISE.makeItem(Component.text("Rotate 90 degrees clockwise")) }, 1, { entity.settings.rotation }, Rotation::class.java, { it.name.toComponent() }) { entity.settings.rotation = it })
+			.addIngredient('C', EnumScrollButton({ GuiItem.COUNTERCLOCKWISE.makeItem(Component.text("Rotate 90 degrees counterclockwise")) }, 1, { entity.settings.rotation }, Rotation::class.java, { it.name.toComponent() }) { entity.settings.rotation = it })
 			.addIngredient('B', GuiItems.CustomControlItem(Component.text("outline"), GuiItem.OUTLINE))
 			.addIngredient('A', GuiItems.CustomControlItem(Component.text("align"), GuiItem.ALIGN))
 			.addIngredient('M', GuiItems.CustomControlItem(Component.text("materials"), GuiItem.MATERIALS))
@@ -63,8 +63,8 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 			.addIngredient('I', GuiItems.CustomControlItem(Component.text("item settings"), GuiItem.GEAR))
 			.addIngredient('d', disableButton)
 			.addIngredient('e', enableButton)
-		if (!isValid()) return
 
+		if (!isValid()) return
 
 		Window.single()
 			.setGui(gui)
@@ -87,8 +87,8 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 		)), line = 0, verticalShift = 3)
 		.build()
 
-	private val enableButton = FeedbackItem
-		.builder(GuiItem.EMPTY.makeItem(Component.text("Start"))) { _, player ->
+	private val enableButton: FeedbackItem = FeedbackItem
+		.builder({ if (entity.isRunning) GuiItem.SHIP_FACTORY_RUNNING.makeItem(Component.text("Start")) else GuiItem.EMPTY.makeItem(Component.text("Start")) }) { _, player ->
 			if (entity.userManager.currentlyUsed()) return@builder FeedbackItemResult.FailureLore(listOf(Component.text("This ship factory is already being used!", NamedTextColor.RED)))
 			if (!entity.ensureBlueprintLoaded(player)) return@builder FeedbackItemResult.FailureLore(listOf(Component.text("Blueprint not found!", NamedTextColor.RED)))
 
@@ -97,10 +97,12 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 		.withFallbackLore(listOf(Component.text("Start the ship factory.")))
 		.withSuccessHandler { _, player ->
 			entity.enable(player)
+			notifyWindows()
+			disableButton.notifyWindows()
 		}
 		.build()
 
-	private val disableButton = FeedbackItem
+	private val disableButton: FeedbackItem = FeedbackItem
 		.builder(GuiItem.EMPTY.makeItem(Component.text("Stop"))) { _, _ ->
 			if (!entity.userManager.currentlyUsed()) return@builder FeedbackItemResult.FailureLore(listOf(Component.text("This ship factory not currently being used!", NamedTextColor.RED)))
 
@@ -109,6 +111,8 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 		.withFallbackLore(listOf(Component.text("Stop the ship factory.")))
 		.withSuccessHandler { _, _ ->
 			entity.disable()
+			notifyWindows()
+			enableButton.notifyWindows()
 		}
 		.build()
 
