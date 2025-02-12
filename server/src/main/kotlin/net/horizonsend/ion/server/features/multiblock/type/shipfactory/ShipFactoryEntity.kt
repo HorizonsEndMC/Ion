@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
-import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
@@ -57,7 +56,7 @@ abstract class ShipFactoryEntity(
 	val isRunning get() = userManager.currentlyUsed()
 
 	var blueprintName: String = data.getAdditionalDataOrDefault(NamespacedKeys.BLUEPRINT_NAME, PersistentDataType.STRING, "?")
-	protected var currentBlueprint: Oid<Blueprint>? = null
+	var currentBlueprint: Blueprint? = null; private set
 
 	override fun tick() {
 		if (!userManager.currentlyUsed()) return
@@ -105,7 +104,7 @@ abstract class ShipFactoryEntity(
 			return false
 		}
 
-		currentBlueprint = result._id
+		currentBlueprint = result
 
 		return true
 	}
