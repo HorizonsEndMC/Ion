@@ -2,7 +2,10 @@ package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.utils.text.ADVANCED_SHIP_FACTORY_CHARACTER
+import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
+import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.toComponent
+import net.horizonsend.ion.server.command.starship.BlueprintCommand
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -16,6 +19,7 @@ import net.horizonsend.ion.server.features.gui.item.FeedbackItem
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem.FeedbackItemResult
 import net.horizonsend.ion.server.features.gui.item.ValueScrollButton
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -73,19 +77,53 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 			.open()
 	}
 
-	private fun setGuiOverlay(): Component = GuiText("Advanced Ship Factory")
-		.addBackground(GuiText.GuiBackground(
-			backgroundChar = ADVANCED_SHIP_FACTORY_CHARACTER,
-			backgroundWidth = 250 - 9,
-			verticalShift = 10
-		))
-		.add(Component.text(entity.blueprintName).color(NamedTextColor.WHITE).shadowColor(ShadowColor.shadowColor(
-			NamedTextColor.DARK_GRAY.red(),
-			NamedTextColor.DARK_GRAY.green(),
-			NamedTextColor.DARK_GRAY.blue(),
-			255
-		)), line = 0, verticalShift = 3)
-		.build()
+	private fun setGuiOverlay(): Component {
+		val text = GuiText("Advanced Ship Factory")
+			.addBackground(
+				GuiText.GuiBackground(
+					backgroundChar = ADVANCED_SHIP_FACTORY_CHARACTER,
+					backgroundWidth = 250 - 9,
+					verticalShift = 10
+				)
+			)
+			.add(
+				Component.text(entity.blueprintName).color(NamedTextColor.WHITE).shadowColor(
+					ShadowColor.shadowColor(
+						NamedTextColor.DARK_GRAY.red(),
+						NamedTextColor.DARK_GRAY.green(),
+						NamedTextColor.DARK_GRAY.blue(),
+						255
+					)
+				), line = 0, verticalShift = 3
+			)
+			.add(
+				Component.text("Blueprint Stats").itemLore,
+				verticalShift = -7 /* down 1 line */ + 2 /* Padding */,
+				horizontalShift = DEFAULT_GUI_WIDTH + 2
+			)
+
+		val blueprint = entity.currentBlueprint
+		if (blueprint != null) {
+			text.add(
+				Component.text(blueprint.name).itemLore,
+				line = 1,
+				verticalShift = -7 /* down 1 line */ + 2 /* Padding */,
+				horizontalShift = DEFAULT_GUI_WIDTH + 2
+			)
+
+			val info = BlueprintCommand.blueprintInfo(blueprint).map(String::miniMessage)
+			info.forEachIndexed { index, component ->
+				text.add(
+					component.itemLore,
+					line = 2 + index,
+					verticalShift = -7 /* down 1 line */ + 2 /* Padding */,
+					horizontalShift = DEFAULT_GUI_WIDTH + 2
+				)
+			}
+		}
+
+		return text.build()
+	}
 
 	private val enableButton: FeedbackItem = FeedbackItem
 		.builder({ if (entity.isRunning) GuiItem.SHIP_FACTORY_RUNNING.makeItem(Component.text("Start")) else GuiItem.EMPTY.makeItem(Component.text("Start")) }) { _, player ->
