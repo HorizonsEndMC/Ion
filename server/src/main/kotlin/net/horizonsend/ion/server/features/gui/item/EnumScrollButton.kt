@@ -5,18 +5,18 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.bukkit.inventory.ItemStack
+import xyz.xenondevs.invui.item.ItemProvider
 import java.util.function.Consumer
 import java.util.function.Supplier
 
 class EnumScrollButton<T : Enum<T>>(
-	item: ItemStack,
+	providedItem: ItemProvider,
 	increment: Int,
 	value: Supplier<T>,
 	private val enum: Class<T>,
 	val nameFormatter: (T) -> Component,
 	valueConsumer: Consumer<T>
-) : ValueScrollButton(item, true, { value.get().ordinal }, increment, 0..enum.enumConstants.lastIndex, { valueConsumer.accept(enum.enumConstants[it]) }) {
+) : ValueScrollButton(providedItem, true, { value.get().ordinal }, increment, 0..enum.enumConstants.lastIndex, { valueConsumer.accept(enum.enumConstants[it]) }) {
 	override var currentLore: List<Component> = listOf(ofChildren(Component.text("Current value: "), nameFormatter.invoke(value.get())))
 
 	override fun getResult(event: InventoryClickEvent, player: Player): FeedbackItemResult {

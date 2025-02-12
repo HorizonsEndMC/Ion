@@ -10,13 +10,13 @@ import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
 
 abstract class FeedbackItem(
-	val itemStack: ItemStack,
+	val providedItem: ItemProvider,
 	fallbackLore: List<Component>
 ) : AbstractItem() {
 	protected open var currentLore = fallbackLore
 
 	private val itemProvider = ItemProvider {
-		itemStack.clone().updateLore(currentLore)
+		providedItem.get().updateLore(currentLore)
 	}
 
 	override fun getItemProvider(): ItemProvider = itemProvider
@@ -64,30 +64,31 @@ abstract class FeedbackItem(
 	}
 
 	companion object {
-		fun builder(itemStack: ItemStack, resultProvier: (InventoryClickEvent, Player) -> FeedbackItemResult): Builder = Builder(itemStack, resultProvier)
+		fun builder(itemStack: ItemStack, resultProvier: (InventoryClickEvent, Player) -> FeedbackItemResult): Builder = Builder({ itemStack }, resultProvier)
+		fun builder(itemStack: ItemProvider, resultProvier: (InventoryClickEvent, Player) -> FeedbackItemResult): Builder = Builder(itemStack, resultProvier)
 	}
 
-	class Builder(val itemStack: ItemStack, val resultProvier: (InventoryClickEvent, Player) -> FeedbackItemResult) {
+	class Builder(val providedItem: ItemProvider, val resultProvier: (InventoryClickEvent, Player) -> FeedbackItemResult) {
 		var fallbackLore: List<Component> = listOf()
-		var onSuccess: ((InventoryClickEvent, Player) -> Unit)? = null
-		var onFailure: ((InventoryClickEvent, Player) -> Unit)? = null
+		var onSuccess: (FeedbackItem.(InventoryClickEvent, Player) -> Unit)? = null
+		var onFailure: (FeedbackItem.(InventoryClickEvent, Player) -> Unit)? = null
 
-		fun build(): FeedbackItem = object : FeedbackItem(itemStack, fallbackLore) {
+		fun build(): FeedbackItem = object : FeedbackItem(providedItem, fallbackLore) {
 			override fun getResult(event: InventoryClickEvent, player: Player): FeedbackItemResult {
 				return resultProvier.invoke(event, player)
 			}
 
-			override fun onSuccess(event: InventoryClickEvent, player: Player) { onSuccess?.invoke(event, player) }
+			override fun onSuccess(event: InventoryClickEvent, player: Player) { onSuccess?.invoke(this, event, player) }
 
-			override fun onFailure(event: InventoryClickEvent, player: Player) { onFailure?.invoke(event, player) }
+			override fun onFailure(event: InventoryClickEvent, player: Player) { onFailure?.invoke(this, event, player) }
 		}
 
-		fun withSuccessHandler(function: (InventoryClickEvent, Player) -> Unit): Builder {
+		fun withSuccessHandler(function: FeedbackItem.(InventoryClickEvent, Player) -> Unit): Builder {
 			onSuccess = function
 			return this
 		}
 
-		fun withFailureHandler(function: (InventoryClickEvent, Player) -> Unit): Builder {
+		fun withFailureHandler(function: FeedbackItem.(InventoryClickEvent, Player) -> Unit): Builder {
 			onFailure = function
 			return this
 		}
