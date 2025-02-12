@@ -12,11 +12,9 @@ import net.horizonsend.ion.server.features.gui.custom.blueprint.BlueprintMenu
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
-import net.horizonsend.ion.server.features.gui.item.EnumScrollButton
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem.FeedbackItemResult
 import net.horizonsend.ion.server.features.gui.item.ValueScrollButton
-import net.horizonsend.ion.server.features.starship.factory.Rotation
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
@@ -53,8 +51,8 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 			.addIngredient('X', ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease X offset")) }, false, { entity.settings.offsetX },-1, -100..100) { entity.settings.offsetX = it })
 			.addIngredient('Y', ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease Y offset")) }, false, { entity.settings.offsetY },-1, -100..100) { entity.settings.offsetY = it })
 			.addIngredient('Z', ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease Z offset")) }, false, { entity.settings.offsetZ },-1, -100..100) { entity.settings.offsetZ = it })
-			.addIngredient('c', EnumScrollButton({ GuiItem.CLOCKWISE.makeItem(Component.text("Rotate 90 degrees clockwise")) }, 1, { entity.settings.rotation }, Rotation::class.java, { it.displayName }) { entity.settings.rotation = it })
-			.addIngredient('C', EnumScrollButton({ GuiItem.COUNTERCLOCKWISE.makeItem(Component.text("Rotate 90 degrees counterclockwise")) }, 1, { entity.settings.rotation }, Rotation::class.java, { it.displayName }) { entity.settings.rotation = it })
+			.addIngredient('c', ValueScrollButton({ GuiItem.CLOCKWISE.makeItem(Component.text("Rotate 90 degrees clockwise")) }, true, { entity.settings.rotation }, 90, -180..180) { entity.settings.rotation = it })
+			.addIngredient('C', ValueScrollButton({ GuiItem.COUNTERCLOCKWISE.makeItem(Component.text("Rotate 90 degrees counterclockwise")) }, true, { entity.settings.rotation }, -90, -180..180) { entity.settings.rotation = it })
 			.addIngredient('B', GuiItems.CustomControlItem(Component.text("outline"), GuiItem.OUTLINE))
 			.addIngredient('A', GuiItems.CustomControlItem(Component.text("align"), GuiItem.ALIGN))
 			.addIngredient('M', GuiItems.CustomControlItem(Component.text("materials"), GuiItem.MATERIALS))
@@ -195,6 +193,20 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 			preview.preview()
 
 			FeedbackItemResult.Success
+		}
+		.build()
+
+	private val resetButton = FeedbackItem.builder(GuiItem.CANCEL.makeItem(Component.text("Reset Offset"))) { _, player ->
+			if (!entity.canEditSettings()) FeedbackItemResult.FailureLore(listOf(Component.text("Placement settings can't be altered while running", NamedTextColor.RED)))
+			FeedbackItemResult.Success
+		}
+		.withSuccessHandler { _, _ ->
+			with(entity.settings) {
+				offsetX = 0
+				offsetY = 0
+				offsetZ = 0
+				rotation = 0
+			}
 		}
 		.build()
 }
