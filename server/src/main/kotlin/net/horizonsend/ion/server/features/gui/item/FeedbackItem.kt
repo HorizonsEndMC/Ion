@@ -13,7 +13,7 @@ abstract class FeedbackItem(
 	val itemStack: ItemStack,
 	fallbackLore: List<Component>
 ) : AbstractItem() {
-	private var currentLore = fallbackLore
+	protected open var currentLore = fallbackLore
 
 	private val itemProvider = ItemProvider {
 		itemStack.clone().updateLore(currentLore)
