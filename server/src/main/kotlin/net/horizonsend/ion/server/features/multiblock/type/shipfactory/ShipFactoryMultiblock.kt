@@ -20,13 +20,14 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
 object ShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShipFactoryEntity>() {
-
 	override val signText = createSignText(
 		line1 = "&1Ship Factory",
 		line2 = null,
 		line3 = null,
 		line4 = null
 	)
+
+	override val blockPlacementsPerTick: Int = 5
 
 	override val displayName: Component get() = text("Ship Factory")
 	override val description: Component get() = text("Print starships and other structures with materials and credits.")

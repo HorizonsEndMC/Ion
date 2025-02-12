@@ -42,6 +42,8 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 		line4 = null
 	)
 
+	override val blockPlacementsPerTick: Int = 10
+
 	override val displayName: Component get() = text("Advanced Ship Factory")
 	override val description: Component get() = text("Print starships and other structures with materials and credits. Provides more configuration settings.")
 
