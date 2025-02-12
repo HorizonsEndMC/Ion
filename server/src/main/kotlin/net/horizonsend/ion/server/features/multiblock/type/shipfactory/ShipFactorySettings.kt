@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
 import com.manya.pdc.base.EnumDataType
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.starship.factory.Rotation
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.COMPLETE_OBSTRUCTIONS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.FLUID_PACEMENT
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.GRAB_NETWORKED_INVENTORIES
@@ -10,7 +11,6 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.X
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.Y
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.Z
-import net.minecraft.world.level.block.Rotation
 import org.bukkit.persistence.PersistentDataType.BOOLEAN
 import org.bukkit.persistence.PersistentDataType.INTEGER
 
