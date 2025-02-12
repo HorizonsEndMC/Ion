@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 
 abstract class AbstractShipFactoryMultiblock <T: ShipFactoryEntity> : Multiblock(), InteractableMultiblock, DisplayNameMultilblock, EntityMultiblock<T> {
 	override val name: String = "shipfactory"
+	abstract val blockPlacementsPerTick: Int
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		val entity = AdvancedShipFactoryMultiblock.getMultiblockEntity(sign) ?: return
