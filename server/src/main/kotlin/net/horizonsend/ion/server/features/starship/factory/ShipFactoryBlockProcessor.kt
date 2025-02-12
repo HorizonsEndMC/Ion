@@ -49,7 +49,7 @@ abstract class ShipFactoryBlockProcessor(
 	}
 
 	protected fun toWorldCoordinates(pos: Vec3i): BlockKey {
-		if (settings.rotation == Rotation.NONE) return toBlockKey(pos + clipboardNormalizationOffset + target)
+		if (settings.rotation == 0) return toBlockKey(pos + clipboardNormalizationOffset + target)
 
 		val regionCenter = Vec3i(
 			clipboard.region.center.x().toInt(),
@@ -58,8 +58,8 @@ abstract class ShipFactoryBlockProcessor(
 		)
 		val localized = pos - regionCenter
 
-		val cosTheta: Double = cos(settings.rotation.radians)
-		val sinTheta: Double = sin(settings.rotation.radians)
+		val cosTheta: Double = cos(Math.toRadians(settings.rotation.toDouble()))
+		val sinTheta: Double = sin(Math.toRadians(settings.rotation.toDouble()))
 
 		val rotatedVector =  Vec3i(
 			(localized.x.toDouble() * cosTheta - localized.z.toDouble() * sinTheta).roundToInt(),
