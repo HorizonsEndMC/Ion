@@ -45,14 +45,14 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 			)
 			.addIngredient('s', searchMenuBotton)
 			.addIngredient('i', blueprintMenuBotton)
-			.addIngredient('x', ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Increase X offset")) }, false, { entity.settings.offsetX },+1, -100..100) { entity.settings.offsetX = it })
-			.addIngredient('y', ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Increase Y offset")) }, false, { entity.settings.offsetY },+1, -100..100) { entity.settings.offsetY = it })
-			.addIngredient('z', ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Increase Z offset")) }, false, { entity.settings.offsetZ },+1, -100..100) { entity.settings.offsetZ = it })
-			.addIngredient('X', ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease X offset")) }, false, { entity.settings.offsetX },-1, -100..100) { entity.settings.offsetX = it })
-			.addIngredient('Y', ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease Y offset")) }, false, { entity.settings.offsetY },-1, -100..100) { entity.settings.offsetY = it })
-			.addIngredient('Z', ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease Z offset")) }, false, { entity.settings.offsetZ },-1, -100..100) { entity.settings.offsetZ = it })
-			.addIngredient('c', ValueScrollButton({ GuiItem.CLOCKWISE.makeItem(Component.text("Rotate 90 degrees clockwise")) }, true, { entity.settings.rotation }, 90, -180..180) { entity.settings.rotation = it })
-			.addIngredient('C', ValueScrollButton({ GuiItem.COUNTERCLOCKWISE.makeItem(Component.text("Rotate 90 degrees counterclockwise")) }, true, { entity.settings.rotation }, -90, -180..180) { entity.settings.rotation = it })
+			.addIngredient('x', ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Increase X offset")) }, false, { entity.settings.offsetX },+1, -100..100) { entity.settings.offsetX = it; entity.reCalculate() })
+			.addIngredient('y', ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Increase Y offset")) }, false, { entity.settings.offsetY },+1, -100..100) { entity.settings.offsetY = it; entity.reCalculate() })
+			.addIngredient('z', ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Increase Z offset")) }, false, { entity.settings.offsetZ },+1, -100..100) { entity.settings.offsetZ = it; entity.reCalculate() })
+			.addIngredient('X', ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease X offset")) }, false, { entity.settings.offsetX },-1, -100..100) { entity.settings.offsetX = it; entity.reCalculate() })
+			.addIngredient('Y', ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease Y offset")) }, false, { entity.settings.offsetY },-1, -100..100) { entity.settings.offsetY = it; entity.reCalculate() })
+			.addIngredient('Z', ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease Z offset")) }, false, { entity.settings.offsetZ },-1, -100..100) { entity.settings.offsetZ = it; entity.reCalculate() })
+			.addIngredient('c', ValueScrollButton({ GuiItem.CLOCKWISE.makeItem(Component.text("Rotate 90 degrees clockwise")) }, true, { entity.settings.rotation }, 90, -180..180) { entity.settings.rotation = it; entity.reCalculate() })
+			.addIngredient('C', ValueScrollButton({ GuiItem.COUNTERCLOCKWISE.makeItem(Component.text("Rotate 90 degrees counterclockwise")) }, true, { entity.settings.rotation }, -90, -180..180) { entity.settings.rotation = it; entity.reCalculate() })
 			.addIngredient('B', boundingBoxPreview)
 			.addIngredient('A', GuiItems.CustomControlItem(Component.text("align"), GuiItem.ALIGN))
 			.addIngredient('M', GuiItems.CustomControlItem(Component.text("materials"), GuiItem.MATERIALS))
@@ -218,6 +218,8 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 				offsetZ = 0
 				rotation = 0
 			}
+
+			entity.reCalculate()
 		}
 		.build()
 }
