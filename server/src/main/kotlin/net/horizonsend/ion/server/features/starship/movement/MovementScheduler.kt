@@ -1,32 +1,48 @@
 package net.horizonsend.ion.server.features.starship.movement
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.concurrent.ThreadFactory
+import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.withLock
 
 object MovementScheduler : IonServerComponent(false) {
 	private lateinit var dispatcherThread: ExecutorService
 	private lateinit var movementWorker: ExecutorService
 	private var handlingMovements: Boolean = false
 
-	override fun onEnable() {
-		movementWorker = Executors.newCachedThreadPool(
-			object : ThreadFactory {
-				private var counter: Int = 0
+	private val processingLock = ReentrantReadWriteLock()
+	private val processingStarships = ObjectOpenHashSet<Starship>()
 
-				override fun newThread(r: Runnable): Thread {
-					return Thread(r, "ion-ship-movement-worker-${counter++}")
-				}
-			}
-		)
+	fun addProcessingStarship(starship: Starship) {
+		processingLock.writeLock().withLock {
+			processingStarships.add(starship)
+		}
+	}
+
+	fun removeProcessingStarship(starship: Starship) {
+		processingLock.writeLock().withLock {
+			processingStarships.remove(starship)
+		}
+	}
+
+	fun isProcessingStarship(starship: Starship): Boolean {
+		return processingLock.readLock().withLock {
+			processingStarships.contains(starship)
+		}
+	}
+
+	override fun onEnable() {
+		movementWorker = Executors.newCachedThreadPool(Tasks.namedThreadFactory("ion-ship-movement-worker"))
 
 		dispatcherThread = Executors.newSingleThreadScheduledExecutor(Tasks.namedThreadFactory("ion-movement-dispatcher"))
 		dispatcherThread.execute(::handleMovements)
@@ -57,11 +73,12 @@ object MovementScheduler : IonServerComponent(false) {
 	}
 
 	@Synchronized
-	private fun executeMovement(starship: ActiveControlledStarship, movement: StarshipMovement) = movementWorker.execute {
-		synchronized(starship.mutex) {
-			try {
-				starship.isMoving = true
+	private fun executeMovement(starship: ActiveControlledStarship, movement: StarshipMovement) {
+		addProcessingStarship(starship)
+		starship.isMoving = true
 
+		movementWorker.execute {
+			try {
 				movement.execute()
 
 				completeMovement(starship, movement, true)
@@ -84,6 +101,7 @@ object MovementScheduler : IonServerComponent(false) {
 
 				completeMovement(starship, movement, false)
 			} finally {
+				removeProcessingStarship(starship)
 				starship.isMoving = false
 			}
 		}
@@ -93,6 +111,7 @@ object MovementScheduler : IonServerComponent(false) {
 		while (handlingMovements) runCatching {
 			for (starship in ActiveStarships.allControlledStarships()) runCatching shipLoop@{
 				if (starship.isMoving) return@shipLoop
+				if (isProcessingStarship(starship)) return@shipLoop
 
 				val rotationQueue = starship.rotationQueue
 				val translateQueue = starship.translationQueue

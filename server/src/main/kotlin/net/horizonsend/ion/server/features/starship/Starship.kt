@@ -111,8 +111,6 @@ class Starship (
 	private val hitbox: ActiveStarshipHitbox,
 	carriedShips: Map<StarshipData, LongOpenHashSet> // map of carried ship to its blocks
 ) : ForwardingAudience {
-	val mutex = Any()
-
 	// Data Aliases
 	val dataId: Oid<out StarshipData> = data._id
 	val type: StarshipType = data.starshipType.actualType
