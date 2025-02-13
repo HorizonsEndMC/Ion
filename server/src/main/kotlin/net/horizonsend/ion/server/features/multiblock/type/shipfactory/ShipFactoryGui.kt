@@ -38,7 +38,7 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 			.setStructure(
 				"s s s s s i . . .",
 				"x y z . . . . d .",
-				". . . . c C . . .",
+				". . . . C c . . .",
 				"X Y Z . . . . . .",
 				"B A M R . P . e .",
 				". 1 3 6 . I . . ."
@@ -53,7 +53,7 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 			.addIngredient('Z', ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease Z offset")) }, false, { entity.settings.offsetZ },-1, -100..100) { entity.settings.offsetZ = it })
 			.addIngredient('c', ValueScrollButton({ GuiItem.CLOCKWISE.makeItem(Component.text("Rotate 90 degrees clockwise")) }, true, { entity.settings.rotation }, 90, -180..180) { entity.settings.rotation = it })
 			.addIngredient('C', ValueScrollButton({ GuiItem.COUNTERCLOCKWISE.makeItem(Component.text("Rotate 90 degrees counterclockwise")) }, true, { entity.settings.rotation }, -90, -180..180) { entity.settings.rotation = it })
-			.addIngredient('B', GuiItems.CustomControlItem(Component.text("outline"), GuiItem.OUTLINE))
+			.addIngredient('B', boundingBoxPreview)
 			.addIngredient('A', GuiItems.CustomControlItem(Component.text("align"), GuiItem.ALIGN))
 			.addIngredient('M', GuiItems.CustomControlItem(Component.text("materials"), GuiItem.MATERIALS))
 			.addIngredient('R', resetButton)
@@ -190,9 +190,20 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 	private fun getPreviewButton(icon: GuiItem, seconds: Int) = FeedbackItem.builder(icon.makeItem(Component.text("Preview ${seconds}s"))) { _, player ->
 			val ticks = seconds * 20L
 			val preview = entity.getPreview(player, ticks) ?: return@builder FeedbackItemResult.FailureLore(listOf(Component.text("Blueprint not found!", NamedTextColor.RED)))
-			preview.preview()
+
+			Tasks.async {
+				preview.preview()
+			}
 
 			FeedbackItemResult.Success
+		}
+		.build()
+
+	private val boundingBoxPreview = FeedbackItem.builder(GuiItem.OUTLINE.makeItem(Component.text("Display Bounding Box"))) { _, player ->
+			if (!entity.toggleBoundingBox(player))  return@builder FeedbackItemResult.FailureLore(listOf(Component.text("Blueprint not found!", NamedTextColor.RED)))
+			entity.tickBoundingBoxTasks() // Tick now
+
+			FeedbackItemResult.SuccessLore(listOf(Component.text("Toggled bounding box", NamedTextColor.GREEN)))
 		}
 		.build()
 

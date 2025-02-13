@@ -20,7 +20,7 @@ abstract class ShipFactoryBlockProcessor(
 	protected val settings: ShipFactorySettings,
 	protected val entity: ShipFactoryEntity
 ) {
-	protected val clipboard: Clipboard = blueprint.loadClipboard()
+	protected val clipboard: Clipboard by lazy { blueprint.loadClipboard() }
 	protected val clipboardNormalizationOffset: Vec3i = getClipboardOffset()
 
 	// Use a RB tree map for key ordering.
@@ -41,15 +41,15 @@ abstract class ShipFactoryBlockProcessor(
 
 			if (data.material.isAir) continue
 
-			val worldKey = toWorldCoordinates(vec3i)
+			val worldKey = toBlockKey(toWorldCoordinates(vec3i))
 
 			blockMap[worldKey] = data
 			blockQueue.add(worldKey)
 		}
 	}
 
-	protected fun toWorldCoordinates(pos: Vec3i): BlockKey {
-		if (settings.rotation == 0) return toBlockKey(pos + clipboardNormalizationOffset + target)
+	protected fun toWorldCoordinates(pos: Vec3i): Vec3i {
+		if (settings.rotation == 0) return pos + clipboardNormalizationOffset + target
 
 		val regionCenter = Vec3i(
 			clipboard.region.center.x().toInt(),
@@ -67,7 +67,7 @@ abstract class ShipFactoryBlockProcessor(
 			(localized.x.toDouble() * sinTheta + localized.z.toDouble() * cosTheta).roundToInt()
 		)
 
-		return toBlockKey(rotatedVector + regionCenter + clipboardNormalizationOffset + target)
+		return rotatedVector + regionCenter + clipboardNormalizationOffset + target
 	}
 
 	private fun calculateTarget(): Vec3i {
