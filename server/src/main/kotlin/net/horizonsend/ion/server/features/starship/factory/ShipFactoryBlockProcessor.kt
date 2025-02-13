@@ -21,13 +21,13 @@ abstract class ShipFactoryBlockProcessor(
 	protected val entity: ShipFactoryEntity
 ) {
 	protected val clipboard: Clipboard by lazy { blueprint.loadClipboard() }
-	protected val clipboardNormalizationOffset: Vec3i = getClipboardOffset()
 
 	// Use a RB tree map for key ordering.
 	protected val blockMap = Object2ObjectRBTreeMap<BlockKey, BlockData>()
 	protected val blockQueue = ArrayDeque<Long>()
 
-	protected val target = calculateTarget()
+	protected open val clipboardNormalizationOffset: Vec3i = getClipboardOffset()
+	protected open val target = calculateTarget()
 
 	protected fun loadBlockQueue() {
 		val min = clipboard.minimumPoint
@@ -70,11 +70,11 @@ abstract class ShipFactoryBlockProcessor(
 		return rotatedVector + regionCenter + clipboardNormalizationOffset + target
 	}
 
-	private fun calculateTarget(): Vec3i {
+	protected fun calculateTarget(): Vec3i {
 		return entity.getPosRelative(0, 0, 4) + Vec3i(settings.offsetX, settings.offsetY, settings.offsetZ)
 	}
 
-	private fun getClipboardOffset(): Vec3i {
+	protected fun getClipboardOffset(): Vec3i {
 		val structureDirection = entity.structureDirection
 		val rightDirection = entity.structureDirection
 
