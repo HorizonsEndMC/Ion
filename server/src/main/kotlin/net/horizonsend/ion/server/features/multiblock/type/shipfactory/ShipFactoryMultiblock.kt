@@ -4,8 +4,6 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity
-import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
@@ -14,8 +12,6 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
-import org.bukkit.event.block.Action
-import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
@@ -56,14 +52,6 @@ object ShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShipFactory
 	fun getStorage(sign: Sign): Inventory {
 		val direction = sign.getFacing().oppositeFace
 		return (sign.block.getRelative(direction).getRelative(direction.rightFace).state as InventoryHolder).inventory
-	}
-
-	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		val leftClick = event.action == Action.LEFT_CLICK_BLOCK && event.player.hasPermission("starlegacy.factory.print.credit")
-
-		Tasks.async {
-			StarshipFactories.process(event.player, sign, leftClick)
-		}
 	}
 
 	override fun createEntity(
