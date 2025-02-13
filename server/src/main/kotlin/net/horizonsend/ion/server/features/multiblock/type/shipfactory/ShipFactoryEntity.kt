@@ -218,5 +218,9 @@ abstract class ShipFactoryEntity(
 		return true
 	}
 
+	fun reCalculate() {
+		Tasks.async { boundingBoxPreviews.values.forEach { it.recalculate() } }
+	}
+
 	fun canEditSettings() = task == null
 }
