@@ -14,9 +14,11 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusT
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.player.CombatTimer
+import net.horizonsend.ion.server.features.starship.factory.BoundingBoxTask
 import net.horizonsend.ion.server.features.starship.factory.NewShipFactoryTask
-import net.horizonsend.ion.server.features.starship.factory.ShipFactoryPreview
+import net.horizonsend.ion.server.features.starship.factory.PreviewTask
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.canAccess
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
@@ -30,6 +32,7 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.id.WrappedObjectId
+import java.util.UUID
 
 abstract class ShipFactoryEntity(
 	data: PersistentMultiblockData,
@@ -106,6 +109,8 @@ abstract class ShipFactoryEntity(
 	}
 
 	override fun tickAsync() {
+		tickBoundingBoxTasks()
+
 		if (!userManager.currentlyUsed()) return
 		val player = userManager.getUserPlayer() ?: return
 
@@ -130,17 +135,27 @@ abstract class ShipFactoryEntity(
 	fun ensureBlueprintLoaded(player: Player): Boolean {
 		if (cachedBlueprintData != null && cachedBlueprintData!!._id == currentBlueprint) return true
 
-		val result = tryResolveBlueprint(player, blueprintName)
+		val id = currentBlueprint
+		if (id != null) {
+			val result = Blueprint.findById(id)
 
-		if (result == null) {
-			sleepWithStatus(Component.text("Blueprint $blueprintName not found!", NamedTextColor.RED), 20)
-			return false
+			if (result != null) {
+				blueprintName = result.name
+				cachedBlueprintData = result
+				return true
+			}
 		}
 
-		currentBlueprint = result._id
-		cachedBlueprintData = result
+		val byName = tryResolveBlueprint(player, blueprintName)
+		if (byName != null) {
+			blueprintName = byName.name
+			cachedBlueprintData = byName
 
-		return true
+			return true
+		}
+
+		sleepWithStatus(Component.text("Blueprint $blueprintName not found!", NamedTextColor.RED), 20)
+		return false
 	}
 
 	private fun checkBlueprintPermissions(blueprint: Blueprint, user: Player): Boolean {
@@ -166,8 +181,41 @@ abstract class ShipFactoryEntity(
 		return null
 	}
 
-	fun getPreview(player: Player, duration: Long): ShipFactoryPreview? {
-		return ShipFactoryPreview(cachedBlueprintData ?: return null, settings, this, player, duration)
+	fun getPreview(player: Player, duration: Long): PreviewTask? {
+		return PreviewTask(cachedBlueprintData ?: return null, settings, this, player, duration)
+	}
+
+	private val boundingBoxPreviews = mutableMapOf<UUID, BoundingBoxTask>()
+
+	fun tickBoundingBoxTasks() {
+		for ((_, boundingBox) in boundingBoxPreviews) {
+			boundingBox.tick()
+		}
+	}
+
+	fun toggleBoundingBox(player: Player): Boolean {
+		if (boundingBoxPreviews.containsKey(player.uniqueId)) {
+			return disableBoundingBox(player)
+		}
+
+		return enableBoundingBox(player)
+	}
+
+	private fun enableBoundingBox(player: Player): Boolean {
+		val blueprint = cachedBlueprintData ?: return false
+
+		val existing = boundingBoxPreviews[player.uniqueId]
+		if (existing != null && existing.getBlueprintId() == currentBlueprint) return true
+
+		Tasks.async {
+			boundingBoxPreviews[player.uniqueId] = BoundingBoxTask(blueprint, settings, this, player)
+		}
+		return true
+	}
+
+	private fun disableBoundingBox(player: Player): Boolean {
+		boundingBoxPreviews.remove(player.uniqueId)
+		return true
 	}
 
 	fun canEditSettings() = task == null
