@@ -14,6 +14,9 @@ class BoundingBoxTask(
 	entity: ShipFactoryEntity,
 	val player: Player
 ) : ShipFactoryBlockProcessor(blueprint, settings, entity) {
+	override var clipboardNormalizationOffset: Vec3i = getClipboardOffset()
+	override var target = calculateTarget()
+
 	fun getBlueprintId() = blueprint._id
 
 	fun tick() {
@@ -33,5 +36,10 @@ class BoundingBoxTask(
 	}
 
 	fun disable() {
+	}
+
+	fun recalculate() {
+		clipboardNormalizationOffset = getClipboardOffset()
+		target = calculateTarget()
 	}
 }

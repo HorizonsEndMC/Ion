@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
-import com.manya.pdc.base.EnumDataType
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.starship.factory.Rotation
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.COMPLETE_OBSTRUCTIONS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.FLUID_PACEMENT
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.GRAB_NETWORKED_INVENTORIES
@@ -25,8 +23,6 @@ data class ShipFactorySettings(
 	var grabFromNetworkedPipes: Boolean
 ) {
 	companion object {
-		private val enumType = EnumDataType(Rotation::class.java)
-
 		fun load(data: PersistentMultiblockData): ShipFactorySettings {
 			val shipFactorySettings = ShipFactorySettings(
 				offsetX = data.getAdditionalDataOrDefault(X, INTEGER, 0),
