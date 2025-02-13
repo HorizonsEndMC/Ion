@@ -15,7 +15,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
 
-class ShipFactoryPreview(
+class PreviewTask(
 	blueprint: Blueprint,
 	settings: ShipFactorySettings,
 	entity: ShipFactoryEntity,

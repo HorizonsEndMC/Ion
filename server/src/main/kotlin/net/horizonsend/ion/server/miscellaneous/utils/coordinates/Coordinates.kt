@@ -195,20 +195,35 @@ fun Location.alongVector(vector: Vector, points: Int): List<Location> {
 fun rectangle(minLoc: Location, maxLoc: Location): List<Location> {
 	if (minLoc.world != maxLoc.world) return emptyList()
 
-	val xAxisLength = (maxLoc.z - minLoc.z).toInt()
-	val zAxisLength = (maxLoc.x - minLoc.x).toInt()
+	val zAxisLength = (maxLoc.z - minLoc.z)
+	val xAxisLength = (maxLoc.x - minLoc.x)
 
-	val northVector = minLoc.toVector().apply { y = 0.0; x += xAxisLength }.subtract(minLoc.toVector().apply { y = 0.0 })
-	val eastVector = maxLoc.toVector().apply { y = 0.0; z -= zAxisLength }.subtract(maxLoc.toVector().apply { y = 0.0 })
-	val southVector = maxLoc.toVector().apply { y = 0.0; x -= xAxisLength }.subtract(maxLoc.toVector().apply { y = 0.0 })
-	val westVector = minLoc.toVector().apply { y = 0.0; z += zAxisLength }.subtract(minLoc.toVector().apply { y = 0.0 })
+	val northVector = Vector(0.0, 0.0, -zAxisLength)
+	val eastVector = Vector(xAxisLength, 0.0, 0.0)
+	val southVector = Vector(0.0, 0.0, zAxisLength)
+	val westVector = Vector(-xAxisLength, 0.0, 0.0)
 
-	val northList = minLoc.alongVector(northVector, xAxisLength)
-	val eastList = maxLoc.alongVector(eastVector, zAxisLength)
-	val southList = maxLoc.alongVector(southVector, xAxisLength)
-	val westList = minLoc.alongVector(westVector, zAxisLength)
+	val northList = minLoc.alongVector(southVector, zAxisLength.toInt())
+	val eastList = maxLoc.alongVector(westVector, xAxisLength.toInt())
+	val southList = maxLoc.alongVector(northVector, zAxisLength.toInt())
+	val westList = minLoc.alongVector(eastVector, xAxisLength.toInt())
 
 	return (northList + eastList + southList + westList).distinct()
+}
+
+fun cube(minLoc: Location, maxLoc: Location): List<Location> {
+	val bottom = rectangle(minLoc, Location(maxLoc.world, maxLoc.x, minLoc.y, maxLoc.z))
+	val top = rectangle(Location(minLoc.world, minLoc.x, maxLoc.y, minLoc.z), maxLoc)
+
+	val height = maxLoc.y - minLoc.y
+	val verticalVector = Vector(0.0, height, 0.0)
+
+	val minList = Location(maxLoc.world, minLoc.x, minLoc.y, minLoc.z).alongVector(verticalVector, height.toInt())
+	val minMaxList = Location(maxLoc.world, minLoc.x, minLoc.y, maxLoc.z).alongVector(verticalVector, height.toInt())
+	val maxMinList = Location(maxLoc.world, maxLoc.x, minLoc.y, minLoc.z).alongVector(verticalVector, height.toInt())
+	val maxList = Location(maxLoc.world, maxLoc.x, minLoc.y, maxLoc.z).alongVector(verticalVector, height.toInt())
+
+	return (top + bottom + minList + minMaxList + maxMinList + maxList).distinct()
 }
 
 fun Location.iterateVector(vector: Vector, points: Int, function: (Location, Double) -> Unit) {
