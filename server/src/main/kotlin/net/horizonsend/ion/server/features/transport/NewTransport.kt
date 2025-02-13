@@ -7,11 +7,9 @@ import net.horizonsend.ion.server.features.starship.event.build.StarshipPlaceBlo
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.isExtractorData
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
@@ -187,10 +185,8 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	}
 
 	fun saveExtractors() {
-		for (world in Bukkit.getWorlds().map { it.ion }) {
-			world.getAllChunks().values.forEach { chunk ->
-				chunk.transportNetwork.extractorManager.save()
-			}
+		transportManagers.forEach {
+			it.extractorManager.save()
 		}
 	}
 }
