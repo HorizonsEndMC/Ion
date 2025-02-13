@@ -133,6 +133,8 @@ class IonWorld private constructor(
 
 		private val ionWorlds = mutableMapOf<World, IonWorld>()
 
+		fun all() = ionWorlds.values
+
 		operator fun get(world: World): IonWorld = ionWorlds[world] ?: throw IllegalStateException("Unregistered Ion World: $world!")
 
 		fun register(world: World) {
@@ -240,5 +242,5 @@ class IonWorld private constructor(
 		world.persistentDataContainer.set(FORBIDDEN_BLOCKS, LONG_ARRAY, detectionForbiddenBlocks.toLongArray())
 	}
 
-	fun getAllChunks() = chunks
+	fun getAllChunks() = chunks.values
 }
