@@ -7,11 +7,13 @@ import net.horizonsend.ion.server.features.space.data.CompletedSection
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
 import net.horizonsend.ion.server.features.world.generation.feature.AsteroidFeature
+import net.horizonsend.ion.server.features.world.generation.feature.nms.IonStructureTypes
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.FeatureConfiguration
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.FeatureGeneratorConfiguration
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.world.level.ChunkPos
+import net.minecraft.world.level.chunk.status.ChunkStatus
 import org.bukkit.Chunk
 import kotlin.random.Random
 
@@ -28,19 +30,30 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 		getStartSearchChunks(pos).forEach(::buildStructureData)
 
 		// Get data for this chunk
-		val data = chunkDataCache[pos]
 
-		val starts = data.starts
-		val references = data.references
+		val referencedStarts = mutableListOf<FeatureStart>()
 
-		val referencedStarts = references.flatMap { (_, referenced) ->
-			referenced.flatMap { key -> chunkDataCache[ChunkPos(key)].starts }
+		val starts = nmsChunk.allStarts
+		for ((structure, nmsStart) in starts) {
+			if (structure !is IonStructureTypes.IonStructure) continue
+			referencedStarts.add(FeatureStart.fromNMS(nmsStart))
 		}
 
-		val toGenerate = starts.plus(referencedStarts)
-		if (toGenerate.isEmpty()) return
+		val references = nmsChunk.allReferences
+		for ((structure, chunkReferences) in references) {
+			if (structure !is IonStructureTypes.IonStructure) continue
 
-		val sectionsB = toGenerate
+			for (key in chunkReferences.iterator()) {
+				val referencePos = ChunkPos(key)
+				val referencedChunk = nmsChunk.level.getChunk(referencePos.x, referencePos.z, ChunkStatus.STRUCTURE_STARTS)
+				val nmsStart = referencedChunk.getStartForStructure(structure) ?: continue
+				referencedStarts.add(FeatureStart.fromNMS(nmsStart))
+			}
+		}
+
+		if (referencedStarts.isEmpty()) return
+
+		val sectionsB = referencedStarts
 			.associateWith { featureStart: FeatureStart ->
 				val deferred = CompletableDeferred<List<CompletedSection>>()
 				WorldGenerationManager.coroutineScope.launch {
@@ -53,13 +66,17 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 		sectionsB.values.awaitAll()
 		val sections = sectionsB.entries.sortedBy { it.key.feature.placementConfiguration.placementPriority }
 
-		sections.forEach { t ->  t.value.await().forEach { section -> section.place(nmsChunk) } }
+		sections.forEach { t -> t.value.await().forEach { section -> section.place(nmsChunk) } }
 		nmsChunk.`moonrise$getChunkAndHolder`().holder.broadcastChanges(nmsChunk)
 	}
 
 	fun buildStructureData(originChunk: ChunkPos) {
 		val toGenerate = addStructureStarts(originChunk)
-		saveStarts(originChunk, toGenerate)
+
+		val worldGenChunk = world.world.minecraft.getChunk(originChunk.x, originChunk.z, ChunkStatus.STRUCTURE_STARTS)
+		for (start in toGenerate) {
+			worldGenChunk.setStartForStructure(start.feature.ionStructure.value(), start.getNMS())
+		}
 
 		for (start in toGenerate) {
 			val (chunkMin, chunkMax) = start.feature.getChunkExtents(start)
