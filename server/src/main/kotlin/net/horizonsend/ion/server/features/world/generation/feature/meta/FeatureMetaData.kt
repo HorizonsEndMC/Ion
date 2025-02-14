@@ -11,8 +11,4 @@ interface FeatureMetaData {
 	fun save(): CompoundTag {
 		return factory.castAndSave(this)
 	}
-
-	companion object {
-		const val FEATURE_METADATA_STRING = "feature_metadata"
-	}
 }

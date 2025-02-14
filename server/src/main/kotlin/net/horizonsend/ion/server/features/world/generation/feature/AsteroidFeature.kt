@@ -45,8 +45,8 @@ object AsteroidFeature : GeneratedFeature<AsteroidMetaData>(NamespacedKeys.key("
 	}
 
 	override fun generateMetaData(chunkRandom: Random): AsteroidMetaData {
-		val material = Material.entries.filter { material -> material.isBlock }.random(chunkRandom)
+//		val material = Material.entries.filter { material -> material.isBlock }.random(chunkRandom)
 
-		return AsteroidMetaData(60.0, material)
+		return AsteroidMetaData(20.0, Material.STONE)
 	}
 }

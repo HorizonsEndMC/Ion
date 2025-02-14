@@ -11,13 +11,22 @@ import net.horizonsend.ion.server.features.world.generation.feature.start.Featur
 import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.FeaturePlacementConfiguration
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.minecraft.core.Holder.Reference
+import net.minecraft.core.registries.Registries
+import net.minecraft.resources.ResourceKey
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.ChunkPos
+import net.minecraft.world.level.levelgen.structure.Structure
 import org.bukkit.NamespacedKey
+import kotlin.collections.map
 import kotlin.random.Random
 
 abstract class GeneratedFeature<T: FeatureMetaData>(val key: NamespacedKey, val placementConfiguration: FeaturePlacementConfiguration) {
 	abstract val metaFactory: FeatureMetadataFactory<T>
 	abstract suspend fun generateSection(generator: IonWorldGenerator<*>, chunkPos: ChunkPos, start: FeatureStart, metaData: T, sectionY: Int, sectionMin: Int, sectionMax: Int): CompletedSection
+
+	val resourceKey = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(key.namespace, key.key))
+	lateinit var ionStructure: Reference<Structure> // by lazy { MinecraftServer.getServer().registryAccess().lookupOrThrow(Registries.STRUCTURE).getValueOrThrow(resourceKey) as IonStructureTypes.IonStructure }
 
 	@Suppress("UNCHECKED_CAST")
 	suspend fun castAndGenerateChunk(generator: IonWorldGenerator<*>, chunkPos: ChunkPos, start: FeatureStart): List<CompletedSection> = generateChunk(generator, chunkPos, start, start.metaData as T)
