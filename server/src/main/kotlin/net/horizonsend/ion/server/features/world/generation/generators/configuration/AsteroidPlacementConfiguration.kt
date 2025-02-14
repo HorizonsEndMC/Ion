@@ -12,13 +12,17 @@ class AsteroidPlacementConfiguration() : FeaturePlacementConfiguration {
 
 	override fun generatePlacements(chunk: ChunkPos, random: Random): List<Vec3i> {
 		val density = 0.0612
-		val stdev = density / 2.0
+		val stdev = density * 4.0
 
-		val count = random.asJavaRandom().nextGaussian(density, stdev).toInt().coerceAtLeast(0)
+		val count = random.asJavaRandom()
+			.nextGaussian(density, stdev)
+			.plus(stdev)
+			.coerceAtLeast(0.0)
+			.toInt()
 
 		val list = mutableListOf<Vec3i>()
 
-		repeat(count) { i ->
+		repeat(count) {
 			val chunkStartX = chunk.x.shl(4)
 			val chunkStartZ = chunk.z.shl(4)
 
