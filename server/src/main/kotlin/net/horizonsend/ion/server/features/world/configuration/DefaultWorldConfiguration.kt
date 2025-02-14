@@ -38,7 +38,7 @@ object DefaultWorldConfiguration {
 	}
 
 	val TEST = register(
-		"world", WorldSettings(
+		"Space", WorldSettings(
 			gasConfiguration = WorldGasConfiguration(
 				gasses = listOf(
 					CollectedGas(

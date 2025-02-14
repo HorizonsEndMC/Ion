@@ -1,10 +1,12 @@
 package net.horizonsend.ion.server.features.world.generation.feature.start
 
-import net.horizonsend.ion.server.features.world.generation.feature.FeatureRegistry
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
-import net.minecraft.nbt.CompoundTag
-import org.bukkit.NamespacedKey
+import net.horizonsend.ion.server.features.world.generation.feature.nms.IonStructureTypes
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.minecraft.world.level.ChunkPos
+import net.minecraft.world.level.levelgen.structure.StructureStart
+import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer
 
 data class FeatureStart(
 	val feature: GeneratedFeature<*>,
@@ -13,38 +15,25 @@ data class FeatureStart(
 	val z: Int,
 	val metaData: FeatureMetaData
 ) {
-	fun save(): CompoundTag {
-		val base = CompoundTag()
-
-		base.putString(FEATURE_KEY, feature.key.toString())
-
-		base.putInt(X_KEY, x)
-		base.putInt(Y_KEY, y)
-		base.putInt(Z_KEY, z)
-
-		base.put(META_KEY, metaData.save())
-
-		return base
+	fun getNMS(): StructureStart {
+		return StructureStart(
+			feature.ionStructure.value(),
+			ChunkPos(x.shr(4), z.shr(4)),
+			0,
+			PiecesContainer(listOf(IonStructureTypes.PieceDataStorage(Vec3i(x, y, z), feature, metaData)))
+		)
 	}
 
 	companion object {
-		private const val FEATURE_KEY = "feature"
-		private const val META_KEY = "meta"
-		private const val X_KEY = "x"
-		private const val Y_KEY = "y"
-		private const val Z_KEY = "z"
-
-		fun load(data: CompoundTag): FeatureStart {
-			val x = data.getInt(X_KEY)
-			val y = data.getInt(Y_KEY)
-			val z = data.getInt(Z_KEY)
-			val featureKey = NamespacedKey.fromString(data.getString(FEATURE_KEY)) ?: throw IllegalArgumentException("Invalid namespace key")
-			val feature = FeatureRegistry[featureKey]
-
-			val metaDataCompound = data.getCompound(META_KEY)
-			val metaData = feature.metaFactory.load(metaDataCompound)
-
-			return FeatureStart(feature, x, y ,z, metaData)
+		fun fromNMS(start: StructureStart): FeatureStart {
+			val piece = start.pieces.first() as IonStructureTypes.PieceDataStorage
+			return FeatureStart(
+				piece.feature,
+				piece.pos.x,
+				piece.pos.y,
+				piece.pos.z,
+				piece.metaData
+			)
 		}
 	}
 }
