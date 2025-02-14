@@ -79,7 +79,8 @@ abstract class GeneratedFeature<T: FeatureMetaData>(val key: NamespacedKey, val 
 
 	fun buildStartsData(chunkPos: ChunkPos, random: Random): List<FeatureStart> {
 		return placementConfiguration.generatePlacements(chunkPos, random).map { context ->
-			FeatureStart(this, context.x, context.y, context.z, generateMetaData(random))
+			val seed = random.nextLong()
+			FeatureStart(this, context.x, context.y, context.z, generateMetaData(random), seed)
 		}
 	}
 
