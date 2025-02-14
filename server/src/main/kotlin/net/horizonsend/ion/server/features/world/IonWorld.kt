@@ -126,8 +126,6 @@ class IonWorld private constructor(
 
 		@EventHandler
 		fun onWorldSave(event: WorldSaveEvent) {
-			val world = event.world.ion
-			world.terrainGenerator?.save()
 //			TODO
 		}
 
