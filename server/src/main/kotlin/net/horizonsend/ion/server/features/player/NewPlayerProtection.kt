@@ -9,7 +9,6 @@ import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.success
@@ -71,23 +70,14 @@ object NewPlayerProtection : net.horizonsend.ion.server.command.SLCommand(), Lis
 		val id = SLPlayer[target]?._id ?: fail { "Unable to remove new player protection from $target, the player does not exist." }
 		lpUserManager.modifyUser(id.uuid) {
 			it.data().run {
-				add(removeProtectionPermission)
 				remove(protectionIndicator)
 			}
 		}.thenAccept { t ->
-		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::hasNewPlayerProtection, false))
-		SLPlayer.updateById(targetSlPlayer._id, setValue(SLPlayer::newPlayerProtectionResetOn, 0))
+			SLPlayer.updateById(id, setValue(SLPlayer::hasNewPlayerProtection, false))
+			SLPlayer.updateById(id, setValue(SLPlayer::newPlayerProtectionResetOn, 0))
 
-		// For removing the suffix
-		val lpUser = lpUserManager.getUser(target)!!
-
-		lpUser.data().run {
-			remove(protectionIndicator)
+			sender.success("Removed new player protection from $target.")
 		}
-
-		lpUserManager.saveUser(lpUser)
-
-		sender.success("Removed new player protection from $target.")}
 	}
 
 	@CommandPermission("ion.core.protection.giveothers")
