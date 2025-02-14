@@ -189,11 +189,12 @@ object IonStructureTypes : IonServerComponent() {
 		}
 	}
 
-	class PieceDataStorage(val pos: Vec3i, val feature: GeneratedFeature<*>, val metaData: FeatureMetaData) : StructurePiece(Type, 1, BoundingBox.infinite()) {
+	class PieceDataStorage(val pos: Vec3i, val seed: Long, val feature: GeneratedFeature<*>, val metaData: FeatureMetaData) : StructurePiece(Type, 1, BoundingBox.infinite()) {
 		override fun addAdditionalSaveData(context: StructurePieceSerializationContext, tag: CompoundTag) {
 			tag.putInt("x", pos.x)
 			tag.putInt("y", pos.y)
 			tag.putInt("z", pos.z)
+			tag.putLong("seed", seed)
 			tag.putString("feature", feature.key.toString())
 
 			tag.put("meta_data", feature.metaFactory.castAndSave(metaData))
@@ -207,6 +208,7 @@ object IonStructureTypes : IonServerComponent() {
 
 				return PieceDataStorage(
 					Vec3i(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")),
+					tag.getLong("seed"),
 					feature,
 					feature.metaFactory.load(tag.getCompound("meta_data"))
 				)

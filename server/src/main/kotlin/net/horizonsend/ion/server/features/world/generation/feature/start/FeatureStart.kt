@@ -13,14 +13,15 @@ data class FeatureStart(
 	val x: Int,
 	val y: Int,
 	val z: Int,
-	val metaData: FeatureMetaData
+	val metaData: FeatureMetaData,
+	val seed: Long,
 ) {
 	fun getNMS(): StructureStart {
 		return StructureStart(
 			feature.ionStructure.value(),
 			ChunkPos(x.shr(4), z.shr(4)),
 			0,
-			PiecesContainer(listOf(IonStructureTypes.PieceDataStorage(Vec3i(x, y, z), feature, metaData)))
+			PiecesContainer(listOf(IonStructureTypes.PieceDataStorage(Vec3i(x, y, z), seed, feature, metaData)))
 		)
 	}
 
@@ -32,7 +33,8 @@ data class FeatureStart(
 				piece.pos.x,
 				piece.pos.y,
 				piece.pos.z,
-				piece.metaData
+				piece.metaData,
+				piece.seed
 			)
 		}
 	}
