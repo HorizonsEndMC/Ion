@@ -6,7 +6,7 @@ import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.space.data.CompletedSection
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
-import net.horizonsend.ion.server.features.world.generation.feature.AsteroidFeature
+import net.horizonsend.ion.server.features.world.generation.feature.StandardAsteroidFeature
 import net.horizonsend.ion.server.features.world.generation.feature.nms.IonStructureTypes
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.FeatureConfiguration
@@ -18,7 +18,7 @@ import org.bukkit.Chunk
 import kotlin.random.Random
 
 class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfiguration) : IonWorldGenerator<FeatureGeneratorConfiguration>(world, configuration) {
-	val features = configuration.features.map(FeatureConfiguration::loadFeature).plus(AsteroidFeature)
+	val features = configuration.features.map(FeatureConfiguration::loadFeature).plus(StandardAsteroidFeature)
 
 	override suspend fun generateChunk(chunk: Chunk) {
 //		if (features.isEmpty()) return
