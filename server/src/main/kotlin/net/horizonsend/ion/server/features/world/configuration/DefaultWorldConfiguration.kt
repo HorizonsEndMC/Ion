@@ -23,7 +23,7 @@ object DefaultWorldConfiguration {
 		return settings
 	}
 
-	val TEST = register("world", WorldSettings(
+	val TEST = register("Space", WorldSettings(
 		terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
 
 		))
