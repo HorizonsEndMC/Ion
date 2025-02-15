@@ -50,7 +50,9 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 	}
 
 	override fun tick() {
-		tryProcessRecipe()
+		if (!tryProcessRecipe()) {
+			progressManager.reset()
+		}
 	}
 
 	override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
