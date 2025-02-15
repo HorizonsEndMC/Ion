@@ -58,6 +58,7 @@ interface ProgressMultiblock {
 		}
 
 		fun reset() {
+			lastProgressTick = System.currentTimeMillis()
 			currentProgress = 0.0
 		}
 
