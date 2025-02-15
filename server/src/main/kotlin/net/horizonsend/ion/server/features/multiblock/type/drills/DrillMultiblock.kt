@@ -172,7 +172,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 			val broken = breakBlocks(
 				maxBroken,
 				toDestroy,
-				getInventory(-1, 0, 0) ?: return run {
+				getInventory(if (multiblock.mirrored) +1 else -1, 0, 0) ?: return run {
 					player.userError("Drill output inventory destroyed")
 					disable()
 				},
