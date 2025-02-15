@@ -207,7 +207,7 @@ object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMul
 			val consumed = checkCanisters(inventory, fuelItem, fuel, oxidizerItem, oxidizer) ?: return
 
 			if (powerStorage.getPower() < maxPower) {
-				tickingManager.sleep(fuelType.cooldown)
+				tickingManager.sleepForTicks(fuelType.cooldown)
 
 				inventory.holder?.burnTime = fuelType.cooldown.toShort()
 				inventory.holder?.update()
