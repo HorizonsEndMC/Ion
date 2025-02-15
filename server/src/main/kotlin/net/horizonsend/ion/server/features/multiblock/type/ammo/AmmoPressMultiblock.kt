@@ -196,7 +196,7 @@ abstract class AmmoPressMultiblock : Multiblock(), EntityMultiblock<AmmoPressMul
 			val typeRefill = ammoRefillAttribute.type
 			if (!inventory.containsAtLeast(ItemStack(typeRefill), 1)) return
 
-			tickingManager.sleep(200)
+			tickingManager.sleepForTicks(200)
 			furnaceInventory.holder?.burnTime = 200
 			furnaceInventory.holder?.update()
 

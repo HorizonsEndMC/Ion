@@ -136,7 +136,7 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: I
 		).register()
 
 		override fun tick() {
-			val inventory = getInventory(right = 0, up = 0, forward = 2) ?: return tickingManager.sleep(1000)
+			val inventory = getInventory(right = 0, up = 0, forward = 2) ?: return tickingManager.sleepForTicks(1000)
 			var broken = 0
 
 			val initialPower = powerStorage.getPower()
@@ -155,13 +155,13 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: I
 
 				for (item in drops) {
 					if (!LegacyItemUtils.canFit(inventory, item)) {
-						tickingManager.sleep(800)
+						tickingManager.sleepForTicks(800)
 						break
 					}
 				}
 
 				if ((broken + 1) * multiblock.powerPerCrop > initialPower) {
-					tickingManager.sleep(500)
+					tickingManager.sleepForTicks(500)
 					break
 				}
 
