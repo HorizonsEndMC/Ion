@@ -7,6 +7,6 @@ import net.kyori.adventure.text.Component
 interface StatusTickedMultiblockEntity : TickedMultiblockEntityParent, StatusMultiblockEntity {
 	fun sleepWithStatus(status: Component, sleepTicks: Int) {
 		setStatus(status)
-		tickingManager.sleep(sleepTicks)
+		tickingManager.sleepForTicks(sleepTicks)
 	}
 }

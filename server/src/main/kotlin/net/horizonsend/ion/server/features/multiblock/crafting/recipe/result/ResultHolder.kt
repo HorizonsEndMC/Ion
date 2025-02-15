@@ -85,7 +85,7 @@ abstract class ResultHolder<E: RecipeEnviornment, R: RecipeResult<E>>(val result
 			val entity = enviornment.multiblock
 			if (entity !is TickedMultiblockEntityParent) return@add
 
-			entity.tickingManager.sleep(ticks)
+			entity.tickingManager.sleepForTicks(ticks)
 		}
 
 		return this
