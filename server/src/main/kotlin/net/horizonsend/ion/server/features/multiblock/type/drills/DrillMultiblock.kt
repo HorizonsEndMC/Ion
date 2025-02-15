@@ -165,7 +165,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 			}
 
 			val inSpace = world.ion.hasFlag(WorldFlag.SPACE_WORLD)
-			if (inSpace) tickingManager.sleep(15)
+			if (inSpace) tickingManager.sleepForTicks(15)
 
 			val toDestroy = getBlocksToDestroy()
 
