@@ -260,7 +260,7 @@ abstract class AutoCrafterMultiblock(
 						// Nothing crafted, could be temporary resource shortage, pause for shorter time period
 						sleepWithStatus(result.displayName(), 200)
 					}  else {
-						tickingManager.sleep(200)
+						tickingManager.sleepForTicks(200)
 					}
 				}
 			}
