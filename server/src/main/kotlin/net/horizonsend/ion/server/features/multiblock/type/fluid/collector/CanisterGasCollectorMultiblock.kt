@@ -87,7 +87,7 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 			val furnaceInventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return
 			if (!Gasses.isCanister(furnaceInventory.fuel)) return
 
-			tickingManager.sleep(configuration.collectorTickInterval)
+			tickingManager.sleepForTicks(configuration.collectorTickInterval)
 
 			furnaceInventory.holder?.burnTime = configuration.collectorTickInterval.toShort()
 			furnaceInventory.holder?.update()

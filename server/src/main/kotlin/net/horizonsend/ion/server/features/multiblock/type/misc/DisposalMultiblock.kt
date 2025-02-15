@@ -106,11 +106,11 @@ abstract class AbstractDisposalMultiblock : Multiblock(), EntityMultiblock<Abstr
 		override fun tick() {
 			val inventory = getInventory(if (this.multiblock.mirrored) 1 else -1, -1, 0) ?: return
 			val power = powerStorage.getPower()
-			if (power == 0) return tickingManager.sleep(20)
+			if (power == 0) return tickingManager.sleepForTicks(20)
 
 			var amountToClear = 0
 
-			if (inventory.isEmpty) return tickingManager.sleep(50)
+			if (inventory.isEmpty) return tickingManager.sleepForTicks(50)
 
 			// Clear while checking for power
 			for (i in 0 until inventory.size) {
