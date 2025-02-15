@@ -100,7 +100,8 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 	}
 
 	companion object {
-		const val FEATURE_START_SEARCH_RANGE = 10
+		// NMS starts throwing warnings if it goes beyond 8
+		const val FEATURE_START_SEARCH_RANGE = 8
 
 		fun getStartSearchChunks(chunkPos: ChunkPos): List<ChunkPos> {
 			val chunks = mutableListOf<ChunkPos>()
