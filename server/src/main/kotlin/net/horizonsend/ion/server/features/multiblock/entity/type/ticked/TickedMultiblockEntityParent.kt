@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.ticked
 
+import java.time.Duration
+
 interface TickedMultiblockEntityParent {
 	val tickingManager: TickingManager
 
@@ -31,8 +33,16 @@ interface TickedMultiblockEntityParent {
 			return true
 		}
 
-		fun sleep(ticks: Int) {
-			sleepTicksEnd = System.currentTimeMillis() + ticks
+		fun sleepForTicks(ticks: Int) {
+			sleepTicksEnd = System.currentTimeMillis() + (ticks * 50)
+		}
+
+		fun sleep(duration: Duration) {
+			sleepTicksEnd = System.currentTimeMillis() + duration.toMinutes()
+		}
+
+		fun sleepUntil(time: Long) {
+			sleepTicksEnd = time
 		}
 
 		fun clearSleep() {
