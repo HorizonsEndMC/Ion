@@ -52,6 +52,7 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VERDOL
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VETERAN
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.spawnChance
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
+import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag.ALLOW_AI_SPAWNS
 import net.horizonsend.ion.server.miscellaneous.utils.getRandomDuration
@@ -153,7 +154,7 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCED), 0.75),
 						spawnChance(WATCHERS.asSpawnedShip(TERALITH), 0.25)
 					),
-					formatLocationSupplier(it, 2500.0, 4500.0),
+					formatLocationSupplier(it, 2500.0, 4500.0) { player -> !player.hasProtection() },
 					SpawnMessage.WorldMessage("<$WATCHER_ACCENT>An unknown starship signature is being broadcast in {4} spawned at {1}, {3}".miniMessage())
 				)
 			)
@@ -190,7 +191,7 @@ object AISpawners : IonServerComponent(true) {
 					pointThreshold = 20 * 60 * 7 * 5
 				),
 				BagSpawner(
-					formatLocationSupplier(it, 2500.0, 4500.0),
+					formatLocationSupplier(it, 2500.0, 4500.0) { player -> !player.hasProtection() },
 					VariableIntegerAmount(10, 20),
 					text("An unusually strong alien signature has been detected in {3} at {0}, {2}", WATCHER_ACCENT),
 					null,
@@ -799,7 +800,7 @@ object AISpawners : IonServerComponent(true) {
 					pointThreshold = 20 * 60 * 7 * 5
 				),
 				BagSpawner(
-					formatLocationSupplier(it, 1500.0, 2500.0),
+					formatLocationSupplier(it, 1500.0, 2500.0) { player -> !player.hasProtection() },
 					VariableIntegerAmount(3, 5),
 					"<$PRIVATEER_LIGHT_TEAL>Privateer Dagger <${HE_MEDIUM_GRAY}>Flight Squadron has spawned at {0}, {2}, in {3}".miniMessage(),
 					null,
@@ -847,7 +848,7 @@ object AISpawners : IonServerComponent(true) {
 					pointThreshold = 20 * 60 * 7 * 10
 				),
 				BagSpawner(
-					formatLocationSupplier(it, 1500.0, 2500.0),
+					formatLocationSupplier(it, 1500.0, 2500.0) { player -> !player.hasProtection() },
 					VariableIntegerAmount(30, 50),
 					"<$PRIVATEER_LIGHT_TEAL>Privateer <${HE_MEDIUM_GRAY}>Assault Force has been spotted engaging a target in {3}, at {0} {2}".miniMessage(),
 					null,
@@ -869,7 +870,7 @@ object AISpawners : IonServerComponent(true) {
 				pointChance = 0.5
 			),
 			BagSpawner(
-				formatLocationSupplier(it, 1000.0, 2000.0),
+				formatLocationSupplier(it, 1000.0, 2000.0) { player -> !player.hasProtection() },
 				VariableIntegerAmount(10, 15),
 				"<${TSAII_DARK_ORANGE}>Dangerous Tsaii Raiders have been reported in the area of {0}, {2}, in {3}. <$TSAII_MEDIUM_ORANGE>Please avoid the sector until the threat has been cleared!".miniMessage(),
 				null,
@@ -921,7 +922,7 @@ object AISpawners : IonServerComponent(true) {
 				),
 				Supplier {
 					val occupiedWorld = IonServer.server.worlds.filter { isSystemOccupied(it) && it.ion.hasFlag(ALLOW_AI_SPAWNS) }.randomOrNull() ?: return@Supplier null
-					return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
+					return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0) { player -> !player.hasProtection() }.get()
 				},
 				spawnMessage = SpawnMessage.WorldMessage("<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage())
 			)
