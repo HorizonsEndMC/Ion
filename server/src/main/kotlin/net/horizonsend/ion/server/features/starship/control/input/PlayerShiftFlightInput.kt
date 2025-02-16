@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
+import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.isHoldingController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
@@ -32,7 +33,7 @@ class PlayerShiftFlightInput(override val controller: PlayerController,
 		get() = player.yaw
 		set(value) {}
 	override var isSneakFlying : Boolean
-		get() = player.isSneaking
+		get() = player.isSneaking && isHoldingController(player)
 		set(value) {}
 	override var toggledSneak = false
 

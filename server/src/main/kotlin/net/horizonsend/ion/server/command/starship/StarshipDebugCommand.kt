@@ -230,4 +230,24 @@ object StarshipDebugCommand : SLCommand() {
 
 		abstract fun apply(controller: ActivePlayerController)
 	}
+
+	@Suppress("Unused")
+	@Subcommand("togglestats")
+	@CommandCompletion("@autoTurretTargets")
+	fun toggleStats(sender: Player, identifier: String) {
+		val formatted = if (identifier.contains(":".toRegex())) identifier.substringAfter(":") else identifier
+		val ship = ActiveStarships[formatted] ?: fail { "$identifier is not a starship" }
+		ship.statsEnabled = !ship.statsEnabled
+		sender.information("Toggled stats for $identifier to ${ship.statsEnabled}")
+	}
+
+	@Suppress("Unused")
+	@Subcommand("toggleforecast")
+	@CommandCompletion("@autoTurretTargets")
+	fun toggleForecast(sender: Player, identifier: String) {
+		val formatted = if (identifier.contains(":".toRegex())) identifier.substringAfter(":") else identifier
+		val ship = ActiveStarships[formatted] ?: fail { "$identifier is not a starship" }
+		ship.forecastEnabled = !ship.forecastEnabled
+		sender.information("Toggled forecast for $identifier to ${ship.forecastEnabled}")
+	}
 }

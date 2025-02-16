@@ -31,7 +31,6 @@ class TranslateMovement(starship: ActiveStarship,
 			newWorld: World? = null,
 			type: MovementType = MovementType.OTHER
 		): CompletableFuture<Boolean> {
-			starship.velocity = Vector(dx.toDouble(), dy.toDouble(), dz.toDouble())
 			val world = newWorld ?: starship.world
 
 			val toLoad = this.getChunkLoadTasks(starship, world, dx, dz)
@@ -123,13 +122,13 @@ class TranslateMovement(starship: ActiveStarship,
 	override fun onComplete() {
 		when (type) {
 			MovementType.MANUAL -> {
-				starship.shiftDynamicEstimator.addData(starship.centerOfMass.toVector(),this)
+				starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(),this)
 			}
 			MovementType.DC -> {
-				starship.shiftDynamicEstimator.addData(starship.centerOfMass.toVector(), this)
+				starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(), this)
 			}
 			MovementType.CRUISE -> {
-				starship.cruiseDynamicEstimator.addData(starship.centerOfMass.toVector(), this)
+				starship.cruiseKinematicEstimator.addData(starship.centerOfMass.toVector(), this)
 			}
 			else -> {}
 		}

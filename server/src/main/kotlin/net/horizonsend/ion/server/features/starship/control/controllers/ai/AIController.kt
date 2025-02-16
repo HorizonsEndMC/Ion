@@ -47,7 +47,7 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 			field.destroy()
 			field = value
 			value.create()
-			information("Updated control mode to ${value.name}")
+			information("Updated AI control mode to ${value.name}")
 		}
 
 	fun setColor(color: Color) { this.color = color }
@@ -123,7 +123,7 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 		for ((_, module) in coreModules) {
 			module.tick()
 		}
-
+		if (!starship.isTeleporting) movementHandler.tick()
 		for (module in utilModules) {
 			module.tick()
 		}

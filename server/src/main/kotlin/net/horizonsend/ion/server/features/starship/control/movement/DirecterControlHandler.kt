@@ -25,6 +25,6 @@ class DirecterControlHandler(
 
 		if (StarshipControl.locationCheck(starship, dx, dy, dz)) return
 
-		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
+		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz, type = TranslateMovement.MovementType.DC)
 	}
 }

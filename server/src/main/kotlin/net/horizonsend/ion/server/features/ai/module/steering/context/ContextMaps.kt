@@ -485,7 +485,7 @@ class ShipDangerContext(
 		for (otherShip in ActiveStarships.getInWorld(ship.world)) {
 			if (otherShip == ship) continue
 			val othershipPos = otherShip.centerOfMass.toVector()
-			val target = othershipPos.clone().add(lookAhead(ship, otherShip, futuremod = 1.0, maxSpeed= maxSpeed))
+			val target = lookAhead(ship, otherShip, futuremod = 1.0, maxSpeed= maxSpeed)
 			val targetOffset = target.add(shipPos.clone().multiply(-1.0))
 			val targetDist = targetOffset.length() + 1e-4
 			if (targetDist < mindist) {
@@ -680,6 +680,7 @@ private fun lookAhead(
 	val offset = pos.add(ship.centerOfMass.toVector().multiply(-1.0))
 	val dist = offset.length() + 1e-4
 	val vel = maxSpeed ?: (ship.velocity.length() + 1e-5)
-	val t = dist / (vel * futuremod)
-	return other.velocity.clone().multiply(t)
+	val t = (dist / (vel * futuremod)).coerceAtMost(2.0)
+	val forecast = other.forecast(System.currentTimeMillis() + (t*1000).toLong(),0)
+	return forecast
 }

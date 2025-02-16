@@ -90,14 +90,11 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 		}
 		displayVectors.forEach { it.update() }
 		val mod = controller.getCoreModuleByType<BasicSteeringModule>()?:return
-		for (player in controller.starship.world.players) {
-
-			val particle = Particle.DUST
-			val dustOptions = Particle.DustOptions(Color.BLUE, 4f,)
-			val orbitTarget = mod.orbitTarget
-			if (orbitTarget != null) {
-				player.spawnParticle(particle, orbitTarget.x, orbitTarget.y, orbitTarget.z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions)
-			}
+		val particle = Particle.DUST
+		val dustOptions = Particle.DustOptions(Color.BLUE, 4f,)
+		val orbitTarget = mod.orbitTarget
+		if (orbitTarget != null) {
+			controller.starship.world.spawnParticle(particle, orbitTarget.x, orbitTarget.y, orbitTarget.z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
 		}
 	}
 

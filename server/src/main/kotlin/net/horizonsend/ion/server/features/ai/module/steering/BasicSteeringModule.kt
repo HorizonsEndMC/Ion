@@ -106,8 +106,10 @@ open class BasicSteeringModule(
         // A current issue is that if the movement and rotation maps are equal and opposing
         // magnitude then it will lead to an agent jittering under a certain ship.velocity threshold.
         //mixing
-        val rotationMovementPrior = config.defaultRotationMixingRatio
-            //max(min(ship.velocity.length() / MAXSPEED*2, 1.0), 0.0).pow(1.0)
+		val clamp = {input : Double, min : Double, max: Double -> min + (input * (max-min))}
+        val rotationMovementPrior = clamp((ship.velocity.length()/config.defaultMaxSpeed).coerceIn(0.0,1.0),
+									     config.defaultRotationMixingRatio * 0.5,
+									     config.defaultRotationMixingRatio * 2).coerceIn(0.0,1.0)
         //println(rotationMovementPrior)
 		ContextMap.mix(contexts["movementInterest"]!!,contexts["rotationInterest"]!!, rotationMovementPrior,config.defaultRotationMixingPower)
 

@@ -150,7 +150,7 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 		if (dx == 0 && dy == 0 && dz == 0) {
 			return
 		}
-		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
+		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz, type = TranslateMovement.MovementType.DC)
 	}
 
 	companion object {
