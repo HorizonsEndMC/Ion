@@ -20,6 +20,7 @@ import org.bukkit.craftbukkit.entity.CraftTextDisplay
 import org.bukkit.util.Transformation
 import org.joml.Quaternionf
 import org.joml.Vector3f
+import kotlin.random.Random
 
 abstract class DisplayModule(
 	val handler: TextDisplayHandler,
@@ -28,7 +29,8 @@ abstract class DisplayModule(
 	private val offsetUp: Double,
 	private val offsetForward: Double,
 
-	val scale: Float
+	val scale: Float,
+	val id: Int = Random.nextInt()
 ) {
 	val entity: TextDisplay = createEntity()
 	private val playerManager: DisplayPlayerManager = DisplayPlayerManager(entity)
@@ -55,7 +57,7 @@ abstract class DisplayModule(
 
 		val location = getLocation()
 
-		return craftEntity.getNMSData(location.x, location.y, location.z)
+		return craftEntity.getNMSData(location.x, location.y, location.z).apply { id = this@DisplayModule.id }
 	}
 
 	fun getLocation(): Location {
