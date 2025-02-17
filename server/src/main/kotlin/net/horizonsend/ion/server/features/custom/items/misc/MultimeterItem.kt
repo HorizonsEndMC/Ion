@@ -31,14 +31,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.INTEGER
@@ -48,41 +46,40 @@ import java.util.PriorityQueue
 object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", NamedTextColor.YELLOW), ItemFactory.unStackableCustomItem) {
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@MultimeterItem) { event, _, itemStack ->
-			handleSecondaryInteract(event.player, itemStack)
+			if (event.player.isSneaking) {
+				cycleNetworks(event.player, event.player.world, itemStack)
+
+				return@rightClickListener
+			}
+
+			setSecondPoint(event.player, itemStack)
 		})
+
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@MultimeterItem) { event, _, itemStack ->
-			handlePrimaryInteract(event.player, itemStack)
+			setFirstPoint(event.player, itemStack)
 		})
 	}
 
-	private fun handlePrimaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
-		val targeted = livingEntity.getTargetBlock(null, 10)
+	private fun setFirstPoint(player: Player, itemStack: ItemStack) {
+		val targeted = player.getTargetBlock(null, 10)
 		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
 
-		itemStack.updateMeta {
-			it.persistentDataContainer.set(X, LONG, key)
-		}
+		itemStack.updatePersistentDataContainer { set(X, LONG, key) }
 
-		livingEntity.information("Set first point to ${toVec3i(key)}")
+		player.information("Set first point to ${toVec3i(key)}")
 
-		tryCheckResistance(livingEntity, livingEntity.world, itemStack)
+		tryCheckResistance(player, player.world, itemStack)
 	}
 
-	private fun handleSecondaryInteract(livingEntity: LivingEntity, itemStack: ItemStack) {
-		if (livingEntity !is Player) return
-		if (livingEntity.isSneaking) {
-			cycleNetworks(livingEntity, livingEntity.world, itemStack)
-			return
-		}
-
-		val targeted = livingEntity.getTargetBlock(null, 10)
+	private fun setSecondPoint(player: Player, itemStack: ItemStack) {
+		val targeted = player.getTargetBlock(null, 10)
 		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
 
 		itemStack.updatePersistentDataContainer { set(Z, LONG, key) }
 
-		livingEntity.information("Set second point to ${toVec3i(key)}")
+		player.information("Set second point to ${toVec3i(key)}")
 
-		tryCheckResistance(livingEntity, livingEntity.world, itemStack)
+		tryCheckResistance(player, player.world, itemStack)
 	}
 
 	private fun tryCheckResistance(audience: Audience, world: World, itemStack: ItemStack) {
@@ -93,19 +90,33 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 		val networkTypeIndex = itemStack.itemMeta.persistentDataContainer.getOrDefault(NODE_TYPE, INTEGER, 0)
 		val cacheType = CacheType.entries[networkTypeIndex]
 
-		val firstNode = cacheType.get(firstChunk).getOrCache(firstPoint) ?: return audience.information("There is no node at ${toVec3i(firstPoint)}")
+		val firstNode = cacheType.get(firstChunk).getOrCache(firstPoint)
+		if (firstNode == null) {
+			audience.information("There is no node at ${toVec3i(firstPoint)}")
+			return
+		}
 
-		val path = getIdealPath(audience, Node.NodePositionData(firstNode, world, firstPoint, BlockFace.SELF, cacheType.get(firstChunk)), secondPoint) ?: return audience.userError("There is no path connecting these nodes")
+		val secondNode = cacheType.get(firstChunk).getOrCache(secondPoint)
+		if (secondNode == null) {
+			audience.information("There is no node at ${toVec3i(secondPoint)}")
+			return
+		}
+
+		val path = getIdealPath(
+			audience = audience,
+			fromNode = Node.NodePositionData(firstNode, world, firstPoint, BlockFace.SELF, cacheType.get(firstChunk)),
+			destination = secondPoint
+		) ?: return
+
 		val resistance = calculatePathResistance(path)
-		audience.information("The resistance from ${firstNode.javaClass.simpleName} at ${toVec3i(firstPoint)} to ${toVec3i(secondPoint)} at ${toVec3i(secondPoint)} is $resistance")
+		audience.information("The resistance from ${firstNode.javaClass.simpleName} at ${toVec3i(firstPoint)} to ${secondNode.javaClass.simpleName} at ${toVec3i(secondPoint)} is $resistance")
 	}
 
 	private fun cycleNetworks(audience: Audience, world: World, itemStack: ItemStack) {
 		val currentIndex = itemStack.itemMeta.persistentDataContainer.getOrDefault(NODE_TYPE, INTEGER, 0)
 		val newIndex = (currentIndex + 1) % CacheType.entries.size
-		itemStack.updateMeta {
-			it.persistentDataContainer.set(NODE_TYPE, INTEGER, newIndex)
-		}
+
+		itemStack.updatePersistentDataContainer { set(NODE_TYPE, INTEGER, newIndex) }
 
 		audience.success("Set network type to ${CacheType.entries[newIndex]}")
 
@@ -122,13 +133,11 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 		val queueSet = LongOpenHashSet()
 
 		fun queueAdd(wrapper: PathfindingNodeWrapper) {
-			audience.information("adding $wrapper")
 			queue.add(wrapper)
 			queueSet.add(wrapper.node.position)
 		}
 
 		fun queueRemove(wrapper: PathfindingNodeWrapper) {
-			audience.information("removing $wrapper")
 			queue.remove(wrapper)
 			queueSet.remove(wrapper.node.position)
 		}
@@ -160,44 +169,49 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 		while (queue.isNotEmpty() && iterations < maxDepth) {
 			iterations++
 			val current = queue.minBy { it.f }
+
 			Tasks.syncDelay(iterations) { audience.highlightBlock(toVec3i(current.node.position), 5L) }
-			audience.information("current: ${current.node.javaClass.simpleName} at ${toVec3i(current.node.position)}")
-			if (current.node.position == destination) return current.buildPath()
+
+			if (current.node.position == destination) {
+				val path = current.buildPath()
+
+				path.forEach { location -> audience.highlightBlock(toVec3i(location.position), 50L) }
+
+				return path
+			}
 
 			queueRemove(current)
 			markVisited(current)
 
-			val neighbors = getNeighbors(current, { nodeCache, cacheType, world, pos -> getOrCacheNode(nodeCache, cacheType, world, pos) }, null)
-			audience.userError("Found ${neighbors.size} neighbors")
+			val neighbors = getNeighbors(
+				current,
+				{ nodeCache, cacheType, world, pos -> getOrCacheNode(nodeCache, cacheType, world, pos) },
+				null
+			)
 
-			for (newNeighbor in neighbors) {
-				audience.information("new neighbor: $newNeighbor at ${toVec3i(newNeighbor.node.position)}")
-				if (!canVisit(newNeighbor.node)) {
-					audience.information("conmtinue")
+			for (computedNeighbor in neighbors) {
+				if (!canVisit(computedNeighbor.node)) {
 					continue
 				}
 
-				newNeighbor.f = (newNeighbor.g + getHeuristic(newNeighbor.node, destination))
+				computedNeighbor.f = (computedNeighbor.g + getHeuristic(computedNeighbor.node, destination))
 
-				if (queueSet.contains(newNeighbor.node.position)) {
-					audience.information("Neighbor exists in queue")
-					val existingNeighbor = queue.first { it.node.position == newNeighbor.node.position }
+				if (queueSet.contains(computedNeighbor.node.position)) {
+					val existingNeighbor = queue.first { it.node.position == computedNeighbor.node.position }
 
-					if (newNeighbor.g < existingNeighbor.g) {
-						audience.information("New path is ideal, updating neighbor to match")
-						existingNeighbor.parent = newNeighbor.parent
+					if (computedNeighbor.g < existingNeighbor.g) {
+						existingNeighbor.parent = computedNeighbor.parent
 
-						existingNeighbor.g = newNeighbor.g
-						existingNeighbor.f = newNeighbor.f
+						existingNeighbor.g = computedNeighbor.g
+						existingNeighbor.f = computedNeighbor.f
 					}
 				} else {
-					audience.information("Not present, Adding to queue")
-					queueAdd(newNeighbor)
+					queueAdd(computedNeighbor)
 				}
 			}
 		}
 
-		audience.userError("Exhausted queue, $iterations")
+		audience.userError("Exhausted queue, after $iterations, could not find destination.")
 
 		return null
 	}
