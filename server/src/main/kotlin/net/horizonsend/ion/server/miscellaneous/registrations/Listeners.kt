@@ -29,7 +29,6 @@ import net.horizonsend.ion.server.listener.misc.BlockListener
 import net.horizonsend.ion.server.listener.misc.BowHitListener
 import net.horizonsend.ion.server.listener.misc.ChatListener
 import net.horizonsend.ion.server.listener.misc.EntityListener
-import net.horizonsend.ion.server.listener.misc.FurnaceListener
 import net.horizonsend.ion.server.listener.misc.HeadListener
 import net.horizonsend.ion.server.listener.misc.InventoryListener
 import net.horizonsend.ion.server.listener.misc.JoinLeaveListener
@@ -52,7 +51,6 @@ val listeners: List<Listener> = listOf(
 
 	BlockListener,
 	EntityListener,
-	FurnaceListener,
 	InventoryListener,
 	BowHitListener,
 

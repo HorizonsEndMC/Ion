@@ -12,8 +12,6 @@ import net.horizonsend.ion.server.features.client.display.modular.display.FlowMe
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItemListeners.sortCustomItemListeners
-import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
-import net.horizonsend.ion.server.features.custom.items.component.Smeltable
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.misc.MultimeterItem
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
@@ -41,11 +39,9 @@ import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.Energy
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.stackableCustomItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.unStackableCustomItem
-import net.horizonsend.ion.server.features.custom.items.util.withComponent
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -215,31 +211,31 @@ object CustomItemRegistry : IonServerComponent() {
 	val CANNON_RECEIVER = register("CANNON_RECEIVER", text("Cannon Receiver"), unStackableCustomItem("industry/cannon_receiver"))
 
 	// Minerals start
-	private fun registerRawOre(identifier: String, name: String, smeltingResult: Supplier<CustomItem>) = register(identifier, text("Raw ${name.replaceFirstChar { it.uppercase() }}"), stackableCustomItem(model = "mineral/raw_$name")).withComponent(CustomComponentTypes.SMELTABLE, Smeltable(smeltingResult.map { it.constructItemStack() }))
+	private fun registerRawOre(identifier: String, name: String) = register(identifier, text("Raw ${name.replaceFirstChar { it.uppercase() }}"), stackableCustomItem(model = "mineral/raw_$name"))
 	private fun registerOreIngot(identifier: String, name: String, useSuffix: Boolean) = register(identifier, text("${name.replaceFirstChar { it.uppercase() }}${if (useSuffix) " Ingot" else ""}"), stackableCustomItem(model = "mineral/$name"))
-	private fun registerOreBlock(identifier: String, name: String, block: Supplier<CustomBlock>, smeltingResult: Supplier<CustomItem>) = customBlockItem(identifier, "mineral/${name}_ore", text("${name.replaceFirstChar { it.uppercase() }} Ore"), block).withComponent(CustomComponentTypes.SMELTABLE, Smeltable(smeltingResult.map { it.constructItemStack() }))
+	private fun registerOreBlock(identifier: String, name: String, block: Supplier<CustomBlock>) = customBlockItem(identifier, "mineral/${name}_ore", text("${name.replaceFirstChar { it.uppercase() }} Ore"), block)
 	private fun registerIngotBlock(identifier: String, name: String, block: Supplier<CustomBlock>) = customBlockItem(identifier, "mineral/${name}_block", text("${name.replaceFirstChar { it.uppercase() }} Block"), block)
 	private fun registerRawBlock(identifier: String, name: String, block: Supplier<CustomBlock>) = customBlockItem(identifier, "mineral/raw_${name}_block", text("Raw ${name.replaceFirstChar { it.uppercase() }} Block"), block)
 
 	val ALUMINUM_INGOT = registerOreIngot("ALUMINUM_INGOT", "aluminum", true)
-	val RAW_ALUMINUM = registerRawOre("RAW_ALUMINUM", "aluminum", smeltingResult = CustomItemRegistry::ALUMINUM_INGOT)
-	val ALUMINUM_ORE: CustomBlockItem = registerOreBlock("ALUMINUM_ORE", "aluminum", block = CustomBlocks::ALUMINUM_ORE, smeltingResult = CustomItemRegistry::ALUMINUM_INGOT)
+	val RAW_ALUMINUM = registerRawOre("RAW_ALUMINUM", "aluminum")
+	val ALUMINUM_ORE: CustomBlockItem = registerOreBlock("ALUMINUM_ORE", "aluminum", block = CustomBlocks::ALUMINUM_ORE)
 	val ALUMINUM_BLOCK: CustomBlockItem = registerIngotBlock("ALUMINUM_BLOCK", "aluminum", block = CustomBlocks::ALUMINUM_BLOCK)
 	val RAW_ALUMINUM_BLOCK: CustomBlockItem = registerRawBlock("RAW_ALUMINUM_BLOCK", "aluminum", block = CustomBlocks::RAW_ALUMINUM_BLOCK)
 
 	val CHETHERITE = registerOreIngot("CHETHERITE", "chetherite", false)
-	val CHETHERITE_ORE: CustomBlockItem = registerOreBlock("CHETHERITE_ORE", "chetherite", block = CustomBlocks::CHETHERITE_ORE, smeltingResult = CustomItemRegistry::CHETHERITE)
+	val CHETHERITE_ORE: CustomBlockItem = registerOreBlock("CHETHERITE_ORE", "chetherite", block = CustomBlocks::CHETHERITE_ORE)
 	val CHETHERITE_BLOCK: CustomBlockItem = registerIngotBlock("CHETHERITE_BLOCK", "chetherite", block = CustomBlocks::CHETHERITE_BLOCK)
 
 	val TITANIUM_INGOT = registerOreIngot("TITANIUM_INGOT", "titanium", true)
-	val RAW_TITANIUM = registerRawOre("RAW_TITANIUM", "titanium", smeltingResult = CustomItemRegistry::TITANIUM_INGOT)
-	val TITANIUM_ORE: CustomBlockItem = registerOreBlock("TITANIUM_ORE", "titanium", block = CustomBlocks::TITANIUM_ORE, smeltingResult = CustomItemRegistry::TITANIUM_INGOT)
+	val RAW_TITANIUM = registerRawOre("RAW_TITANIUM", "titanium")
+	val TITANIUM_ORE: CustomBlockItem = registerOreBlock("TITANIUM_ORE", "titanium", block = CustomBlocks::TITANIUM_ORE)
 	val TITANIUM_BLOCK: CustomBlockItem = registerIngotBlock("TITANIUM_BLOCK", "titanium", block = CustomBlocks::TITANIUM_BLOCK)
 	val RAW_TITANIUM_BLOCK: CustomBlockItem = registerRawBlock("RAW_TITANIUM_BLOCK", "titanium", block = CustomBlocks::RAW_TITANIUM_BLOCK)
 
 	val URANIUM = registerOreIngot(identifier = "URANIUM", name = "uranium", false)
-	val RAW_URANIUM = registerRawOre(identifier = "RAW_URANIUM", name = "uranium", smeltingResult = CustomItemRegistry::URANIUM)
-	val URANIUM_ORE: CustomBlockItem = registerOreBlock(identifier = "URANIUM_ORE", name = "uranium", block = CustomBlocks::URANIUM_ORE, smeltingResult = CustomItemRegistry::URANIUM)
+	val RAW_URANIUM = registerRawOre(identifier = "RAW_URANIUM", name = "uranium")
+	val URANIUM_ORE: CustomBlockItem = registerOreBlock(identifier = "URANIUM_ORE", name = "uranium", block = CustomBlocks::URANIUM_ORE)
 	val URANIUM_BLOCK: CustomBlockItem = registerIngotBlock(identifier = "URANIUM_BLOCK", name = "uranium", block = CustomBlocks::URANIUM_BLOCK)
 	val RAW_URANIUM_BLOCK: CustomBlockItem = registerRawBlock(identifier = "RAW_URANIUM_BLOCK", name = "uranium", block = CustomBlocks::RAW_URANIUM_BLOCK)
 	// Minerals end
@@ -447,37 +443,37 @@ object CustomItemRegistry : IonServerComponent() {
 	val ARMOR_MODIFICATION_ENVIRONMENT: ModificationItem = register(ModificationItem(
 		"ARMOR_MODIFICATION_ENVRORNMENT",
 		"power_armor/module/environment",
-		ofChildren(Component.text("Enviornment", GRAY), Component.text(" Module", GOLD)),
+		ofChildren(text("Enviornment", GRAY), text(" Module", GOLD)),
 		text("Allows the user to survive inhospitable planetary enviornments.")
 	) { ItemModRegistry.ENVIRONMENT })
 	val ARMOR_MODIFICATION_NIGHT_VISION: ModificationItem = register(ModificationItem(
 		"ARMOR_MODIFICATION_NIGHT_VISION",
 		"power_armor/module/night_vision",
-		ofChildren(Component.text("Night Vision", GRAY), Component.text(" Module", GOLD)),
+		ofChildren(text("Night Vision", GRAY), text(" Module", GOLD)),
 		text("Allows the user to see in dark enviornments. ")
 	) { ItemModRegistry.NIGHT_VISION })
 	val ARMOR_MODIFICATION_PRESSURE_FIELD: ModificationItem = register(ModificationItem(
 		"ARMOR_MODIFICATION_PRESSURE_FIELD",
 		"power_armor/module/pressure_field",
-		ofChildren(Component.text("Pressure Field", GRAY), Component.text(" Module", GOLD)),
+		ofChildren(text("Pressure Field", GRAY), text(" Module", GOLD)),
 		text("Allows the user to breathe in space.")
 	) { ItemModRegistry.PRESSURE_FIELD })
 	val ARMOR_MODIFICATION_ROCKET_BOOSTING: ModificationItem = register(ModificationItem(
 		"ARMOR_MODIFICATION_ROCKET_BOOSTING",
 		"power_armor/module/rocket_boosting",
-		ofChildren(Component.text("Rocket Boosting", GRAY), Component.text(" Module", GOLD)),
+		ofChildren(text("Rocket Boosting", GRAY), text(" Module", GOLD)),
 		text("Allows propelled flight.")
 	) { ItemModRegistry.ROCKET_BOOSTING })
 	val ARMOR_MODIFICATION_SHOCK_ABSORBING: ModificationItem = register(ModificationItem(
 		"ARMOR_MODIFICATION_SHOCK_ABSORBING",
 		"power_armor/module/shock_absorbing",
-		ofChildren(Component.text("Shock Absorbing", GRAY), Component.text(" Module", GOLD)),
+		ofChildren(text("Shock Absorbing", GRAY), text(" Module", GOLD)),
 		text("Reduces knockback.")
 	) { ItemModRegistry.SHOCK_ABSORBING })
 	val ARMOR_MODIFICATION_SPEED_BOOSTING: ModificationItem = register(ModificationItem(
 		"ARMOR_MODIFICATION_SPEED_BOOSTING",
 		"power_armor/module/speed_boosting",
-		ofChildren(Component.text("Speed Boosting", GRAY), Component.text(" Module", GOLD)),
+		ofChildren(text("Speed Boosting", GRAY), text(" Module", GOLD)),
 		text("Boosts the user's running speed.")
 	) { ItemModRegistry.SPEED_BOOSTING })
 
