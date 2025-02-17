@@ -71,7 +71,7 @@ object MultiblockWorkbench : CustomBlock(
 		event.isCancelled = true
 
 		// Prevent the double firing of player interact events
-		cooldown.tryExec(player) { openMenu(player, block.location.toCenterLocation()) }
+		cooldown.tryExec(player) { openMenu(player, block.location.toCenterLocation().add(0.0, 0.55, 0.0)) }
 	}
 
 	private fun openMenu(player: Player, location: Location) {
@@ -232,7 +232,7 @@ object MultiblockWorkbench : CustomBlock(
 
 		override fun handleClose(event: InventoryCloseEvent) {
 			if (isSearching) return
-			dropItems(location)
+			addOrDropItems(location)
 		}
 
 		private fun openSearchMenu(player: Player) {
