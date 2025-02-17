@@ -5,10 +5,8 @@ import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerConsumption
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
-import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
@@ -48,9 +46,6 @@ object AutoSmeltModifier : ItemModification, DropModifier {
 	override val priority: Int = 1
 
 	override fun modifyDrop(itemStack: ItemStack): Boolean {
-		val customItem = itemStack.customItem
-		if (customItem?.hasComponent(CustomComponentTypes.SMELTABLE) == true) return false
-
 		// Replace with modified version
 		smeltedItemCache[itemStack].getOrNull()?.let {
 			itemStack.type = it.type
