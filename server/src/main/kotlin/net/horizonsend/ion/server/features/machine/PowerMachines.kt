@@ -26,33 +26,6 @@ object PowerMachines : IonServerComponent() {
 				0.0f,
 				200
 			))
-
-			// Another hacky fix that should be removed to make gas power plants work
-			Bukkit.addRecipe(FurnaceRecipe(
-				NamespacedKey(IonServer, "gas_canisters"),
-				deadBush,
-				Material.WARPED_FUNGUS_ON_A_STICK,
-				0.0f,
-				200
-			))
-
-			// Batteries
-			Bukkit.addRecipe(FurnaceRecipe(
-				NamespacedKey(IonServer, "batteries"),
-				deadBush,
-				Material.SNOWBALL,
-				0.0f,
-				200
-			))
-
-			// Gas furnaces
-			Bukkit.addRecipe(FurnaceRecipe(
-				NamespacedKey(IonServer, "gas_furnaces"),
-				ItemStack(Material.IRON_INGOT),
-				Material.IRON_INGOT,
-				0.0f,
-				Int.MAX_VALUE
-			))
 		}
 	}
 
