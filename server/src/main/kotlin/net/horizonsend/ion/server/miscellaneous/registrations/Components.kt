@@ -29,7 +29,6 @@ import net.horizonsend.ion.server.features.economy.collectors.Collectors
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AreaShields
-import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.misc.AutoRestart
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
@@ -140,7 +139,6 @@ val components: List<IonComponent> = listOf(
 	MultiblockRegistration,
 	MultiblockAccess,
 	MultiblockTicking,
-	PowerMachines,
 	AreaShields,
 
 	TransportConfig.Companion,

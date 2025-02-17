@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool.mods.general
 
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.client.display.modular.display.FlowMeterDisplayModule
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerStorage
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
@@ -12,7 +13,6 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.Applicati
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.util.updateDurability
-import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -39,7 +39,7 @@ class PowerCapacityIncrease(
 	override val displayName: Component = ofChildren(
 		text("Power Storage ", RED),
 		text("+", YELLOW),
-		PowerMachines.prefixComponent,
+		FlowMeterDisplayModule.firstLine,
 		text(increaseAmount, GREEN)
 	).decoration(TextDecoration.ITALIC, false)
 
