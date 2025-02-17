@@ -17,7 +17,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.faces
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Axis
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -108,17 +110,15 @@ sealed interface PowerNode : Node {
             displayHandler.update()
         }
 
-		companion object {
+		private companion object {
+			val firstLine = ofChildren(text("Δ", GREEN), text("E: ", YELLOW))
 			val format = DecimalFormat("##.##")
 		}
 
         fun formatFlow(): Component {
             val avg = runCatching { rollingAverage.getAverage().roundToHundredth() }.getOrDefault(0.0)
 
-            return ofChildren(
-				FlowMeterDisplayModule.firstLine,
-				Component.text(format.format(avg), NamedTextColor.GREEN),
-			)
+            return ofChildren(firstLine, text(format.format(avg), GREEN),)
         }
 
         override val pathfindingResistance: Double = 0.5

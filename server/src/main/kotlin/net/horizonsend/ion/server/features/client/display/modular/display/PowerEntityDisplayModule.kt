@@ -36,9 +36,13 @@ class PowerEntityDisplayModule(
 		return title?.let { ofChildren(it, newline(), formatPower()) } ?: formatPower()
 	}
 
-	private fun formatPower(): Component = ofChildren(FlowMeterDisplayModule.firstLine, text(multiblockEntity.powerStorage.getPower(), NamedTextColor.GREEN))
+	private fun formatPower(): Component = ofChildren(powerPrefix, text(multiblockEntity.powerStorage.getPower(), NamedTextColor.GREEN))
 
 	override fun toString(): String {
 		return "PowerEntityDisplayModule{TextPlain: ${PaperAdventure.asAdventure(entity.text).plainText()}}, Displaying at ${getLocation()}"
+	}
+
+	companion object {
+		val powerPrefix = text("E: ", NamedTextColor.YELLOW)
 	}
 }
