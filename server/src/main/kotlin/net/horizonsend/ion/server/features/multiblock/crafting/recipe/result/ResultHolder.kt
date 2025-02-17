@@ -19,7 +19,7 @@ abstract class ResultHolder<E: RecipeEnviornment, R: RecipeResult<E>>(val result
 	 **/
 	abstract fun buildTransaction(input: E, resultEnviornment: ResultExecutionEnviornment<E>)
 
-	val callbacks = mutableListOf<(E, RecipeExecutionResult?) -> Unit>()
+	private val callbacks = mutableListOf<(E, RecipeExecutionResult?) -> Unit>()
 
 	fun executeCallbacks(enviornment: E, result: RecipeExecutionResult?) {
 		callbacks.forEach { t -> t.invoke(enviornment, result) }
