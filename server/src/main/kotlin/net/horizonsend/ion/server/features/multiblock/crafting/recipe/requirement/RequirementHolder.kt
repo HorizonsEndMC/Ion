@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement
 
 import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.util.SlotModificationWrapper
+import org.bukkit.inventory.ItemStack
 
 open class RequirementHolder<T: RecipeEnviornment, V: Any?, out R: RecipeRequirement<V>>(val dataTypeClass: Class<V>, val getter: (T) -> V, val requirement: R) {
 	fun checkRequirement(enviornment: T): Boolean {
@@ -20,11 +22,17 @@ open class RequirementHolder<T: RecipeEnviornment, V: Any?, out R: RecipeRequire
 		dataTypeClass: Class<V>,
 		getter: (T) -> V,
 		requirement: R,
-		val slotModificationWrapper: (T) -> SlotModificationWrapper
+		private val slotModificationWrapper: (T) -> SlotModificationWrapper
 	) : RequirementHolder<T, V, R>(dataTypeClass, getter, requirement) {
 		override fun consume(enviornment: T) {
 			val wrapper = slotModificationWrapper.invoke(enviornment)
-			wrapper.removeFromSlot(1)
+
+			if (requirement is ItemRequirement) { //TODO generalize for new
+				wrapper.consume consumer@{ item: ItemStack? ->
+					if (item == null) return@consumer
+					requirement.consume(item)
+				}
+			}
 		}
 	}
 
