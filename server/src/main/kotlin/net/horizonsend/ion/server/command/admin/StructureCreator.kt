@@ -7,7 +7,6 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.STANDARD_EXTRACTOR_TYPE
-import net.horizonsend.ion.server.features.transport.old.Wires
 import net.horizonsend.ion.server.features.transport.old.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -153,7 +152,7 @@ object StructureCreator : SLCommand() {
 			data.material == Material.LAPIS_BLOCK -> ".lapisBlock()"
 
 			data.material == Material.FLETCHING_TABLE -> ".fluidInput()"
-			data.material == Wires.INPUT_COMPUTER_BLOCK -> ".powerInput()"
+			data.material == Material.NOTE_BLOCK -> ".powerInput()"
 			data.material == STANDARD_EXTRACTOR_TYPE -> ".extractor()"
 			data.material == Material.HOPPER -> ".hopper()"
 			data.material == Material.DISPENSER -> ".dispenser()"

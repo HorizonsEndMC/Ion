@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.NETHERITE_
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.STANDARD_EXTRACTOR_TYPE
-import net.horizonsend.ion.server.features.transport.old.Wires
 import net.horizonsend.ion.server.features.transport.old.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
@@ -478,7 +477,7 @@ class MultiblockShape {
 		)
 
 		fun fluidInput() = type(Material.FLETCHING_TABLE)
-		fun powerInput() = type(Wires.INPUT_COMPUTER_BLOCK)
+		fun powerInput() = type(Material.NOTE_BLOCK)
 		fun extractor() = type(STANDARD_EXTRACTOR_TYPE)
 
 		fun sponge() = anyType(Material.SPONGE, Material.WET_SPONGE, alias = "sponge")

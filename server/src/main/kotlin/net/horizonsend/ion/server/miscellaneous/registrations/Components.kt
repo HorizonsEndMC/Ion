@@ -90,7 +90,6 @@ import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry
 import net.horizonsend.ion.server.features.transport.old.TransportConfig
-import net.horizonsend.ion.server.features.transport.old.Wires
 import net.horizonsend.ion.server.features.transport.old.pipe.Pipes
 import net.horizonsend.ion.server.features.transport.old.pipe.filter.Filters
 import net.horizonsend.ion.server.features.tutorial.Tutorials
@@ -145,7 +144,6 @@ val components: List<IonComponent> = listOf(
 	Pipes,
 	FilterType,
 	Filters,
-	Wires,
 	NewTransport,
 
 	SwordListener,
