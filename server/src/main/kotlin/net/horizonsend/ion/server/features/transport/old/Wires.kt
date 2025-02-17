@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.debugHighlightBlock
-import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -44,7 +43,7 @@ object Wires : IonServerComponent() {
 		.build<Sign, Int>(
 			CacheLoader.from { sign ->
 				checkNotNull(sign)
-				PowerMachines.getPower(sign, fast = true)
+				0
 			}
 		)
 
@@ -118,7 +117,7 @@ object Wires : IonServerComponent() {
 			}
 
 			for ((sign, power) in powerSignUpdateCache.asMap()) {
-				PowerMachines.setPower(sign, power, fast = true)
+//				PowerMachines.setPower(sign, power, fast = true)
 			}
 
 			powerSignUpdateCache.invalidateAll()

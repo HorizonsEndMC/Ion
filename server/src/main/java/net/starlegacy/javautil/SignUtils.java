@@ -1,7 +1,6 @@
 package net.starlegacy.javautil;
 
 import net.horizonsend.ion.server.IonServer;
-import net.horizonsend.ion.server.features.machine.PowerMachines;
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
@@ -114,9 +113,7 @@ public class SignUtils {
 			converted.copyTo(sign.getPersistentDataContainer(), true);
 
 			if (sign.getPersistentDataContainer().has(NamespacedKeys.INSTANCE.getPOWER())) {
-				if (PowerMachines.INSTANCE.getPower(sign) >= 0) {
-					PowerMachines.INSTANCE.setPower(sign, 0, true);
-				}
+				// TODO
 			}
 
 			sign.update(false, false);
