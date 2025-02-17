@@ -197,5 +197,4 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 			return path != null
 		}
 	}
-
 }

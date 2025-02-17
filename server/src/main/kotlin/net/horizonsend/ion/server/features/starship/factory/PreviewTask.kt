@@ -47,7 +47,7 @@ class PreviewTask(
 
 	private fun sendFakeBlock(x: Int, y: Int, z: Int, blockData: BlockData) {
 		val nmsBlockPos = BlockPos(x, y, z)
-		val packet = ClientboundBlockUpdatePacket(nmsBlockPos, blockData.nms)
+		val packet = ClientboundBlockUpdatePacket(nmsBlockPos, blockData.nms.rotate(getNMSRotation()))
 
 		player.minecraft.connection.send(packet)
 	}
