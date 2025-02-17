@@ -26,7 +26,7 @@ import java.util.function.Supplier
 
 interface CustomFilterBlock<T: Any, M: FilterMeta> : WrenchRemovable, InteractableCustomBlock {
 	companion object {
-		val cooldown = PerPlayerCooldown(5L)
+		val filterInteractCooldown = PerPlayerCooldown(5L)
 	}
 
 	override fun onRightClick(event: PlayerInteractEvent, block: Block) {
@@ -41,7 +41,7 @@ interface CustomFilterBlock<T: Any, M: FilterMeta> : WrenchRemovable, Interactab
 		val filterManager = chunk.transportNetwork.filterManager
 		val filterData = filterManager.getFilter(key) ?: filterManager.registerFilter<T, M>(key, this)
 
-		cooldown.tryExec(event.player) {
+		filterInteractCooldown.tryExec(event.player) {
 			Tasks.sync {
 				@Suppress("UNCHECKED_CAST")
 				val gui = getGui(event.player, block, filterData as FilterData<T, M>) { block.state as TileState }
