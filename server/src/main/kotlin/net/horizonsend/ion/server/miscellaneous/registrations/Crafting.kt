@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_INGOT
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_ORE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ARMOR_MODIFICATION_ENVIRONMENT
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ARMOR_MODIFICATION_NIGHT_VISION
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ARMOR_MODIFICATION_PRESSURE_FIELD
@@ -113,12 +114,14 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.SUPER
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.SUPERCONDUCTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.TITANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.TITANIUM_INGOT
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.TITANIUM_ORE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.UNCHARGED_SHELL
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.UNLOADED_ARSENAL_MISSILE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.UNLOADED_SHELL
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM_CORE
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM_ORE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM_ROD
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.VEIN_MINER_25
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
@@ -209,6 +212,7 @@ import org.bukkit.Material.TURTLE_EGG
 import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.BlastingRecipe
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice
@@ -219,6 +223,8 @@ import org.bukkit.inventory.ShapelessRecipe
 @Suppress("unused") // Lots of helper functions which may not be used now but will be in the future
 object Crafting : IonServerComponent() {
 	override fun onEnable() {
+		registerOreFurnaceRecipes()
+
 		// Prismarine Bricks
 		Bukkit.addRecipe(FurnaceRecipe(
 			NamespacedKey(IonServer, "prismarine_bricks"),
@@ -801,6 +807,36 @@ object Crafting : IonServerComponent() {
 		registerSwordRecipes(ENERGY_SWORD_PINK, RecipeChoice.MaterialChoice(PINK_TULIP))
 	}
 
+	private fun registerOreFurnaceRecipes() {
+		fun registerFurnaceRecipe(smelted: CustomItem, result: CustomItem) {
+			Bukkit.addRecipe(FurnaceRecipe(
+				NamespacedKey(IonServer, "${smelted.identifier.lowercase()}_smelting"),
+				result.constructItemStack(),
+				ExactChoice(smelted.constructItemStack()),
+				0.5f,
+				200
+			))
+
+			Bukkit.addRecipe(BlastingRecipe(
+				NamespacedKey(IonServer, "${smelted.identifier.lowercase()}_blasting"),
+				result.constructItemStack(),
+				ExactChoice(smelted.constructItemStack()),
+				0.5f,
+				100
+			))
+		}
+
+		fun registerOreType(rawType: CustomItem, oreType: CustomBlockItem, smeltedType: CustomItem) {
+			registerFurnaceRecipe(rawType, smeltedType)
+			registerFurnaceRecipe(oreType, smeltedType)
+		}
+
+		registerOreType(rawType = RAW_ALUMINUM, oreType = ALUMINUM_ORE, smeltedType = ALUMINUM_INGOT)
+		registerOreType(rawType = RAW_TITANIUM, oreType = TITANIUM_ORE, smeltedType = TITANIUM_INGOT)
+		registerOreType(rawType = RAW_URANIUM, oreType = URANIUM_ORE, smeltedType = URANIUM)
+		registerFurnaceRecipe(smelted = CHETHERITE_BLOCK, result = CHETHERITE)
+	}
+
 	// Different names due to signature problems from type erasure
 	private fun shapedMaterial(name: String, result: Material, shape1: String, shape2: String, shape3: String, vararg ingredients: Pair<Char, Material>) {
 		val recipe = ShapedRecipe(NamespacedKeys.key(name), ItemStack(result))
@@ -879,7 +915,7 @@ object Crafting : IonServerComponent() {
 
 	private fun ShapedRecipe.setIngredient(key: Char, customItem: CustomItem) = setIngredient(key, customItem.constructItemStack())
 
-	fun materialBlockRecipes(blockItem: CustomBlockItem, ingotItem: CustomItem) {
+	private fun materialBlockRecipes(blockItem: CustomBlockItem, ingotItem: CustomItem) {
 		shapeless(blockItem.identifier.lowercase(), blockItem.constructItemStack()) {
 			addIngredient(ingotItem.constructItemStack(9))
 		}
