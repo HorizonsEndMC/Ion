@@ -9,9 +9,7 @@ import java.util.function.Consumer
  * Handles the addition of items to a slot in an inventory
  **/
 class SlotModificationWrapper(private val getter: Supplier<ItemStack?>, private val setter: Consumer<ItemStack>) {
-	fun removeFromSlot(amount: Int) {
-		getter.get()?.amount -= amount
-	}
+	fun consume(consumeFunction: Consumer<ItemStack?>) = consumeFunction.accept(getter.get())
 
 	fun addToSlot(newItem: ItemStack) {
 		val currentItem = getter.get()
