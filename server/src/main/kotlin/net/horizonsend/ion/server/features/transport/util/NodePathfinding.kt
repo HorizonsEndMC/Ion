@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.transport.util
 
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.command.misc.TransportDebugCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheProvider
 import net.horizonsend.ion.server.features.transport.manager.holders.ChunkCacheHolder
@@ -99,10 +98,7 @@ fun getIdealPath(
 		val current = queue.minBy { it.f }
 
 		if (current.node.position == destination) {
-			val path = current.buildPath()
-			TransportDebugCommand.idealNumbers.offer(path.size)
-			TransportDebugCommand.stepNumbers.offer(iterations)
-			return path
+			return current.buildPath()
 		}
 
 		queueRemove(current)
@@ -110,7 +106,9 @@ fun getIdealPath(
 
 		// Compute new neighbor data from current position
 		for (computedNeighbor in getNeighbors(current, cachedNodeProvider, pathfindingFilter)) {
-			if (!canVisit(computedNeighbor.node)) continue
+			if (!canVisit(computedNeighbor.node)) {
+				continue
+			}
 
 			// Update the f value
 			computedNeighbor.f = (computedNeighbor.g + getHeuristic(computedNeighbor.node, destination))
