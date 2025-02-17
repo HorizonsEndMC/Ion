@@ -4,7 +4,6 @@ import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
-import net.horizonsend.ion.server.features.machine.PowerMachines.prefixComponent
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.kyori.adventure.text.Component
@@ -37,7 +36,7 @@ class PowerEntityDisplayModule(
 		return title?.let { ofChildren(it, newline(), formatPower()) } ?: formatPower()
 	}
 
-	private fun formatPower(): Component = ofChildren(prefixComponent, text(multiblockEntity.powerStorage.getPower(), NamedTextColor.GREEN))
+	private fun formatPower(): Component = ofChildren(FlowMeterDisplayModule.firstLine, text(multiblockEntity.powerStorage.getPower(), NamedTextColor.GREEN))
 
 	override fun toString(): String {
 		return "PowerEntityDisplayModule{TextPlain: ${PaperAdventure.asAdventure(entity.text).plainText()}}, Displaying at ${getLocation()}"
