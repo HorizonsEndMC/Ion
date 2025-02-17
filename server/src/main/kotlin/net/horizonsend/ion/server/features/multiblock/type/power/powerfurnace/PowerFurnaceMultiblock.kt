@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.client.display.modular.display.Status
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
@@ -35,7 +36,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.block.Furnace
 import org.bukkit.block.Sign
 import org.bukkit.craftbukkit.block.CraftFurnaceFurnace
 import org.bukkit.craftbukkit.inventory.CraftItemStack
@@ -101,7 +101,7 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, multiblock.maxPower), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, PoweredMultiblockEntity, LegacyMultiblockEntity,
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, multiblock.maxPower), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, PoweredMultiblockEntity, LegacyMultiblockEntity, FurnaceBasedMultiblockEntity,
 		DisplayMultiblockEntity {
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
@@ -118,20 +118,20 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 				return
 			}
 
-			val furnace = getInventory(0, 0, 0)?.holder as? Furnace
+			val furnaceInventory = getFurnaceInventory()
 
-			if (furnace == null) {
+			if (furnaceInventory == null) {
 				sleepWithStatus(text("Insufficient Power", RED), 250)
 				return
 			}
 
-			val smelted = furnace.inventory.smelting
+			val smelted = furnaceInventory.smelting
 			if (smelted == null) {
 				sleepWithStatus(text("Sleeping...", BLUE), 250)
 				return
 			}
 
-			if (furnace !is CraftFurnaceFurnace) return
+			if (furnaceInventory !is CraftFurnaceFurnace) return
 			val resultOption = smeltingRecipeCache[smelted]
 
 			if (resultOption.isEmpty) {
@@ -142,9 +142,7 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 			powerStorage.removePower(30)
 			sleepWithStatus(text("Working...", GREEN), multiblock.burnTime)
 
-			furnace.burnTime = multiblock.burnTime.toShort()
-			furnace.cookTime = 100.toShort()
-			furnace.update()
+			setBurningForTicks(multiblock.burnTime)
 		}
 
 		override fun loadFromSign(sign: Sign) {
