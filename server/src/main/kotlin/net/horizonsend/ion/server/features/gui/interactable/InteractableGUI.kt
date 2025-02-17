@@ -239,11 +239,21 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder, 
 	/**
 	 * Drops all items in the inventory not added to the noDrop list
 	 **/
-	protected fun dropItems(location: Location) {
+	protected fun addOrDropItems(location: Location) {
+		val remainders = mutableListOf<ItemStack>()
+
 		for ((slot, content) in inventory.contents.withIndex()) {
 			if (noDropSlots.contains(slot)) continue
-			viewer.world.dropItemNaturally(location, content?.clone() ?: continue)
+			val remainder = viewer.inventory.addItem(content?.clone() ?: continue)
+			if (remainder.isNotEmpty()) {
+				remainders.add(remainder.entries.first().value)
+			}
+
 			content.amount = 0 // Ensure no dupes
+		}
+
+		for (item in remainders) {
+			viewer.world.dropItemNaturally(location, item)
 		}
 	}
 
