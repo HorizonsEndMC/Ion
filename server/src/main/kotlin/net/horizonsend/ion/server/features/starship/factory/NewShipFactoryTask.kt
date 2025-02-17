@@ -48,11 +48,9 @@ class NewShipFactoryTask(
 		Tasks.syncDelay(delay) {
 			sendEntityPacket(
 				player,
-				displayBlock(player.world.minecraft, data, worldCoordinate.toCenterVector(), 0.75f, false),
+				displayBlock(player.world.minecraft, getRotatedBlockData(data), worldCoordinate.toCenterVector(), 0.75f, false),
 				30 * 20L
 			)
 		}
 	}
-
-
 }
