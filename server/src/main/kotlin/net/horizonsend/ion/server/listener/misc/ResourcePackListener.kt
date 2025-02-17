@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.PERSONAL_TRANSPORTER
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -80,6 +81,8 @@ class ResourcePackListener : SLEventListener() {
 
 		if (!event.player.hasPlayedBefore() && event.player.gameMode == GameMode.SURVIVAL) {
 			event.player.inventory.apply {
+				addItem(CustomItemRegistry.BLASTER_PISTOL.constructItemStack())
+				addItem(CustomItemRegistry.POWER_DRILL_BASIC.constructItemStack())
 				addItem(ItemStack(COOKED_BEEF, 32))
 				addItem(ItemStack(CLOCK))
 				addItem(ItemStack(CHAINMAIL_BOOTS))
