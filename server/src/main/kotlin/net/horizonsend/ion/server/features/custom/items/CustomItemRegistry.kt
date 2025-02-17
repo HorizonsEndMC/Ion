@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
-import net.horizonsend.ion.server.features.client.display.modular.display.FlowMeterDisplayModule
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule.Companion.powerPrefix
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItemListeners.sortCustomItemListeners
@@ -534,13 +534,13 @@ object CustomItemRegistry : IonServerComponent() {
 		"TOOL_MODIFICATION_POWER_CAPACITY_25",
 		"tool/modification/power_capacity_25",
 		text("Small Auxiliary battery"),
-		ofChildren(text("Increases power storage by ", HE_MEDIUM_GRAY), FlowMeterDisplayModule.firstLine, text(25000, GREEN))
+		ofChildren(text("Increases power storage by ", HE_MEDIUM_GRAY), powerPrefix, text(25000, GREEN))
 	) { ItemModRegistry.POWER_CAPACITY_25 })
 	val POWER_CAPACITY_50: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_POWER_CAPACITY_50",
 		"tool/modification/power_capacity_50",
 		text("Medium Auxiliary battery"),
-		ofChildren(text("Increases power storage by ", HE_MEDIUM_GRAY), FlowMeterDisplayModule.firstLine, text(50000, GREEN))
+		ofChildren(text("Increases power storage by ", HE_MEDIUM_GRAY), powerPrefix, text(50000, GREEN))
 	) { ItemModRegistry.POWER_CAPACITY_50 })
 	val AUTO_REPLANT: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_AUTO_REPLANT",
