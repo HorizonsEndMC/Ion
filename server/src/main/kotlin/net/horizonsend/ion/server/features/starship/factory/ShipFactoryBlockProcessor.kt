@@ -9,7 +9,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.loadClipboard
+import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
+import net.minecraft.world.level.block.Rotation
 import org.bukkit.block.data.BlockData
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -90,5 +92,21 @@ abstract class ShipFactoryBlockProcessor(
 		val clipboardOffsetZ = (z - clipboard.region.center.z() * 2).roundToInt()
 
 		return Vec3i(clipboardOffsetX, clipboardOffsetY, clipboardOffsetZ)
+	}
+
+	protected fun getNMSRotation(): Rotation {
+		return when (settings.rotation) {
+			-180 -> Rotation.CLOCKWISE_180
+			-90 -> Rotation.COUNTERCLOCKWISE_90
+			0 -> Rotation.NONE
+			+90 -> Rotation.CLOCKWISE_90
+			+180 -> Rotation.CLOCKWISE_180
+			else -> error("Unsupported rotation angle! ${settings.rotation}")
+		}
+	}
+
+	protected fun getRotatedBlockData(data: BlockData): BlockData {
+		val rotation = getNMSRotation()
+		return data.nms.rotate(rotation).createCraftBlockData()
 	}
 }
