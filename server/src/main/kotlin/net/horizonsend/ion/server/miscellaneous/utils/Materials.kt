@@ -13,6 +13,7 @@ val MATERIALS: Registry<Material> = Registry.MATERIAL
 fun getMatchingMaterials(filter: (Material) -> Boolean): EnumSet<Material> =
 	MATERIALS.filterTo(EnumSet.noneOf(Material::class.java), filter)
 
+val ALL_GLASS_TYPES = getMatchingMaterials { it.name.endsWith("_STAINED_GLASS") } + Material.GLASS
 val STAINED_GLASS_TYPES = getMatchingMaterials { it.name.endsWith("_STAINED_GLASS") }
 val Material.isGlass: Boolean get() = this == Material.GLASS || this.isStainedGlass
 val Material.isStainedGlass: Boolean get() = STAINED_GLASS_TYPES.contains(this)
