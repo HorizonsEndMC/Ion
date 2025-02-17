@@ -35,7 +35,6 @@ import org.bukkit.entity.Player
 import org.slf4j.Logger
 import java.lang.management.ManagementFactory
 import java.lang.management.ThreadInfo
-import java.util.concurrent.LinkedBlockingDeque
 
 @CommandPermission("starlegacy.transportdebug")
 @CommandAlias("transportdebug|transportbug")
@@ -262,30 +261,5 @@ object TransportDebugCommand : SLCommand() {
 		val destinations = cache.getNetworkDestinations<PowerInputNode>(location, node) { true }
 		sender.information("${destinations.size} destinations")
 		sender.highlightBlocks(destinations.map(::toVec3i), 50L)
-	}
-
-	val idealNumbers: LinkedBlockingDeque<Int> = LinkedBlockingDeque<Int>()
-	val stepNumbers: LinkedBlockingDeque<Int> = LinkedBlockingDeque<Int>()
-
-	@Subcommand("metrics astar")
-	fun getMetricsAstar(sender: Player) {
-		val averageStepNumber = stepNumbers.average()
-		val maxStep = stepNumbers.max()
-		val minStep = stepNumbers.min()
-		val averageIdealNumber = idealNumbers.average()
-		val maxIdeal = idealNumbers.max()
-		val minIdeal = idealNumbers.min()
-
-		sender.sendRichMessage("""
-			maxStep: $maxStep
-			minStep: $minStep
-			maxIdeal: $maxIdeal
-			minIdeal: $minIdeal
-
-			averageIdealNumber: $averageIdealNumber
-			averageStepNumber: $averageStepNumber
-
-			average : ideal ratio: ${averageStepNumber / averageIdealNumber}
-		""".trimIndent())
 	}
 }
