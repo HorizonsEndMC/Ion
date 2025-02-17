@@ -305,7 +305,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	private fun isAir(state: BlockState?) = state?.blockType?.material?.isAir != false
 
-	private fun showMaterials(sender: Player, blueprint: Blueprint) {
+	fun showMaterials(sender: Player, blueprint: Blueprint) {
 		val clipboard = blueprint.loadClipboard()
 
 		val map = mutableMapOf<PrintItem, Int>()
