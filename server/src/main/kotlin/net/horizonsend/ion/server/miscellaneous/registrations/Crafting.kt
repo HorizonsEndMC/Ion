@@ -5,6 +5,7 @@ import io.papermc.paper.datacomponent.item.ItemEnchantments
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ADVANCED_ITEM_EXTRACTOR
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_INGOT
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_ORE
@@ -57,6 +58,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_C
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_CANISTER_HYDROGEN
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GUN_BARREL
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ITEM_FILTER
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.MOTHERBOARD
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.MULTIBLOCK_WORKBENCH
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.NETHERITE_CASING
@@ -124,11 +126,13 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANI
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM_ORE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM_ROD
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.VEIN_MINER_25
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.WRENCH
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
 import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.ALL_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WOOL_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
@@ -217,6 +221,7 @@ import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice
 import org.bukkit.inventory.RecipeChoice.ExactChoice
+import org.bukkit.inventory.RecipeChoice.MaterialChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
 
@@ -224,6 +229,8 @@ import org.bukkit.inventory.ShapelessRecipe
 object Crafting : IonServerComponent() {
 	override fun onEnable() {
 		registerOreFurnaceRecipes()
+		registerTools()
+		registerMisc()
 
 		// Prismarine Bricks
 		Bukkit.addRecipe(FurnaceRecipe(
@@ -835,6 +842,28 @@ object Crafting : IonServerComponent() {
 		registerOreType(rawType = RAW_TITANIUM, oreType = TITANIUM_ORE, smeltedType = TITANIUM_INGOT)
 		registerOreType(rawType = RAW_URANIUM, oreType = URANIUM_ORE, smeltedType = URANIUM)
 		registerFurnaceRecipe(smelted = CHETHERITE_BLOCK, result = CHETHERITE)
+	}
+
+	private fun registerTools() {
+		shaped("wrench", WRENCH) {
+			shape("a a", " a ", " a ")
+			setIngredient('a', IRON_INGOT)
+		}
+	}
+
+	private fun registerMisc() {
+		shaped("advanced_item_extractor", ADVANCED_ITEM_EXTRACTOR) {
+			shape(" g ", "rcr", " g ")
+			setIngredient('c', CRAFTING_TABLE)
+			setIngredient('g', MaterialChoice(*ALL_GLASS_TYPES.toTypedArray()))
+			setIngredient('r', REDSTONE)
+		}
+		shaped("item_filter", ITEM_FILTER) {
+			shape(" g ", "rhr", " g ")
+			setIngredient('h', HOPPER)
+			setIngredient('g', MaterialChoice(*ALL_GLASS_TYPES.toTypedArray()))
+			setIngredient('r', REDSTONE)
+		}
 	}
 
 	// Different names due to signature problems from type erasure
