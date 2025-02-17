@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.util
 
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.machine.PowerMachines
+import net.horizonsend.ion.server.features.client.display.modular.display.FlowMeterDisplayModule
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
@@ -32,7 +32,7 @@ enum class StoredValues(
 
 	POWER(NamespacedKeys.POWER) {
 		override fun formatLore(amount: Int, maxAmount: Int): Component = ofChildren(
-			PowerMachines.prefixComponent,
+			FlowMeterDisplayModule.firstLine,
 			text(amount, GREEN),
 			text(" / ", GRAY),
 			text(maxAmount, YELLOW)

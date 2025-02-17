@@ -4,7 +4,6 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AntiAirCannons.isOccupied
-import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
@@ -711,7 +710,7 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 	private const val POWER_PER_SHOT = 1000
 
 	fun shoot(shooter: Player, facing: BlockFace, turretBaseSign: Sign) {
-		val power = PowerMachines.getPower(turretBaseSign, true)
+		val power = 0
 
 		if (power < POWER_PER_SHOT) return shooter.userError("Out of power!")
 
@@ -731,6 +730,5 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 			shooter
 		).fire()
 
-		PowerMachines.removePower(turretBaseSign, POWER_PER_SHOT)
 	}
 }
