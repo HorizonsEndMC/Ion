@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.client.display.modular.display.PowerE
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
@@ -98,7 +99,7 @@ object CarbonProcessorMultiblock : Multiblock(), EntityMultiblock<CarbonProcesso
 		z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : SimplePoweredEntity(data, MissileLoaderMultiblock, manager, x, y, z, world, structureFace, 30_000), LegacyMultiblockEntity, StatusTickedMultiblockEntity, SyncTickingMultiblockEntity {
+	) : SimplePoweredEntity(data, MissileLoaderMultiblock, manager, x, y, z, world, structureFace, 30_000), LegacyMultiblockEntity, StatusTickedMultiblockEntity, SyncTickingMultiblockEntity, FurnaceBasedMultiblockEntity {
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 1)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
@@ -131,13 +132,7 @@ object CarbonProcessorMultiblock : Multiblock(), EntityMultiblock<CarbonProcesso
 			powerStorage.removePower(100)
 
 			sleepWithStatus(text("Working", GREEN), 50)
-
-			val furnace = furnaceInventory.holder ?: return
-
-			furnace.burnTime = Short.MAX_VALUE
-			furnace.cookTime = 50
-
-			furnace.update()
+			setBurningForTicks(50)
 		}
 
 		fun getOutput(inputType: ItemStack): ItemStack {

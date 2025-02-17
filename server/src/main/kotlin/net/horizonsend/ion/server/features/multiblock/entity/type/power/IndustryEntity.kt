@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.ProgressManager
@@ -27,7 +28,8 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 	SyncTickingMultiblockEntity,
 	RecipeProcessingMultiblockEntity<FurnaceEnviornment>,
 	ProgressMultiblock,
-	StatusTickedMultiblockEntity {
+	StatusTickedMultiblockEntity,
+	FurnaceBasedMultiblockEntity {
 
 	override var lastRecipe: MultiblockRecipe<FurnaceEnviornment>? = null
 
@@ -35,6 +37,7 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 	override val tickingManager: TickingManager = TickingManager(20)
 	override val statusManager: StatusManager = StatusManager()
 
+	@Suppress("LeakingThis")
 	final override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 		this,
 		{ PowerEntityDisplayModule(it, this) },
@@ -52,6 +55,7 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 	override fun tick() {
 		if (!tryProcessRecipe()) {
 			progressManager.reset()
+			putOutFurnace()
 		}
 	}
 

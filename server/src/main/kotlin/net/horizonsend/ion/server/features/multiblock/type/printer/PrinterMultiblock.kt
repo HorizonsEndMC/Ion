@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.client.display.modular.display.PowerE
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
@@ -139,7 +140,7 @@ abstract class PrinterMultiblock : Multiblock(), EntityMultiblock<PrinterMultibl
 		z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureFace, 50_000), LegacyMultiblockEntity, StatusTickedMultiblockEntity, SyncTickingMultiblockEntity {
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureFace, 50_000), LegacyMultiblockEntity, StatusTickedMultiblockEntity, SyncTickingMultiblockEntity, FurnaceBasedMultiblockEntity {
 		override val tickingManager: TickingManager = TickingManager(interval = 1)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
@@ -173,12 +174,7 @@ abstract class PrinterMultiblock : Multiblock(), EntityMultiblock<PrinterMultibl
 			powerStorage.removePower(250)
 
 			sleepWithStatus(text("Working", GREEN), 100)
-
-			val furnace = furnaceInventory.holder ?: return
-			furnace.burnTime = Short.MAX_VALUE
-			furnace.cookTime = 100
-
-			furnace.update()
+			setBurningForTicks(100)
 		}
 	}
 }
