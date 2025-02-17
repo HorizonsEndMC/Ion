@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.utils.text.ADVANCED_SHIP_FACTORY_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.toComponent
+import net.horizonsend.ion.server.command.starship.BlueprintCommand.showMaterials
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -55,7 +56,7 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 			.addIngredient('C', ValueScrollButton({ GuiItem.COUNTERCLOCKWISE.makeItem(Component.text("Rotate 90 degrees counterclockwise")) }, true, { entity.settings.rotation }, -90, -180..180) { entity.settings.rotation = it; entity.reCalculate() })
 			.addIngredient('B', boundingBoxPreview)
 			.addIngredient('A', GuiItems.CustomControlItem(Component.text("align"), GuiItem.ALIGN))
-			.addIngredient('M', GuiItems.CustomControlItem(Component.text("materials"), GuiItem.MATERIALS))
+			.addIngredient('M', materialsButton)
 			.addIngredient('R', resetButton)
 			.addIngredient('1', getPreviewButton(GuiItem.ONE_QUARTER, 10))
 			.addIngredient('3', getPreviewButton(GuiItem.TWO_QUARTER, 30))
@@ -220,6 +221,19 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 			}
 
 			entity.reCalculate()
+		}
+		.build()
+
+	private val materialsButton = FeedbackItem.builder(GuiItem.MATERIALS.makeItem(Component.text("Get Materials"))) { _, player ->
+			if (!entity.ensureBlueprintLoaded(player)) {
+				return@builder FeedbackItemResult.FailureLore(listOf(Component.text("You must load a blueprint first!", NamedTextColor.RED)))
+			}
+			FeedbackItemResult.Success
+		}
+		.withSuccessHandler { _, _ ->
+			Tasks.async {
+				showMaterials(viewer, entity.cachedBlueprintData ?: return@async)
+			}
 		}
 		.build()
 }
