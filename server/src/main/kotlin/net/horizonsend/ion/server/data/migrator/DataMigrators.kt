@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.data.migrator
 
+import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.server.IonServerComponent
@@ -16,6 +17,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.LegacyPowerArmorModule
 import org.bukkit.Chunk
 import org.bukkit.Material
+import org.bukkit.craftbukkit.inventory.CraftBlockInventoryHolder
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -857,6 +859,8 @@ object DataMigrators : IonServerComponent() {
 	}
 
 	fun migrateInventory(inventory: Inventory, versions: List<DataVersion>) {
+		if (inventory.holder is CraftBlockInventoryHolder || inventory.holder is ChestGui) return
+
 		for (dataVersion in versions) {
 			dataVersion.migrateInventory(inventory)
 		}

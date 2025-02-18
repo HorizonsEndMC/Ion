@@ -11,6 +11,8 @@ class ReplacementMigrator(vararg items: CustomItem) : CustomItemStackMigrator(Cu
 
 	override fun performMigration(subject: ItemStack): MigratorResult<ItemStack> {
 		val customItem = subject.customItem ?: return MigratorResult.Mutation()
+		val ideal = customItem.constructItemStack(subject.amount)
+		if (ideal.isSimilar(subject)) return MigratorResult.Mutation()
 
 		return MigratorResult.Replacement(customItem.constructItemStack(subject.amount))
 	}
