@@ -40,7 +40,9 @@ data class Territory(
     /** The NPC territory owner residing here. */
 	var npcOwner: Oid<NPCTerritoryOwner>? = null,
     /** If the territory should be a safe-zone from PVP and explosions */
-	var isProtected: Boolean = false
+	var isProtected: Boolean = false,
+	/** If the territory is a nation claim, determines who gets to build in it */
+	var minBuildAccess: Settlement.ForeignRelation? = null,
 ) : DbObject {
 	// region dumb stuff
 	// Use all properties for equals, only id for hashcode
@@ -58,6 +60,7 @@ data class Territory(
 		if (nation != other.nation) return false
 		if (npcOwner != other.npcOwner) return false
 		if (isProtected != other.isProtected) return false
+		if (minBuildAccess != other.minBuildAccess) return false
 
 		return true
 	}
@@ -101,5 +104,9 @@ data class Territory(
 
 		fun isUnclaimed(territoryId: Oid<Territory>): Boolean =
 			col.none(and(idFilterQuery(territoryId), unclaimedQuery))
+
+		fun setMinBuildAccess(id: Oid<Territory>, level: Settlement.ForeignRelation) = trx { sess ->
+			updateById(sess, id, org.litote.kmongo.setValue(Territory::minBuildAccess, level))
+		}
 	}
 }
