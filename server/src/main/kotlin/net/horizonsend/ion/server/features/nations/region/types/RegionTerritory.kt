@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.database.cache.nations.AbstractPlayerCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
+import net.horizonsend.ion.common.database.enumValue
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
@@ -62,6 +63,8 @@ class RegionTerritory(territory: Territory) :
 	val isUnclaimed get() = settlement == null && nation == null && npcOwner == null
 	val isClaimed get() = settlement != null || nation != null || npcOwner != null
 
+	var minBuildAccess = territory.minBuildAccess; private set
+
 	override fun contains(x: Int, y: Int, z: Int): Boolean = polygon.contains(x, z)
 
 	override fun update(delta: ChangeStreamDocument<Territory>) {
@@ -78,6 +81,7 @@ class RegionTerritory(territory: Territory) :
 			centerX = polygon.xpoints.average().roundToInt()
 			centerZ = polygon.ypoints.average().roundToInt()
 		}
+		delta[Territory::minBuildAccess]?.let { minBuildAccess = it.nullable()?.enumValue<Settlement.ForeignRelation>() }
 
 		NationsMap.updateTerritory(this)
 	}
@@ -91,6 +95,7 @@ class RegionTerritory(territory: Territory) :
 		val nation = nation
 		val settlement = settlement
 		val npcOwner = npcOwner
+		val minBuildAccess =  minBuildAccess
 
 		return when {
 			// if it's a nation outpost
@@ -108,16 +113,20 @@ class RegionTerritory(territory: Territory) :
 	}
 
 	private fun handleNationClaim(playerData: AbstractPlayerCache.PlayerData, nation: Oid<Nation>): String? {
+		val nation = nation
 		val playerNation: Oid<Nation>? = playerData.nationOid
+		val minBuildAccess =  minBuildAccess
 
-		/*                // if they're at least an ally they can build
-										if (playerNation != null && RelationCache[playerNation, nation] >= NationRelation.Level.ALLY) {
-												return null
-										}*/
+		if (minBuildAccess != null && minBuildAccess != Settlement.ForeignRelation.STRICT) {
+			when (minBuildAccess) {
+				Settlement.ForeignRelation.NONE -> return null
 
-		// allow nation members
-		if (playerNation == nation) {
-			return null
+				Settlement.ForeignRelation.ALLY -> if (playerNation != null && RelationCache[nation, playerNation] >=
+					NationRelation.Level.ALLY) return null
+
+				Settlement.ForeignRelation.NATION_MEMBER -> if (playerNation == nation) return null
+				else -> {}
+			}
 		}
 
 		return "$name is claimed by ${ NationCache[nation].name }".intern()
