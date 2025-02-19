@@ -54,7 +54,7 @@ class StarfighterSteeringModule(
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this,
 			Supplier(ConfigurationFiles.aiContextConfiguration()::starfighterOffsetSeekContextConfiguration), offsetSupplier = orbitDist)
 		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty,
-			Supplier(ConfigurationFiles.aiContextConfiguration()::starfighterFaceSeekContextConfiguration))
+			Supplier(ConfigurationFiles.aiContextConfiguration()::starfighterFaceSeekContextConfiguration), offsetSupplier = orbitDist)
 		contexts["fleetGravity"] = FleetGravityContext(ship)
 		contexts["avoidIllius"] = AvoidIlliusContext(ship)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty)

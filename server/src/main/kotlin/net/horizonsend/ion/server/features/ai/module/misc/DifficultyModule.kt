@@ -24,6 +24,21 @@ class DifficultyModule(
 		}
 	}
 
+	val doubleEstimateAim get() = internalDifficulty >= 4
+
+	val aimAdjust : Double get() {
+		return when (internalDifficulty) {
+			0 -> 0.0
+			1 -> 0.0
+			2 -> 0.5
+			3 -> 1.0
+			4 -> 1.0
+			else -> {0.0}
+		}
+	}
+
+	val aimEverything get() = internalDifficulty >= 4
+
 	val faceModifier get() = if (internalDifficulty <= 0) 0.5 else 1.0
 
 	companion object {

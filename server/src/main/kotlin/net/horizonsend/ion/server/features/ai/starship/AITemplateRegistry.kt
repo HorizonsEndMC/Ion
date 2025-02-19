@@ -304,7 +304,7 @@ object AITemplateRegistry {
 	val ANAAN = registerTemplate(builder(
 		identifier = "ANAAN",
 		template = StarshipTemplateRegistry.ANAAN,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
@@ -316,7 +316,7 @@ object AITemplateRegistry {
 	val VENDETTA = registerTemplate(builder(
 		identifier = "VENDETTA",
 		template = StarshipTemplateRegistry.VENDETTA,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
@@ -328,7 +328,7 @@ object AITemplateRegistry {
 	val CORMORANT = registerTemplate(builder(
 		identifier = "CORMORANT",
 		template = StarshipTemplateRegistry.CORMORANT,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
@@ -340,7 +340,7 @@ object AITemplateRegistry {
 	val MANTIS = registerTemplate(builder(
 		identifier = "MANTIS",
 		template = StarshipTemplateRegistry.MANTIS,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
@@ -352,7 +352,7 @@ object AITemplateRegistry {
 	val HERNSTEIN = registerTemplate(builder(
 		identifier = "HERNSTEIN",
 		template = StarshipTemplateRegistry.HERNSTEIN,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
@@ -364,7 +364,7 @@ object AITemplateRegistry {
 	val FYR = registerTemplate(builder(
 		identifier = "FYR",
 		template = StarshipTemplateRegistry.FYR,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
@@ -411,7 +411,7 @@ object AITemplateRegistry {
 	val CONTRACTOR = registerTemplate(builder(
 		identifier = "CONTRACTOR",
 		template = StarshipTemplateRegistry.CONTRACTOR,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 1250.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
@@ -447,7 +447,7 @@ object AITemplateRegistry {
 	val PATROLLER = registerTemplate(builder(
 		identifier = "PATROLLER",
 		template = StarshipTemplateRegistry.PATROLLER,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 650.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
@@ -459,7 +459,7 @@ object AITemplateRegistry {
 	val PROTECTOR = registerTemplate(builder(
 		identifier = "PROTECTOR",
 		template = StarshipTemplateRegistry.PROTECTOR,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 650.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
@@ -471,7 +471,7 @@ object AITemplateRegistry {
 	val VETERAN = registerTemplate(builder(
 		identifier = "VETERAN",
 		template = StarshipTemplateRegistry.VETERAN,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 650.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
@@ -810,7 +810,7 @@ object AITemplateRegistry {
 	val RAIDER = registerTemplate(builder(
 		identifier = "RAIDER",
 		template = StarshipTemplateRegistry.RAIDER,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 1000.0
 	)
 		.addFactionConfiguration(TSAII_RAIDERS)

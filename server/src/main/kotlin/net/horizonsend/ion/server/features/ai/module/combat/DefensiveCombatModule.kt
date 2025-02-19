@@ -8,8 +8,9 @@ import java.util.function.Supplier
 class DefensiveCombatModule(
 	controller: AIController,
 	difficulty: DifficultyModule,
+	aiming : AimingModule,
 	targetingSupplier: Supplier<AITarget?>
-) : CombatModule(controller, difficulty,targetingSupplier) {
+) : SingleTargetCombatModule(controller, difficulty,aiming,targetingSupplier) {
 	override fun tick() {
 		val target = targetingSupplier.get() ?: return
 

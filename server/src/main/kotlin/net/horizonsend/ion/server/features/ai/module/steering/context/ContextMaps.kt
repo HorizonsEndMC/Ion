@@ -176,7 +176,7 @@ class OffsetSeekContext(
 		val tetherl = finalDist * PI * 2 * 0.1
 		val shipvel = ship.velocity.clone()
 		shipvel.y = 0.0
-		if (shipvel.length() > 1e-5) shipvel.normalize()
+		if (shipvel.lengthSquared() > 1e-5) shipvel.normalize()
 		val frowardTether = shipPos.clone().add(shipvel.multiply(tetherl))
 		val tetherOffset = frowardTether.add(center.clone().multiply(-1.0))
 		tetherOffset.y = 0.0
@@ -208,7 +208,8 @@ class FaceSeekContext(
 	private val generalTarget : Supplier<AITarget?>,
 	val difficulty: DifficultyModule,
 	val configSupplier: Supplier<AIContextConfiguration.FaceSeekContextConfiguration> =
-		Supplier(ConfigurationFiles.aiContextConfiguration()::defaultFaceSeekContextConfiguration)
+		Supplier(ConfigurationFiles.aiContextConfiguration()::defaultFaceSeekContextConfiguration),
+	private val offsetSupplier: Supplier<Double> = Supplier {configSupplier.get().falloff}
 ) : ContextMap() {
 	private val config get() = configSupplier.get()
 	override fun populateContext() {
@@ -219,9 +220,12 @@ class FaceSeekContext(
 		val shipPos = ship.centerOfMass.toVector()
 		val offset = target.add(shipPos.clone().multiply(-1.0))
 		val dist = offset.length() + 1e-4
+		val distWeight = dist / offsetSupplier.get()
 		offset.normalize()
-		offset.multiply(config.faceWeight).add(ship.getTargetForward().direction).normalize()
-		dotContext(offset,-0.2, dist / config.falloff * config.weight * difficulty.faceModifier)
+		val shipVelocity = ship.velocity.clone()
+		if (shipVelocity.lengthSquared() >= 1e-3) shipVelocity.normalize()
+		offset.multiply(config.faceWeight).add(shipVelocity).normalize()
+		dotContext(offset,-0.2, distWeight * config.weight * difficulty.faceModifier)
 		for (i in 0 until NUMBINS) {
 			bins[i] = min(bins[i], config.maxWeight * difficulty.faceModifier)
 		}

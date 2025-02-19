@@ -51,7 +51,8 @@ class GunshipSteeringModule(
 		contexts["danger"]= BlankContext()
 		contexts["wander"] = WanderContext(ship,offset)
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this,offsetSupplier = orbitDist)
-		contexts["faceSeek"]= FaceSeekContext(ship, generalTarget,difficulty)
+		contexts["faceSeek"]= FaceSeekContext(ship, generalTarget,difficulty,
+			Supplier(ConfigurationFiles.aiContextConfiguration()::gunshipFaceSeekContextConfiguration),offsetSupplier = orbitDist)
 		contexts["fleetGravity"] = FleetGravityContext(ship)
 		contexts["avoidIllius"] = AvoidIlliusContext(ship)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty)

@@ -53,7 +53,7 @@ class CapitalSteeringModule(
 		contexts["wander"] = WanderContext(ship,offset)
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this,
 			Supplier(ConfigurationFiles.aiContextConfiguration()::capitalOffsetSeekContextConfiguration), offsetSupplier = orbitDist)
-		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty)
+		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty, offsetSupplier = orbitDist)
 		contexts["fleetGravity"] = FleetGravityContext(ship)
 		contexts["avoidIllius"] = AvoidIlliusContext(ship)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty,

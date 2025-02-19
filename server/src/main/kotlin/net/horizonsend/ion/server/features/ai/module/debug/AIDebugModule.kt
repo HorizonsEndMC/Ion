@@ -40,6 +40,8 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 
 		var canShipsMove = true
 		var canShipsRotate = true
+		var showAims = false
+		var fireWeapons = true
 	}
 
 	// These vars are for saving the info of the closest

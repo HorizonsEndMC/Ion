@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
+import net.horizonsend.ion.server.features.ai.module.combat.AimingModule
+import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -109,6 +111,7 @@ object AIControlUtils {
 			controller,
 			direction,
 			leftClick,
+			true,
 			controllerLoc,
 			weaponSet
 		)
@@ -118,10 +121,23 @@ object AIControlUtils {
 		controller: AIController,
 		direction: Vector,
 		leftClick: Boolean,
+		manual: Boolean = true,
 		target: Vector? = null,
 		weaponSet: String? = null,
 		controllerLoc: Location? = null
 	) {
+
+
+		if (AIDebugModule.showAims) {
+			if (target != null) {
+				AimingModule.showAims(controller.getWorld(),target,leftClick)
+			}
+		}
+
+		if (!AIDebugModule.fireWeapons) {
+			return
+		}
+
 		val damager = controller.damager
 		val originLocation = controllerLoc ?: controller.starship.centerOfMass.toLocation(controller.starship.world)
 
@@ -143,7 +159,8 @@ object AIControlUtils {
 			vectorToBlockFace(direction),
 			direction,
 			target ?: StarshipWeaponry.getTarget(originLocation, direction, controller.starship),
-			weaponSet
+			weaponSet,
+			manual
 		)
 	}
 

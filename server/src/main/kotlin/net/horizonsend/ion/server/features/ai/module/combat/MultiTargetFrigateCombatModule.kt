@@ -16,8 +16,9 @@ class MultiTargetFrigateCombatModule(
 	controller: AIController,
 	difficulty : DifficultyModule,
 	private val toggleRandomTargeting: Boolean = true,
+	aiming : AimingModule,
 	targetingSupplier: Supplier<List<AITarget>>
-) : MultiTargetCombatModule(controller,difficulty, targetingSupplier) {
+) : MultiTargetCombatModule(controller,difficulty,aiming, targetingSupplier) {
 	var leftFace: Boolean = false
 	var ticks = 0
 	private var aimAtRandom = false
@@ -39,8 +40,8 @@ class MultiTargetFrigateCombatModule(
 		handleAutoWeapons(starship.centerOfMass, target)
 		fireAllWeapons(
 			origin = starship.centerOfMass,
-			target = target.getVec3i(aimAtRandom).toVector(),
-			direction = direction
+			target = target,
+			aimAtRandom
 		)
 
 		if (toggleRandomTargeting && ticks % 40 == 0) {

@@ -60,7 +60,7 @@ open class TravelSteeringModule(
 		contexts["danger"]= BlankContext()
 		contexts["wander"] = WanderContext(ship,offset)
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this, offsetSupplier = orbitDist)
-		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty)
+		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty, offsetSupplier = orbitDist)
 		contexts["goalSeek"] = GoalSeekContext(ship,goalPoint)
 		contexts["fleetGravity"] = FleetGravityContext(ship)
 		contexts["avoidIllius"] = AvoidIlliusContext(ship)

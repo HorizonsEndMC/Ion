@@ -88,7 +88,7 @@ object AIDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("ai")
-	@CommandCompletion("@controllerFactories standoffDistance x y z manualSets autoSets @autoTurretTargets ")
+	@CommandCompletion("@controllerFactories difficulty x y z manualSets autoSets @autoTurretTargets ")
 	fun ai(
 		sender: Player,
 		controller: AIControllerFactory,
@@ -143,6 +143,7 @@ object AIDebugCommand : SLCommand() {
 		sender: Player,
 	) {
 		AIDebugModule.canShipsMove = !AIDebugModule.canShipsMove
+		sender.information("Toggled movements to ${AIDebugModule.canShipsMove}")
 	}
 
 	@Subcommand("toggle rotation")
@@ -151,6 +152,25 @@ object AIDebugCommand : SLCommand() {
 		sender: Player,
 	) {
 		AIDebugModule.canShipsRotate = !AIDebugModule.canShipsRotate
+		sender.information("Toggled rotations to ${AIDebugModule.canShipsRotate}")
+	}
+
+	@Subcommand("toggle showAims")
+	@Suppress("unused")
+	fun toggleShowAims(
+		sender: Player,
+	) {
+		AIDebugModule.showAims = !AIDebugModule.showAims
+		sender.information("Toggled aim visualization to ${AIDebugModule.showAims}")
+	}
+
+	@Subcommand("toggle fireWeapons")
+	@Suppress("unused")
+	fun toggleFireWeapons(
+		sender: Player,
+	) {
+		AIDebugModule.fireWeapons = !AIDebugModule.fireWeapons
+		sender.information("Toggled weapons firing to ${AIDebugModule.fireWeapons}")
 	}
 
 
