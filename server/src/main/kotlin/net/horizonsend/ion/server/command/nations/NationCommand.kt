@@ -420,6 +420,7 @@ internal object NationCommand : SLCommand() {
 		VAULT_ECO.withdrawPlayer(sender, realCost.toDouble())
 
 		Territory.setNation(territory.id, nationId)
+		Territory.setMinBuildAccess(territory.id, Settlement.ForeignRelation.NATION_MEMBER)
 
 		sender.rewardAchievement(Achievement.CREATE_OUTPOST)
 
@@ -449,6 +450,7 @@ internal object NationCommand : SLCommand() {
 		failIf(regionTerritory.nation != nationId) { "$territoryName is not claimed by your nation" }
 
 		Territory.setNation(regionTerritory.id, null)
+		Territory.setMinBuildAccess(regionTerritory.id, Settlement.ForeignRelation.NONE)
 
 		val nationName = getNationName(nationId)
 		Notify.chatAndEvents(nationImportantMessageFormat(
@@ -458,6 +460,37 @@ internal object NationCommand : SLCommand() {
 			territoryWorld,
 			nationName
 		))
+	}
+
+	@Subcommand("set minbuildaccess")
+	@CommandCompletion("NONE|ALLY|NATION_MEMBER|STRICT")
+	@Description("Change your nation territory's minimum build access level")
+	fun onSetMinBuildAccess(sender: Player, territory: String, accessLevel: Settlement.ForeignRelation): Unit = asyncCommand(sender) {
+		val nationId = requireNationIn(sender)
+		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
+
+		val regionTerritory = Regions.getAllOf<RegionTerritory>()
+			.firstOrNull { it.name.equals(territory, ignoreCase = true) }
+			?: fail { "Territory $territory not found" }
+		val territoryName = regionTerritory.name
+		val territoryWorld = regionTerritory.world
+
+		failIf(regionTerritory.nation != nationId) { "$territoryName is not claimed by your nation" }
+
+		failIf(accessLevel == Settlement.ForeignRelation.SETTLEMENT_MEMBER) { "Access level cannot be ${Settlement.ForeignRelation.SETTLEMENT_MEMBER}" }
+
+		Territory.setMinBuildAccess(regionTerritory.id, accessLevel)
+		Notify.nationCrossServer(nationId, text("${sender.name} changed the territory $territoryName (on world $territoryWorld)'s min build access to $accessLevel"))
+
+		val description = when (accessLevel) {
+			Settlement.ForeignRelation.NONE -> "Anyone, even nationless and settlementless people (should probably NEVER select this)"
+			Settlement.ForeignRelation.ALLY -> "Anyone who is a nation ally, nation member, or settlement member"
+			Settlement.ForeignRelation.NATION_MEMBER -> "Anyone who is a nation member"
+			Settlement.ForeignRelation.SETTLEMENT_MEMBER -> "Anyone who is a settlement member"
+			Settlement.ForeignRelation.STRICT -> "No default permission, only people with explicit access from e.g. a role"
+		}
+
+		sender.success("Changed min build access to $accessLevel. Description: $description")
 	}
 
 	@Subcommand("top|list")
