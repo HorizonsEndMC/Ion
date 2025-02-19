@@ -859,7 +859,7 @@ object DataMigrators : IonServerComponent() {
 	}
 
 	fun migrateInventory(inventory: Inventory, versions: List<DataVersion>) {
-		if (inventory.holder is CraftBlockInventoryHolder || inventory.holder is ChestGui) return
+		if (inventory.holder is CraftBlockInventoryHolder || inventory.holder is ChestGui || inventory.holder == null) return
 
 		for (dataVersion in versions) {
 			dataVersion.migrateInventory(inventory)
