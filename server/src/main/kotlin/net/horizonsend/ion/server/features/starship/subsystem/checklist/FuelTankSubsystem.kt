@@ -34,7 +34,7 @@ class FuelTankSubsystem(starship: ActiveStarship, sign: Sign, multiblock: FuelTa
 
 		if (fuelCanisters.isEmpty()) return 0
 
-		val byFuel = fuelCanisters.map { it to GAS_CANISTER_HYDROGEN.getFill(it) }.sortedByDescending { it.second }
+		val byFuel = fuelCanisters.map { it to GAS_CANISTER_HYDROGEN.getFill(it) }.sortedBy { it.second }
 
 		for ((itemStack, fuelAmount) in byFuel) {
 			val toRemove = min(remaining, fuelAmount)

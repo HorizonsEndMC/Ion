@@ -233,7 +233,7 @@ object CustomItemRegistry : IonServerComponent() {
 	val TITANIUM_BLOCK: CustomBlockItem = registerIngotBlock("TITANIUM_BLOCK", "titanium", block = CustomBlocks::TITANIUM_BLOCK)
 	val RAW_TITANIUM_BLOCK: CustomBlockItem = registerRawBlock("RAW_TITANIUM_BLOCK", "titanium", block = CustomBlocks::RAW_TITANIUM_BLOCK)
 
-	val URANIUM = registerOreIngot(identifier = "URANIUM", name = "uranium", true)
+	val URANIUM = registerOreIngot(identifier = "URANIUM", name = "uranium", false)
 	val RAW_URANIUM = registerRawOre(identifier = "RAW_URANIUM", name = "uranium", smeltingResult = CustomItemRegistry::URANIUM)
 	val URANIUM_ORE: CustomBlockItem = registerOreBlock(identifier = "URANIUM_ORE", name = "uranium", block = CustomBlocks::URANIUM_ORE, smeltingResult = CustomItemRegistry::URANIUM)
 	val URANIUM_BLOCK: CustomBlockItem = registerIngotBlock(identifier = "URANIUM_BLOCK", name = "uranium", block = CustomBlocks::URANIUM_BLOCK)

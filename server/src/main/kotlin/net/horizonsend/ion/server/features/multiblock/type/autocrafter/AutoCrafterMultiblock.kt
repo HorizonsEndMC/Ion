@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.multiblock.type.autocrafter
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
+import net.horizonsend.ion.server.data.migrator.DataMigrators
+import net.horizonsend.ion.server.data.migrator.DataMigrators.migrateInventory
 import net.horizonsend.ion.server.features.machine.PowerMachines
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockShape
@@ -136,7 +138,11 @@ abstract class AutoCrafterMultiblock(
 		if (furnace.inventory.fuel?.type != Material.PRISMARINE_CRYSTALS) return
 
 		val input: InventoryHolder = getInput(sign) ?: return
+		migrateInventory(input.inventory, DataMigrators.getVersions(0))
+
 		val recipeHolder: InventoryHolder = getRecipeHolder(sign) ?: return
+		migrateInventory(recipeHolder.inventory, DataMigrators.getVersions(0))
+
 		val output: InventoryHolder = getOutput(sign) ?: return
 
 		// material data of each item in the recipe holder, used as the crafting grid

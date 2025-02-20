@@ -202,30 +202,37 @@ object CustomItemListeners : SLEventListener() {
 	 **/
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun allowLessIdealMaterials(event: PrepareItemCraftEvent) {
-		// Disallow recusion from setting the items
-		val trace = Thread.currentThread().stackTrace
-		if (trace.any { element -> element.methodName.contains("setMatrix") }) return
-
-		val currentItems = event.inventory.matrix
-		val toReplace = mutableMapOf<ItemStack, ItemStack>()
-
-		val stockCustomItems = Array(currentItems.size) {
-			val item = currentItems[it]
-			val customItem = item?.customItem
-			if (customItem == null) return@Array item ?: ItemStack.empty()
-			val ideal = customItem.constructItemStack(item.amount)
-			if (ideal == item) return@Array item
-			toReplace[item] = ideal
-			ideal
-		}
-
-		val recipe = runCatching { Bukkit.getCraftingRecipe(stockCustomItems, Bukkit.getWorlds().first()) }.getOrNull()
-		if (recipe == null) return
-
-		event.inventory.matrix = Array(event.inventory.matrix.size) {
-			val current = event.inventory.matrix[it] ?: return@Array null
-			toReplace[current] ?: current
-		}
+//		// Disallow recusion from setting the items
+//		val trace = Thread.currentThread().stackTrace
+//		if (trace.any { element -> element.methodName.contains("setMatrix") }) return
+//
+//		val currentItems = event.inventory.matrix
+//		val toReplace = mutableMapOf<ItemStack, ItemStack>()
+//
+//		val stockCustomItems = Array(currentItems.size) {
+//			val item = currentItems[it] ?: return@Array ItemStack.empty()
+//			val customItem = item.customItem ?: return@Array item
+//
+//			if (customItem.hasComponent(CustomComponentTypes.POWER_STORAGE)) {
+//				val powerStorageComponent = customItem.getComponent(CustomComponentTypes.POWER_STORAGE)
+//
+//				// if one of these items is using a custom item that holds power and is not fully charged, prevent the craft
+//				if (powerStorageComponent.getPower(item) < powerStorageComponent.getMaxPower(customItem, item)) return
+//			}
+//
+//			val ideal = customItem.constructItemStack(item.amount)
+//			if (ideal == item) return@Array item
+//			toReplace[item] = ideal
+//			ideal
+//		}
+//
+//		val recipe = runCatching { Bukkit.getCraftingRecipe(stockCustomItems, Bukkit.getWorlds().first()) }.getOrNull()
+//		if (recipe == null) return
+//
+//		event.inventory.matrix = Array(event.inventory.matrix.size) {
+//			val current = event.inventory.matrix[it] ?: return@Array null
+//			toReplace[current] ?: current
+//		}
 	}
 
 	@EventHandler

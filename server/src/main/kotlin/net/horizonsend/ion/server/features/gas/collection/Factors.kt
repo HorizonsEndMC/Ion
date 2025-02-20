@@ -49,7 +49,7 @@ data class HeightRamp(
     val maxWeight: DoubleAmount
 ) : ChildFactor {
 	override fun modifyFactor(location: Location, previousResult: Int): Int {
-		if (location.y < minHeight.get() || location.y > maxHeight.get()) return previousResult
+		if (location.y < minHeight.get() || location.y > maxHeight.get()) return 0
 
 		val slope = (maxWeight.get() - minWeight.get()) / (maxHeight.get() - minHeight.get())
 		val ramp = ((location.y - minHeight.get()) * slope) + minWeight.get()

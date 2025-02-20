@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.misc
 
+import net.horizonsend.ion.server.data.migrator.DataMigrators
+import net.horizonsend.ion.server.data.migrator.DataMigrators.migrateInventory
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.multiblock.type.hyperdrive.HyperdriveMultiblock
@@ -26,6 +28,8 @@ class HyperdriveSubsystem(starship: ActiveStarship, sign: Sign, multiblock: Hype
 
 	fun useFuel(): Unit = getHoppers().forEach { hopper ->
 		var remaining = Hyperspace.HYPERMATTER_AMOUNT
+		migrateInventory(hopper.inventory, DataMigrators.getVersions(0))
+
 		for (item: ItemStack? in hopper.inventory) {
 			if (item == null) {
 				continue

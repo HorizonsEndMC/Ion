@@ -259,8 +259,11 @@ object FleetCommand : SLCommand() {
             return
         }
 
+        val x = xCoordinate.toIntOrNull() ?: fail { "Invalid X or Z coordinate! Must be a number." }
+        val z = zCoordinate.toIntOrNull() ?: fail { "Invalid X or Z coordinate! Must be a number." }
+
         fleet.information("Fleet Commander issuing fleet jump command")
-        fleet.jumpFleet(xCoordinate.toInt(), zCoordinate.toInt())
+        fleet.jumpFleet(x, z)
         sender.success("Jumping fleet")
     }
 
