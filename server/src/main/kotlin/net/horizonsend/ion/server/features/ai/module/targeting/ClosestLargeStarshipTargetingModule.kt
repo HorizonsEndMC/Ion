@@ -9,10 +9,10 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 class ClosestLargeStarshipTargetingModule(
     controller: AIController,
     var maxRange: Double,
+	targetAI : Boolean = false,
     existingTarget: AITarget? = null,
-    private val targetAI: Boolean = false,
     private val focusRange: Double = 0.0
-) : TargetingModule(controller) {
+) : TargetingModule(controller,targetAI) {
     init {
         lastTarget = existingTarget
     }

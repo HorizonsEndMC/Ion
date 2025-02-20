@@ -8,9 +8,10 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 
 class ClosestSmallStarshipTargetingModule(
     controller: AIController,
+	targetAI : Boolean = false,
     var maxRange: Double,
     existingTarget: AITarget? = null
-) : TargetingModule(controller) {
+) : TargetingModule(controller,targetAI) {
     private var lastDamaged: Long = 0
 
     init {
@@ -29,8 +30,9 @@ class ClosestSmallStarshipTargetingModule(
     }
 
     override fun searchForTargetList(): List<AITarget> {
+		val map = if (!targetAI) sortMap else aiSortMap
         return controller.getNearbyTargetsInRadius(0.0, maxRange) {
-            targetFilter(it,false)
+            targetFilter(it,targetAI)
         }.sortedWith(
             Comparator { o1, o2 ->
                 // if both objects are not StarshipTargets, maintain order
@@ -59,4 +61,13 @@ class ClosestSmallStarshipTargetingModule(
         StarshipType.TRANSPORT to 1,
         StarshipType.LIGHT_FREIGHTER to 2
     )
+
+	private val aiSortMap = mapOf(
+		StarshipType.AI_STARFIGHTER to 0,
+		StarshipType.AI_GUNSHIP to 1,
+		StarshipType.AI_CORVETTE to 2,
+		StarshipType.AI_SHUTTLE to 0,
+		StarshipType.AI_TRANSPORT to 1,
+		StarshipType.AI_LIGHT_FREIGHTER to 2
+	)
 }

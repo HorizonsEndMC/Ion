@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai
 
+import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.ai.module.AIModule
-import net.horizonsend.ion.server.features.ai.module.steering.SteeringSolverModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
@@ -18,16 +18,16 @@ import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlight
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.sortedByValue
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Color
 import org.bukkit.World
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockState
-import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 import kotlin.reflect.KClass
@@ -109,11 +109,25 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 		return manualWeaponSets.filter { it.engagementRange.containsDouble(distance) }
 	}
 
+	fun addManualSet(name: String, minRange: Double, maxRange: Double) {
+		manualWeaponSets.add(WeaponSet(name,minRange,maxRange))
+	}
+
 	private val autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf()
 
 	/** Returns the weapon set that's range contains the specified distance */
-	fun getAutoSetInRange(distance: Double): WeaponSet? {
-		return autoWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }
+	fun getAutoSetsInRange(distance: Double): Set<WeaponSet> {
+		return autoWeaponSets.filter { it.engagementRange.containsDouble(distance) }.toSet()
+	}
+
+	fun addAutoSet(name: String, minRange: Double, maxRange: Double) {
+		autoWeaponSets.add(WeaponSet(name,minRange,maxRange))
+	}
+
+	private val specialWeaponSets: MutableSet<WeaponSet> = mutableSetOf()
+
+	fun addSpecialSet(name: String, minRange: Double, maxRange: Double) {
+		autoWeaponSets.add(WeaponSet(name,minRange,maxRange))
 	}
 
 	inline fun <reified T> getCoreModuleByType(): T? = coreModules.values.filterIsInstance<T>().firstOrNull()
@@ -187,6 +201,59 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 			.keys
 
 		return targets
+	}
+
+	fun validateWeaponSets() {
+		val starShipWeaponSets = starship.weaponSets.keys()
+		val union = (starShipWeaponSets
+			union manualWeaponSets.map { it.name.lowercase() }
+			union autoWeaponSets.map { it.name.lowercase() }
+			union specialWeaponSets.map { it.name.lowercase() })
+		debugAudience.information("starShipWeaponSets : ${starShipWeaponSets.joinToString { it }}")
+		debugAudience.information("union : ${union.joinToString { it }}")
+		var difference = union subtract starShipWeaponSets
+		if (difference.isNotEmpty()) {
+			debugAudience.alert("Weaponsets in the template not present on the starship! :")
+			debugAudience.alert(difference.joinToString { it })
+		}
+
+		difference = (union
+			subtract manualWeaponSets.map { it.name }.toSet()
+			subtract autoWeaponSets.map { it.name }.toSet()
+			subtract specialWeaponSets.map { it.name }.toSet())
+		if (difference.isNotEmpty()) {
+			debugAudience.alert("Weaponsets in the Starship not accounted for in the template! :")
+			debugAudience.alert(difference.joinToString { it })
+		}
+
+		debugAudience.information("Manual Weaponsets:")
+		for (weaponSet in manualWeaponSets) {
+			val name = weaponSet.name.lowercase()
+			if (!starShipWeaponSets.contains(name)) {
+				debugAudience.alert(weaponSet.toString())
+				continue
+			}
+			debugAudience.information(weaponSet.toString())
+			val weapons = starship.weaponSets[name]
+			if (weapons.any { it is AutoWeaponSubsystem }) {
+				debugAudience.alert("weaponset has auto weapons, is this okay?")
+				debugAudience.alert(weapons.joinToString { it.name })
+			}
+		}
+		debugAudience.information("Auto Weaponsets:")
+		for (weaponSet in autoWeaponSets) {
+			val name = weaponSet.name.lowercase()
+			if (!starShipWeaponSets.contains(name)) {
+				debugAudience.alert(weaponSet.toString())
+				continue
+			}
+			debugAudience.information(weaponSet.toString())
+			val weapons = starship.weaponSets[name]
+			if (weapons.any { it !is AutoWeaponSubsystem }) {
+				debugAudience.alert("weaponset has manual weapons!")
+				debugAudience.alert(weapons.joinToString { it.name })
+			}
+		}
 	}
 
 	override fun toString(): String {

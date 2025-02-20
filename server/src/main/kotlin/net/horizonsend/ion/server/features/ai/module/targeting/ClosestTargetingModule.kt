@@ -1,15 +1,15 @@
 package net.horizonsend.ion.server.features.ai.module.targeting
 
 import net.horizonsend.ion.server.features.ai.util.AITarget
-import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 
 class ClosestTargetingModule(
 	controller: AIController,
+	targetAI : Boolean = false,
 	var maxRange: Double,
 	existingTarget: AITarget? = null
-) : TargetingModule(controller) {
+) : TargetingModule(controller, targetAI) {
 	private var lastDamaged: Long = 0
 
 	init {
@@ -28,6 +28,6 @@ class ClosestTargetingModule(
 	}
 
 	override fun searchForTargetList(): List<AITarget> {
-		return controller.getNearbyTargetsInRadius(0.0, maxRange) { targetFilter(it,false) }.toList()
+		return controller.getNearbyTargetsInRadius(0.0, maxRange) { targetFilter(it,targetAI) }.toList()
 	}
 }

@@ -28,6 +28,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.AISpawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.kyori.adventure.text.Component.text
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -93,6 +94,7 @@ object AIDebugCommand : SLCommand() {
 		sender: Player,
 		controller: AIControllerFactory,
 		@Optional difficulty: Int?,
+		@Optional targetAI: Boolean?,
 		@Optional manualSets: String?,
 		@Optional autoSets: String?,
 	) {
@@ -105,8 +107,12 @@ object AIDebugCommand : SLCommand() {
 			text("Player Created AI Ship"),
 			Configuration.parse<WeaponSetsCollection>(manualSets ?: "{}").sets,
 			Configuration.parse<WeaponSetsCollection>(autoSets ?: "{}").sets,
-			difficulty ?: 3
+			difficulty ?: 3,
+			targetAI ?: false
 		)
+
+		AIControlUtils.guessWeaponSets(starship,newController)
+		newController.validateWeaponSets()
 
 		starship.setController(newController)
 

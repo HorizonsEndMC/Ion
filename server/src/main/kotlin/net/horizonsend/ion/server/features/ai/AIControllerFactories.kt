@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.module.misc.ContactsJammerModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.misc.GravityWellModule
-import net.horizonsend.ion.server.features.ai.module.misc.TrackingModule
 import net.horizonsend.ion.server.features.ai.module.steering.BasicSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.CapitalSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.DistancePositioningModule
@@ -43,10 +42,15 @@ object AIControllerFactories : IonServerComponent() {
 	val aiSteeringConfig get() = ConfigurationFiles.aiSteeringConfiguration()
 
 	val starfighter = registerFactory("STARFIGHTER") {
-		setCoreModuleBuilder { controller: AIController, difficulty ->
+		setCoreModuleBuilder { controller: AIController, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(controller, 500.0, null).apply { sticky = false })
+			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(
+				controller,
+				targetAI,
+				maxRange = 500.0,
+				existingTarget = null
+			).apply { sticky = false })
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			val aiming = builder.addModule(AimingModule::class, AimingModule(controller,difficultyManager))
@@ -80,10 +84,15 @@ object AIControllerFactories : IonServerComponent() {
 	}
 
 	val gunship = registerFactory("GUNSHIP") {
-		setCoreModuleBuilder { controller, difficulty ->
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(controller, 500.0, null).apply { sticky = false })
+			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(
+				controller,
+				targetAI,
+				maxRange = 500.0,
+				existingTarget = null
+			).apply { sticky = false })
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			val aiming = builder.addModule(AimingModule::class, AimingModule(controller,difficultyManager))
@@ -117,10 +126,15 @@ object AIControllerFactories : IonServerComponent() {
     }
 
 	val goonship = registerFactory("GOONSHIP") {
-		setCoreModuleBuilder { controller, difficulty ->
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(controller, 500.0, null).apply { sticky = false })
+			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(
+				controller,
+				targetAI,
+				maxRange = 500.0,
+				existingTarget = null
+			).apply { sticky = false })
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			val aiming = builder.addModule(AimingModule::class, AimingModule(controller,difficultyManager))
@@ -152,7 +166,7 @@ object AIControllerFactories : IonServerComponent() {
 	}
 
 	val jammingGunship = registerFactory("JAMMING_GUNSHIP") {
-		setCoreModuleBuilder { controller, difficulty ->
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 			val targeting = builder.addModule(TargetingModule::class, ClosestPlayerTargetingModule(controller, 5000.0))
 
@@ -189,10 +203,15 @@ object AIControllerFactories : IonServerComponent() {
 	}
 
 	val corvette = registerFactory("CORVETTE") {
-		setCoreModuleBuilder { controller, difficulty ->
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(controller, 500.0, null).apply { sticky = false })
+			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(
+				controller,
+				targetAI,
+				maxRange = 500.0,
+				existingTarget = null
+			).apply { sticky = false })
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			val aiming = builder.addModule(AimingModule::class, AimingModule(controller,difficultyManager))
@@ -227,10 +246,15 @@ object AIControllerFactories : IonServerComponent() {
 	}
 
 	val interdictionCorvette = registerFactory("INTERDICTION_CORVETTE") {
-		setCoreModuleBuilder { controller, difficulty ->
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(controller, 2000.0, null).apply { sticky = false })
+			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(
+				controller,
+				targetAI,
+				maxRange = 2000.0,
+				existingTarget = null
+			).apply { sticky = false })
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			val aiming = builder.addModule(AimingModule::class, AimingModule(controller,difficultyManager))
 			builder.addModule(CombatModule::class, StarfighterCombatModule(controller, difficultyManager,aiming, targeting::findTarget))
@@ -265,10 +289,15 @@ object AIControllerFactories : IonServerComponent() {
 	}
 
 	val logisticCorvette = registerFactory("LOGISTIC_CORVETTE") {
-		setCoreModuleBuilder { controller, difficulty ->
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			val targeting = builder.addModule(TargetingModule::class, ClosestLargeStarshipTargetingModule(controller, 2000.0, null, true).apply { sticky = false })
+			val targeting = builder.addModule(TargetingModule::class, ClosestLargeStarshipTargetingModule(
+				controller,
+				2000.0,
+				true,
+				existingTarget = null
+			).apply { sticky = false })
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			val aiming = builder.addModule(AimingModule::class, AimingModule(controller,difficultyManager))
 			builder.addModule(CombatModule::class, MultiTargetFrigateCombatModule(controller, difficultyManager,toggleRandomTargeting = false, aiming) { targeting.findTargets() })
@@ -303,10 +332,15 @@ object AIControllerFactories : IonServerComponent() {
 	}
 
 	val miniFrigate = registerFactory("MINI_FRIGATE") {//for 4.9k ships
-		setCoreModuleBuilder { controller, difficulty ->
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(controller, 1500.0, null).apply { sticky = true })
+			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(
+				controller,
+				targetAI,
+				maxRange = 1500.0,
+				existingTarget = null
+			).apply { sticky = true })
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			val aiming = builder.addModule(AimingModule::class, AimingModule(controller,difficultyManager))
 			builder.addModule(CombatModule::class, FrigateCombatModule(controller, difficultyManager, toggleRandomTargeting = true,aiming, targeting::findTarget))
@@ -340,10 +374,15 @@ object AIControllerFactories : IonServerComponent() {
 	}
 
 	val frigate = registerFactory("FRIGATE") {
-        setCoreModuleBuilder { controller, difficulty ->
+        setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(controller, 1500.0, null).apply { sticky = true })
+			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(
+				controller,
+				targetAI,
+				maxRange = 1500.0,
+				existingTarget = null
+			).apply { sticky = true })
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			val aiming = builder.addModule(AimingModule::class, AimingModule(controller,difficultyManager))
 			builder.addModule(CombatModule::class, FrigateCombatModule(controller, difficultyManager, toggleRandomTargeting = true,aiming, targeting::findTarget))
@@ -375,10 +414,15 @@ object AIControllerFactories : IonServerComponent() {
     }
 
 	val advancedFrigate = registerFactory("ADVANCED_FRIGATE") {
-        setCoreModuleBuilder { controller, difficulty ->
+        setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			val targeting = builder.addModule(TargetingModule::class, ClosestSmallStarshipTargetingModule(controller, 700.0, null).apply { sticky = true })
+			val targeting = builder.addModule(TargetingModule::class, ClosestSmallStarshipTargetingModule(
+				controller,
+				targetAI,
+				maxRange = 700.0,
+				existingTarget = null
+			).apply { sticky = true })
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			val aiming = builder.addModule(AimingModule::class, AimingModule(controller,difficultyManager))
 			builder.addModule(CombatModule::class, MultiTargetFrigateCombatModule(controller, difficultyManager, toggleRandomTargeting = true,aiming, targeting::findTargets))
@@ -411,10 +455,15 @@ object AIControllerFactories : IonServerComponent() {
 	}
 
 	val destroyer = registerFactory("DESTROYER") {
-		setCoreModuleBuilder { controller, difficulty ->
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(controller, 5000.0, null).apply { sticky = true })
+			val targeting = builder.addModule(TargetingModule::class, ClosestTargetingModule(
+				controller,
+				targetAI,
+				maxRange = 5000.0,
+				existingTarget = null
+			).apply { sticky = true })
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			val aiming = builder.addModule(AimingModule::class, AimingModule(controller,difficultyManager))
 			builder.addModule(CombatModule::class, FrigateCombatModule(controller, difficultyManager, toggleRandomTargeting = true,aiming, targeting::findTarget))
@@ -447,10 +496,15 @@ object AIControllerFactories : IonServerComponent() {
 	}
 
 	val advancedDestroyer = registerFactory("ADVANCED_DESTROYER") {
-		setCoreModuleBuilder { controller, difficulty ->
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			val targeting = builder.addModule(TargetingModule::class, ClosestLargeStarshipTargetingModule(controller, 5000.0, null).apply { sticky = true })
+			val targeting = builder.addModule(TargetingModule::class, ClosestLargeStarshipTargetingModule(
+				controller,
+				5000.0,
+				targetAI,
+				existingTarget = null
+			).apply { sticky = true })
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			val aiming = builder.addModule(AimingModule::class, AimingModule(controller,difficultyManager))
 			builder.addModule(CombatModule::class, MultiTargetFrigateCombatModule(controller, difficultyManager, toggleRandomTargeting = false,aiming, targeting::findTargets))
@@ -483,10 +537,16 @@ object AIControllerFactories : IonServerComponent() {
 	}
 
 	val battlecruiser = registerFactory("BATTLECRUISER") {
-		setCoreModuleBuilder { controller, difficulty ->
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			val targeting = builder.addModule(TargetingModule::class, ClosestLargeStarshipTargetingModule(controller, 5000.0, null, focusRange = 200.0).apply { sticky = true })
+			val targeting = builder.addModule(TargetingModule::class, ClosestLargeStarshipTargetingModule(
+				controller,
+				5000.0,
+				targetAI,
+				existingTarget = null,
+				focusRange = 200.0
+			).apply { sticky = true })
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			val aiming = builder.addModule(AimingModule::class, AimingModule(controller,difficultyManager))
 			builder.addModule(CombatModule::class, FrigateCombatModule(controller, difficultyManager, toggleRandomTargeting = true,aiming, targeting::findTarget))
@@ -553,11 +613,11 @@ object AIControllerFactories : IonServerComponent() {
 			Optional.empty()
 		}
 
-		setCoreModuleBuilder { controller, difficulty ->
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
 			// Combat handling
-			val targeting = builder.addModule(TargetingModule::class, HighestDamagerTargetingModule(controller))
+			val targeting = builder.addModule(TargetingModule::class, HighestDamagerTargetingModule(controller, targetAI,))
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 			val aiming = builder.addModule(AimingModule::class, AimingModule(controller,difficultyManager))
 			builder.addModule(CombatModule::class, DefensiveCombatModule(controller ,difficultyManager,aiming, targeting::findTarget))

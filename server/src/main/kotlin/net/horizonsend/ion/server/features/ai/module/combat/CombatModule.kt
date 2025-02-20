@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.ai.module.combat
 
-import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
@@ -17,11 +16,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import java.util.function.Supplier
-import kotlin.math.PI
-import kotlin.math.acos
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sin
 
 abstract class CombatModule<T>(
 	controller: AIController,
@@ -109,10 +103,14 @@ abstract class CombatModule<T>(
 			AIControlUtils.unSetAllWeapons(controller)
 			return
 		}
-
 		val (x, y, z) = origin
 		val distance = target.getVec3i(false).distance(x, y, z)
-		val weaponSet = controller.getAutoSetInRange(distance)
+		var weaponSets : Set<AIStarshipTemplate.WeaponSet?> = controller.getAutoSetsInRange(distance)
+		if (weaponSets.isEmpty()) weaponSets = setOf(null)
+		weaponSets.forEach { handleAutoWeapon(it,origin,target) }
+	}
+
+	private fun handleAutoWeapon(weaponSet: AIStarshipTemplate.WeaponSet?, origin: Vec3i, target: AITarget) {
 
 		if (weaponSet == null) {
 			AIControlUtils.unSetAllWeapons(controller)

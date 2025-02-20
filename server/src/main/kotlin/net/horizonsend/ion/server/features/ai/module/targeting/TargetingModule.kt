@@ -11,7 +11,10 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 
-abstract class TargetingModule(controller: AIController) : net.horizonsend.ion.server.features.ai.module.AIModule(controller) {
+abstract class TargetingModule(
+	controller: AIController,
+	protected val targetAI: Boolean = false
+) : net.horizonsend.ion.server.features.ai.module.AIModule(controller) {
 	/** Determines if the module should stick to a target once finding it */
 	var sticky: Boolean = false
 	var lastTarget: AITarget? = null

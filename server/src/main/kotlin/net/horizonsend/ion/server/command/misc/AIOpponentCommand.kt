@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.command.misc
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.success
@@ -42,26 +43,26 @@ object AIOpponentCommand : SLCommand() {
 	}
 
 	@Subcommand("summon")
-	fun summon(sender: Player, template: AITemplate) {
+	fun summon(sender: Player, template: AITemplate, @Optional difficulty : Int?, @Optional targetAI : Boolean?) {
 		val world = sender.world
 		failIf(!world.ion.hasFlag(WorldFlag.AI_ARENA)) { "AI Opponents may only be spawned in arena worlds!" }
 
 		sender.hint("Spawning ${template.starshipInfo.miniMessageName}")
 
-		summonShip(sender, template, null)
+		summonShip(sender, template, null,difficulty,targetAI)
 	}
 
 	@Subcommand("summon")
-	fun summon(sender: Player, template: AITemplate, x: Int, y: Int, z: Int) {
+	fun summon(sender: Player, template: AITemplate, x: Int, y: Int, z: Int, @Optional difficulty : Int?, @Optional targetAI : Boolean?) {
 		val world = sender.world
 		failIf(!world.ion.hasFlag(WorldFlag.AI_ARENA)) { "AI Opponents may only be spawned in arena worlds!" }
 
 		sender.hint("Spawning ${template.starshipInfo.miniMessageName}")
 
-		summonShip(sender, template, Vec3i(x, y, z))
+		summonShip(sender, template, Vec3i(x, y, z),difficulty,targetAI)
 	}
 
-	private fun summonShip(summoner: Player, template: AITemplate, vec: Vec3i?) {
+	private fun summonShip(summoner: Player, template: AITemplate, vec: Vec3i?, difficulty: Int?, targetAI: Boolean?) {
 		val location = vec?.toLocation(summoner.world) ?: summoner.location.add(summoner.location.direction.multiply(500.0))
 
 		Tasks.async {
@@ -79,10 +80,12 @@ object AIOpponentCommand : SLCommand() {
 							template.starshipInfo.componentName(),
 							template.starshipInfo.autoWeaponSets,
 							template.starshipInfo.manualWeaponSets,
-							template.difficulty.get()
+							difficulty ?: template.difficulty.get(),
+							targetAI ?: false
 						)
 
 						processController(summoner, controller)
+						controller.validateWeaponSets()
 						controller
 					},
 					""
