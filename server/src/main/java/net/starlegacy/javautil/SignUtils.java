@@ -34,7 +34,6 @@ public class SignUtils {
 		Component[] lines = readLines(nbt);
 		Map<String, Tag> tags;
 		tags = readPDC(nbt);
-
 		return new SignData(lines, tags);
 	}
 
@@ -109,12 +108,10 @@ public class SignUtils {
 				sign.getSide(Side.FRONT).line(i, lines[i]);
 			}
 
+			persistentDataValues.remove(NamespacedKeys.INSTANCE.getMULTIBLOCK_ENTITY_DATA().asString());
+
 			CraftPersistentDataContainer converted = new CraftPersistentDataContainer(persistentDataValues, DATA_TYPE_REGISTRY);
 			converted.copyTo(sign.getPersistentDataContainer(), true);
-
-			if (sign.getPersistentDataContainer().has(NamespacedKeys.INSTANCE.getPOWER())) {
-				// TODO
-			}
 
 			sign.update(false, false);
 		}
