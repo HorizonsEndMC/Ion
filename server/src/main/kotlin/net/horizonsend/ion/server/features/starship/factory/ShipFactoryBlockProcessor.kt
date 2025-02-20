@@ -8,10 +8,14 @@ import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFacto
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import net.horizonsend.ion.server.miscellaneous.utils.loadClipboard
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
 import net.minecraft.world.level.block.Rotation
+import net.minecraft.world.level.block.state.BlockState
+import net.starlegacy.javautil.SignUtils
+import net.starlegacy.javautil.SignUtils.SignData
 import org.bukkit.block.data.BlockData
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -26,6 +30,8 @@ abstract class ShipFactoryBlockProcessor(
 
 	// Use a RB tree map for key ordering.
 	protected val blockMap = Object2ObjectRBTreeMap<BlockKey, BlockData>()
+	protected val signMap = Object2ObjectRBTreeMap<BlockKey, SignData>()
+
 	protected val blockQueue = ArrayDeque<Long>()
 
 	protected open val clipboardNormalizationOffset: Vec3i = getClipboardOffset()
@@ -46,6 +52,11 @@ abstract class ShipFactoryBlockProcessor(
 			val worldKey = toBlockKey(toWorldCoordinates(vec3i))
 
 			blockMap[worldKey] = data
+
+			if (data.material.isSign) {
+				signMap[worldKey] = SignUtils.readSignData(baseBlock.nbt)
+			}
+
 			blockQueue.add(worldKey)
 		}
 	}
@@ -105,8 +116,8 @@ abstract class ShipFactoryBlockProcessor(
 		}
 	}
 
-	protected fun getRotatedBlockData(data: BlockData): BlockData {
+	protected fun getRotatedBlockData(data: BlockData): BlockState {
 		val rotation = getNMSRotation()
-		return data.nms.rotate(rotation).createCraftBlockData()
+		return data.nms.rotate(rotation)
 	}
 }
