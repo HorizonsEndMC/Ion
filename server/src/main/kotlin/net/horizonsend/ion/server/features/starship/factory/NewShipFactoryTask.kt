@@ -1,56 +1,257 @@
 package net.horizonsend.ion.server.features.starship.factory
 
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
+import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.toComponent
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
+import net.horizonsend.ion.server.features.starship.factory.StarshipFactories.missingMaterialsCache
+import net.horizonsend.ion.server.features.transport.items.util.ItemReference
+import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
+import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
+import net.horizonsend.ion.server.miscellaneous.utils.setNMSBlockData
+import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.starlegacy.javautil.SignUtils.SignData
+import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
+import java.util.concurrent.atomic.AtomicInteger
 
 class NewShipFactoryTask(
 	blueprint: Blueprint,
 	settings: ShipFactorySettings,
 	entity: ShipFactoryEntity,
+	private val inventories: Set<ShipFactoryEntity.InventoryReference>,
 	private val player: Player
 ) : ShipFactoryBlockProcessor(blueprint, settings, entity) {
+	val missingMaterials = mutableMapOf<PrintItem, AtomicInteger>()
 
 	fun tickProgress() {
-		if (isDisabled) return
+		// Blocks that are gonna be printed
+		val toPrint = mutableListOf<BlockKey>()
 
-		val first10 = blockQueue.take(entity.multiblock.blockPlacementsPerTick)
-		for (entry in first10) {
-			blockQueue.remove(entry)
-			blockMap.remove(entry)?.let {
-				debugSengBlock(it, toVec3i(entry), 0)
-//				println("Removed $it")
+		// Per multiblock print limit
+		val printLimit = entity.multiblock.blockPlacementsPerTick
+
+		// All items available in inventories
+		val availableItems = getAvailableItems()
+
+		var availableCredits = player.getMoneyBalance()
+
+		// Find the first blocks that can be placed with the available resources, up to the limit
+		for (key: BlockKey in blockQueue) {
+			if (toPrint.size >= printLimit) break
+			val blockData = blockMap[key] ?: continue
+
+			val vec3i = toVec3i(key)
+			if (entity.world.getBlockData(vec3i.x, vec3i.y, vec3i.z) == blockData) continue
+
+			val price = ShipFactoryMaterialCosts.getPrice(blockData)
+
+			areResourcesAvailable(availableItems, blockData) { result: Boolean, item, amount, resources ->
+				if (result && availableCredits >= price) {
+					// Mark as available to print
+					toPrint.add(key)
+
+					// Decrement available resources
+					resources.amount.addAndGet(-amount)
+
+					// If it were missing before, and is not now, it was likely added to the inventory
+					if (missingMaterials.containsKey(item)) {
+						val atomic = missingMaterials[item]
+
+						if (atomic != null) {
+							if (atomic.get() >= amount) atomic.addAndGet(-amount)
+						}
+					}
+
+					availableCredits -= price
+					return@areResourcesAvailable
+				}
+
+				missingMaterials.getOrPut(item) { AtomicInteger() }.addAndGet(amount)
 			}
 		}
 
-		if (blockMap.isEmpty()) entity.disable()
+		if (toPrint.isEmpty()) {
+			if (missingMaterials.isNotEmpty()) {
+				sendMissing(missingMaterials)
+			}
+
+			entity.disable()
+		}
+
+		Tasks.sync {
+			printBlocks(availableItems, missingMaterials, toPrint)
+		}
+
+		if (blockMap.isEmpty()) {
+			if (missingMaterials.isNotEmpty()) {
+				sendMissing(missingMaterials)
+			}
+
+			player.success("Ship factory has finished printing.")
+			entity.disable()
+		}
 	}
 
 	fun onEnable() {
 		loadBlockQueue()
 	}
 
-	private var isDisabled: Boolean = false
-
 	fun onDisable() {
 		println("Disabled task")
 	}
 
-	private fun debugSengBlock(data: BlockData, worldCoordinate: Vec3i, delay: Long) {
-		Tasks.syncDelay(delay) {
-			sendEntityPacket(
-				player,
-				displayBlock(player.world.minecraft, getRotatedBlockData(data), worldCoordinate.toCenterVector(), 0.75f, false),
-				30 * 20L
-			)
+	private fun printBlocks(availableItems: Map<PrintItem, AvailableItemInformation>, missingMaterials: MutableMap<PrintItem, AtomicInteger>, blocks: List<BlockKey>) {
+		var consumedMoney = 0.0
+
+		for (entry in blocks) {
+			blockQueue.remove(entry)
+			val blockData = blockMap.remove(entry) ?: continue
+			val signData = signMap.remove(entry)
+
+			val price = ShipFactoryMaterialCosts.getPrice(blockData)
+			if (!player.hasEnoughMoney(consumedMoney + price)) continue
+			consumedMoney += price
+
+			val printItem = PrintItem[blockData] ?: continue
+			val availabilityInfo = availableItems[printItem] ?: continue
+
+			val references = availabilityInfo.references
+			val missing = consumeItemFromReferences(references, StarshipFactories.getRequiredAmount(blockData))
+
+			if (missing > 0) {
+				missingMaterials.getOrPut(printItem) { AtomicInteger() }.addAndGet(missing)
+				continue
+			}
+
+			// If all good, place the block
+			placeBlock(entry, blockData, signData)
 		}
+
+		player.withdrawMoney(consumedMoney)
+	}
+
+	private fun placeBlock(location: BlockKey, data: BlockData, signData: SignData?) {
+		val (x, y, z) = toVec3i(location)
+		val world = entity.world
+		val block = world.getBlockAt(x, y, z)
+
+		world.setNMSBlockData(x, y, z, getRotatedBlockData(data))
+
+		val state = block.state as? Sign
+		if (state != null) {
+			signData?.applyTo(state)
+		}
+	}
+
+	private fun getAvailableItems(): Map<PrintItem, AvailableItemInformation> {
+		val items = mutableMapOf<PrintItem, AvailableItemInformation>()
+
+		for (inventoryReference in inventories) {
+			for ((index, item: ItemStack?) in inventoryReference.inventory.contents.withIndex()) {
+				if (item == null || item.type.isEmpty) continue
+				val printItem = PrintItem(item)
+
+				if (!inventoryReference.isAvailable(item)) {
+					continue
+				}
+
+				val information = items.getOrPut(printItem) { AvailableItemInformation(AtomicInteger(), mutableListOf()) }
+
+				information.amount.addAndGet(item.amount)
+				information.references.add(ItemReference(inventoryReference.inventory, index))
+			}
+		}
+
+		// If asked to leave one remaining, reduce the available items in each slot by 1 so they won't be consumed
+//		if (settings.leaveItemRemaining) {
+//			for ((_, information) in availableItems) {
+//				if (information.amount.get() > 0) information.amount.decrementAndGet()
+//			}
+//		}
+
+		return items
+	}
+
+	private fun areResourcesAvailable(
+		availableItems: Map<PrintItem, AvailableItemInformation>,
+		blockData: BlockData,
+		resultConsumer: (Boolean, PrintItem, Int, AvailableItemInformation) -> Unit = { _, _, _, _ -> }
+	): Boolean {
+		val printItem = PrintItem[blockData]
+		if (printItem == null) {
+			IonServer.slF4JLogger.warn("$blockData has no print item!")
+			return false
+		}
+
+		val required = StarshipFactories.getRequiredAmount(blockData)
+		val information = availableItems[printItem] ?: return false
+
+		if (information.amount.get() < required) {
+			resultConsumer.invoke(false, printItem, required, information)
+			return false
+		}
+
+		resultConsumer.invoke(true, printItem, required, information)
+		return true
+	}
+
+	private data class AvailableItemInformation(val amount: AtomicInteger, val references: MutableList<ItemReference>)
+
+	private fun sendMissing(missingMaterials: MutableMap<PrintItem, AtomicInteger>) {
+		missingMaterialsCache[player.uniqueId] = missingMaterials.mapValues { it.value.get() }
+
+		val sorted = missingMaterials.entries.toList().sortedBy { it.value.get() }
+
+		player.userError("Missing Materials: ")
+
+		player.sendMessage(
+			formatPaginatedMenu(
+			entries = sorted.size,
+			command = "/shipfactory listmissing",
+			currentPage = 1,
+		) { index ->
+			val (item, count) = sorted[index]
+
+			return@formatPaginatedMenu ofChildren(
+				item.toComponent(color = RED),
+				text(": ", DARK_GRAY),
+				text(count.get(), WHITE)
+			)
+		})
+	}
+
+	private fun consumeItemFromReferences(references: Collection<ItemReference>, amount: Int): Int {
+		var remaining = amount
+
+		for (reference in references) {
+			val item = reference.get() ?: continue
+			val stackAmount = item.amount
+
+			if (remaining >= stackAmount) {
+				remaining -= stackAmount
+				reference.inventory.setItem(reference.index, null)
+			} else {
+				val toRemove = minOf(stackAmount, remaining)
+				item.amount -= toRemove
+			}
+		}
+
+		return remaining
 	}
 }

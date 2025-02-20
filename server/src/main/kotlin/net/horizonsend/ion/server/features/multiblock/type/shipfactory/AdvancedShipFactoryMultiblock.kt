@@ -149,6 +149,31 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 			Vec3i(+2, -1, 1),
 		)
 
+		private val inventoryOffsets = arrayOf(
+			Vec3i(-2, 0, 1),
+			Vec3i(+2, 0, 1)
+		)
+
+		override fun getInventories(): Set<InventoryReference> {
+			val extractors =  getNetworkedExtractors()
+
+			val transportManager = manager.getTransportManager()
+			val itemCache = transportManager.itemPipeManager.cache
+
+			val base = inventoryOffsets.mapNotNullTo(mutableSetOf()) {
+				val inv = itemCache.getInventory(toBlockKey(it)) ?: return@mapNotNullTo null
+				InventoryReference.StandardInventoryReference(inv)
+			}
+
+			return extractors.flatMapTo(mutableSetOf()) { (machineKey, destinations) ->
+				destinations.flatMap { extractorKey ->
+					itemCache.getSources(extractorKey).map {
+						InventoryReference.RemoteInventoryReference(it, extractorKey, machineKey, this)
+					}
+				}
+			}.plus(base)
+		}
+
 		fun getNetworkedExtractors(): Map<BlockKey, Collection<BlockKey>> {
 			val transportManager = manager.getTransportManager()
 			val itemCacheHolder = transportManager.itemPipeManager
@@ -173,9 +198,6 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 
 		fun canRemoveFromDestination(destination: BlockKey, sourceLoc: BlockKey, stack: ItemStack): Boolean {
 			val localCacheHolder = manager.getTransportManager().itemPipeManager.getCacheHolderAt(destination) ?: return false
-			val destinationInventory = localCacheHolder.cache.getInventory(destination) ?: return false
-
-			if (!destinationInventory.containsAtLeast(stack, stack.amount)) return false
 			val singletonItem = stack.asOne()
 
 			val path = localCacheHolder.cache.findPath(

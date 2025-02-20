@@ -20,12 +20,15 @@ import net.horizonsend.ion.server.features.starship.factory.PreviewTask
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.canAccess
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
 import org.litote.kmongo.and
@@ -96,7 +99,7 @@ abstract class ShipFactoryEntity(
 
 		userManager.setUser(user)
 
-		task = NewShipFactoryTask(blueprint, settings, this, user)
+		task = NewShipFactoryTask(blueprint, settings,this, getInventories(), user)
 		task?.onEnable()
 	}
 
@@ -223,4 +226,24 @@ abstract class ShipFactoryEntity(
 	}
 
 	fun canEditSettings() = task == null
+
+	abstract fun getInventories(): Set<InventoryReference>
+
+	sealed interface InventoryReference {
+		val inventory: CraftInventory
+		fun isAvailable(itemStack: ItemStack): Boolean
+
+		data class StandardInventoryReference(override val inventory: CraftInventory): InventoryReference {
+			override fun isAvailable(itemStack: ItemStack): Boolean = true
+		}
+
+		data class RemoteInventoryReference(
+			override val inventory: CraftInventory,
+			val extractorKey: BlockKey,
+			val connectedFrom: BlockKey,
+			val entity: AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity
+		): InventoryReference {
+			override fun isAvailable(itemStack: ItemStack): Boolean = entity.canRemoveFromDestination(extractorKey, connectedFrom, itemStack)
+		}
+	}
 }
