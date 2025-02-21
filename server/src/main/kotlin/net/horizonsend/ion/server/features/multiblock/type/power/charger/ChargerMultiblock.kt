@@ -113,8 +113,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), EntityMul
 			val availablePower = powerStorage.getPower()
 			if (availablePower == 0) return
 
-			val item = furnaceInventory.fuel ?: return
-
+			val item = getItem(furnaceInventory) ?: return
 			val custom = item.customItem ?: return
 			if (!custom.hasComponent(CustomComponentTypes.POWER_STORAGE)) return
 
@@ -125,6 +124,16 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), EntityMul
 				furnaceInventory,
 				availablePower
 			)
+		}
+
+		fun getItem(furnaceInventory: FurnaceInventory): ItemStack? {
+			return furnaceInventory.smelting?.takeIf { fuelItem ->
+				val custom = fuelItem.customItem ?: return@takeIf false
+				custom.hasComponent(CustomComponentTypes.POWER_STORAGE)
+			} ?: furnaceInventory.fuel?.takeIf { fuelItem ->
+				val custom = fuelItem.customItem ?: return@takeIf false
+				custom.hasComponent(CustomComponentTypes.POWER_STORAGE)
+			}
 		}
 
 		private fun handleModern(
