@@ -503,6 +503,9 @@ enum class ChatChannel(
 			for (player in Bukkit.getOnlinePlayers()) {
 				if (!player.hasPermission("chat.channel.$name")) continue
 
+				val cached = PlayerCache.getIfOnline(player) ?: continue
+				if (cached.blockedPlayerIDs.contains(player.slPlayerId)) continue
+
 				player.sendMessage(message.buildChatComponent(
 					useLevelsPrefix = false,
 					useChannelPrefix = true,
