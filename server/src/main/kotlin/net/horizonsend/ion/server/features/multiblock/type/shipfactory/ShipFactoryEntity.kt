@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem.FeedbackItemResult
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.task.TaskHandlingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity
@@ -54,7 +55,7 @@ abstract class ShipFactoryEntity(
 	y,
 	z,
 	structureDirection
-), StatusTickedMultiblockEntity, AsyncTickingMultiblockEntity, UserManagedMultiblockEntity, DisplayMultiblockEntity {
+), StatusTickedMultiblockEntity, AsyncTickingMultiblockEntity, UserManagedMultiblockEntity, DisplayMultiblockEntity, TaskHandlingMultiblockEntity<NewShipFactoryTask> {
 	val settings = ShipFactorySettings.load(data)
 
 	override val userManager: UserManagedMultiblockEntity.UserManager = UserManagedMultiblockEntity.UserManager(data, persistent = false)
@@ -87,7 +88,7 @@ abstract class ShipFactoryEntity(
 		store.addAdditionalData(NamespacedKeys.BLUEPRINT_NAME, PersistentDataType.STRING, blueprintName)
 	}
 
-	var task: NewShipFactoryTask? = null
+	override var task: NewShipFactoryTask? = null
 
 	fun enable(user: Player) {
 		if (userManager.currentlyUsed()) return
@@ -98,17 +99,13 @@ abstract class ShipFactoryEntity(
 		if (!checkBlueprintPermissions(blueprint, user)) return
 
 		userManager.setUser(user)
-
-		task = NewShipFactoryTask(blueprint, settings,this, getInventories(), user)
-		task?.onEnable()
+		startTask(NewShipFactoryTask(blueprint, settings,this, getInventories(), user))
 	}
 
 	fun disable() {
 		if (!userManager.currentlyUsed()) return
 		userManager.clear()
-
-		task?.onDisable()
-		task = null
+		stopTask()
 	}
 
 	override fun tickAsync() {
@@ -120,7 +117,7 @@ abstract class ShipFactoryEntity(
 		if (!ensureBlueprintLoaded(player)) return
 		setStatus(Component.text(blueprintName))
 
-		task?.tickProgress()
+		task?.tick()
 	}
 
 	// Util section
