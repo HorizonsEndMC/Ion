@@ -223,6 +223,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		string == "~" -> originCoord
 
 		string.startsWith("~") -> parseNumber(string.removePrefix("~"), 0) + originCoord
+		string.endsWith("k") -> parseNumber(string.removeSuffix("k"), 0) * 1000
+		string.endsWith("K") -> parseNumber(string.removeSuffix("K"), 0) * 1000
 
 		else -> string.toIntOrNull() ?: fail { "&cInvalid X or Z coordinate! Must be a number." }
 	}
