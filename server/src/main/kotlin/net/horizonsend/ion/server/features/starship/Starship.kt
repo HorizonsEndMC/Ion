@@ -20,6 +20,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.gui.custom.starship.RenameButton.Companion.starshipNameSerializer
 import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
@@ -33,8 +34,12 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.UnpilotedController
-import net.horizonsend.ion.server.features.starship.control.input.DirectControlHandler
-import net.horizonsend.ion.server.features.starship.control.input.ShiftFlightHandler
+import net.horizonsend.ion.server.features.starship.control.input.AIDirectControlInput
+import net.horizonsend.ion.server.features.starship.control.input.AIShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectControlInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
+import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -43,6 +48,7 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotat
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.modules.PlayerShipSinkMessageFactory
 import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
+import net.horizonsend.ion.server.features.starship.movement.KinematicEstimator
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipBlockedException
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
@@ -73,6 +79,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
@@ -84,7 +91,9 @@ import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.TextDecoration
 import net.starlegacy.feature.starship.active.ActiveStarshipHitbox
 import org.bukkit.Bukkit
+import org.bukkit.Color
 import org.bukkit.Location
+import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
@@ -98,6 +107,7 @@ import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 import kotlin.math.cbrt
 import kotlin.math.ln
 import kotlin.math.max
@@ -140,6 +150,14 @@ class Starship (
 		controller.tick()
 
 		subsystems.forEach { it.tick() }
+		shiftKinematicEstimator.removeData()
+		cruiseKinematicEstimator.removeData()
+		if (forecastEnabled) {
+			displayForecast()
+		}
+		if (statsEnabled) {
+			logStatistics(this)
+		}
 	}
 
 	/** Called when a starship is removed. Any cleanup logic should be done here. */
@@ -301,11 +319,89 @@ class Starship (
 	// manual move is sneak/direct control
 	var lastManualMove = System.nanoTime() / 1_000_000
 
+
+	val shiftKinematicEstimator = KinematicEstimator(this, manualMoveCooldownMillis * 10,
+													 dataWeightFactor = 0.85, regulationfactor = 0.1, numTerms = 2)
+	val cruiseKinematicEstimator = KinematicEstimator(this, 20000L, numTerms = 3)
+
+	/** used for estimating a ships pos, vel and accel at any time t*/
+	fun forecast(time : Long, order : Int) : Vector{
+
+		if (order > 0) {
+			val shiftForecast = shiftKinematicEstimator.getDerivative(time,order)
+			val cruiseForecast = cruiseKinematicEstimator.getDerivative(time,order)
+			return shiftForecast.add(cruiseForecast)
+		}
+		// order is 0
+		// can get the best position prediction using the regressed position if the ship is only shift or cruise flying.
+		if (shiftKinematicEstimator.movements.isEmpty() || cruiseKinematicEstimator.movements.isEmpty()) {
+			val shiftForecast = shiftKinematicEstimator.getDerivative(time,order)
+			val cruiseForecast = cruiseKinematicEstimator.getDerivative(time,order)
+
+			//println("shift ref pos: ${shiftKinematicEstimator.referncePos}")
+			//println("cruise ref pos: ${cruiseKinematicEstimator.referncePos}")
+			//println("shift forcast: $shiftForecast")
+			//println("cruise forcast: $cruiseForecast")
+			val reference = if (shiftKinematicEstimator.referenceTime < cruiseKinematicEstimator.referenceTime) {
+				shiftKinematicEstimator.referncePos
+			} else {cruiseKinematicEstimator.referncePos}
+			val forecast = shiftForecast.clone().add(cruiseForecast).add(reference)
+			return forecast
+		}
+		// if not, well have to recalculate position from scratch using the current position
+		// dear god if ANYONE can figure out how to do this better than by all means, but after looking at this
+		//problem for an entire week and failing to do simple math, I give up
+		//I will give 100 USD for whoever can replace this curse code with a proper call to getDerivative(time,0)
+		val currentPos = centerOfMass.toVector()
+		val currentTime = System.currentTimeMillis()
+		if (abs(time - currentTime) <= 50) {
+			return  currentPos
+		}
+		// Get kinematics for the target time
+		val shiftKinematics = shiftKinematicEstimator.getKinematics(currentTime).toMutableList()
+		val cruiseKinematics = cruiseKinematicEstimator.getKinematics(currentTime)
+
+		//kill the acceleration in shift flying cause its basically inaccurate.
+		if (shiftKinematics.size >= 3) shiftKinematics.subList(2,shiftKinematics.size -1).replaceAll { Vector() }
+
+		// Ensure both lists are of the same size
+		val maxOrder = maxOf(shiftKinematics.size, cruiseKinematics.size)
+		val combinedKinematics: List<Vector>
+
+		// Combine derivatives additively
+		if (shiftKinematics.size >= cruiseKinematics.size) {
+			combinedKinematics = shiftKinematics
+			cruiseKinematics.forEachIndexed { i, it ->  combinedKinematics[i].add(it)}
+		} else {
+			combinedKinematics = cruiseKinematics
+			shiftKinematics.forEachIndexed { i, it ->  combinedKinematics[i].add(it)}
+		}
+
+
+
+		// Compute new position using Taylor series expansion
+		val timeDelta = (time - currentTime).toDouble() / 1000.0
+		var forecast = currentPos.clone()
+
+		for (order in 1 until maxOrder) { // Start from velocity (1st derivative)
+			val factor = (1..order).fold(1.0) { acc, i -> acc * i } // Factorial calculation
+			forecast.add(combinedKinematics[order].multiply(timeDelta.pow(order) / factor))
+		}
+		return  forecast
+	}
+
 	/**
 	 * Non-normalized vector containing the ships velocity
 	 * Used for target lead / speed estimations
 	 */
-	var velocity: Vector = Vector(0.0, 0.0, 0.0)
+	val velocity: Vector get() = forecast(System.currentTimeMillis(), 1)
+
+	/**
+	 * Non-normalized vector containing the ships acceleration
+	 * Used for target lead / speed estimations
+	 */
+	val accel: Vector get() = forecast(System.currentTimeMillis(), 2)
+
 
 	fun moveAsync(movement: StarshipMovement): CompletableFuture<Boolean> {
 		if (!ActiveStarships.isActive(this)) {
@@ -364,8 +460,7 @@ class Starship (
 
 	//region Direct Control
 	val isDirectControlEnabled: Boolean get() {
-		return controller is ActivePlayerController &&
-			(controller as ActivePlayerController).inputHandler is DirectControlHandler
+		return controller.movementHandler is DirectControlHandler
 	}
 
 	var directControlCenter: Location? = null
@@ -386,11 +481,19 @@ class Starship (
 	var directControlSlowExpiryFromHeavyLasers = 0L
 
 	fun setDirectControlEnabled(enabled: Boolean) {
-		if (controller !is ActivePlayerController) return
-		val controller = controller as ActivePlayerController
-
-		if (enabled) controller.inputHandler = DirectControlHandler(controller) else
-			controller.inputHandler = ShiftFlightHandler(controller)
+		when(controller) {
+			is ActivePlayerController -> {
+				val controller = controller as ActivePlayerController
+				if (enabled) controller.movementHandler = DirectControlHandler(controller, PlayerDirectControlInput(controller)) else
+					controller.movementHandler = ShiftFlightHandler(controller, PlayerShiftFlightInput(controller))
+			}
+			is AIController -> {
+				val controller = controller as AIController
+				if (enabled) controller.movementHandler = DirectControlHandler(controller, AIDirectControlInput(controller)) else
+					controller.movementHandler = ShiftFlightHandler(controller, AIShiftFlightInput(controller))
+			}
+			else -> return
+		}
 	}
 
 	//endregion
@@ -625,6 +728,36 @@ class Starship (
 	//endregion
 
 	fun isOversized() = this.initialBlockCount > this.type.maxSize && (this.initialBlockCount <= (this.type.maxSize * StarshipDetection.OVERSIZE_MODIFIER).toInt())
+
+	//Debugging tools
+
+	var forecastEnabled = false
+	var statsEnabled = false
+
+	private fun displayForecast() {
+		val endpoint = 5000
+		val interval = 1000
+		val particle = Particle.DUST
+		for (t in 0 .. endpoint step interval) {
+			val size = if(t == 0) 3.0f else 1.5f
+			val dustOptions = Particle.DustOptions(Color.GRAY, size,)
+			val pos = forecast(System.currentTimeMillis() + t, 0)
+			world.spawnParticle(particle,pos.x, pos.y, pos.z,1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
+		}
+	}
+
+	fun logStatistics(starship: Starship) {
+		if (!shiftKinematicEstimator.needsUpdate) return
+		println("---Stats for ${starship.getDisplayNamePlain()}---")
+		println("Current CoM : ${starship.centerOfMass}")
+		println("Estimated CoM : ${starship.forecast(System.currentTimeMillis(), 0)}")
+		println("Estimated velocity : ${starship.velocity}")
+		println("Estimated accel : ${starship.accel}")
+		println("Estimated Pos in 2 seconds : ${starship.forecast(System.currentTimeMillis() + 2000, 0)}")
+	}
+
+	//end Debug
+
 
 	init {
 		IonWorld[world].starships.add(this)

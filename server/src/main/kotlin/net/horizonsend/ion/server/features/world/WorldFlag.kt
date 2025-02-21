@@ -9,5 +9,6 @@ enum class WorldFlag {
     ALLOW_AI_SPAWNS,
 	AI_ARENA,
 	ARENA,
-	NO_SHIP_LOCKS
+	NO_SHIP_LOCKS,
+	NOT_SECURE
 }

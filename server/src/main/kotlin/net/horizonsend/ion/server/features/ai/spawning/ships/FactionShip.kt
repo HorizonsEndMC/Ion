@@ -16,17 +16,29 @@ class FactionShip(
 ) : SpawnedShip {
 	override val offsets: MutableList<Supplier<Vector>> = mutableListOf()
 	override var absoluteHeight: Double? = null
+	override var pilotName : Component? = null
 
-	override fun createController(logger: Logger, starship: ActiveStarship): AIController {
+	override fun createController(logger: Logger, starship: ActiveStarship, difficulty: Int): AIController {
 		val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
 
-		val controller = factory.invoke(starship, getName())
+		val controller = factory.invoke(
+			starship,
+			getName(difficulty),
+			template.starshipInfo.autoWeaponSets,
+			template.starshipInfo.manualWeaponSets,
+			difficulty
+		)
+
 		faction.controllerModifier.invoke(controller)
+		controller.validateWeaponSets()
 
 		return controller
 	}
 
-	override fun getName(): Component {
-		return faction.getAvailableName()
+	override fun getName(difficulty: Int): Component {
+		if (pilotName == null) {
+			pilotName = faction.getAvailableName(difficulty)
+		}
+		return pilotName!!
 	}
 }

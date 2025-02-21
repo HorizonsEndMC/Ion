@@ -75,6 +75,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -155,7 +156,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	fun onStopRiding(sender: Player) {
 		val starship = getStarshipRiding(sender)
 
-		failIf(starship is ActiveControlledStarship && starship.playerPilot == sender) {
+		failIf(starship.playerPilot == sender) {
 			"You can't stop riding if you're the pilot. Use /release or /unpilot."
 		}
 
@@ -620,8 +621,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			val size: Int = starship.initialBlockCount
 			totalBlocks += size
 
-			var worldName = starship.world.key.toString().substringAfterLast(":")
-				.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+			var worldName = starship.world.key.toString().substringAfterLast(":").replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
 			if (worldName == "Overworld") {
 				worldName = starship.world.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
@@ -632,14 +632,12 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 					val player = controller.player
 					val pilotNation = PlayerCache.getIfOnline(player)?.nationOid
 
-					val color = if (pilotNation != null && senderNation != null) {
-						RelationCache[senderNation, pilotNation].color
-					} else WHITE
+					val color = if (pilotNation != null && senderNation != null) RelationCache[senderNation, pilotNation].color else WHITE
 
-					controller.getPilotName().color(color)
+					text(controller.player.name, color)
 				}
 
-				else -> controller.getPilotName()
+				else -> controller.pilotName
 			}
 
 			val line = template(
@@ -647,7 +645,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				color = HE_LIGHT_GRAY,
 				paramColor = WHITE,
 				useQuotesAroundObjects = true,
-				if (pilot?.hasProtection() == true) text(" ★", NamedTextColor.GOLD) else Component.empty(),
+				if (pilot?.hasProtection() == true) text(" ★", GOLD) else Component.empty(),
 				starship.getDisplayName(),
 				name,
 				bracketed(text(starship.initialBlockCount, WHITE)),
