@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Material
 import org.bukkit.Material.AIR
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
@@ -145,6 +146,10 @@ class DecomposeTask(
 
 		// get drops BEFORE breaking
 		var drops: List<ItemStack> = block.drops.toList()
+
+		if (block.type == Material.END_PORTAL_FRAME) {
+			drops = listOf(ItemStack(Material.END_PORTAL_FRAME))
+		}
 
 		var customOre = false
 		OldOreData.entries.forEach { ore -> if (ore.blockData == (customBlock?.blockData ?: false)) customOre = true }
