@@ -35,9 +35,6 @@ class BoundingBoxTask(
 		}
 	}
 
-	fun disable() {
-	}
-
 	fun recalculate() {
 		clipboardNormalizationOffset = getClipboardOffset()
 		target = calculateTarget()
