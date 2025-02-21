@@ -131,10 +131,10 @@ abstract class AbstractDisposalMultiblock : Multiblock(), EntityMultiblock<Abstr
 
 object DisposalMultiblock : AbstractDisposalMultiblock() {
 	override val mirrored = false
-	override val displayName: Component = text("Incinerator ${if (mirrored) "(Mirrored)" else ""}")
+	override val displayName: Component = text("Incinerator${if (mirrored) "(Mirrored)" else ""}")
 }
 
 object DisposalMultiblockMirrored : AbstractDisposalMultiblock() {
 	override val mirrored = true
-	override val displayName: Component = text("Incinerator ${if (mirrored) "(Mirrored)" else ""}")
+	override val displayName: Component = text("Incinerator${if (mirrored) " (Mirrored)" else ""}")
 }
