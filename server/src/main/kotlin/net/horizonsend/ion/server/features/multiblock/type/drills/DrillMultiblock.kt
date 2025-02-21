@@ -229,7 +229,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 
 		private fun getBlocksToDestroy(): MutableList<Block> {
 			val toDestroy = getSquareRegion(offsetRight = 0, offsetUp = 0, offsetForward = 4, radius = multiblock.radius, depth = 1) {
-				it.type == Material.AIR || it.type == Material.BEDROCK
+				it.type.isAir || isBlacklisted(it)
 			}
 
 			val origin = getBlockRelative(0, 0, 4)
@@ -310,6 +310,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 					break
 				}
 			}
+
 			return broken
 		}
 	}
