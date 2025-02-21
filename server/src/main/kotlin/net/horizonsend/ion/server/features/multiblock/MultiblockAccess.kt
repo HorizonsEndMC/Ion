@@ -18,17 +18,23 @@ import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK
+import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
+import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
+import net.kyori.adventure.audience.Audience
 import org.bukkit.World
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.block.data.type.WallSign
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -282,7 +288,13 @@ object MultiblockAccess : IonServerComponent() {
 	@EventHandler(priority = EventPriority.MONITOR)
 	fun onPlayerBreakBlock(event: BlockBreakEvent) {
 		if (event.isCancelled) return
-		if (getBlockTypeSafe(event.block.world, event.block.x, event.block.y, event.block.z)?.isSign == false) return
+
+		if (getBlockTypeSafe(event.block.world, event.block.x, event.block.y, event.block.z)?.isSign == false) {
+			// If this is not a sign, it may support a sign
+			checkSurroundingBlocks(event.block, event.player)
+			return
+		}
+
 		val sign = event.block.state as? Sign ?: return
 
 		val origin = MultiblockEntity.getOriginFromSign(sign)
@@ -290,5 +302,22 @@ object MultiblockAccess : IonServerComponent() {
 		val removed = removeMultiblock(event.block.world, origin.x, origin.y, origin.z, sign.getFacing().oppositeFace) ?: return
 
 		event.player.information("Destroyed ${removed.name}")
+	}
+
+	private fun checkSurroundingBlocks(brokenBlock: Block, audience: Audience) {
+		for (face in ADJACENT_BLOCK_FACES) {
+			val positon = brokenBlock.getRelativeIfLoaded(face) ?: continue
+			val blockData = getBlockDataSafe(brokenBlock.world, positon.x, positon.y, positon.z) ?: continue
+
+			if (blockData is WallSign) Tasks.sync {
+				val postTickData = getBlockDataSafe(brokenBlock.world, positon.x, positon.y, positon.z) ?: return@sync
+				if (!postTickData.material.isAir) return@sync
+
+				val origin = MultiblockEntity.getOriginFromSignData(positon, blockData)
+				val removed = removeMultiblock(brokenBlock.world, origin.x, origin.y, origin.z, blockData.facing.oppositeFace) ?: return@sync
+
+				audience.information("Destroyed ${removed.name}")
+			}
+		}
 	}
 }

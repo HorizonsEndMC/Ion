@@ -21,6 +21,7 @@ import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
+import org.bukkit.block.data.type.WallSign
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.persistence.PersistentDataAdapterContext
@@ -284,6 +285,13 @@ abstract class MultiblockEntity(
 	}
 
 	companion object {
+		/** Get the multiblock's origin from its sign */
+		fun getOriginFromSignData(block: Block, sign: WallSign): Block {
+			val multiblockDirection = sign.facing.oppositeFace
+
+			return block.getRelative(multiblockDirection)
+		}
+
 		/** Get the multiblock's origin from its sign */
 		fun getOriginFromSign(sign: Sign): Block {
 			val multiblockDirection = sign.getFacing().oppositeFace
