@@ -84,7 +84,7 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 		val text = GuiText("Advanced Ship Factory")
 			.addBackground(GuiText.GuiBackground(
 				backgroundChar = ADVANCED_SHIP_FACTORY_CHARACTER,
-				backgroundWidth = 250 - 9,
+				backgroundWidth = 176 - 9,
 				verticalShift = 10
 			))
 			.add(
