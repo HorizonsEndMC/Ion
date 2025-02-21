@@ -22,7 +22,6 @@ class PreviewTask(
 	private val player: Player,
 	private val durationTicks: Long,
 ) : ShipFactoryBlockProcessor(blueprint, settings, entity) {
-
 	fun preview() {
 		loadBlockQueue()
 		sendBlocks()
