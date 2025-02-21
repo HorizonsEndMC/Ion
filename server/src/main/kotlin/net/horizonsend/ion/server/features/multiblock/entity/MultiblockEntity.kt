@@ -214,7 +214,7 @@ abstract class MultiblockEntity(
 		return (getBlockRelative( right = right, up = up, forward = forward).getState(false) as? InventoryHolder)?.inventory
 	}
 
-	fun getSquareRegion(offsetRight: Int, offsetUp: Int, offsetForward: Int, radius: Int, depth: Int, filter: (Block) -> Boolean = { true }): MutableList<Block> {
+	fun getSquareRegion(offsetRight: Int, offsetUp: Int, offsetForward: Int, radius: Int, depth: Int, filterNot: (Block) -> Boolean = { true }): MutableList<Block> {
 		val center = getBlockRelative(right = offsetRight, up = offsetUp, forward = offsetForward)
 		val right = structureDirection.rightFace
 
@@ -224,7 +224,7 @@ abstract class MultiblockEntity(
 			for (v in -radius .. radius) {
 				for (d in 0..depth) {
 					val block = center.getRelative(right, h).getRelative(BlockFace.UP, v)
-					if (filter(block)) continue
+					if (filterNot(block)) continue
 					blocks.add(block)
 				}
 			}
