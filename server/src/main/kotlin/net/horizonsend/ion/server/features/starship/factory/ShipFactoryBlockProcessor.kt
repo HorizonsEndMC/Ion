@@ -24,7 +24,7 @@ import kotlin.math.sin
 abstract class ShipFactoryBlockProcessor(
 	protected val blueprint: Blueprint,
 	protected val settings: ShipFactorySettings,
-	protected val entity: ShipFactoryEntity
+	protected open val entity: ShipFactoryEntity
 ) {
 	protected val clipboard: Clipboard by lazy { blueprint.loadClipboard() }
 
