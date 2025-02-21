@@ -4,19 +4,21 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.button
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.machine.DecomposeTask
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.task.TaskHandlingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity.StatusManager
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.UserManagedMultiblockEntity.UserManager
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
@@ -76,10 +78,13 @@ object DecomposerMultiblock : Multiblock(), EntityMultiblock<DecomposerMultibloc
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : SimplePoweredEntity(data, DecomposerMultiblock, manager, x, y, z, world, structureDirection, 75_000), LegacyMultiblockEntity, StatusMultiblockEntity, UserManagedMultiblockEntity {
+	) : SimplePoweredEntity(
+		data, DecomposerMultiblock, manager, x, y, z, world, structureDirection, 75_000
+	), LegacyMultiblockEntity, StatusMultiblockEntity, UserManagedMultiblockEntity, SyncTickingMultiblockEntity, TaskHandlingMultiblockEntity<DecomposeTask> {
 		override val multiblock = DecomposerMultiblock
 		override val statusManager: StatusManager = StatusManager()
 		override val userManager: UserManager = UserManager(data, false)
+		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 
 		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
@@ -87,12 +92,23 @@ object DecomposerMultiblock : Multiblock(), EntityMultiblock<DecomposerMultibloc
 			{ StatusDisplayModule(it, statusManager) }
 		).register()
 
-		var currentTask: DecomposeTask? = null
+		override var task: DecomposeTask? = null
+
+		override fun tick() {
+			if (!userManager.currentlyUsed()) {
+				stopTask()
+				return
+			}
+
+			task?.tick()
+		}
 
 		fun handleClick(player: Player) {
 			if (userManager.currentlyUsed()) {
 				if (userManager.getUserId() != player.uniqueId) return player.userError("Decomposer in use!")
-				return player.sendMessage(ofChildren(text("Would you like to cancel?" ), button(text("Confirm", RED)) { currentTask?.cancel() }))
+				return player.sendMessage(ofChildren(text("Would you like to cancel? "), button(text("Click here to cancel", RED)) {
+					stopTask()
+				}))
 			}
 
 			if (isRegionDenied(player, getOrigin().location)) return player.userError("You can't use that here!")
@@ -108,14 +124,7 @@ object DecomposerMultiblock : Multiblock(), EntityMultiblock<DecomposerMultibloc
 			}
 
 			userManager.setUser(player)
-			currentTask = DecomposeTask(
-				this,
-				width,
-				height,
-				depth,
-			)
-
-			currentTask?.runTaskTimer(IonServer, 20L, 20L)
+			startTask(DecomposeTask(this, width, height, depth))
 
 			player.success("Started Decomposer")
 		}

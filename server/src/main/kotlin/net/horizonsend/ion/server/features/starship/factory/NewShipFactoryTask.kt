@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories.missingMaterialsCache
@@ -33,13 +34,17 @@ import java.util.concurrent.atomic.AtomicInteger
 class NewShipFactoryTask(
 	blueprint: Blueprint,
 	settings: ShipFactorySettings,
-	entity: ShipFactoryEntity,
+	override val entity: ShipFactoryEntity,
 	private val inventories: Set<ShipFactoryEntity.InventoryReference>,
 	private val player: Player
-) : ShipFactoryBlockProcessor(blueprint, settings, entity) {
+) : ShipFactoryBlockProcessor(blueprint, settings, entity), MultiblockEntityTask<ShipFactoryEntity> {
 	val missingMaterials = mutableMapOf<PrintItem, AtomicInteger>()
 
-	fun tickProgress() {
+	override fun disable() {
+		entity.disable()
+	}
+
+	override fun tick() {
 		// Blocks that are gonna be printed
 		val toPrint = mutableListOf<BlockKey>()
 
@@ -108,11 +113,11 @@ class NewShipFactoryTask(
 		}
 	}
 
-	fun onEnable() {
+	override fun onEnable() {
 		loadBlockQueue()
 	}
 
-	fun onDisable() {
+	override fun onDisable() {
 		println("Disabled task")
 	}
 
