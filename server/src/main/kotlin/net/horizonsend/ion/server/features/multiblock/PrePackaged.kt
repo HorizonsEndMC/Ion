@@ -16,10 +16,12 @@ import net.horizonsend.ion.server.features.multiblock.shape.BlockRequirement
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
+import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
@@ -94,7 +96,9 @@ object PrePackaged : SLEventListener() {
 		return obstructed
 	}
 
-	fun place(player: Player, origin: Block, direction: BlockFace, multiblock: Multiblock, itemSource: List<ItemStack>?, entityData: PersistentMultiblockData?) {
+	private val cooldown = PerPlayerCooldown(100L)
+
+	fun place(player: Player, origin: Block, direction: BlockFace, multiblock: Multiblock, itemSource: List<ItemStack>?, entityData: PersistentMultiblockData?) = cooldown.tryExec(player) {
 		val requirements = multiblock.shape.getRequirementMap(direction)
 		val placements = mutableMapOf<Block, BlockData>()
 
@@ -125,12 +129,12 @@ object PrePackaged : SLEventListener() {
 				EquipmentSlot.HAND
 			).callEvent()
 
-			if (!event) return player.userError("You can't build here!")
+			if (!event) return@tryExec player.userError("You can't build here!")
 
 			val placement = if (usedItem == null) {
 				requirement.example.clone()
 			} else {
-				requirement.itemRequirement.toBlock.invoke(usedItem)
+				requirement.itemRequirement.toBlock.invoke(usedItem!!)
 			}
 
 			requirement.executePlacementModifications(placement, direction)
@@ -139,16 +143,17 @@ object PrePackaged : SLEventListener() {
 		}
 
 		for ((block, placement) in placements) {
+			NewTransport.handleBlockEvent(block.world, block.x, block.y, block.z, block.blockData, placement)
 			block.blockData = placement
 			val soundGroup = placement.soundGroup
 			origin.world.playSound(block.location, soundGroup.placeSound, soundGroup.volume, soundGroup.pitch)
 		}
 
-		if (multiblock is SignlessStarshipWeaponMultiblock<*>) return
+		if (multiblock is SignlessStarshipWeaponMultiblock<*>) return@tryExec
 		val signItem: ItemStack? = itemSource?.firstOrNull { it.type.isSign == true }
 
 		// If there is an item source but no sign then there is not one available
-		if (itemSource != null && signItem == null) return
+		if (itemSource != null && signItem == null) return@tryExec
 
 		val signType = signItem?.type?.let { getWallSignType(it) } ?: Material.OAK_WALL_SIGN
 
@@ -194,7 +199,7 @@ object PrePackaged : SLEventListener() {
 				sign.update()
 
 				signItem.amount--
-				return
+				return@tryExec
 			}
 		}
 
