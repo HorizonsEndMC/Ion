@@ -117,45 +117,39 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 		val numDestinations = filteredDestinations.size
 
-		val paths: Array<PathfindingReport?> = Array(numDestinations) {
-			findPath(source, filteredDestinations[it])
-		}
-
 		var maximumResistance: Double = -1.0
 		var minimumResistance = 0.0
 
 		// Perform the calc & max find in the same loop
-		val pathResistance: Array<Double?> = Array(numDestinations) {
-			val res = paths[it]?.resistance
-			if (res != null && maximumResistance < res) maximumResistance = res
-			if (res != null && minimumResistance > res) minimumResistance = res
+		val paths: Array<PathfindingReport?> = Array(numDestinations) {
+			val path = findPath(source, filteredDestinations[it])
 
-			res
+			if (path != null && maximumResistance < path.resistance) maximumResistance = path.resistance
+			if (path != null && minimumResistance > path.resistance) minimumResistance = path.resistance
+
+			path
 		}
 
-		// All null, no paths found
-		if (maximumResistance == -1.0) return availableTransferPower
+		var totalShares = 0.0
 
-		var shareFactorSum = 0.0
+		val pathShares: Array<Double?> = Array(numDestinations) {
+			val res = paths[it]?.resistance ?: return@Array null
 
-		// Get a parallel array containing the ascending order of resistances
-		val sortedIndexes = getSorted(pathResistance)
+			val share = -res * (1 / (maximumResistance - minimumResistance)) + 1.25
+			totalShares += share
 
-		val shareFactors: Array<Double?> = Array(numDestinations) { index ->
-			val resistance = (pathResistance[index] ?: return@Array null) - minimumResistance
-			val fac = (numDestinations - sortedIndexes[index]).toDouble() / (resistance / maximumResistance)
-			shareFactorSum += fac
-
-			fac
+			share
 		}
+
+		if (totalShares == 0.0) return availableTransferPower
 
 		var remainingPower = availableTransferPower
 
 		for ((index, destination) in filteredDestinations.withIndex()) {
-			val shareFactor = shareFactors[index] ?: continue
+			val shareFactor = pathShares[index] ?: continue
 			val inputData = getInputEntities(destination).filterIsInstance<PoweredMultiblockEntity>()
 
-			val share = shareFactor / shareFactorSum
+			val share = shareFactor / totalShares
 
 			val idealSend = (availableTransferPower * share).roundToInt()
 			val remainingCapacity = inputData.sumOf { it.powerStorage.getRemainingCapacity() }
@@ -172,14 +166,6 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 				// Update power flow meters
 				paths[index]?.traversedNodes?.forEach { if (it.type is PowerFlowMeter) it.type.onCompleteChain(realTaken) }
 			}
-
-			if (remainder == 0) continue
-
-			// Get the proportion of the amount of power that sent compared to the ideal calculations.
-			val usedShare = realTaken.toDouble() / idealSend.toDouble()
-			// Use that to get a proportion of the share factor, and remove that from the sum.
-			val toRemove = shareFactor * usedShare
-			shareFactorSum -= toRemove
 		}
 
 		return remainingPower
