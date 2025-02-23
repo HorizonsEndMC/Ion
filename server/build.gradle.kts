@@ -42,7 +42,7 @@ dependencies {
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
 	compileOnly("com.discordsrv:discordsrv:1.29.0")
 	compileOnly("net.luckperms:api:5.4")
-	compileOnly("xyz.xenondevs.invui:invui:1.43") // Downloaded via paper library manager for remapping
+	compileOnly("xyz.xenondevs.invui:invui:1.44") // Downloaded via paper library manager for remapping
 
 	// Included Dependencies
 	implementation("com.manya:persistent-data-types:1.0.25")
