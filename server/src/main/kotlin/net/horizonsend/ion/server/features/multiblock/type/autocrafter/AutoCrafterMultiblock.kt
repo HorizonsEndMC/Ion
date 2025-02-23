@@ -229,7 +229,9 @@ abstract class AutoCrafterMultiblock(
 			outputInventory: Inventory,
 			result: ItemStack
 		): Int {
-			val removeSlots = mutableMapOf<Int, AtomicInteger>() // can be multiple times per slot, so list, not set
+			// Slots to amounts.
+			val removeSlots = mutableMapOf<Int, AtomicInteger>()
+
 			var requiredIngredients = 0
 			var matchedIngredients = 0
 
@@ -284,6 +286,7 @@ abstract class AutoCrafterMultiblock(
 				val toRemove = result.amount - notAdded
 				outputInventory.removeItem(result.asQuantity(toRemove))
 
+				resultHash = null
 				sleepWithStatus(text("Output Full", RED), 100)
 				return -1
 			}
