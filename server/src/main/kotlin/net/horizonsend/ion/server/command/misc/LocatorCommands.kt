@@ -136,7 +136,7 @@ object LocatorCommands : SLCommand() {
 		if (autoNearPlayers.contains(sender.uniqueId)) {
 			autoNearPlayers.remove(sender.uniqueId)
 
-			sender.success("Stopppd auto near. Run this command again to enable it")
+			sender.success("Stopped auto near. Run this command again to enable it")
 			return
 		}
 
