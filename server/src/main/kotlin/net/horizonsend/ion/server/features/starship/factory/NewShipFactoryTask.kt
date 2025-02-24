@@ -40,6 +40,7 @@ class NewShipFactoryTask(
 ) : ShipFactoryBlockProcessor(blueprint, settings, entity), MultiblockEntityTask<ShipFactoryEntity> {
 	override val taskEntity: ShipFactoryEntity get() = entity
 	private val missingMaterials = mutableMapOf<PrintItem, AtomicInteger>()
+	private var skippedBlocks = 0
 
 	override fun disable() {
 		entity.disable()
@@ -63,24 +64,43 @@ class NewShipFactoryTask(
 			val blockData = blockMap[key] ?: continue
 
 			val vec3i = toVec3i(key)
-			if (entity.world.getBlockData(vec3i.x, vec3i.y, vec3i.z) == blockData) continue
+			val worldBlockData = entity.world.getBlockData(vec3i.x, vec3i.y, vec3i.z)
+			if (worldBlockData == blockData) continue
+
+			val printItem = PrintItem[blockData]
+			if (printItem == null) {
+				IonServer.slF4JLogger.warn("$blockData has no print item!")
+				continue
+			}
+			val requiredAmount = StarshipFactories.getRequiredAmount(blockData)
+
+			// Already know it is not air
+			if (!worldBlockData.material.isAir) {
+				if (settings.markObstrcutedBlocksAsComplete) continue
+
+				// Mark missing
+				skippedBlocks++
+
+				markItemMissing(printItem, requiredAmount)
+				continue
+			}
 
 			val price = ShipFactoryMaterialCosts.getPrice(blockData)
 
-			val anyAvailable = areResourcesAvailable(availableItems, blockData) { result: Boolean, item, amount, resources ->
+			val anyAvailable = areResourcesAvailable(availableItems, printItem, requiredAmount) { result: Boolean, resources ->
 				if (result && availableCredits >= price) {
 					// Mark as available to print
 					toPrint.add(key)
 
 					// Decrement available resources
-					resources.amount.addAndGet(-amount)
+					resources.amount.addAndGet(-requiredAmount)
 
 					// If it were missing before, and is not now, it was likely added to the inventory
-					if (missingMaterials.containsKey(item)) {
-						val atomic = missingMaterials[item]
+					if (missingMaterials.containsKey(printItem)) {
+						val atomic = missingMaterials[printItem]
 
 						if (atomic != null) {
-							if (atomic.get() >= amount) atomic.addAndGet(-amount)
+							if (atomic.get() >= requiredAmount) atomic.addAndGet(-requiredAmount)
 						}
 					}
 
@@ -88,19 +108,12 @@ class NewShipFactoryTask(
 					return@areResourcesAvailable
 				}
 
-				missingMaterials.getOrPut(item) { AtomicInteger() }.addAndGet(amount)
+				markItemMissing(printItem, requiredAmount)
 			}
 
 			if (!anyAvailable) {
-				val printItem = PrintItem[blockData]
-				if (printItem == null) {
-					IonServer.slF4JLogger.warn("$blockData has no print item!")
-					continue
-				}
 
-				val required = StarshipFactories.getRequiredAmount(blockData)
-
-				missingMaterials.getOrPut(printItem) { AtomicInteger() }.addAndGet(required)
+				markItemMissing(printItem, requiredAmount)
 			}
 		}
 
@@ -208,24 +221,18 @@ class NewShipFactoryTask(
 
 	private fun areResourcesAvailable(
 		availableItems: Map<PrintItem, AvailableItemInformation>,
-		blockData: BlockData,
-		resultConsumer: (Boolean, PrintItem, Int, AvailableItemInformation) -> Unit = { _, _, _, _ -> }
+		printItem: PrintItem,
+		requiredAmount: Int,
+		resultConsumer: (Boolean, AvailableItemInformation) -> Unit = { _, _ -> }
 	): Boolean {
-		val printItem = PrintItem[blockData]
-		if (printItem == null) {
-			IonServer.slF4JLogger.warn("$blockData has no print item!")
-			return false
-		}
-
-		val required = StarshipFactories.getRequiredAmount(blockData)
 		val information = availableItems[printItem] ?: return false
 
-		if (information.amount.get() < required) {
-			resultConsumer.invoke(false, printItem, required, information)
+		if (information.amount.get() < requiredAmount) {
+			resultConsumer.invoke(false, information)
 			return false
 		}
 
-		resultConsumer.invoke(true, printItem, required, information)
+		resultConsumer.invoke(true, information)
 		return true
 	}
 
@@ -252,6 +259,8 @@ class NewShipFactoryTask(
 				text(count.get(), WHITE)
 			)
 		})
+		if (skippedBlocks > 0) player.userError("$skippedBlocks were skipped due to being obstructed.")
+		player.userError("Use <italic><underlined><click:run_command:/shipfactory listmissing all>/shipfactory listmissing all</click></italic> to list all missing materials in one message.")
 	}
 
 	private fun consumeItemFromReferences(references: Collection<ItemReference>, amount: Int): Int {
@@ -271,5 +280,9 @@ class NewShipFactoryTask(
 		}
 
 		return remaining
+	}
+
+	private fun markItemMissing(printItem: PrintItem, amount: Int): Int {
+		return missingMaterials.getOrPut(printItem) { AtomicInteger() }.addAndGet(amount)
 	}
 }
