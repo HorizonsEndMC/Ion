@@ -34,11 +34,12 @@ import java.util.concurrent.atomic.AtomicInteger
 class NewShipFactoryTask(
 	blueprint: Blueprint,
 	settings: ShipFactorySettings,
-	override val entity: ShipFactoryEntity,
+	entity: ShipFactoryEntity,
 	private val inventories: Set<ShipFactoryEntity.InventoryReference>,
 	private val player: Player
 ) : ShipFactoryBlockProcessor(blueprint, settings, entity), MultiblockEntityTask<ShipFactoryEntity> {
-	val missingMaterials = mutableMapOf<PrintItem, AtomicInteger>()
+	override val taskEntity: ShipFactoryEntity get() = entity
+	private val missingMaterials = mutableMapOf<PrintItem, AtomicInteger>()
 
 	override fun disable() {
 		entity.disable()
@@ -66,7 +67,7 @@ class NewShipFactoryTask(
 
 			val price = ShipFactoryMaterialCosts.getPrice(blockData)
 
-			areResourcesAvailable(availableItems, blockData) { result: Boolean, item, amount, resources ->
+			val anyAvailable = areResourcesAvailable(availableItems, blockData) { result: Boolean, item, amount, resources ->
 				if (result && availableCredits >= price) {
 					// Mark as available to print
 					toPrint.add(key)
@@ -88,6 +89,18 @@ class NewShipFactoryTask(
 				}
 
 				missingMaterials.getOrPut(item) { AtomicInteger() }.addAndGet(amount)
+			}
+
+			if (!anyAvailable) {
+				val printItem = PrintItem[blockData]
+				if (printItem == null) {
+					IonServer.slF4JLogger.warn("$blockData has no print item!")
+					continue
+				}
+
+				val required = StarshipFactories.getRequiredAmount(blockData)
+
+				missingMaterials.getOrPut(printItem) { AtomicInteger() }.addAndGet(required)
 			}
 		}
 
