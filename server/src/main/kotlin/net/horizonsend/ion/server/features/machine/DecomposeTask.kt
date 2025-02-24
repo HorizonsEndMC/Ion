@@ -23,7 +23,7 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
 class DecomposeTask(
-	override val entity: DecomposerMultiblock.DecomposerEntity,
+	override val taskEntity: DecomposerMultiblock.DecomposerEntity,
 	private val maxWidth: Int,
 	private val maxHeight: Int,
 	private val maxDepth: Int
@@ -34,47 +34,47 @@ class DecomposeTask(
 	private val totalVolume = maxWidth * maxDepth * maxHeight
 
 	override fun disable() {
-		entity.stopTask()
-		entity.userManager.clear()
+		taskEntity.stopTask()
+		taskEntity.userManager.clear()
 	}
 
 	override fun onDisable() {
-		entity.userManager.getUserPlayer()?.information("Decomposer broke $totalBlocksBroken blocks.")
-		entity.userManager.clear()
+		taskEntity.userManager.getUserPlayer()?.information("Decomposer broke $totalBlocksBroken blocks.")
+		taskEntity.userManager.clear()
 	}
 
 	override fun tick() {
-		val player = entity.userManager.getUserPlayer()
+		val player = taskEntity.userManager.getUserPlayer()
 
 		if (player == null) {
 			disable()
 			return
 		}
 
-		if (!entity.isIntact(checkSign = false)) {
-			entity.setStatus(Component.text("Not Intact", NamedTextColor.RED))
+		if (!taskEntity.isIntact(checkSign = false)) {
+			taskEntity.setStatus(Component.text("Not Intact", NamedTextColor.RED))
 			player.userError("Decomposer destroyed.")
 			disable()
 			return
 		}
 
-		val storage = entity.getStorage()
+		val storage = taskEntity.getStorage()
 
 		if (storage == null) {
-			entity.setStatus(Component.text("Storage missing.", NamedTextColor.RED))
+			taskEntity.setStatus(Component.text("Storage missing.", NamedTextColor.RED))
 			player.userError("Decomposer storage missing.")
 			disable()
 			return
 		}
 
-		var power = entity.powerStorage.getPower()
+		var power = taskEntity.powerStorage.getPower()
 
 		Tasks.async {
 			val toBreak = mutableListOf<Block>()
 
 			for (position in this) {
 				val realPosition = getRealCoordinate(position)
-				val block = getBlockIfLoaded(entity.world, realPosition.x, realPosition.y, realPosition.z)
+				val block = getBlockIfLoaded(taskEntity.world, realPosition.x, realPosition.y, realPosition.z)
 
 				if (block == null) {
 					totalBlocksSkiped++
@@ -87,7 +87,7 @@ class DecomposeTask(
 				}
 
 				if (power < 10) {
-					entity.setStatus(Component.text("Out of Power", NamedTextColor.RED))
+					taskEntity.setStatus(Component.text("Out of Power", NamedTextColor.RED))
 					player.userError("Decomposer out of power!")
 					break
 				}
@@ -97,11 +97,11 @@ class DecomposeTask(
 				if (toBreak.size >= DecomposerMultiblock.BLOCKS_PER_SECOND) break
 			}
 
-			entity.setStatus(formatPercent())
-			entity.powerStorage.setPower(power)
+			taskEntity.setStatus(formatPercent())
+			taskEntity.powerStorage.setPower(power)
 
 			if (toBreak.isEmpty()) {
-				entity.setStatus(Component.text("Nothing to Break", NamedTextColor.RED))
+				taskEntity.setStatus(Component.text("Nothing to Break", NamedTextColor.RED))
 				player.userError("Decomposer had nothing to break.")
 				disable()
 				return@async
@@ -164,9 +164,9 @@ class DecomposeTask(
 			val remaining: HashMap<Int, ItemStack> = storage.addItem(*drops.toTypedArray())
 
 			if (remaining.any()) {
-				for (drop in drops) block.world.dropItemNaturally(entity.getSignLocation(), drop)
+				for (drop in drops) block.world.dropItemNaturally(taskEntity.getSignLocation(), drop)
 
-				entity.setStatus(Component.text("Out of space.", NamedTextColor.RED))
+				taskEntity.setStatus(Component.text("Out of space.", NamedTextColor.RED))
 				player.userError("Decomposer out of space, dropping items and cancelling decomposition.")
 				return false
 			}
@@ -175,7 +175,7 @@ class DecomposeTask(
 		return true
 	}
 
-	private fun getRealCoordinate(offset: Vec3i) = entity.getPosRelative(right = offset.x + 1, up = offset.y + 1, forward = offset.z + 1)
+	private fun getRealCoordinate(offset: Vec3i) = taskEntity.getPosRelative(right = offset.x + 1, up = offset.y + 1, forward = offset.z + 1)
 
 	private var currentPosition: Vec3i = Vec3i(0, 0, 0)
 
