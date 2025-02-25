@@ -13,6 +13,8 @@ import net.horizonsend.ion.server.features.gui.custom.blueprint.BlueprintMenu
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
+import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
+import net.horizonsend.ion.server.features.gui.custom.settings.button.BooleanSupplierConsumerButton
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem.FeedbackItemResult
 import net.horizonsend.ion.server.features.gui.item.ValueScrollButton
@@ -61,8 +63,8 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 			.addIngredient('1', getPreviewButton(GuiItem.ONE_QUARTER, 10))
 			.addIngredient('3', getPreviewButton(GuiItem.TWO_QUARTER, 30))
 			.addIngredient('6', getPreviewButton(GuiItem.THREE_QUARTER, 60))
-			.addIngredient('P', GuiItems.CustomControlItem(Component.text("placement settings"), GuiItem.GEAR))
-			.addIngredient('I', GuiItems.CustomControlItem(Component.text("item settings"), GuiItem.GEAR))
+			.addIngredient('P', placementMenu)
+			.addIngredient('I', itemMenu)
 			.addIngredient('d', disableButton)
 			.addIngredient('e', enableButton)
 
@@ -208,7 +210,7 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 		}
 		.build()
 
-	private val resetButton = FeedbackItem.builder(GuiItem.CANCEL.makeItem(Component.text("Reset Offset"))) { _, player ->
+	private val resetButton = FeedbackItem.builder(GuiItem.CANCEL.makeItem(Component.text("Reset Offset"))) { _, _ ->
 			if (!entity.canEditSettings()) FeedbackItemResult.FailureLore(listOf(Component.text("Placement settings can't be altered while running", NamedTextColor.RED)))
 			FeedbackItemResult.Success
 		}
@@ -236,4 +238,60 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 			}
 		}
 		.build()
+
+	private val placementMenu = GuiItems.createButton(GuiItem.GEAR.makeItem(Component.text("Placement Settings"))) { _, _, _ ->
+		placementSettings.open()
+	}
+	private val placementSettings = createSettingsPage(
+		viewer,
+		"Placement Settings",
+		BooleanSupplierConsumerButton(
+			entity.settings::markObstrcutedBlocksAsComplete,
+			{ entity.settings.markObstrcutedBlocksAsComplete = it },
+			Component.text("Mark Obstructions Complete"),
+			"Marks obstructed blocks as completed, rather than missing materials.",
+			GuiItem.MATERIALS,
+			true
+		),
+		BooleanSupplierConsumerButton(
+			entity.settings::overrideReplaceableBlocks,
+			{ entity.settings.overrideReplaceableBlocks = it },
+			Component.text("Override Replaceable"),
+			"Blueprint blocks will be placed in \"Replacable\" blocks (e.g. ferns), rather than marking them as obstructed. Defaults to true.",
+			GuiItem.MATERIALS,
+			true
+		),
+		BooleanSupplierConsumerButton(
+			entity.settings::placeBlocksUnderwater,
+			{ entity.settings.placeBlocksUnderwater = it },
+			Component.text("Place Underwater"),
+			"Allows blueprint blocks to be placed in water. Defaults to false.",
+			GuiItem.MATERIALS,
+			false
+		),
+	).apply { parent = this@ShipFactoryGui }
+
+	private val itemMenu = GuiItems.createButton(GuiItem.GEAR.makeItem(Component.text("Item Settings"))) { _, _, _ ->
+		itemSettings.open()
+	}
+	private val itemSettings = createSettingsPage(
+		viewer,
+		"Item Settings",
+		BooleanSupplierConsumerButton(
+			entity.settings::leaveItemRemaining,
+			{ entity.settings.leaveItemRemaining = it },
+			Component.text("Leave One Item Remaining"),
+			"Leaves one of each item remaining in input inventories.",
+			GuiItem.MATERIALS,
+			false
+		),
+		BooleanSupplierConsumerButton(
+			entity.settings::grabFromNetworkedPipes,
+			{ entity.settings.grabFromNetworkedPipes = it },
+			Component.text("Grab From Networked Pipes"),
+			"Toggles whether to pathfind to find network chests. Only applicable to the Advanced Ship Factory.",
+			GuiItem.MATERIALS,
+			false
+		),
+	).apply { parent = this@ShipFactoryGui }
 }

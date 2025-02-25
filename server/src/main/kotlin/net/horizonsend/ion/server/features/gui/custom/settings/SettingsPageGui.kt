@@ -1,9 +1,13 @@
 package net.horizonsend.ion.server.features.gui.custom.settings
 
+import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.gui.GuiWrapper
+import net.horizonsend.ion.server.features.gui.custom.settings.button.SettingsMenuButton
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
@@ -17,8 +21,8 @@ import kotlin.math.min
 abstract class SettingsPageGui(
 	val player: Player,
 	val title: String,
-) : AbstractBackgroundPagedGui, SettingsGuiItem {
-	var parent: SettingsPageGui? = null
+) : AbstractBackgroundPagedGui, SettingsGuiItem, GuiWrapper {
+	var parent: GuiWrapper? = null
 	override var currentWindow: Window? = null
 	protected abstract val buttonsList: List<SettingsGuiItem>
 
@@ -42,17 +46,19 @@ abstract class SettingsPageGui(
 			.addIngredient('v', backButton)
 
 		for (button in buttonsList) {
-			val button = button.makeButton(this)
-			gui.addContent(button)
+			val created = button.makeButton(this)
+			gui.addContent(created)
+
+			val lore = if (button is SettingsMenuButton<*>) text(button.buttonDescription).itemLore.wrap(150) else listOf()
 
 			// Add items to the right
-			repeat(8) { gui.addContent(GuiItems.BlankButton(button)) }
+			repeat(8) { gui.addContent(GuiItems.BlankButton(created, lore)) }
 		}
 
 		return gui.build()
 	}
 
-	fun open() {
+	override fun open() {
 		currentWindow = buildWindow(player)
 		currentWindow?.open()
 	}
