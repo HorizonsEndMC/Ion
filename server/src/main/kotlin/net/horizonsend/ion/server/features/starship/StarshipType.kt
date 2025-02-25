@@ -124,7 +124,7 @@ enum class StarshipType(
 	),
 	INTERCEPTOR(
 		displayName = "Interceptor",
-		icon = SidebarIcon.STARFIGHTER_ICON.text,
+		icon = SidebarIcon.INTERCEPTOR_ICON.text,
 		minSize = 150,
 		maxSize = 350,
 		minLevel = 1,
@@ -136,7 +136,7 @@ enum class StarshipType(
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#ff8000",
 		overridePermission = "ion.ships.override.1",
-		dynmapIcon = "starfighter",
+		dynmapIcon = "interceptor",
 		balancingSupplier = ConfigurationFiles.starshipBalancing()::interceptor
 	),
 	GUNSHIP(
