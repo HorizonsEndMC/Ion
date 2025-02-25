@@ -136,7 +136,6 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 			.addPowerInput(0, -1, 0)
 			.build()
 
-
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
 			super.storeAdditionalData(store, adapterContext)
 			savePowerData(store)
@@ -161,7 +160,7 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 			val itemCache = transportManager.itemPipeManager.cache
 
 			val base = inventoryOffsets.mapNotNullTo(mutableSetOf()) {
-				val inv = itemCache.getInventory(toBlockKey(it)) ?: return@mapNotNullTo null
+				val inv = itemCache.getInventory(toBlockKey(getPosRelative(right = it.x, up = it.y, forward = it.z))) ?: return@mapNotNullTo null
 				InventoryReference.StandardInventoryReference(inv)
 			}
 
@@ -174,7 +173,8 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 			}.plus(base)
 		}
 
-		fun getNetworkedExtractors(): Map<BlockKey, Collection<BlockKey>> {
+		private fun getNetworkedExtractors(): Map<BlockKey, Collection<BlockKey>> {
+			if (!settings.grabFromNetworkedPipes) return mapOf()
 			val transportManager = manager.getTransportManager()
 			val itemCacheHolder = transportManager.itemPipeManager
 
