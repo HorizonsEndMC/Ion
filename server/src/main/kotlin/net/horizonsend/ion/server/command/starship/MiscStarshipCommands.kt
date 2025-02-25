@@ -312,6 +312,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		sender: Player,
 		tier: Int?,
 	) {
+		failIf(starship.type == StarshipType.INTERCEPTOR) { "Interceptors cannot jump to hyperspace" }
+
 		val hyperdrive: HyperdriveSubsystem = tier?.let { Hyperspace.findHyperdrive(starship, tier) }
 			?: Hyperspace.findHyperdrive(starship) ?: fail {
 				"Intact hyperdrive not found"
