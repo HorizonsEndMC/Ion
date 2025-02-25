@@ -125,11 +125,12 @@ object GuiItems {
 
     class EmptyItem : SimpleItem(ItemStack(Material.AIR))
 
-    class BlankButton(val item: Item) : ControlItem<Gui>() {
+    class BlankButton(val item: Item, val lore: List<Component> = listOf()) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
             return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).apply {
 				setData(DataComponentTypes.ITEM_MODEL, GuiItem.EMPTY.modelKey)
 				setData(DataComponentTypes.CUSTOM_NAME, item.itemProvider.get().displayName().itemName)
+				updateLore(this@BlankButton.lore)
 			})
         }
 

@@ -123,11 +123,6 @@ object NamespacedKeys {
 	val TANK_2 = key("tank_2")
 	val TANK_3 = key("tank_3")
 
-	val FLUID_PACEMENT = key("fluid_pacement")
-	val COMPLETE_OBSTRUCTIONS = key("complete_obstructions")
-	val LEAVE_ITEM_REMAINING = key("leave_item_remaining")
-	val GRAB_NETWORKED_INVENTORIES = key("grab_networked_inventories")
-
 	val BLUEPRINT_NAME = key("blueprint_name")
 	val BLUEPRINT_ID = key("blueprint_id")
 
