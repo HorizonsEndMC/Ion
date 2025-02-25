@@ -1,5 +1,9 @@
 package net.horizonsend.ion.server.features.starship.factory
 
+import io.papermc.paper.registry.RegistryAccess.registryAccess
+import io.papermc.paper.registry.RegistryKey
+import io.papermc.paper.registry.TypedKey
+import io.papermc.paper.registry.keys.tags.BlockTypeTagKeys
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
@@ -8,6 +12,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
+import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories.missingMaterialsCache
@@ -25,8 +30,10 @@ import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.starlegacy.javautil.SignUtils.SignData
+import org.bukkit.Material
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
+import org.bukkit.block.data.Waterlogged
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.atomic.AtomicInteger
@@ -47,6 +54,8 @@ class NewShipFactoryTask(
 	}
 
 	override fun tick() {
+		missingMaterials.clear()
+
 		// Blocks that are gonna be printed
 		val toPrint = mutableListOf<BlockKey>()
 
@@ -58,8 +67,18 @@ class NewShipFactoryTask(
 
 		var availableCredits = player.getMoneyBalance()
 
+		var usedPower = 0
+
 		// Find the first blocks that can be placed with the available resources, up to the limit
 		for (key: BlockKey in blockQueue) {
+			if (entity is AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity) {
+				val power = entity.powerStorage.getPower()
+				if (power < usedPower) {
+					entity.statusManager.setStatus(text("Insufficient Power!", RED))
+					break
+				}
+			}
+
 			if (toPrint.size >= printLimit) break
 			val blockData = blockMap[key] ?: continue
 
@@ -74,15 +93,31 @@ class NewShipFactoryTask(
 			}
 			val requiredAmount = StarshipFactories.getRequiredAmount(blockData)
 
-			// Already know it is not air
+			val replaceableTag = registryAccess().getRegistry(RegistryKey.BLOCK).getTag(BlockTypeTagKeys.REPLACEABLE)
+			val replaceable = replaceableTag.contains(TypedKey.create(RegistryKey.BLOCK, worldBlockData.material.asBlockType()!!.key))
+
+			// Whether to skip the obstruction check because it replaceable and that setting is enabled
+			val isAllowedReplaceable = replaceable && settings.overrideReplaceableBlocks
+
+			// Whether to skip the obstruction check because it water and that setting is enabled
+			val isAllowedWater = worldBlockData.material == Material.WATER && settings.placeBlocksUnderwater
+
+			// If it is air then it can be placed.
+			// If it is not air, AND not replaceable (if replaceables are marked as obstructing), OR in water (if water placement is not allowed)
+			// then placement is obstructed
 			if (!worldBlockData.material.isAir) {
-				if (settings.markObstrcutedBlocksAsComplete) continue
+				// Air is replacable, so the check should only be done if it is not air
+				if (!isAllowedReplaceable && !isAllowedWater) {
+					// Continue if it should just be marked as complete, not missing
+					if (settings.markObstrcutedBlocksAsComplete) continue
 
-				// Mark missing
-				skippedBlocks++
+					// Mark missing
+					skippedBlocks++
+					markItemMissing(printItem, requiredAmount)
 
-				markItemMissing(printItem, requiredAmount)
-				continue
+					// Move onto next block
+					continue
+				}
 			}
 
 			val price = ShipFactoryMaterialCosts.getPrice(blockData)
@@ -91,6 +126,7 @@ class NewShipFactoryTask(
 				if (result && availableCredits >= price) {
 					// Mark as available to print
 					toPrint.add(key)
+					usedPower += 10
 
 					// Decrement available resources
 					resources.amount.addAndGet(-requiredAmount)
@@ -112,7 +148,6 @@ class NewShipFactoryTask(
 			}
 
 			if (!anyAvailable) {
-
 				markItemMissing(printItem, requiredAmount)
 			}
 		}
@@ -144,12 +179,12 @@ class NewShipFactoryTask(
 	}
 
 	override fun onDisable() {
-		println("Disabled task")
 	}
 
 	private fun printBlocks(availableItems: Map<PrintItem, AvailableItemInformation>, missingMaterials: MutableMap<PrintItem, AtomicInteger>, blocks: List<BlockKey>) {
 		var consumedMoney = 0.0
 
+		var placements = 0
 		for (entry in blocks) {
 			blockQueue.remove(entry)
 			val blockData = blockMap.remove(entry) ?: continue
@@ -171,18 +206,30 @@ class NewShipFactoryTask(
 			}
 
 			// If all good, place the block
+			placements++
 			placeBlock(entry, blockData, signData)
+		}
+
+		if (entity is AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity) {
+			entity.powerStorage.removePower(placements * 10)
 		}
 
 		player.withdrawMoney(consumedMoney)
 	}
 
 	private fun placeBlock(location: BlockKey, data: BlockData, signData: SignData?) {
+		var placedData = data
+
 		val (x, y, z) = toVec3i(location)
 		val world = entity.world
 		val block = world.getBlockAt(x, y, z)
 
-		world.setNMSBlockData(x, y, z, getRotatedBlockData(data))
+		if (placedData is Waterlogged && block.type == Material.WATER) {
+			placedData = data.clone() // Don't affect placements if moved
+			(placedData as Waterlogged).isWaterlogged = true
+		}
+
+		world.setNMSBlockData(x, y, z, getRotatedBlockData(placedData))
 
 		val state = block.state as? Sign
 		if (state != null) {
@@ -210,11 +257,11 @@ class NewShipFactoryTask(
 		}
 
 		// If asked to leave one remaining, reduce the available items in each slot by 1 so they won't be consumed
-//		if (settings.leaveItemRemaining) {
-//			for ((_, information) in availableItems) {
-//				if (information.amount.get() > 0) information.amount.decrementAndGet()
-//			}
-//		}
+		if (settings.leaveItemRemaining) {
+			for ((_, information) in items) {
+				if (information.amount.get() > 0) information.amount.decrementAndGet()
+			}
+		}
 
 		return items
 	}
@@ -229,7 +276,7 @@ class NewShipFactoryTask(
 
 		if (information.amount.get() < requiredAmount) {
 			resultConsumer.invoke(false, information)
-			return false
+			return true
 		}
 
 		resultConsumer.invoke(true, information)
@@ -276,6 +323,7 @@ class NewShipFactoryTask(
 			} else {
 				val toRemove = minOf(stackAmount, remaining)
 				item.amount -= toRemove
+				remaining -= toRemove
 			}
 		}
 
