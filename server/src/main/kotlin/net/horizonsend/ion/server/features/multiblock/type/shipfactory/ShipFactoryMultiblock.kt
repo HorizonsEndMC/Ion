@@ -1,9 +1,14 @@
 package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
+import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity
+import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
@@ -11,11 +16,10 @@ import net.kyori.adventure.text.Component.text
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 
-object ShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShipFactoryEntity>() {
+object ShipFactoryMultiblock : AbstractShipFactoryMultiblock<ShipFactoryMultiblock.StandardShipFactoryEntity>() {
 	override val signText = createSignText(
 		line1 = "&1Ship Factory",
 		line2 = null,
@@ -27,13 +31,6 @@ object ShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShipFactory
 
 	override val displayName: Component get() = text("Ship Factory")
 	override val description: Component get() = text("Print starships and other structures with materials and credits.")
-
-//	override val maxPower: Int = 1_000_000
-
-	override fun onTransformSign(player: Player, sign: Sign) {
-		sign.setLine(2, sign.getLine(1))
-		sign.setLine(1, player.uniqueId.toString())
-	}
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
@@ -62,7 +59,34 @@ object ShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShipFactory
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace,
-	): AdvancedShipFactoryEntity {
-		return AdvancedShipFactoryEntity(data, manager, x, y, z, world, structureDirection)
+	): StandardShipFactoryEntity {
+		return StandardShipFactoryEntity(data, manager, x, y, z, world, structureDirection)
+	}
+
+	class StandardShipFactoryEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace
+	) : ShipFactoryEntity(data, ShipFactoryMultiblock, manager, world, x, y, z, structureDirection) {
+		override val inputsData: InputsData = none()
+
+		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			{ StatusDisplayModule(it, statusManager) }
+		).register()
+
+		private val inventoryOffset = Vec3i(1, 0, 0)
+
+		override fun getInventories(): Set<InventoryReference> {
+			val transportManager = manager.getTransportManager()
+			val itemCache = transportManager.itemPipeManager.cache
+
+			val inv = itemCache.getInventory(toBlockKey(getPosRelative(right = inventoryOffset.x, up = inventoryOffset.y, forward = inventoryOffset.z))) ?: return setOf()
+			return setOf(InventoryReference.StandardInventoryReference(inv))
+		}
 	}
 }

@@ -115,7 +115,6 @@ abstract class ShipFactoryEntity(
 		val player = userManager.getUserPlayer() ?: return
 
 		if (!ensureBlueprintLoaded(player)) return
-		setStatus(Component.text(blueprintName))
 
 		task?.tick()
 	}
