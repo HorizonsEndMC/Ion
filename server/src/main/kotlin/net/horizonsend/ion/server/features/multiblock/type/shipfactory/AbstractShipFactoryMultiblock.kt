@@ -13,7 +13,7 @@ abstract class AbstractShipFactoryMultiblock <T: ShipFactoryEntity> : Multiblock
 	abstract val blockPlacementsPerTick: Int
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		val entity = AdvancedShipFactoryMultiblock.getMultiblockEntity(sign) ?: return
+		val entity = getMultiblockEntity(sign) ?: return
 		entity.openMenu(player)
 	}
 }
