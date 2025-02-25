@@ -7,11 +7,13 @@ import io.papermc.paper.registry.keys.tags.BlockTypeTagKeys
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
+import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.Companion.formatProgress
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
@@ -48,6 +50,7 @@ class NewShipFactoryTask(
 	override val taskEntity: ShipFactoryEntity get() = entity
 	private val missingMaterials = mutableMapOf<PrintItem, AtomicInteger>()
 	private var skippedBlocks = 0
+	private var totalBlocks = 0
 
 	override fun disable() {
 		entity.disable()
@@ -84,7 +87,11 @@ class NewShipFactoryTask(
 
 			val vec3i = toVec3i(key)
 			val worldBlockData = entity.world.getBlockData(vec3i.x, vec3i.y, vec3i.z)
-			if (worldBlockData == blockData) continue
+			if (worldBlockData == blockData) {
+				// Save an iteration
+				blockMap.remove(key)
+				continue
+			}
 
 			val printItem = PrintItem[blockData]
 			if (printItem == null) {
@@ -171,11 +178,14 @@ class NewShipFactoryTask(
 
 			player.success("Ship factory has finished printing.")
 			entity.disable()
+		} else {
+			updateStatus()
 		}
 	}
 
 	override fun onEnable() {
 		loadBlockQueue()
+		totalBlocks = blockQueue.size
 	}
 
 	override fun onDisable() {
@@ -332,5 +342,12 @@ class NewShipFactoryTask(
 
 	private fun markItemMissing(printItem: PrintItem, amount: Int): Int {
 		return missingMaterials.getOrPut(printItem) { AtomicInteger() }.addAndGet(amount)
+	}
+
+	private fun updateStatus() {
+		val blueprintName = text(entity.blueprintName)
+		val percent = formatProgress(WHITE, (totalBlocks - blockQueue.size) / totalBlocks.toDouble())
+		val formatted = ofChildren(blueprintName, text(": ", HEColorScheme.HE_DARK_GRAY), percent)
+		entity.setStatus(formatted)
 	}
 }
