@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.command.starship
 
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.StarshipDetection
@@ -24,9 +26,10 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.round
 import kotlin.math.roundToInt
 
+@CommandAlias("starshipinfo|starship")
 object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("Unused")
-	@CommandAlias("starshipinfo|starship")
+	@Default
 	fun onExecute(sender: Player) {
 		val ship = getStarshipPiloting(sender)
 
@@ -141,11 +144,11 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	private fun createPercent(fraction: Double) = "${round(fraction * 1000) / 10}%"
 
-	@CommandAlias("starshipinfo shields|starship shields")
+	@Subcommand("shields")
 	fun onDisplayShields(sender: Player) {
 		val ship = getStarshipPiloting(sender)
 
-		cooldown.tryExec(sender.uniqueId to System.currentTimeMillis()) {
+		cooldown.tryExec(sender.uniqueId) {
 			for ((index, subsystem) in ship.shields.withIndex()) {
 				// exit if too many shields will be rendered
 				if (index >= 30) return@tryExec
@@ -157,10 +160,9 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 	}
 
-	val cooldown = object : AbstractCooldown<Pair<UUID, Long>>(10L, TimeUnit.SECONDS) {
-		override fun cooldownRejected(player: Pair<UUID, Long>) {
-			val (uuid, _) = player
-			Bukkit.getPlayer(uuid)?.userError("You're doing that too often!")
+	val cooldown = object : AbstractCooldown<UUID>(10L, TimeUnit.SECONDS) {
+		override fun cooldownRejected(player: UUID) {
+			Bukkit.getPlayer(player)?.userError("You're doing that too often!")
 		}
 	}
 }
