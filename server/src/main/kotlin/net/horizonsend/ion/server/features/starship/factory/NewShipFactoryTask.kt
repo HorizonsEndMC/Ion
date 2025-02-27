@@ -56,7 +56,23 @@ class NewShipFactoryTask(
 		entity.disable()
 	}
 
+	// Prevents multiple ticks from running concurrently, this might happen if a large blueprint is being done, and the execution takes more than 5 ms
+	private var isTicking = false
+
 	override fun tick() {
+		if (isTicking) return
+
+		isTicking = true
+		try {
+		    runTick()
+		} finally {
+		    isTicking = false
+		}
+	}
+
+	private var disabledSignal = false
+
+	private fun runTick() {
 		missingMaterials.clear()
 
 		// Blocks that are gonna be printed
@@ -69,27 +85,26 @@ class NewShipFactoryTask(
 		val availableItems = getAvailableItems()
 
 		var availableCredits = player.getMoneyBalance()
-
 		var usedPower = 0
 
 		// Find the first blocks that can be placed with the available resources, up to the limit
-		for (key: BlockKey in blockQueue) {
-			if (entity is AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity) {
-				val power = entity.powerStorage.getPower()
-				if (power < usedPower) {
-					entity.statusManager.setStatus(text("Insufficient Power!", RED))
-					break
-				}
+		val keyIterator = blockQueue.iterator()
+		while (keyIterator.hasNext()) {
+			if (disabledSignal) {
+				disabledSignal = false
+				break
 			}
 
+			val key: BlockKey = keyIterator.next()
 			if (toPrint.size >= printLimit) break
+
 			val blockData = blockMap[key] ?: continue
 
 			val vec3i = toVec3i(key)
 			val worldBlockData = entity.world.getBlockData(vec3i.x, vec3i.y, vec3i.z)
 			if (worldBlockData == blockData) {
 				// Save an iteration
-				blockMap.remove(key)
+				keyIterator.remove()
 				continue
 			}
 
@@ -129,11 +144,21 @@ class NewShipFactoryTask(
 
 			val price = ShipFactoryMaterialCosts.getPrice(blockData)
 
+			var insufficientPower = false
 			val anyAvailable = areResourcesAvailable(availableItems, printItem, requiredAmount) { result: Boolean, resources ->
 				if (result && availableCredits >= price) {
 					// Mark as available to print
 					toPrint.add(key)
 					usedPower += 10
+
+					if (entity is AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity) {
+						val power = entity.powerStorage.getPower()
+						if (power < usedPower) {
+							entity.statusManager.setStatus(text("Insufficient Power!", RED))
+							insufficientPower = true
+							return@areResourcesAvailable
+						}
+					}
 
 					// Decrement available resources
 					resources.amount.addAndGet(-requiredAmount)
@@ -153,6 +178,8 @@ class NewShipFactoryTask(
 
 				markItemMissing(printItem, requiredAmount)
 			}
+
+			if (insufficientPower) break
 
 			if (!anyAvailable) {
 				markItemMissing(printItem, requiredAmount)
@@ -189,6 +216,9 @@ class NewShipFactoryTask(
 	}
 
 	override fun onDisable() {
+		disabledSignal = true
+
+		player.userError("Disabled ship factory.")
 	}
 
 	private fun printBlocks(availableItems: Map<PrintItem, AvailableItemInformation>, missingMaterials: MutableMap<PrintItem, AtomicInteger>, blocks: List<BlockKey>) {

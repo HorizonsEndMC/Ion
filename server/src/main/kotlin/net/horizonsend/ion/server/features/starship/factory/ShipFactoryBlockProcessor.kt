@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.state.BlockState
 import net.starlegacy.javautil.SignUtils
 import net.starlegacy.javautil.SignUtils.SignData
 import org.bukkit.block.data.BlockData
+import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -32,7 +33,7 @@ abstract class ShipFactoryBlockProcessor(
 	protected val blockMap = Object2ObjectRBTreeMap<BlockKey, BlockData>()
 	protected val signMap = Object2ObjectRBTreeMap<BlockKey, SignData>()
 
-	protected val blockQueue = ArrayDeque<Long>()
+	protected val blockQueue = ConcurrentLinkedQueue<Long>()
 
 	protected open val clipboardNormalizationOffset: Vec3i = getClipboardOffset()
 	protected open val target = calculateTarget()
