@@ -98,7 +98,7 @@ object CarbonProcessorMultiblock : Multiblock(), EntityMultiblock<CarbonProcesso
 		z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : SimplePoweredEntity(data, CarbonPrinterMultiblock, manager, x, y, z, world, structureFace, 30_000), LegacyMultiblockEntity, StatusTickedMultiblockEntity, SyncTickingMultiblockEntity, FurnaceBasedMultiblockEntity {
+	) : SimplePoweredEntity(data, CarbonProcessorMultiblock, manager, x, y, z, world, structureFace, 30_000), LegacyMultiblockEntity, StatusTickedMultiblockEntity, SyncTickingMultiblockEntity, FurnaceBasedMultiblockEntity {
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 1)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
