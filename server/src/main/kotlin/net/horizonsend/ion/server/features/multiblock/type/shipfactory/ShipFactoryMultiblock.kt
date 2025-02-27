@@ -73,6 +73,7 @@ object ShipFactoryMultiblock : AbstractShipFactoryMultiblock<ShipFactoryMultiblo
 		structureDirection: BlockFace
 	) : ShipFactoryEntity(data, ShipFactoryMultiblock, manager, world, x, y, z, structureDirection) {
 		override val inputsData: InputsData = none()
+		override val guiTitle: String = "Ship Factory"
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
