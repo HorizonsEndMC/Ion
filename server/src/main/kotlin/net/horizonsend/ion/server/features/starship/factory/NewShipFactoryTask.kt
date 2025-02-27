@@ -5,8 +5,10 @@ import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.TypedKey
 import io.papermc.paper.registry.keys.tags.BlockTypeTagKeys
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -71,6 +73,7 @@ class NewShipFactoryTask(
 	}
 
 	private var disabledSignal = false
+	private var consumedCredits: Double = 0.0
 
 	private fun runTick() {
 		missingMaterials.clear()
@@ -144,7 +147,8 @@ class NewShipFactoryTask(
 
 			val price = ShipFactoryMaterialCosts.getPrice(blockData)
 
-			var insufficientPower = false
+			var toBreak = false
+
 			val anyAvailable = areResourcesAvailable(availableItems, printItem, requiredAmount) { result: Boolean, resources ->
 				if (result && availableCredits >= price) {
 					// Mark as available to print
@@ -155,7 +159,7 @@ class NewShipFactoryTask(
 						val power = entity.powerStorage.getPower()
 						if (power < usedPower) {
 							entity.statusManager.setStatus(text("Insufficient Power!", RED))
-							insufficientPower = true
+							toBreak = true
 							return@areResourcesAvailable
 						}
 					}
@@ -173,13 +177,21 @@ class NewShipFactoryTask(
 					}
 
 					availableCredits -= price
+					consumedCredits += price
+
 					return@areResourcesAvailable
+				}
+
+				if (availableCredits < price) {
+					entity.statusManager.setStatus(text("Insufficient Credits!", RED))
+					player.userError("Insufficient Credits!")
+					toBreak = true
 				}
 
 				markItemMissing(printItem, requiredAmount)
 			}
 
-			if (insufficientPower) break
+			if (toBreak) break
 
 			if (!anyAvailable) {
 				markItemMissing(printItem, requiredAmount)
@@ -189,6 +201,7 @@ class NewShipFactoryTask(
 		if (toPrint.isEmpty()) {
 			if (missingMaterials.isNotEmpty()) {
 				sendMissing(missingMaterials)
+				player.information("Printing consumed C${consumedCredits.roundToHundredth()}")
 			}
 
 			entity.disable()
@@ -204,6 +217,7 @@ class NewShipFactoryTask(
 			}
 
 			player.success("Ship factory has finished printing.")
+			player.information("Printing consumed C${consumedCredits.roundToHundredth()}")
 			entity.disable()
 		} else {
 			updateStatus()
