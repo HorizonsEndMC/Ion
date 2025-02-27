@@ -62,6 +62,8 @@ abstract class ShipFactoryEntity(
 	override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(5)
 	override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
+	abstract val guiTitle: String
+
 	fun openMenu(player: Player) {
 		ShipFactoryGui(player, this).open()
 	}
