@@ -47,6 +47,19 @@ class PlayerTarget(val player: Player) : AITarget() {
 	override fun toString(): String {
 		return player.name
 	}
+
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (javaClass != other?.javaClass) return false
+
+		other as PlayerTarget
+
+		return player.uniqueId == other.player.uniqueId
+	}
+
+	override fun hashCode(): Int {
+		return player.uniqueId.hashCode()
+	}
 }
 
 class StarshipTarget(val ship: ActiveStarship) : AITarget() {
@@ -76,5 +89,60 @@ class StarshipTarget(val ship: ActiveStarship) : AITarget() {
 
 	override fun toString(): String {
 		return ship.identifier
+	}
+
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (javaClass != other?.javaClass) return false
+
+		other as StarshipTarget
+
+		return ship == other.ship
+	}
+
+	override fun hashCode(): Int {
+		return ship.hashCode()
+	}
+}
+
+class GoalTarget(val position : Vec3i, val world: World, var hyperspace : Boolean) : AITarget() {
+	override var offset: Vec3i = Vec3i(0,0,0)
+
+	override fun getLocation(random: Boolean): Location {
+		return position.toLocation(world)
+	}
+
+	override fun getVec3i(random: Boolean): Vec3i {
+		return position
+	}
+
+	override fun getWorld(): World {
+		return world
+	}
+
+	override fun getAutoTurretTarget(): AutoTurretTargeting.AutoTurretTarget<*> {
+		TODO("Not yet implemented") //need to fix this
+	}
+
+	override fun isActive(): Boolean {
+		return true
+	}
+
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (javaClass != other?.javaClass) return false
+
+		other as GoalTarget
+
+		if (position != other.position) return false
+		if (world != other.world) return false
+
+		return true
+	}
+
+	override fun hashCode(): Int {
+		var result = position.hashCode()
+		result = 31 * result + world.hashCode()
+		return result
 	}
 }

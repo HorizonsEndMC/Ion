@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.configuration
 
 import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.ai.configuration.AIEmities
 import net.horizonsend.ion.server.features.ai.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextConfiguration
 import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
@@ -31,6 +32,8 @@ object ConfigurationFiles {
 	val aiSpawningConfiguration = defineConfigurationFile<AISpawningConfiguration>(configurationFolder, "aiSpawning")
 
 	val aiSteeringConfiguration = defineConfigurationFile<AISteeringConfiguration>(configurationFolder, "aiSteering")
+
+	val aiEmityConfiguration = defineConfigurationFile<AIEmities>(configurationFolder, "aiEmities")
 
 	val aiContextConfiguration = defineConfigurationFile<AIContextConfiguration>(configurationFolder, "aiContexts")
 

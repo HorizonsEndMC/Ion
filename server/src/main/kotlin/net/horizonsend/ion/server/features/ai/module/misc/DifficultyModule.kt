@@ -16,6 +16,28 @@ class DifficultyModule(
 
 	val speedDebuff get () = internalDifficulty <= 0
 
+	val outOfRangeAggro : Double get() {
+		return when (internalDifficulty) {
+			0 -> 0.0
+			1 -> 0.0
+			2 -> 0.5
+			3 -> 1.0
+			4 -> 2.0
+			else -> {0.0}
+		}
+	}
+
+	val decayEmityThreshold : Double get() {
+		return when (internalDifficulty) {
+			0 -> 0.0
+			1 -> 0.0
+			2 -> 0.0
+			3 -> 0.5
+			4 -> 1.5
+			else -> {0.0}
+		}
+	}
+
 	val shotVariation : Double get() {
 		return when (internalDifficulty) {
 			0 -> 0.3
@@ -25,6 +47,10 @@ class DifficultyModule(
 	}
 
 	val doubleEstimateAim get() = internalDifficulty >= 4
+
+	val aimEverything get() = internalDifficulty >= 4
+
+	val faceModifier get() = if (internalDifficulty <= 0) 0.5 else 1.0
 
 	val aimAdjust : Double get() {
 		return when (internalDifficulty) {
@@ -36,10 +62,6 @@ class DifficultyModule(
 			else -> {0.0}
 		}
 	}
-
-	val aimEverything get() = internalDifficulty >= 4
-
-	val faceModifier get() = if (internalDifficulty <= 0) 0.5 else 1.0
 
 	companion object {
 
