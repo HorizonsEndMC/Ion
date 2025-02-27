@@ -83,7 +83,7 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 	}
 
 	private fun setGuiOverlay(): Component {
-		val text = GuiText("Advanced Ship Factory")
+		val text = GuiText(entity.guiTitle)
 			.addBackground(GuiText.GuiBackground(
 				backgroundChar = ADVANCED_SHIP_FACTORY_CHARACTER,
 				backgroundWidth = 176 - 9,
