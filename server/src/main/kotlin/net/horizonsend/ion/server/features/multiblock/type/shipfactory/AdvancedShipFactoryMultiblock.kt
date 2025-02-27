@@ -136,6 +136,8 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 			.addPowerInput(0, -1, 0)
 			.build()
 
+		override val guiTitle: String = "Advanced Ship Factory"
+
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
 			super.storeAdditionalData(store, adapterContext)
 			savePowerData(store)
