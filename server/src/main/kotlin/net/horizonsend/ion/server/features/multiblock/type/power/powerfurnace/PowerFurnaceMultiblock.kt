@@ -37,7 +37,6 @@ import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import org.bukkit.craftbukkit.block.CraftFurnaceFurnace
 import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack as BukkitItemStack
 import java.util.Optional
@@ -114,28 +113,27 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 
 		override fun tick() {
 			if (powerStorage.getPower() == 0) {
-				sleepWithStatus(text("Insufficient Power", RED), 250)
+				sleepWithStatus(text("Insufficient Power", RED), 50)
 				return
 			}
 
 			val furnaceInventory = getFurnaceInventory()
 
 			if (furnaceInventory == null) {
-				sleepWithStatus(text("Insufficient Power", RED), 250)
+				sleepWithStatus(text("Not Intact!", RED), 50)
 				return
 			}
 
 			val smelted = furnaceInventory.smelting
 			if (smelted == null) {
-				sleepWithStatus(text("Sleeping...", BLUE), 250)
+				sleepWithStatus(text("Sleeping...", BLUE), 50)
 				return
 			}
 
-			if (furnaceInventory !is CraftFurnaceFurnace) return
 			val resultOption = smeltingRecipeCache[smelted]
 
 			if (resultOption.isEmpty) {
-				sleepWithStatus(text("Invalid Recipe", RED), 250)
+				sleepWithStatus(text("Invalid Recipe", RED), 50)
 				return
 			}
 
