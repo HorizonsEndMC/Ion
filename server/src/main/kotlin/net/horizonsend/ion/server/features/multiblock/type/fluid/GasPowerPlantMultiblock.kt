@@ -263,6 +263,7 @@ object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMul
 		private fun clearEmpty(furnaceInventory: Inventory, itemStack: ItemStack): Boolean {
 			val discardChest = getInventory(0, 0, 6) ?: return true
 			if (!LegacyItemUtils.canFit(discardChest, EMPTY_CANISTER)) return true
+			discardChest.addItem(EMPTY_CANISTER.clone())
 
 			furnaceInventory.remove(itemStack)
 			return false
