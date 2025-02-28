@@ -150,7 +150,7 @@ abstract class MultiblockManager(val log: Logger) {
 	/**
 	 * Multiblock entities are stored on the block the sign is placed on
 	 **/
-	operator fun get(sign: Sign): MultiblockEntity? {
+	open operator fun get(sign: Sign): MultiblockEntity? {
 		return multiblockEntities[getRelative(toBlockKey(sign.x, sign.y, sign.z), sign.getFacing().oppositeFace)]
 	}
 
