@@ -242,7 +242,7 @@ class CancelListeners : SLEventListener() {
 			val entity = state.tileEntity
 
 			entity.config = disabledVaultConfig
-			vaultServerDataResumeField.set(entity.serverData, Long.MAX_VALUE)
+			vaultServerDataResumeField.set(entity.getServerData(), Long.MAX_VALUE)
 		}
 	}
 

@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
@@ -192,7 +193,7 @@ abstract class AutoCrafterMultiblock(
 					}
 
 					val consumed = runCraftingIteration(powerUsage, grid, inputInventory, output, result)
-					if (consumed == -1) break
+					if (consumed == -1) break // Inventory full
 
 					power -= consumed
 				}
@@ -232,8 +233,7 @@ abstract class AutoCrafterMultiblock(
 			// Slots to amounts.
 			val removeSlots = mutableMapOf<Int, AtomicInteger>()
 
-			var requiredIngredients = 0
-			var matchedIngredients = 0
+			var insufficientIngredients = false
 
 			// for each slot in the crafting grid,
 			ingredientLoop@
@@ -241,80 +241,54 @@ abstract class AutoCrafterMultiblock(
 				// if it's not null,
 				if (ingredient == null) continue
 
-				// increment required ingredients to keep track of how many are needed,
-				requiredIngredients++
+				val indexedValue = inputInventory.contents.withIndex().firstOrNull { (index: Int, item: ItemStack?) ->
+					if (item == null) return@firstOrNull false
+					if (!item.isSimilar(ingredient)) return@firstOrNull false
 
-				// Loop through the input inventory
-				for ((index: Int, item: ItemStack?) in inputInventory.withIndex()) {
-					// if it matches AND we haven't already taken too much from it, use it
-					if (item == null) continue
-
-					// if an item's data matches the ingredient,
-					if (!item.isSimilar(ingredient)) continue
-
-					// Boxed int to keep track
 					val atomic = removeSlots.getOrPut(index) { AtomicInteger() }
+					if (item.amount < atomic.get() + 1) return@firstOrNull false
 
-					// And has enough
-					if (item.amount < atomic.get() + 1) continue
-
-					// flag that slot for removal,
-					atomic.incrementAndGet()
-
-					// Increment matched ingredient.
-					// This will only be called once per ingredient, since at this point it will continue onto the next one.
-					matchedIngredients++
-
-					// and move on to the next ingredient
-					continue@ingredientLoop
+					true
 				}
+
+				// No item matched
+				if (indexedValue == null) {
+					insufficientIngredients = true
+					break
+				}
+
+				val (index: Int, item: ItemStack?) = indexedValue
+				if (item == null) {
+					// Shouldn't happen but best to handle the case properly
+					insufficientIngredients = true
+					break
+				}
+
+				// flag that slot for removal
+				removeSlots.getOrPut(index) { AtomicInteger() }.incrementAndGet()
 			}
 
 			// stop iterating if not all the ingredients were found
-			if (matchedIngredients != requiredIngredients) {
+			if (insufficientIngredients) {
 				return 0
 			}
 
-			val remaining: HashMap<Int, ItemStack> = outputInventory.addItem(result.clone())
-
-			if (remaining.isNotEmpty()) {
-				// Only 1 ingredient is added, it will be the 0 index of the param.
-				val notAdded = remaining[0]!!.amount
-				check(notAdded >= 0)
-
-				// Remove the amount that was actually added, since the ingredients will not be consumed
-				val toRemove = result.amount - notAdded
-				outputInventory.removeItem(result.asQuantity(toRemove))
-
+			if (!LegacyItemUtils.canFit(outputInventory, result)) {
 				resultHash = null
 				sleepWithStatus(text("Output Full", RED), 100)
 				return -1
 			}
 
-			// below code leaves incomplete stacks, but might be faster
-			/*// attempt to add the item to the output inventory (we already checked that we can remove it from the input)
-			var fit = false
-			for ((index: Int, item: ItemStack?) in output.inventory.contents.withIndex()) {
-				if (item == null) {
-					output.inventory.setItem(index, result)
-					fit = true
-					break
-				} else if(item.isSimilar(result) && item.amount + result.amount <= item.maxStackSize) {
-					item.amount += result.amount
-					fit = true
-					break
-				}
-			}
+			outputInventory.addItem(result.clone())
 
-			if (!fit) {
-				return
-			}*/
+			var totalRemove = 0
 
 			// remove the items
 			for ((index, count) in removeSlots) {
 				// it will automatically remove the item if the amount hits 0
 				inputInventory.getItem(index)!!.amount -= count.get()
-				println("Consuming ${count.get()}")
+				totalRemove += count.get()
+//				println("Consuming ${count.get()}")
 			}
 
 			return powerUsage
