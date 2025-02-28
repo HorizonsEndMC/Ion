@@ -24,14 +24,5 @@ data class AIEmities(
 		val distanceAggroWeight : Double = 1.0,
 		val gravityWellAggro : Double = 10.0,
 		val damagerAggroWeight : Double = 10.0,
-		val defaultEmityFilter : (@Contextual AITarget) -> Boolean = fun(target : AITarget) : Boolean {
-			if (target is PlayerTarget) {
-				return target.player.hasProtection()
-			}
-			if (target is StarshipTarget) {
-				return target.ship.playerPilot?.hasProtection() ?: false
-			}
-			return false
-		}
 	)
 }

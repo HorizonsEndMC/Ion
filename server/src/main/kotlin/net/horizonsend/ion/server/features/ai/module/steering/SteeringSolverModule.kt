@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
+import net.horizonsend.ion.server.features.ai.util.GoalTarget
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.input.AIInput
@@ -46,7 +47,7 @@ class SteeringSolverModule(
 		if (AIDebugModule.canShipsRotate) {
 			AIControlUtils.faceDirection(controller, vectorToBlockFace(heading))
 		}
-		if (!AIDebugModule.canShipsMove) {
+		if ((target.get() is GoalTarget && (target.get() as GoalTarget).hyperspace) || !AIDebugModule.canShipsMove) {
 			controller.starship.setDirectControlEnabled(false)
 			StarshipCruising.stopCruising(controller,starship)
 			AIControlUtils.shiftFlyInDirection(controller, null)

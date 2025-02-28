@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.ai.module.targeting
 
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
@@ -19,6 +20,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.P
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import java.util.function.Supplier
 import kotlin.math.cbrt
 
@@ -44,6 +46,7 @@ open class EmityModule(
 		decayEmity()
 		generateEmity()
 		updateAggro()
+		debugAudience.information("Number of targets: ${emityList.size}")
 		sortEmity()
 	}
 
@@ -85,12 +88,12 @@ open class EmityModule(
 	}
 
 	private fun aggroOnWell() {
-		for (starship in ActiveStarships.getInWorld(starship.world)) {
-			if (!starship.isInterdicting) continue
-			val tempTarget = AIOpponent(StarshipTarget(starship))
-			if (emityFilter(starship,tempTarget.target,targetAI)) continue
+		for (otherStarship in ActiveStarships.getInWorld(starship.world)) {
+			if (!otherStarship.isInterdicting) continue
+			val tempTarget = AIOpponent(StarshipTarget(otherStarship))
+			if (!emityFilter(starship,tempTarget.target,targetAI)) continue
 			val dist = getOpponentDistance(tempTarget.target)!!
-			if (dist > Interdiction.starshipInterdictionRangeEquation(starship)) continue
+			if (dist > Interdiction.starshipInterdictionRangeEquation(otherStarship)) continue
 			val index = emityList.indexOf(tempTarget)
 			if (index != -1) {
 				emityList[index].baseWeight += config.gravityWellAggro * 0.1 //kepping a well up will make ai pissed on you
@@ -103,9 +106,9 @@ open class EmityModule(
 	}
 
 	private fun aggroOnDistance() {
-		for (starship in ActiveStarships.getInWorld(starship.world)) {
-			val tempTarget = AIOpponent(StarshipTarget(starship))
-			if (emityFilter(starship,tempTarget.target,targetAI)) continue
+		for (otherStarship in ActiveStarships.getInWorld(starship.world)) {
+			val tempTarget = AIOpponent(StarshipTarget(otherStarship))
+			if (!emityFilter(starship,tempTarget.target,targetAI)) continue
 			val dist = getOpponentDistance(tempTarget.target)!! + 1e-4
 			val weight : Double
 			if (dist > config.aggroRange) {
@@ -126,7 +129,7 @@ open class EmityModule(
 		for (player in starship.world.players) {
 			//TODO check if a player is already riding a ship
 			val tempTarget = AIOpponent(PlayerTarget(player))
-			if (emityFilter(starship,tempTarget.target,targetAI)) continue
+			if (!emityFilter(starship,tempTarget.target,targetAI)) continue
 			val dist = getOpponentDistance(tempTarget.target)!!
 			if (dist > config.aggroRange ) continue
 			val index = emityList.indexOf(tempTarget)
@@ -143,7 +146,7 @@ open class EmityModule(
 	private fun aggroOnDamager() {
 		val topDamager = starship.damagers.maxByOrNull { it.value.points.get() } ?: return
 		val tempTarget  = topDamager.key.getAITarget()?.let { AIOpponent(it) } ?: return
-		if (emityFilter(starship,tempTarget.target,targetAI)) return
+		if (!emityFilter(starship,tempTarget.target,targetAI)) return
 		val index = emityList.indexOf(tempTarget)
 		if (index != -1) {
 			emityList[index].baseWeight += config.damagerAggroWeight * 0.1 //the highest damager will generate base emity

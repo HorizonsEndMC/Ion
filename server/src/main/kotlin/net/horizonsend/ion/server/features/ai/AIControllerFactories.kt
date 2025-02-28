@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.module.misc.ContactsJammerModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.misc.GravityWellModule
+import net.horizonsend.ion.server.features.ai.module.misc.NavigationModule
 import net.horizonsend.ion.server.features.ai.module.steering.BasicSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.CapitalSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.DistancePositioningModule
@@ -74,11 +75,19 @@ object AIControllerFactories : IonServerComponent() {
 				SteeringSolverModule.MovementType.DC
 			)
 			)
+			if (difficultyManager.doNavigation) {
+				builder.addModule(NavigationModule::class, NavigationModule(
+					controller,
+					targeting,
+					difficultyManager
+				))
+			}
 
 			builder
 		}
 
 		addUtilModule { AIDebugModule(it) }
+
 
 		build()
 	}
@@ -115,6 +124,14 @@ object AIControllerFactories : IonServerComponent() {
 				SteeringSolverModule.MovementType.DC
 			)
 			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(NavigationModule::class, NavigationModule(
+					controller,
+					targeting,
+					difficultyManager
+				))
+			}
 
 			builder
 		}
@@ -154,6 +171,14 @@ object AIControllerFactories : IonServerComponent() {
 				SteeringSolverModule.MovementType.DC
 			)
 			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(NavigationModule::class, NavigationModule(
+					controller,
+					targeting,
+					difficultyManager
+				))
+			}
 
 			builder
 		}
@@ -195,6 +220,14 @@ object AIControllerFactories : IonServerComponent() {
 				SteeringSolverModule.MovementType.DC
 			)
 			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(NavigationModule::class, NavigationModule(
+					controller,
+					targeting,
+					difficultyManager
+				))
+			}
 
 			builder.addModule(ContactsJammerModule::class, ContactsJammerModule(controller, 300.0, controller.getCoreModuleSupplier<TargetingModule>(TargetingModule::class).map { it.findTargets() }))
 			builder
@@ -239,6 +272,14 @@ object AIControllerFactories : IonServerComponent() {
 			)
 			)
 
+			if (difficultyManager.doNavigation) {
+				builder.addModule(NavigationModule::class, NavigationModule(
+					controller,
+					targeting,
+					difficultyManager
+				))
+			}
+
 			builder
 		}
 
@@ -280,6 +321,14 @@ object AIControllerFactories : IonServerComponent() {
 				SteeringSolverModule.MovementType.DC
 			)
 			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(NavigationModule::class, NavigationModule(
+					controller,
+					targeting,
+					difficultyManager
+				))
+			}
 
 			builder
 		}
@@ -324,6 +373,14 @@ object AIControllerFactories : IonServerComponent() {
 			)
 			)
 
+			if (difficultyManager.doNavigation) {
+				builder.addModule(NavigationModule::class, NavigationModule(
+					controller,
+					targeting,
+					difficultyManager
+				))
+			}
+
 
 			builder
 		}
@@ -367,6 +424,14 @@ object AIControllerFactories : IonServerComponent() {
 			)
 			)
 
+			if (difficultyManager.doNavigation) {
+				builder.addModule(NavigationModule::class, NavigationModule(
+					controller,
+					targeting,
+					difficultyManager
+				))
+			}
+
 			builder
 		}
 
@@ -405,6 +470,14 @@ object AIControllerFactories : IonServerComponent() {
 				SteeringSolverModule.MovementType.CRUISE
 			)
 			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(NavigationModule::class, NavigationModule(
+					controller,
+					targeting,
+					difficultyManager
+				))
+			}
 
 
 			builder
@@ -445,6 +518,14 @@ object AIControllerFactories : IonServerComponent() {
 				SteeringSolverModule.MovementType.CRUISE
 			)
 			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(NavigationModule::class, NavigationModule(
+					controller,
+					targeting,
+					difficultyManager
+				))
+			}
 
 
 			builder
@@ -488,6 +569,14 @@ object AIControllerFactories : IonServerComponent() {
 			)
 			)
 
+			if (difficultyManager.doNavigation) {
+				builder.addModule(NavigationModule::class, NavigationModule(
+					controller,
+					targeting,
+					difficultyManager
+				))
+			}
+
 
 			builder
 		}
@@ -529,6 +618,14 @@ object AIControllerFactories : IonServerComponent() {
 			)
 			)
 
+			if (difficultyManager.doNavigation) {
+				builder.addModule(NavigationModule::class, NavigationModule(
+					controller,
+					targeting,
+					difficultyManager
+				))
+			}
+
 
 			builder
 		}
@@ -568,6 +665,14 @@ object AIControllerFactories : IonServerComponent() {
 				targeting::findTarget,
 				SteeringSolverModule.MovementType.CRUISE
 			))
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(NavigationModule::class, NavigationModule(
+					controller,
+					targeting,
+					difficultyManager
+				))
+			}
 
 			builder
 		}
@@ -647,6 +752,14 @@ object AIControllerFactories : IonServerComponent() {
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
 			))
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(NavigationModule::class, NavigationModule(
+					controller,
+					targeting,
+					difficultyManager
+				))
+			}
 
 			builder
 		}

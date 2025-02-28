@@ -38,6 +38,8 @@ class DifficultyModule(
 		}
 	}
 
+	val doNavigation : Boolean get() = internalDifficulty >= 2
+
 	val shotVariation : Double get() {
 		return when (internalDifficulty) {
 			0 -> 0.3
