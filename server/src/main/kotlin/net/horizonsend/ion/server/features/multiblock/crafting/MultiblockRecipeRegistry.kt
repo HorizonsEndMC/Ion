@@ -33,8 +33,12 @@ import kotlin.reflect.KClass
 
 @Suppress("UNUSED")
 object MultiblockRecipeRegistry : IonServerComponent() {
-	val recipes = mutableListOf<MultiblockRecipe<*>>()
-	val byMultiblock = multimapOf<KClass<out RecipeProcessingMultiblockEntity<*>>, MultiblockRecipe<*>>()
+	private val recipes = mutableListOf<MultiblockRecipe<*>>()
+	private val byMultiblock = multimapOf<KClass<out RecipeProcessingMultiblockEntity<*>>, MultiblockRecipe<*>>()
+
+	override fun onEnable() {
+		registerGasFurnaceRecipes()
+	}
 
 	val URANIUM_ENRICHMENT = register(FurnaceMultiblockRecipe(
 		identifier = "URANIUM_ENRICHMENT",
@@ -211,6 +215,61 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 			.updateProgressText()
 			.updateFurnace()
 	))
+
+	private fun registerGasFurnaceRecipes() {
+		val pairs = arrayOf(
+			Material.COPPER_BLOCK to Material.EXPOSED_COPPER,
+			Material.EXPOSED_COPPER to Material.WEATHERED_COPPER,
+			Material.WEATHERED_COPPER to Material.OXIDIZED_COPPER,
+
+			Material.CHISELED_COPPER to Material.EXPOSED_CHISELED_COPPER,
+			Material.EXPOSED_CHISELED_COPPER to Material.WEATHERED_CHISELED_COPPER,
+			Material.WEATHERED_CHISELED_COPPER to Material.OXIDIZED_CHISELED_COPPER,
+
+			Material.COPPER_GRATE to Material.EXPOSED_COPPER_GRATE,
+			Material.EXPOSED_COPPER_GRATE to Material.WEATHERED_COPPER_GRATE,
+			Material.WEATHERED_COPPER_GRATE to Material.OXIDIZED_COPPER_GRATE,
+
+			Material.CUT_COPPER to Material.EXPOSED_CUT_COPPER,
+			Material.EXPOSED_CUT_COPPER to Material.WEATHERED_CUT_COPPER,
+			Material.WEATHERED_CUT_COPPER to Material.OXIDIZED_CUT_COPPER,
+
+			Material.CUT_COPPER_STAIRS to Material.EXPOSED_CUT_COPPER_STAIRS,
+			Material.EXPOSED_CUT_COPPER_STAIRS to Material.WEATHERED_CUT_COPPER_STAIRS,
+			Material.WEATHERED_CUT_COPPER_STAIRS to Material.OXIDIZED_CUT_COPPER_STAIRS,
+
+			Material.CUT_COPPER_SLAB to Material.EXPOSED_CUT_COPPER_SLAB,
+			Material.EXPOSED_CUT_COPPER_SLAB to Material.WEATHERED_CUT_COPPER_SLAB,
+			Material.WEATHERED_CUT_COPPER_SLAB to Material.OXIDIZED_CUT_COPPER_SLAB,
+
+			Material.COPPER_DOOR to Material.EXPOSED_COPPER_DOOR,
+			Material.EXPOSED_COPPER_DOOR to Material.WEATHERED_COPPER_DOOR,
+			Material.WEATHERED_COPPER_DOOR to Material.OXIDIZED_COPPER_DOOR,
+
+			Material.COPPER_TRAPDOOR to Material.EXPOSED_COPPER_TRAPDOOR,
+			Material.EXPOSED_COPPER_TRAPDOOR to Material.WEATHERED_COPPER_TRAPDOOR,
+			Material.WEATHERED_COPPER_TRAPDOOR to Material.OXIDIZED_COPPER_TRAPDOOR,
+
+			Material.COPPER_BULB to Material.EXPOSED_COPPER_BULB,
+			Material.EXPOSED_COPPER_BULB to Material.WEATHERED_COPPER_BULB,
+			Material.WEATHERED_COPPER_BULB to Material.OXIDIZED_COPPER_BULB,
+		)
+
+		for ((ingredient, result) in pairs) {
+			register(FurnaceMultiblockRecipe(
+				identifier = "${ingredient}_OXIDATION",
+				clazz = GasFurnaceMultiblock.GasFurnaceMultiblockEntity::class,
+				smeltingItem = ItemRequirement.MaterialRequirement(ingredient),
+				fuelItem = GasCanisterRequirement(Gasses.OXYGEN, 50),
+				power = PowerRequirement(100),
+				result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+					duration = Duration.ofSeconds(10),
+					normalResult = ItemResult.simpleResult(result),
+				))
+				.updateFurnace()
+			))
+		}
+	}
 
 	fun <E: RecipeEnviornment, R: MultiblockRecipe<E>> register(recipe: R): R {
 		recipes.add(recipe)
