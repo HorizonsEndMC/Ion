@@ -7,28 +7,27 @@ import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.inventory.FurnaceInventory
 
 object CanisterVentMultiblock : Multiblock(), EntityMultiblock<CanisterVentMultiblock.CanisterVentMultiblockEntity>, DisplayNameMultilblock {
 	override val name: String = "vent"
 
 	override val signText: Array<Component?> = arrayOf(
-		Component.text()
-			.append(Component.text("Gas", NamedTextColor.RED))
-			.append(Component.text(" Vent", NamedTextColor.GOLD))
+		text()
+			.append(text("Gas", NamedTextColor.RED))
+			.append(text(" Vent", NamedTextColor.GOLD))
 			.build(),
 		null,
 		null,
@@ -66,12 +65,12 @@ object CanisterVentMultiblock : Multiblock(), EntityMultiblock<CanisterVentMulti
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : MultiblockEntity(manager, CanisterGasCollectorMultiblock, world, x, y, z, structureDirection), AsyncTickingMultiblockEntity {
+	) : MultiblockEntity(manager, CanisterVentMultiblock, world, x, y, z, structureDirection), SyncTickingMultiblockEntity, FurnaceBasedMultiblockEntity {
 		val configuration get() = globalGassesConfiguration()
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 
-		override fun tickAsync() {
-			val furnaceInventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return
+		override fun tick() {
+			val furnaceInventory = getFurnaceInventory() ?: return
 
 			val fuel = furnaceInventory.fuel ?: return
 			val customItem = fuel.customItem ?: return
