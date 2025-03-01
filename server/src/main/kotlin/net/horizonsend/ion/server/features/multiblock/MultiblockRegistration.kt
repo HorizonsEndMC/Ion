@@ -125,6 +125,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.HorizontalNavigationComputerMultiblockAdvanced
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.VerticalNavigationComputerMultiblockAdvanced
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.InterceptorCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.LaserCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.PulseCannonStarshipWeaponMultiblock
@@ -301,6 +302,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(LaserCannonStarshipWeaponMultiblock)
 		registerMultiblock(PlasmaCannonStarshipWeaponMultiblock)
 		registerMultiblock(PulseCannonStarshipWeaponMultiblock)
+		registerMultiblock(InterceptorCannonStarshipWeaponMultiblock)
 		registerMultiblock(HeavyLaserStarshipWeaponMultiblock)
 		registerMultiblock(AIHeavyLaserStarshipWeaponMultiblock)
 		registerMultiblock(AIPhaserStarshipWeaponMultiblock)
