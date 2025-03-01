@@ -115,7 +115,7 @@ class RegionTerritory(territory: Territory) :
 	private fun handleNationClaim(playerData: AbstractPlayerCache.PlayerData, nation: Oid<Nation>): String? {
 		val nation = nation
 		val playerNation: Oid<Nation>? = playerData.nationOid
-		val minBuildAccess =  minBuildAccess
+		val minBuildAccess = minBuildAccess
 
 		if (minBuildAccess != null && minBuildAccess != Settlement.ForeignRelation.STRICT) {
 			when (minBuildAccess) {
@@ -127,6 +127,10 @@ class RegionTerritory(territory: Territory) :
 				Settlement.ForeignRelation.NATION_MEMBER -> if (playerNation == nation) return null
 				else -> {}
 			}
+		}
+		else if (minBuildAccess == null) {
+			// Assume nation claim restriction
+			if (playerNation == nation) return null
 		}
 
 		return "$name is claimed by ${ NationCache[nation].name }".intern()
