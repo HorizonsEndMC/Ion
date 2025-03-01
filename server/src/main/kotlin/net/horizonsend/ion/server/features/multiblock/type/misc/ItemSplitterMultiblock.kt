@@ -172,8 +172,8 @@ object ItemSplitterMultiblock : Multiblock(), InteractableMultiblock, EntityMult
 			sign.update()
 		}
 
-		fun getBlacklist(): List<ItemStack>? {
-			val items = getInventory(0, 1, 1) ?: return null
+		private fun getBlacklist(): List<ItemStack>? {
+			val items = getInventory(0, 1, 2) ?: return null
 			return items.storageContents.filterNotNull()
 		}
 
