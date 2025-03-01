@@ -26,6 +26,9 @@ object StarshipDestruction {
 
 		starship.isExploding = true
 
+		starship.multiblockManager.clearData()
+		starship.transportManager.clearData()
+
 		if (urgent) {
 			return Tasks.syncBlocking {
 				DeactivatedPlayerStarships.deactivateNow(starship, true)
@@ -58,6 +61,9 @@ object StarshipDestruction {
 		}
 
 		starship.isExploding = true
+
+		starship.multiblockManager.clearData()
+		starship.transportManager.clearData()
 
 		val previousController = starship.controller
 

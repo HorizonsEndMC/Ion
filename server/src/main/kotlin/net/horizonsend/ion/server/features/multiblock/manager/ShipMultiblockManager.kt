@@ -176,4 +176,10 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 		val local = getLocalCoordinate(Vec3i(sign.x, sign.y, sign.z))
 		return multiblockEntities[getRelative(toBlockKey(local), sign.getFacing().oppositeFace)]
 	}
+
+	fun clearData() {
+		multiblockEntities = ConcurrentHashMap()
+		syncTickingMultiblockEntities = ConcurrentHashMap()
+		asyncTickingMultiblockEntities = ConcurrentHashMap()
+	}
 }

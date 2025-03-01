@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.manager
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.NewTransport
@@ -70,5 +71,10 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 
 	override fun getLocalCoordinate(globalVec3i: Vec3i): Vec3i {
 		return starship.getLocalCoordinate(globalVec3i)
+	}
+
+	fun clearData() {
+		extractorManager.extractors = Long2ObjectOpenHashMap()
+		filterManager.filters.clear()
 	}
 }
