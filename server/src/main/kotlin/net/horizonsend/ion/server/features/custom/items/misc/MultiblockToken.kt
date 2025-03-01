@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
+import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.rightClickListener
 import net.horizonsend.ion.server.features.custom.items.component.StoredMultiblock
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
@@ -33,6 +34,9 @@ object MultiblockToken : CustomItem(
 		addComponent(CustomComponentTypes.MULTIBLOCK_TYPE, StoredMultiblock)
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@MultiblockToken) { event, _, itemStack ->
 			handleSecondaryInteract(event.player, itemStack, event)
+		})
+		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@MultiblockToken) { event, _, itemStack ->
+			PrePackaged.tryPreview(event.player, itemStack, event)
 		})
 	}
 
