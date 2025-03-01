@@ -177,7 +177,7 @@ class DecomposeTask(
 
 	private fun getRealCoordinate(offset: Vec3i) = taskEntity.getPosRelative(right = offset.x + 1, up = offset.y + 1, forward = offset.z + 1)
 
-	private var currentPosition: Vec3i = Vec3i(0, 0, 0)
+	private var currentPosition: Vec3i = Vec3i(0, 0, -1)
 
 	private val iterator = object : Iterator<Vec3i> {
 		var hasNext = true
