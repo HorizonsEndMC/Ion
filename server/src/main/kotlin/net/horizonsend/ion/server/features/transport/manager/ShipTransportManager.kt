@@ -50,7 +50,7 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 		NewTransport.registerTransportManager(this)
 	}
 
-	fun release() {
+	fun onDestroy() {
 		cacheHolders.forEach { it.release() }
 		NewTransport.removeTransportManager(this)
 		extractorManager.releaseExtractors()
