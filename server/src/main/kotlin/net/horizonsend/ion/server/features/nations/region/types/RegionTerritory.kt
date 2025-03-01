@@ -95,7 +95,6 @@ class RegionTerritory(territory: Territory) :
 		val nation = nation
 		val settlement = settlement
 		val npcOwner = npcOwner
-		val minBuildAccess =  minBuildAccess
 
 		return when {
 			// if it's a nation outpost
@@ -113,7 +112,6 @@ class RegionTerritory(territory: Territory) :
 	}
 
 	private fun handleNationClaim(playerData: AbstractPlayerCache.PlayerData, nation: Oid<Nation>): String? {
-		val nation = nation
 		val playerNation: Oid<Nation>? = playerData.nationOid
 		val minBuildAccess = minBuildAccess
 
