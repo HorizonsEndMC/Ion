@@ -26,23 +26,23 @@ import org.litote.kmongo.util.KMongoUtil.idFilterQuery
  * - CityNPC (Territory it's in)
  */
 data class Territory(
-    override val _id: Oid<Territory> = objId(),
-    /** The display name of the territory */
+	override val _id: Oid<Territory> = objId(),
+	/** The display name of the territory */
 	var name: String,
-    /** The world the territory is in */
+	/** The world the territory is in */
 	var world: String,
-    /** The data of the points of the territory */
+	/** The data of the points of the territory */
 	var polygonData: ByteArray,
-    /** The settlement residing here. */
+	/** The settlement residing here. */
 	var settlement: Oid<Settlement>? = null,
-    /** The nation with an outpost here. For outposts only, not member settlements! */
+	/** The nation with an outpost here. For outposts only, not member settlements! */
 	var nation: Oid<Nation>? = null,
-    /** The NPC territory owner residing here. */
+	/** The NPC territory owner residing here. */
 	var npcOwner: Oid<NPCTerritoryOwner>? = null,
-    /** If the territory should be a safe-zone from PVP and explosions */
+	/** If the territory should be a safe-zone from PVP and explosions */
 	var isProtected: Boolean = false,
 	/** If the territory is a nation claim, determines who gets to build in it */
-	var minBuildAccess: Settlement.ForeignRelation? = null,
+	var minBuildAccess: Settlement.ForeignRelation? = Settlement.ForeignRelation.NATION_MEMBER,
 ) : DbObject {
 	// region dumb stuff
 	// Use all properties for equals, only id for hashcode
