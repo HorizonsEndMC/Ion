@@ -314,9 +314,6 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 
 			starship.subsystems.forEach { it.handleRelease() }
 
-			starship.multiblockManager.release()
-			starship.transportManager.release()
-
 			for ((ship: StarshipData, blocks: Set<Long>) in starship.carriedShips) {
 				if (!blocks.isEmpty()) {
 					carriedShipStateMap[ship] = StarshipState.createFromBlocks(world, blocks)
