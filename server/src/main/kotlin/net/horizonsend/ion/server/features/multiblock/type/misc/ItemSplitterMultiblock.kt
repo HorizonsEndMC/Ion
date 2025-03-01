@@ -141,8 +141,8 @@ object ItemSplitterMultiblock : Multiblock(), InteractableMultiblock, EntityMult
 			val filterItems = getBlacklist() ?: return
 
 			val inputInventory = getInventory(0, 1, 0) ?: return
-			val remainderInventory = getInventory(2, 1, 1) ?: return
-			val filteredInventory = getInventory(-2, 1, 1) ?: return
+			val remainderInventory = getInventory(-2, 1, 1) ?: return
+			val filteredInventory = getInventory(+2, 1, 1) ?: return
 
 			if (isBlacklist) {
 				doFilter(inputInventory, filteredInventory, remainderInventory) { it?.filterContains(filterItems) == false }
