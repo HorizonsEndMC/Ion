@@ -51,11 +51,9 @@ fun getRemovableItems(inventory: CraftInventory): Iterable<Pair<Int, ItemStack>>
 
 	when (inventory.inventory) {
 		is AbstractFurnaceBlockEntity -> {
-			for ((index, value) in items) {
-				if (value == null) continue
-				if (index == AbstractFurnaceMenu.RESULT_SLOT) continue
-
-				filtered.add(index to value)
+			val item = inventory.getItem(AbstractFurnaceMenu.RESULT_SLOT)
+			if (item != null && !item.isEmpty) {
+				filtered.add(AbstractFurnaceMenu.RESULT_SLOT to item)
 			}
 		}
 
