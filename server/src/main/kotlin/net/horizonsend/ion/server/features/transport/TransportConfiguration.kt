@@ -16,7 +16,7 @@ data class TransportConfiguration(
 	@Serializable
 	data class PowerTransportConfiguration(
 		val maxPowerRemovedPerExtractorTick: Int = 1000,
-		val solarPanelTickPower: Int = 100,
+		val solarPanelTickPower: Int = 5,
 		val maxExtractorDestinations: Int = 100,
 		val maxSolarDestinations: Int = 100,
 		val maxPathfindDepth: Int = 600
