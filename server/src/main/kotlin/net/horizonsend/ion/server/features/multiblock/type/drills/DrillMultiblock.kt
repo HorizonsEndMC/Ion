@@ -44,6 +44,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
+import org.bukkit.inventory.ItemStack
 import java.util.EnumSet
 import java.util.UUID
 import kotlin.math.max
@@ -288,6 +289,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 				var drops = customBlock?.drops?.getDrops(null, false) ?: if (block.type == Material.SNOW_BLOCK) listOf() else block.drops
 
 				if (block.type.isShulkerBox) drops = listOf()
+				if (block.type == Material.END_PORTAL_FRAME) drops = listOf(ItemStack(Material.END_PORTAL_FRAME))
 
 				if (!canBuild(block)) {
 					continue
