@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemContainerContents
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
@@ -41,11 +42,13 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Directional
 import org.bukkit.block.data.type.WallSign
 import org.bukkit.block.sign.Side
+import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
@@ -375,5 +378,23 @@ object PrePackaged : SLEventListener() {
 
 		val multiblock = getTokenData(item) ?: return
 		event.inventory.result = MultiblockToken.constructFor(multiblock)
+	}
+
+	fun tryPreview(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
+		if (livingEntity !is Player) return
+
+		val packagedData = PrePackaged.getTokenData(itemStack) ?: run {
+			livingEntity.userError("The packaged multiblock has no data!")
+			return
+		}
+
+		val origin = PrePackaged.getOriginFromPlacement(
+			event.clickedBlock ?: return,
+			livingEntity.facing,
+			packagedData.shape
+		)
+
+		val locations = packagedData.shape.getLocations(livingEntity.facing).map { Vec3i(origin.x, origin.y, origin.z).plus(it) }
+		livingEntity.highlightBlocks(locations, 100L)
 	}
 }
