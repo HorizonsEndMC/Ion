@@ -18,13 +18,11 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getModel
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component.text
 import org.bukkit.GameMode
-import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
@@ -41,7 +39,7 @@ object PackagedMultiblock : CustomItem(
 			tryPlace(event.player, itemStack, event)
 		})
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@PackagedMultiblock) { event, _, itemStack ->
-			tryPreview(event.player, itemStack, event)
+			PrePackaged.tryPreview(event.player, itemStack, event)
 		})
 	}
 
@@ -95,24 +93,6 @@ object PackagedMultiblock : CustomItem(
 		if (event.player.gameMode != GameMode.CREATIVE) {
 			itemStack.amount--
 		}
-	}
-
-	fun tryPreview(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
-		if (livingEntity !is Player) return
-
-		val packagedData = PrePackaged.getTokenData(itemStack) ?: run {
-			livingEntity.userError("The packaged multiblock has no data!")
-			return
-		}
-
-		val origin = PrePackaged.getOriginFromPlacement(
-			event.clickedBlock ?: return,
-			livingEntity.facing,
-			packagedData.shape
-		)
-
-		val locations = packagedData.shape.getLocations(livingEntity.facing).map { Vec3i(origin.x, origin.y, origin.z).plus(it) }
-		livingEntity.highlightBlocks(locations, 100L)
 	}
 
 	override fun getBazaarString(itemStack: ItemStack): String {
