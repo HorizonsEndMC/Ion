@@ -90,7 +90,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 		}
 	}
 
-	fun release() {
+	fun onDestroy() {
 		MultiblockTicking.removeMultiblockManager(this)
 		releaseEntities()
 	}
