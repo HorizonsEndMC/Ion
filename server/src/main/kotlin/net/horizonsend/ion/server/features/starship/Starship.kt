@@ -151,6 +151,9 @@ class Starship(
 	fun destroy() {
 		IonWorld[world].starships.remove(this)
 		controller.destroy()
+
+		multiblockManager.onDestroy()
+		transportManager.onDestroy()
 	}
 
 	//region Pilot & Controller
@@ -176,7 +179,6 @@ class Starship(
 
 	// Start region transport
 	val transportManager = ShipTransportManager(this)
-
 	val multiblockManager = ShipMultiblockManager(this)
 	// Endregion
 
