@@ -463,9 +463,9 @@ internal object NationCommand : SLCommand() {
 	}
 
 	@Subcommand("set minbuildaccess")
-	@CommandCompletion("NONE|ALLY|NATION_MEMBER|STRICT")
+	@CommandCompletion("NONE|ALLY|NATION_MEMBER|STRICT @outposts")
 	@Description("Change your nation territory's minimum build access level")
-	fun onSetMinBuildAccess(sender: Player, territory: String, accessLevel: Settlement.ForeignRelation): Unit = asyncCommand(sender) {
+	fun onSetMinBuildAccess(sender: Player, accessLevel: Settlement.ForeignRelation, territory: String): Unit = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
 
