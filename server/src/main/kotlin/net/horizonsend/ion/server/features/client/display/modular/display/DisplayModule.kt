@@ -42,7 +42,7 @@ abstract class DisplayModule(
 		)
 
 		craftEntity.billboard = org.bukkit.entity.Display.Billboard.FIXED
-		craftEntity.viewRange = 1.0f
+		craftEntity.viewRange = 0.25f
 		craftEntity.brightness = org.bukkit.entity.Display.Brightness(15, 15)
 		craftEntity.teleportDuration = 0
 		craftEntity.backgroundColor = Color.fromARGB(0x00000000)
