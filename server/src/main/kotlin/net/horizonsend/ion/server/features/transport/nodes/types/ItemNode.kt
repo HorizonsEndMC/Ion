@@ -113,11 +113,9 @@ interface ItemNode : Node {
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 
 		override fun filterPositionData(nextNodes: List<NodePositionData>, backwards: BlockFace): List<NodePositionData> {
-			val forward = backwards.oppositeFace
-
 			val filtered = mutableListOf<NodePositionData>()
 			for (node in nextNodes) {
-				if (node.offset == forward) filtered.add(node)
+				if (node.offset == direction) filtered.add(node)
 				if (node.type is InventoryNode) filtered.add(node)
 			}
 
