@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.manager
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
@@ -26,13 +27,22 @@ abstract class TransportManager<T: CacheHolder<*>> {
 	abstract fun getInputProvider(): InputManager
 
 	fun tick() {
+		val invalid = LongOpenHashSet()
+
 		for (extractor in extractorManager.getExtractors()) {
+			if (!extractorManager.verifyExtractor(getWorld(), extractor.pos)) {
+				invalid.add(extractor.pos)
+				continue
+			}
+
 			val delta = extractor.markTicked()
 
 			for (network in tickedHolders) {
 				network.cache.tickExtractor(extractor.pos, delta, (extractor as? AdvancedExtractorData<*>)?.metaData)
 			}
 		}
+
+		invalid.forEach(extractorManager::removeExtractor)
 	}
 
 	abstract fun getWorld(): World
