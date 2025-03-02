@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.manager
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.NewTransport
@@ -74,7 +73,7 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 	}
 
 	fun clearData() {
-		extractorManager.extractors = Long2ObjectOpenHashMap()
+		extractorManager.extractors.clear()
 		filterManager.filters.clear()
 	}
 }

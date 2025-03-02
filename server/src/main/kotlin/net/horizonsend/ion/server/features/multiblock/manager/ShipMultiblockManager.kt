@@ -178,8 +178,8 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 	}
 
 	fun clearData() {
-		multiblockEntities = ConcurrentHashMap()
-		syncTickingMultiblockEntities = ConcurrentHashMap()
-		asyncTickingMultiblockEntities = ConcurrentHashMap()
+		multiblockEntities.forEachKey(1) { key ->
+			removeMultiblockEntity(key)
+		}
 	}
 }
