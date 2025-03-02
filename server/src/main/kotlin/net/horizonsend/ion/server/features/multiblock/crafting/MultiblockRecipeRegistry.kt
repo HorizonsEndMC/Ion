@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.crafting
 
 import io.papermc.paper.util.Tick
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment

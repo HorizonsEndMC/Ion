@@ -18,9 +18,9 @@ import net.horizonsend.ion.common.utils.text.formatSettlementName
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.orEmpty
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.misc.GToggleCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.messages.NationsChatMessage
 import net.horizonsend.ion.server.features.chat.messages.NormalChatMessage
