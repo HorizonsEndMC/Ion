@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.configurationFolder
+import net.horizonsend.ion.server.core.registries.IonRegistries
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
 import net.horizonsend.ion.server.features.misc.WorldReset
@@ -71,6 +72,8 @@ object IonServer : JavaPlugin() {
 		}
 
 		bootstrapCustomTranslations()
+
+		IonRegistries.onEnable()
 
 		// Basically exists as a catch all for any weird state which could result in worlds already being loaded at this
 		// such as reloading or other plugins doing things they probably shouldn't.
