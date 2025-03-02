@@ -89,7 +89,13 @@ abstract class MultiblockManager(val log: Logger) {
 	 **/
 	fun removeMultiblockEntity(x: Int, y: Int, z: Int, save: Boolean = true): MultiblockEntity? {
 		val key = toBlockKey(x, y, z)
+		return removeMultiblockEntity(key, save)
+	}
 
+	/**
+	 * Upon the removal of a multiblock sign
+	 **/
+	fun removeMultiblockEntity(key: BlockKey, save: Boolean = true): MultiblockEntity? {
 		val entity = multiblockEntities.remove(key)
 
 		syncTickingMultiblockEntities.remove(key)
