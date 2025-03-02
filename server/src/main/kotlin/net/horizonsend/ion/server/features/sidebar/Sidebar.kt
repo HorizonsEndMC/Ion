@@ -1,17 +1,18 @@
 package net.horizonsend.ion.server.features.sidebar
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.kyori.adventure.key.Key
 import net.megavex.scoreboardlibrary.api.ScoreboardLibrary
 import net.megavex.scoreboardlibrary.api.exception.NoPacketAdapterAvailableException
 import net.megavex.scoreboardlibrary.api.noop.NoopScoreboardLibrary
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.kyori.adventure.key.Key
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import java.util.*
+import java.util.Collections
+import java.util.UUID
 
 object Sidebar : IonServerComponent() {
 	val fontKey = Key.key("horizonsend:sidebar")

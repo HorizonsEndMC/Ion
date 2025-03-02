@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.progression
 
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.progression.SLXP.getCached
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer

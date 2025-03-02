@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.economy.cargotrade
 
 import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentManager.getShipmentItemId
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship

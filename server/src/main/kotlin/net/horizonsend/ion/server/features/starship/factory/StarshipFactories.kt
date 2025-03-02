@@ -11,7 +11,7 @@ import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer

@@ -11,8 +11,8 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.npcs.NPCManager
 import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
 import net.horizonsend.ion.server.features.npcs.traits.CombatNPCTrait

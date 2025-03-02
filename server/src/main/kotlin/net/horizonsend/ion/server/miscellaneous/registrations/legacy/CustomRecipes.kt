@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.registrations.legacy
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Material
