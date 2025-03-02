@@ -18,8 +18,8 @@ import net.horizonsend.ion.common.utils.text.colors.TSAII_VERY_DARK_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.common.utils.text.miniMessage
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_BATTLECRUISER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_CORVETTE

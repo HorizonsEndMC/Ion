@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.progression
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.int
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.server.core.IonServerComponent
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
