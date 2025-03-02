@@ -9,7 +9,7 @@ import net.horizonsend.ion.common.database.schema.space.Planet
 import net.horizonsend.ion.common.database.schema.space.RoguePlanet
 import net.horizonsend.ion.common.database.schema.space.Star
 import net.horizonsend.ion.common.utils.miscellaneous.squared
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.space.body.CachedMoon
 import net.horizonsend.ion.server.features.space.body.CachedStar
 import net.horizonsend.ion.server.features.space.body.planet.CachedOrbitingPlanet
