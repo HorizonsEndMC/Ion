@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
@@ -65,6 +66,11 @@ abstract class ExtractorManager {
 			val entity = getBlockEntity(Vec3i(x, y, z), world) ?: return
 			entity.persistentDataContainer.set(NamespacedKeys.COMPLEX_EXTRACTORS, MetaDataContainer, data.asMetaDataContainer())
 		}
+	}
+
+	fun verifyExtractor(world: World, key: BlockKey): Boolean {
+		val data = getBlockDataSafe(world, getX(key), getY(key), getZ(key)) ?: return true // Cannot check if not loaded
+		return isExtractorData(data)
 	}
 
 	open fun onLoad() {}
