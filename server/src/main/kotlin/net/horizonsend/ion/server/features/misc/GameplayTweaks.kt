@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.misc
 
 import com.destroystokyo.paper.event.player.PlayerElytraBoostEvent
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.FLYABLE_BLOCKS
 import net.horizonsend.ion.server.features.starship.Mass
 import net.horizonsend.ion.server.miscellaneous.utils.ANVIL_TYPES

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.filters
 
 import net.horizonsend.ion.common.utils.text.toComponent
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta.EmptyFilterMeta
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta.ItemFilterMeta
 import net.horizonsend.ion.server.features.transport.fluids.Fluid
