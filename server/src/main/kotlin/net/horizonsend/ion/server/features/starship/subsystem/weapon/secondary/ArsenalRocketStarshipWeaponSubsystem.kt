@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.ArsenalRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopArsenalStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -83,7 +83,7 @@ class ArsenalRocketStarshipWeaponSubsystem(
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireCustomItem(item, CustomItemRegistry.ARSENAL_MISSILE, 1)
+		return requireCustomItem(item, CustomItemKeys.ARSENAL_MISSILE.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {

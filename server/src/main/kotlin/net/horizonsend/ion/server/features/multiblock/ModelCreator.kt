@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -185,7 +186,7 @@ object ModelCreator : SLCommand() {
 	private fun getMaterialTexture(blockData: BlockData): String {
 		val customBlock = CustomBlocks.getByBlockData(blockData)
 		if (customBlock != null) {
-			val item = customBlock.customItem
+			val item = customBlock.customItem as CustomBlockItem
 			return "horizonsend:block/${item.customModel}"
 		}
 

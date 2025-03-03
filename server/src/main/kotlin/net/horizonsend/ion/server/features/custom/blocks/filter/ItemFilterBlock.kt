@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.features.custom.blocks.filter
 
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
 import net.horizonsend.ion.server.features.custom.blocks.filter.CustomFilterBlock.Companion.filterInteractCooldown
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.gui.custom.filter.ItemFilterGui
 import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta.ItemFilterMeta
@@ -71,9 +71,9 @@ object ItemFilterBlock : DirectionalCustomBlock(
 	),
 	drops = BlockLoot(
 		requiredTool = { BlockLoot.Tool.PICKAXE },
-		drops = customItemDrop(CustomItemRegistry::ITEM_FILTER)
+		drops = customItemDrop(CustomItemKeys.ITEM_FILTER)
 	),
-	customBlockItem = CustomItemRegistry::ITEM_FILTER,
+	customBlockItem = CustomItemKeys.ITEM_FILTER,
 ), CustomFilterBlock<ItemStack, ItemFilterMeta> {
 	override fun createData(pos: BlockKey): FilterData<ItemStack, ItemFilterMeta> {
 		return FilterData(pos, FilterType.ItemType)
@@ -116,8 +116,8 @@ object ItemFilterBlock : DirectionalCustomBlock(
 		@Suppress("UNCHECKED_CAST")
 		val filterData = (filterManager.getFilter(key) ?: filterManager.registerFilter(key, this)) as FilterData<ItemStack, ItemFilterMeta>
 
-		if (!event.player.isSneaking && clickedItem != null) {
-			if (clickedItem.customItem == CustomItemRegistry.WRENCH) return // Being removed
+		if (event.player.isSneaking && clickedItem != null) {
+			if (clickedItem.customItem == CustomItemKeys.WRENCH) return // Being removed
 
 			val filtered = filterData.matchesFilter(clickedItem)
 			event.player.information("Item passes filter: $filtered")
