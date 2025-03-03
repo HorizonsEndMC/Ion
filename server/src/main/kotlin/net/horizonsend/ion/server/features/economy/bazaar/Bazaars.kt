@@ -17,7 +17,7 @@ import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.command.economy.BazaarCommand
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
@@ -51,7 +51,7 @@ import kotlin.reflect.KProperty
 object Bazaars : IonServerComponent() {
 	val strings = mutableListOf<String>().apply {
 		addAll(Material.entries.filter { it.isItem && !it.isLegacy }.map { it.name })
-		addAll(CustomItemRegistry.identifiers)
+		addAll(CustomItemKeys.allStrings())
 	}
 
     fun onClickBazaarNPC(player: Player, city: TradeCityData) {
