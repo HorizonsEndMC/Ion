@@ -217,7 +217,7 @@ object WaypointManager : IonServerComponent() {
 		val discriminant = b * b - 4 * a * c
 
 		if (discriminant < 0) {
-			return false  // No intersection
+			return true  // No intersection
 		}
 
 		// Solve quadratic equation for t
@@ -285,7 +285,7 @@ object WaypointManager : IonServerComponent() {
 			if (MassShadows.find(body.spaceWorld!!, pos.x, pos.z) != null ) continue //dont add points inside gravity wells
 			val formatedNum = String.format("%.2f",rMod)
 			val vertex = WaypointVertex(
-				name = "${name}_cage_${formatedNum}_${n}",
+				name = "${name}_cage_${formatedNum}_${i}",
 				icon = SidebarIcon.ROUTE_SEGMENT_ICON.text.first(),
 				loc = pos.toLocation(body.spaceWorld!!),
 				linkedWaypoint = null,

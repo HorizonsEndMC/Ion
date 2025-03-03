@@ -24,6 +24,6 @@ data class AIEmities(
 		val initialAggroThreshold : Double = 1.0,
 		val distanceAggroWeight : Double = 1.0,
 		val gravityWellAggro : Double = 10.0,
-		val damagerAggroWeight : Double = 10.0,
+		val damagerAggroWeight : Double = 2.0,
 	)
 }

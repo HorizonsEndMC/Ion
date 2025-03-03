@@ -163,4 +163,8 @@ class GoalTarget(val position : Vec3i, private val world: World, var hyperspace 
 		result = 31 * result + world.hashCode()
 		return result
 	}
+
+	override fun toString(): String {
+		return "GoalTarget(position=$position, world=$world, hyperspace=$hyperspace)"
+	}
 }

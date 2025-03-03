@@ -32,7 +32,7 @@ class NavigationModule(
 	val engageHyperdiveRange : Double = 1000.0,
 ) : AIModule(controller){
 	private val tickRate = 20 * 10
-	private var ticks = 0
+	private var ticks = 0 + randomInt(0,tickRate) //randomly offset navigation updates
 	private val targetLocation : Location? get() {
 		val target = targetModule.findTargetAnywhere()
 		val location : Location?
@@ -55,16 +55,25 @@ class NavigationModule(
 	override fun tick() {
 		validateNavigation()
 		//only try to use hyperdrive when navigation calls for it and after navigation has been evaluated
-		if (navigate && hyperdriveNavigate && !triggerUpdate) attemptHyperdrive()
+		if (navigate && hyperdriveNavigate && !triggerUpdate && ticks % 20 == 0) attemptHyperdrive() //tick every second
 
 		ticks++
 		if (ticks % tickRate != 0 && !triggerUpdate) return
+		ticks = 0
 		if (navigate) evaluateNavigation()
 
 	}
 
 	private fun attemptHyperdrive() {
-		if (Hyperspace.isWarmingUp(starship) || Hyperspace.isMoving(starship)) return
+		starship.debug("Attempting hyper drive")
+		if (Hyperspace.isWarmingUp(starship) || Hyperspace.isMoving(starship)){
+			starship.debug("Already warming up or moving")
+			return
+		}
+		if (world.hasFlag(WorldFlag.HYPERSPACE_WORLD)) {
+			starship.debug("In hyperspace world, odd condition")
+			return
+		}
 		if (MassShadows.find(world, location.x.toDouble(), location.z.toDouble()) != null) {
 			starship.debug("In Mass shadow, doing non hyperspace navigation")
 			navigationTarget.hyperspace = false
@@ -145,6 +154,7 @@ class NavigationModule(
 		}
 
 		starship.debug("Initiating hyperspace jump to ${jumpLocation.world.name} ($x1, $z1)")
+		starship.debug("Current location:$world ${location.x} ${location.z}")
 
 		val offset = ln(distance).toInt()
 
@@ -221,7 +231,9 @@ class NavigationModule(
 	}
 
 	private fun fromSpace() {
+		starship.debug("AI ship in pace")
 		val dest = if (targetLocation!!.world.hasFlag(WorldFlag.PlANET_WORLD)) { //need to cast to space coordinate
+			starship.debug("target in planet, casting cords")
 			val spaceworld = Space.getPlanet(targetLocation!!.world)!!.spaceWorld!!
 			Space.getPlanet(targetLocation!!.world)!!.location.toLocation(spaceworld)
 		} else {
@@ -232,6 +244,7 @@ class NavigationModule(
 		//This condition works because we already checked if the ai and target words are different
 		//The only way this holds is if there is a planet nearby.
 		if (dest.world == world && dest.toVector().distance(location.toVector()) < engageHyperdiveRange) {
+			starship.debug("target in nearby world, navigating")
 			hyperdriveNavigate = false
 			navigationTarget = GoalTarget(Vec3i(dest), dest.world, false)
 			setOverride(navigationTarget)
@@ -245,6 +258,7 @@ class NavigationModule(
 		}
 
 		if (path?.edgeList.isNullOrEmpty()) { //no path
+			starship.debug("no path to target unsetting navigation")
 			hyperdriveNavigate = false
 			setOverride(null)
 			return
@@ -258,9 +272,13 @@ class NavigationModule(
 
 	private fun setOverride(target : GoalTarget?) {
 		if (target == null) {
+			if (targetModule.findTargetOverride != null) {
+				starship.debug("Unset target override")
+			}
 			targetModule.findTargetOverride = null
 			return
 		}
+		starship.debug("Set target override to: $target")
 		targetModule.findTargetOverride = { target}
 	}
 

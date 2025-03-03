@@ -154,7 +154,7 @@ open class EmityModule(
 		if (!emityFilter(starship,tempTarget.target,targetAI)) return
 		val index = emityList.indexOf(tempTarget)
 		if (index != -1) {
-			emityList[index].damagerWeight += config.damagerAggroWeight * 0.1 //the highest damager will generate base emity
+			emityList[index].damagerWeight += config.damagerAggroWeight * 0.5 //the highest damager will generate base emity
 		} else {
 			tempTarget.damagerWeight = config.damagerAggroWeight
 			emityList.add(tempTarget)

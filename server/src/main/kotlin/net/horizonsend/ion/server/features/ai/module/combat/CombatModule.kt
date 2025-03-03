@@ -53,6 +53,8 @@ abstract class CombatModule<T>(
 	 **/
 	protected fun fireAllWeapons(origin: Vec3i, target: AITarget, aimAtRandom : Boolean	) {
 
+		if (!AIDebugModule.showAims && !AIDebugModule.fireWeapons) return //dont do anything if both of the options are false
+
 		val targetPos = target.getVec3i()
 		//println("targetPos : $targetPos")
 		val targetOffset = target.getVec3i(aimAtRandom).minus(targetPos)
@@ -117,6 +119,11 @@ abstract class CombatModule<T>(
 	}
 
 	private fun handleAutoWeapon(weaponSet: AIStarshipTemplate.WeaponSet?, origin: Vec3i, target: AITarget) {
+
+		if (!AIDebugModule.showAims && !AIDebugModule.fireWeapons) {
+			AIControlUtils.unSetAllWeapons(controller)
+			return
+		} //dont do anything if both of the options are false
 
 		if (weaponSet == null) {
 			AIControlUtils.unSetAllWeapons(controller)
