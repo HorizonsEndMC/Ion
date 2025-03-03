@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool
 
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
@@ -19,8 +20,8 @@ import org.bukkit.block.Sign
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 
-class Battery(type: Char, color: TextColor, maxPower: Int) : CustomItem(
-	identifier = "BATTERY_$type",
+class Battery(key: IonRegistryKey<CustomItem>, type: Char, color: TextColor, maxPower: Int) : CustomItem(
+	key = key,
 	displayName = ofChildren(text("Size", BLUE), text("-", GRAY), text("$type", color), text(" Battery", BLUE)),
 	baseItemFactory = ItemFactory.stackableCustomItem(maxStackSize = 16, "battery/battery_${type.toString().lowercase()}")
 ) {
