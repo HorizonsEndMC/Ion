@@ -16,4 +16,6 @@ abstract class Registry<T : Any>(val id: String) {
 	}
 
 	fun createKey(key: String): IonRegistryKey<T> = IonRegistryKey(this, key)
+
+	fun getAll() = byRawString.values
 }

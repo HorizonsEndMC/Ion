@@ -2,10 +2,10 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid.collector
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.globalGassesConfiguration
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.gas.collection.CollectedGas
@@ -158,13 +158,13 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 			}
 
 			when (customItem) {
-				CustomItemRegistry.GAS_CANISTER_EMPTY -> fillEmptyCanister(furnaceInventory, gas, amount)
+				CustomItemKeys.GAS_CANISTER_EMPTY -> fillEmptyCanister(furnaceInventory, gas, amount)
 				is GasCanister -> fillGasCanister(canisterItem, furnaceInventory, hopperInventory, amount) // Don't even bother with the gas
 			}
 		}
 
 		private fun fillEmptyCanister(furnaceInventory: FurnaceInventory, gas: Gas, amount: Int): Boolean {
-			val newType = CustomItemRegistry.getByIdentifier(gas.containerIdentifier) as? GasCanister
+			val newType = CustomItemKeys[gas.containerIdentifier]?.getValue() as? GasCanister
 			if (newType == null) {
 				sleepWithStatus(text("Invalid canister.", RED), configuration.collectorTickInterval)
 				return false

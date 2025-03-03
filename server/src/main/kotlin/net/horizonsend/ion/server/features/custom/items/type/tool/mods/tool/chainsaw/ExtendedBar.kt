@@ -1,14 +1,14 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.chainsaw
 
 import net.horizonsend.ion.common.utils.text.miniMessage
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ApplicationPredicate
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
 import net.kyori.adventure.text.Component
-import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 object ExtendedBar : ItemModification {
@@ -17,7 +17,7 @@ object ExtendedBar : ItemModification {
 
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.ClassPredicate(PowerChainsaw::class))
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
-	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItemRegistry.EXTENDED_BAR }
+	override val modItem: IonRegistryKey<CustomItem> = CustomItemKeys.TOOL_MODIFICATION_EXTENDED_BAR
 
 	// Just a range extender for something that already vein mines
 	override val crouchingDisables: Boolean = false
