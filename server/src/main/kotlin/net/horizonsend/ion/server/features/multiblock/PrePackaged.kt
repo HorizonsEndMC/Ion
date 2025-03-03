@@ -3,9 +3,9 @@ package net.horizonsend.ion.server.features.multiblock
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemContainerContents
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.loadFromData
@@ -374,7 +374,7 @@ object PrePackaged : SLEventListener() {
 		if (contents.size != 1) return
 
 		val item = contents.first() ?: return
-		if (item.customItem != CustomItemRegistry.PACKAGED_MULTIBLOCK) return
+		if (item.customItem != CustomItemKeys.PACKAGED_MULTIBLOCK) return
 
 		val multiblock = getTokenData(item) ?: return
 		event.inventory.result = MultiblockToken.constructFor(multiblock)

@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.data.migrator.types.item.modern.migrator
 
 import io.papermc.paper.datacomponent.DataComponentType.Valued
 import io.papermc.paper.datacomponent.DataComponentTypes
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ChangeIdentifierMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ChangeTypeMigrator
@@ -20,13 +21,13 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 class AspectMigrator private constructor(
-	val customItem: CustomItem,
+	val customItem: IonRegistryKey<CustomItem>,
 	predicate: ItemMigratorPredicate,
 	private val aspects: Set<ItemAspectMigrator>,
 	private val additionalIdentifiers: Set<String> = setOf()
 ) : CustomItemStackMigrator(predicate) {
 	override fun registerTo(map: MutableMap<String, CustomItemStackMigrator>) {
-		map[customItem.identifier] = this
+		map[customItem.key] = this
 		map.putAll(additionalIdentifiers.map { it to this })
 	}
 
@@ -47,7 +48,7 @@ class AspectMigrator private constructor(
 		return if (replaced) MigratorResult.Replacement(item) else MigratorResult.Mutation()
 	}
 
-	class Builder(private val customItem: CustomItem) {
+	class Builder(private val customItem: IonRegistryKey<CustomItem>) {
 		private val aspects: MutableSet<ItemAspectMigrator> = mutableSetOf()
 		private val additionalIdentifiers: MutableSet<String> = mutableSetOf()
 
@@ -70,7 +71,7 @@ class AspectMigrator private constructor(
 
 		fun setItemMaterial(newMaterial: Material): Builder {
 			aspects.add(ChangeTypeMigrator(newMaterial))
-			val example = customItem.constructItemStack()
+			val example = customItem.getValue().constructItemStack()
 
 			setDataComponent(DataComponentTypes.MAX_STACK_SIZE, example.maxStackSize)
 			return this
@@ -86,13 +87,13 @@ class AspectMigrator private constructor(
 			return this
 		}
 
-		fun pullLore(from: CustomItem): Builder {
-			aspects.add(PullLoreMigrator(from))
+		fun pullLore(from: IonRegistryKey<CustomItem>): Builder {
+			aspects.add(PullLoreMigrator(from.getValue()))
 			return this
 		}
 
-		fun pullModel(from: CustomItem): Builder {
-			aspects.add(PullModelMigrator(from))
+		fun pullModel(from: IonRegistryKey<CustomItem>): Builder {
+			aspects.add(PullModelMigrator(from.getValue()))
 			return this
 		}
 
@@ -101,8 +102,8 @@ class AspectMigrator private constructor(
 			return this
 		}
 
-		fun pullName(from: CustomItem): Builder {
-			aspects.add(PullLoreMigrator(from))
+		fun pullName(from: IonRegistryKey<CustomItem>): Builder {
+			aspects.add(PullLoreMigrator(from.getValue()))
 			return this
 		}
 
@@ -114,11 +115,11 @@ class AspectMigrator private constructor(
 	}
 
 	companion object {
-		fun builder(customItem: CustomItem): Builder {
+		fun builder(customItem: IonRegistryKey<CustomItem>): Builder {
 			return Builder(customItem)
 		}
 
-		fun fixModel(customItem: CustomItem): AspectMigrator {
+		fun fixModel(customItem: IonRegistryKey<CustomItem>): AspectMigrator {
 			return builder(customItem).pullModel(customItem).build()
 		}
 	}

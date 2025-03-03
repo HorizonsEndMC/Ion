@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item
 
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.RecipeRequirement
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -17,7 +18,7 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 		item.amount--
 	}
 
-	class CustomItemRequirement(val customItem: CustomItem) : ItemRequirement {
+	class CustomItemRequirement(val customItem: IonRegistryKey<CustomItem>) : ItemRequirement {
 		override fun matches(item: ItemStack?): Boolean {
 			return item?.customItem == customItem && item.amount >= 1
 		}

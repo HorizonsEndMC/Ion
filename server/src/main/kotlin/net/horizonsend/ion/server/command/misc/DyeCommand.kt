@@ -7,7 +7,7 @@ import co.aikar.commands.annotation.Subcommand
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.DyedItemColor
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
 import net.horizonsend.ion.server.miscellaneous.utils.enumValueOfOrNull
 import net.horizonsend.ion.server.miscellaneous.utils.isBed
