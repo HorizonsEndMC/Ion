@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponent
@@ -18,7 +19,7 @@ import org.bukkit.persistence.PersistentDataType
 import xyz.xenondevs.invui.item.ItemProvider
 
 open class CustomItem(
-	val identifier: String,
+	val key: IonRegistryKey<CustomItem>,
 	val displayName: Component,
 	baseItemFactory: ItemFactory,
 ) : ItemProvider {
@@ -48,13 +49,13 @@ open class CustomItem(
 
 	protected open val baseItemFactory = ItemFactory.builder(baseItemFactory)
 		.setNameSupplier { displayName.itemName }
-		.addPDCEntry(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
+		.addPDCEntry(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, key.key)
 		.addModifier { base -> customComponents.getAll().forEach { it.decorateBase(base, this) } }
 		.addModifier { base -> decorateItemStack(base) }
 		.setLoreSupplier { base -> assembleLore(base) }
 		.build()
 
-	fun constructItemStack(): ItemStack = try { baseItemFactory.construct() } catch (e: Throwable) { throw Throwable("Error when constructing custom item $identifier", e) }
+	fun constructItemStack(): ItemStack = try { baseItemFactory.construct() } catch (e: Throwable) { throw Throwable("Error when constructing custom item $key", e) }
 
 	override fun get(localization: String?): ItemStack {
 		return constructItemStack()
@@ -102,6 +103,8 @@ open class CustomItem(
 
 	fun getItemFactory() = baseItemFactory
 
-	open fun getBazaarString(itemStack: ItemStack): String = identifier
+	open fun getBazaarString(itemStack: ItemStack): String = key.key
 	open fun fromBazaarString(string: String): ItemStack = constructItemStack(1)
+	
+	val identifier get() = key.key
 }

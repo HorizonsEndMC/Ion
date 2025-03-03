@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.IonTurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -40,7 +40,7 @@ class IonTurretWeaponSubsystem(
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireCustomItem(item, CustomItemRegistry.CHARGED_SHELL, 1)
+		return requireCustomItem(item, CustomItemKeys.CHARGED_SHELL.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {

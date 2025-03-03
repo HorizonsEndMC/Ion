@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.type.weapon.blaster
 
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.AmmoStorage
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.AmmunitionStorage
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
@@ -10,8 +11,8 @@ import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
-class Magazine(identifier: String, displayName: Component, itemFactory: ItemFactory, private val balancingSupplier: Supplier<AmmoStorage>) : CustomItem(
-	identifier,
+class Magazine(key: IonRegistryKey<CustomItem>, displayName: Component, itemFactory: ItemFactory, private val balancingSupplier: Supplier<AmmoStorage>) : CustomItem(
+	key,
 	displayName,
 	itemFactory,
 ) {
