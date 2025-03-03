@@ -7,6 +7,8 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.AIEmities
 import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
 import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.module.listeners.AIModuleHandlePlayerDeath
+import net.horizonsend.ion.server.features.ai.module.listeners.AIModuleHandleShipSink
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
@@ -18,9 +20,12 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
+import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
+import org.bukkit.event.EventHandler
+import org.bukkit.event.entity.PlayerDeathEvent
 import java.util.function.Supplier
 import kotlin.math.cbrt
 
@@ -31,7 +36,7 @@ open class EmityModule(
 	val configSupplier: Supplier<AIEmities.AIEmityConfiguration>
 	= Supplier(ConfigurationFiles.aiEmityConfiguration()::defaultAIEmityConfiguration),
 	val emityFilter : (starship : Starship, AITarget : AITarget, targetAI : Boolean) -> Boolean = Companion::targetFilter
-) : AIModule(controller){
+) : AIModule(controller), AIModuleHandlePlayerDeath, AIModuleHandleShipSink{
 	val config get() = configSupplier.get()
 	val emityList : MutableList<AIOpponent> = mutableListOf()
 	var findTargetOverride : (() -> AITarget)? = null
@@ -67,7 +72,7 @@ open class EmityModule(
 	 *  this is used shooting at multiple targets only
 	 */
 	fun findTargets() : List<AITarget> {
-		return findTargetsAnywhere().filter { it.getWorld() == world }
+		return findTargetsAnywhere().filter { it.getWorld() == world && getOpponentDistance(it)!! < config.aggroRange}
 	}
 
 	/**
@@ -127,7 +132,7 @@ open class EmityModule(
 		}
 
 		for (player in starship.world.players) {
-			//TODO check if a player is already riding a ship
+			if (ActiveStarships.findByPassenger(player) != null) continue
 			val tempTarget = AIOpponent(PlayerTarget(player))
 			if (!emityFilter(starship,tempTarget.target,targetAI)) continue
 			val dist = getOpponentDistance(tempTarget.target)!!
@@ -149,9 +154,9 @@ open class EmityModule(
 		if (!emityFilter(starship,tempTarget.target,targetAI)) return
 		val index = emityList.indexOf(tempTarget)
 		if (index != -1) {
-			emityList[index].baseWeight += config.damagerAggroWeight * 0.1 //the highest damager will generate base emity
+			emityList[index].damagerWeight += config.damagerAggroWeight * 0.1 //the highest damager will generate base emity
 		} else {
-			tempTarget.baseWeight = config.damagerAggroWeight
+			tempTarget.damagerWeight = config.damagerAggroWeight
 			emityList.add(tempTarget)
 		}
 	}
@@ -172,8 +177,9 @@ open class EmityModule(
 					if (dist > config.aggroRange) it.baseWeight *= config.outOfRangeDecay
 				}
 			}
+			it.damagerWeight *= config.damagerDeacy
 		}
-		emityList.removeAll { it.baseWeight < 1e-4 }
+		emityList.removeAll { it.baseWeight + it.damagerWeight < 1e-4 }
 	}
 
 	open fun sortEmity() {
@@ -184,14 +190,14 @@ open class EmityModule(
 
 		emityList.sortBy {-1 *(//descending
 			it.baseWeight
-			+ config.damagerWeight * damagersMap.getOrDefault(it.target,0)
+			+ config.damagerWeight * it.damagerWeight
 			+ config.sizeWeight * cbrt((it.target as? StarshipTarget)?.ship?.initialBlockCount?.toDouble() ?: 0.0)
 			+ config.distanceWeight * calcDistFactor(it.target)
 		)}
 	}
 
 	private fun calcDistFactor(target : AITarget) : Double{
-		return ((config.aggroRange  - (getOpponentDistance(target) ?: 0.0)) / (config.aggroRange + 1e-4)).coerceAtMost(0.0)
+		return ((config.aggroRange  - (getOpponentDistance(target) ?: 0.0)) / (config.aggroRange + 1e-4)).coerceAtLeast(0.0)
 	}
 
 	fun getOpponentDistance(target : AITarget) : Double?{
@@ -201,9 +207,21 @@ open class EmityModule(
 		return target.getLocation(false).toVector().distance(location.toVector())
 	}
 
+
+	override fun onShipSink(event : StarshipSunkEvent) {
+		val tempTarget = AIOpponent(StarshipTarget(event.starship))
+		emityList.remove(tempTarget)
+	}
+
+	override fun onPLayerDeath(event: PlayerDeathEvent) {
+		val tempTarget = AIOpponent(PlayerTarget(event.player))
+		emityList.remove(tempTarget)
+	}
+
 	data class AIOpponent(
 		var target : AITarget,
 		var baseWeight : Double = 0.0,
+		var damagerWeight : Double = 0.0,
 		var aggroed : Boolean = false,
 		val decay : Boolean = true,
 	) {

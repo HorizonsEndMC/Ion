@@ -47,7 +47,6 @@ class AimingModule(
 			&& ((it is AutoWeaponSubsystem) xor manual)
 			&& !(it is MiningLaserSubsystem) // because screw you
 			&& it.isIntact()
-			&& it.isCooledDown()
 			&& it.canFire(getDirection(origin, targetShip.centerOfMass).normalize(), shipPos)// this is a shortcut
 		} //reduce the amount of different weapon types as much as possible
 		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet.name.lowercase()]).shuffled(
@@ -63,11 +62,10 @@ class AimingModule(
 			//calculate the travel time to at most 3 seconds in the future
 			val travelTime = if (weapon is PhaserWeaponSubsystem) {
 				(distance / PhaserProjectile.speedUpSpeed
-					+ TimeUnit.NANOSECONDS.toMillis(PhaserProjectile.speedUpTime).toDouble()/ 1000).coerceAtMost(3.0)
+					+ TimeUnit.NANOSECONDS.toMillis(PhaserProjectile.speedUpTime).toDouble()/ 1000).coerceAtMost(4.0)
 			} else {
-				(distance / weapon.balancing.speed).coerceAtMost(3.0)
+				(distance / weapon.balancing.speed).coerceAtMost(4.0)
 			}
-			if (travelTime >= 1.0) println("travel time: $travelTime, weapon: ${weapon.name}, speed: ${weapon.balancing.speed}")
 			forecast = targetShip.forecast(System.currentTimeMillis() + (travelTime * 1000).toLong(),0)
 		}
 		if (difficulty.aimAdjust > 0.9) return  forecast

@@ -17,6 +17,8 @@ abstract class AITarget {
 	abstract fun getLocation(random: Boolean = false): Location
 	abstract fun getVec3i(random: Boolean = false): Vec3i
 
+	abstract fun getFudgeFactor() : Double
+
 	abstract fun getWorld(): World
 	abstract fun getAutoTurretTarget(): AutoTurretTargeting.AutoTurretTarget<*>
 
@@ -34,6 +36,11 @@ class PlayerTarget(val player: Player) : AITarget() {
 
 	override fun getVec3i(random: Boolean): Vec3i {
 		return Vec3i(player.location).plus(offset)
+	}
+
+	/** account for target size for weapons selection */
+	override fun getFudgeFactor(): Double {
+		return 0.0
 	}
 
 	override fun getAutoTurretTarget(): AutoTurretTargeting.AutoTurretTarget<*> {
@@ -73,10 +80,17 @@ class StarshipTarget(val ship: ActiveStarship) : AITarget() {
 
 	override fun getVec3i(random: Boolean): Vec3i {
 		return if (random) {
-			val key = ship.blocks.random(ThreadLocalRandom.current().asKotlinRandom())
+			val key = ship.shields.random(ThreadLocalRandom.current().asKotlinRandom()).pos
 
 			Vec3i(key).plus(offset)
 		} else ship.centerOfMass.plus(offset)
+	}
+
+	override fun getFudgeFactor(): Double {
+		val minPos = Vec3i(ship.min.x,0,ship.min.z)
+		val maxPos = Vec3i(ship.max.x,0,ship.max.z)
+		val dist = maxPos.distance(minPos)
+		return dist / 3.0
 	}
 
 	override fun getAutoTurretTarget(): AutoTurretTargeting.AutoTurretTarget<*> {
@@ -118,6 +132,10 @@ class GoalTarget(val position : Vec3i, private val world: World, var hyperspace 
 
 	override fun getWorld(): World {
 		return world
+	}
+
+	override fun getFudgeFactor(): Double {
+		return 0.0
 	}
 
 	override fun getAutoTurretTarget(): AutoTurretTargeting.AutoTurretTarget<*> {

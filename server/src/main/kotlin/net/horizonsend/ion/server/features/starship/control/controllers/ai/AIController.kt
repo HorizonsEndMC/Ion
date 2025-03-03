@@ -104,8 +104,10 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 		return manualWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }
 	}
 
-	/** Returns the weapon set that's range contains the specified distance */
-	fun getManualSetsInRange(distance: Double): List<WeaponSet> {
+	/** Returns the weapon set that's range contains the specified distance
+	 * if no manual sets are define, return null*/
+	fun getManualSetsInRange(distance: Double): List<WeaponSet>? {
+		if (manualWeaponSets.isEmpty()) return null
 		return manualWeaponSets.filter { it.engagementRange.containsDouble(distance) }
 	}
 
@@ -127,10 +129,15 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 	private val specialWeaponSets: MutableSet<WeaponSet> = mutableSetOf()
 
 	fun addSpecialSet(name: String, minRange: Double, maxRange: Double) {
-		autoWeaponSets.add(WeaponSet(name,minRange,maxRange))
+		specialWeaponSets.add(WeaponSet(name,minRange,maxRange))
 	}
 
 	inline fun <reified T> getCoreModuleByType(): T? = coreModules.values.filterIsInstance<T>().firstOrNull()
+
+	/** please consider other getters first */
+	fun getAllModules() : Set<AIModule>{
+		return coreModules.values.union(utilModules)
+	}
 
 	// Functionality
 	override fun tick() {
@@ -204,7 +211,7 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 	}
 
 	fun validateWeaponSets() {
-		val starShipWeaponSets = starship.weaponSets.keys()
+		val starShipWeaponSets = starship.weaponSets.keySet()
 		val union = (starShipWeaponSets
 			union manualWeaponSets.map { it.name.lowercase() }
 			union autoWeaponSets.map { it.name.lowercase() }

@@ -57,10 +57,13 @@ abstract class CombatModule<T>(
 		//println("targetPos : $targetPos")
 		val targetOffset = target.getVec3i(aimAtRandom).minus(targetPos)
 
-		val distance = target.getLocation().toVector().distance(origin.toVector())
+		//account for opponent size
+		val fudgeFactor = target.getFudgeFactor()
+		val distance = (target.getLocation().toVector().distance(origin.toVector()) - fudgeFactor).coerceAtLeast(1.0)
+		starship.debug("Distance manual: $distance (fudged)")
 
-		var weaponSets : List<AIStarshipTemplate.WeaponSet?> = controller.getManualSetsInRange(distance)//?.name?.lowercase()
-		if (weaponSets.isEmpty()) weaponSets = listOf(null)
+		val weaponSets : List<AIStarshipTemplate.WeaponSet?> = controller.getManualSetsInRange(distance) ?: listOf(null)
+		if (weaponSets.isEmpty()) return //there are no valid weaponsets in range
 
 		for (weaponSet in weaponSets){
 			val correctedHeavyTarget = if (target is StarshipTarget) {
@@ -79,6 +82,7 @@ abstract class CombatModule<T>(
 			val lightDirection = aiming.sampleDirection(correctedLightTarget.clone().subtract(origin.toVector()).normalize())
 			//println("lightDirection : $lightDirection")
 			Tasks.sync {
+				starship.debug("Firing manual weapons: Set: ${weaponSet?.name?.lowercase()}")
 				fireHeavyWeapons(heavyDirection, correctedHeavyTarget, weaponSet = weaponSet?.name?.lowercase(), true)
 				fireLightWeapons(lightDirection, correctedLightTarget, weaponSet = weaponSet?.name?.lowercase(), true)
 			}
@@ -104,8 +108,9 @@ abstract class CombatModule<T>(
 			AIControlUtils.unSetAllWeapons(controller)
 			return
 		}
-		val (x, y, z) = origin
-		val distance = target.getVec3i(false).distance(x, y, z)
+		val fudgeFactor = target.getFudgeFactor()
+		val distance = (target.getLocation().toVector().distance(origin.toVector()) - fudgeFactor).coerceAtLeast(1.0)
+		starship.debug("Distance auto: $distance (fudged)")
 		var weaponSets : Set<AIStarshipTemplate.WeaponSet?> = controller.getAutoSetsInRange(distance)
 		if (weaponSets.isEmpty()) weaponSets = setOf(null)
 		weaponSets.forEach { handleAutoWeapon(it,origin,target) }
@@ -117,7 +122,7 @@ abstract class CombatModule<T>(
 			AIControlUtils.unSetAllWeapons(controller)
 			return
 		}
-		if (!difficulty.aimEverything or (target !is GoalTarget)) {
+		if (!difficulty.aimEverything and (target !is GoalTarget)) {
 			AIControlUtils.setAutoWeapons(controller, weaponSet.name.lowercase(), target.getAutoTurretTarget())
 			return
 		}
@@ -141,6 +146,7 @@ abstract class CombatModule<T>(
 		val lightDirection = aiming.sampleDirection(correctedLightTarget.clone().subtract(origin.toVector()).normalize())
 
 		Tasks.sync {
+			starship.debug("Firing auto weapons: Set: ${weaponSet?.name?.lowercase()}")
 			fireHeavyWeapons(heavyDirection, correctedHeavyTarget, weaponSet = weaponSet.name.lowercase(), false)
 			fireLightWeapons(lightDirection, correctedLightTarget, weaponSet = weaponSet.name.lowercase(), false)
 		}

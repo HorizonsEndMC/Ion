@@ -48,7 +48,7 @@ class SteeringSolverModule(
 			AIControlUtils.faceDirection(controller, vectorToBlockFace(heading))
 		}
 		if ((target.get() is GoalTarget && (target.get() as GoalTarget).hyperspace) || !AIDebugModule.canShipsMove) {
-			controller.starship.setDirectControlEnabled(false)
+			if (controller.starship.isDirectControlEnabled) controller.starship.setDirectControlEnabled(false)
 			StarshipCruising.stopCruising(controller,starship)
 			AIControlUtils.shiftFlyInDirection(controller, null)
 			return

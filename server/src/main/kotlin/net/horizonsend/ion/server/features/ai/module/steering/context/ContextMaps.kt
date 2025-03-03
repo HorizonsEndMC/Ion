@@ -164,16 +164,11 @@ class OffsetSeekContext(
 		clearContext()
 		val seekPos =  generalTarget.get()?.getLocation()?.toVector()
 		seekPos ?: return
-		var finalDist = offsetDist
-		if (generalTarget.get() is StarshipTarget) {
-			finalDist =  offsetDist * min((generalTarget.get() as StarshipTarget).ship.currentBlockCount
-											/ship.currentBlockCount.toDouble(), 1.0)
-		}
 		val shipPos = ship.centerOfMass.toVector()
 		val center = seekPos.clone()
 		val yDiff = shipPos.clone().add(center.clone().multiply(-1.0)).y
 		center.y += sign(yDiff) * min(abs(yDiff),config.maxHeightDiff)//adjust center to account for height diff
-		val tetherl = finalDist * PI * 2 * 0.1
+		val tetherl = offsetDist * PI * 2 * 0.1
 		val shipvel = ship.velocity.clone()
 		shipvel.y = 0.0
 		if (shipvel.lengthSquared() > 1e-5) shipvel.normalize()
@@ -181,7 +176,7 @@ class OffsetSeekContext(
 		val tetherOffset = frowardTether.add(center.clone().multiply(-1.0))
 		tetherOffset.y = 0.0
 		tetherOffset.normalize()
-		val target = center.clone().add(tetherOffset.multiply(finalDist))
+		val target = center.clone().add(tetherOffset.multiply(offsetDist))
 		module.orbitTarget = target.clone()
 		val targetOffset = target.clone().add(shipPos.clone().multiply(-1.0))
 		val dist = targetOffset.length()

@@ -49,7 +49,10 @@ object StarshipWeaponry : IonServerComponent() {
 			StarshipWeapons.fireQueuedShots(queuedShots, starship)
 		}
 
-		if (!leftClick) cooldown.tryExec(shooter, fireTask) else fireTask()
+		if (!leftClick) {
+			if (weapons.all { it !is HeavyWeaponSubsystem }) return //prevent light weapons from messing up the cooldown
+			cooldown.tryExec(shooter, fireTask)
+		} else fireTask()
 	}
 
 	fun getTarget(loc: Location, dir: Vector, starship: ActiveStarship): Vector {

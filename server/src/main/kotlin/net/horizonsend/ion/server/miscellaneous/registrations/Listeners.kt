@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
+import net.horizonsend.ion.server.features.ai.module.listeners.AIModuleListener
 import net.horizonsend.ion.server.features.client.VoidNetwork
 import net.horizonsend.ion.server.features.client.networking.packets.WorldPacket
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
@@ -81,6 +82,7 @@ val listeners: List<Listener> = listOf(
 	RecipeModifications,
 	ActivePlayerController.Companion,
 	PersonalTransporterManager,
+	AIModuleListener,
 
 	// Achievement Listeners
 	AchievementListeners(),
