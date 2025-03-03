@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.custom.items.util.serialization
 
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 
 object CustomItemSerialization : IonServerComponent() {
 	fun getCompletions(input: String): List<String>? {
 
-		val customItem = CustomItemRegistry.getByIdentifier(input.substringBefore('[')) ?: return CustomItemRegistry.identifiers.filter { it.startsWith(input) }
+		val customItem = CustomItemKeys[input.substringBefore('[')]?.getValue() ?: return CustomItemKeys.allStrings().filter { it.startsWith(input) }
 
 		return getCompletions(customItem, input.substringAfter(customItem.identifier))
 	}

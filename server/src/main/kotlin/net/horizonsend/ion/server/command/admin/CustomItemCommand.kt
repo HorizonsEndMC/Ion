@@ -12,19 +12,18 @@ import co.aikar.commands.bukkit.contexts.OnlinePlayer
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.getByIdentifier
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 @CommandAlias("customitem|legacycustomitem")
 object CustomItemCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
-		manager.commandCompletions.registerCompletion("customItem") { _ -> CustomItemRegistry.identifiers }
+		manager.commandCompletions.registerCompletion("customItem") { _ -> CustomItemKeys.allStrings() }
 		manager.commandContexts.registerContext(CustomItem::class.java) { c: BukkitCommandExecutionContext ->
 			val arg = c.popFirstArg()
-			return@registerContext getByIdentifier(arg) ?: throw InvalidCommandArgument("No custom item $arg found!")
+			return@registerContext CustomItemKeys[arg]?.getValue() ?: throw InvalidCommandArgument("No custom item $arg found!")
 		}
 	}
 
@@ -40,9 +39,13 @@ object CustomItemCommand : SLCommand() {
 	) {
 		val player = target?.player ?: sender as? Player ?: fail { "Console must specify a target player" }
 
-		val itemStack = getByIdentifier(customItem)?.constructItemStack()
+		val itemStack = CustomItemKeys[customItem]?.getValue()?.constructItemStack()
 
-		if (itemStack == null) return player.userError("No custom item $customItem found!")
+		if (itemStack == null) {
+			player.userError("No custom item $customItem found!")
+			return
+		}
+
 		if (amount != null && amount <= 0) return player.userError("Amount cannot be less than 0!")
 
 		itemStack.amount = amount ?: 1

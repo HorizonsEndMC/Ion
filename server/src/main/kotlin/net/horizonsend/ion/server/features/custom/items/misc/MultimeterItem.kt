@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.misc
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
@@ -30,7 +31,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.INTEGER
 import org.bukkit.persistence.PersistentDataType.LONG
 
-object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", NamedTextColor.YELLOW), ItemFactory.unStackableCustomItem) {
+object MultimeterItem : CustomItem(CustomItemKeys.MULTIMETER, Component.text("Multimeter", NamedTextColor.YELLOW), ItemFactory.unStackableCustomItem) {
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@MultimeterItem) { event, _, itemStack ->
 			if (event.player.isSneaking) {

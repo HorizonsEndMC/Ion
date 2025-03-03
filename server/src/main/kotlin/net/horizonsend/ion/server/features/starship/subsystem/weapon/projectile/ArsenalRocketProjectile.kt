@@ -4,8 +4,8 @@ import com.mojang.math.Transformation
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.getAddEntityPacket
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockPos
@@ -191,7 +191,7 @@ class ArsenalRocketProjectile(
 			val player = (playerBukkit as CraftPlayer)
 			val connection = player.handle.connection
 			val itemDisplay = ItemDisplay(EntityType.ITEM_DISPLAY, player.minecraft.level()).apply {
-				this.itemStack = CraftItemStack.asNMSCopy(CustomItemRegistry.ACTIVATED_ARSENAL_MISSILE.constructItemStack())
+				this.itemStack = CraftItemStack.asNMSCopy(CustomItemKeys.ACTIVATED_ARSENAL_MISSILE.getValue().constructItemStack())
 				setPos(player.location.toBlockPos().center)
 				val translation = originLocation.toVector().subtract(Vector(this.x, this.y, this.z)).toVector3f()
 				val transformation = Transformation(
@@ -217,7 +217,7 @@ class ArsenalRocketProjectile(
 		val nmsPlayer = (player as CraftPlayer)
 		val connection = nmsPlayer.handle.connection
 		val itemDisplay = ItemDisplay(EntityType.ITEM_DISPLAY, nmsPlayer.minecraft.level()).apply {
-			this.itemStack = CraftItemStack.asNMSCopy(CustomItemRegistry.ACTIVATED_ARSENAL_MISSILE.constructItemStack())
+			this.itemStack = CraftItemStack.asNMSCopy(CustomItemKeys.ACTIVATED_ARSENAL_MISSILE.getValue().constructItemStack())
 			setPos(nmsPlayer.location.toBlockPos().center)
 			val translation = originLocation.toVector().subtract(Vector(this.x, this.y, this.z)).toVector3f()
 			val transformation = Transformation(

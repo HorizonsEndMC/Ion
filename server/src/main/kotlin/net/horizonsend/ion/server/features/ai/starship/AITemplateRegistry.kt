@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
 import net.horizonsend.ion.server.configuration.util.VariableIntegerAmount
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
@@ -26,8 +27,6 @@ import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.PUMPKIN_GRENADE
 import net.horizonsend.ion.server.features.world.WorldSettings.DroppedItem
 import org.bukkit.Material
 
@@ -90,7 +89,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(WATCHERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
-		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 		.build()
 	)
 
@@ -103,7 +102,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(WATCHERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
-		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
@@ -122,7 +121,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(WATCHERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(CreditRewardProviderConfiguration(18000.0))
-		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.75,
 			delay = 100L,
@@ -173,7 +172,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(吃饭人)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
-		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 		.build()
 	)
 
@@ -186,7 +185,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(吃饭人)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
-		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 		.build()
 	)
 
@@ -985,7 +984,7 @@ object AITemplateRegistry {
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
 			)
 		})
-		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.NETHER_STAR.name, StaticIntegerAmount(1), 0.25f))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.SNIFFER_EGG.name, StaticIntegerAmount(1), 0.25f))))
@@ -1015,7 +1014,7 @@ object AITemplateRegistry {
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
 			)
 		})
-		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.NETHER_STAR.name, StaticIntegerAmount(1), 0.25f))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.SNIFFER_EGG.name, StaticIntegerAmount(1), 0.25f))))
@@ -1044,7 +1043,7 @@ object AITemplateRegistry {
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
 			)
 		})
-		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.NETHER_STAR.name, StaticIntegerAmount(1), 0.25f))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.SNIFFER_EGG.name, StaticIntegerAmount(1), 0.25f))))
@@ -1073,7 +1072,7 @@ object AITemplateRegistry {
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
 			)
 		})
-		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.NETHER_STAR.name, StaticIntegerAmount(1), 0.25f))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.SNIFFER_EGG.name, StaticIntegerAmount(1), 0.25f))))
@@ -1090,8 +1089,8 @@ object AITemplateRegistry {
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.55))
 		.addRewardProvider(CreditRewardProviderConfiguration(3500.0))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.ACACIA_SAPLING.name, VariableIntegerAmount(3, 5), 0.25f))))
-		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(PUMPKIN_GRENADE.identifier, VariableIntegerAmount(0, 3), 1.05f))))
-		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 0.5f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(CustomItemKeys.PUMPKIN_GRENADE.key, VariableIntegerAmount(0, 3), 1.05f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 0.5f, amount = StaticIntegerAmount(1)))))
 		.build()
 	)
 
@@ -1105,7 +1104,7 @@ object AITemplateRegistry {
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.35))
 		.addRewardProvider(CreditRewardProviderConfiguration(1500.0))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.ACACIA_SAPLING.name, VariableIntegerAmount(3, 5), 0.25f))))
-		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(PUMPKIN_GRENADE.identifier, VariableIntegerAmount(0, 3), 1.0f))))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(CustomItemKeys.PUMPKIN_GRENADE.key, VariableIntegerAmount(0, 3), 1.0f))))
 		.build()
 	)
 

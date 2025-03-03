@@ -2,8 +2,9 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods
 
 import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.kyori.adventure.text.Component
@@ -13,14 +14,14 @@ import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
 class ModificationItem(
-	identifier: String,
+	key: IonRegistryKey<CustomItem>,
 
 	val model: String,
 	displayName: Component,
 	vararg description: Component,
 	private val modSupplier: Supplier<ItemModification>,
 ) : CustomItem(
-	identifier,
+	key,
 	displayName,
 	ItemFactory
 		.builder(ItemFactory.unStackableCustomItem)
@@ -30,11 +31,11 @@ class ModificationItem(
 	private val descriptionLines = Array(description.size) { description[it].itemLore }
 
 	override fun assembleLore(itemStack: ItemStack): List<Component> {
-		val applicableTo = CustomItemRegistry.ALL
+		val applicableTo = CustomItemKeys.allkeys()
 			.filter { customItem ->
-				modSupplier.get().applicationPredicates.any { predicate -> predicate.canApplyTo(customItem) }
+				modSupplier.get().applicationPredicates.any { predicate -> predicate.canApplyTo(customItem.getValue()) }
 			}
-			.map { customItem -> customItem.displayName.itemLore }
+			.map { customItem -> customItem.getValue().displayName.itemLore }
 			.toTypedArray()
 
 		return mutableListOf(

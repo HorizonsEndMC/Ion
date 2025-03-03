@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.MultiBlockDisplay
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.SwordListener
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
@@ -123,7 +122,6 @@ val components: List<IonComponent> = listOf(
 	NPCTraits,
 	CombatNPCs,
 
-	CustomItemRegistry,
 	DataMigrators,
 	CustomRecipes,
 	Crafting,

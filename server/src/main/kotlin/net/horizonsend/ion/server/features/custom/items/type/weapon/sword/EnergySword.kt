@@ -4,6 +4,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
@@ -27,8 +28,8 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.inventory.EquipmentSlotGroup
 
-class EnergySword(type: String, color: TextColor) : CustomItem(
-	"ENERGY_SWORD_${type.uppercase()}",
+class EnergySword(key: IonRegistryKey<CustomItem>, type: String, color: TextColor) : CustomItem(
+	key = key,
 	displayName = ofChildren(Component.text(type.lowercase().replaceFirstChar { it.uppercase() }, color), Component.text(" Energy Sword", YELLOW)),
 	baseItemFactory = ItemFactory.builder()
 		.setMaterial(SHIELD)
@@ -52,7 +53,7 @@ class EnergySword(type: String, color: TextColor) : CustomItem(
 		})
 
 		addComponent(CustomComponentTypes.LISTENER_PREPARE_CRAFT, prepareCraftListener(this@EnergySword) { event, customItem, item ->
-			val permission = "gear.energysword." + customItem.identifier.lowercase().removePrefix("energy_sword_")
+			val permission = "gear.energysword." + customItem.key.key.lowercase().removePrefix("energy_sword_")
 			if (!event.view.player.hasPermission(permission)) {
 				event.view.player.userError("You can only craft yellow energy swords unless you donate for other colors!")
 				event.inventory.result = null

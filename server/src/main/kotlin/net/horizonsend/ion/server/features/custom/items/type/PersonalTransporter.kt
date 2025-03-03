@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.type
 
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
@@ -18,7 +19,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
 object PersonalTransporter : CustomItem(
-	"PERSONAL_TRANSPORTER",
+	CustomItemKeys.PERSONAL_TRANSPORTER,
 	text("Personal Transporter", GOLD).itemName,
 	ItemFactory.unStackableCustomItem("throwables/personal_transporter")
 ) {

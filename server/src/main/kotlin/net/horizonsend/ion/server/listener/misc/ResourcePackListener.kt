@@ -5,8 +5,8 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.PERSONAL_TRANSPORTER
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.PERSONAL_TRANSPORTER
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -81,15 +81,15 @@ class ResourcePackListener : SLEventListener() {
 
 		if (!event.player.hasPlayedBefore() && event.player.gameMode == GameMode.SURVIVAL) {
 			event.player.inventory.apply {
-				addItem(CustomItemRegistry.BLASTER_PISTOL.constructItemStack())
-				addItem(CustomItemRegistry.POWER_DRILL_BASIC.constructItemStack())
+				addItem(CustomItemKeys.BLASTER_PISTOL.getValue().constructItemStack())
+				addItem(CustomItemKeys.POWER_DRILL_BASIC.getValue().constructItemStack())
 				addItem(ItemStack(COOKED_BEEF, 32))
 				addItem(ItemStack(CLOCK))
 				addItem(ItemStack(CHAINMAIL_BOOTS))
 				addItem(ItemStack(CHAINMAIL_LEGGINGS))
 				addItem(ItemStack(CHAINMAIL_CHESTPLATE))
 				addItem(ItemStack(CHAINMAIL_HELMET))
-				addItem(PERSONAL_TRANSPORTER.constructItemStack())
+				addItem(PERSONAL_TRANSPORTER.getValue().constructItemStack())
 			}
 		}
 

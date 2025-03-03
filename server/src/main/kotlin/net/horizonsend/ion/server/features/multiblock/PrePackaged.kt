@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemContainerContents
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
@@ -60,7 +61,6 @@ import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.persistence.PersistentDataType.STRING
-import org.bukkit.util.Vector
 
 object PrePackaged : SLEventListener() {
 	fun getOriginFromPlacement(clickedBlock: Block, direction: BlockFace, shape: MultiblockShape): Block {
@@ -403,7 +403,7 @@ object PrePackaged : SLEventListener() {
 		if (contents.size != 1) return
 
 		val item = contents.first() ?: return
-		if (item.customItem != CustomItemRegistry.PACKAGED_MULTIBLOCK) return
+		if (item.customItem != CustomItemKeys.PACKAGED_MULTIBLOCK) return
 
 		val multiblock = getTokenData(item) ?: return
 		event.inventory.result = MultiblockToken.constructFor(multiblock)
@@ -412,7 +412,7 @@ object PrePackaged : SLEventListener() {
 	fun tryPreview(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
 		if (livingEntity !is Player) return
 
-		val packagedData = getTokenData(itemStack) ?: run {
+		val packagedData = PrePackaged.getTokenData(itemStack) ?: run {
 			livingEntity.userError("The packaged multiblock has no data!")
 			return
 		}

@@ -1,12 +1,13 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.hoe
 
 import net.horizonsend.ion.common.utils.text.ITALIC
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ApplicationPredicate
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
@@ -15,7 +16,6 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 object FertilizerDispenser : ItemModification {
@@ -25,7 +25,7 @@ object FertilizerDispenser : ItemModification {
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.ClassPredicate(PowerHoe::class))
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 
-	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItemRegistry.FERTILIZER_DISPENSER }
+	override val modItem: IonRegistryKey<CustomItem> = CustomItemKeys.TOOL_MODIFICATION_FERTILIZER_DISPENSER
 
 	override val crouchingDisables: Boolean = true
 

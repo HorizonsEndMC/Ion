@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.utils.text.CHETHERITE_CHARACTER
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.CHETHERITE
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -159,7 +159,7 @@ fun Player.rewardAchievement(achievement: Achievement, callback: () -> Unit = {}
 	SLXP.addAsync(this@rewardAchievement, achievement.experienceReward, false)
 
 	if (achievement.chetheriteReward > 0) {
-		inventory.addItem(CHETHERITE.constructItemStack().asQuantity(achievement.chetheriteReward))
+		inventory.addItem(CHETHERITE.getValue().constructItemStack().asQuantity(achievement.chetheriteReward))
 	}
 
 	showTitle(

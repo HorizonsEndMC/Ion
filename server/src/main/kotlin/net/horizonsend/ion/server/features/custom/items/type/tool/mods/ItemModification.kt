@@ -1,9 +1,10 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool.mods
 
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemStack
-import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 interface ItemModification {
@@ -11,7 +12,7 @@ interface ItemModification {
 	val displayName: Component
 	val applicationPredicates: Array<ApplicationPredicate>
 	val incompatibleWithMods: Array<KClass<out ItemModification>>
-	val modItem: Supplier<ModificationItem?>
+	val modItem: IonRegistryKey<CustomItem>?
 
 	val crouchingDisables: Boolean
 

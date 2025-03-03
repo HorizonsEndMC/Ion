@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.type
 
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
@@ -8,7 +9,7 @@ import org.bukkit.Material
 import java.util.function.Supplier
 
 open class CustomBlockItem(
-	identifier: String,
+	identifier: IonRegistryKey<CustomItem>,
 
 	val customModel: String,
 	displayName: Component,

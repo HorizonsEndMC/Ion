@@ -4,9 +4,9 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
@@ -19,7 +19,7 @@ import org.bukkit.persistence.PersistentDataType
 import java.text.DecimalFormat
 
 object ProgressHolder : CustomItem(
-	"PROGRESS_HOLDER",
+	CustomItemKeys.PROGRESS_HOLDER,
 	text("Empty Progress Holder"),
 	ItemFactory.unStackableCustomItem
 ) {
@@ -37,9 +37,9 @@ object ProgressHolder : CustomItem(
 		example.getData(DataComponentTypes.ITEM_MODEL)?.let { base.setData(DataComponentTypes.ITEM_MODEL, it) }
 
 		return base.updatePersistentDataContainer {
-			set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, identifier)
+			set(NamespacedKeys.CUSTOM_ITEM, PersistentDataType.STRING, key.key)
 			set(NamespacedKeys.PROGRESS, PersistentDataType.DOUBLE, 0.0)
-			set(NamespacedKeys.CUSTOM_ITEM_RESULT, PersistentDataType.STRING, result.identifier)
+			set(NamespacedKeys.CUSTOM_ITEM_RESULT, PersistentDataType.STRING, result.key.key)
 		}
 	}
 
@@ -55,7 +55,7 @@ object ProgressHolder : CustomItem(
 	 **/
 	fun getResult(itemStack: ItemStack): CustomItem? {
 		val identifier = itemStack.itemMeta.persistentDataContainer.get(NamespacedKeys.CUSTOM_ITEM_RESULT, PersistentDataType.STRING) ?: return null
-		return CustomItemRegistry.getByIdentifier(identifier)
+		return CustomItemKeys[identifier]?.getValue()
 	}
 
 	/**

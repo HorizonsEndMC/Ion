@@ -2,9 +2,10 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.dri
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.general.AOEDMod
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
@@ -20,13 +21,12 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import java.util.ArrayDeque
 import java.util.concurrent.TimeUnit
-import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 class VeinMinerMod(
 	val depth: Int,
 	override val identifier: String = "DRILL_VEIN_$depth",
-	override val modItem: Supplier<ModificationItem?>
+	override val modItem: IonRegistryKey<CustomItem>
 ) : DrillModification(), net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.BlockListModifier {
 	override val displayName: Component = ofChildren(text("Vein ", HE_LIGHT_ORANGE), text("Mining", GRAY)).decoration(TextDecoration.ITALIC, false)
 

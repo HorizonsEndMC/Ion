@@ -4,6 +4,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.Equippable
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import io.papermc.paper.datacomponent.item.Unbreakable
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.PotionEffectAttribute
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
@@ -41,12 +42,12 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 class PowerArmorItem(
-	identifier: String,
+	key: IonRegistryKey<CustomItem>,
 	displayName: Component,
 	itemModel: String,
 	val slot: EquipmentSlot
 ) : CustomItem(
-	identifier,
+	key,
 	displayName,
 	ItemFactory
 		.builder()
@@ -64,8 +65,8 @@ class PowerArmorItem(
 		)
 		.addData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
 			.itemAttributes()
-			.addModifier(Attribute.ARMOR, AttributeModifier(NamespacedKeys.key(identifier), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
-//			.addModifier(Attribute.ARMOR_TOUGHNESS, AttributeModifier(NamespacedKeys.key(identifier), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
+			.addModifier(Attribute.ARMOR, AttributeModifier(NamespacedKeys.key(key.key), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
+//			.addModifier(Attribute.ARMOR_TOUGHNESS, AttributeModifier(NamespacedKeys.key(key.key), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
 			.build())
 		.build()
 ) {

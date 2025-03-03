@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.ModManager
 import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
@@ -43,7 +43,7 @@ class ToolModMenu(
 
 		var index = 0
 		for (mod in mods) {
-			val modCustomItem = mod.modItem.get() ?: continue
+			val modCustomItem = mod.modItem?.getValue() ?: continue
 			internalInventory.setItem(index, modCustomItem.constructItemStack())
 
 			index++
@@ -59,7 +59,7 @@ class ToolModMenu(
 
 		val nonItemMods = modManager
 			.getMods(itemStack)
-			.filter { it.modItem.get() == null }
+			.filter { it.modItem?.getValue() == null }
 
 		val mods = contents
 			.mapNotNull { it?.customItem }

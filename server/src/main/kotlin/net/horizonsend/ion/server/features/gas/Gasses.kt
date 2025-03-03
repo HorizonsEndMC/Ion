@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.gas
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_CANISTER_EMPTY
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.GAS_CANISTER_EMPTY
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.features.gas.type.GasFuel
@@ -111,10 +111,10 @@ object Gasses : IonServerComponent(false) {
 		return gas
 	}
 
-	val EMPTY_CANISTER: ItemStack = GAS_CANISTER_EMPTY.constructItemStack()
+	val EMPTY_CANISTER: ItemStack = GAS_CANISTER_EMPTY.getValue().constructItemStack()
 
 	fun isEmptyCanister(itemStack: ItemStack?): Boolean {
-		return itemStack?.customItem?.identifier == GAS_CANISTER_EMPTY.identifier
+		return itemStack?.customItem?.key == GAS_CANISTER_EMPTY
 	}
 
 	fun isCanister(itemStack: ItemStack?): Boolean = isEmptyCanister(itemStack) || itemStack?.customItem is GasCanister

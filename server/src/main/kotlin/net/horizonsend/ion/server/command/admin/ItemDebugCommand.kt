@@ -8,8 +8,9 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.core.registries.IonRegistries
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.MOD_MANAGER
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.POWER_STORAGE
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
@@ -108,7 +109,7 @@ object ItemDebugCommand : SLCommand() {
 
 	@Subcommand("test all")
 	fun onTestAll(sender: Player) {
-		val allItems = CustomItemRegistry.ALL.map { item -> object : GuiItems.AbstractButtonItem(item.displayName.itemName, item.constructItemStack()) {
+		val allItems = IonRegistries.CUSTOM_ITEMS.getAll().map { item -> object : GuiItems.AbstractButtonItem(item.displayName.itemName, item.constructItemStack()) {
 			override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
 				player.inventory.addItem(item.constructItemStack())
 			}
@@ -150,8 +151,8 @@ object ItemDebugCommand : SLCommand() {
 		sender.information(CustomItemSerialization.getCompletions(value)?.joinToString { it } ?: "null")
 
 		val data = "[${value.substringAfter('[')}"
-		val customItem = CustomItemRegistry.getByIdentifier(value.substringBefore('[')) ?: fail { "Not valid custom item: ${value.substringBefore('[')}" }
+		val customItem = CustomItemKeys[value.substringBefore('[')] ?: fail { "Not valid custom item: ${value.substringBefore('[')}" }
 
-		sender.inventory.addItem(customItem.deserialize(data))
+		sender.inventory.addItem(customItem.getValue().deserialize(data))
 	}
 }

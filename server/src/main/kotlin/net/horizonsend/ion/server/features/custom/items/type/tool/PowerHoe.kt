@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool
 
 import net.horizonsend.ion.common.extensions.alertAction
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
@@ -31,7 +33,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.EnumSet
 import kotlin.math.roundToInt
 
-class PowerHoe(identifier: String, displayName: Component, modLimit: Int, basePowerCapacity: Int, model: String) : PowerTool(identifier, displayName, modLimit, basePowerCapacity, model) {
+class PowerHoe(key: IonRegistryKey<CustomItem>, displayName: Component, modLimit: Int, basePowerCapacity: Int, model: String) : PowerTool(key, displayName, modLimit, basePowerCapacity, model) {
 	override val customComponents: CustomItemComponentManager = super.customComponents.apply {
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@PowerHoe) { event, _, item ->
 			handleLeftClick(event.player, item, event)

@@ -8,9 +8,10 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Balancing
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.AmmunitionStorage
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
@@ -41,19 +42,19 @@ import org.bukkit.util.Vector
 import java.util.function.Supplier
 
 open class Blaster<T : Balancing>(
-	identifier: String,
+	key: IonRegistryKey<CustomItem>,
 	displayName: Component,
 	itemFactory: ItemFactory,
 	private val balancingSupplier: Supplier<T>
 ) : CustomItem(
-	identifier,
+	key,
 	displayName,
 	itemFactory,
 ) {
 	val balancing get() = balancingSupplier.get()
 
 	val ammoComponent = AmmunitionStorage(balancingSupplier, balancing.consumesAmmo)
-	val magazineComponent = MagazineType(balancingSupplier) { CustomItemRegistry.getByIdentifier(balancing.magazineIdentifier)!! }
+	val magazineComponent = MagazineType(balancingSupplier, CustomItemKeys[balancing.magazineIdentifier] ?: error("No custom item type ${balancing.magazineIdentifier}"))
 
 	override fun decorateItemStack(base: ItemStack) {
 		// Clear base item attributes
