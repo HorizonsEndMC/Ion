@@ -2,12 +2,13 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods.general
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ApplicationPredicate
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.drill.VeinMinerMod
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -15,7 +16,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
-import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 class AOEDMod(
@@ -24,7 +24,7 @@ class AOEDMod(
 		ApplicationPredicate.ClassPredicate(PowerDrill::class),
 		ApplicationPredicate.ClassPredicate(PowerHoe::class),
 	),
-	override val modItem: Supplier<ModificationItem?>
+	override val modItem: IonRegistryKey<CustomItem>
 ) : ItemModification, net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.BlockListModifier {
 
 	override val identifier: String = "AOE_$radius"

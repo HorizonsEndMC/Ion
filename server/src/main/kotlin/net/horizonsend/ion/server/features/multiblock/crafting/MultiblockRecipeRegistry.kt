@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.crafting
 
 import io.papermc.paper.util.Tick
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
@@ -43,12 +43,12 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 	val URANIUM_ENRICHMENT = register(FurnaceMultiblockRecipe(
 		identifier = "URANIUM_ENRICHMENT",
 		clazz = CentrifugeMultiblock.CentrifugeMultiblockEntity::class,
-		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemRegistry.URANIUM),
+		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.URANIUM),
 		fuelItem = null,
 		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 			duration = Duration.ofSeconds(10),
-			normalResult = ItemResult.simpleResult(CustomItemRegistry.ENRICHED_URANIUM),
+			normalResult = ItemResult.simpleResult(CustomItemKeys.ENRICHED_URANIUM),
 		))
 			.playSound(Sound.sound(NamespacedKeys.packKey("industry.centrifuge"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
 			.updateFurnace()
@@ -57,12 +57,12 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 	val URANIUM_CORE_COMPRESSION = register(FurnaceMultiblockRecipe(
 		identifier = "URANIUM_CORE_COMPRESSION",
 		clazz = CompressorMultiblock.CompressorMultiblockEntity::class,
-		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemRegistry.URANIUM_CORE),
+		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.URANIUM_CORE),
 		fuelItem = null,
 		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 			Tick.of(60L * 60L * 20L),
-			ItemResult.simpleResult(CustomItemRegistry.URANIUM_ROD),
+			ItemResult.simpleResult(CustomItemKeys.URANIUM_ROD),
 		))
 			.updateProgressText()
 			.updateFurnace()
@@ -76,7 +76,7 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 			duration = Duration.ofSeconds(10),
-			normalResult = ItemResult.simpleResult(CustomItemRegistry.STEEL_INGOT),
+			normalResult = ItemResult.simpleResult(CustomItemKeys.STEEL_INGOT),
 		))
 			.updateFurnace()
 	))
@@ -84,12 +84,12 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 	val REACTIVE_PLATING_PRESSING = register(FurnaceMultiblockRecipe(
 		identifier = "REACTIVE_PLATING_PRESSING",
 		clazz = PlatePressMultiblock.PlatePressMultiblockEntity::class,
-		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemRegistry.REACTIVE_PLATING),
+		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.REACTIVE_PLATING),
 		fuelItem = null,
 		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 			Tick.of(60L * 60L * 20L),
-			ItemResult.simpleResult(CustomItemRegistry.REACTIVE_CHASSIS),
+			ItemResult.simpleResult(CustomItemKeys.REACTIVE_CHASSIS),
 		))
 			.playSound(Sound.sound(NamespacedKeys.packKey("industry.press"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
 			.updateProgressText()
@@ -99,12 +99,12 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 	val STEEL_PLATE_PRESSING = register(FurnaceMultiblockRecipe(
 		identifier = "STEEL_PLATE_PRESSING",
 		clazz = PlatePressMultiblock.PlatePressMultiblockEntity::class,
-		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemRegistry.STEEL_PLATE),
+		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.STEEL_PLATE),
 		fuelItem = null,
 		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 			Tick.of(60L * 60L * 20L),
-			ItemResult.simpleResult(CustomItemRegistry.STEEL_CHASSIS),
+			ItemResult.simpleResult(CustomItemKeys.STEEL_CHASSIS),
 		))
 			.playSound(Sound.sound(NamespacedKeys.packKey("industry.press"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
 			.updateProgressText()
@@ -114,12 +114,12 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 	val FUEL_ROD_CORE_FABRICATION = register(FurnaceMultiblockRecipe(
 		identifier = "FUEL_ROD_CORE_FABRICATION",
 		clazz = FabricatorMultiblock.FabricatorMultiblockEntity::class,
-		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemRegistry.FUEL_ROD_CORE),
+		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.FUEL_ROD_CORE),
 		fuelItem = null,
 		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 			Tick.of(60L * 60L * 20L * 2L),
-			ItemResult.simpleResult(CustomItemRegistry.FUEL_CELL),
+			ItemResult.simpleResult(CustomItemKeys.FUEL_CELL),
 		))
 			.playSound(Sound.sound(NamespacedKeys.packKey("industry.fabricate"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
 			.updateProgressText()
@@ -129,12 +129,12 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 	val FABRICATED_ASSEMBLY_FABRICATION = register(FurnaceMultiblockRecipe(
 		identifier = "FABRICATED_ASSEMBLY_FABRICATION",
 		clazz = FabricatorMultiblock.FabricatorMultiblockEntity::class,
-		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemRegistry.REACTIVE_ASSEMBLY),
+		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.REACTIVE_ASSEMBLY),
 		fuelItem = null,
 		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 			Tick.of(60L * 60L * 20L * 2L),
-			ItemResult.simpleResult(CustomItemRegistry.FABRICATED_ASSEMBLY),
+			ItemResult.simpleResult(CustomItemKeys.FABRICATED_ASSEMBLY),
 		))
 			.playSound(Sound.sound(NamespacedKeys.packKey("industry.fabricate"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
 			.updateProgressText()
@@ -144,12 +144,12 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 	val REINFORCED_FRAME_FABRICATION = register(FurnaceMultiblockRecipe(
 		identifier = "REINFORCED_FRAME_FABRICATION",
 		clazz = FabricatorMultiblock.FabricatorMultiblockEntity::class,
-		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemRegistry.STEEL_ASSEMBLY),
+		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.STEEL_ASSEMBLY),
 		fuelItem = null,
 		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 			Tick.of(60L * 60L * 20L * 2L),
-			ItemResult.simpleResult(CustomItemRegistry.REINFORCED_FRAME),
+			ItemResult.simpleResult(CustomItemKeys.REINFORCED_FRAME),
 		))
 			.playSound(Sound.sound(NamespacedKeys.packKey("industry.fabricate"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
 			.updateProgressText()
@@ -159,12 +159,12 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 	val CIRCUIT_BOARD_FABRICATION = register(FurnaceMultiblockRecipe(
 		identifier = "CIRCUIT_BOARD_FABRICATION",
 		clazz = CircuitfabMultiblock.CircuitfabMultiblockEntity::class,
-		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemRegistry.CIRCUITRY),
+		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.CIRCUITRY),
 		fuelItem = null,
 		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 			Tick.of(60L * 60L * 20L),
-			ItemResult.simpleResult(CustomItemRegistry.CIRCUIT_BOARD),
+			ItemResult.simpleResult(CustomItemKeys.CIRCUIT_BOARD),
 		))
 			.playSound(Sound.sound(NamespacedKeys.packKey("industry.fabricate"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
 			.updateProgressText()
@@ -174,12 +174,12 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 	val LOADED_SHELL_LOADING = register(FurnaceMultiblockRecipe(
 		identifier = "LOADED_SHELL_LOADING",
 		clazz = AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity::class,
-		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemRegistry.UNLOADED_SHELL),
+		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.UNLOADED_SHELL),
 		fuelItem = null,
 		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 			Duration.ofSeconds(90),
-			ItemResult.simpleResult(CustomItemRegistry.LOADED_SHELL),
+			ItemResult.simpleResult(CustomItemKeys.LOADED_SHELL),
 		))
 			.playSound(Sound.sound(NamespacedKeys.packKey("industry.load"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
 			.updateProgressText()
@@ -189,12 +189,12 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 	val UNCHARGED_SHELL_CHARGING = register(FurnaceMultiblockRecipe(
 		identifier = "UNCHARGED_SHELL_CHARGING",
 		clazz = AmmoLoaderMultiblock.AmmoLoaderMultiblockEntity::class,
-		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemRegistry.UNCHARGED_SHELL),
+		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.UNCHARGED_SHELL),
 		fuelItem = null,
 		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 			Duration.ofSeconds(90),
-			ItemResult.simpleResult(CustomItemRegistry.CHARGED_SHELL),
+			ItemResult.simpleResult(CustomItemKeys.CHARGED_SHELL),
 		))
 			.playSound(Sound.sound(NamespacedKeys.packKey("industry.load"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
 			.updateProgressText()
@@ -204,12 +204,12 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 	val ARSENAL_MISSILE_LOADING = register(FurnaceMultiblockRecipe(
 		identifier = "ARSENAL_MISSILE_LOADING",
 		clazz = MissileLoaderMultiblock.MissileLoaderMultiblockEntity::class,
-		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemRegistry.UNLOADED_ARSENAL_MISSILE),
+		smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.UNLOADED_ARSENAL_MISSILE),
 		fuelItem = null,
 		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 			Duration.ofMinutes(60),
-			ItemResult.simpleResult(CustomItemRegistry.ARSENAL_MISSILE),
+			ItemResult.simpleResult(CustomItemKeys.ARSENAL_MISSILE),
 		))
 			.playSound(Sound.sound(NamespacedKeys.packKey("industry.mload"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
 			.updateProgressText()

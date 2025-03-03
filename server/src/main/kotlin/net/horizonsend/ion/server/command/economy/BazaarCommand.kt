@@ -27,7 +27,7 @@ import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
@@ -375,7 +375,7 @@ object BazaarCommand : SLCommand() {
 				val territory: RegionTerritory = Regions[territoryId]
 
 				// attempt to get the planet icon, just use a detonator if unavailable
-				val item = Space.getPlanet(territory.world)?.planetIconFactory?.construct() ?: CustomItemRegistry.CHANDRA.constructItemStack()
+				val item = Space.getPlanet(territory.world)?.planetIconFactory?.construct() ?: CustomItemKeys.CHANDRA.getValue().constructItemStack()
 
 				return@map guiButton(item) {
 					val clicker: Player = playerClicker
