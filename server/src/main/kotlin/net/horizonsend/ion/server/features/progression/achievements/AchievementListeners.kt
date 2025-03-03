@@ -1,10 +1,11 @@
 package net.horizonsend.ion.server.features.progression.achievements
 
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_INGOT
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.TITANIUM_INGOT
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.ALUMINUM_INGOT
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.CHETHERITE
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.TITANIUM_INGOT
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.URANIUM
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDetectedEvent
@@ -34,11 +35,11 @@ class AchievementListeners : SLEventListener() {
 	@Suppress("Unused")
 	fun onPlayerAttemptPickupItemEvent(event: PlayerAttemptPickupItemEvent) {
 		event.player.rewardAchievement(
-			when (event.item.itemStack) {
-				TITANIUM_INGOT.constructItemStack() -> Achievement.ACQUIRE_TITANIUM
-				ALUMINUM_INGOT.constructItemStack() -> Achievement.ACQUIRE_ALUMINIUM
-				CHETHERITE.constructItemStack() -> Achievement.ACQUIRE_CHETHERITE
-				URANIUM.constructItemStack() -> Achievement.ACQUIRE_URANIUM
+			when (event.item.itemStack.customItem?.key) {
+				TITANIUM_INGOT -> Achievement.ACQUIRE_TITANIUM
+				ALUMINUM_INGOT -> Achievement.ACQUIRE_ALUMINIUM
+				CHETHERITE -> Achievement.ACQUIRE_CHETHERITE
+				URANIUM -> Achievement.ACQUIRE_URANIUM
 				else -> return
 			}
 		)
@@ -51,11 +52,11 @@ class AchievementListeners : SLEventListener() {
 		val player = getPlayer(event.view.player.uniqueId) ?: return
 
 		player.rewardAchievement(
-			when (item) {
-				TITANIUM_INGOT.constructItemStack() -> Achievement.ACQUIRE_TITANIUM
-				ALUMINUM_INGOT.constructItemStack() -> Achievement.ACQUIRE_ALUMINIUM
-				CHETHERITE.constructItemStack() -> Achievement.ACQUIRE_CHETHERITE
-				URANIUM.constructItemStack() -> Achievement.ACQUIRE_URANIUM
+			when (item.customItem?.key) {
+				TITANIUM_INGOT -> Achievement.ACQUIRE_TITANIUM
+				ALUMINUM_INGOT -> Achievement.ACQUIRE_ALUMINIUM
+				CHETHERITE -> Achievement.ACQUIRE_CHETHERITE
+				URANIUM -> Achievement.ACQUIRE_URANIUM
 				else -> return
 			}
 		)

@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.misc
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
@@ -25,7 +26,7 @@ import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 
 object Wrench : CustomItem(
-	"WRENCH",
+	CustomItemKeys.WRENCH,
 	text("Wrench"),
 	ItemFactory.builder(ItemFactory.unStackableCustomItem)
 		.setCustomModel("tool/wrench")

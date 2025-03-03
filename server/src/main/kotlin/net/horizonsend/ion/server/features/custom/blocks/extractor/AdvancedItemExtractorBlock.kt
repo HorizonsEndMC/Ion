@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.custom.blocks.extractor
 
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.transport.items.SortingOrder
@@ -36,9 +36,9 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 	},
 	BlockLoot(
 		requiredTool = { BlockLoot.Tool.PICKAXE },
-		drops = customItemDrop(CustomItemRegistry::ADVANCED_ITEM_EXTRACTOR)
+		drops = customItemDrop(CustomItemKeys.ADVANCED_ITEM_EXTRACTOR)
 	),
-	CustomItemRegistry::ADVANCED_ITEM_EXTRACTOR,
+	CustomItemKeys.ADVANCED_ITEM_EXTRACTOR,
 	ItemExtractorData::class
 ) {
 	override fun createExtractorData(pos: BlockKey): ItemExtractorData {

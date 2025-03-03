@@ -19,9 +19,9 @@ import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
@@ -206,7 +206,7 @@ object ShipmentManager : IonServerComponent() {
 		val destinationWorld = destinationTerritory.world
 		val planetId = destinationWorld.uppercase(Locale.getDefault()).replace(" ", "")
 
-		val planetIcon = CustomItemRegistry.getByIdentifier(planetId)?.constructItemStack() ?: CustomItemRegistry.BATTERY_G.constructItemStack()
+		val planetIcon = CustomItemKeys[planetId]?.getValue()?.constructItemStack() ?: CustomItemKeys.BATTERY_G.getValue().constructItemStack()
 		return planetIcon.makeGuiButton { _, _ ->  }
 	}
 
