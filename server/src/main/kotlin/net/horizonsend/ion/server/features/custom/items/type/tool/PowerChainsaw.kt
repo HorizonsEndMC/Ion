@@ -2,7 +2,9 @@ package net.horizonsend.ion.server.features.custom.items.type.tool
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
@@ -32,13 +34,13 @@ import java.util.ArrayDeque
 import kotlin.math.roundToInt
 
 class PowerChainsaw(
-	identifier: String,
+	key: IonRegistryKey<CustomItem>,
 	displayName: Component,
 	modLimit: Int,
 	basePowerCapacity: Int,
 	model: String,
 	val initialBlocksBroken: Int
-) : PowerTool(identifier, displayName, modLimit, basePowerCapacity, model) {
+) : PowerTool(key, displayName, modLimit, basePowerCapacity, model) {
 	override val customComponents: CustomItemComponentManager = super.customComponents.apply {
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@PowerChainsaw) { event, _, item ->
 			handleClick(event.player, item, event)

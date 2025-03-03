@@ -4,9 +4,9 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipBalancing
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
+import net.horizonsend.ion.server.features.starship.StarshipType.entries
 import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -332,7 +332,7 @@ enum class StarshipType(
 		minLevel = 70,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
-		menuItemRaw = { CustomItemRegistry.STEEL_PLATE.constructItemStack() },
+		menuItemRaw = { net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.STEEL_PLATE.getValue().constructItemStack() },
 		menuSubclasses = { listOf(AI_CRUISER) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#FFD700",
@@ -372,7 +372,7 @@ enum class StarshipType(
 		minLevel = 80,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.0,
-		menuItemRaw = { CustomItemRegistry.STEEL_BLOCK.constructItemStack() },
+		menuItemRaw = { net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.STEEL_BLOCK.getValue().constructItemStack() },
 		menuSubclasses = { listOf(AI_BATTLECRUISER) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#0c5ce8",
@@ -413,7 +413,7 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.015,
 		crateLimitMultiplier = 0.5,
-		menuItemRaw = { CustomItemRegistry.STEEL_MODULE.constructItemStack() },
+		menuItemRaw = { net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.STEEL_MODULE.getValue().constructItemStack() },
 		menuSubclasses = { listOf(AI_BATTLESHIP) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#0c1cff",
@@ -447,7 +447,7 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.015,
 		crateLimitMultiplier = 0.5,
-		menuItemRaw = { CustomItemRegistry.STEEL_ASSEMBLY.constructItemStack() },
+		menuItemRaw = { net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.STEEL_ASSEMBLY.getValue().constructItemStack() },
 		menuSubclasses = { listOf(AI_DREADNOUGHT) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#320385",
@@ -482,7 +482,7 @@ enum class StarshipType(
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.0,
 		concretePercent = 0.0,
-		menuItemRaw = { CustomItemRegistry.GAS_CANISTER_EMPTY.constructItemStack() },
+		menuItemRaw = { net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.GAS_CANISTER_EMPTY.getValue().constructItemStack() },
 		typeCategory = TypeCategory.SPECIALTY,
 		color = "#ff8000",
 		overridePermission = "ion.ships.tank",
