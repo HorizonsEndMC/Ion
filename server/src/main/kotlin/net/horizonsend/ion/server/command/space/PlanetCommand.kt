@@ -426,7 +426,7 @@ object PlanetCommand : SLCommand() {
 		failIf(planet !is OrbitingCelestialBody) { "Planet ${planet.name} can't orbit!" }
 
 		val elapsedNanos = measureNanoTime {
-			(planet as OrbitingCelestialBody).orbit(true)
+			Orbits.orbitPlanets()
 		}
 
 		spaceWorld.save()
