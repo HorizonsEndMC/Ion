@@ -6,7 +6,7 @@ import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
@@ -170,7 +170,7 @@ object ModelCreator : SLCommand() {
 	private fun getQuoted(text: String): String = "\"$text\""
 
 	fun getMaterialTexture(blockData: BlockData): String {
-		val customBlock = CustomBlocks.getByBlockData(blockData)
+		val customBlock = blockData.customBlock
 		if (customBlock != null) {
 			val item = customBlock.customItem as CustomBlockItem
 			return "horizonsend:block/${item.customModel}"

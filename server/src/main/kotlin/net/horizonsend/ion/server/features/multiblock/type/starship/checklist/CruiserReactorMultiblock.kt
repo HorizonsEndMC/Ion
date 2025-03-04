@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.checklist
 
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.CRUISER_REACTOR_CORE
+import net.horizonsend.ion.server.core.registries.keys.CustomBlockKeys
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 
-object CruiserReactorMultiblock : AbstractReactorCore({ customBlock(CRUISER_REACTOR_CORE) }) {
+object CruiserReactorMultiblock : AbstractReactorCore({ customBlock(CustomBlockKeys.CRUISER_REACTOR_CORE.getValue()) }) {
 	override val displayName: Component get() = text("Cruiser Reactor")
 	override val description: Component get() = text("Reactor core critical to a Cruiser's functionality.")
 
