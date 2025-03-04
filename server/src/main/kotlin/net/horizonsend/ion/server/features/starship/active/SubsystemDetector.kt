@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
+import net.horizonsend.ion.server.core.registries.keys.CustomBlockKeys
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield
@@ -271,7 +271,7 @@ object SubsystemDetector {
 
 	fun detectCustomTurretBase(starship: ActiveControlledStarship, block: Block) {
 		val matches = EnumSet.of(NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST).map { block.getRelative(it) }.all {
-			it.customBlock == CustomBlocks.TITANIUM_BLOCK
+			it.customBlock?.key == CustomBlockKeys.TITANIUM_BLOCK
 		}
 
 		if (!matches) return
