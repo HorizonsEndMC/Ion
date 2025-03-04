@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.WrenchRemovable
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
@@ -61,7 +61,7 @@ object Wrench : CustomItem(
 	private fun handleRightClick(player: Player, event: PlayerInteractEvent?) {
 		val clickedBlock = event?.clickedBlock ?: return
 		val state = clickedBlock.state
-		val customBlock = CustomBlocks.getByBlockData(clickedBlock.blockData)
+		val customBlock = clickedBlock.blockData.customBlock
 
 		if (player.isSneaking && state is Sign) return tryPickUpMultiblock(player, state)
 		if (player.isSneaking && customBlock is WrenchRemovable) return tryPickUpBlock(player, clickedBlock, customBlock)
