@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.shape
 
+import net.horizonsend.ion.server.core.registries.keys.CustomBlockKeys
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.ENRICHED_URANIUM_BLOCK
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.NETHERITE_CASING
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.STANDARD_EXTRACTOR_TYPE
@@ -264,18 +263,18 @@ class MultiblockShape {
 
 		fun customBlock(customBlock: CustomBlock) {
 			val requirement = BlockRequirement(
-				alias = customBlock.identifier,
+				alias = customBlock.key.key,
 				example = customBlock.blockData,
 				syncCheck = { block, _, loadChunks ->
-					if (loadChunks) CustomBlocks.getByBlock(block) else {
-						getBlockDataSafe(block.world, block.x, block.y, block.z)?.let { CustomBlocks.getByBlockData(it) }
+					if (loadChunks) block.customBlock else {
+						getBlockDataSafe(block.world, block.x, block.y, block.z)?.customBlock
 					} === customBlock
 				},
 				itemRequirement = BlockRequirement.ItemRequirement(
 					itemCheck = { val customItem = it.customItem; customItem is CustomBlockItem && customItem.getCustomBlock() == customBlock },
 					amountConsumed = { 1 },
 					toBlock = { _ -> customBlock.blockData },
-					toItemStack = { block -> CustomBlocks.getByBlockData(block)?.customItem?.constructItemStack() ?: ItemStack(Material.AIR) }
+					toItemStack = { blockData -> blockData.customBlock?.customItem?.constructItemStack() ?: ItemStack(Material.AIR) }
 				)
 			)
 
@@ -366,11 +365,11 @@ class MultiblockShape {
 		fun redstoneBlock() = type(Material.REDSTONE_BLOCK)
 		fun lapisBlock() = type(Material.LAPIS_BLOCK)
 
-		fun titaniumBlock() = customBlock(CustomBlocks.TITANIUM_BLOCK)
-		fun aluminumBlock() = customBlock(CustomBlocks.ALUMINUM_BLOCK)
-		fun chetheriteBlock() = customBlock(CustomBlocks.CHETHERITE_BLOCK)
-		fun steelBlock() = customBlock(CustomBlocks.STEEL_BLOCK)
-		fun enrichedUraniumBlock() = customBlock(ENRICHED_URANIUM_BLOCK)
+		fun titaniumBlock() = customBlock(CustomBlockKeys.TITANIUM_BLOCK.getValue())
+		fun aluminumBlock() = customBlock(CustomBlockKeys.ALUMINUM_BLOCK.getValue())
+		fun chetheriteBlock() = customBlock(CustomBlockKeys.CHETHERITE_BLOCK.getValue())
+		fun steelBlock() = customBlock(CustomBlockKeys.STEEL_BLOCK.getValue())
+		fun enrichedUraniumBlock() = customBlock(CustomBlockKeys.ENRICHED_URANIUM_BLOCK.getValue())
 
 		fun anyCopperVariant() = anyType(
 			Material.COPPER_BLOCK,
@@ -488,7 +487,7 @@ class MultiblockShape {
 		fun anyPipedInventory() = filteredTypes("any container block", edit = { setExample(Material.CHEST.createBlockData()) }) { it.isPipedInventory }
 		fun dispenser() = type(Material.DISPENSER)
 
-		fun netheriteCasing() = customBlock(NETHERITE_CASING)
+		fun netheriteCasing() = customBlock(CustomBlockKeys.NETHERITE_CASING.getValue())
 
 		fun redstoneLamp() = filteredTypes("redstone lamp") { it.isRedstoneLamp }
 		fun daylightSensor() = filteredTypes("daylight sensor") { it.isDaylightSensor }
