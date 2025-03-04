@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
-import java.util.function.Supplier
 
 open class CustomBlockItem(
 	identifier: IonRegistryKey<CustomItem>,
@@ -14,7 +13,7 @@ open class CustomBlockItem(
 	val customModel: String,
 	displayName: Component,
 
-	private val customBlockSupplier: Supplier<CustomBlock>
+	val customBlockKey: IonRegistryKey<CustomBlock>
 ) : CustomItem(
 	identifier,
 	displayName,
@@ -25,6 +24,6 @@ open class CustomBlockItem(
 		.build()
 ) {
     fun getCustomBlock(): CustomBlock {
-        return customBlockSupplier.get()
+        return customBlockKey.getValue()
     }
 }

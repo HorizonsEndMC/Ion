@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
 import io.papermc.paper.event.player.PlayerPickItemEvent
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.InteractableCustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
@@ -117,7 +117,7 @@ object CustomBlockListeners : SLEventListener() {
 		val player = event.player
 
 		val targetedBlock = player.getTargetBlockExact(player.getAttribute(Attribute.BLOCK_INTERACTION_RANGE)?.value?.roundToInt() ?: 5) ?: return
-		val customBlock = CustomBlocks.getByBlockData(targetedBlock.blockData) ?: return
+		val customBlock = targetedBlock.blockData.customBlock ?: return
 		val customBlockItem = customBlock.customItem.constructItemStack()
 
 		// Source slot is for survival, when taking the item from the slot in the inventory, -1 if it is not present, e.g. creative mode

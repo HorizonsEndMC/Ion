@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.transport.nodes.util
 
 import com.google.common.collect.Multimap
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -35,11 +36,12 @@ class NodeCacheFactory private constructor(private val materialHandlers: Multima
 			return this
 		}
 
-		inline fun <reified T: BlockData> addDataHandler(customBlock: CustomBlock, noinline constructor: (T, BlockKey, CacheHolder<*>) -> Node?): Builder {
-			require(customBlock.blockData is T)
+		inline fun <reified T: BlockData> addDataHandler(customBlock: IonRegistryKey<CustomBlock>, noinline constructor: (T, BlockKey, CacheHolder<*>) -> Node?): Builder {
+			val blockData = customBlock.getValue().blockData
+			require(blockData is T)
 
-			return addDataHandler<T>(customBlock.blockData.material) { data, lng, holder ->
-				if (CustomBlocks.getByBlockData(data) != customBlock) return@addDataHandler null
+			return addDataHandler<T>(blockData.material) { data, lng, holder ->
+				if (data.customBlock != customBlock) return@addDataHandler null
 				constructor.invoke(data, lng, holder)
 			}
 		}
@@ -74,9 +76,9 @@ class NodeCacheFactory private constructor(private val materialHandlers: Multima
 			return this
 		}
 
-		inline fun <reified T: BlockData> addSimpleNode(customBlock: CustomBlock, node: Node): Builder {
-			return addDataHandler<T>(customBlock.blockData.material) { data, lng, _ ->
-				if (CustomBlocks.getByBlockData(data) != customBlock) return@addDataHandler null
+		inline fun <reified T: BlockData> addSimpleNode(customBlock: IonRegistryKey<CustomBlock>, node: Node): Builder {
+			return addDataHandler<T>(customBlock.getValue().blockData.material) { data, lng, _ ->
+				if (data.customBlock?.key != customBlock) return@addDataHandler null
 				node
 			}
 		}
