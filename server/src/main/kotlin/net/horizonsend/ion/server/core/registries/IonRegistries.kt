@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.core.registries
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.IonComponent
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 
 object IonRegistries : IonComponent() {
@@ -16,6 +17,7 @@ object IonRegistries : IonComponent() {
 	}
 
 	val CUSTOM_ITEMS = register(CustomItemRegistry())
+	val CUSTOM_BLOCKS = register(CustomBlockRegistry())
 
 	fun <T : Registry<*>> register(registry: T): T {
 		byId[registry.id] = registry
