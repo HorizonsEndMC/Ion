@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.filters.manager
 
 import github.scarsz.discordsrv.dependencies.alexh.Fluent.ConcurrentHashMap
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.blocks.filter.CustomFilterBlock
 import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta
@@ -53,7 +53,7 @@ abstract class FilterCache(open val manager: TransportManager<*>) {
 
 		if (entityStored == null) {
 			val block = manager.getWorld().getBlockData(globalVec3i.x, globalVec3i.y, globalVec3i.z)
-			val customBlock = CustomBlocks.getByBlockData(block)
+			val customBlock = block.customBlock
 			if (customBlock !is CustomFilterBlock<*, *>) return null
 
 			@Suppress("UNCHECKED_CAST")
