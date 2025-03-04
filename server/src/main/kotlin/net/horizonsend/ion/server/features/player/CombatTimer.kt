@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.player
 
+import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.extensions.alert
@@ -139,6 +140,17 @@ object CombatTimer : IonServerComponent() {
 
 		// Remove all combat tags on death
 		listen<PlayerDeathEvent> { event ->
+			if (npcTimer[event.player.uniqueId] != null) {
+				event.player.success("You are no longer in combat (NPC)")
+				npcTimer.remove(event.player.uniqueId)
+			}
+			if (pvpTimer[event.player.uniqueId] != null) {
+				event.player.success("You are no longer in combat (PVP)")
+				pvpTimer.remove(event.player.uniqueId)
+			}
+		}
+
+		listen<PlayerPostRespawnEvent> { event ->
 			if (npcTimer[event.player.uniqueId] != null) {
 				event.player.success("You are no longer in combat (NPC)")
 				npcTimer.remove(event.player.uniqueId)
