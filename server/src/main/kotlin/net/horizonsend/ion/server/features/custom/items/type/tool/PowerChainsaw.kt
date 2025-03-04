@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.type.tool
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager

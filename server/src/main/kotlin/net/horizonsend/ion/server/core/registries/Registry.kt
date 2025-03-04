@@ -7,9 +7,12 @@ abstract class Registry<T : Any>(val id: String) {
 
 	abstract fun boostrap()
 
-	fun register(key: IonRegistryKey<T>, value: T) {
+	protected open fun register(key: IonRegistryKey<T>, value: T) {
 		byRawString[key.key] = value
+		registerAdditional(key, value)
 	}
+
+	protected open fun registerAdditional(key: IonRegistryKey<T>, value: T) {}
 
 	operator fun get(key: IonRegistryKey<T>): T {
 		return byRawString[key.key] ?: error("Unregistered value $key!")

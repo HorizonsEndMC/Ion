@@ -4,8 +4,8 @@ import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent
 import io.papermc.paper.event.player.PlayerOpenSignEvent
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
+import net.horizonsend.ion.server.core.registries.keys.CustomBlockKeys
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
@@ -212,12 +212,12 @@ class CancelListeners : SLEventListener() {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onExplode(event: EntityExplodeEvent) {
-		event.blockList().removeAll { it.customBlock == CustomBlocks.BATTLECRUISER_REACTOR_CORE || it.customBlock == CustomBlocks.CRUISER_REACTOR_CORE }
+		event.blockList().removeAll { it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE || it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE }
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onExplode(event: BlockExplodeEvent) {
-		event.blockList().removeAll { it.customBlock == CustomBlocks.BATTLECRUISER_REACTOR_CORE || it.customBlock == CustomBlocks.CRUISER_REACTOR_CORE}
+		event.blockList().removeAll { it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE || it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE}
 	}
 
 	@EventHandler

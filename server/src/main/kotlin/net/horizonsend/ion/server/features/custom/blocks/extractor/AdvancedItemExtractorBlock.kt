@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.custom.blocks.extractor
 
+import net.horizonsend.ion.server.core.registries.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customItemDrop
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.transport.items.SortingOrder
@@ -27,7 +28,7 @@ import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
 
 object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
-	"ADVANCED_ITEM_EXTRACTOR",
+	CustomBlockKeys.ADVANCED_ITEM_EXTRACTOR,
 	blockData = Material.VAULT.createBlockData { t ->
 		t as Vault
 		t.facing = BlockFace.SOUTH

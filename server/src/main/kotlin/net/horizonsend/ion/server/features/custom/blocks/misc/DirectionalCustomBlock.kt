@@ -11,7 +11,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 
 abstract class DirectionalCustomBlock(
-	identifier: String,
+	identifier: IonRegistryKey<CustomBlock>,
 	val faceData: Map<BlockFace, BlockData>,
 	drops: BlockLoot,
 	customBlockItem: IonRegistryKey<CustomItem>

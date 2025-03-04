@@ -9,10 +9,10 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Energy
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.core.registries.Registry
+import net.horizonsend.ion.server.core.registries.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule.Companion.powerPrefix
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItemListeners.sortCustomItemListeners
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.misc.MultimeterItem
@@ -228,46 +228,46 @@ class CustomItemRegistry : Registry<CustomItem>("CUSTOM_ITEMS") {
 		fun registerOreIngot(key: IonRegistryKey<CustomItem>, name: String, useSuffix: Boolean) =
 			register(key, text("${name.replaceFirstChar { it.uppercase() }}${if (useSuffix) " Ingot" else ""}"), stackableCustomItem(model = "mineral/$name"))
 
-		fun registerOreBlock(key: IonRegistryKey<CustomItem>, name: String, block: Supplier<CustomBlock>) =
+		fun registerOreBlock(key: IonRegistryKey<CustomItem>, name: String, block: IonRegistryKey<CustomBlock>) =
 			customBlockItem(key, "mineral/${name}_ore", text("${name.replaceFirstChar { it.uppercase() }} Ore"), block)
 
-		fun registerIngotBlock(key: IonRegistryKey<CustomItem>, name: String, block: Supplier<CustomBlock>) =
+		fun registerIngotBlock(key: IonRegistryKey<CustomItem>, name: String, block: IonRegistryKey<CustomBlock>) =
 			customBlockItem(key, "mineral/${name}_block", text("${name.replaceFirstChar { it.uppercase() }} Block"), block)
 
-		fun registerRawBlock(key: IonRegistryKey<CustomItem>, name: String, block: Supplier<CustomBlock>) =
+		fun registerRawBlock(key: IonRegistryKey<CustomItem>, name: String, block: IonRegistryKey<CustomBlock>) =
 			customBlockItem(key, "mineral/raw_${name}_block", text("Raw ${name.replaceFirstChar { it.uppercase() }} Block"), block)
 
 		registerOreIngot(CustomItemKeys.ALUMINUM_INGOT, "aluminum", true)
 		registerRawOre(CustomItemKeys.RAW_ALUMINUM, "aluminum")
-		registerOreBlock(CustomItemKeys.ALUMINUM_ORE, "aluminum", block = CustomBlocks::ALUMINUM_ORE)
-		registerIngotBlock(CustomItemKeys.ALUMINUM_BLOCK, "aluminum", block = CustomBlocks::ALUMINUM_BLOCK)
-		registerRawBlock(CustomItemKeys.RAW_ALUMINUM_BLOCK, "aluminum", block = CustomBlocks::RAW_ALUMINUM_BLOCK)
+		registerOreBlock(CustomItemKeys.ALUMINUM_ORE, "aluminum", block = CustomBlockKeys.ALUMINUM_ORE)
+		registerIngotBlock(CustomItemKeys.ALUMINUM_BLOCK, "aluminum", block = CustomBlockKeys.ALUMINUM_BLOCK)
+		registerRawBlock(CustomItemKeys.RAW_ALUMINUM_BLOCK, "aluminum", block = CustomBlockKeys.RAW_ALUMINUM_BLOCK)
 
 		registerOreIngot(CustomItemKeys.CHETHERITE, "chetherite", false)
-		registerOreBlock(CustomItemKeys.CHETHERITE_ORE, "chetherite", block = CustomBlocks::CHETHERITE_ORE)
-		registerIngotBlock(CustomItemKeys.CHETHERITE_BLOCK, "chetherite", block = CustomBlocks::CHETHERITE_BLOCK)
+		registerOreBlock(CustomItemKeys.CHETHERITE_ORE, "chetherite", block = CustomBlockKeys.CHETHERITE_ORE)
+		registerIngotBlock(CustomItemKeys.CHETHERITE_BLOCK, "chetherite", block = CustomBlockKeys.CHETHERITE_BLOCK)
 
 		registerOreIngot(CustomItemKeys.TITANIUM_INGOT, "titanium", true)
 		registerRawOre(CustomItemKeys.RAW_TITANIUM, "titanium")
-		registerOreBlock(CustomItemKeys.TITANIUM_ORE, "titanium", block = CustomBlocks::TITANIUM_ORE)
-		registerIngotBlock(CustomItemKeys.TITANIUM_BLOCK, "titanium", block = CustomBlocks::TITANIUM_BLOCK)
-		registerRawBlock(CustomItemKeys.RAW_TITANIUM_BLOCK, "titanium", block = CustomBlocks::RAW_TITANIUM_BLOCK)
+		registerOreBlock(CustomItemKeys.TITANIUM_ORE, "titanium", block = CustomBlockKeys.TITANIUM_ORE)
+		registerIngotBlock(CustomItemKeys.TITANIUM_BLOCK, "titanium", block = CustomBlockKeys.TITANIUM_BLOCK)
+		registerRawBlock(CustomItemKeys.RAW_TITANIUM_BLOCK, "titanium", block = CustomBlockKeys.RAW_TITANIUM_BLOCK)
 
 		registerOreIngot(CustomItemKeys.URANIUM, name = "uranium", false)
 		registerRawOre(CustomItemKeys.RAW_URANIUM, name = "uranium")
-		registerOreBlock(CustomItemKeys.URANIUM_ORE, name = "uranium", block = CustomBlocks::URANIUM_ORE)
-		registerIngotBlock(CustomItemKeys.URANIUM_BLOCK, name = "uranium", block = CustomBlocks::URANIUM_BLOCK)
-		registerRawBlock(CustomItemKeys.RAW_URANIUM_BLOCK, name = "uranium", block = CustomBlocks::RAW_URANIUM_BLOCK)
+		registerOreBlock(CustomItemKeys.URANIUM_ORE, name = "uranium", block = CustomBlockKeys.URANIUM_ORE)
+		registerIngotBlock(CustomItemKeys.URANIUM_BLOCK, name = "uranium", block = CustomBlockKeys.URANIUM_BLOCK)
+		registerRawBlock(CustomItemKeys.RAW_URANIUM_BLOCK, name = "uranium", block = CustomBlockKeys.RAW_URANIUM_BLOCK)
 	}
 
 	private fun registerIndustry() {
-		customBlockItem(key = CustomItemKeys.NETHERITE_CASING, model = "industry/netherite_casing", displayName = text("Netherite Casing"), customBlock = CustomBlocks::NETHERITE_CASING)
+		customBlockItem(key = CustomItemKeys.NETHERITE_CASING, model = "industry/netherite_casing", displayName = text("Netherite Casing"), customBlock = CustomBlockKeys.NETHERITE_CASING)
 		stackable(key = CustomItemKeys.ENRICHED_URANIUM, text("Enriched Uranium"), "industry/enriched_uranium")
 		customBlockItem(
 			key = CustomItemKeys.ENRICHED_URANIUM_BLOCK,
 			model = "industry/enriched_uranium_block",
 			displayName = text("Enriched Uranium Block"),
-			customBlock = CustomBlocks::ENRICHED_URANIUM_BLOCK
+			customBlock = CustomBlockKeys.ENRICHED_URANIUM_BLOCK
 		)
 		unStackable(key = CustomItemKeys.URANIUM_CORE, model = "industry/uranium_core", displayName = text("Uranium Core"))
 		unStackable(key = CustomItemKeys.URANIUM_ROD, model = "industry/uranium_rod", displayName = text("Uranium Rod"))
@@ -292,12 +292,12 @@ class CustomItemRegistry : Registry<CustomItem>("CUSTOM_ITEMS") {
 			key = CustomItemKeys.SUPERCONDUCTOR_BLOCK,
 			model = "industry/superconductor_block",
 			displayName = text("Superconductor Block"),
-			customBlock = CustomBlocks::SUPERCONDUCTOR_BLOCK
+			customBlock = CustomBlockKeys.SUPERCONDUCTOR_BLOCK
 		)
 		unStackable(key = CustomItemKeys.SUPERCONDUCTOR_CORE, model = "industry/superconductor_core", displayName = text("Superconductor Core", YELLOW))
 
 		stackable(key = CustomItemKeys.STEEL_INGOT, text("Steel Ingot"), "industry/steel_ingot")
-		customBlockItem(key = CustomItemKeys.STEEL_BLOCK, model = "industry/steel_block", displayName = text("Steel Block"), customBlock = CustomBlocks::STEEL_BLOCK)
+		customBlockItem(key = CustomItemKeys.STEEL_BLOCK, model = "industry/steel_block", displayName = text("Steel Block"), customBlock = CustomBlockKeys.STEEL_BLOCK)
 		unStackable(key = CustomItemKeys.STEEL_PLATE, model = "industry/steel_plate", displayName = text("Steel Plate"))
 		unStackable(key = CustomItemKeys.STEEL_CHASSIS, model = "industry/steel_chassis", displayName = text("Steel Chassis"))
 		unStackable(key = CustomItemKeys.STEEL_MODULE, model = "industry/steel_module", displayName = text("Steel Module"))
@@ -318,9 +318,9 @@ class CustomItemRegistry : Registry<CustomItem>("CUSTOM_ITEMS") {
 	}
 
 	private fun registerShipCores() {
-		customBlockItem(key = CustomItemKeys.BATTLECRUISER_REACTOR_CORE, model = "starship/battlecruiser_reactor_core", displayName = text("Battlecruiser Reactor Core", NamedTextColor.WHITE, BOLD), customBlock = CustomBlocks::BATTLECRUISER_REACTOR_CORE)
-		customBlockItem(key = CustomItemKeys.BARGE_REACTOR_CORE, model = "starship/barge_reactor_core", displayName = text("Barge Reactor Core", NamedTextColor.WHITE, BOLD), customBlock = CustomBlocks::BARGE_REACTOR_CORE)
-		customBlockItem(key = CustomItemKeys.CRUISER_REACTOR_CORE, model = "starship/cruiser_reactor_core", displayName = text("Cruiser Reactor Core", NamedTextColor.WHITE, BOLD), customBlock = CustomBlocks::CRUISER_REACTOR_CORE)
+		customBlockItem(key = CustomItemKeys.BATTLECRUISER_REACTOR_CORE, model = "starship/battlecruiser_reactor_core", displayName = text("Battlecruiser Reactor Core", NamedTextColor.WHITE, BOLD), customBlock = CustomBlockKeys.BATTLECRUISER_REACTOR_CORE)
+		customBlockItem(key = CustomItemKeys.BARGE_REACTOR_CORE, model = "starship/barge_reactor_core", displayName = text("Barge Reactor Core", NamedTextColor.WHITE, BOLD), customBlock = CustomBlockKeys.BARGE_REACTOR_CORE)
+		customBlockItem(key = CustomItemKeys.CRUISER_REACTOR_CORE, model = "starship/cruiser_reactor_core", displayName = text("Cruiser Reactor Core", NamedTextColor.WHITE, BOLD), customBlock = CustomBlockKeys.CRUISER_REACTOR_CORE)
 	}
 
 	private fun registerGasCanisters() {
@@ -348,11 +348,14 @@ class CustomItemRegistry : Registry<CustomItem>("CUSTOM_ITEMS") {
 		register(CustomItemKeys.MULTIBLOCK_TOKEN, MultiblockToken)
 		register(CustomItemKeys.PACKAGED_MULTIBLOCK, PackagedMultiblock)
 
-		register(CustomItemKeys.MULTIBLOCK_WORKBENCH, CustomBlockItem(identifier = CustomItemKeys.MULTIBLOCK_WORKBENCH, displayName = text("Multiblock Workbench"), customModel = "misc/multiblock_workbench") { CustomBlocks.MULTIBLOCK_WORKBENCH })
+		register(
+			CustomItemKeys.MULTIBLOCK_WORKBENCH,
+			CustomBlockItem(CustomItemKeys.MULTIBLOCK_WORKBENCH, "misc/multiblock_workbench", text("Multiblock Workbench"), CustomBlockKeys.MULTIBLOCK_WORKBENCH)
+		)
 		register(CustomItemKeys.WRENCH, Wrench)
 
-		customBlockItem(CustomItemKeys.ADVANCED_ITEM_EXTRACTOR, "misc/advanced_item_extractor", text("Advanced Item Extractor"), CustomBlocks::ADVANCED_ITEM_EXTRACTOR)
-		customBlockItem(CustomItemKeys.ITEM_FILTER, "misc/item_filter", text("Item Filter"), CustomBlocks::ITEM_FILTER)
+		customBlockItem(CustomItemKeys.ADVANCED_ITEM_EXTRACTOR, "misc/advanced_item_extractor", text("Advanced Item Extractor"), CustomBlockKeys.ADVANCED_ITEM_EXTRACTOR)
+		customBlockItem(CustomItemKeys.ITEM_FILTER, "misc/item_filter", text("Item Filter"), CustomBlockKeys.ITEM_FILTER)
 
 		fun formatToolName(tierName: String, tierColor: TextColor, toolName: String) = ofChildren(
 			text("$tierName ", tierColor),
@@ -688,7 +691,7 @@ class CustomItemRegistry : Registry<CustomItem>("CUSTOM_ITEMS") {
 		register(key, CustomItem(key, displayName, unStackableCustomItem(model = model)))
 	}
 
-	private fun customBlockItem(key: IonRegistryKey<CustomItem>, model: String, displayName: Component, customBlock: Supplier<CustomBlock>) {
+	private fun customBlockItem(key: IonRegistryKey<CustomItem>, model: String, displayName: Component, customBlock: IonRegistryKey<CustomBlock>) {
 		register(key, CustomBlockItem(key, model, displayName, customBlock))
 	}
 

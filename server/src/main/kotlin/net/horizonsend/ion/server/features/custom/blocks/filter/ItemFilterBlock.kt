@@ -1,9 +1,10 @@
 package net.horizonsend.ion.server.features.custom.blocks.filter
 
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.core.registries.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customItemDrop
 import net.horizonsend.ion.server.features.custom.blocks.filter.CustomFilterBlock.Companion.filterInteractCooldown
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
@@ -30,7 +31,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
 object ItemFilterBlock : DirectionalCustomBlock(
-	identifier = "ITEM_FILTER",
+	identifier = CustomBlockKeys.ITEM_FILTER,
 	faceData = mapOf(
 		BlockFace.NORTH to Material.VAULT.createBlockData { t ->
 			t as VaultData

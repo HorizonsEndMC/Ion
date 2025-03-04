@@ -4,8 +4,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
@@ -40,10 +39,10 @@ data class PrintItem(val itemString: String) {
 		}
 
 		private fun findPrintItem(data: BlockData): PrintItem? {
-			val customBlock = CustomBlocks.getByBlockData(data)
+			val customBlock = data.customBlock
 			when {
 				customBlock != null -> {
-					val customItem = CustomItemKeys[customBlock.identifier]?.getValue() ?: return null
+					val customItem = customBlock.customItem
 					return PrintItem(customItem)
 				}
 

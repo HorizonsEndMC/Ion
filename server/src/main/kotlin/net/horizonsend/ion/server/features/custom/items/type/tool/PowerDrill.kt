@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.type.tool
 import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
@@ -115,7 +115,7 @@ class PowerDrill(key: IonRegistryKey<CustomItem>, displayName: Component, modLim
 			usage: PowerHoe.UsageReference
 		): Boolean {
 			val blockType = block.type
-			val customBlock = CustomBlocks.getByBlock(block)
+			val customBlock = block.customBlock
 
 			if (blockType == Material.BEDROCK || blockType == Material.BARRIER || blockType.isShulkerBox) {
 				return false

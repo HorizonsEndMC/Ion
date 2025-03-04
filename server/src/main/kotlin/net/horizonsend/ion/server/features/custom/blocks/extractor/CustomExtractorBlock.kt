@@ -30,7 +30,7 @@ import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
 
 abstract class CustomExtractorBlock<T: ExtractorData>(
-	identifier: String,
+	identifier: IonRegistryKey<CustomBlock>,
 	blockData: BlockData,
 	drops: BlockLoot,
 	customBlockItem: IonRegistryKey<CustomItem>,
