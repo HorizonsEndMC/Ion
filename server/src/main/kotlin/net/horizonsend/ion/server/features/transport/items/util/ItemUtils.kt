@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.machine.GeneratorFuel
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.minecraft.world.inventory.AbstractFurnaceMenu
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity
+import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.Material
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.craftbukkit.inventory.CraftInventoryFurnace
@@ -74,6 +75,10 @@ fun getRemovableItems(inventory: CraftInventory): Iterable<Pair<Int, ItemStack>>
  */
 fun addToInventory(inventory: CraftInventory, itemStack: ItemStack): Int {
 	val nmsContainer = inventory.inventory
+
+	if (nmsContainer is BlockEntity) {
+		nmsContainer.setChanged()
+	}
 
 	if (nmsContainer is AbstractFurnaceBlockEntity) {
 		return addToFurnace(CraftInventoryFurnace(nmsContainer), itemStack)
