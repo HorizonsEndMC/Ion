@@ -43,9 +43,8 @@ object GenerateAsteroid {
 					val worldYDouble = worldY.toDouble()
 					val ySquared = (worldYDouble - asteroid.y) * (worldYDouble - asteroid.y)
 
-					val isCave: Boolean =
-						(abs(asteroid.cave1.noise(worldXDouble, worldYDouble, worldZDouble, 1.0, 1.0)) < 0.1) &&
-								(abs(asteroid.cave2.noise(worldXDouble, worldYDouble, worldZDouble, 1.0, 1.0)) < 0.1)
+					val isCave: Boolean = abs(asteroid.cave1.noise(worldXDouble, worldYDouble, worldZDouble, 1.0, 1.0)) < 0.1
+							&& abs(asteroid.cave2.noise(worldXDouble, worldYDouble, worldZDouble, 1.0, 1.0)) < 0.1
 
 					if (isCave) continue
 
@@ -144,7 +143,9 @@ data class AsteroidGenerationData(
 ) : SpaceGenerationData() {
 	val random = Random(seed)
 	val sizeFactor = size / 15
+
 	private val bubble = size + sizeFactor
+
 	fun getCoveredSections(minHeight: Int, maxHeight: Int): IntRange {
 		val min = (y - bubble.toInt()).shr(4).coerceIn(minHeight.shr(4), maxHeight.shr(4) - 1)
 		val max = (y + bubble.toInt()).shr(4).coerceIn(minHeight.shr(4), maxHeight.shr(4) - 1)
