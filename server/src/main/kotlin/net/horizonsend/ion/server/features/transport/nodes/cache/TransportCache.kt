@@ -157,7 +157,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		Vec3i(1, 0, 1),
 		Vec3i(-1, 0, 1),
 		Vec3i(1, 0, -1),
-		Vec3i(-1, 0, -1),
+		Vec3i(-1, 0, -1)
 	)
 
 	inline fun <reified T> getExtractorSourceEntities(extractorLocation: BlockKey, filterNot: (T) -> Boolean): List<T> {
