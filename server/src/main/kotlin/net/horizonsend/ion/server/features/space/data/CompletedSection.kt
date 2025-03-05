@@ -3,6 +3,9 @@ package net.horizonsend.ion.server.features.space.data
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.BLOCKS
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.PALETTE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.Y
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.component1
+import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.chunk.LevelChunk
@@ -47,7 +50,7 @@ data class CompletedSection(val y: Int, val palette: MutableList<BlockData>, val
 		fun empty(sectionY: Int) = CompletedSection(sectionY, mutableListOf(BlockData.AIR), IntArray(4096) { 0 })
     }
 
-	fun place(levelChunk: LevelChunk) {
+	fun place(levelChunk: LevelChunk) = Tasks.syncBlocking {
 		val worldMin = levelChunk.level.minSectionY
 
 		val section = levelChunk.sections[y - worldMin]
