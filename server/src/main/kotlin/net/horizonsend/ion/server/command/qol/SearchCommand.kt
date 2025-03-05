@@ -96,7 +96,7 @@ object SearchCommand : SLCommand() {
 	 */
 	private fun searchItem(item: ItemStack, player: Player, blocks: MutableSet<Block>, inventories: MutableSet<Inventory>, strList: List<String>) {
 		for (block in blocks.withIndex()) {
-			val loc = Vector(block.value.x.toDouble() + 0.5, block.value.y.toDouble() + 0.5, block.value.z.toDouble() + 0.5)
+			val loc = Vector(block.value.x.toDouble(), block.value.y.toDouble(), block.value.z.toDouble())
 
 			if(!containsItem(inventories.elementAt(block.index), item)) continue //necessary check for multi-item searches to prevent false positives
 
