@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.items.util
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.ItemStack
 
@@ -34,6 +35,11 @@ class BackedItemTransaction(
 	private fun tryRemove(): Int {
 		val sourceStack = source.inventory.getItem(source.index) ?: return amount
 		val removeAmount = minOf(amount, sourceStack.amount)
+
+		val nmsContainer = source.inventory.inventory
+		if (nmsContainer is BlockEntity) {
+			nmsContainer.setChanged()
+		}
 
 		return if (amount == removeAmount) {
 			source.inventory.setItem(source.index, null)
