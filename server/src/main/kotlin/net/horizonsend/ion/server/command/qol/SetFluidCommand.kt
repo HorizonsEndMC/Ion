@@ -44,9 +44,9 @@ object SetFluidCommand : SLCommand() {
 		var hits = 0
 
 		for (blockPosition in selection) {
-			val x = blockPosition.x
-			val y = blockPosition.y
-			val z = blockPosition.z
+			val x = blockPosition.x()
+			val y = blockPosition.y()
+			val z = blockPosition.z()
 
 			sender.debug("checking block at $x $y $z")
 
