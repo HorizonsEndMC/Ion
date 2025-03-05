@@ -14,7 +14,7 @@ class ClosestPlayerTargetingModule(
 
     override fun searchForTargetList(): List<AITarget> {
         return controller.getNearbyTargetsInRadius(0.0, 0.0, playerRange = maxRange) {
-            if (it is StarshipTarget) { it.ship.controller !is AIController } else true
+            targetFilter(it,false)
         }.toList()
     }
 }

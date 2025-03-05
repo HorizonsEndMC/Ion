@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -47,6 +48,12 @@ class HyperspaceWarmup(
 
 	override fun run() {
 		seconds++
+
+		if(Hyperspace.isMoving(ship)) {
+			ship.debug("Double queued warmup, canceling")
+			cancel()
+		}
+
 		ship.onlinePassengers.forEach { player ->
 			player.informationAction(
 				"Hyperdrive Warmup: $seconds/$warmup seconds"
