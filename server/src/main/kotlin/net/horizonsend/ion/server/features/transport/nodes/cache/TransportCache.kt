@@ -270,26 +270,3 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		}
 	}
 }
-
-// I hate this function but it works
-fun getSorted(pathResistance: Array<Double?>): IntArray {
-	// Store the shuffled indicies
-	val ranks = IntArray(pathResistance.size) { it }
-	val tempSorted = pathResistance.clone()
-
-	for (index in ranks.indices) {
-		for (j in 0..< ranks.lastIndex) {
-			if ((tempSorted[j] ?: Double.MAX_VALUE) > (tempSorted[j + 1] ?: Double.MAX_VALUE)) {
-				val temp = tempSorted[j]
-				tempSorted[j] = tempSorted[j + 1]
-				tempSorted[j + 1] = temp
-
-				val prev = ranks[j]
-				ranks[j] = prev + 1
-				ranks[j + 1] = prev
-			}
-		}
-	}
-
-	return ranks
-}
