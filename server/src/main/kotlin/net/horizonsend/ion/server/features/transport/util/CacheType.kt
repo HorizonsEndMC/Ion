@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.UNWAXED_CHISELED_COPPER_TY
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import org.bukkit.Material
 import org.bukkit.Material.BARREL
+import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.CHEST
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.DAYLIGHT_DETECTOR
@@ -43,6 +44,7 @@ import org.bukkit.Material.LAPIS_BLOCK
 import org.bukkit.Material.NOTE_BLOCK
 import org.bukkit.Material.OBSERVER
 import org.bukkit.Material.REDSTONE_BLOCK
+import org.bukkit.Material.SMOKER
 import org.bukkit.Material.SPONGE
 import org.bukkit.Material.TINTED_GLASS
 import org.bukkit.Material.TRAPPED_CHEST
@@ -136,6 +138,8 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 				TRAPPED_CHEST,
 				BARREL,
 				FURNACE,
+				SMOKER,
+				BLAST_FURNACE,
 				DISPENSER,
 				DROPPER,
 				DECORATED_POT
