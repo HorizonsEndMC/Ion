@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.space.data.BlockData
 import net.horizonsend.ion.server.features.space.data.CompletedSection
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetadataFactory
-import net.horizonsend.ion.server.features.world.generation.feature.meta.StandardAsteroidMetaData
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.AsteroidPlacementConfiguration
@@ -22,14 +22,14 @@ import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-object StandardAsteroidFeature : GeneratedFeature<StandardAsteroidMetaData>(NamespacedKeys.key("asteroid_normal"), AsteroidPlacementConfiguration()) {
-	override val metaFactory: FeatureMetadataFactory<StandardAsteroidMetaData> = StandardAsteroidMetaData.Factory
+object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(NamespacedKeys.key("asteroid_normal"), AsteroidPlacementConfiguration()) {
+	override val metaFactory: FeatureMetadataFactory<ConfigurableAsteroidMeta> = ConfigurableAsteroidMeta.Factory
 
 	override suspend fun generateSection(
 		generator: IonWorldGenerator<*>,
 		chunkPos: ChunkPos,
 		start: FeatureStart,
-		metaData: StandardAsteroidMetaData,
+		metaData: ConfigurableAsteroidMeta,
 		sectionY: Int,
 		sectionMin: Int,
 		sectionMax: Int,
@@ -65,7 +65,7 @@ object StandardAsteroidFeature : GeneratedFeature<StandardAsteroidMetaData>(Name
 	 * Places the asteroid block, if inside, and returns the block
 	 **/
 	private fun checkBlockPlacement(
-		metaData: StandardAsteroidMetaData,
+		metaData: ConfigurableAsteroidMeta,
 		worldX: Double,
 		worldY: Double,
 		worldZ: Double,
@@ -139,7 +139,7 @@ object StandardAsteroidFeature : GeneratedFeature<StandardAsteroidMetaData>(Name
 //		return metadata.paletteBlocks[index]
 	}
 
-	private fun getSurfaceNoise(difference: Double, paletteSample: Double, metaData: StandardAsteroidMetaData, cave1Noise: Double, cave2Noise: Double): BlockState {
+	private fun getSurfaceNoise(difference: Double, paletteSample: Double, metaData: ConfigurableAsteroidMeta, cave1Noise: Double, cave2Noise: Double): BlockState {
 		if (difference < 0.1) {
 			val index = (paletteSample * metaData.paletteBlocks.size).toInt()
 			return metaData.paletteBlocks[index]
@@ -159,7 +159,7 @@ object StandardAsteroidFeature : GeneratedFeature<StandardAsteroidMetaData>(Name
 		return Material.MAGMA_BLOCK.createBlockData().nms
 	}
 
-	private fun getSurfaceDepth(distanceSquared: Double, metaData: StandardAsteroidMetaData): BlockState {
+	private fun getSurfaceDepth(distanceSquared: Double, metaData: ConfigurableAsteroidMeta): BlockState {
 		val radius = metaData.totalDisplacement
 		// Concentrate into the outer ratio
 		val concentration = radius * 0.55
@@ -173,7 +173,7 @@ object StandardAsteroidFeature : GeneratedFeature<StandardAsteroidMetaData>(Name
 
 	private val LIMIT_EXTENSION_RANGE = 1.2
 
-	override fun getExtents(metaData: StandardAsteroidMetaData): Pair<Vec3i, Vec3i> {
+	override fun getExtents(metaData: ConfigurableAsteroidMeta): Pair<Vec3i, Vec3i> {
 		return Vec3i(
 				-metaData.size.toInt(),
 				-metaData.size.toInt(),
@@ -185,9 +185,9 @@ object StandardAsteroidFeature : GeneratedFeature<StandardAsteroidMetaData>(Name
 			)
 	}
 
-	override fun generateMetaData(chunkRandom: Random): StandardAsteroidMetaData {
+	override fun generateMetaData(chunkRandom: Random): ConfigurableAsteroidMeta {
 //		val material = Material.entries.filter { material -> material.isBlock }.random(chunkRandom)
 		// chunkRandom.nextDouble(5.0, 40.0)
-		return StandardAsteroidMetaData(chunkRandom.nextLong(), 150.0, Material.STONE)
+		return ConfigurableAsteroidMeta(chunkRandom.nextLong(), 150.0, Material.STONE)
 	}
 }

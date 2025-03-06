@@ -16,7 +16,7 @@ import org.bukkit.Bukkit
  * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
  * @param maxAsteroidSize: Maximum Size for an Asteroid
  * @param blockPalettes: list of Palettes use for the asteroid materials
- * @param features List of StandardAsteroidFeature
+ * @param features List of ConfigurableAsteroidFeature
  * @see Palette
  */
 @Serializable
