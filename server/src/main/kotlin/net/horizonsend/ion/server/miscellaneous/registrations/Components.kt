@@ -25,14 +25,12 @@ import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.collectors.CollectionMissions
 import net.horizonsend.ion.server.features.economy.collectors.Collectors
-import net.horizonsend.ion.server.features.economy.misc.StationRentalZones
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.misc.AutoRestart
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
 import net.horizonsend.ion.server.features.misc.ProxyMessaging
-import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.misc.Shuttles
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
@@ -91,9 +89,10 @@ import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
-import net.horizonsend.ion.server.features.world.generation.feature.nms.IonStructureTypes
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.data.DataFixers
+import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
+import net.horizonsend.ion.server.features.world.generation.feature.nms.IonStructureTypes
 import net.horizonsend.ion.server.listener.misc.WorldEditListener
 import net.horizonsend.ion.server.listener.packets.PacketListeners
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
@@ -224,6 +223,5 @@ val components: List<IonComponent> = listOf(
 	DisplayHandlers,
 	PlanetTeleportCooldown,
 	MultiBlockDisplay,
-	StationRentalZones,
-	ServerInboxes
+	WorldGenerationManager
 )
