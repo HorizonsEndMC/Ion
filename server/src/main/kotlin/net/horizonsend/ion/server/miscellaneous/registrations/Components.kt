@@ -87,6 +87,7 @@ import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
+import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
 import net.horizonsend.ion.server.features.world.generation.feature.nms.IonStructureTypes
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.data.DataFixers
@@ -218,4 +219,5 @@ val components: List<IonComponent> = listOf(
 	DisplayHandlers,
 	PlanetTeleportCooldown,
 	MultiBlockDisplay,
+	WorldGenerationManager
 )
