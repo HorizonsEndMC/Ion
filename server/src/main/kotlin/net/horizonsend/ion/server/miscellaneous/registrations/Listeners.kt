@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.A
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconManager
 import net.horizonsend.ion.server.features.waypoint.WaypointListeners
 import net.horizonsend.ion.server.features.world.IonWorld
-import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
 import net.horizonsend.ion.server.listener.fixers.BiomeFixer9001
 import net.horizonsend.ion.server.listener.fixers.CancelListeners
 import net.horizonsend.ion.server.listener.fixers.EdenFixer9000
@@ -69,7 +68,6 @@ val listeners: List<Listener> = listOf(
 	HeadListener(),
 	HyperspaceBeaconManager,
 	MiscListeners(),
-	WorldGenerationManager,
 	EncounterManager(),
 	ResourcePackListener(),
 	VoidNetwork(),

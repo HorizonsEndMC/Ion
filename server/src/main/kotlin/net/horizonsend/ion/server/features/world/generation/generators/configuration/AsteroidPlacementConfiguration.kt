@@ -28,7 +28,7 @@ class AsteroidPlacementConfiguration() : FeaturePlacementConfiguration {
 
 			list.add(Vec3i(
 				chunkStartX + random.nextInt(0, 15),
-				random.asJavaRandom().nextGaussian(192.0, 196 / 2.0).toInt().coerceIn(1, 383),
+				random.asJavaRandom().nextGaussian(84.0, 196 / 2.0).toInt().coerceIn(1, 383),
 				chunkStartZ + random.nextInt(0, 15)
 			))
 		}

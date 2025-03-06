@@ -91,6 +91,7 @@ import net.horizonsend.ion.server.features.transport.pipe.Pipes
 import net.horizonsend.ion.server.features.transport.pipe.filter.Filters
 import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
+import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
 import net.horizonsend.ion.server.features.world.generation.feature.nms.IonStructureTypes
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
 import net.horizonsend.ion.server.miscellaneous.utils.Discord
@@ -221,4 +222,5 @@ val components: List<IonComponent> = listOf(
 	CombatTimer,
 	PlanetTeleportCooldown,
 	MultiBlockDisplay,
+	WorldGenerationManager
 )
