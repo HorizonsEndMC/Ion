@@ -96,6 +96,7 @@ import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.data.DataFixers
 import net.horizonsend.ion.server.features.world.environment.Environments
+import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
 import net.horizonsend.ion.server.features.world.generation.feature.nms.IonStructureTypes
 import net.horizonsend.ion.server.listener.misc.WorldEditListener
 import net.horizonsend.ion.server.listener.packets.PacketListeners
@@ -231,4 +232,7 @@ val components: List<IonComponent> = listOf(
 	StationRentalZones,
 	ServerInboxes,
 	ServerMutesHook,
+	ChestShops,
+	Environments,
+	WorldGenerationManager,
 )
