@@ -1,6 +1,9 @@
-package net.horizonsend.ion.server.features.world.generation.feature.meta
+package net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid
 
 import net.horizonsend.ion.common.utils.miscellaneous.squared
+import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
+import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetadataFactory
+import net.horizonsend.ion.server.features.world.generation.feature.meta.OreBlob
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.level.block.state.BlockState
@@ -11,7 +14,7 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-class StandardAsteroidMetaData(
+class ConfigurableAsteroidMeta(
 	override val seed: Long,
 	val size: Double,
 	val block: Material,
@@ -43,7 +46,7 @@ class StandardAsteroidMetaData(
 	val octaves: Int = 3,
 ) : FeatureMetaData {
 	val sizeSquared = size.squared()
-	override val factory: FeatureMetadataFactory<StandardAsteroidMetaData> = Factory
+	override val factory: FeatureMetadataFactory<ConfigurableAsteroidMeta> = Factory
 	private val sizeFactor = size / 15
 
 	val random = Random(seed)
@@ -72,16 +75,16 @@ class StandardAsteroidMetaData(
 		return (size / (octave + 1))
 	}
 
-	object Factory : FeatureMetadataFactory<StandardAsteroidMetaData>() {
-		override fun load(data: CompoundTag): StandardAsteroidMetaData {
-			return StandardAsteroidMetaData(
+	object Factory : FeatureMetadataFactory<ConfigurableAsteroidMeta>() {
+		override fun load(data: CompoundTag): ConfigurableAsteroidMeta {
+			return ConfigurableAsteroidMeta(
 				data.getLong("seed"),
 				data.getDouble("size"),
 				Material.valueOf(data.getString("block"))
 			)
 		}
 
-		override fun saveData(featureData: StandardAsteroidMetaData): CompoundTag {
+		override fun saveData(featureData: ConfigurableAsteroidMeta): CompoundTag {
 			val tag = CompoundTag()
 			tag.putLong("seed", featureData.seed)
 			tag.putDouble("size", featureData.size)
