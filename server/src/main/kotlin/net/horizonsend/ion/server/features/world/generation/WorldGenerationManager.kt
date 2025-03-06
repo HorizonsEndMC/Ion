@@ -5,19 +5,20 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
+import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.place
 import net.horizonsend.ion.server.features.space.data.StoredChunkBlocks.Companion.store
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.generation.generators.space.GenerateChunk
-import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.cbukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.ChunkLoadEvent
 import java.util.concurrent.Executors
 
-object WorldGenerationManager : SLEventListener() {
-	val thread = Executors.newFixedThreadPool(16, Tasks.namedThreadFactory("worldgen")).asCoroutineDispatcher()
+object WorldGenerationManager : IonServerComponent() {
+	val internalThread = Executors.newFixedThreadPool(16, Tasks.namedThreadFactory("worldgen"))
+	val thread = internalThread.asCoroutineDispatcher()
 	val coroutineScope = CoroutineScope(thread + SupervisorJob())
 
 	@EventHandler
@@ -26,6 +27,10 @@ object WorldGenerationManager : SLEventListener() {
 		coroutineScope.launch {
 			generator.generateChunk(event.chunk)
 		}
+	}
+
+	override fun onDisable() {
+		internalThread.shutdown()
 	}
 
 	@OptIn(ExperimentalCoroutinesApi::class)
