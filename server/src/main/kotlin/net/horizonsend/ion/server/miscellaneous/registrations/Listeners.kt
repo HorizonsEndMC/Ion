@@ -68,7 +68,6 @@ val listeners: List<Listener> = listOf(
 	HyperspaceBeaconManager,
 	IonChunk,
 	MiscListeners(),
-	WorldGenerationManager,
 	EncounterManager(),
 	ResourcePackListener(),
 	VoidNetwork(),
