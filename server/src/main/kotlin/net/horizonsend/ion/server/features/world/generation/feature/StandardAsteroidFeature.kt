@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.world.generation.feature
 
+import com.github.auburn.FastNoiseLite
+import com.github.auburn.FastNoiseLite.FractalType
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.space.data.BlockData
 import net.horizonsend.ion.server.features.space.data.CompletedSection
@@ -16,6 +18,8 @@ import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
 import kotlin.math.abs
 import kotlin.math.pow
+import kotlin.math.roundToInt
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 object StandardAsteroidFeature : GeneratedFeature<StandardAsteroidMetaData>(NamespacedKeys.key("asteroid_normal"), AsteroidPlacementConfiguration()) {
@@ -67,24 +71,36 @@ object StandardAsteroidFeature : GeneratedFeature<StandardAsteroidMetaData>(Name
 		worldZ: Double,
 		distanceSquared: Double
 	): BlockState? {
+		if (distanceSquared > metaData.sizeSquared) return null
 		// Calculate a noise pattern with a minimum at zero, and a max peak of the size of the materials list.
 		val paletteSample = (metaData.materialNoise.noise(worldX, worldY, worldZ, 0.0, 0.0, true) + 1) / 2
 
+		val xScale = 1.0f
+		val yScale = 1.0f
+		val zScale = 1.0f
+
 		// Full noise is used as the radius of the asteroid, and it is offset by the noise of each block pos.
-		var fullNoise = 0.0
-		val initialScale = 0.015 / metaData.sizeFactor.coerceAtLeast(1.0)
-
-		for (octave in 0..metaData.octaves) {
-			metaData.shapingNoise.setScale(initialScale * (octave + 1.0).pow(2.25 + (metaData.sizeFactor / 2.25).coerceAtMost(0.5)))
-
-			val offset = abs(metaData.shapingNoise.noise(worldX, worldY, worldZ, 0.0, 1.0, false)) * (metaData.size / (octave + 1.0).pow(2.25))
-
-			fullNoise += offset
+		var fullNoise = metaData.shapingNoise.withIndex().sumOf { (octave, generator) ->
+			val generatedValue = (generator.noise(worldX * xScale, worldY * yScale, worldZ * zScale, 1.0, 1.0, true) + 1.0) / 2.0
+			generatedValue * metaData.scaleNoiseFactor(octave) * metaData.normalizingFactor
 		}
+
+		val noise = FastNoiseLite()
+		noise.SetNoiseType(FastNoiseLite.NoiseType.Cellular)
+		noise.SetSeed(metaData.seed.toInt())
+		noise.SetFrequency(0.015f)
+		noise.SetFractalType(FractalType.None)
+		noise.SetCellularReturnType(FastNoiseLite.CellularReturnType.Distance2Div)
+//		noise.SetFractalLacunarity(2f)
+//		noise.SetFractalPingPongStrength(2f)
+//		noise.SetFractalOctaves(3)
+		noise.SetCellularDistanceFunction(FastNoiseLite.CellularDistanceFunction.EuclideanSq)
+
+		fullNoise += (noise.GetNoise(worldX.toFloat() * xScale, worldY.toFloat() * yScale, worldZ.toFloat() * zScale) * (metaData.size * 0.35) * -1)
 
 		val noiseSquared = fullNoise * fullNoise
 		// Continue if block is not inside any asteroid
-		if (distanceSquared >= noiseSquared) return null
+		if (distanceSquared > noiseSquared) return null
 
 //		val sqrtDistanceSquared = sqrt(distanceSquared)
 //		val sizeRatio = fullNoise / sqrtDistanceSquared
@@ -102,6 +118,28 @@ object StandardAsteroidFeature : GeneratedFeature<StandardAsteroidMetaData>(Name
 		val difference = (abs(1 - (distanceSquared / noiseSquared)))
 //		return metadata.paletteBlocks[difference.roundToInt().coerceIn(0, metadata.paletteBlocks.lastIndex)]
 
+//		return getSurfaceNoise(difference, paletteSample, metaData, cave1Noise, cave2Noise)
+//		return getSurfaceDepth(distanceSquared, metaData)
+
+//		Surface detection
+//		val surfaceDetectionDifference = fullNoise - sqrt(distanceSquared)
+//		if (abs(surfaceDetectionDifference) < 1) {
+//			check(sizeRatio)
+////			return Material.NETHERITE_BLOCK.createBlockData().nms
+//		}
+
+//		// Normal noise
+//		val index = (paletteSample * metadata.paletteBlocks.size).toInt()
+//		return metadata.paletteBlocks[index]
+
+		return if (distanceSquared < (metaData.size.pow(2))) return Material.GREEN_CONCRETE.createBlockData().nms else Material.RED_CONCRETE.createBlockData().nms
+
+		// On the surface, do normal noise
+//		val index = (paletteSample * metadata.paletteBlocks.size).toInt()
+//		return metadata.paletteBlocks[index]
+	}
+
+	private fun getSurfaceNoise(difference: Double, paletteSample: Double, metaData: StandardAsteroidMetaData, cave1Noise: Double, cave2Noise: Double): BlockState {
 		if (difference < 0.1) {
 			val index = (paletteSample * metaData.paletteBlocks.size).toInt()
 			return metaData.paletteBlocks[index]
@@ -119,37 +157,31 @@ object StandardAsteroidFeature : GeneratedFeature<StandardAsteroidMetaData>(Name
 			return Material.BLACKSTONE.createBlockData().nms
 		}
 		return Material.MAGMA_BLOCK.createBlockData().nms
+	}
 
-//		Surface detection
-//		val surfaceDetectionDifference = fullNoise - sqrt(distanceSquared)
-//		if (abs(surfaceDetectionDifference) < 1) {
-//			check(sizeRatio)
-////			return Material.NETHERITE_BLOCK.createBlockData().nms
-//		}
+	private fun getSurfaceDepth(distanceSquared: Double, metaData: StandardAsteroidMetaData): BlockState {
+		val radius = metaData.totalDisplacement
+		// Concentrate into the outer ratio
+		val concentration = radius * 0.55
+		val sqrtDistance = sqrt(distanceSquared)
+		if (sqrtDistance < concentration) return metaData.paletteBlocks.first()
 
-//		// Normal noise
-//		val index = (paletteSample * metadata.paletteBlocks.size).toInt()
-//		return metadata.paletteBlocks[index]
-
-//		return if (distanceSquared < (metadata.size.pow(2))) return Material.GREEN_CONCRETE.createBlockData().nms else Material.RED_CONCRETE.createBlockData().nms
-
-
-		// On the surface, do normal noise
-//		val index = (paletteSample * metadata.paletteBlocks.size).toInt()
-//		return metadata.paletteBlocks[index]
+		val ratio = ((sqrtDistance - concentration) / ((radius - concentration) - 1))
+		val index = (metaData.paletteBlocks.size * ratio).roundToInt().coerceIn(0 ..< metaData.paletteBlocks.size)
+		return metaData.paletteBlocks[index]
 	}
 
 	private val LIMIT_EXTENSION_RANGE = 1.2
 
 	override fun getExtents(metaData: StandardAsteroidMetaData): Pair<Vec3i, Vec3i> {
 		return Vec3i(
-				(-metaData.size * LIMIT_EXTENSION_RANGE).toInt(),
-				(-metaData.size * LIMIT_EXTENSION_RANGE).toInt(),
-				(-metaData.size * LIMIT_EXTENSION_RANGE).toInt()
+				-metaData.size.toInt(),
+				-metaData.size.toInt(),
+				-metaData.size.toInt()
 			) to Vec3i(
-				(metaData.size * LIMIT_EXTENSION_RANGE).toInt(),
-				(metaData.size * LIMIT_EXTENSION_RANGE).toInt(),
-				(metaData.size * LIMIT_EXTENSION_RANGE).toInt()
+				metaData.size.toInt(),
+				metaData.size.toInt(),
+				metaData.size.toInt()
 			)
 	}
 
