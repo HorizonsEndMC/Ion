@@ -5,6 +5,15 @@ import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetadataFactory
 import net.horizonsend.ion.server.features.world.generation.feature.meta.OreBlob
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.Add
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.IterativeValueProvider
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.Max
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.Multiply
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.NoiseConfiguration
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.Size
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.Static
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.Subtract
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.Sum
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.level.block.state.BlockState

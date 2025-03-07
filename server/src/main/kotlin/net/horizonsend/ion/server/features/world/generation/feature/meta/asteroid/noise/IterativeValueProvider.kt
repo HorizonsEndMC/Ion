@@ -1,6 +1,7 @@
-package net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid
+package net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise
 
 import kotlinx.serialization.Serializable
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
 
 @Serializable
 sealed interface IterativeValueProvider {
