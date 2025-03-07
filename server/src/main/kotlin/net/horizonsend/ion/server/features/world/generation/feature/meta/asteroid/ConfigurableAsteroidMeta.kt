@@ -6,17 +6,15 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.Feature
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetadataFactory
 import net.horizonsend.ion.server.features.world.generation.feature.meta.OreBlob
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.Add
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.BlockPlacementConfiguration
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.BlockPlacer
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.IterativeValueProvider
-import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.Max
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.Multiply
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.NoiseConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.Size
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.Static
-import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.Subtract
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.Sum
-import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
 import org.bukkit.util.noise.PerlinOctaveGenerator
 import org.bukkit.util.noise.SimplexOctaveGenerator
@@ -116,42 +114,64 @@ class ConfigurableAsteroidMeta(
 	override val seed: Long,
 	val size: Double,
 	val block: Material,
-	val paletteBlocks: List<BlockState> = listOf(
-		Material.BLUE_GLAZED_TERRACOTTA,
-		Material.TUBE_CORAL_BLOCK,
-		Material.LIGHT_BLUE_TERRACOTTA,
-		Material.LIGHT_BLUE_CONCRETE,
-		Material.BLUE_ICE,
-		Material.PACKED_ICE,
-//		Material.ICE,
-		Material.LIGHT_BLUE_WOOL,
-		Material.LIGHT_BLUE_GLAZED_TERRACOTTA,
-		Material.LIGHT_GRAY_GLAZED_TERRACOTTA,
-		Material.DIORITE,
-		Material.CALCITE,
-		Material.SNOW_BLOCK,
-	).map { it.createBlockData().nms },
 	val oreBlobs: MutableList<OreBlob> = mutableListOf(),
-	private val noiseLayers: IterativeValueProvider =
-		Add(
-			Multiply(a = Size, b = Static(0.65)),
-			Multiply(
-				a = Multiply(Size, Static(0.35)),
-				b = Subtract(
-					a = Max(
-						a = NoiseConfiguration(
-							noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.Perlin(featureSize = 10f),
-							fractalSettings = NoiseConfiguration.FractalSettings.None,
-							domainWarpConfiguration = NoiseConfiguration.DomainWarpConfiguration.None,
-							amplitude = 1.0,
-							normalizedPositive = true
-						).build(),
-						b = Static(0.75)
-					),
-					b = Static(0.75)
-				)
-			)
+	private val noiseLayers: IterativeValueProvider = Sum(listOf(
+		NoiseConfiguration(
+			noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
+				featureSize = 150f,
+			),
+			fractalSettings = NoiseConfiguration.FractalSettings.FractalParameters(
+				type = NoiseConfiguration.FractalSettings.NoiseFractalType.FBM,
+				octaves = 3,
+				lunacrity = 2f,
+				gain = 1f,
+				weightedStrength = 3f,
+				pingPongStrength = 1f
+			),
+			domainWarpConfiguration = NoiseConfiguration.DomainWarpConfiguration.None,
+			amplitude = 100.0
+		).build(),
+		NoiseConfiguration(
+			noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
+				featureSize = 25f,
+			),
+			fractalSettings = NoiseConfiguration.FractalSettings.None,
+			domainWarpConfiguration = NoiseConfiguration.DomainWarpConfiguration.None,
+			amplitude = 15.0
+		).build(),
+		NoiseConfiguration(
+			NoiseConfiguration.NoiseTypeConfiguration.Voronoi(
+				featureSize = 10f,
+				distanceFunction = FastNoiseLite.CellularDistanceFunction.Euclidean,
+				returnType = FastNoiseLite.CellularReturnType.Distance,
+			),
+			NoiseConfiguration.FractalSettings.None,
+			NoiseConfiguration.DomainWarpConfiguration.None,
+			10.0,
+			normalizedPositive = false
+		).build()
+	)),
+	val blockPlacer: BlockPlacer = BlockPlacementConfiguration(
+		blocks = listOf(
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.BLUE_GLAZED_TERRACOTTA, 3.0),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.TUBE_CORAL_BLOCK, 1.0),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.LIGHT_BLUE_TERRACOTTA, 1.0),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.LIGHT_BLUE_CONCRETE, 1.0),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.BLUE_ICE, 1.0),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.PACKED_ICE, 1.0),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.ICE, 1.0),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.LIGHT_BLUE_WOOL, 1.0),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.LIGHT_BLUE_GLAZED_TERRACOTTA, 1.0),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.CLAY, 2.0),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.STONE, 17.5),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.CLAY, 2.0),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.LIGHT_GRAY_GLAZED_TERRACOTTA, 1.0),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.DIORITE, 1.0),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.CALCITE, 1.0),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.SNOW_BLOCK, 3.0),
+			BlockPlacementConfiguration.PlacedBlockConfiguration(Material.DIORITE, 7.0),
 		)
+	).build()
 ) : FeatureMetaData {
 	override val factory: FeatureMetadataFactory<ConfigurableAsteroidMeta> = Factory
 
