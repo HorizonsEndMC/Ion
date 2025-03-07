@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid
+package net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise
 
 import com.github.auburn.FastNoiseLite
 import com.github.auburn.FastNoiseLite.CellularDistanceFunction
