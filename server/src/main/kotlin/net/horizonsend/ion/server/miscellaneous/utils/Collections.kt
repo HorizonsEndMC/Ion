@@ -62,17 +62,17 @@ fun <T, R : Any> Iterable<T>.filterIsInstance(clazz: KClass<out R>, transform: (
 	return destination
 }
 
-fun <T> Iterable<T>.weightedRandomOrNull(random: Random = ThreadLocalRandom.current().asKotlinRandom(), selector: (T) -> Double): T? {
+fun <T> Iterable<T>.weightedEntryOrNull(value: Double, selector: (T) -> Double): T? {
 	val sum = this.sumOf { selector(it) }
 	if (sum <= 0.0) return null
-	val selectionPoint = random.nextDouble(0.0, sum)
-
 	var running = 0.0
+
+	val index = sum * value
 
 	for (entry: T in this) {
 		val probability = selector(entry)
 
-		if (selectionPoint in running..(running + probability)) return entry
+		if (index in running..(running + probability)) return entry
 
 		running += probability
 	}
@@ -80,7 +80,13 @@ fun <T> Iterable<T>.weightedRandomOrNull(random: Random = ThreadLocalRandom.curr
 	return null
 }
 
+fun <T> Iterable<T>.weightedRandomOrNull(random: Random = ThreadLocalRandom.current().asKotlinRandom(), selector: (T) -> Double): T? {
+	val selectionPoint = random.nextDouble(0.0, 1.0)
+	return weightedEntryOrNull(selectionPoint, selector)
+}
+
 fun <T> Iterable<T>.weightedRandom(random: Random = ThreadLocalRandom.current().asKotlinRandom(), selector: (T) -> Double): T = weightedRandomOrNull(random, selector) ?: throw NoSuchElementException()
+fun <T> Iterable<T>.weightedEntry(value: Double, selector: (T) -> Double): T = weightedEntryOrNull(value, selector) ?: throw NoSuchElementException()
 
 // Idk why I did this
 operator fun <A> Pair<A, A>.iterator(): Iterator<A> = object : Iterator<A> {
