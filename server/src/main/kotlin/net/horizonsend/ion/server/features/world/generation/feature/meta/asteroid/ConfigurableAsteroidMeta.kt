@@ -1,16 +1,17 @@
 package net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid
 
+import com.github.auburn.FastNoiseLite
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetadataFactory
 import net.horizonsend.ion.server.features.world.generation.feature.meta.OreBlob
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.AsteroidConfiguration.StartValue
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
 import org.bukkit.util.noise.PerlinOctaveGenerator
 import org.bukkit.util.noise.SimplexOctaveGenerator
-import kotlin.math.pow
 import kotlin.math.sqrt
 import kotlin.random.Random
 
@@ -43,36 +44,89 @@ class ConfigurableAsteroidMeta(
 		Material.SNOW_BLOCK,
 	).map { it.createBlockData().nms },
 	val oreBlobs: MutableList<OreBlob> = mutableListOf(),
-	val octaves: Int = 3,
+	val startValue: StartValue = StartValue.NONE,
+	private val noiseLayers: List<NoiseWrapper> = listOf(
+		NoiseConfiguration(
+			noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
+				featureSize = 150f,
+			),
+			fractalSettings = NoiseConfiguration.FractalSettings.FractalParameters(
+				type = NoiseConfiguration.FractalSettings.NoiseFractalType.FBM,
+				octaves = 3,
+				lunacrity = 2f,
+				gain = 1f,
+				weightedStrength = 3f,
+				pingPongStrength = 1f
+			),
+			domainWarpConfiguration = NoiseConfiguration.DomainWarpConfiguration.None,
+			blendMode = BlendMode.ADD,
+			amplitude = 100.0f
+		).build(),
+		NoiseConfiguration(
+			noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
+				featureSize = 25f,
+			),
+			fractalSettings = NoiseConfiguration.FractalSettings.None,
+			domainWarpConfiguration = NoiseConfiguration.DomainWarpConfiguration.DomainWarpParameters(
+				domainWarpType = FastNoiseLite.DomainWarpType.OpenSimplex2,
+				rotationType3D = FastNoiseLite.RotationType3D.None,
+				amplitude = 91f,
+				noiseType = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
+					featureSize = 20f,
+				),
+				fractalSettings = NoiseConfiguration.FractalSettings.None
+			),
+			blendMode = BlendMode.ADD,
+			amplitude = 15.0f
+		).build(),
+		NoiseConfiguration(
+			NoiseConfiguration.NoiseTypeConfiguration.Voronoi(
+				featureSize = 10f,
+				distanceFunction = FastNoiseLite.CellularDistanceFunction.Euclidean,
+				returnType = FastNoiseLite.CellularReturnType.Distance,
+			),
+			NoiseConfiguration.FractalSettings.None,
+			NoiseConfiguration.DomainWarpConfiguration.None,
+			BlendMode.ADD,
+			10.0f,
+			normalizedPositive = false
+		).build()
+	)
 ) : FeatureMetaData {
-	val sizeSquared = size.squared()
 	override val factory: FeatureMetadataFactory<ConfigurableAsteroidMeta> = Factory
-	private val sizeFactor = size / 15
 
+	val sizeSquared = size.squared()
 	val random = Random(seed)
+
 	val cave1 = PerlinOctaveGenerator(random.nextLong(), 3).apply { this.setScale(sqrt(0.05 * (1 / size))) }
 	val cave2 = PerlinOctaveGenerator(random.nextLong(), 3).apply { this.setScale(sqrt(0.05 * (1 / size))) }
 
-	private val initialScale = 0.015 / sizeFactor.coerceAtLeast(1.0)
-	val shapingNoise: Array<SimplexOctaveGenerator> = Array(octaves) { octave ->
-		val noiseLayer = SimplexOctaveGenerator(seed, 1)
-		noiseLayer.setScale(initialScale * (octave + 1.0).pow(2.25 + (sizeFactor / 2.25).coerceAtMost(0.5)))
-		noiseLayer
-	}
-
-	val totalDisplacement = (0..octaves).sumOf { octave -> scaleNoiseFactor(octave) }
-	val normalizingFactor = size / totalDisplacement
-
-	init {
-	    println("total displacement: $totalDisplacement, size: $size")
-	}
-
 	val materialNoise = SimplexOctaveGenerator(seed, 1).apply {
-		this.setScale(0.15 / sqrt(sizeFactor))
+		this.setScale(0.15 / sqrt(size / 15))
 	}
 
-	fun scaleNoiseFactor(octave: Int): Double {
-		return (size / (octave + 1))
+	val totalDisplacement = getMaxDisplacement()
+	private val normalizingFactor = size / totalDisplacement
+
+	fun getNoise(x: Double, y: Double, z: Double): Double {
+		var total = startValue.getValue(this)
+
+		for (noiseLayer in noiseLayers) {
+			val noise = noiseLayer.getNoise(x, y, z)
+			total = noiseLayer.blendMode.apply(total.toFloat(), noise).toDouble()
+		}
+
+		return total * normalizingFactor
+	}
+
+	private fun getMaxDisplacement(): Double {
+		var total = startValue.getValue(this)
+
+		for (noiseLayer in noiseLayers) {
+			total = noiseLayer.blendMode.apply(total.toFloat(), 1.0f * noiseLayer.amplitude).toDouble()
+		}
+
+		return total
 	}
 
 	object Factory : FeatureMetadataFactory<ConfigurableAsteroidMeta>() {

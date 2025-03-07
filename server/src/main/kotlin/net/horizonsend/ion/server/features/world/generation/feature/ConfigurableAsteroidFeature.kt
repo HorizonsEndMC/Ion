@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.features.world.generation.feature
 
-import com.github.auburn.FastNoiseLite
-import com.github.auburn.FastNoiseLite.FractalType
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.space.data.BlockData
 import net.horizonsend.ion.server.features.space.data.CompletedSection
@@ -75,28 +73,13 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 		// Calculate a noise pattern with a minimum at zero, and a max peak of the size of the materials list.
 		val paletteSample = (metaData.materialNoise.noise(worldX, worldY, worldZ, 0.0, 0.0, true) + 1) / 2
 
-		val xScale = 1.0f
-		val yScale = 1.0f
-		val zScale = 1.0f
-
 		// Full noise is used as the radius of the asteroid, and it is offset by the noise of each block pos.
-		var fullNoise = metaData.shapingNoise.withIndex().sumOf { (octave, generator) ->
-			val generatedValue = (generator.noise(worldX * xScale, worldY * yScale, worldZ * zScale, 1.0, 1.0, true) + 1.0) / 2.0
-			generatedValue * metaData.scaleNoiseFactor(octave) * metaData.normalizingFactor
-		}
+//		val fullNoise = metaData.shapingNoise.withIndex().sumOf { (octave, generator) ->
+//			val generatedValue = (generator.noise(worldX * xScale, worldY * yScale, worldZ * zScale, 1.0, 1.0, true) + 1.0) / 2.0
+//			generatedValue * metaData.scaleNoiseFactor(octave) * metaData.normalizingFactor
+//		}
 
-		val noise = FastNoiseLite()
-		noise.SetNoiseType(FastNoiseLite.NoiseType.Cellular)
-		noise.SetSeed(metaData.seed.toInt())
-		noise.SetFrequency(0.015f)
-		noise.SetFractalType(FractalType.None)
-		noise.SetCellularReturnType(FastNoiseLite.CellularReturnType.Distance2Div)
-//		noise.SetFractalLacunarity(2f)
-//		noise.SetFractalPingPongStrength(2f)
-//		noise.SetFractalOctaves(3)
-		noise.SetCellularDistanceFunction(FastNoiseLite.CellularDistanceFunction.EuclideanSq)
-
-		fullNoise += (noise.GetNoise(worldX.toFloat() * xScale, worldY.toFloat() * yScale, worldZ.toFloat() * zScale) * (metaData.size * 0.35) * -1)
+		val fullNoise = metaData.getNoise(worldX, worldY, worldZ)
 
 		val noiseSquared = fullNoise * fullNoise
 		// Continue if block is not inside any asteroid
@@ -170,8 +153,6 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 		val index = (metaData.paletteBlocks.size * ratio).roundToInt().coerceIn(0 ..< metaData.paletteBlocks.size)
 		return metaData.paletteBlocks[index]
 	}
-
-	private val LIMIT_EXTENSION_RANGE = 1.2
 
 	override fun getExtents(metaData: ConfigurableAsteroidMeta): Pair<Vec3i, Vec3i> {
 		return Vec3i(
