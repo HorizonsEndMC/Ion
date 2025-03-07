@@ -15,7 +15,6 @@ import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
 import kotlin.math.abs
-import kotlin.math.pow
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.random.Random
@@ -73,20 +72,11 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 		// Calculate a noise pattern with a minimum at zero, and a max peak of the size of the materials list.
 		val paletteSample = (metaData.materialNoise.noise(worldX, worldY, worldZ, 0.0, 0.0, true) + 1) / 2
 
-		// Full noise is used as the radius of the asteroid, and it is offset by the noise of each block pos.
-//		val fullNoise = metaData.shapingNoise.withIndex().sumOf { (octave, generator) ->
-//			val generatedValue = (generator.noise(worldX * xScale, worldY * yScale, worldZ * zScale, 1.0, 1.0, true) + 1.0) / 2.0
-//			generatedValue * metaData.scaleNoiseFactor(octave) * metaData.normalizingFactor
-//		}
-
 		val fullNoise = metaData.getNoise(worldX, worldY, worldZ)
 
 		val noiseSquared = fullNoise * fullNoise
 		// Continue if block is not inside any asteroid
 		if (distanceSquared > noiseSquared) return null
-
-//		val sqrtDistanceSquared = sqrt(distanceSquared)
-//		val sizeRatio = fullNoise / sqrtDistanceSquared
 
 		val proportionDepth = (abs((distanceSquared / noiseSquared))) * 1.5
 
@@ -97,29 +87,7 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 
 		if (isCave) return null
 
-//		Depth based
-		val difference = (abs(1 - (distanceSquared / noiseSquared)))
-//		return metadata.paletteBlocks[difference.roundToInt().coerceIn(0, metadata.paletteBlocks.lastIndex)]
-
-//		return getSurfaceNoise(difference, paletteSample, metaData, cave1Noise, cave2Noise)
-//		return getSurfaceDepth(distanceSquared, metaData)
-
-//		Surface detection
-//		val surfaceDetectionDifference = fullNoise - sqrt(distanceSquared)
-//		if (abs(surfaceDetectionDifference) < 1) {
-//			check(sizeRatio)
-////			return Material.NETHERITE_BLOCK.createBlockData().nms
-//		}
-
-//		// Normal noise
-//		val index = (paletteSample * metadata.paletteBlocks.size).toInt()
-//		return metadata.paletteBlocks[index]
-
-		return if (distanceSquared < (metaData.size.pow(2))) return Material.GREEN_CONCRETE.createBlockData().nms else Material.RED_CONCRETE.createBlockData().nms
-
-		// On the surface, do normal noise
-//		val index = (paletteSample * metadata.paletteBlocks.size).toInt()
-//		return metadata.paletteBlocks[index]
+		return getSurfaceDepth(distanceSquared, metaData)
 	}
 
 	private fun getSurfaceNoise(difference: Double, paletteSample: Double, metaData: ConfigurableAsteroidMeta, cave1Noise: Double, cave2Noise: Double): BlockState {
@@ -145,12 +113,16 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 	private fun getSurfaceDepth(distanceSquared: Double, metaData: ConfigurableAsteroidMeta): BlockState {
 		val radius = metaData.totalDisplacement
 		// Concentrate into the outer ratio
-		val concentration = radius * 0.55
-		val sqrtDistance = sqrt(distanceSquared)
-		if (sqrtDistance < concentration) return metaData.paletteBlocks.first()
+		val gradientStart = radius * 0.95
+		val gradientEnd = radius * 1.0
 
-		val ratio = ((sqrtDistance - concentration) / ((radius - concentration) - 1))
-		val index = (metaData.paletteBlocks.size * ratio).roundToInt().coerceIn(0 ..< metaData.paletteBlocks.size)
+		val sqrtDistance = sqrt(distanceSquared)
+		if (sqrtDistance < gradientStart) return metaData.paletteBlocks.first()
+		if (sqrtDistance > gradientEnd) return metaData.paletteBlocks.last()
+
+		val position = (sqrtDistance - gradientStart) / (gradientEnd - gradientStart)
+
+		val index = (metaData.paletteBlocks.size * position).roundToInt().coerceIn(0 ..< metaData.paletteBlocks.size)
 		return metaData.paletteBlocks[index]
 	}
 
