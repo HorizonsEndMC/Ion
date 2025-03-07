@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroi
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.SimpleMaterialConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.WeightedMaterialConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.AddConfiguration
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.DivideConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.EvaluationConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.MultiplyConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.NoiseConfiguration
@@ -159,16 +160,36 @@ class ConfigurableAsteroidMeta(
 		)
 	)),
 	blockPlacerConfiguration: NoiseMaterialConfiguration = NoiseMaterialConfiguration(
-		NoiseConfiguration(
-			NoiseConfiguration.NoiseTypeConfiguration.Voronoi(
-				featureSize = 100f,
-				distanceFunction = FastNoiseLite.CellularDistanceFunction.Euclidean,
-				returnType = FastNoiseLite.CellularReturnType.Distance,
+		DivideConfiguration(
+			AddConfiguration(
+				NoiseConfiguration(
+					NoiseConfiguration.NoiseTypeConfiguration.Voronoi(
+						featureSize = 100f,
+						distanceFunction = FastNoiseLite.CellularDistanceFunction.Euclidean,
+						returnType = FastNoiseLite.CellularReturnType.Distance,
+					),
+					NoiseConfiguration.FractalSettings.None,
+					NoiseConfiguration.DomainWarpConfiguration.None,
+					1.0,
+					normalizedPositive = true
+				),
+				NoiseConfiguration(
+					noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
+						featureSize = 30f,
+					),
+					fractalSettings = NoiseConfiguration.FractalSettings.FractalParameters(
+						type = NoiseConfiguration.FractalSettings.NoiseFractalType.FBM,
+						octaves = 3,
+						lunacrity = 2f,
+						gain = 1f,
+						weightedStrength = 3f,
+						pingPongStrength = 1f
+					),
+					domainWarpConfiguration = NoiseConfiguration.DomainWarpConfiguration.None,
+					amplitude = 0.25
+				)
 			),
-			NoiseConfiguration.FractalSettings.None,
-			NoiseConfiguration.DomainWarpConfiguration.None,
-			1.0,
-			normalizedPositive = true
+			StaticConfiguration(1.25),
 		),
 		listOf(
 			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.BLUE_GLAZED_TERRACOTTA), 3.0),
