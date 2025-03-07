@@ -1,8 +1,9 @@
-package net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid
+package net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise
 
 import com.github.auburn.FastNoiseLite
 import com.github.auburn.FastNoiseLite.Vector2
 import com.github.auburn.FastNoiseLite.Vector3
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
 
 class NoiseWrapper(
 	private val noise: FastNoiseLite,
