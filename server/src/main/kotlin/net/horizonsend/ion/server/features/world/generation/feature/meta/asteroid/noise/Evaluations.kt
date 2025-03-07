@@ -1,9 +1,7 @@
 package net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise
 
-import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
 
-@Serializable
 data class Sum(val values: List<IterativeValueProvider>) : IterativeValueProvider {
 	override fun getFallbackValue(meta: ConfigurableAsteroidMeta): Double {
 		return values.sumOf { it.getFallbackValue(meta) }
@@ -18,7 +16,6 @@ data class Sum(val values: List<IterativeValueProvider>) : IterativeValueProvide
 	}
 }
 
-@Serializable
 data class Add(val a: IterativeValueProvider, val b: IterativeValueProvider) : IterativeValueProvider {
 	override fun getFallbackValue(meta: ConfigurableAsteroidMeta): Double {
 		return a.getFallbackValue(meta) + b.getFallbackValue(meta)
@@ -33,7 +30,6 @@ data class Add(val a: IterativeValueProvider, val b: IterativeValueProvider) : I
 	}
 }
 
-@Serializable
 data class Subtract(val a: IterativeValueProvider, val b: IterativeValueProvider) : IterativeValueProvider {
 	override fun getFallbackValue(meta: ConfigurableAsteroidMeta): Double {
 		return a.getFallbackValue(meta) - b.getFallbackValue(meta)
@@ -48,7 +44,6 @@ data class Subtract(val a: IterativeValueProvider, val b: IterativeValueProvider
 	}
 }
 
-@Serializable
 data class Multiply(val a: IterativeValueProvider, val b: IterativeValueProvider) : IterativeValueProvider {
 	override fun getFallbackValue(meta: ConfigurableAsteroidMeta): Double {
 		return a.getFallbackValue(meta) * b.getFallbackValue(meta)
@@ -63,7 +58,6 @@ data class Multiply(val a: IterativeValueProvider, val b: IterativeValueProvider
 	}
 }
 
-@Serializable
 data class Divide(val a: IterativeValueProvider, val b: IterativeValueProvider) : IterativeValueProvider {
 	override fun getFallbackValue(meta: ConfigurableAsteroidMeta): Double {
 		return a.getFallbackValue(meta) / b.getFallbackValue(meta)
@@ -78,7 +72,6 @@ data class Divide(val a: IterativeValueProvider, val b: IterativeValueProvider) 
 	}
 }
 
-@Serializable
 data class Min(val a: IterativeValueProvider, val b: IterativeValueProvider) : IterativeValueProvider {
 	override fun getFallbackValue(meta: ConfigurableAsteroidMeta): Double {
 		return minOf(a.getFallbackValue(meta), b.getFallbackValue(meta))
@@ -93,7 +86,6 @@ data class Min(val a: IterativeValueProvider, val b: IterativeValueProvider) : I
 	}
 }
 
-@Serializable
 data class Max(val a: IterativeValueProvider, val b: IterativeValueProvider) : IterativeValueProvider {
 	override fun getFallbackValue(meta: ConfigurableAsteroidMeta): Double {
 		return maxOf(a.getFallbackValue(meta), b.getFallbackValue(meta))
@@ -108,14 +100,12 @@ data class Max(val a: IterativeValueProvider, val b: IterativeValueProvider) : I
 	}
 }
 
-@Serializable
 data class Static(val value: Double) : IterativeValueProvider {
 	override fun getFallbackValue(meta: ConfigurableAsteroidMeta): Double = value
 	override fun getValue(x: Double, z: Double, meta: ConfigurableAsteroidMeta): Double = value
 	override fun getValue(x: Double, y: Double, z: Double, meta: ConfigurableAsteroidMeta): Double = value
 }
 
-@Serializable
 data object Size : IterativeValueProvider {
 	override fun getFallbackValue(meta: ConfigurableAsteroidMeta): Double = meta.size
 	override fun getValue(x: Double, z: Double, meta: ConfigurableAsteroidMeta): Double = meta.size
