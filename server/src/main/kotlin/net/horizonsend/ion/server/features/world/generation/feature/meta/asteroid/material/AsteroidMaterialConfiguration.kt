@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.world.generation.feature.meta.astero
 
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
-import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.NoiseConfiguration
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.EvaluationConfiguration
 import org.bukkit.Material
 
 @Serializable
@@ -17,7 +17,7 @@ data class WeightedMaterialConfiguration(val materialConfiguration: MaterialConf
 
 @Serializable
 data class NoiseMaterialConfiguration(
-	val noiseConfiguration: NoiseConfiguration,
+	val noiseConfiguration: EvaluationConfiguration,
 	val blocks: List<WeightedMaterialConfiguration>,
 ) : MaterialConfiguration {
 	override fun build(meta: ConfigurableAsteroidMeta): NoiseAsteroidMaterial = NoiseAsteroidMaterial(meta, noiseConfiguration.build(meta), blocks.map { it.build(meta) })
@@ -26,4 +26,18 @@ data class NoiseMaterialConfiguration(
 @Serializable
 data class SimpleMaterialConfiguration(val material: Material): MaterialConfiguration {
 	override fun build(meta: ConfigurableAsteroidMeta): AsteroidMaterial = AsteroidMaterial.SimpleMaterial(material)
+}
+
+@Serializable
+data class WeightedRandomConfiguration(val blocks: List<WeightedMaterialConfiguration>) : MaterialConfiguration {
+	override fun build(meta: ConfigurableAsteroidMeta): AsteroidMaterial {
+		return RamdomWeightedAsteroidMaterial(blocks.map { it.build(meta) })
+	}
+}
+
+@Serializable
+data class RandomConfiguration(val blocks: List<MaterialConfiguration>) : MaterialConfiguration {
+	override fun build(meta: ConfigurableAsteroidMeta): AsteroidMaterial {
+		return RamdomAsteroidMaterial(blocks.map { it.build(meta) })
+	}
 }
