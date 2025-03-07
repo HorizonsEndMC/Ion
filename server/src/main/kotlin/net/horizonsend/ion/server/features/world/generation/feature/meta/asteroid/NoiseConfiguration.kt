@@ -13,8 +13,7 @@ data class NoiseConfiguration(
 	val noiseTypeConfiguration: NoiseTypeConfiguration,
 	val fractalSettings: FractalSettings,
 	val domainWarpConfiguration: DomainWarpConfiguration,
-	val blendMode: BlendMode,
-	val amplitude: Float = 1.0f,
+	val amplitude: Double = 1.0,
 	val normalizedPositive: Boolean = true
 ) {
 	fun build(): NoiseWrapper {
@@ -23,7 +22,7 @@ data class NoiseConfiguration(
 		fractalSettings.apply(instance)
 		domainWarpConfiguration.apply(instance)
 
-		return NoiseWrapper(instance, domainWarpConfiguration.build(), blendMode, amplitude, normalizedPositive)
+		return NoiseWrapper(instance, domainWarpConfiguration.build(), amplitude, normalizedPositive)
 	}
 
 	@Serializable
@@ -150,6 +149,7 @@ data class NoiseConfiguration(
 			val amplitude: Float,
 			val noiseType: NoiseTypeConfiguration,
 			val fractalSettings: FractalSettings,
+			val domainWarpMultiplier: Float
 		) : DomainWarpConfiguration {
 			override fun apply(noiseLite: FastNoiseLite) {
 				noiseLite.SetDomainWarpType(domainWarpType)
@@ -162,7 +162,7 @@ data class NoiseConfiguration(
 				noiseType.apply(domainWarpNoise)
 				fractalSettings.apply(domainWarpNoise)
 
-				return NoiseWrapper.DomainWarp.NoiseWarp(domainWarpNoise)
+				return NoiseWrapper.DomainWarp.NoiseWarp(domainWarpNoise, domainWarpMultiplier)
 			}
 		}
 	}
