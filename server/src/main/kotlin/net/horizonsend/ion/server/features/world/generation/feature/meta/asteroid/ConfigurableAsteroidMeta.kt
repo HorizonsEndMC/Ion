@@ -5,7 +5,6 @@ import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetadataFactory
 import net.horizonsend.ion.server.features.world.generation.feature.meta.OreBlob
-import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.AsteroidConfiguration.StartValue
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.level.block.state.BlockState
@@ -15,19 +14,99 @@ import org.bukkit.util.noise.SimplexOctaveGenerator
 import kotlin.math.sqrt
 import kotlin.random.Random
 
+private val standardLayers: IterativeValueProvider = Sum(listOf(
+		NoiseConfiguration(
+			noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
+				featureSize = 150f,
+			),
+			fractalSettings = NoiseConfiguration.FractalSettings.FractalParameters(
+				type = NoiseConfiguration.FractalSettings.NoiseFractalType.FBM,
+				octaves = 3,
+				lunacrity = 2f,
+				gain = 1f,
+				weightedStrength = 3f,
+				pingPongStrength = 1f
+			),
+			domainWarpConfiguration = NoiseConfiguration.DomainWarpConfiguration.None,
+			amplitude = 100.0
+		).build(),
+		NoiseConfiguration(
+			noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
+				featureSize = 25f,
+			),
+			fractalSettings = NoiseConfiguration.FractalSettings.None,
+			domainWarpConfiguration = NoiseConfiguration.DomainWarpConfiguration.None,
+			amplitude = 15.0
+		).build(),
+		NoiseConfiguration(
+			NoiseConfiguration.NoiseTypeConfiguration.Voronoi(
+				featureSize = 10f,
+				distanceFunction = FastNoiseLite.CellularDistanceFunction.Euclidean,
+				returnType = FastNoiseLite.CellularReturnType.Distance,
+			),
+			NoiseConfiguration.FractalSettings.None,
+			NoiseConfiguration.DomainWarpConfiguration.None,
+			10.0,
+			normalizedPositive = false
+		).build()
+	))
+
+private val coronavirus: IterativeValueProvider = Add(
+		Multiply(
+		Size,
+		Static(0.75)
+		),
+		Sum(listOf(
+			NoiseConfiguration(
+				noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
+					featureSize = 150f,
+				),
+				fractalSettings = NoiseConfiguration.FractalSettings.FractalParameters(
+					type = NoiseConfiguration.FractalSettings.NoiseFractalType.FBM,
+					octaves = 3,
+					lunacrity = 2f,
+					gain = 1f,
+					weightedStrength = 3f,
+					pingPongStrength = 1f
+				),
+				domainWarpConfiguration = NoiseConfiguration.DomainWarpConfiguration.None,
+				amplitude = 20.0,
+				normalizedPositive = false
+			).build(),
+			NoiseConfiguration(
+				noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
+					featureSize = 75f,
+				),
+				fractalSettings = NoiseConfiguration.FractalSettings.FractalParameters(
+					type = NoiseConfiguration.FractalSettings.NoiseFractalType.FBM,
+					octaves = 3,
+					lunacrity = 2f,
+					gain = 1f,
+					weightedStrength = 3f,
+					pingPongStrength = 1f
+				),
+				domainWarpConfiguration = NoiseConfiguration.DomainWarpConfiguration.None,
+				amplitude = 20.0,
+				normalizedPositive = false
+			).build(),
+			NoiseConfiguration(
+				NoiseConfiguration.NoiseTypeConfiguration.Voronoi(
+					featureSize = 30f,
+					distanceFunction = FastNoiseLite.CellularDistanceFunction.Euclidean,
+					returnType = FastNoiseLite.CellularReturnType.Distance,
+				),
+				NoiseConfiguration.FractalSettings.None,
+				NoiseConfiguration.DomainWarpConfiguration.None,
+				20.0,
+				normalizedPositive = false
+			).build()
+		))
+	)
+
 class ConfigurableAsteroidMeta(
 	override val seed: Long,
 	val size: Double,
 	val block: Material,
-//	val paletteBlocks: List<BlockState> = listOf(
-//		Material.QUARTZ_BRICKS.createBlockData().nms,
-//		Material.QUARTZ_BLOCK.createBlockData().nms,
-//		Material.DIORITE.createBlockData().nms,
-//		Material.POLISHED_DIORITE.createBlockData().nms,
-//		Material.RED_GLAZED_TERRACOTTA.createBlockData().nms,
-//		Material.NETHERRACK.createBlockData().nms,
-//		Material.RED_NETHER_BRICKS.createBlockData().nms,
-//	),
 	val paletteBlocks: List<BlockState> = listOf(
 		Material.BLUE_GLAZED_TERRACOTTA,
 		Material.TUBE_CORAL_BLOCK,
@@ -44,54 +123,26 @@ class ConfigurableAsteroidMeta(
 		Material.SNOW_BLOCK,
 	).map { it.createBlockData().nms },
 	val oreBlobs: MutableList<OreBlob> = mutableListOf(),
-	val startValue: StartValue = StartValue.NONE,
-	private val noiseLayers: List<NoiseWrapper> = listOf(
-		NoiseConfiguration(
-			noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
-				featureSize = 150f,
-			),
-			fractalSettings = NoiseConfiguration.FractalSettings.FractalParameters(
-				type = NoiseConfiguration.FractalSettings.NoiseFractalType.FBM,
-				octaves = 3,
-				lunacrity = 2f,
-				gain = 1f,
-				weightedStrength = 3f,
-				pingPongStrength = 1f
-			),
-			domainWarpConfiguration = NoiseConfiguration.DomainWarpConfiguration.None,
-			blendMode = BlendMode.ADD,
-			amplitude = 100.0f
-		).build(),
-		NoiseConfiguration(
-			noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
-				featureSize = 25f,
-			),
-			fractalSettings = NoiseConfiguration.FractalSettings.None,
-			domainWarpConfiguration = NoiseConfiguration.DomainWarpConfiguration.DomainWarpParameters(
-				domainWarpType = FastNoiseLite.DomainWarpType.OpenSimplex2,
-				rotationType3D = FastNoiseLite.RotationType3D.None,
-				amplitude = 91f,
-				noiseType = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
-					featureSize = 20f,
-				),
-				fractalSettings = NoiseConfiguration.FractalSettings.None
-			),
-			blendMode = BlendMode.ADD,
-			amplitude = 15.0f
-		).build(),
-		NoiseConfiguration(
-			NoiseConfiguration.NoiseTypeConfiguration.Voronoi(
-				featureSize = 10f,
-				distanceFunction = FastNoiseLite.CellularDistanceFunction.Euclidean,
-				returnType = FastNoiseLite.CellularReturnType.Distance,
-			),
-			NoiseConfiguration.FractalSettings.None,
-			NoiseConfiguration.DomainWarpConfiguration.None,
-			BlendMode.ADD,
-			10.0f,
-			normalizedPositive = false
-		).build()
-	)
+	private val noiseLayers: IterativeValueProvider =
+		Add(
+			Multiply(a = Size, b = Static(0.65)),
+			Multiply(
+				a = Multiply(Size, Static(0.35)),
+				b = Subtract(
+					a = Max(
+						a = NoiseConfiguration(
+							noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.Perlin(featureSize = 10f),
+							fractalSettings = NoiseConfiguration.FractalSettings.None,
+							domainWarpConfiguration = NoiseConfiguration.DomainWarpConfiguration.None,
+							amplitude = 1.0,
+							normalizedPositive = true
+						).build(),
+						b = Static(0.75)
+					),
+					b = Static(0.75)
+				)
+			)
+		)
 ) : FeatureMetaData {
 	override val factory: FeatureMetadataFactory<ConfigurableAsteroidMeta> = Factory
 
@@ -109,24 +160,11 @@ class ConfigurableAsteroidMeta(
 	private val normalizingFactor = size / totalDisplacement
 
 	fun getNoise(x: Double, y: Double, z: Double): Double {
-		var total = startValue.getValue(this)
-
-		for (noiseLayer in noiseLayers) {
-			val noise = noiseLayer.getNoise(x, y, z)
-			total = noiseLayer.blendMode.apply(total.toFloat(), noise).toDouble()
-		}
-
-		return total * normalizingFactor
+		return noiseLayers.getValue(x, y, z, this) * normalizingFactor
 	}
 
 	private fun getMaxDisplacement(): Double {
-		var total = startValue.getValue(this)
-
-		for (noiseLayer in noiseLayers) {
-			total = noiseLayer.blendMode.apply(total.toFloat(), 1.0f * noiseLayer.amplitude).toDouble()
-		}
-
-		return total
+		return noiseLayers.getFallbackValue(this)
 	}
 
 	object Factory : FeatureMetadataFactory<ConfigurableAsteroidMeta>() {
