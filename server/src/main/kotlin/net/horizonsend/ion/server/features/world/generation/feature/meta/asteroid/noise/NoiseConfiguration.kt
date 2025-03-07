@@ -7,6 +7,7 @@ import com.github.auburn.FastNoiseLite.DomainWarpType
 import com.github.auburn.FastNoiseLite.FractalType
 import com.github.auburn.FastNoiseLite.RotationType3D
 import kotlinx.serialization.Serializable
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
 
 @Serializable
 data class NoiseConfiguration(
@@ -15,14 +16,16 @@ data class NoiseConfiguration(
 	val domainWarpConfiguration: DomainWarpConfiguration,
 	val amplitude: Double = 1.0,
 	val normalizedPositive: Boolean = true
-) {
-	fun build(): NoiseWrapper {
+) : EvaluationConfiguration {
+	override fun build(meta: ConfigurableAsteroidMeta): NoiseWrapper {
 		val instance = FastNoiseLite()
 		noiseTypeConfiguration.apply(instance)
 		fractalSettings.apply(instance)
 		domainWarpConfiguration.apply(instance)
 
-		return NoiseWrapper(instance, domainWarpConfiguration.build(), amplitude, normalizedPositive)
+		val wrapper = NoiseWrapper(instance, domainWarpConfiguration.build(), amplitude, normalizedPositive)
+		wrapper.setSeed(meta.random)
+		return wrapper
 	}
 
 	@Serializable
