@@ -41,3 +41,14 @@ data class RandomConfiguration(val blocks: List<MaterialConfiguration>) : Materi
 		return RamdomAsteroidMaterial(blocks.map { it.build(meta) })
 	}
 }
+
+@Serializable
+class SurfaceDistanceAsteroidMaterialConfiguration(
+	val blocks: List<WeightedMaterialConfiguration>,
+	private val minRatio: Double,
+	private val maxRatio: Double
+) : MaterialConfiguration  {
+	override fun build(meta: ConfigurableAsteroidMeta): AsteroidMaterial {
+		return RelativeSurfaceDistanceAsteroidMaterial(blocks.map { it.build(meta) }, minRatio, maxRatio)
+	}
+}
