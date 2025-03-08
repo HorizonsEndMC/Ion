@@ -53,6 +53,8 @@ import org.bukkit.Material.WAXED_EXPOSED_CHISELED_COPPER
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
 import org.bukkit.Material.WAXED_WEATHERED_CHISELED_COPPER
 import org.bukkit.NamespacedKey
+import org.bukkit.block.BlockFace
+import org.bukkit.block.data.FaceAttachable.AttachedFace
 import org.bukkit.block.data.type.Hopper
 import org.bukkit.block.data.type.Observer
 import org.bukkit.block.data.type.Vault
@@ -130,7 +132,15 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 			.addSimpleNode(GLASS, SolidGlassNode(ItemNode.PipeChannel.CLEAR))
 			.addSimpleNode(GLASS_PANE, ItemNode.PaneGlassNode(ItemNode.PipeChannel.CLEAR))
 			.addSimpleNode(TINTED_GLASS, ItemNode.WildcardSolidGlassNode)
-			.addDataHandler<CraftGrindstone>(GRINDSTONE) { data, _, _ -> ItemNode.ItemMergeNode(data.facing) }
+			.addDataHandler<CraftGrindstone>(GRINDSTONE) { data, _, _ ->
+				val outFace: BlockFace = when (data.attachedFace) {
+					AttachedFace.CEILING -> BlockFace.DOWN
+					AttachedFace.FLOOR -> BlockFace.UP
+					else -> data.facing
+				}
+
+				ItemNode.ItemMergeNode(outFace)
+			}
 			.addDataHandler<Vault>(ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(key, holder.cache as ItemTransportCache, ITEM_FILTER.getFace(data)) }
 			.addDataHandler<Hopper>(HOPPER) { data, key, holder -> ItemNode.HopperFilterNode(key, data.facing, holder.cache as ItemTransportCache) }
 			.addSimpleNode(
