@@ -4,14 +4,16 @@ import com.manya.pdc.DataTypes
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isDoor
 import net.horizonsend.ion.server.miscellaneous.utils.isGlass
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
@@ -27,7 +29,9 @@ import org.bukkit.persistence.PersistentDataType
 object ConnectedDockingTubeMultiblock : DockingTubeMultiblock(
 	MiniMessage.miniMessage().deserialize("[Connected]").color(TextColor.fromHexString("#55FF55"))
 ) {
-	override fun MultiblockShape.RequirementBuilder.tubeStateExtension() = anyGlass()
+	override val displayName: Component get() = text("Docking Tube (Connected)")
+
+	override fun MultiblockShape.RequirementBuilder.tubeStateExtension() = this.anyGlass()
 
 	override fun toggle(sign: Sign, player: Player) {
 		if (ActiveStarships.findByBlock(sign.block) != null) {

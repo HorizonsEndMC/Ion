@@ -10,6 +10,9 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.WallSign
+import org.bukkit.block.sign.Side
+import org.bukkit.block.sign.SignSide
+import java.util.EnumSet
 
 /**
  * @see getNMSBlockSateSafe
@@ -26,10 +29,22 @@ fun getBlockDataSafe(world: World, x: Int, y: Int, z: Int): BlockData? {
 }
 
 /**
+ * Get block data, with an option to handle chunk loading to get the data
+ */
+fun getBlockDataSafe(world: World, x: Int, y: Int, z: Int, loadChunks: Boolean = false): BlockData? {
+	val data = getBlockDataSafe(world, x, y, z)
+
+	if (data != null) return data
+	if (!loadChunks) return null
+
+	return world.getBlockData(x, y, z)
+}
+
+/**
  * Gets the block state at the given location if loaded. Sync only.
  */
 fun getBlockIfLoaded(world: World, x: Int, y: Int, z: Int): Block? {
-	if (y < 0 || y > world.maxHeight) {
+	if (y < 0 || y >= world.maxHeight) {
 		return null
 	}
 
@@ -80,12 +95,20 @@ val ADJACENT_BLOCK_FACES: Set<BlockFace> = ImmutableSet.of(
 	BlockFace.DOWN
 )
 
+val ADJACENT_PAIRS: Map<Axis, Set<BlockFace>> = mapOf(
+	Axis.Z to ImmutableSet.of(BlockFace.NORTH, BlockFace.SOUTH),
+	Axis.X to ImmutableSet.of(BlockFace.EAST, BlockFace.WEST),
+	Axis.Y to ImmutableSet.of(BlockFace.UP, BlockFace.DOWN)
+)
+
 val CARDINAL_BLOCK_FACES: Set<BlockFace> = ImmutableSet.of(
 	BlockFace.NORTH,
 	BlockFace.SOUTH,
 	BlockFace.EAST,
 	BlockFace.WEST
 )
+
+val ALL_DIRECTIONS: Set<BlockFace> = EnumSet.complementOf(EnumSet.of(BlockFace.SELF))
 
 val BlockFace.rightFace: BlockFace
 	get() = when (this) {
@@ -105,11 +128,21 @@ val BlockFace.leftFace: BlockFace
 		else -> error("Unsupported direction $this")
 	}
 
-val BlockFace.axis: Axis
+val BlockFace.axis: Axis get() = this.axisOrNull ?: error("Unsupported axis for BlockFace: $this")
+
+val BlockFace.axisOrNull: Axis?
 	get() = when (this) {
 		BlockFace.NORTH, BlockFace.SOUTH -> Axis.Z
 		BlockFace.EAST, BlockFace.WEST -> Axis.X
 		BlockFace.UP, BlockFace.DOWN -> Axis.Y
+		else -> null
+	}
+
+val Axis.faces: Pair<BlockFace, BlockFace>
+	get() = when (this) {
+		Axis.Z -> BlockFace.NORTH to BlockFace.SOUTH
+		Axis.X -> BlockFace.EAST to BlockFace.WEST
+		Axis.Y -> BlockFace.UP to BlockFace.DOWN
 		else -> error("Unsupported axis for BlockFace: $this")
 	}
 
@@ -118,3 +151,6 @@ fun BlockFace.matchesAxis(other: BlockFace) = this.axis == other.axis
 fun Sign.getFacing(): BlockFace =
 	(this.blockData as? org.bukkit.block.data.type.Sign)?.rotation
 		?: (this.blockData as WallSign).facing
+
+fun Sign.front(): SignSide = getSide(Side.FRONT)
+fun Sign.back(): SignSide = getSide(Side.BACK)

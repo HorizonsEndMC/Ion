@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.ai.reward
 
-import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
@@ -11,7 +10,6 @@ import org.slf4j.Logger
 import java.util.concurrent.atomic.AtomicInteger
 
 interface AIRewardsProvider : RewardsProvider {
-	val configuration: AITemplate.AIRewardsProviderConfiguration
 	val starship: ActiveStarship
 	val log: Logger
 

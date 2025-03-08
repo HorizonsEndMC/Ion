@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayName
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.World
