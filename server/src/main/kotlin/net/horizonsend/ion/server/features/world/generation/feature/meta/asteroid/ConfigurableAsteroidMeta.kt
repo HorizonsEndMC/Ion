@@ -5,11 +5,13 @@ import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetadataFactory
 import net.horizonsend.ion.server.features.world.generation.feature.meta.OreBlob
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.MaterialConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.NoiseMaterialConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.SimpleMaterialConfiguration
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.SurfaceDistanceAsteroidMaterialConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.WeightedMaterialConfiguration
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.WeightedRandomConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.AddConfiguration
-import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.DivideConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.EvaluationConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.MultiplyConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.NoiseConfiguration
@@ -28,7 +30,7 @@ private val standardLayers =
 		listOf(
 			NoiseConfiguration(
 				noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
-					featureSize = 150f,
+					featureSize = 100f,
 				),
 				fractalSettings = NoiseConfiguration.FractalSettings.FractalParameters(
 					type = NoiseConfiguration.FractalSettings.NoiseFractalType.FBM,
@@ -159,38 +161,7 @@ class ConfigurableAsteroidMeta(
 			normalizedPositive = false
 		)
 	)),
-	blockPlacerConfiguration: NoiseMaterialConfiguration = NoiseMaterialConfiguration(
-		DivideConfiguration(
-			AddConfiguration(
-				NoiseConfiguration(
-					NoiseConfiguration.NoiseTypeConfiguration.Voronoi(
-						featureSize = 100f,
-						distanceFunction = FastNoiseLite.CellularDistanceFunction.Euclidean,
-						returnType = FastNoiseLite.CellularReturnType.Distance,
-					),
-					NoiseConfiguration.FractalSettings.None,
-					NoiseConfiguration.DomainWarpConfiguration.None,
-					1.0,
-					normalizedPositive = true
-				),
-				NoiseConfiguration(
-					noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
-						featureSize = 30f,
-					),
-					fractalSettings = NoiseConfiguration.FractalSettings.FractalParameters(
-						type = NoiseConfiguration.FractalSettings.NoiseFractalType.FBM,
-						octaves = 3,
-						lunacrity = 2f,
-						gain = 1f,
-						weightedStrength = 3f,
-						pingPongStrength = 1f
-					),
-					domainWarpConfiguration = NoiseConfiguration.DomainWarpConfiguration.None,
-					amplitude = 0.25
-				)
-			),
-			StaticConfiguration(1.25),
-		),
+	blockPlacerConfiguration: MaterialConfiguration = SurfaceDistanceAsteroidMaterialConfiguration(
 		listOf(
 			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.BLUE_GLAZED_TERRACOTTA), 3.0),
 			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.TUBE_CORAL_BLOCK), 1.0),
@@ -201,7 +172,10 @@ class ConfigurableAsteroidMeta(
 			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.ICE), 1.0),
 			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.LIGHT_BLUE_WOOL), 1.0),
 			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.LIGHT_BLUE_GLAZED_TERRACOTTA), 1.0),
-			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CLAY), 2.0),
+			WeightedMaterialConfiguration(WeightedRandomConfiguration(listOf(
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CLAY), 50.0),
+				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SEA_LANTERN), 1.0),
+			)), 2.0),
 			WeightedMaterialConfiguration(NoiseMaterialConfiguration(
 				NoiseConfiguration(
 					NoiseConfiguration.NoiseTypeConfiguration.Voronoi(
@@ -233,8 +207,89 @@ class ConfigurableAsteroidMeta(
 			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CALCITE), 1.0),
 			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SNOW_BLOCK), 3.0),
 			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DIORITE), 7.0),
-		)
+		),
+		0.5,
+		0.95
 	)
+//	blockPlacerConfiguration: MaterialConfiguration = NoiseMaterialConfiguration(
+//		DivideConfiguration(
+//			AddConfiguration(
+//				NoiseConfiguration(
+//					NoiseConfiguration.NoiseTypeConfiguration.Voronoi(
+//						featureSize = 100f,
+//						distanceFunction = FastNoiseLite.CellularDistanceFunction.Euclidean,
+//						returnType = FastNoiseLite.CellularReturnType.Distance,
+//					),
+//					NoiseConfiguration.FractalSettings.None,
+//					NoiseConfiguration.DomainWarpConfiguration.None,
+//					1.0,
+//					normalizedPositive = true
+//				),
+//				NoiseConfiguration(
+//					noiseTypeConfiguration = NoiseConfiguration.NoiseTypeConfiguration.OpenSimplex2(
+//						featureSize = 30f,
+//					),
+//					fractalSettings = NoiseConfiguration.FractalSettings.FractalParameters(
+//						type = NoiseConfiguration.FractalSettings.NoiseFractalType.FBM,
+//						octaves = 3,
+//						lunacrity = 2f,
+//						gain = 1f,
+//						weightedStrength = 3f,
+//						pingPongStrength = 1f
+//					),
+//					domainWarpConfiguration = NoiseConfiguration.DomainWarpConfiguration.None,
+//					amplitude = 0.25
+//				)
+//			),
+//			StaticConfiguration(1.25),
+//		),
+//		listOf(
+//			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.BLUE_GLAZED_TERRACOTTA), 3.0),
+//			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.TUBE_CORAL_BLOCK), 1.0),
+//			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.LIGHT_BLUE_TERRACOTTA), 1.0),
+//			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.LIGHT_BLUE_CONCRETE), 1.0),
+//			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.BLUE_ICE), 1.0),
+//			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.PACKED_ICE), 1.0),
+//			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.ICE), 1.0),
+//			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.LIGHT_BLUE_WOOL), 1.0),
+//			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.LIGHT_BLUE_GLAZED_TERRACOTTA), 1.0),
+//			WeightedMaterialConfiguration(WeightedRandomConfiguration(listOf(
+//				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CLAY), 50.0),
+//				WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SEA_LANTERN), 1.0),
+//			)), 2.0),
+//			WeightedMaterialConfiguration(NoiseMaterialConfiguration(
+//				NoiseConfiguration(
+//					NoiseConfiguration.NoiseTypeConfiguration.Voronoi(
+//						featureSize = 10f,
+//						distanceFunction = FastNoiseLite.CellularDistanceFunction.Euclidean,
+//						returnType = FastNoiseLite.CellularReturnType.Distance,
+//					),
+//					NoiseConfiguration.FractalSettings.None,
+//					NoiseConfiguration.DomainWarpConfiguration.None,
+//					1.0,
+//					normalizedPositive = true
+//				),
+//				listOf(
+//					WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.TERRACOTTA), 2.0),
+//					WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DRIPSTONE_BLOCK), 2.0),
+//					WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.TUFF), 2.0),
+//					WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.STONE), 2.0),
+//					WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.COBBLESTONE), 2.0),
+//					WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.ANDESITE), 2.0),
+//					WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.COBBLESTONE), 2.0),
+//					WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.TUFF), 2.0),
+//					WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DRIPSTONE_BLOCK), 2.0),
+//					WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.TERRACOTTA), 2.0),
+//				)
+//			), 12.5),
+//			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CLAY), 2.0),
+//			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.LIGHT_GRAY_GLAZED_TERRACOTTA), 1.0),
+//			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DIORITE), 1.0),
+//			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.CALCITE), 1.0),
+//			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.SNOW_BLOCK), 3.0),
+//			WeightedMaterialConfiguration(SimpleMaterialConfiguration(Material.DIORITE), 7.0),
+//		)
+//	)
 ) : FeatureMetaData {
 	val random = Random(seed)
 	val blockPlacer = blockPlacerConfiguration.build(this)

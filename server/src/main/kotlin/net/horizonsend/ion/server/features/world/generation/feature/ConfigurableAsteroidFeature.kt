@@ -84,44 +84,8 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 
 		if (isCave) return null
 
-		return metaData.blockPlacer.getValue(worldX, worldY, worldZ, distanceSquared, metaData)
+		return metaData.blockPlacer.getValue(worldX, worldY, worldZ, distanceSquared, fullNoise, metaData)
 	}
-
-//	private fun getSurfaceNoise(difference: Double, paletteSample: Double, metaData: ConfigurableAsteroidMeta, cave1Noise: Double, cave2Noise: Double): BlockState {
-//		if (difference < 0.1) {
-//			val index = (paletteSample * metaData.paletteBlocks.size).toInt()
-//			return metaData.paletteBlocks[index]
-//		}
-//		if ((cave1Noise < 0.125) && (cave2Noise < 0.125)) {
-//			return Material.BLACKSTONE.createBlockData().nms
-//		}
-//		if (difference < 0.5) {
-//			return Material.STONE.createBlockData().nms
-//		}
-//		if (difference < 0.75) {
-//			return Material.DEEPSLATE.createBlockData().nms
-//		}
-//		if (difference < 0.85) {
-//			return Material.BLACKSTONE.createBlockData().nms
-//		}
-//		return Material.MAGMA_BLOCK.createBlockData().nms
-//	}
-
-//	private fun getSurfaceDepth(distanceSquared: Double, metaData: ConfigurableAsteroidMeta): BlockState {
-//		val radius = metaData.totalDisplacement
-//		// Concentrate into the outer ratio
-//		val gradientStart = radius * 0.95
-//		val gradientEnd = radius * 1.0
-//
-//		val sqrtDistance = sqrt(distanceSquared)
-//		if (sqrtDistance < gradientStart) return metaData.paletteBlocks.first()
-//		if (sqrtDistance > gradientEnd) return metaData.paletteBlocks.last()
-//
-//		val position = (sqrtDistance - gradientStart) / (gradientEnd - gradientStart)
-//
-//		val index = (metaData.paletteBlocks.size * position).roundToInt().coerceIn(0 ..< metaData.paletteBlocks.size)
-//		return metaData.paletteBlocks[index]
-//	}
 
 	override fun getExtents(metaData: ConfigurableAsteroidMeta): Pair<Vec3i, Vec3i> {
 		return Vec3i(
