@@ -86,7 +86,7 @@ interface Node {
 			))
 		}
 
-		return filterPositionData(nodes, backwards)
+		return nodes
 	}
 
 	/**
