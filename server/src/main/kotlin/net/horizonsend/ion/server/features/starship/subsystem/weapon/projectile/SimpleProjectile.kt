@@ -192,10 +192,15 @@ abstract class SimpleProjectile(
 	}
 
 	protected open fun onHitEntity(entity: LivingEntity) {
+		fun damage(amount: Double, cause: Entity?) {
+			entity.health -= minOf(entity.health, amount)
+			entity.damage(0.0, cause)
+		}
+
 		when (shooter) {
-			is PlayerDamager -> entity.damage(10.0, shooter.player)
-			is EntityDamager -> entity.damage(10.0, shooter.entity)
-			else -> entity.damage(10.0)
+			is PlayerDamager -> damage(10.0, shooter.player)
+			is EntityDamager -> damage(10.0, shooter.entity)
+			else -> damage(10.0, null)
 		}
 	}
 
