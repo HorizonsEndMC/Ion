@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PlasmaLaserProjectile
@@ -26,6 +27,18 @@ class PlasmaCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Bl
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
 		return this.face == starship.forward
+	}
+
+	override fun canFire(dir: Vector, target: Vector): Boolean {
+		if (starship.controller is PlayerController) {
+			return !starship.isInternallyObstructed(getFirePos(), dir)
+		}
+		val firePos = getFirePos()
+		val targetDir = target.clone().subtract(firePos.toCenterVector())
+		val angle = targetDir.angle(dir)
+		//since the direction is already coerced into the firing cone we want to check how much the coercion was
+		if (angle > maxOf(angleRadiansVertical,angleRadiansHorizontal) * 0.2) return false
+		return !starship.isInternallyObstructed(firePos, dir)
 	}
 
 	override fun isForwardOnly(): Boolean = balancing.forwardOnly

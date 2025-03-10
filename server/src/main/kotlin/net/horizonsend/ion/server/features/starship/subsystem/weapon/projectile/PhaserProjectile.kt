@@ -27,14 +27,11 @@ class PhaserProjectile(
 	override val pitch: Float = balancing.pitch
 	override val soundName: String = balancing.soundName
 
-	private val speedUpTime = TimeUnit.MILLISECONDS.toNanos(500L)
-	private val speedUpSpeed = 1000.0
-
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		super.moveVisually(oldLocation, newLocation, travel)
 
-		if (System.nanoTime() - this.firedAtNanos > this.speedUpTime) {
-			this.speed = this.speedUpSpeed
+		if (System.nanoTime() - this.firedAtNanos > PhaserProjectile.speedUpTime) {
+			this.speed = PhaserProjectile.speedUpSpeed
 		}
 	}
 
@@ -44,5 +41,10 @@ class PhaserProjectile(
 		val extra = 0.0
 		val data = null
 		loc.world.spawnParticle(Particle.SOUL_FIRE_FLAME, x, y, z, count, offset, offset, offset, extra, data, force)
+	}
+
+	companion object {
+		val speedUpTime = TimeUnit.MILLISECONDS.toNanos(500L)
+		val speedUpSpeed = 1000.0
 	}
 }

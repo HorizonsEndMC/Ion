@@ -61,7 +61,7 @@ class PlayerDamagerWrapper(override val player: Player) : PlayerDamager {
 
 	override val color: Color
 		get() = PlayerCache[player].nationOid?.let { Color.fromRGB( NationCache[it].color ) } ?: Color.RED
-	override fun getAITarget(): AITarget = PlayerTarget(player)
+	override fun getAITarget(): AITarget = if (starship == null) PlayerTarget(player) else StarshipTarget(starship!!)
 
 	override fun toString(): String = "PlayerDamager[${player.name}]"
 

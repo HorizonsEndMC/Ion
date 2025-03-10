@@ -40,6 +40,9 @@ object Hyperspace : IonServerComponent() {
 
 	fun isWarmingUp(starship: ActiveStarship) = warmupTasks.containsKey(starship)
 	fun isMoving(starship: ActiveStarship) = movementTasks.containsKey(starship)
+	fun getJumpDestination(starship: ActiveStarship) : Location? {
+		return movementTasks[starship]?.dest
+	}
 
 	const val HYPERMATTER_AMOUNT = 2
 	const val INTER_SYSTEM_DISTANCE = 60000
