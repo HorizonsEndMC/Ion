@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.NETHERITE_
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.STANDARD_EXTRACTOR_TYPE
-import net.horizonsend.ion.server.features.transport.old.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
@@ -26,6 +25,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isDoor
 import net.horizonsend.ion.server.miscellaneous.utils.isFroglight
 import net.horizonsend.ion.server.miscellaneous.utils.isGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
+import net.horizonsend.ion.server.miscellaneous.utils.isPipedInventory
 import net.horizonsend.ion.server.miscellaneous.utils.isRedstoneLamp
 import net.horizonsend.ion.server.miscellaneous.utils.isSlab
 import net.horizonsend.ion.server.miscellaneous.utils.isStairs
@@ -485,7 +485,7 @@ class MultiblockShape {
 		fun lightningRod(edit: BlockRequirement.() -> Unit = {}) = type(Material.LIGHTNING_ROD, edit)
 
 		fun hopper() = type(Material.HOPPER)
-		fun anyPipedInventory() = filteredTypes("any container block", edit = { setExample(Material.CHEST.createBlockData()) }) { Pipes.isPipedInventory(it) }
+		fun anyPipedInventory() = filteredTypes("any container block", edit = { setExample(Material.CHEST.createBlockData()) }) { it.isPipedInventory }
 		fun dispenser() = type(Material.DISPENSER)
 
 		fun netheriteCasing() = customBlock(NETHERITE_CASING)

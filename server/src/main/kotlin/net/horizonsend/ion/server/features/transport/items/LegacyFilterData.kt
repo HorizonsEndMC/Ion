@@ -1,13 +1,13 @@
-package net.horizonsend.ion.server.features.transport.old.pipe.filter
+package net.horizonsend.ion.server.features.transport.items
 
 import org.bukkit.Material
 
-data class FilterItemData(val material: Material, val customItemIdentifier: String?) {
+data class LegacyFilterData(val material: Material, val customItemIdentifier: String?) {
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
 		if (javaClass != other?.javaClass) return false
 
-		other as FilterItemData
+		other as LegacyFilterData
 
 		if (material != other.material) return false
 		if (customItemIdentifier != other.customItemIdentifier) return false

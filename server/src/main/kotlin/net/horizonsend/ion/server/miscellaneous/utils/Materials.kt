@@ -181,3 +181,17 @@ val UNWAXED_CHISELED_COPPER_TYPES = enumSetOf(
 )
 
 val Material.isChiseledCopper get() = ALL_CHISELED_COPPER_TYPES.contains(this)
+
+val PIPED_INVENTORY_TYPES = enumSetOf(
+	Material.CHEST,
+	Material.TRAPPED_CHEST,
+	Material.BARREL,
+	Material.FURNACE,
+	Material.SMOKER,
+	Material.BLAST_FURNACE,
+	Material.DISPENSER,
+	Material.DROPPER,
+	Material.DECORATED_POT
+)
+
+val Material.isPipedInventory get() = PIPED_INVENTORY_TYPES.contains(this)
