@@ -89,9 +89,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShi
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry
-import net.horizonsend.ion.server.features.transport.old.TransportConfig
-import net.horizonsend.ion.server.features.transport.old.pipe.Pipes
-import net.horizonsend.ion.server.features.transport.old.pipe.filter.Filters
 import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld
@@ -140,10 +137,7 @@ val components: List<IonComponent> = listOf(
 	MultiblockTicking,
 	AreaShields,
 
-	TransportConfig.Companion,
-	Pipes,
 	FilterType,
-	Filters,
 	NewTransport,
 
 	SwordListener,
