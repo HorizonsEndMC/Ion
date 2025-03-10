@@ -7,8 +7,8 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.EntityDamager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.iterateVector
-import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.iterateVector
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.FluidCollisionMode

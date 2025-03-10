@@ -9,6 +9,7 @@ import kotlin.random.Random
 import kotlin.random.asKotlinRandom
 
 fun Double.roundToHundredth(): Double = times(100.0).roundToInt().toDouble().div(100.0)
+fun Double.roundToTenThousanth(): Double = times(10000.0).roundToInt().toDouble().div(10000.0)
 
 @Suppress("NOTHING_TO_INLINE")
 inline fun Int.squared(): Int = this * this
