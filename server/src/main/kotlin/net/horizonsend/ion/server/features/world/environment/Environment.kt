@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.world.environment
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.EnvironmentMod
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.isInside
@@ -16,7 +18,10 @@ import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import java.util.concurrent.TimeUnit
+import kotlin.reflect.jvm.internal.impl.load.kotlin.JvmType
 
 enum class Environment {
 	VACUUM {
@@ -58,6 +63,93 @@ enum class Environment {
 			checkSuffocation(player)
 		}
 	},
+
+	RADIOACTIVE {
+		private fun checkRadiation(player: Player) {
+			if (isWearingSpaceSuit(player)) return
+
+			if (isInside(player.eyeLocation, 1)) return
+
+			if (checkEnvironmentInstalled(player)) return
+
+			player.addPotionEffect(PotionEffect(PotionEffectType.POISON, 200 , 1))
+			player.addPotionEffect(PotionEffect(PotionEffectType.NAUSEA, 200, 1))
+
+			player.sendMessage("Suffering Radiation Poisoning!!!")
+
+		}
+
+		private val environmentCooldown = PerPlayerCooldown(1, TimeUnit.SECONDS)
+
+		private fun checkEnvironmentInstalled(player: Player): Boolean {
+			val helmet = player.inventory.helmet ?: return false
+			val customItem = helmet.customItem ?: return false
+
+			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) return false
+			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getMods(helmet)
+			if (!mods.contains(ItemModRegistry.ENVIRONMENT)) return false
+
+			val powerUsage = 10
+
+			val power = customItem.getComponent(CustomComponentTypes.POWER_STORAGE)
+			if (power.getPower(helmet) < powerUsage) return false
+
+			environmentCooldown.tryExec(player) {
+				power.removePower(helmet, customItem, powerUsage)
+			}
+
+			return true
+		}
+
+		override fun tickPlayer(player: Player) {
+			if (player.gameMode != GameMode.SURVIVAL || player.isDead) return
+
+			checkRadiation(player)
+		}
+	},
+
+	FROSTBITE {
+		private fun checkFrostbite(player: Player) {
+			if (isWearingSpaceSuit(player)) return
+
+			if (isInside(player.eyeLocation, 1)) return
+
+			if (checkEnvironmentInstalled(player)) return
+
+			player.setFreezeTicks(200)
+
+			player.damage(0.5)
+		}
+
+		private val environmentCooldown = PerPlayerCooldown(1, TimeUnit.SECONDS)
+
+		private fun checkEnvironmentInstalled(player: Player): Boolean {
+			val helmet = player.inventory.helmet ?: return false
+			val customItem = helmet.customItem ?: return false
+
+			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) return false
+			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getMods(helmet)
+			if (!mods.contains(ItemModRegistry.ENVIRONMENT)) return false
+
+			val powerUsage = 10
+
+			val power = customItem.getComponent(CustomComponentTypes.POWER_STORAGE)
+			if (power.getPower(helmet) < powerUsage) return false
+
+			environmentCooldown.tryExec(player) {
+				power.removePower(helmet, customItem, powerUsage)
+			}
+
+			return true
+		}
+
+		override fun tickPlayer(player: Player) {
+			if (player.gameMode != GameMode.SURVIVAL || player.isDead) return
+
+			checkFrostbite(player)
+		}
+	},
+
 
 	NO_GRAVITY {
 		override fun tickPlayer(player: Player) {
@@ -140,5 +232,13 @@ enum class Environment {
 				inventory.leggings?.type == Material.CHAINMAIL_LEGGINGS &&
 				inventory.boots?.type == Material.CHAINMAIL_BOOTS
 		}
+
+		private fun spaceSuitOrShip(player: Player) {
+			if (isWearingSpaceSuit(player)) return
+
+			if (isInside(player.eyeLocation, 1)) return
+
+		}
 	}
 }
+
