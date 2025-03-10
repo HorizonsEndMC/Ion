@@ -6,14 +6,15 @@ import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.util.PathCache
+import net.horizonsend.ion.server.features.transport.nodes.pathfinding.PathTracker
+import net.horizonsend.ion.server.features.transport.nodes.pathfinding.calculatePathResistance
+import net.horizonsend.ion.server.features.transport.nodes.pathfinding.getIdealPath
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
-import net.horizonsend.ion.server.features.transport.util.getIdealPath
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.block.BlockFace
 import kotlin.math.roundToInt
@@ -120,9 +121,11 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		var maximumResistance: Double = -1.0
 		var minimumResistance = 0.0
 
+		val pathTracker = PathTracker()
+
 		// Perform the calc & max find in the same loop
 		val paths: Array<PathfindingReport?> = Array(numDestinations) {
-			val path = findPath(source, filteredDestinations[it])
+			val path = findPath(source, pathTracker, filteredDestinations[it])
 
 			if (path != null && maximumResistance < path.resistance) maximumResistance = path.resistance
 			if (path != null && minimumResistance > path.resistance) minimumResistance = path.resistance
@@ -205,12 +208,30 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		return remainingPower
 	}
 
-	fun findPath(origin: NodePositionData, destination: BlockKey, pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null): PathfindingReport? =
-		pathCache.getOrCompute(origin.position, destination) {
-			val path = runCatching { getIdealPath(origin, destination, holder.nodeCacherGetter, pathfindingFilter) }.getOrNull()
+	fun findPath(origin: NodePositionData, pathTracker: PathTracker, destination: BlockKey, pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null): PathfindingReport? {
+		val nodeBlockPositionData = NodePositionData(
+			type = PowerInputNode,
+			world = origin.world,
+			position = destination,
+			offset = BlockFace.SELF,
+			cache = this
+		)
+
+		return pathCache.getOrCompute(origin.position, destination) {
+			val path = runCatching {
+				getIdealPath(
+					from = nodeBlockPositionData,
+					destination = origin.position,
+					pathTracker = pathTracker,
+					cachedNodeProvider = holder.nodeCacherGetter,
+					pathfindingFilter = pathfindingFilter
+				)
+			}.getOrNull()
+
 			if (path == null) return@getOrCompute null
 
 			val resistance = calculatePathResistance(path)
-				PathfindingReport(path, resistance)
+			PathfindingReport(path, resistance)
 		}
+	}
 }

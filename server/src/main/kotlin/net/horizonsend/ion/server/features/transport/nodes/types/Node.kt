@@ -64,27 +64,27 @@ interface Node {
 
 	/** Altered node provider, designed for traversing networks backwards */
 	fun getPreviousNodes(
-		currentCache: TransportCache,
-		world: World,
-		position: BlockKey,
-		backwards: BlockFace,
+		positionData: NodePositionData,
 		cachedNodeProvider: CacheProvider,
 		filter: ((Node, BlockFace) -> Boolean)?
 	): List<NodePositionData> {
+		val backwards = positionData.offset.oppositeFace
 		val nodes = mutableListOf<NodePositionData>()
 
 		for (adjacentFace in ADJACENT_BLOCK_FACES) {
-			val relativePos = getRelative(position, adjacentFace)
-			val cacheResult = cachedNodeProvider.invoke(currentCache, cacheType, world, relativePos) ?: continue
+			val relativePos = getRelative(positionData.position, adjacentFace)
+			val cacheResult = cachedNodeProvider.invoke(positionData.cache, cacheType, positionData.world, relativePos) ?: continue
 			val (cache, cached) = cacheResult
 			if (cached == null) continue
 
 			if (!cached.canTransferTo(this, adjacentFace.oppositeFace) || !canTransferFrom(cached, adjacentFace.oppositeFace)) continue
 			if (filter != null && !filter.invoke(cached, adjacentFace.oppositeFace)) continue
 
+			if (cached.filterPositionData(nextNodes = listOf(positionData), backwards = adjacentFace.oppositeFace).isEmpty()) continue
+
 			nodes.add(NodePositionData(
 				type = cached,
-				world = world,
+				world = positionData.world,
 				position = relativePos,
 				offset = adjacentFace.oppositeFace,
 				cache = cache,
@@ -98,13 +98,14 @@ interface Node {
 	 * Filters the found adjacent nodes, after checking for transport possibility
 	 **/
 	fun filterPositionData(nextNodes: List<NodePositionData>, backwards: BlockFace): List<NodePositionData> = nextNodes
+	fun filterPositionDataBackwards(previousNodes: List<NodePositionData>, backwards: BlockFace): List<NodePositionData> = previousNodes
 
 	data class NodePositionData(val type: Node, val world: World, val position: BlockKey, val offset: BlockFace, val cache: TransportCache) {
 		fun getNextNodes(cachedNodeProvider: CacheProvider, filter: ((Node, BlockFace) -> Boolean)?): List<NodePositionData> =
 				type.getNextNodes(cache, world, position, offset.oppositeFace, cachedNodeProvider, filter)
 
 		fun getPreviousNodes(cachedNodeProvider: CacheProvider, filter: ((Node, BlockFace) -> Boolean)?): List<NodePositionData> =
-				type.getPreviousNodes(cache, world, position, offset.oppositeFace, cachedNodeProvider, filter)
+				type.getPreviousNodes(this, cachedNodeProvider, filter)
 	}
 
 	fun onInvalidate() {}
