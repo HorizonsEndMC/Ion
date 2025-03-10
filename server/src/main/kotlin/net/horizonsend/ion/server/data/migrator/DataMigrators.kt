@@ -12,9 +12,9 @@ import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.Repla
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.MOD_MANAGER
-import net.horizonsend.ion.server.features.transport.old.pipe.Pipes
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.LegacyPowerArmorModule
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.isPipedInventory
 import org.bukkit.Chunk
 import org.bukkit.Material
 import org.bukkit.attribute.Attribute
@@ -917,7 +917,7 @@ object DataMigrators : IonServerComponent() {
 
 		for (x in 0..15) for (y in chunk.world.minHeight until chunk.world.maxHeight) for (z in 0..15) {
 			val type = snapshot.getBlockType(x, y, z)
-			if (Pipes.isPipedInventory(type)) {
+			if (type.isPipedInventory) {
 				val state = chunk.getBlock(x, y, z).state as InventoryHolder
 				migrateInventory(state.inventory, toApply)
 			}
