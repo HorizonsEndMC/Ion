@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.transport.util.MAX_PATHFINDS_OVER_BLOCK
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -217,7 +216,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		}
 
 		fun canVisit(node: NodePositionData): Boolean {
-			return visited.getOrDefault(node.position, 0) < MAX_PATHFINDS_OVER_BLOCK
+			return visited.getOrDefault(node.position, 0) < node.type.getMaxPathfinds()
 		}
 
 		val destinations = LongOpenHashSet()

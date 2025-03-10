@@ -28,6 +28,7 @@ import java.lang.ref.WeakReference
 
 interface ItemNode : Node {
 	override val cacheType: CacheType get() = CacheType.ITEMS
+	override fun getMaxPathfinds(): Int = 1
 
 	sealed interface PaneAlwaysTransfersForward
 
