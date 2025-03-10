@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.custom.items.component.Listener.Compa
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.transport.util.MAX_PATHFINDS_OVER_BLOCK
 import net.horizonsend.ion.server.features.transport.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
 import net.horizonsend.ion.server.features.transport.util.getHeuristic
@@ -159,7 +158,7 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 		}
 
 		fun canVisit(node: Node.NodePositionData): Boolean {
-			return visited.getOrDefault(node.position, 0) < MAX_PATHFINDS_OVER_BLOCK
+			return visited.getOrDefault(node.position, 0) < node.type.getMaxPathfinds()
 		}
 
 		// Safeguard
