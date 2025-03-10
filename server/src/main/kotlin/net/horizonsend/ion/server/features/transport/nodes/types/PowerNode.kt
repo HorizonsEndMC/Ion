@@ -27,6 +27,7 @@ import java.text.DecimalFormat
 
 sealed interface PowerNode : Node {
     override val cacheType: CacheType get() = CacheType.POWER
+	override fun getMaxPathfinds(): Int = 6
 
     data object SpongeNode : PowerNode {
         override val pathfindingResistance: Double = 1.0
