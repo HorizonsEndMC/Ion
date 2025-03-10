@@ -34,7 +34,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	 * Cache containing a cache state at their corresponding block position.
 	 * The state can either be empty, or present. Empty key / value pairs have not been cached.
 	 **/
-	private val nodeCache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap(16, 0.5f, 8)
+	private val nodeCache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap(16, 0.5f, 64)
 
 	/**
 	 * A table containing cached paths. The first value is the origin of the path, usually an extractor, and the second is the destination location.

@@ -10,13 +10,13 @@ import net.horizonsend.ion.server.features.transport.manager.extractors.data.Ext
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData.ItemExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.util.PathCache
+import net.horizonsend.ion.server.features.transport.nodes.pathfinding.calculatePathResistance
+import net.horizonsend.ion.server.features.transport.nodes.pathfinding.getIdealPath
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
 import net.horizonsend.ion.server.features.transport.util.getBlockEntity
-import net.horizonsend.ion.server.features.transport.util.getIdealPath
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -298,7 +298,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		val entry = pathCache.getOrCompute(origin.position, destination) { mutableMapOf() } ?: return null // Should not return null, but handle the possibility
 
 		return entry.getOrPut(itemStack) {
-			val path = runCatching { getIdealPath(origin, destination, holder.nodeCacherGetter, pathfindingFilter) }.getOrNull()
+			val path = runCatching { getIdealPath(origin, destination, null, holder.nodeCacherGetter, pathfindingFilter) }.getOrNull()
 			if (path == null) return@getOrPut Optional.empty()
 
 			val resistance = calculatePathResistance(path)

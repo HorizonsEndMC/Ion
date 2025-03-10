@@ -27,13 +27,14 @@ import java.text.DecimalFormat
 
 sealed interface PowerNode : Node {
     override val cacheType: CacheType get() = CacheType.POWER
-	override fun getMaxPathfinds(): Int = 6
+	override fun getMaxPathfinds(): Int = 1
 
     data object SpongeNode : PowerNode {
         override val pathfindingResistance: Double = 1.0
         override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
         override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true
         override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+		override fun getMaxPathfinds(): Int = 2
     }
 
     data class EndRodNode(var axis: Axis) : PowerNode, ComplexNode {
