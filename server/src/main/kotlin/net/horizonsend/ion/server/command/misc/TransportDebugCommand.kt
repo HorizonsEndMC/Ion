@@ -6,7 +6,6 @@ import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import io.papermc.paper.util.StacktraceDeobfuscator
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.SLCommand
@@ -18,7 +17,6 @@ import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCa
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
-import net.horizonsend.ion.server.features.transport.old.TransportConfig
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
@@ -30,7 +28,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.block.Block
-import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.slf4j.Logger
 import java.lang.management.ManagementFactory
@@ -39,13 +36,6 @@ import java.lang.management.ThreadInfo
 @CommandPermission("starlegacy.transportdebug")
 @CommandAlias("transportdebug|transportbug")
 object TransportDebugCommand : SLCommand() {
-	@Suppress("Unused")
-	@Subcommand("reload")
-	fun reload(sender: CommandSender) {
-		TransportConfig.reload()
-		sender.success("Reloaded config")
-	}
-
 	@Subcommand("threaddump")
 	fun forceDump(sender: Player) {
 		log.error("Entire Thread Dump:")

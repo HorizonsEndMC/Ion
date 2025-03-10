@@ -2,13 +2,11 @@ package net.horizonsend.ion.server.features.transport.nodes.types
 
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.features.transport.filters.FilterData
-import net.horizonsend.ion.server.features.transport.filters.FilterMeta
 import net.horizonsend.ion.server.features.transport.filters.FilterType
+import net.horizonsend.ion.server.features.transport.items.LegacyFilterData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
-import net.horizonsend.ion.server.features.transport.old.pipe.filter.FilterItemData
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -24,7 +22,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import java.lang.ref.WeakReference
 
 interface ItemNode : Node {
 	override val cacheType: CacheType get() = CacheType.ITEMS
@@ -127,7 +124,6 @@ interface ItemNode : Node {
 	}
 
 	data class AdvancedFilterNode(val position: BlockKey, val cache: ItemTransportCache, val face: BlockFace) : FilterNode {
-		val filter: WeakReference<FilterData<ItemStack, FilterMeta.ItemFilterMeta>> = WeakReference(cache.holder.transportManager.filterManager.getFilter(position, FilterType.ItemType)!!)
 		override val pathfindingResistance: Double = 1.0
 
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(face)
@@ -136,7 +132,8 @@ interface ItemNode : Node {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = other !is ItemExtractorNode  && other !is FilterNode
 
 		override fun matches(itemStack: ItemStack): Boolean {
-			return filter.get()?.matchesFilter(itemStack) == true
+			val filterData = cache.holder.transportManager.filterManager.getFilter(position, FilterType.ItemType) ?: return false
+			return filterData.matchesFilter(itemStack)
 		}
 	}
 
@@ -161,8 +158,8 @@ interface ItemNode : Node {
 			face = movement.displaceFace(face)
 		}
 
-		private fun getItemData(inventory: Inventory): Set<FilterItemData> {
-			val types = mutableSetOf<FilterItemData>()
+		private fun getItemData(inventory: Inventory): Set<LegacyFilterData> {
+			val types = mutableSetOf<LegacyFilterData>()
 
 			for (item: ItemStack? in inventory.contents) {
 				val type = item?.type ?: continue
@@ -177,8 +174,8 @@ interface ItemNode : Node {
 			return types
 		}
 
-		fun createFilterItemData(item: ItemStack): FilterItemData {
-			return FilterItemData(item.type, item.customItem?.identifier)
+		fun createFilterItemData(item: ItemStack): LegacyFilterData {
+			return LegacyFilterData(item.type, item.customItem?.identifier)
 		}
 
 		override fun toString(): String {
