@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.util
+package net.horizonsend.ion.server.features.transport.nodes.pathfinding
 
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.transport.manager.holders.CacheProvid
 import net.horizonsend.ion.server.features.transport.manager.holders.ChunkCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
+import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
@@ -49,6 +50,7 @@ fun getGlobalNode(currentCache: TransportCache, type: CacheType, world: World, p
 fun getIdealPath(
 	from: Node.NodePositionData,
 	destination: BlockKey,
+	pathTracker: PathTracker?,
 	cachedNodeProvider: CacheProvider,
 	pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null
 ): Array<Node.NodePositionData>? {
@@ -96,7 +98,18 @@ fun getIdealPath(
 		val current = queue.minBy { it.f }
 
 		if (current.node.position == destination) {
-			return current.buildPath()
+			val path = current.buildPath()
+			// Add the path to all positions along it
+			pathTracker?.addPathLookup(path, path)
+
+			return path
+		}
+
+		if (pathTracker != null) {
+			val data = pathTracker.checkPosition(current)
+			if (data != null) {
+				return data
+			}
 		}
 
 		queueRemove(current)
@@ -130,12 +143,8 @@ fun getIdealPath(
 }
 
 // Wraps neighbor nodes in a data class to store G and F values for pathfinding. Should probably find a better solution
-fun getNeighbors(
-	current: PathfindingNodeWrapper,
-	cachedNodeProvider: CacheProvider,
-	filter: ((Node, BlockFace) -> Boolean)?
-): Array<PathfindingNodeWrapper> {
-	val transferable = current.node.getNextNodes(cachedNodeProvider, filter)
+fun getNeighbors(current: PathfindingNodeWrapper, cachedNodeProvider: CacheProvider, filter: ((Node, BlockFace) -> Boolean)?): Array<PathfindingNodeWrapper> {
+	val transferable = current.node.getPreviousNodes(cachedNodeProvider, filter)
 
 	return Array(transferable.size) {
 		val next = transferable[it]
@@ -154,56 +163,6 @@ fun getNeighbors(
 fun getHeuristic(node: Node.NodePositionData, destination: BlockKey): Int {
 	val resistance = node.type.pathfindingResistance
 	return (toVec3i(node.position).distance(toVec3i(destination)) + resistance).roundToInt()
-}
-
-/**
- * @param node The cached node at this position
- * @param parent The parent node
- **/
-data class PathfindingNodeWrapper(
-	val node: Node.NodePositionData,
-	var parent: PathfindingNodeWrapper?,
-	var g: Int,
-	var f: Int
-) {
- 	// Compiles the path
-	fun buildPath(): Array<Node.NodePositionData> {
-		val list = mutableListOf(this.node)
-		var current: PathfindingNodeWrapper? = this
-
-		while (current?.parent != null) {
-			current = current.parent!!
-			list.add(current.node)
-		}
-
-		// Return a reversed array, to put the origin node at the head of the array
-		val lastIndex = list.lastIndex
-		return Array(list.size) {
-			list[lastIndex - it]
-		}
-	}
-
-	//<editor-fold desc="Generated Methods">
-	override fun equals(other: Any?): Boolean {
-		if (this === other) return true
-		if (javaClass != other?.javaClass) return false
-
-		other as PathfindingNodeWrapper
-
-		if (node != other.node) return false
-		if (parent != other.parent) return false
-		if (g != other.g) return false
-		return f == other.f
-	}
-
-	override fun hashCode(): Int {
-		var result = node.hashCode()
-		result = 31 * result + (parent?.hashCode() ?: 0)
-		result = 31 * result + g
-		result = 31 * result + f
-		return result
-	}
-	//</editor-fold>
 }
 
 fun calculatePathResistance(path: Array<Node.NodePositionData>): Double {
