@@ -13,13 +13,15 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomItemComp
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.rightClickListener
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
+import net.horizonsend.ion.server.features.transport.nodes.pathfinding.PathfindingNodeWrapper
+import net.horizonsend.ion.server.features.transport.nodes.pathfinding.calculatePathResistance
+import net.horizonsend.ion.server.features.transport.nodes.pathfinding.getHeuristic
+import net.horizonsend.ion.server.features.transport.nodes.pathfinding.getNeighbors
+import net.horizonsend.ion.server.features.transport.nodes.pathfinding.getOrCacheNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
+import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
+import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.transport.util.PathfindingNodeWrapper
-import net.horizonsend.ion.server.features.transport.util.calculatePathResistance
-import net.horizonsend.ion.server.features.transport.util.getHeuristic
-import net.horizonsend.ion.server.features.transport.util.getNeighbors
-import net.horizonsend.ion.server.features.transport.util.getOrCacheNode
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.X
@@ -103,8 +105,14 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 
 		val path = getIdealPath(
 			audience = audience,
-			fromNode = Node.NodePositionData(firstNode, world, firstPoint, BlockFace.SELF, cacheType.get(firstChunk)),
-			destination = secondPoint
+			fromNode = NodePositionData(
+				type = PowerInputNode,
+				world = world,
+				position = secondPoint,
+				offset = BlockFace.SELF,
+				cache = cacheType.get(firstChunk)
+			),
+			destination = firstPoint
 		) ?: return
 
 		val resistance = calculatePathResistance(path)
@@ -141,12 +149,14 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 			queueSet.remove(wrapper.node.position)
 		}
 
-		queueAdd(PathfindingNodeWrapper(
+		queueAdd(
+			PathfindingNodeWrapper(
 			node = fromNode,
 			parent = null,
 			g = 0,
 			f = getHeuristic(fromNode, destination)
-		))
+		)
+		)
 
 		val visited = Long2IntOpenHashMap()
 
