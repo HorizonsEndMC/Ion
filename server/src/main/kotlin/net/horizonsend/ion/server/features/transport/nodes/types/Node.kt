@@ -25,6 +25,11 @@ interface Node {
 	 **/
 	fun canTransferFrom(other: Node, offset: BlockFace): Boolean
 
+	/**
+	 * Gets the max number of times this node can be iterated over during pathfinding
+	 **/
+	fun getMaxPathfinds(): Int = 1
+
 	fun getNextNodes(
 		currentCache: TransportCache,
 		world: World,

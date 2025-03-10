@@ -43,8 +43,6 @@ fun getGlobalNode(currentCache: TransportCache, type: CacheType, world: World, p
 	return cache to cache.getCached(pos)
 }
 
-const val MAX_PATHFINDS_OVER_BLOCK = 6
-
 /**
  * Uses the A* algorithm to find the shortest available path between these two nodes.
  **/
@@ -86,7 +84,7 @@ fun getIdealPath(
 	}
 
 	fun canVisit(node: Node.NodePositionData): Boolean {
-		return visited.getOrDefault(node.position, 0) < MAX_PATHFINDS_OVER_BLOCK
+		return visited.getOrDefault(node.position, 0) < node.type.getMaxPathfinds()
 	}
 
 	// Safeguard
