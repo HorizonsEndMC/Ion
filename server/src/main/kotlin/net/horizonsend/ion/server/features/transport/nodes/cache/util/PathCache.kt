@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache.util
 
 import com.google.common.collect.HashBasedTable
+import net.horizonsend.ion.server.features.transport.nodes.cache.PathfindingReport
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
-import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache.PathfindingReport
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.set
