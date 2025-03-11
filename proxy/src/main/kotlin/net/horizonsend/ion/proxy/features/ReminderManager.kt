@@ -45,7 +45,13 @@ object ReminderManager : IonComponent() {
 		"<$HE_MEDIUM_GRAY>Pickaxes are for boomers. Use a power drill!",
 		"<$HE_MEDIUM_GRAY>You can always use /kit controller if you're in need of one on the go.",
 		"<$HE_MEDIUM_GRAY>Building a mob defender is a cheap way to protect your home from unwanted visitors.",
-		"<$HE_MEDIUM_GRAY>Pro Tip: Ship factories can also be used for printing buildings and infrastructure."
+		"<$HE_MEDIUM_GRAY>Pro Tip: Ship factories can also be used for printing buildings and infrastructure. Ask another player for details",
+		"<$HE_MEDIUM_GRAY>Pro Tip: Going from Luxiterna to Chimgara? Use /route add Chimgara to chart a course, then use /jump auto, works 90% of the time!",
+		"<$HE_MEDIUM_GRAY> New players (marked by a <gold>★</gold>) have special combat protections, dont attack them unprovoked!.Vist /rules for more info",
+		"<$HE_MEDIUM_GRAY> Planets have gravity wells that stop hyperspace travel! Make sure you have no planet between you and where your trying to jump. Use /map for help",
+		"<$HE_MEDIUM_GRAY> AI Ships have various levels of difficulty, vist the /wiki for more info. Mining and privateer ships are tricky targets but transit ships are pushovers",
+
+
 
 		// expand list here
 	)
