@@ -24,6 +24,7 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 
 	override val extractorNodeClass: KClass<out Node> = PowerNode.PowerExtractorNode::class
 
+
 	sealed interface SolarPanelComponent: Node {
 		data object CraftingTable: SolarPanelComponent
 		data object DiamondBlock: SolarPanelComponent

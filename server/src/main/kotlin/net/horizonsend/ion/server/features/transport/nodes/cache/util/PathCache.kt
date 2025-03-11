@@ -16,6 +16,8 @@ class PathCache<T : Any>(val cache: TransportCache) {
 	private val lock = ReentrantReadWriteLock(true)
 
 	fun contains(origin: BlockKey, destination: BlockKey): Boolean {
+		return false
+
 		lock.readLock().lock()
 		try {
 			return pathCache.contains(origin, destination)
@@ -25,6 +27,8 @@ class PathCache<T : Any>(val cache: TransportCache) {
 	}
 
 	fun get(origin: BlockKey, destination: BlockKey): T? {
+		return null
+
 		lock.readLock().lock()
 		try {
 			return pathCache.get(origin, destination)?.getOrNull()
@@ -34,6 +38,8 @@ class PathCache<T : Any>(val cache: TransportCache) {
 	}
 
 	fun set(origin: BlockKey, destination: BlockKey, value: T?) {
+		return
+
 		lock.writeLock().lock()
 		try {
 			pathCache[origin, destination] = Optional.ofNullable(value)
@@ -43,6 +49,8 @@ class PathCache<T : Any>(val cache: TransportCache) {
 	}
 
 	fun remove(origin: BlockKey, destination: BlockKey): T? {
+		return null
+
 		lock.writeLock().lock()
 		try {
 			return pathCache.remove(origin, destination)?.getOrNull()
