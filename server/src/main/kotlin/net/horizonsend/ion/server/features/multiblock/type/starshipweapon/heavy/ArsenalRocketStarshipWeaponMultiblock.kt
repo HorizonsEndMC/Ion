@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 
 sealed class ArsenalRocketStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<ArsenalRocketStarshipWeaponSubsystem>() {
+	override val key: String = "arsenal_rocket"
 	override fun createSubsystem(
 		starship: ActiveStarship,
 		pos: Vec3i,

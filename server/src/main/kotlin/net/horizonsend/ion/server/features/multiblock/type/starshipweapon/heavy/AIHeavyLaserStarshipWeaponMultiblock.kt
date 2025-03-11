@@ -9,6 +9,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object AIHeavyLaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<AIHeavyLaserWeaponSubsystem>() {
+	override val key: String = "heavy_laser"
 	override val requiredPermission: String = "ion.weapon.ai"
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): AIHeavyLaserWeaponSubsystem {
 		return AIHeavyLaserWeaponSubsystem(starship, pos, face)

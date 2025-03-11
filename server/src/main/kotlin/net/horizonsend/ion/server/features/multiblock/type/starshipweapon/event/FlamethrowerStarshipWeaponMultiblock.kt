@@ -9,6 +9,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object FlamethrowerStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<FlamethrowerWeaponSubsystem>() {
+	override val key: String = "flamethrower"
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): FlamethrowerWeaponSubsystem {
 		return FlamethrowerWeaponSubsystem(starship, pos, face)
 	}

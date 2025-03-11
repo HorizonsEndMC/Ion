@@ -12,6 +12,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 import java.time.Duration
 
@@ -28,10 +29,10 @@ class IonTurretProjectile(
 	override val starshipShieldDamageMultiplier: Double,
 	override val areaShieldDamageMultiplier: Double,
 	override val soundName: String,
-	override val balancing: StarshipWeapons.ProjectileBalancing?,
+	override val balancing: StarshipWeapons.ProjectileBalancing,
 	shooter: Damager
 
-): LaserProjectile(ship, name, loc, dir, shooter) {
+): LaserProjectile(ship, name, loc, dir, shooter, DamageType.GENERIC) {
 
 	override val volume: Int = (range / 16).toInt()
 

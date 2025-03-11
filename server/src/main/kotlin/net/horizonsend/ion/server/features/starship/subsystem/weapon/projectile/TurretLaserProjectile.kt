@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
 class TurretLaserProjectile(
@@ -21,9 +22,9 @@ class TurretLaserProjectile(
 	override val starshipShieldDamageMultiplier: Double,
 	override val areaShieldDamageMultiplier: Double,
 	override val soundName: String,
-	override val balancing: StarshipWeapons.ProjectileBalancing?,
+	override val balancing: StarshipWeapons.ProjectileBalancing,
 	shooter: Damager
-) : LaserProjectile(ship, name, loc, dir, shooter) {
+) : LaserProjectile(ship, name, loc, dir, shooter, DamageType.GENERIC) {
 
 	override val volume: Int = (range / 16).toInt()
 }

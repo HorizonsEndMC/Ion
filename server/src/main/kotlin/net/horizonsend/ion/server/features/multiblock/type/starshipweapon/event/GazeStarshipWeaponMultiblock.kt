@@ -9,6 +9,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object GazeStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<AbyssalGazeSubsystem>() {
+	override val key: String = "gaze"
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): AbyssalGazeSubsystem {
 		return AbyssalGazeSubsystem(starship, pos, face)
 	}

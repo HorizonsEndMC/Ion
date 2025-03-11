@@ -9,6 +9,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object FireWaveWeaponMultiblock : SignlessStarshipWeaponMultiblock<FireWaveWeaponSubsystem>() {
+	override val key: String = "fire_wave"
 	override val requiredPermission: String = "ioncore.eventweapon"
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
