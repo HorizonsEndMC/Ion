@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSettings
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
@@ -12,7 +13,6 @@ import net.horizonsend.ion.server.features.transport.nodes.pathfinding.getIdealP
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
-import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -52,12 +52,8 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		if (destinations.isEmpty()) return@runTask
 
 		val transferLimit = (transportSettings().powerConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
-		val transferred = minOf(source.powerStorage.getPower(), transferLimit)
 
-		// Store this just in case
-		val missing = source.powerStorage.removePower(transferred)
-
-		val remainder = runPowerTransfer(
+		runPowerTransfer(
 			NodePositionData(
 				PowerNode.PowerExtractorNode,
 				world,
@@ -66,13 +62,9 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 				this
 			),
 			destinations.take(transportSettings().powerConfiguration.maxExtractorDestinations),
-			(transferred - missing)
+			transferLimit,
+			source.powerStorage
 		)
-
-
-		if (remainder > 0) {
-			source.powerStorage.addPower(remainder)
-		}
 	}
 
 	private fun tickSolarPanel(location: BlockKey, delta: Double, solarCache: SolarPanelCache) = NewTransport.runTask {
@@ -100,64 +92,37 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 				this
 			),
 			destinations.take(transportSettings().powerConfiguration.maxSolarDestinations),
-			transportPower
+			transportPower,
+			null
 		)
 	}
 
 	/**
 	 * Runs the power transfer from the source to the destinations. pending rewrite
 	 **/
-	fun runPowerTransfer(source: NodePositionData, rawDestinations: List<BlockKey>, availableTransferPower: Int): Int {
-		if (rawDestinations.isEmpty()) return availableTransferPower
+	fun runPowerTransfer(source: NodePositionData, rawDestinations: List<BlockKey>, transferLimit: Int, powerStorage: PowerStorage?) {
+		if (rawDestinations.isEmpty()) return
 
 		val filteredDestinations = rawDestinations.filter { destinationLoc ->
 			getInputEntities(destinationLoc).any { it is PoweredMultiblockEntity && !it.powerStorage.isFull() }
 		}
 
-		if (filteredDestinations.isEmpty()) return availableTransferPower
+		if (filteredDestinations.isEmpty()) return
 
 		val numDestinations = filteredDestinations.size
+		// Should the power storage be null, it is a solar panel, and the transfer limit was just what is generated
+		val removeAmount = minOf((numDestinations * transferLimit), (powerStorage?.getPower() ?: transferLimit))
+		// Remove all at the start
+		powerStorage?.removePower(removeAmount)
+		val individualAmount = removeAmount / numDestinations
 
-		var maximumResistance: Double = -1.0
-		var minimumResistance = 0.0
+		var remainingPower = removeAmount
 
-		val pathTracker = PathTracker()
-
-		// Perform the calc & max find in the same loop
-		val paths: Array<PathfindingReport?> = Array(numDestinations) {
-			val path = findPath(source, pathTracker, filteredDestinations[it])
-
-			if (path != null && maximumResistance < path.resistance) maximumResistance = path.resistance
-			if (path != null && minimumResistance > path.resistance) minimumResistance = path.resistance
-
-			path
-		}
-
-		var totalShares = 0.0
-
-		val pathShares: Array<Double?> = Array(numDestinations) {
-			val res = paths[it]?.resistance ?: return@Array null
-
-			val share = -res * (1 / (maximumResistance - minimumResistance)) + 1.25
-			totalShares += share
-
-			share
-		}
-
-		if (totalShares == 0.0) return availableTransferPower
-
-		var remainingPower = availableTransferPower
-
-		for ((index, destination) in filteredDestinations.withIndex()) {
-			val shareFactor = pathShares[index] ?: continue
+		for (destination in filteredDestinations) {
 			val inputData = getInputEntities(destination).filterIsInstance<PoweredMultiblockEntity>()
 
-			val share = shareFactor / totalShares
-
-			val idealSend = (availableTransferPower * share).roundToInt()
 			val remainingCapacity = inputData.sumOf { it.powerStorage.getRemainingCapacity() }
-
-			val toSend = minOf(idealSend, remainingCapacity)
+			val toSend = minOf(individualAmount, remainingCapacity)
 
 			// Amount of power that didn't fit
 			val remainder = distributePower(inputData, toSend)
@@ -167,11 +132,11 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 			runCatching {
 				// Update power flow meters
-				paths[index]?.traversedNodes?.forEach { if (it.type is PowerFlowMeter) it.type.onCompleteChain(realTaken) }
+//				paths[index]?.traversedNodes?.forEach { if (it.type is PowerFlowMeter) it.type.onCompleteChain(realTaken) }
 			}
 		}
 
-		return remainingPower
+		powerStorage?.addPower(remainingPower)
 	}
 
 	/**
