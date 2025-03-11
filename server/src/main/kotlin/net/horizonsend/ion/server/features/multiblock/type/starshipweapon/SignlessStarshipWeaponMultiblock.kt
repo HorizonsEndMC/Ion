@@ -5,7 +5,6 @@ import io.papermc.paper.registry.RegistryKey
 import io.papermc.paper.registry.TypedKey
 import io.papermc.paper.registry.keys.DamageTypeKeys
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.CapitalBeamStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
@@ -16,7 +15,7 @@ import org.bukkit.damage.DamageType
 abstract class SignlessStarshipWeaponMultiblock<TSubsystem : WeaponSubsystem> : Multiblock(), SubsystemMultiblock<TSubsystem> {
 	abstract val key: String
 	val damageTypeKey: TypedKey<DamageType> by lazy { DamageTypeKeys.create(Key.key("hoizonsend", key)) }
-	val damageType: DamageType by lazy { RegistryAccess.registryAccess().getRegistry(RegistryKey.DAMAGE_TYPE).getOrThrow(CapitalBeamStarshipWeaponMultiblock.damageTypeKey) }
+	val damageType: DamageType by lazy { RegistryAccess.registryAccess().getRegistry(RegistryKey.DAMAGE_TYPE).getOrThrow(damageTypeKey) }
 
 	override val signText = arrayOf<Component?>(null, null, null, null)
 
