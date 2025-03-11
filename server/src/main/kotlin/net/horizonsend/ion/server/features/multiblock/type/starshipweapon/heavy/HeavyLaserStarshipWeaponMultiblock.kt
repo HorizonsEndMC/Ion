@@ -17,15 +17,15 @@ object HeavyLaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<Hea
 		repeat(+7) { z ->
 			z(z) {
 				y(-1) {
-					x(+0).stainedGlass()
+					x(+0).anyGlass()
 				}
 				y(+0) {
-					x(-1).stainedGlass()
+					x(-1).anyGlass()
 					x(+0).redstoneBlock()
-					x(+1).stainedGlass()
+					x(+1).anyGlass()
 				}
 				y(+1) {
-					x(+0).stainedGlass()
+					x(+0).anyGlass()
 				}
 			}
 		}
