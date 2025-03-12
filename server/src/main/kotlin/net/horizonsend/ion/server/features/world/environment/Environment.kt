@@ -75,7 +75,6 @@ enum class Environment {
 			player.addPotionEffect(PotionEffect(PotionEffectType.POISON, 200 , 1))
 			player.addPotionEffect(PotionEffect(PotionEffectType.NAUSEA, 200, 1))
 
-			player.sendMessage("Suffering Radiation Poisoning!!!")
 
 		}
 
