@@ -12,6 +12,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
+import org.bukkit.damage.DamageType
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
@@ -24,7 +25,8 @@ class AntiAirCannonProjectile(
 	Component.text("Anti Air Cannon"),
 	loc,
 	dir,
-	playerShooter.damager()
+	playerShooter.damager(),
+	DamageType.GENERIC
 ) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = ConfigurationFiles.starshipBalancing().antiAirCannon
 	override val volume: Int = balancing.volume

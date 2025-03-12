@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.PulseCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.kyori.adventure.text.Component
@@ -16,7 +17,7 @@ class PulseLaserProjectile(
 	dir: Vector,
 	override val color: Color,
 	shooter: Damager
-) : LaserProjectile(starship, name, loc, dir, shooter) {
+) : LaserProjectile(starship, name, loc, dir, shooter, PulseCannonStarshipWeaponMultiblock.damageType) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.pulseCannon ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.pulseCannon
 	override val range: Double = balancing.range
 	override val speed: Double = balancing.speed

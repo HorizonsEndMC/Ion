@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.GazeStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -21,7 +22,7 @@ class AbyssalGazeProjectile(
 	shooter: Damager,
 	originalTarget: Vector,
 	baseAimDistance: Int
-) : TrackingLaserProjectile(starship, name, loc, dir, shooter, originalTarget, baseAimDistance) {
+) : TrackingLaserProjectile(starship, name, loc, dir, shooter, originalTarget, baseAimDistance, GazeStarshipWeaponMultiblock.damageType) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship.balancing.weapons.abyssalGaze
 	override val range: Double = balancing.range
 	override val speed: Double = balancing.speed

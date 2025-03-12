@@ -4,7 +4,11 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.server.configuration.StarshipSounds.SoundInfo
+import net.horizonsend.ion.server.configuration.StarshipWeapons.ProjectileBalancing
 import net.horizonsend.ion.server.configuration.serializer.SubsystemSerializer
+import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.damager.EntityDamager
+import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
@@ -12,6 +16,10 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserR
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
+import org.bukkit.damage.DamageSource
+import org.bukkit.damage.DamageType
+import org.bukkit.entity.Entity
+import org.bukkit.entity.LivingEntity
 import java.util.LinkedList
 import kotlin.math.PI
 
@@ -899,20 +907,21 @@ data class StarshipTypeBalancing(
 
 @Serializable
 data class AntiAirCannonBalancing(
-		override var range: Double = 500.0,
-		override var speed: Double = 125.0,
-		override var areaShieldDamageMultiplier: Double = 1.0,
-		override var starshipShieldDamageMultiplier: Double = 3.0,
-		override var particleThickness: Double = 0.8,
-		override var explosionPower: Float = 6f,
-		override var volume: Int = 0,
-		override var pitch: Float = 2.0f,
-		override var soundName: String = "horizonsend:starship.weapon.turbolaser.tri.shoot",
-		override var maxDegrees: Double = 360.0,
-		override var displayEntityCustomModelData: Int? = null,
-		override var displayEntitySize: Double? = null,
-		override var delayMillis: Int? = null
-) : StarshipWeapons.ProjectileBalancing
+	override var range: Double = 500.0,
+	override var speed: Double = 125.0,
+	override var areaShieldDamageMultiplier: Double = 1.0,
+	override var starshipShieldDamageMultiplier: Double = 3.0,
+	override var particleThickness: Double = 0.8,
+	override var explosionPower: Float = 6f,
+	override var volume: Int = 0,
+	override var pitch: Float = 2.0f,
+	override var soundName: String = "horizonsend:starship.weapon.turbolaser.tri.shoot",
+	override var maxDegrees: Double = 360.0,
+	override var displayEntityCustomModelData: Int? = null,
+	override var displayEntitySize: Double? = null,
+	override var delayMillis: Int? = null,
+	override val entityDamage: ProjectileBalancing.EntityDamage = ProjectileBalancing.RegularDamage(10.0),
+) : ProjectileBalancing
 
 @Serializable
 data class StarshipBalancing(
@@ -1702,47 +1711,49 @@ class StarshipWeapons(
 	 **/
 	@Serializable
 	data class StarshipWeapon(
-			override var canFire: Boolean = true,
-			override var minBlockCount: Int = 0,
-			override var maxBlockCount: Int = Int.MAX_VALUE,
+		override var canFire: Boolean = true,
+		override var minBlockCount: Int = 0,
+		override var maxBlockCount: Int = Int.MAX_VALUE,
 
-			override var range: Double,
-			override var speed: Double,
+		override var range: Double,
+		override var speed: Double,
 
-			override var explosionPower: Float,
+		override var explosionPower: Float,
 
-			override var starshipShieldDamageMultiplier: Double,
-			override var areaShieldDamageMultiplier: Double,
+		override var starshipShieldDamageMultiplier: Double,
+		override var areaShieldDamageMultiplier: Double,
 
-			override var particleThickness: Double,
+		override var particleThickness: Double,
 
-			override var soundName: String,
-			override var volume: Int,
-			override var pitch: Float,
+		override var soundName: String,
+		override var volume: Int,
+		override var pitch: Float,
 
-			override var powerUsage: Int,
+		override var powerUsage: Int,
 
-			override var length: Int,
-			override var extraDistance: Int,
+		override var length: Int,
+		override var extraDistance: Int,
 
-			override var angleRadiansVertical: Double,
-			override var angleRadiansHorizontal: Double,
-			override var convergeDistance: Double,
+		override var angleRadiansVertical: Double,
+		override var angleRadiansHorizontal: Double,
+		override var convergeDistance: Double,
 
-			override var fireCooldownMillis: Long,
-			override var applyCooldownToAll: Boolean,
-			override var maxPerShot: Int = 0,
+		override var fireCooldownMillis: Long,
+		override var applyCooldownToAll: Boolean,
+		override var maxPerShot: Int = 0,
 
-			override var forwardOnly: Boolean = false,
+		override var forwardOnly: Boolean = false,
 
-			var boostChargeSeconds: Long = 0, // Seconds, should only be put for heavyWeapons
-			var aimDistance: Int, // should only be put if the weapon in question is target tracking
-			override var inaccuracyRadians: Double = 2.0,
-			override var maxDegrees: Double = 0.0,
-			override var displayEntityCustomModelData: Int? = null,
-			override var displayEntitySize: Double? = null,
+		var boostChargeSeconds: Long = 0, // Seconds, should only be put for heavyWeapons
+		var aimDistance: Int, // should only be put if the weapon in question is target tracking
+		override var inaccuracyRadians: Double = 2.0,
+		override var maxDegrees: Double = 0.0,
+		override var displayEntityCustomModelData: Int? = null,
+		override var displayEntitySize: Double? = null,
 
-			override var delayMillis: Int? = null
+		override val entityDamage: ProjectileBalancing.EntityDamage = ProjectileBalancing.TrueDamage(10.0),
+
+		override var delayMillis: Int? = null
 	) : ProjectileBalancing, SubSystem
 
 	@Serializable
@@ -1763,7 +1774,56 @@ class StarshipWeapons(
 		var displayEntityCustomModelData: Int?
 		var displayEntitySize: Double?
 
+		val entityDamage: EntityDamage
+
 		var delayMillis: Int?
+
+		@Serializable
+		sealed interface EntityDamage {
+			fun deal(target: LivingEntity, shooter: Damager, type: DamageType)
+
+			fun getCause(source: Entity?, damageType: DamageType): DamageSource {
+				val builder = DamageSource.builder(damageType)
+				if (source != null) {
+					builder.withDirectEntity(source)
+					builder.withCausingEntity(source)
+				}
+
+				return builder.build()
+			}
+		}
+
+		@Serializable
+		data class RegularDamage(val amount: Double) : EntityDamage {
+			override fun deal(target: LivingEntity, shooter: Damager, type: DamageType) {
+				when (shooter) {
+					is PlayerDamager -> target.damage(amount, getCause(shooter.player, type))
+					is EntityDamager -> target.damage(amount, getCause(shooter.entity, type))
+					else -> target.damage(amount, getCause(null, type))
+				}
+			}
+		}
+
+		@Serializable
+		data class TrueDamage(val amount: Double) : EntityDamage {
+			override fun deal(target: LivingEntity, shooter: Damager, type: DamageType) {
+				fun damage(amount: Double, sourceEntity: Entity?) {
+					target.damage(0.0, getCause(sourceEntity, type))
+					target.health -= minOf(target.health, amount)
+				}
+
+				when (shooter) {
+					is PlayerDamager -> damage(amount, shooter.player)
+					is EntityDamager -> damage(amount, shooter.entity)
+					else -> damage(amount, null)
+				}
+			}
+		}
+
+		@Serializable
+		data object NoDamage : EntityDamage {
+			override fun deal(target: LivingEntity, shooter: Damager, type: DamageType) {}
+		}
 	}
 
 	@Serializable

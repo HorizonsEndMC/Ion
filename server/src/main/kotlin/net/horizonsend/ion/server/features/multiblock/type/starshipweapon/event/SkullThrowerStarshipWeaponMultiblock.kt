@@ -9,6 +9,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object SkullThrowerStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<FlamingSkullCannon>() {
+	override val key: String = "skull_thrower"
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): FlamingSkullCannon {
 		return FlamingSkullCannon(starship, pos, face)
 	}

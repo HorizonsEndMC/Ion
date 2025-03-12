@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.TorpedoStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.kyori.adventure.text.Component
@@ -17,7 +18,7 @@ class TorpedoProjectile(
 	shooter: Damager,
 	originalTarget: Vector,
 	baseAimDistance: Int
-) : TrackingLaserProjectile(starship, name, loc, dir, shooter, originalTarget, baseAimDistance) {
+) : TrackingLaserProjectile(starship, name, loc, dir, shooter, originalTarget, baseAimDistance, TorpedoStarshipWeaponMultiblock.damageType) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.protonTorpedo ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.protonTorpedo
 
 	override val range: Double = balancing.range

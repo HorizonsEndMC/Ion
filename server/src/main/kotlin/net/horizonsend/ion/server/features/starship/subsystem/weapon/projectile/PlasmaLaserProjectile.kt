@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.gayColors
@@ -17,7 +18,7 @@ class PlasmaLaserProjectile(
 	loc: Location,
 	dir: Vector,
 	shooter: Damager
-) : LaserProjectile(starship, name, loc, dir, shooter) {
+) : LaserProjectile(starship, name, loc, dir, shooter, PlasmaCannonStarshipWeaponMultiblock.damageType) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.plasmaCannon ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.plasmaCannon
 	override val range: Double = balancing.range
 	override val speed: Double = balancing.speed

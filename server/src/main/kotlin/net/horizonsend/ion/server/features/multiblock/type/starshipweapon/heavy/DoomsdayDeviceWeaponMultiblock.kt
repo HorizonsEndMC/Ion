@@ -9,6 +9,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object DoomsdayDeviceWeaponMultiblock : SignlessStarshipWeaponMultiblock<DoomsdayDeviceWeaponSubsystem>() {
+	override val key: String = "doomsday_device"
     override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): DoomsdayDeviceWeaponSubsystem {
         return DoomsdayDeviceWeaponSubsystem(starship, pos, face)
     }

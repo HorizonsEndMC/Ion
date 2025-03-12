@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.HeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -23,7 +24,7 @@ class HeavyLaserProjectile(
     originalTarget: Vector,
     baseAimDistance: Int,
     sound: String
-) : TrackingLaserProjectile(starship, name, loc, dir, shooter, originalTarget, baseAimDistance) {
+) : TrackingLaserProjectile(starship, name, loc, dir, shooter, originalTarget, baseAimDistance, HeavyLaserStarshipWeaponMultiblock.damageType) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.heavyLaser ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.heavyLaser
 	override val starshipShieldDamageMultiplier = balancing.starshipShieldDamageMultiplier
 	override val areaShieldDamageMultiplier: Double = balancing.areaShieldDamageMultiplier

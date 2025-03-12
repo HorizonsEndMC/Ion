@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.proj
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.FlamethrowerStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ArcedParticleProjectile
@@ -17,7 +18,7 @@ class FlamethrowerProjectile(
 	loc: Location,
 	dir: Vector,
 	shooter: Damager
-) : ArcedParticleProjectile(starship, name, loc, dir, shooter) {
+) : ArcedParticleProjectile(starship, name, loc, dir, shooter, FlamethrowerStarshipWeaponMultiblock.damageType) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.flameThrower ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.flameThrower
 	override val range: Double = balancing.range
 	override var speed: Double = balancing.speed

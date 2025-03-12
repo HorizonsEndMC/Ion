@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
 abstract class StickyParticleProjectile(
@@ -11,8 +12,9 @@ abstract class StickyParticleProjectile(
 	name: Component,
 	loc: Location,
 	dir: Vector,
-	shooter: Damager
-) : ParticleProjectile(starship, name, loc, dir, shooter) {
+	shooter: Damager,
+	damageType: DamageType
+) : ParticleProjectile(starship, name, loc, dir, shooter, damageType) {
 	var embeddedShip: ActiveStarship? = null
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {

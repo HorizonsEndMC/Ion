@@ -17,6 +17,7 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.data.BlockData
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
 abstract class BlockProjectile(
@@ -24,8 +25,9 @@ abstract class BlockProjectile(
 	name: Component,
 	loc: Location,
 	dir: Vector,
-	shooter: Damager
-) : SimpleProjectile(starship, name, loc, dir, shooter) {
+	shooter: Damager,
+	damageType: DamageType
+) : SimpleProjectile(starship, name, loc, dir, shooter, damageType) {
 	abstract val blockMap: Map<Vec3i, BlockData>
 	private val refreshedBlocks = LongOpenHashSet()
 

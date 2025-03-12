@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 
 object TorpedoStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<TorpedoWeaponSubsystem>() {
+	override val key: String = "torpedo"
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TorpedoWeaponSubsystem {
 		return TorpedoWeaponSubsystem(starship, pos, face)
 	}

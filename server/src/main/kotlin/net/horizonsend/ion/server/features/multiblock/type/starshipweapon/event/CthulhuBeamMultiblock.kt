@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 
 sealed class CthulhuBeamMutliblock : SignlessStarshipWeaponMultiblock<CthulhuBeamSubsystem>() {
+	override val key: String = "cthulhu_beam"
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): CthulhuBeamSubsystem {
 		val adjustedFace = getAdjustedFace(face)
 		return CthulhuBeamSubsystem(starship, pos, adjustedFace)

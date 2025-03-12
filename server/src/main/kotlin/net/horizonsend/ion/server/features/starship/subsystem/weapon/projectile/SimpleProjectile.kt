@@ -9,8 +9,6 @@ import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.features.starship.damager.EntityDamager
-import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.kyori.adventure.key.Key.key
@@ -25,6 +23,7 @@ import org.bukkit.SoundCategory
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.craftbukkit.util.CraftMagicNumbers
+import org.bukkit.damage.DamageType
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.LivingEntity
@@ -38,7 +37,8 @@ abstract class SimpleProjectile(
 	val name: Component,
 	var loc: Location,
 	var dir: Vector,
-	shooter: Damager
+	shooter: Damager,
+	private val damageType: DamageType,
 ) : Projectile(starship, shooter) {
 	abstract val range: Double
 	abstract val speed: Double
@@ -192,11 +192,7 @@ abstract class SimpleProjectile(
 	}
 
 	protected open fun onHitEntity(entity: LivingEntity) {
-		when (shooter) {
-			is PlayerDamager -> entity.damage(10.0, shooter.player)
-			is EntityDamager -> entity.damage(10.0, shooter.entity)
-			else -> entity.damage(10.0)
-		}
+		balancing.entityDamage.deal(entity, shooter, damageType)
 	}
 
 	private fun addToDamagers(world: World, block: Block, shooter: Damager, points: Int = 1, explosionOccurred: Boolean = false) {

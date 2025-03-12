@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
@@ -33,7 +34,7 @@ class CycleTurretProjectile(
 	shooter: Damager,
 	private val shotIndex: Int,
 	private val multiblock: CycleTurretMultiblock
-) : LaserProjectile(ship, name, loc, dir, shooter) {
+) : LaserProjectile(ship, name, loc, dir, shooter, DamageType.GENERIC) {
 
     override val volume: Int = (range / 16).toInt()
 

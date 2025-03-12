@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 
 sealed class PointDefenseStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<PointDefenseSubsystem>() {
+	override val key: String = "point_defense"
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): PointDefenseSubsystem {
 		val adjustedFace = getAdjustedFace(face)
 		return PointDefenseSubsystem(starship, pos, adjustedFace)

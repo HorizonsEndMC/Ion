@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.cannon.LaserCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
@@ -12,7 +13,6 @@ import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
-
 
 class LaserCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace) :
 	CannonWeaponSubsystem(starship, pos, face) {
@@ -30,7 +30,7 @@ class LaserCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
 	}
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
-		CannonLaserProjectile(starship, getName(), loc, dir, shooter).fire()
+		CannonLaserProjectile(starship, getName(), loc, dir, shooter, LaserCannonStarshipWeaponMultiblock.damageType).fire()
 	}
 
 	override val extraDistance: Int = balancing.extraDistance

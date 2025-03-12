@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Material.GRINDSTONE
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
 sealed class LogisticTurretMultiblock : TurretMultiblock() {
@@ -85,7 +86,8 @@ sealed class LogisticTurretMultiblock : TurretMultiblock() {
                 getAreaShieldDamageMultiplier(starship),
                 getSound(starship),
                 starship.balancing.weapons.logisticTurret, // Not used by anything
-                shooter
+                shooter,
+				DamageType.GENERIC
             ).fire()
         }
     }

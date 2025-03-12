@@ -9,6 +9,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object SonicMissileWeaponMultiblock : SignlessStarshipWeaponMultiblock<SonicMissileWeaponSubsystem>() {
+	override val key: String = "sonic_missile"
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(+0) {

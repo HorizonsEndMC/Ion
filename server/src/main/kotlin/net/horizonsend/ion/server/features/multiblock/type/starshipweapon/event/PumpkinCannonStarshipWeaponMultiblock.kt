@@ -9,6 +9,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object PumpkinCannonStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<PumpkinCannonWeaponSubsystem>() {
+	override val key: String = "pumpkin_cannon"
 	fun getAdjustedFace(originalFace: BlockFace): BlockFace {
 		return originalFace
 	}

@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.kyori.adventure.text.Component
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
 abstract class HitscanProjectile(
@@ -13,7 +14,8 @@ abstract class HitscanProjectile(
 	loc: Location,
 	dir: Vector,
 	shooter: Damager,
-) : SimpleProjectile(starship, name, loc, dir, shooter) {
+	damageType: DamageType
+) : SimpleProjectile(starship, name, loc, dir, shooter, damageType) {
 
 	override fun tick() {
 		val result = loc.world.rayTrace(loc, dir, range, FluidCollisionMode.NEVER, true, 0.1) { true }

@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 import kotlin.math.acos
 import kotlin.math.cos
@@ -18,8 +19,9 @@ abstract class TrackingLaserProjectile(
 	dir: Vector,
 	shooter: Damager,
 	private val originalTarget: Vector,
-	private val aimDistance: Int
-) : LaserProjectile(starship, name, loc, dir, shooter) {
+	private val aimDistance: Int,
+	damageType: DamageType
+) : LaserProjectile(starship, name, loc, dir, shooter, damageType) {
 	val maxTrackingRadius = 0.15
 	private lateinit var getTargetOrigin: () -> Vector
 	private lateinit var targetBase: Vector

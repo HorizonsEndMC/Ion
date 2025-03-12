@@ -9,6 +9,7 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object MiniPhaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<MiniPhaserWeaponSubsystem>() {
+	override val key: String = "mini_phaser"
 	override fun MultiblockShape.buildStructure() {
 		y(+0) {
 			z(+0) { x(+0).type(Material.IRON_BLOCK) }

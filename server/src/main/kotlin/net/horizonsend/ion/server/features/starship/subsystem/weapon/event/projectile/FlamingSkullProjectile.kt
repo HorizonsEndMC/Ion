@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.SkullThrowerStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ItemDisplayContainer
@@ -21,7 +22,7 @@ class FlamingSkullProjectile(
 	shooter: Damager,
 	originalTarget: Vector,
 	baseAimDistance: Int
-) : TrackingLaserProjectile(starship, name, loc, dir, shooter, originalTarget, baseAimDistance) {
+) : TrackingLaserProjectile(starship, name, loc, dir, shooter, originalTarget, baseAimDistance, SkullThrowerStarshipWeaponMultiblock.damageType) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship.balancing.weapons.skullThrower
 	override val range: Double = balancing.range
 	override val speed: Double = balancing.speed

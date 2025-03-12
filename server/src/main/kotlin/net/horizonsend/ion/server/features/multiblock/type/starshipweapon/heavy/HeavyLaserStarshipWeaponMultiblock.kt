@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.block.BlockFace
 
 object HeavyLaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<HeavyLaserWeaponSubsystem>() {
+	override val key: String = "heavy_laser"
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): HeavyLaserWeaponSubsystem {
 		return HeavyLaserWeaponSubsystem(starship, pos, face)
 	}
@@ -16,15 +17,15 @@ object HeavyLaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<Hea
 		repeat(+7) { z ->
 			z(z) {
 				y(-1) {
-					x(+0).stainedGlass()
+					x(+0).anyGlass()
 				}
 				y(+0) {
-					x(-1).stainedGlass()
+					x(-1).anyGlass()
 					x(+0).redstoneBlock()
-					x(+1).stainedGlass()
+					x(+1).anyGlass()
 				}
 				y(+1) {
-					x(+0).stainedGlass()
+					x(+0).anyGlass()
 				}
 			}
 		}

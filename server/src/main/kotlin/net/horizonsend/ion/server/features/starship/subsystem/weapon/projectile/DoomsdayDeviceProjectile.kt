@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.heavy.DoomsdayDeviceWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.EntityDamager
@@ -27,7 +28,7 @@ class DoomsdayDeviceProjectile(
 	loc: Location,
 	dir: Vector,
 	shooter: Damager
-) : ParticleProjectile(starship, name, loc, dir, shooter) {
+) : ParticleProjectile(starship, name, loc, dir, shooter, DoomsdayDeviceWeaponMultiblock.damageType) {
     override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.doomsdayDevice ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.doomsdayDevice
     override val range: Double = balancing.range
     override var speed: Double = balancing.speed
