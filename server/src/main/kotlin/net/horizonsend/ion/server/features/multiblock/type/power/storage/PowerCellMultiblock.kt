@@ -65,6 +65,9 @@ object PowerCellMultiblock : Multiblock(), EntityMultiblock<PowerCellMultiblock.
 			migrateLegacyPower(sign)
 		}
 
-		override val inputsData: InputsData = InputsData.builder(this).addPowerInput(0, 0, 0).build()
+		override val inputsData: InputsData = InputsData.builder(this)
+			.addPowerInput(0, 0, 0)
+			.registerSignInputs()
+			.build()
 	}
 }
