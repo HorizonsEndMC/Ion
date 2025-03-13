@@ -44,5 +44,6 @@ abstract class SimplePoweredEntity(
 
 	override val inputsData: InputsData = InputsData.Builder(this)
 		.addPowerInput(0, -1, 0)
+		.registerSignInputs()
 		.build()
 }
