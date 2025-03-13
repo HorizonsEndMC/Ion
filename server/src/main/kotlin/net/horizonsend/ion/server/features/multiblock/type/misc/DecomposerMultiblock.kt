@@ -93,6 +93,7 @@ object DecomposerMultiblock : Multiblock(), EntityMultiblock<DecomposerMultibloc
 			.addPowerInput(1, 1, 0)
 			.addPowerInput(-1, 1, 0)
 			.addPowerInput(0, 1, 1)
+			.registerSignInputs()
 			.build()
 
 		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
