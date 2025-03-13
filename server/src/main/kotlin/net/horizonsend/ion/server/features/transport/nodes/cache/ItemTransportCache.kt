@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.transport.manager.extractors.data.Ext
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData.ItemExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.util.PathCache
+import net.horizonsend.ion.server.features.transport.nodes.pathfinding.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.nodes.pathfinding.calculatePathResistance
 import net.horizonsend.ion.server.features.transport.nodes.pathfinding.getIdealPath
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
@@ -95,7 +96,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 	) {
 //		debugAudience.information("Checking ${singletonItem.type} [$count]")
 
-		val destinations: List<BlockKey> = getNetworkDestinations<ItemNode.InventoryNode>(originKey, originNode) { node ->
+		val destinations: List<PathfindingNodeWrapper> = getNetworkDestinations<ItemNode.InventoryNode>(originKey, originNode) { node ->
 			val destinationInventory = destinationInvCache.getOrPut(node.position) {
 				getInventory(node.position) ?: return@getNetworkDestinations false
 			}
@@ -128,7 +129,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 					BlockFace.SELF,
 					this
 				),
-				destination = destinations[it],
+				destination = destinations[it].node.position,
 				itemStack = singletonItem,
 			) { node, _ ->
 				if (node !is ItemNode.FilterNode) return@findPath true
@@ -149,7 +150,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		val destinationInventories = getDestinations(
 			singletonItem,
 			destinationInvCache,
-			validDestinations,
+			validDestinations.mapTo(mutableListOf()) { it.node.position },
 			meta,
 			originKey
 		)

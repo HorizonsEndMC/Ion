@@ -195,7 +195,7 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 				}
 			}
 
-			return allDestinations
+			return allDestinations.mapValues { (_, destinations) -> destinations.map { it.node.position } }
 		}
 
 		fun canRemoveFromDestination(destination: BlockKey, sourceLoc: BlockKey, stack: ItemStack): Boolean {
