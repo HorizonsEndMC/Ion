@@ -7,16 +7,12 @@ import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.util.PathCache
-import net.horizonsend.ion.server.features.transport.nodes.pathfinding.PathTracker
-import net.horizonsend.ion.server.features.transport.nodes.pathfinding.calculatePathResistance
-import net.horizonsend.ion.server.features.transport.nodes.pathfinding.getIdealPath
+import net.horizonsend.ion.server.features.transport.nodes.pathfinding.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
-import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import org.bukkit.block.BlockFace
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass
 
@@ -43,7 +39,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		val originNode = cacheResult.second ?: return@runTask
 
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: Collection<BlockKey> = getOrCacheDestination<PowerInputNode>(location, originNode) { node ->
+		val destinations: Collection<PathfindingNodeWrapper> = getOrCacheDestination<PowerInputNode>(location, originNode) { node ->
 			getInputEntities(node.position).any { entity ->
 				(entity is PoweredMultiblockEntity) && !entity.powerStorage.isFull()
 			}
@@ -54,13 +50,6 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		val transferLimit = (transportSettings().powerConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
 
 		runPowerTransfer(
-			NodePositionData(
-				PowerNode.PowerExtractorNode,
-				world,
-				location,
-				BlockFace.SELF,
-				this
-			),
 			destinations.take(transportSettings().powerConfiguration.maxExtractorDestinations),
 			transferLimit,
 			source.powerStorage
@@ -75,7 +64,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		val originNode = cacheResult.second ?: return@runTask
 
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: Collection<BlockKey> = getOrCacheDestination<PowerInputNode>(location, originNode) { node ->
+		val destinations: Collection<PathfindingNodeWrapper> = getOrCacheDestination<PowerInputNode>(location, originNode) { node ->
 			getInputEntities(node.position).any { entity ->
 				(entity is PoweredMultiblockEntity) && !entity.powerStorage.isFull()
 			}
@@ -84,13 +73,6 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		if (destinations.isEmpty()) return@runTask
 
 		holder.transportManager.powerNodeManager.cache.runPowerTransfer(
-			NodePositionData(
-				PowerNode.PowerExtractorNode,
-				holder.getWorld(),
-				location,
-				BlockFace.SELF,
-				this
-			),
 			destinations.take(transportSettings().powerConfiguration.maxSolarDestinations),
 			transportPower,
 			null
@@ -100,11 +82,11 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	/**
 	 * Runs the power transfer from the source to the destinations. pending rewrite
 	 **/
-	fun runPowerTransfer(source: NodePositionData, rawDestinations: List<BlockKey>, transferLimit: Int, powerStorage: PowerStorage?) {
+	private fun runPowerTransfer(rawDestinations: List<PathfindingNodeWrapper>, transferLimit: Int, powerStorage: PowerStorage?) {
 		if (rawDestinations.isEmpty()) return
 
 		val filteredDestinations = rawDestinations.filter { destinationLoc ->
-			getInputEntities(destinationLoc).any { it is PoweredMultiblockEntity && !it.powerStorage.isFull() }
+			getInputEntities(destinationLoc.node.position).any { it is PoweredMultiblockEntity && !it.powerStorage.isFull() }
 		}
 
 		if (filteredDestinations.isEmpty()) return
@@ -119,7 +101,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		var remainingPower = removeAmount
 
 		for (destination in filteredDestinations) {
-			val inputData = getInputEntities(destination).filterIsInstance<PoweredMultiblockEntity>()
+			val inputData = getInputEntities(destination.node.position).filterIsInstance<PoweredMultiblockEntity>()
 
 			val remainingCapacity = inputData.sumOf { it.powerStorage.getRemainingCapacity() }
 			val toSend = minOf(individualAmount, remainingCapacity)
@@ -132,7 +114,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 			runCatching {
 				// Update power flow meters
-//				paths[index]?.traversedNodes?.forEach { if (it.type is PowerFlowMeter) it.type.onCompleteChain(realTaken) }
+				destination.buildPath().forEach { if (it.type is PowerNode.PowerFlowMeter) it.type.onCompleteChain(realTaken) }
 			}
 		}
 
@@ -171,32 +153,5 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		}
 
 		return remainingPower
-	}
-
-	fun findPath(origin: NodePositionData, pathTracker: PathTracker, destination: BlockKey, pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null): PathfindingReport? {
-		val nodeBlockPositionData = NodePositionData(
-			type = PowerInputNode,
-			world = origin.world,
-			position = destination,
-			offset = BlockFace.SELF,
-			cache = this
-		)
-
-		return pathCache.getOrCompute(origin.position, destination) {
-			val path = runCatching {
-				getIdealPath(
-					from = nodeBlockPositionData,
-					destination = origin.position,
-					pathTracker = pathTracker,
-					cachedNodeProvider = holder.nodeCacherGetter,
-					pathfindingFilter = pathfindingFilter
-				)
-			}.getOrNull()
-
-			if (path == null) return@getOrCompute null
-
-			val resistance = calculatePathResistance(path)
-			PathfindingReport(path, resistance)
-		}
 	}
 }

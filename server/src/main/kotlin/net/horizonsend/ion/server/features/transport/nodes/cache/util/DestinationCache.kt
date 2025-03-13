@@ -3,7 +3,9 @@ package net.horizonsend.ion.server.features.transport.nodes.cache.util
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
+import net.horizonsend.ion.server.features.transport.nodes.pathfinding.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import java.util.concurrent.TimeUnit
@@ -16,7 +18,7 @@ class DestinationCache(private val parentCache: TransportCache) {
 		val EXPIRES_AFTER = TimeUnit.SECONDS.toMillis(15)
 	}
 
-	data class CacedDestinations(val cachTimestamp: Long, val destinations: LongOpenHashSet) {
+	data class CacedDestinations(val cachTimestamp: Long, val destinations: ObjectOpenHashSet<PathfindingNodeWrapper>) {
 		fun isExpired(): Boolean = (cachTimestamp + EXPIRES_AFTER) < System.currentTimeMillis()
 	}
 
@@ -37,7 +39,7 @@ class DestinationCache(private val parentCache: TransportCache) {
 		}
 	}
 
-	fun getOrPut(nodeType: KClass<out Node>, origin: BlockKey, cachingFunction: () -> Set<Long>?): Set<Long>? {
+	fun getOrPut(nodeType: KClass<out Node>, origin: BlockKey, cachingFunction: () -> Set<PathfindingNodeWrapper>?): Set<PathfindingNodeWrapper>? {
 		val entries = get(nodeType, origin)
 		if (entries != null) return entries
 
@@ -46,20 +48,20 @@ class DestinationCache(private val parentCache: TransportCache) {
 		return new
 	}
 
-	fun get(nodeType: KClass<out Node>, origin: BlockKey): Set<Long>? {
+	fun get(nodeType: KClass<out Node>, origin: BlockKey): Set<PathfindingNodeWrapper>? {
 		return lock.readLock().withLock { getCache(nodeType)[origin] }?.takeIf { !it.isExpired() }?.destinations
 	}
 
-	fun set(nodeType: KClass<out Node>, origin: BlockKey, value: Set<Long>) {
+	fun set(nodeType: KClass<out Node>, origin: BlockKey, value: Set<PathfindingNodeWrapper>) {
 		lock.writeLock().lock()
 		try {
-			getCache(nodeType)[origin] = CacedDestinations(System.currentTimeMillis(), LongOpenHashSet(value))
+			getCache(nodeType)[origin] = CacedDestinations(System.currentTimeMillis(), ObjectOpenHashSet(value))
 		} finally {
 			lock.writeLock().unlock()
 		}
 	}
 
-	fun remove(nodeType: KClass<out Node>, origin: BlockKey): Set<Long>? {
+	fun remove(nodeType: KClass<out Node>, origin: BlockKey): Set<PathfindingNodeWrapper>? {
 		lock.writeLock().lock()
 		try {
 			return getCache(nodeType).remove(origin)?.destinations
@@ -79,8 +81,8 @@ class DestinationCache(private val parentCache: TransportCache) {
 		parentCache.getNetworkDestinations(clazz = parentCache.extractorNodeClass, originPos = pos, originNode = node) {
 			// Traverse network backwards
 			getPreviousNodes(cache.holder.cachedNodeLookup, null)
-		}.forEach { extractorPos ->
-			toRemove.add(extractorPos)
+		}.forEach { inputPos ->
+			toRemove.add(inputPos.node.position)
 		}
 
 		// Remove all the paths after being found
