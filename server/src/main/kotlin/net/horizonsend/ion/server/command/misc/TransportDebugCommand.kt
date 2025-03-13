@@ -204,24 +204,6 @@ object TransportDebugCommand : SLCommand() {
 		}
 	}
 
-	@Subcommand("get cached paths chunk")
-	fun getCachedPathsChunk(sender: Player, network: CacheType) {
-		var cacheHolder: TransportCache? = null
-		val (node, location) = requireLookingAt(sender) { network.get(it.chunk.ion()).apply { cacheHolder = this } }
-		sender.information("Targeted node: $node at ${toVec3i(location)}")
-		if (cacheHolder == null) fail { "Something went wrong" }
-		sender.information("Contains paths: ${cacheHolder?.pathCache?.containsOriginPoint(location)}")
-	}
-
-	@Subcommand("get cached paths ship")
-	fun getCachedPathsShip(sender: Player, network: CacheType) {
-		var cacheHolder: TransportCache? = null
-		val (node, location) = requireLookingAt(sender) { network.get(getStarshipRiding(sender)).apply { cacheHolder = this } }
-		sender.information("Targeted node: $node at ${toVec3i(location)}")
-		if (cacheHolder == null) fail { "Something went wrong" }
-		sender.information("Contains paths: ${cacheHolder?.pathCache?.containsOriginPoint(location)}")
-	}
-
 	@Subcommand("test extractor")
 	fun onTick(sender: Player, type: CacheType) {
 		val (_, location) = requireLookingAt(sender) { type.get(it.chunk.ion()) }
