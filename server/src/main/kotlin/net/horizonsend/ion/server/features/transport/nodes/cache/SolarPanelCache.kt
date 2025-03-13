@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.transport.nodes.cache
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.cache.util.PathCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
@@ -20,9 +19,7 @@ import kotlin.reflect.KClass
 class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(holder) {
 	override val type: CacheType = CacheType.SOLAR_PANELS
 
-	override val pathCache: PathCache<*> = PathCache.standard(this)
-
-	override val extractorNodeClass: KClass<out Node> = PowerNode.PowerExtractorNode::class
+    override val extractorNodeClass: KClass<out Node> = PowerNode.PowerExtractorNode::class
 
 
 	sealed interface SolarPanelComponent: Node {
