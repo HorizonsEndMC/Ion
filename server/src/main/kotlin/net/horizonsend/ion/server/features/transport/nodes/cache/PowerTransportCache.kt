@@ -6,10 +6,10 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredM
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.pathfinding.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
+import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import kotlin.math.roundToInt
@@ -21,108 +21,106 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) {
 		val solarCache = holder.transportManager.solarPanelManager.cache
-		if (solarCache.isSolarPanel(location)) tickSolarPanel(location, delta, solarCache)
 
-		tickPowerExtractor(location, delta)
-	}
-
-	private fun tickPowerExtractor(location: BlockKey, delta: Double) =	NewTransport.runTask {
-		val world = holder.getWorld()
-
-		val sources = getExtractorSourceEntities<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
-		val source = sources.randomOrNull() ?: return@runTask //TODO take from all
-
-		val cacheResult = holder.nodeCacherGetter.invoke(this, type, holder.getWorld(), location) ?: return@runTask
-		val originNode = cacheResult.second ?: return@runTask
-
-		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: Collection<PathfindingNodeWrapper> = getOrCacheDestination<PowerInputNode>(location, originNode) { node ->
-			getInputEntities(node.position).any { entity ->
-				(entity is PoweredMultiblockEntity) && !entity.powerStorage.isFull()
+		if (solarCache.isSolarPanel(location)) {
+			NewTransport.runTask {
+				tickSolarPanel(location, delta, solarCache)
 			}
 		}
 
-		if (destinations.isEmpty()) return@runTask
+		NewTransport.runTask {
+			tickPowerExtractor(location, delta)
+		}
+	}
 
-		val transferLimit = (transportSettings().powerConfiguration.powerTransferRate * delta).roundToInt()
+	private fun tickPowerExtractor(location: BlockKey, delta: Double) {
+		val sources = getExtractorSourceEntities<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
+		val source = sources.randomOrNull() ?: return //TODO take from all
 
 		runPowerTransfer(
-			destinations,
-			transferLimit,
-			source.powerStorage
+			destinations = getTransferDestinations(location) ?: return,
+			transferLimit = (transportSettings().powerConfiguration.powerTransferRate * delta).roundToInt(),
+			powerStorage = source.powerStorage
 		)
 	}
 
-	private fun tickSolarPanel(location: BlockKey, delta: Double, solarCache: SolarPanelCache) = NewTransport.runTask {
+	private fun tickSolarPanel(location: BlockKey, delta: Double, solarCache: SolarPanelCache) {
 		val transportPower = solarCache.getPower(holder.getWorld(), location, delta)
-		if (transportPower == 0) return@runTask
+		if (transportPower == 0) return
 
-		val cacheResult = holder.nodeCacherGetter.invoke(this, type, holder.getWorld(), location) ?: return@runTask
-		val originNode = cacheResult.second ?: return@runTask
+		runPowerTransfer(
+			destinations = getTransferDestinations(location) ?: return,
+			transferLimit = transportPower,
+			powerStorage = null
+		)
+	}
 
+	private fun getTransferDestinations(extractorLocation: BlockKey): Collection<PathfindingNodeWrapper>? {
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: Collection<PathfindingNodeWrapper> = getOrCacheDestination<PowerInputNode>(location, originNode) { node ->
-			getInputEntities(node.position).any { entity ->
-				(entity is PoweredMultiblockEntity) && !entity.powerStorage.isFull()
-			}
+		val destinations: Collection<PathfindingNodeWrapper> = getOrCacheNetworkDestinations<PowerInputNode>(
+			originPos = extractorLocation,
+			originNode = holder.getOrCacheGlobalNode(extractorLocation) ?: return null
+		) { node ->
+			getInputEntitiesTyped<PoweredMultiblockEntity>(node.position).any { entity -> !entity.powerStorage.isFull() }
 		}
 
-		if (destinations.isEmpty()) return@runTask
+		if (destinations.isEmpty()) return null
 
-		holder.transportManager.powerNodeManager.cache.runPowerTransfer(
-			destinations,
-			transportPower,
-			null
-		)
+		return destinations
 	}
 
 	/**
 	 * Runs the power transfer from the source to the destinations. pending rewrite
 	 **/
-	private fun runPowerTransfer(rawDestinations: Collection<PathfindingNodeWrapper>, transferLimit: Int, powerStorage: PowerStorage?) {
-		if (rawDestinations.isEmpty()) return
+	private fun runPowerTransfer(destinations: Collection<PathfindingNodeWrapper>, transferLimit: Int, powerStorage: PowerStorage?) {
+		val numDestinations = destinations.size
 
-		val filteredDestinations = rawDestinations.filter { destinationLoc ->
-			getInputEntities(destinationLoc.node.position).any { it is PoweredMultiblockEntity && !it.powerStorage.isFull() }
-		}
+		val removeAmount = minOf(
+			a = numDestinations * transferLimit,
 
-		if (filteredDestinations.isEmpty()) return
+			// Should the power storage be null, it is a solar panel, and the transfer limit was just what is generated
+			b = powerStorage?.getPower() ?: transferLimit
+		)
 
-		val numDestinations = filteredDestinations.size
-		// Should the power storage be null, it is a solar panel, and the transfer limit was just what is generated
-		val removeAmount = minOf((numDestinations * transferLimit), (powerStorage?.getPower() ?: transferLimit))
 		// Remove all at the start
-		powerStorage?.removePower(removeAmount)
-		val individualAmount = removeAmount / numDestinations
+		val missing = powerStorage?.removePower(removeAmount) ?: 0
+		val individualAmount = (removeAmount - missing) / numDestinations
 
-		var remainingPower = removeAmount
+		// The amount of power that has not been removed
+		var remainingPower = removeAmount - missing
 
-		for (destination in filteredDestinations) {
-			val inputData = getInputEntities(destination.node.position).filterIsInstance<PoweredMultiblockEntity>()
+		for (destination in destinations) {
+			val inputEntities = getInputEntitiesTyped<PoweredMultiblockEntity>(destination.node.position)
 
-			val remainingCapacity = inputData.sumOf { it.powerStorage.getRemainingCapacity() }
+			val remainingCapacity = inputEntities.sumOf { it.powerStorage.getRemainingCapacity() }
+			if (remainingCapacity == 0) continue
+
 			val toSend = minOf(individualAmount, remainingCapacity)
 
 			// Amount of power that didn't fit
-			val remainder = distributePower(inputData, toSend)
+			val remainder = distributePower(inputEntities, toSend)
 			val realTaken = toSend - remainder
 
 			remainingPower -= realTaken
 
-			runCatching {
-				// Update power flow meters
-				destination.buildPath().forEach { if (it.type is PowerNode.PowerFlowMeter) it.type.onCompleteChain(realTaken) }
-			}
+			updateFlowMeters(destination, realTaken)
 		}
 
 		powerStorage?.addPower(remainingPower)
+	}
+
+	private fun updateFlowMeters(destination: PathfindingNodeWrapper, amountTaken: Int) = runCatching {
+		destination.buildPath().forEach {
+			if (it.type !is PowerNode.PowerFlowMeter) return@forEach
+			it.type.onCompleteChain(amountTaken)
+		}
 	}
 
 	/**
 	 * Distributes power to the provided list of entities
 	 * Returns the amount that would not fit
 	 **/
-	private fun distributePower(destinations: List<PoweredMultiblockEntity>, power: Int): Int {
+	private fun distributePower(destinations: Collection<PoweredMultiblockEntity>, power: Int): Int {
 		val entities = destinations.filterTo(mutableListOf()) { !it.powerStorage.isFull() }
 		if (entities.isEmpty()) return power
 

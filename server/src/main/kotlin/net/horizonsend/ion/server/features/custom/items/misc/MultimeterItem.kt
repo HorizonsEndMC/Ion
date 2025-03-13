@@ -1,33 +1,18 @@
 package net.horizonsend.ion.server.features.custom.items.misc
 
-import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.rightClickListener
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
-import net.horizonsend.ion.server.features.transport.nodes.pathfinding.PathfindingNodeWrapper
-import net.horizonsend.ion.server.features.transport.nodes.pathfinding.calculatePathResistance
-import net.horizonsend.ion.server.features.transport.nodes.pathfinding.getHeuristic
-import net.horizonsend.ion.server.features.transport.nodes.pathfinding.getNeighbors
-import net.horizonsend.ion.server.features.transport.nodes.pathfinding.getOrCacheNode
-import net.horizonsend.ion.server.features.transport.nodes.types.Node
-import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
-import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.X
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.Z
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -37,12 +22,10 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.World
-import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType.INTEGER
 import org.bukkit.persistence.PersistentDataType.LONG
-import java.util.PriorityQueue
 
 object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", NamedTextColor.YELLOW), ItemFactory.unStackableCustomItem) {
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
@@ -103,20 +86,20 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 			return
 		}
 
-		val path = getIdealPath(
-			audience = audience,
-			fromNode = NodePositionData(
-				type = PowerInputNode,
-				world = world,
-				position = secondPoint,
-				offset = BlockFace.SELF,
-				cache = cacheType.get(firstChunk)
-			),
-			destination = firstPoint
-		) ?: return
-
-		val resistance = calculatePathResistance(path)
-		audience.information("The resistance from ${firstNode.javaClass.simpleName} at ${toVec3i(firstPoint)} to ${secondNode.javaClass.simpleName} at ${toVec3i(secondPoint)} is $resistance")
+//		val path = getIdealPath(
+//			audience = audience,
+//			fromNode = NodePositionData(
+//				type = PowerInputNode,
+//				world = world,
+//				position = secondPoint,
+//				offset = BlockFace.SELF,
+//				cache = cacheType.get(firstChunk)
+//			),
+//			destination = firstPoint
+//		) ?: return
+//
+//		val resistance = calculatePathResistance(path)
+//		audience.information("The resistance from ${firstNode.javaClass.simpleName} at ${toVec3i(firstPoint)} to ${secondNode.javaClass.simpleName} at ${toVec3i(secondPoint)} is $resistance")
 	}
 
 	private fun cycleNetworks(audience: Audience, world: World, itemStack: ItemStack) {
@@ -128,100 +111,5 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 		audience.success("Set network type to ${CacheType.entries[newIndex]}")
 
 		tryCheckResistance(audience, world, itemStack)
-	}
-
-	/**
-	 * Uses the A* algorithm to find the shortest available path between these two nodes.
-	 **/
-	private fun getIdealPath(audience: Audience, fromNode: Node.NodePositionData, destination: BlockKey): Array<Node.NodePositionData>? {
-		// There are 2 collections here. First the priority queue contains the next nodes, which needs to be quick to iterate.
-		val queue = PriorityQueue<PathfindingNodeWrapper> { o1, o2 -> o2.f.compareTo(o1.f) }
-		// The hash set here is to speed up the .contains() check further down the road, which is slow with the queue.
-		val queueSet = LongOpenHashSet()
-
-		fun queueAdd(wrapper: PathfindingNodeWrapper) {
-			queue.add(wrapper)
-			queueSet.add(wrapper.node.position)
-		}
-
-		fun queueRemove(wrapper: PathfindingNodeWrapper) {
-			queue.remove(wrapper)
-			queueSet.remove(wrapper.node.position)
-		}
-
-		queueAdd(
-			PathfindingNodeWrapper(
-			node = fromNode,
-			parent = null,
-			g = 0,
-			f = getHeuristic(fromNode, destination)
-		)
-		)
-
-		val visited = Long2IntOpenHashMap()
-
-		fun markVisited(node: PathfindingNodeWrapper) {
-			val pos = node.node.position
-			val existing = visited.getOrDefault(pos, 0)
-
-			visited[pos] = existing + 1
-		}
-
-		fun canVisit(node: Node.NodePositionData): Boolean {
-			return visited.getOrDefault(node.position, 0) < node.type.getMaxPathfinds()
-		}
-
-		// Safeguard
-		var iterations = 0L
-
-		val maxDepth = ConfigurationFiles.transportSettings().generalConfiguration.maxPathfindDepth
-		while (queue.isNotEmpty() && iterations < maxDepth) {
-			iterations++
-			val current = queue.minBy { it.f }
-
-			Tasks.syncDelay(iterations) { audience.highlightBlock(toVec3i(current.node.position), 5L) }
-
-			if (current.node.position == destination) {
-				val path = current.buildPath()
-
-				path.forEach { location -> audience.highlightBlock(toVec3i(location.position), 50L) }
-
-				return path
-			}
-
-			queueRemove(current)
-			markVisited(current)
-
-			val neighbors = getNeighbors(
-				current,
-				{ nodeCache, cacheType, world, pos -> getOrCacheNode(nodeCache, cacheType, world, pos) },
-				null
-			)
-
-			for (computedNeighbor in neighbors) {
-				if (!canVisit(computedNeighbor.node)) {
-					continue
-				}
-
-				computedNeighbor.f = (computedNeighbor.g + getHeuristic(computedNeighbor.node, destination))
-
-				if (queueSet.contains(computedNeighbor.node.position)) {
-					val existingNeighbor = queue.first { it.node.position == computedNeighbor.node.position }
-
-					if (computedNeighbor.g < existingNeighbor.g) {
-						existingNeighbor.parent = computedNeighbor.parent
-
-						existingNeighbor.g = computedNeighbor.g
-						existingNeighbor.f = computedNeighbor.f
-					}
-				} else {
-					queueAdd(computedNeighbor)
-				}
-			}
-		}
-
-		audience.userError("Exhausted queue, after $iterations, could not find destination.")
-
-		return null
 	}
 }

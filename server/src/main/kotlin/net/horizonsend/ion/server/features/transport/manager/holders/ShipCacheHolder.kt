@@ -65,8 +65,8 @@ class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTran
 		}
 	}
 
-	override val nodeCacherGetter: CacheProvider = { _, _, _, pos -> cache to getInternalNode(pos) }
-	override val cachedNodeLookup: CacheProvider = nodeCacherGetter
+	override val globalGetter: CacheProvider = { _, _, pos -> cache to getInternalNode(pos) }
+	override val globalCacherGetter: CacheProvider = globalGetter
 
 	override fun getInputManager(): InputManager {
 		return transportManager.inputManager

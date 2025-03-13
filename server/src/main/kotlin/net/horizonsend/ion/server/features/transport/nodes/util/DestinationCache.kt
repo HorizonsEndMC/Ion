@@ -1,11 +1,10 @@
-package net.horizonsend.ion.server.features.transport.nodes.cache.util
+package net.horizonsend.ion.server.features.transport.nodes.util
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
-import net.horizonsend.ion.server.features.transport.nodes.pathfinding.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import java.util.concurrent.TimeUnit
@@ -80,7 +79,7 @@ class DestinationCache(private val parentCache: TransportCache) {
 		// Perform a flood fill to find all network destinations, then remove all destination columns
 		parentCache.getNetworkDestinations(clazz = parentCache.extractorNodeClass, originPos = pos, originNode = node) {
 			// Traverse network backwards
-			getPreviousNodes(cache.holder.cachedNodeLookup, null)
+			getPreviousNodes(cache.holder.globalCacherGetter, null)
 		}.forEach { inputPos ->
 			toRemove.add(inputPos.node.position)
 		}
