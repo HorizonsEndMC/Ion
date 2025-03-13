@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.nodes.pathfinding
+package net.horizonsend.ion.server.features.transport.nodes.util
 
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 
@@ -8,12 +8,9 @@ import net.horizonsend.ion.server.features.transport.nodes.types.Node
  **/
 data class PathfindingNodeWrapper(
 	val node: Node.NodePositionData,
-	var parent: PathfindingNodeWrapper?,
-	var g: Int,
-	var f: Int
+	var parent: PathfindingNodeWrapper?
 ) {
- 	// Compiles the path.
-	fun buildPath(): Array<Node.NodePositionData> {
+	fun buildPath(): Path {
 		val list = arrayListOf(this.node)
 		var current: PathfindingNodeWrapper? = this
 
@@ -22,10 +19,9 @@ data class PathfindingNodeWrapper(
 			list.add(current.node)
 		}
 
-		return list.toTypedArray()
+		return Path(list.toTypedArray())
 	}
 
-	//<editor-fold desc="Generated Methods">
 	override fun equals(other: Any?): Boolean {
 		if (this === other) return true
 		if (javaClass != other?.javaClass) return false
@@ -34,16 +30,13 @@ data class PathfindingNodeWrapper(
 
 		if (node != other.node) return false
 		if (parent != other.parent) return false
-		if (g != other.g) return false
-		return f == other.f
+
+		return true
 	}
 
 	override fun hashCode(): Int {
 		var result = node.hashCode()
 		result = 31 * result + (parent?.hashCode() ?: 0)
-		result = 31 * result + g
-		result = 31 * result + f
 		return result
 	}
-	//</editor-fold>
 }
