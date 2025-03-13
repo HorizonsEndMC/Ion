@@ -13,8 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedS
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
-import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
-import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.BACKWARD
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.FORWARD
@@ -31,7 +30,6 @@ import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs.Shape.STRAIGHT
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
-import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
 
 object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShipFactoryEntity>() {
@@ -167,16 +165,19 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 				InventoryReference.StandardInventoryReference(inv)
 			}
 
-			return extractors.flatMapTo(mutableSetOf()) { (machineKey, destinations) ->
-				destinations.flatMap { extractorKey ->
-					itemCache.getSources(extractorKey).map {
-						InventoryReference.RemoteInventoryReference(it, extractorKey, machineKey, this)
+			return extractors.flatMapTo(mutableSetOf()) { (_, destinations) ->
+
+				destinations.flatMap { extractorKey: PathfindingNodeWrapper ->
+					val path = extractorKey.buildPath()
+
+					itemCache.getSources(extractorKey.node.position).map {
+						InventoryReference.RemoteInventoryReference(it, path, this)
 					}
 				}
 			}.plus(base)
 		}
 
-		private fun getNetworkedExtractors(): Map<BlockKey, Collection<BlockKey>> {
+		private fun getNetworkedExtractors(): Map<BlockKey, Collection<PathfindingNodeWrapper>> {
 			if (!settings.grabFromNetworkedPipes) return mapOf()
 			val transportManager = manager.getTransportManager()
 			val itemCacheHolder = transportManager.itemPipeManager
@@ -184,7 +185,7 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 			val localPipeInputKeys = pipeInputOffsets.map { i -> toBlockKey(getPosRelative(i.x, i.y, i.z)) }
 
 			val allDestinations = localPipeInputKeys.associateWith { inputLoc ->
-				val cacheResult = itemCacheHolder.nodeCacherGetter.invoke(itemCacheHolder.cache, CacheType.ITEMS, world, inputLoc) ?: return@associateWith listOf()
+				val cacheResult = itemCacheHolder.globalGetter.invoke(itemCacheHolder.cache, world, inputLoc) ?: return@associateWith listOf()
 				val node = cacheResult.second ?: return@associateWith listOf()
 
 				itemCacheHolder.cache.getNetworkDestinations(
@@ -192,34 +193,11 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 					originPos = inputLoc,
 					originNode = node,
 				) {
-					getPreviousNodes(itemCacheHolder.nodeCacherGetter, null)
+					getPreviousNodes(itemCacheHolder.globalGetter, null)
 				}
 			}
 
-			return allDestinations.mapValues { (_, destinations) -> destinations.map { it.node.position } }
-		}
-
-		fun canRemoveFromDestination(destination: BlockKey, sourceLoc: BlockKey, stack: ItemStack): Boolean {
-			val localCacheHolder = manager.getTransportManager().itemPipeManager.getCacheHolderAt(destination) ?: return false
-			val singletonItem = stack.asOne()
-
-			val path = localCacheHolder.cache.findPath(
-				origin = NodePositionData(
-					ItemNode.ItemExtractorNode,
-					world,
-					destination,
-					BlockFace.SELF,
-					localCacheHolder.cache
-				),
-				destination = sourceLoc,
-				itemStack = singletonItem,
-			) { node, _ ->
-				if (node !is ItemNode.FilterNode) return@findPath true
-
-				node.matches(singletonItem)
-			}
-
-			return path != null
+			return allDestinations
 		}
 	}
 }
