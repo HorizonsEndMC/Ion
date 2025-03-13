@@ -16,14 +16,11 @@ import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isAdjacent
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -108,51 +105,8 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	 * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
 	 **/
 	fun getInputEntities(location: BlockKey): Set<MultiblockEntity> {
-		val inputManager = holder.getInputManager()
-		val registered = inputManager.getHolders(type, location)
-
-		// The stupid offsets are a list of locations that a multiblock entity would be accessible from if its sign were touching the provided location
-		// Doing a call to try to find a sign is a lot more expensive since it has a getChunk call
-		//
-		// If this actually finds an entity, it makes sure that its sign block is adjacent to the input
-		val multiblockManager = holder.getMultiblockManager()
-		val adjacentBlocks = stupidOffsets.mapNotNull {
-			val loc = Vec3i(it.x, it.y, it.z) + toVec3i(location)
-
-			multiblockManager.getGlobalMultiblockEntity(holder.getWorld(), loc.x, loc.y, loc.z)?.takeIf { entity ->
-				val signLoc = entity.getSignKey()
-				isAdjacent(signLoc, location)
-			}
-		}
-
-		registered.addAll(adjacentBlocks)
-
-		return registered
+		return holder.getInputManager().getHolders(type, location)
 	}
-
-	private val stupidOffsets: Array<Vec3i> = arrayOf(
-		// Upper ring
-		Vec3i(1, 1, 0),
-		Vec3i(-1, 1, 0),
-		Vec3i(0, 1, 1),
-		Vec3i(0, 1, -1),
-		// Lower ring
-		Vec3i(1, -1, 0),
-		Vec3i(-1, -1, 0),
-		Vec3i(0, -1, 1),
-		Vec3i(0, -1, -1),
-
-		// Middle ring
-		Vec3i(2, 0, 0),
-		Vec3i(-2, 0, 0),
-		Vec3i(0, 0, -2),
-		Vec3i(0, 0, -2),
-
-		Vec3i(1, 0, 1),
-		Vec3i(-1, 0, 1),
-		Vec3i(1, 0, -1),
-		Vec3i(-1, 0, -1)
-	)
 
 	inline fun <reified T> getExtractorSourceEntities(extractorLocation: BlockKey, filterNot: (T) -> Boolean): List<T> {
 		val sources = mutableListOf<T>()
