@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.transport.items.util.getTransferSpace
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData.ItemExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.cache.util.PathCache
 import net.horizonsend.ion.server.features.transport.nodes.pathfinding.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.nodes.pathfinding.calculatePathResistance
 import net.horizonsend.ion.server.features.transport.nodes.pathfinding.getIdealPath
@@ -43,8 +42,6 @@ import kotlin.reflect.KClass
 class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): TransportCache(holder) {
 	override val type: CacheType = CacheType.ITEMS
 	override val extractorNodeClass: KClass<out Node> = ItemNode.ItemExtractorNode::class
-
-	override val pathCache: PathCache<MutableMap<ItemStack, Optional<PathfindingReport>>> = PathCache.keyed<ItemStack>(this)
 
 	override fun tickExtractor(
 		location: BlockKey,
@@ -296,7 +293,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		itemStack: ItemStack,
 		pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null
 	): PathfindingReport? {
-		val entry = pathCache.getOrCompute(origin.position, destination) { mutableMapOf() } ?: return null // Should not return null, but handle the possibility
+		val entry: MutableMap<ItemStack, Optional<PathfindingReport>> = mutableMapOf()
 
 		return entry.getOrPut(itemStack) {
 			val path = runCatching { getIdealPath(origin, destination, null, holder.nodeCacherGetter, pathfindingFilter) }.getOrNull()
