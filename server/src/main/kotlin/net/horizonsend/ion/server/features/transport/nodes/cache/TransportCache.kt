@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.util.DestinationCache
-import net.horizonsend.ion.server.features.transport.nodes.cache.util.PathCache
 import net.horizonsend.ion.server.features.transport.nodes.pathfinding.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.nodes.types.ComplexNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
@@ -38,10 +37,6 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	 **/
 	private val nodeCache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap(16, 0.5f, 64)
 
-	/**
-	 * A table containing cached paths. The first value is the origin of the path, usually an extractor, and the second is the destination location.
-	 **/
-	abstract val pathCache: PathCache<*>
 	@Suppress("LeakingThis")
 	val destinationCache = DestinationCache(this)
 
@@ -85,7 +80,6 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 			return
 		}
 
-		pathCache.invalidatePaths(key, removed)
 		destinationCache.invalidatePaths(key, removed)
 	}
 
@@ -93,7 +87,6 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		ADJACENT_BLOCK_FACES.forEach {
 			val relative = getRelative(key, it)
 			val node = getCached(relative) ?: return@forEach
-			pathCache.invalidatePaths(relative, node)
 			destinationCache.invalidatePaths(relative, node)
 		}
 	}
