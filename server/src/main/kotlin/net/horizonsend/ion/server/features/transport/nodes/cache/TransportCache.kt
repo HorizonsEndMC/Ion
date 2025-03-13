@@ -7,12 +7,14 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.cache.util.DestinationCache
-import net.horizonsend.ion.server.features.transport.nodes.pathfinding.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.nodes.types.ComplexNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
+import net.horizonsend.ion.server.features.transport.nodes.util.CacheState
+import net.horizonsend.ion.server.features.transport.nodes.util.DestinationCache
+import net.horizonsend.ion.server.features.transport.nodes.util.NodeCacheFactory
+import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -108,6 +110,14 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		return holder.getInputManager().getHolders(type, location)
 	}
 
+	/**
+	 * Gets the powered entities accessible from this location, assuming it is an input
+	 * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
+	 **/
+	inline fun <reified T> getInputEntitiesTyped(location: BlockKey): Set<T> {
+		return holder.getInputManager().getHolders(type, location).filterIsInstanceTo(mutableSetOf())
+	}
+
 	inline fun <reified T> getExtractorSourceEntities(extractorLocation: BlockKey, filterNot: (T) -> Boolean): List<T> {
 		val sources = mutableListOf<T>()
 
@@ -126,16 +136,17 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		return sources
 	}
 
-	inline fun <reified T: Node> getOrCacheDestination(
+	inline fun <reified T: Node> getOrCacheNetworkDestinations(
 		originPos: BlockKey,
 		originNode: Node,
-		noinline check: ((NodePositionData) -> Boolean)? = null
+		noinline pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null,
+		noinline destinationCheck: ((NodePositionData) -> Boolean)? = null
 	): Collection<PathfindingNodeWrapper> {
 		val clazz = T::class
 		val cachedEntry = destinationCache.get(clazz, originPos)
 		if (cachedEntry != null) return cachedEntry
 
-		val destinations = getNetworkDestinations(T::class, originPos, originNode, check)
+		val destinations = getNetworkDestinations(T::class, originPos, originNode, destinationCheck, pathfindingFilter)
 
 		destinationCache.set(clazz, originPos, destinations)
 		return destinations
@@ -144,8 +155,9 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	inline fun <reified T: Node> getNetworkDestinations(
 		originPos: BlockKey,
 		originNode: Node,
-		noinline check: ((NodePositionData) -> Boolean)? = null
-	): Set<PathfindingNodeWrapper> = getNetworkDestinations(T::class, originPos, originNode, check)
+		noinline pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null,
+		noinline destinationCheck: ((NodePositionData) -> Boolean)? = null
+	): Set<PathfindingNodeWrapper> = getNetworkDestinations(T::class, originPos, originNode, destinationCheck, pathfindingFilter)
 
 	/**
 	 * This is a weird combination of A* and a flood fill. It keeps track of paths, and returned destinations have those available.
@@ -154,8 +166,9 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		clazz: KClass<out Node>,
 		originPos: BlockKey,
 		originNode: Node,
-		nodeCheck: ((NodePositionData) -> Boolean)? = null,
-		nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.nodeCacherGetter, null) }
+		destinationCheck: ((NodePositionData) -> Boolean)? = null,
+		pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null,
+		nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalGetter, pathfindingFilter) }
 	): Set<PathfindingNodeWrapper> {
 		val visitQueue = Long2ObjectRBTreeMap<PathfindingNodeWrapper>()
 		val visited = Long2IntOpenHashMap()
@@ -189,9 +202,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 					BlockFace.SELF,
 					this
 				),
-				parent = null,
-				0,
-				0
+				parent = null
 			),
 			nextNodeProvider = nextNodeProvider,
 			visitQueue = visitQueue,
@@ -213,7 +224,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 			markVisited(current.node)
 
 			// If matches destinations, mark as such
-			if (clazz.isInstance(current.node.type) && (nodeCheck?.invoke(current.node) != false)) {
+			if (clazz.isInstance(current.node.type) && (destinationCheck?.invoke(current.node) != false)) {
 				destinations.add(current)
 			}
 
@@ -241,20 +252,11 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 
 			val wrapped = PathfindingNodeWrapper(
 				node = next,
-				parent = current,
-				g = current.g + 1,
-				f = 1
+				parent = current
 			)
 
 			if (visitQueue.contains(next.position)) {
-				val existingNeighbor = visitQueue[next.position]
-
-				if (wrapped.g < existingNeighbor.g) {
-					existingNeighbor.parent = wrapped.parent
-
-					existingNeighbor.g = wrapped.g
-					existingNeighbor.f = wrapped.f
-				}
+				continue
 			} else {
 				visitQueue.put(next.position, wrapped)
 			}

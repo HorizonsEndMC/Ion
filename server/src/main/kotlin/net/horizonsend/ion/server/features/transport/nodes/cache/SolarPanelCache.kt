@@ -36,9 +36,9 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 	}
 
 	fun isSolarPanel(extractorKey: BlockKey): Boolean {
-		if (holder.nodeCacherGetter.invoke(this, type, holder.getWorld(), extractorKey)?.second !is SolarPanelComponent.CraftingTable) return false
-		if (holder.nodeCacherGetter.invoke(this, type, holder.getWorld(), getRelative(extractorKey, BlockFace.UP, 1))?.second !is SolarPanelComponent.DiamondBlock) return false
-		if (holder.nodeCacherGetter.invoke(this, type, holder.getWorld(), getRelative(extractorKey, BlockFace.UP, 2))?.second !is SolarPanelComponent.DaylightDetector) return false
+		if (holder.globalGetter.invoke(this, holder.getWorld(), extractorKey)?.second !is SolarPanelComponent.CraftingTable) return false
+		if (holder.globalGetter.invoke(this, holder.getWorld(), getRelative(extractorKey, BlockFace.UP, 1))?.second !is SolarPanelComponent.DiamondBlock) return false
+		if (holder.globalGetter.invoke(this, holder.getWorld(), getRelative(extractorKey, BlockFace.UP, 2))?.second !is SolarPanelComponent.DaylightDetector) return false
 
 		return true
 	}

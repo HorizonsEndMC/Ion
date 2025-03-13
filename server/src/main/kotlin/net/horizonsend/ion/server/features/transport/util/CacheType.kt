@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.ITEM_FILTE
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.transport.nodes.cache.FluidTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
-import net.horizonsend.ion.server.features.transport.nodes.cache.NodeCacheFactory
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache.SolarPanelComponent
@@ -16,6 +15,7 @@ import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.SolidG
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
+import net.horizonsend.ion.server.features.transport.nodes.util.NodeCacheFactory
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES

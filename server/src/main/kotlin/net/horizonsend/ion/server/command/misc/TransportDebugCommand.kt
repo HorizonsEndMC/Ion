@@ -12,11 +12,11 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
-import net.horizonsend.ion.server.features.transport.nodes.cache.CacheState
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
+import net.horizonsend.ion.server.features.transport.nodes.util.CacheState
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk

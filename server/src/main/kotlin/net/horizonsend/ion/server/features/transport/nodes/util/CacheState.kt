@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.nodes.cache
+package net.horizonsend.ion.server.features.transport.nodes.util
 
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 

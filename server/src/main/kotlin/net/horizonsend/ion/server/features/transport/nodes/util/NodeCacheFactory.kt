@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.nodes.cache
+package net.horizonsend.ion.server.features.transport.nodes.util
 
 import com.google.common.collect.Multimap
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock

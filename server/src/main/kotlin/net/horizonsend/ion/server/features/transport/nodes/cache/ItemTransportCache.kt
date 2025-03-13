@@ -9,12 +9,10 @@ import net.horizonsend.ion.server.features.transport.items.util.getTransferSpace
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData.ItemExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.pathfinding.PathfindingNodeWrapper
-import net.horizonsend.ion.server.features.transport.nodes.pathfinding.calculatePathResistance
-import net.horizonsend.ion.server.features.transport.nodes.pathfinding.getIdealPath
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
+import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.getBlockEntity
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -30,13 +28,10 @@ import net.minecraft.world.CompoundContainer
 import net.minecraft.world.Container
 import net.minecraft.world.level.block.ChestBlock
 import net.minecraft.world.level.block.state.properties.ChestType
-import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest
 import org.bukkit.inventory.ItemStack
-import java.util.Optional
 import java.util.SequencedCollection
-import kotlin.jvm.optionals.getOrNull
 import kotlin.reflect.KClass
 
 class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): TransportCache(holder) {
@@ -67,8 +62,6 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 			}
 		}
 
-//		debugAudience.information("references: [${references.entries.joinToString { "${it.key} ${it.value}" }}, ${toVec3i(location)}")
-
 		val originNode = getOrCache(location) ?: return
 
 		val destinationInvCache = mutableMapOf<BlockKey, CraftInventory>()
@@ -83,6 +76,63 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		)
 	}
 
+	private fun getTransferDestinations(
+		extractorLocation: BlockKey,
+		originNode: Node,
+		singletonItem: ItemStack,
+		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
+		availableItemReferences: ArrayDeque<ItemReference>
+	): Collection<PathfindingNodeWrapper>? {
+		val destinations: Collection<PathfindingNodeWrapper> = getOrCacheNetworkDestinations<ItemNode.InventoryNode>(
+			originPos = extractorLocation,
+			originNode = originNode,
+			pathfindingFilter = pathfindingFilter@{ intermediateNode, _ ->
+				if (intermediateNode !is ItemNode.FilterNode) return@pathfindingFilter true
+
+				intermediateNode.matches(singletonItem)
+			},
+			destinationCheck = destinationFilter@{ destinationTypeNode ->
+				validateDestination(destinationTypeNode, singletonItem, availableItemReferences, destinationInvCache)
+			}
+		)
+
+		if (destinations.isEmpty()) return null
+
+		return destinations
+	}
+
+	private fun validateDestination(
+		node: NodePositionData,
+		singletonItem: ItemStack,
+		availableItemReferences: ArrayDeque<ItemReference>,
+		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
+	): Boolean {
+		// If the inventory is missing / can't be loaded, return
+		val destinationInventory = destinationInvCache.getOrPut(node.position) {
+			getInventory(node.position) ?: return false
+		}
+
+		// If it can't fit a single item, don't use it
+		if (!LegacyItemUtils.canFit(destinationInventory, singletonItem, 1)) {
+			return false
+		}
+
+		// IF it is an origin inventory, don't use it
+		return availableItemReferences.none { itemReference ->
+			val referenceInventory = itemReference.inventory
+
+			// Special handling of double chests
+			if (destinationInventory is CraftInventoryDoubleChest && referenceInventory is CraftInventoryDoubleChest) {
+				val leftMatches = (referenceInventory.leftSide as CraftInventory).inventory == (destinationInventory.leftSide as CraftInventory).inventory
+				val rightMatches = (referenceInventory.rightSide as CraftInventory).inventory == (destinationInventory.rightSide as CraftInventory).inventory
+
+				return@none leftMatches || rightMatches
+			}
+
+			referenceInventory.inventory == destinationInventory.inventory
+		}
+	}
+
 	private fun transferItemType(
 		originKey: BlockKey,
 		originNode: Node,
@@ -91,63 +141,20 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
 		availableItemReferences: ArrayDeque<ItemReference>,
 	) {
-//		debugAudience.information("Checking ${singletonItem.type} [$count]")
-
-		val destinations: List<PathfindingNodeWrapper> = getNetworkDestinations<ItemNode.InventoryNode>(originKey, originNode) { node ->
-			val destinationInventory = destinationInvCache.getOrPut(node.position) {
-				getInventory(node.position) ?: return@getNetworkDestinations false
-			}
-
-			if (!LegacyItemUtils.canFit(destinationInventory, singletonItem, 1)) {
-				return@getNetworkDestinations false
-			}
-
-			availableItemReferences.none { itemReference ->
-				val referenceInventory = itemReference.inventory
-				if (destinationInventory is CraftInventoryDoubleChest && referenceInventory is CraftInventoryDoubleChest) {
-					val leftMatches = (referenceInventory.leftSide as CraftInventory).inventory == (destinationInventory.leftSide as CraftInventory).inventory
-					val rightMatches = (referenceInventory.rightSide as CraftInventory).inventory == (destinationInventory.rightSide as CraftInventory).inventory
-
-					return@none leftMatches || rightMatches
-				}
-
-				referenceInventory.inventory == destinationInventory.inventory
-			}
-		}.toList()
-
-//		if (destinations.isEmpty()) return debugAudience.information("No destinations found")
-
-		val paths: Array<PathfindingReport?> = Array(destinations.size) {
-			findPath(
-				origin = NodePositionData(
-					ItemNode.ItemExtractorNode,
-					holder.getWorld(),
-					originKey,
-					BlockFace.SELF,
-					this
-				),
-				destination = destinations[it].node.position,
-				itemStack = singletonItem,
-			) { node, _ ->
-				if (node !is ItemNode.FilterNode) return@findPath true
-
-				node.matches(singletonItem)
-			}
-		}
-
-		val validDestinations = destinations.filterIndexedTo(mutableListOf()) { index, _ ->
-			val path = paths[index]
-			path != null
-		}
-
-		if (validDestinations.isEmpty()) return
+		val destinations: List<PathfindingNodeWrapper> = getTransferDestinations(
+			extractorLocation = originKey,
+			originNode = originNode,
+			singletonItem = singletonItem,
+			destinationInvCache = destinationInvCache,
+			availableItemReferences = availableItemReferences
+		)?.toList() ?: return
 
 		val transaction = ItemTransaction()
 
 		val destinationInventories = getDestinations(
 			singletonItem,
 			destinationInvCache,
-			validDestinations.mapTo(mutableListOf()) { it.node.position },
+			destinations.mapTo(mutableListOf()) { it.node.position },
 			meta,
 			originKey
 		)
@@ -278,29 +285,12 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 		for (face in ADJACENT_BLOCK_FACES) {
 			val inventoryLocation = getRelative(extractorLocation, face)
-			if (holder.nodeCacherGetter.invoke(this, type, holder.getWorld(), inventoryLocation)?.second !is ItemNode.InventoryNode) continue
+			if (holder.globalGetter.invoke(this, holder.getWorld(), inventoryLocation)?.second !is ItemNode.InventoryNode) continue
 			val inv = getInventory(inventoryLocation) ?: continue
 			if (inv.isEmpty) continue
 			inventories.add(inv)
 		}
 
 		return inventories
-	}
-
-	fun findPath(
-		origin: NodePositionData,
-		destination: BlockKey,
-		itemStack: ItemStack,
-		pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null
-	): PathfindingReport? {
-		val entry: MutableMap<ItemStack, Optional<PathfindingReport>> = mutableMapOf()
-
-		return entry.getOrPut(itemStack) {
-			val path = runCatching { getIdealPath(origin, destination, null, holder.nodeCacherGetter, pathfindingFilter) }.getOrNull()
-			if (path == null) return@getOrPut Optional.empty()
-
-			val resistance = calculatePathResistance(path)
-			Optional.of(PathfindingReport(path, resistance))
-		}.getOrNull()
 	}
 }
