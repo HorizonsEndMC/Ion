@@ -134,6 +134,7 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 
 		override val inputsData: InputsData = InputsData.Builder(this)
 			.addPowerInput(0, -1, 0)
+			.registerSignInputs()
 			.build()
 
 		override val guiTitle: String = "Advanced Ship Factory"
