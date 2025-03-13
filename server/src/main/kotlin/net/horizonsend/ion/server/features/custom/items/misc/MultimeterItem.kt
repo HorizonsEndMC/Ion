@@ -174,7 +174,7 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 		// Safeguard
 		var iterations = 0L
 
-		val maxDepth = ConfigurationFiles.transportSettings().powerConfiguration.maxPathfindDepth
+		val maxDepth = ConfigurationFiles.transportSettings().generalConfiguration.maxPathfindDepth
 		while (queue.isNotEmpty() && iterations < maxDepth) {
 			iterations++
 			val current = queue.minBy { it.f }
