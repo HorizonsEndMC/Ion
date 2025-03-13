@@ -44,10 +44,10 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 		if (destinations.isEmpty()) return@runTask
 
-		val transferLimit = (transportSettings().powerConfiguration.maxPowerRemovedPerExtractorTick * delta).roundToInt()
+		val transferLimit = (transportSettings().powerConfiguration.powerTransferRate * delta).roundToInt()
 
 		runPowerTransfer(
-			destinations.take(transportSettings().powerConfiguration.maxExtractorDestinations),
+			destinations,
 			transferLimit,
 			source.powerStorage
 		)
@@ -70,7 +70,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		if (destinations.isEmpty()) return@runTask
 
 		holder.transportManager.powerNodeManager.cache.runPowerTransfer(
-			destinations.take(transportSettings().powerConfiguration.maxSolarDestinations),
+			destinations,
 			transportPower,
 			null
 		)
@@ -79,7 +79,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	/**
 	 * Runs the power transfer from the source to the destinations. pending rewrite
 	 **/
-	private fun runPowerTransfer(rawDestinations: List<PathfindingNodeWrapper>, transferLimit: Int, powerStorage: PowerStorage?) {
+	private fun runPowerTransfer(rawDestinations: Collection<PathfindingNodeWrapper>, transferLimit: Int, powerStorage: PowerStorage?) {
 		if (rawDestinations.isEmpty()) return
 
 		val filteredDestinations = rawDestinations.filter { destinationLoc ->
