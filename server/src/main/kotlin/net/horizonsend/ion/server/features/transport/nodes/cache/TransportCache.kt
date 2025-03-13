@@ -1,13 +1,15 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.util.DestinationCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.util.PathCache
+import net.horizonsend.ion.server.features.transport.nodes.pathfinding.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.nodes.types.ComplexNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
@@ -181,7 +183,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		originPos: BlockKey,
 		originNode: Node,
 		noinline check: ((NodePositionData) -> Boolean)? = null
-	): Collection<BlockKey> {
+	): Collection<PathfindingNodeWrapper> {
 		val clazz = T::class
 		val cachedEntry = destinationCache.get(clazz, originPos)
 		if (cachedEntry != null) return cachedEntry
@@ -196,57 +198,119 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		originPos: BlockKey,
 		originNode: Node,
 		noinline check: ((NodePositionData) -> Boolean)? = null
-	): Set<BlockKey> = getNetworkDestinations(T::class, originPos, originNode, check)
+	): Set<PathfindingNodeWrapper> = getNetworkDestinations(T::class, originPos, originNode, check)
 
+	/**
+	 * This is a weird combination of A* and a flood fill. It keeps track of paths, and returned destinations have those available.
+	 **/
 	fun getNetworkDestinations(
 		clazz: KClass<out Node>,
 		originPos: BlockKey,
 		originNode: Node,
 		nodeCheck: ((NodePositionData) -> Boolean)? = null,
 		nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.nodeCacherGetter, null) }
-	): Set<BlockKey> {
-		val visitQueue = ArrayDeque<NodePositionData>()
+	): Set<PathfindingNodeWrapper> {
+		val visitQueue = Long2ObjectRBTreeMap<PathfindingNodeWrapper>()
 		val visited = Long2IntOpenHashMap()
 
+		// Helper function for marking visited. Since some nodes need to be able to be traversed more than once,
+		// it stores a map of nodes to number of times visited.
 		fun markVisited(node: NodePositionData) {
 			val pos = node.position
-			val existing = visited.getOrDefault(pos, 0)
+
+			var new = false
+			val existing = visited.getOrPut(pos) {
+				new = true
+				1
+			}
+
+			if (new) return
 
 			visited[pos] = existing + 1
 		}
 
-		fun canVisit(node: NodePositionData): Boolean {
-			return visited.getOrDefault(node.position, 0) < node.type.getMaxPathfinds()
-		}
+		// Located destinations
+		val destinations = ObjectOpenHashSet<PathfindingNodeWrapper>()
 
-		val destinations = LongOpenHashSet()
+		// Populate array with original nodes
+		computeNextNodes(
+			current = PathfindingNodeWrapper(
+				node = NodePositionData(
+					originNode,
+					holder.getWorld(),
+					originPos,
+					BlockFace.SELF,
+					this
+				),
+				parent = null,
+				0,
+				0
+			),
+			nextNodeProvider = nextNodeProvider,
+			visitQueue = visitQueue,
+			visited = visited
+		)
 
-		val nextNodes = nextNodeProvider.invoke(NodePositionData(
-			originNode,
-			holder.getWorld(),
-			originPos,
-			BlockFace.SELF,
-			this
-		))
-
-		visitQueue.addAll(nextNodes)
-
+		// So this doesn't go forever
 		var iterations = 0L
 		val upperBound = 20_000
 
+		// Flood fill algorithm
 		while (visitQueue.isNotEmpty() && iterations < upperBound) {
 			iterations++
-			val current = visitQueue.removeFirst()
-			markVisited(current)
 
-			if (clazz.isInstance(current.type) && (nodeCheck?.invoke(current) != false)) {
-				destinations.add(current.position)
+			// Pop the head of the queue
+			val (key, current) = visitQueue.firstEntry()
+			visitQueue.remove(key)
+
+			markVisited(current.node)
+
+			// If matches destinations, mark as such
+			if (clazz.isInstance(current.node.type) && (nodeCheck?.invoke(current.node) != false)) {
+				destinations.add(current)
 			}
 
-			visitQueue.addAll(nextNodeProvider(current).filterNot { !canVisit(it) || visitQueue.contains(it) })
+			// Populate the visit queue
+			computeNextNodes(current, nextNodeProvider, visitQueue, visited)
 		}
 
 		return destinations
 	}
 
+	private fun computeNextNodes(
+		current: PathfindingNodeWrapper,
+		nextNodeProvider: NodePositionData.() -> List<NodePositionData>,
+		visitQueue: Long2ObjectRBTreeMap<PathfindingNodeWrapper>,
+		visited: Long2IntOpenHashMap,
+	) {
+		fun canVisit(node: NodePositionData): Boolean {
+			return visited.get(node.position) < node.type.getMaxPathfinds()
+		}
+
+		val nextNodes = nextNodeProvider(current.node)
+
+		for (next in nextNodes) {
+			if (!canVisit(next)) continue
+
+			val wrapped = PathfindingNodeWrapper(
+				node = next,
+				parent = current,
+				g = current.g + 1,
+				f = 1
+			)
+
+			if (visitQueue.contains(next.position)) {
+				val existingNeighbor = visitQueue[next.position]
+
+				if (wrapped.g < existingNeighbor.g) {
+					existingNeighbor.parent = wrapped.parent
+
+					existingNeighbor.g = wrapped.g
+					existingNeighbor.f = wrapped.f
+				}
+			} else {
+				visitQueue.put(next.position, wrapped)
+			}
+		}
+	}
 }

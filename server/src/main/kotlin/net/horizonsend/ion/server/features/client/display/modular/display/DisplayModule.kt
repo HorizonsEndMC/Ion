@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import net.minecraft.world.entity.Display.TextDisplay
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.phys.Vec3
 import org.bukkit.Axis.Y
 import org.bukkit.Color
 import org.bukkit.Location
@@ -33,9 +34,16 @@ abstract class DisplayModule(
 	val id: Int = Random.nextInt()
 ) {
 	val entity: TextDisplay = createEntity()
-	private val playerManager: DisplayPlayerManager = DisplayPlayerManager(entity)
+	private val playerManager: DisplayPlayerManager = DisplayPlayerManager(entity) {
+		val location = getLocation()
+		val vec3 = Vec3(location.x, location.y, location.z)
 
-	open fun createEntity(): TextDisplay {
+		val difference = it.position().subtract(vec3)
+
+		difference.length() < 80.0
+	}
+
+	fun createEntity(): TextDisplay {
 		val craftEntity = CraftTextDisplay(
 			IonServer.server as CraftServer,
 			TextDisplay(EntityType.TEXT_DISPLAY, handler.holder.handlerGetWorld().minecraft)

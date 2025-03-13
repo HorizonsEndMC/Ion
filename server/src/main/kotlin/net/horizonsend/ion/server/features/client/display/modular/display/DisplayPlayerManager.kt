@@ -11,7 +11,7 @@ import net.minecraft.world.entity.Relative
 import org.bukkit.Bukkit.getPlayer
 import java.util.UUID
 
-class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display) {
+class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display, private val playerFilter: (ServerPlayer) -> Boolean = { true }) {
 	private var shownPlayers = mutableSetOf<UUID>()
 
 	fun sendTeleport() {
@@ -34,10 +34,12 @@ class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display) {
 
 	fun runUpdates() {
 		val chunk = entity.level().getChunkIfLoaded(entity.x.toInt().shr(4), entity.z.toInt().shr(4)) ?: return
-		val viewers = chunk.`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false).mapTo(mutableSetOf(), ServerPlayer::getUUID)
+		val viewerPlayers = chunk.`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false).filter(playerFilter)
 
-		val new = viewers.minus(shownPlayers)
-		val retained = viewers.intersect(shownPlayers)
+		val viewerIDs = viewerPlayers.mapTo(mutableSetOf(), ServerPlayer::getUUID)
+
+		val new = viewerIDs.minus(shownPlayers)
+		val retained = viewerIDs.intersect(shownPlayers)
 
 		if (new.isNotEmpty()) sendAddEntity(new)
 
@@ -46,6 +48,6 @@ class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display) {
 			all.mapNotNull(::getPlayer).forEach { bukkitPlayer -> entity.refreshEntityData(bukkitPlayer.minecraft) }
 		}
 
-		shownPlayers = viewers
+		shownPlayers = viewerIDs
 	}
 }

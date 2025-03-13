@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
-import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSettings
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringEntity
-import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.fluids.Fluid
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
@@ -12,10 +10,7 @@ import net.horizonsend.ion.server.features.transport.nodes.types.FluidNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import org.bukkit.block.BlockFace
-import kotlin.math.roundToInt
 import kotlin.reflect.KClass
 
 class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCache(holder) {
@@ -24,50 +19,7 @@ class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCa
 
 	override val pathCache: PathCache<*> = PathCache.keyed<Fluid>(this)
 
-	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) { NewTransport.runTask {
-		val world = holder.getWorld()
-		val sources = getExtractorSourceEntities<FluidStoringEntity>(location) { it.isEmpty() }
-		val source = sources.randomOrNull() ?: return@runTask //TODO take from all
-
-		if (source.getStoredResources().isEmpty()) return@runTask
-
-		val cacheResult = holder.nodeCacherGetter.invoke(this, type, holder.getWorld(), location) ?: return@runTask
-		val originNode = cacheResult.second ?: return@runTask
-
-		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: Collection<BlockKey> = getOrCacheDestination<FluidNode.FluidInputNode>(location, originNode) { node ->
-			world.ion.inputManager.getHolders(type, node.position).any { entity -> entity is FluidStoringEntity && !entity.isFull() }
-		}
-
-		if (destinations.isEmpty()) return@runTask
-
-		val transferLimit = (transportSettings().extractorConfiguration.maxFluidRemovedPerExtractorTick * delta).roundToInt()
-		val resources = source.getExtractableResources()
-
-		for ((storage, avail) in resources) {
-			val (fluid, amount) = avail
-			val transferred = minOf(amount, transferLimit)
-
-			val missing = storage.removeAmount(transferred)
-			val remainder = runFluidTransfer(
-				Node.NodePositionData(
-					FluidNode.FluidExtractorNode,
-					world,
-					location,
-					BlockFace.SELF,
-					this
-				),
-				destinations,
-				fluid,
-				transferred - missing
-			)
-
-			if (remainder > 0) {
-				storage.setFluid(fluid)
-				storage.addAmount(remainder)
-			}
-		}
-	} }
+	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) {}
 
 	/**
 	 * Executes the transfer from the source node to the lit of destinations. Transports one fluid at a time.
