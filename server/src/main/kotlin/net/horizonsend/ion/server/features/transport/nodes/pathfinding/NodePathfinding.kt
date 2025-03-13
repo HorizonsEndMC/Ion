@@ -92,7 +92,7 @@ fun getIdealPath(
 	// Safeguard
 	var iterations = 0
 
-	val maxDepth = ConfigurationFiles.transportSettings().powerConfiguration.maxPathfindDepth
+	val maxDepth = ConfigurationFiles.transportSettings().generalConfiguration.maxPathfindDepth
 	while (queue.isNotEmpty() && iterations < maxDepth) {
 		iterations++
 		val current = queue.minBy { it.f }
