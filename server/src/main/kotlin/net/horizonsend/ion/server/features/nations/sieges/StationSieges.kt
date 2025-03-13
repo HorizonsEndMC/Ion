@@ -82,7 +82,7 @@ object StationSieges : IonServerComponent() {
 				elapsed >= siegeMinTimeMillis -> capture(player, stationId)
 				else -> {
 					val elapsedSecondsDecimal = TimeUnit.MILLISECONDS.toSeconds(siegeMinTimeMillis - elapsed) / 60.0
-					player.informationAction("$elapsedSecondsDecimal minutes remaining")
+					player.informationAction("${String.format("%.2f", elapsedSecondsDecimal)} minutes remaining")
 				}
 			}
 		}
