@@ -18,10 +18,10 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.factory.BoundingBoxTask
 import net.horizonsend.ion.server.features.starship.factory.NewShipFactoryTask
 import net.horizonsend.ion.server.features.starship.factory.PreviewTask
+import net.horizonsend.ion.server.features.transport.nodes.util.Path
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.canAccess
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -237,11 +237,10 @@ abstract class ShipFactoryEntity(
 
 		data class RemoteInventoryReference(
 			override val inventory: CraftInventory,
-			val extractorKey: BlockKey,
-			val connectedFrom: BlockKey,
+			val path: Path,
 			val entity: AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity
 		): InventoryReference {
-			override fun isAvailable(itemStack: ItemStack): Boolean = entity.canRemoveFromDestination(extractorKey, connectedFrom, itemStack)
+			override fun isAvailable(itemStack: ItemStack): Boolean = path.isValid()
 		}
 	}
 }

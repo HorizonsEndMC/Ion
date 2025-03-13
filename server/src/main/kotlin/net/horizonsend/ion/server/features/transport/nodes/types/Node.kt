@@ -43,7 +43,7 @@ interface Node {
 
 		for (adjacentFace in adjacent) {
 			val relativePos = getRelative(position, adjacentFace)
-			val cacheResult = cachedNodeProvider.invoke(currentCache, cacheType, world, relativePos) ?: continue
+			val cacheResult = cachedNodeProvider.invoke(currentCache, world, relativePos) ?: continue
 			val (cache, cached) = cacheResult
 			if (cached == null) continue
 
@@ -73,7 +73,7 @@ interface Node {
 
 		for (adjacentFace in ADJACENT_BLOCK_FACES) {
 			val relativePos = getRelative(positionData.position, adjacentFace)
-			val cacheResult = cachedNodeProvider.invoke(positionData.cache, cacheType, positionData.world, relativePos) ?: continue
+			val cacheResult = cachedNodeProvider.invoke(positionData.cache, positionData.world, relativePos) ?: continue
 			val (cache, cached) = cacheResult
 			if (cached == null) continue
 
