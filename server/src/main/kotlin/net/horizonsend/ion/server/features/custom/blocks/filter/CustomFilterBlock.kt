@@ -39,7 +39,7 @@ interface CustomFilterBlock<T: Any, M: FilterMeta> : WrenchRemovable, Interactab
 		val key = toBlockKey(block.x, block.y, block.z)
 
 		val filterManager = chunk.transportNetwork.filterManager
-		val filterData = filterManager.getFilter(key) ?: filterManager.registerFilter<T, M>(key, this)
+		val filterData = filterManager.getFilter(key) ?: filterManager.registerFilter(key, this)
 
 		filterInteractCooldown.tryExec(event.player) {
 			Tasks.sync {
