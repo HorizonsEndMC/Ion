@@ -77,7 +77,7 @@ class DestinationCache(private val parentCache: TransportCache) {
 		}
 
 		// Perform a flood fill to find all network destinations, then remove all destination columns
-		parentCache.getNetworkDestinations(clazz = parentCache.extractorNodeClass, originPos = pos, originNode = node) {
+		parentCache.getNetworkDestinations(destinationTypeClass = parentCache.extractorNodeClass, originPos = pos, originNode = node) {
 			// Traverse network backwards
 			getPreviousNodes(cache.holder.globalCacherGetter, null)
 		}.forEach { inputPos ->

@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.nodes.cache
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
@@ -17,13 +18,16 @@ import net.horizonsend.ion.server.features.transport.nodes.util.NodeCacheFactory
 import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
+import net.kyori.adventure.audience.Audience
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
@@ -163,11 +167,12 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	 * This is a weird combination of A* and a flood fill. It keeps track of paths, and returned destinations have those available.
 	 **/
 	fun getNetworkDestinations(
-		clazz: KClass<out Node>,
+		destinationTypeClass: KClass<out Node>,
 		originPos: BlockKey,
 		originNode: Node,
 		destinationCheck: ((NodePositionData) -> Boolean)? = null,
 		pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null,
+		debug: Audience? = null,
 		nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalGetter, pathfindingFilter) }
 	): Set<PathfindingNodeWrapper> {
 		val visitQueue = Long2ObjectRBTreeMap<PathfindingNodeWrapper>()
@@ -221,10 +226,16 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 			val (key, current) = visitQueue.firstEntry()
 			visitQueue.remove(key)
 
+			if (debug != null) {
+				Tasks.asyncDelay(iterations) {
+					debug.highlightBlock(toVec3i(current.node.position), 10L)
+				}
+			}
+
 			markVisited(current.node)
 
 			// If matches destinations, mark as such
-			if (clazz.isInstance(current.node.type) && (destinationCheck?.invoke(current.node) != false)) {
+			if (destinationTypeClass.isInstance(current.node.type) && (destinationCheck?.invoke(current.node) != false)) {
 				destinations.add(current)
 			}
 
