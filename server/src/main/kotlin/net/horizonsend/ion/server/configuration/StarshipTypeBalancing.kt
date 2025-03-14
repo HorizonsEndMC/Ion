@@ -20,6 +20,7 @@ import org.bukkit.damage.DamageSource
 import org.bukkit.damage.DamageType
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 import java.util.LinkedList
 import kotlin.math.PI
 
@@ -1808,6 +1809,7 @@ class StarshipWeapons(
 		data class TrueDamage(val amount: Double) : EntityDamage {
 			override fun deal(target: LivingEntity, shooter: Damager, type: DamageType) {
 				fun damage(amount: Double, sourceEntity: Entity?) {
+					if (target.isDead || (target is Player && !target.gameMode.isInvulnerable))
 					target.damage(0.0, getCause(sourceEntity, type))
 					target.health -= minOf(target.health, amount)
 				}
