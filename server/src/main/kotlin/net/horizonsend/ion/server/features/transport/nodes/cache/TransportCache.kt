@@ -38,10 +38,9 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	 * Cache containing a cache state at their corresponding block position.
 	 * The state can either be empty, or present. Empty key / value pairs have not been cached.
 	 **/
-	private val nodeCache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap(16, 0.5f, 64)
+	private val nodeCache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap(16, 0.5f, 16)
 
-	@Suppress("LeakingThis")
-	val destinationCache = DestinationCache(this)
+	abstract val destinationCache: DestinationCache
 
 	abstract val type: CacheType
 	private val nodeFactory: NodeCacheFactory get() = type.nodeCacheFactory
