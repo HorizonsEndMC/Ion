@@ -11,7 +11,8 @@ import net.minecraft.world.entity.Relative
 import org.bukkit.Bukkit.getPlayer
 import java.util.UUID
 
-class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display, private val playerFilter: (ServerPlayer) -> Boolean = { true }) {
+class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display, private val updateInvervalMS: Long = 1000L, private val playerFilter: (ServerPlayer) -> Boolean = { true }) {
+	private var lastUpdate = 0L
 	private var shownPlayers = mutableSetOf<UUID>()
 
 	fun sendTeleport() {
@@ -44,7 +45,8 @@ class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display, priva
 		if (new.isNotEmpty()) sendAddEntity(new)
 
 		val all = retained.union(new)
-		if (all.isNotEmpty()) {
+		if (all.isNotEmpty() && System.currentTimeMillis() - lastUpdate > updateInvervalMS) {
+			lastUpdate = System.currentTimeMillis()
 			all.mapNotNull(::getPlayer).forEach { bukkitPlayer -> entity.refreshEntityData(bukkitPlayer.minecraft) }
 		}
 
