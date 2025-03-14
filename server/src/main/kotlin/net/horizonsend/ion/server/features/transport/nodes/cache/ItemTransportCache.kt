@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
+import net.horizonsend.ion.server.features.transport.nodes.util.DestinationCache
 import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.getBlockEntity
@@ -37,6 +38,7 @@ import kotlin.reflect.KClass
 class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): TransportCache(holder) {
 	override val type: CacheType = CacheType.ITEMS
 	override val extractorNodeClass: KClass<out Node> = ItemNode.ItemExtractorNode::class
+	override val destinationCache = DestinationCache(this)
 
 	override fun tickExtractor(
 		location: BlockKey,

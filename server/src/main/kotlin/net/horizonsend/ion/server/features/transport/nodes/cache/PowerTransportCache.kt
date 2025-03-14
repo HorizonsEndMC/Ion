@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
+import net.horizonsend.ion.server.features.transport.nodes.util.DestinationCache
 import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -18,6 +19,7 @@ import kotlin.reflect.KClass
 class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportCache(holder) {
 	override val type: CacheType = CacheType.POWER
 	override val extractorNodeClass: KClass<out Node> = PowerNode.PowerExtractorNode::class
+	override val destinationCache = DestinationCache(this)
 
 	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) {
 		val solarCache = holder.transportManager.solarPanelManager.cache

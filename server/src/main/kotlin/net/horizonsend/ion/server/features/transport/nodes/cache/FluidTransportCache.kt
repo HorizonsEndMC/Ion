@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.FluidNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
+import net.horizonsend.ion.server.features.transport.nodes.util.DestinationCache
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import kotlin.reflect.KClass
@@ -15,6 +16,8 @@ import kotlin.reflect.KClass
 class FluidTransportCache(holder: CacheHolder<FluidTransportCache>): TransportCache(holder) {
 	override val type: CacheType = CacheType.FLUID
 	override val extractorNodeClass: KClass<out Node> = FluidNode.FluidExtractorNode::class
+
+	override val destinationCache = DestinationCache(this)
 
 	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) {}
 
