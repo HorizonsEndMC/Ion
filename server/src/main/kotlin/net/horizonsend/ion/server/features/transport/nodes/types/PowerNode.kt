@@ -101,6 +101,7 @@ sealed interface PowerNode : Node {
     }
 
     data class PowerFlowMeter(val cache: PowerTransportCache, var face: BlockFace, var world: World, var location: BlockKey) : PowerNode, ComplexNode, DisplayHandlerHolder {
+		var lastRefreshed = 0L
 		val rollingAverage = RollingAverage()
 
 		override var isAlive: Boolean = true
@@ -109,7 +110,10 @@ sealed interface PowerNode : Node {
         fun onCompleteChain(transferred: Int) {
 			// Push onto queue
 			rollingAverage.addEntry(transferred)
-            displayHandler.update()
+			if (System.currentTimeMillis() - lastRefreshed > 1000) {
+				lastRefreshed = System.currentTimeMillis()
+				displayHandler.update()
+			}
         }
 
 		private companion object {
