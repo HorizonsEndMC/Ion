@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.FluidNode
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.SolidGlassNode
+import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
@@ -61,9 +62,10 @@ import org.bukkit.block.data.type.Vault
 import org.bukkit.craftbukkit.block.impl.CraftEndRod
 import org.bukkit.craftbukkit.block.impl.CraftGrindstone
 import org.bukkit.craftbukkit.block.impl.CraftLightningRod
+import kotlin.reflect.KClass
 
-enum class CacheType(val namespacedKey: NamespacedKey) {
-	POWER(NamespacedKeys.POWER_TRANSPORT) {
+enum class CacheType(val namespacedKey: NamespacedKey, val inputType: KClass<out Node>) {
+	POWER(NamespacedKeys.POWER_TRANSPORT, PowerInputNode::class) {
 		override val nodeCacheFactory: NodeCacheFactory = NodeCacheFactory.builder()
 			.addSimpleNode(CRAFTING_TABLE, PowerNode.PowerExtractorNode)
 			.addSimpleNode(SPONGE, PowerNode.SpongeNode)
@@ -83,7 +85,7 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 			return ship.transportManager.powerNodeManager.cache
 		}
 	},
-	SOLAR_PANELS(NamespacedKeys.POWER_TRANSPORT) {
+	SOLAR_PANELS(NamespacedKeys.POWER_TRANSPORT, PowerInputNode::class) {
 		override val nodeCacheFactory: NodeCacheFactory = NodeCacheFactory.builder()
 			.addSimpleNode(CRAFTING_TABLE, SolarPanelComponent.CraftingTable)
 			.addSimpleNode(DIAMOND_BLOCK, SolarPanelComponent.DiamondBlock)
@@ -98,7 +100,7 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 			return ship.transportManager.solarPanelManager.cache
 		}
 	},
-	FLUID(NamespacedKeys.FLUID_TRANSPORT) {
+	FLUID(NamespacedKeys.FLUID_TRANSPORT, FluidNode.FluidInputNode::class) {
 		override val nodeCacheFactory: NodeCacheFactory = NodeCacheFactory.builder()
 			.addDataHandler<CraftLightningRod>(Material.LIGHTNING_ROD) { data, _, _ -> FluidNode.LightningRodNode(data.facing.axis) }
 			.addSimpleNode(WAXED_CHISELED_COPPER) { _, _ -> FluidNode.FluidJunctionNode(WAXED_CHISELED_COPPER) }
@@ -123,7 +125,7 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 //			return ship.transportManager.fluidNodeManager.cache
 		}
 	},
-	ITEMS(NamespacedKeys.ITEM_TRANSPORT) {
+	ITEMS(NamespacedKeys.ITEM_TRANSPORT, ItemNode.InventoryNode::class) {
 		override val nodeCacheFactory: NodeCacheFactory = NodeCacheFactory.builder()
 			.addSimpleNode(CRAFTING_TABLE, ItemNode.ItemExtractorNode)
 			.addDataHandler<Vault>(CustomBlocks.ADVANCED_ITEM_EXTRACTOR) { _, _, _ -> ItemNode.ItemExtractorNode }
