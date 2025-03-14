@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.features.custom.items.misc
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
@@ -86,20 +88,25 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 			return
 		}
 
-//		val path = getIdealPath(
-//			audience = audience,
-//			fromNode = NodePositionData(
-//				type = PowerInputNode,
-//				world = world,
-//				position = secondPoint,
-//				offset = BlockFace.SELF,
-//				cache = cacheType.get(firstChunk)
-//			),
-//			destination = firstPoint
-//		) ?: return
-//
-//		val resistance = calculatePathResistance(path)
-//		audience.information("The resistance from ${firstNode.javaClass.simpleName} at ${toVec3i(firstPoint)} to ${secondNode.javaClass.simpleName} at ${toVec3i(secondPoint)} is $resistance")
+		val destinations = cacheType.get(firstChunk).getNetworkDestinations(
+			destinationTypeClass = secondNode::class,
+			originPos = firstPoint,
+			originNode = firstNode,
+			debug = audience
+		)
+
+		val path = destinations.firstOrNull { it.node.position == secondPoint }?.buildPath()
+
+		if (path == null) {
+			audience.userError("There is no path between these points")
+			return
+		}
+
+		path.forEach { audience.highlightBlock(toVec3i(it.position), 100L) }
+		audience.success("There are ${path.nodes.size} nodes on the path between point 1 and 2.")
+		val nodeData = path.nodes.groupBy { it.type::class }
+
+		audience.information(nodeData.entries.joinToString(separator = "\n") { (nodeType, nodes) -> "${nodeType.simpleName} : ${nodes.size}" })
 	}
 
 	private fun cycleNetworks(audience: Audience, world: World, itemStack: ItemStack) {
