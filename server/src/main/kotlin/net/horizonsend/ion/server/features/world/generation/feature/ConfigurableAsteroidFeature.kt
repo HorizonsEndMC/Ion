@@ -45,7 +45,7 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 
 					val centerDistanceSquared = xOffset.squared() + yOffset.squared() + zOffset.squared()
 
-					val blockState = checkBlockPlacement(metaData, realX, realY, realZ, centerDistanceSquared) ?: continue
+					val blockState = checkBlockPlacement(metaData, start, realX, realY, realZ, centerDistanceSquared) ?: continue
 
 					section.setBlock(x, y, z, BlockData(blockState, null))
 				}
@@ -60,6 +60,7 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 	 **/
 	private fun checkBlockPlacement(
 		metaData: ConfigurableAsteroidMeta,
+		start: FeatureStart,
 		worldX: Double,
 		worldY: Double,
 		worldZ: Double,
@@ -69,7 +70,7 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 		// Calculate a noise pattern with a minimum at zero, and a max peak of the size of the materials list.
 		val paletteSample = (metaData.materialNoise.noise(worldX, worldY, worldZ, 0.0, 0.0, true) + 1) / 2
 
-		val fullNoise = metaData.getNoise(worldX, worldY, worldZ)
+		val fullNoise = metaData.getNoise(worldX, worldY, worldZ, start)
 
 		val noiseSquared = fullNoise * fullNoise
 		// Continue if block is not inside any asteroid
@@ -84,7 +85,7 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 
 		if (isCave) return null
 
-		return metaData.blockPlacer.getValue(worldX, worldY, worldZ, distanceSquared, fullNoise, metaData)
+		return metaData.blockPlacer.getValue(worldX, worldY, worldZ, distanceSquared, fullNoise, metaData, start)
 	}
 
 	override fun getExtents(metaData: ConfigurableAsteroidMeta): Pair<Vec3i, Vec3i> {
