@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.event.GazeStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.GazeStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.damager.Damager
