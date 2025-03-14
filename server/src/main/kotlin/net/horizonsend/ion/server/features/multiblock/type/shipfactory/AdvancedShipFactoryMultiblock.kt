@@ -189,7 +189,7 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 				val node = cacheResult.second ?: return@associateWith listOf()
 
 				itemCacheHolder.cache.getNetworkDestinations(
-					clazz = ItemNode.ItemExtractorNode::class,
+					destinationTypeClass = ItemNode.ItemExtractorNode::class,
 					originPos = inputLoc,
 					originNode = node,
 				) {
