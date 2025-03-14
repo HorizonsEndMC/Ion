@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.transport.manager.extractors.data.Ext
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
+import net.horizonsend.ion.server.features.transport.nodes.util.DestinationCache
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -18,9 +19,8 @@ import kotlin.reflect.KClass
 
 class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(holder) {
 	override val type: CacheType = CacheType.SOLAR_PANELS
-
+	override val destinationCache = DestinationCache(this)
     override val extractorNodeClass: KClass<out Node> = PowerNode.PowerExtractorNode::class
-
 
 	sealed interface SolarPanelComponent: Node {
 		data object CraftingTable: SolarPanelComponent
