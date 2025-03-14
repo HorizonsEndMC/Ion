@@ -33,7 +33,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	private lateinit var executor: ExecutorService
 
 	override fun onEnable() {
-		executor = Executors.newFixedThreadPool(32, Tasks.namedThreadFactory("wire-transport"))
+		executor = Executors.newFixedThreadPool(16, Tasks.namedThreadFactory("wire-transport"))
 
 		val interval: Long = ConfigurationFiles.transportSettings().extractorConfiguration.extractorTickIntervalMS
 
