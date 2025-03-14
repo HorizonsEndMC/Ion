@@ -1752,7 +1752,7 @@ class StarshipWeapons(
 		override var displayEntityCustomModelData: Int? = null,
 		override var displayEntitySize: Double? = null,
 
-		override val entityDamage: ProjectileBalancing.EntityDamage = ProjectileBalancing.TrueDamage(10.0),
+		override val entityDamage: ProjectileBalancing.EntityDamage = ProjectileBalancing.TrueDamage(9.0),
 
 		override var delayMillis: Int? = null
 	) : ProjectileBalancing, SubSystem
