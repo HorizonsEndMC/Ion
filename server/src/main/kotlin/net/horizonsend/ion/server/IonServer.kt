@@ -11,7 +11,9 @@ import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.configurationFolder
+import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
+import net.horizonsend.ion.server.features.transport.TransportConfiguration
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.generators.bukkit.EmptyChunkGenerator
 import net.horizonsend.ion.server.features.world.generation.generators.bukkit.SpaceBiomeProvider
@@ -19,7 +21,6 @@ import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.commands
 import net.horizonsend.ion.server.miscellaneous.registrations.components
 import net.horizonsend.ion.server.miscellaneous.registrations.listeners
-import net.horizonsend.ion.server.miscellaneous.utils.Discord
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -145,16 +146,17 @@ object IonServer : JavaPlugin() {
 	}
 
 	override fun onDisable() {
-		IonWorld.unregisterAll()
-
 		SLCommand.ASYNC_COMMAND_THREAD.shutdown()
 
 		for (component in components.asReversed()) try {
 			component.onDisable()
+			slF4JLogger.info("Disabled ${component.javaClass.simpleName}")
 		} catch (e: Exception) {
 			slF4JLogger.error("There was an error shutting down ${component.javaClass.simpleName}! ${e.message}")
 			e.printStackTrace()
 		}
+
+		IonWorld.unregisterAll()
 	}
 
 	override fun getDefaultBiomeProvider(worldName: String, id: String?): BiomeProvider {

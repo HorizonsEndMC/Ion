@@ -1,12 +1,14 @@
 package net.horizonsend.ion.server.features.multiblock.type.misc
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
@@ -14,14 +16,16 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.MultipleFacing
 import org.bukkit.block.data.Orientable
-import org.bukkit.block.sign.Side
 import org.bukkit.block.sign.Side.FRONT
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
 
-object AirlockMultiblock : Multiblock(), InteractableMultiblock {
+object AirlockMultiblock : Multiblock(), InteractableMultiblock, DisplayNameMultilblock {
 	override val name: String = "airlock"
+
+	override val displayName: Component get() = text("Airlock")
+	override val description: Component get() = text("A force field that can be toggled to allow or prevent players from passing through.")
 
 	override val signText = createSignText(
 		line1 = "&7Airlock",
@@ -38,11 +42,11 @@ object AirlockMultiblock : Multiblock(), InteractableMultiblock {
 			}
 
 			y(-1) {
-				x(xOffset + 0).anyType(Material.IRON_BARS, Material.NETHER_PORTAL)
+				x(xOffset + 0).anyType(Material.IRON_BARS, Material.NETHER_PORTAL, alias = "iron bars")
 			}
 
 			y(+0) {
-				x(xOffset + 0).anyType(Material.IRON_BARS, Material.NETHER_PORTAL)
+				x(xOffset + 0).anyType(Material.IRON_BARS, Material.NETHER_PORTAL, alias = "iron bars")
 			}
 		}
 	}
