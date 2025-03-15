@@ -128,7 +128,14 @@ class PowerArmorItem(
 		}
 
 		entity.isGliding = true
-		entity.velocity = entity.velocity.midpoint(entity.location.direction.multiply(0.6))
+		val strafeVelocity = entity.velocity.midpoint(entity.location.direction.multiply(0.6))
+		when(RocketBoostingMod.strafingMode[entity.uniqueId]) {
+			StrafingMode.LEFT -> strafeVelocity.rotateAroundY(0.26)
+			StrafingMode.RIGHT -> strafeVelocity.rotateAroundY(-0.26)
+			else -> {}
+		}
+		entity.velocity = strafeVelocity
+
 		entity.world.spawnParticle(Particle.SMOKE, entity.location, 5)
 
 		if (!entity.world.hasFlag(WorldFlag.ARENA)) {

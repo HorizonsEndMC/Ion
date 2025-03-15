@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
+import net.horizonsend.ion.server.features.custom.items.type.armor.StrafingMode
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ApplicationPredicate
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
@@ -26,6 +27,7 @@ object RocketBoostingMod : ItemModification {
 
 	val glidingPlayers = mutableSetOf<UUID>()
 	val glideDisabledPlayers = mutableMapOf<UUID, Long>() // UUID to end time of glide block
+	val strafingMode= mutableMapOf<UUID, StrafingMode>()
 
 	fun setGliding(player: Player, gliding: Boolean) {
 		if (gliding) enableGliding(player) else disableGliding(player)
