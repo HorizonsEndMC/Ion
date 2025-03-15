@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.util.CacheState
-import net.horizonsend.ion.server.features.transport.nodes.util.DestinationCache
 import net.horizonsend.ion.server.features.transport.nodes.util.NodeCacheFactory
 import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.CacheType
@@ -31,6 +30,8 @@ import net.kyori.adventure.audience.Audience
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import java.util.concurrent.ConcurrentHashMap
+import java.util.function.Consumer
+import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 abstract class TransportCache(open val holder: CacheHolder<*>) {
@@ -39,8 +40,6 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	 * The state can either be empty, or present. Empty key / value pairs have not been cached.
 	 **/
 	private val nodeCache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap(16, 0.5f, 16)
-
-	abstract val destinationCache: DestinationCache
 
 	abstract val type: CacheType
 	private val nodeFactory: NodeCacheFactory get() = type.nodeCacheFactory
@@ -82,14 +81,15 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 			return
 		}
 
-		destinationCache.invalidatePaths(key, removed)
+		if (this is DestinationCacheHolder) destinationCache.invalidatePaths(key, removed)
 	}
 
 	fun invalidateSurroundingPaths(key: BlockKey) {
 		ADJACENT_BLOCK_FACES.forEach {
 			val relative = getRelative(key, it)
 			val node = getCached(relative) ?: return@forEach
-			destinationCache.invalidatePaths(relative, node)
+
+			if (this is DestinationCacheHolder) destinationCache.invalidatePaths(relative, node)
 		}
 	}
 
@@ -142,16 +142,19 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	inline fun <reified T: Node> getOrCacheNetworkDestinations(
 		originPos: BlockKey,
 		originNode: Node,
+
+		cacheGetter: Supplier<Set<PathfindingNodeWrapper>?>,
+		cachingFunction: Consumer<Set<PathfindingNodeWrapper>>,
+
 		noinline pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null,
 		noinline destinationCheck: ((NodePositionData) -> Boolean)? = null
 	): Collection<PathfindingNodeWrapper> {
-		val clazz = T::class
-		val cachedEntry = destinationCache.get(clazz, originPos)
+		val cachedEntry = cacheGetter.get()
 		if (cachedEntry != null) return cachedEntry
 
 		val destinations = getNetworkDestinations(T::class, originPos, originNode, destinationCheck, pathfindingFilter)
-
-		destinationCache.set(clazz, originPos, destinations)
+		cachingFunction.accept(destinations)
+		
 		return destinations
 	}
 
