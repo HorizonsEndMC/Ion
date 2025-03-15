@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.space.body.OrbitingCelestialBody
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
+import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.Color
@@ -16,6 +17,8 @@ import kotlin.random.Random
 object SpaceMap : IonServerComponent(true) {
 	private lateinit var markerSet: MarkerSet
 	private lateinit var gravityWellMarkerSet: MarkerSet
+	// TODO: REMOVE THIS; FOR DEBUG USES ONLY
+	private lateinit var debugWaypointMarkerSet: MarkerSet
 
 	override fun onEnable() {
 		if (!getPluginManager().isPluginEnabled("dynmap")) {
@@ -35,6 +38,9 @@ object SpaceMap : IonServerComponent(true) {
 		markerSet = markerAPI.createMarkerSet("space", "Space", null, false)
 		markerAPI.getMarkerSet("gravity_well")?.deleteMarkerSet()
 		gravityWellMarkerSet = markerAPI.createMarkerSet("gravity_well", "Gravity Wells", null, false)
+		// TODO: REMOVE THIS; FOR DEBUG USES ONLY
+		markerAPI.getMarkerSet("debug_waypoints")?.deleteMarkerSet()
+		debugWaypointMarkerSet = markerAPI.createMarkerSet("debug_waypoints", "DEBUG: Waypoints", null, false)
 
 		for (star in Space.getStars()) {
 			if (star.name == "EdenHack") continue
@@ -146,6 +152,37 @@ object SpaceMap : IonServerComponent(true) {
 				markerAPI.getMarkerIcon("world"),
 				false
 			)
+		}
+
+		// TODO: REMOVE THIS; FOR DEBUG USES ONLY
+		for (waypoint in WaypointManager.mainGraph.vertexSet()) {
+			debugWaypointMarkerSet.createMarker(
+				waypoint.name,
+				waypoint.name,
+				false,
+				waypoint.loc.world.name,
+				waypoint.loc.x,
+				waypoint.loc.y,
+				waypoint.loc.z,
+				markerAPI.getMarkerIcon("pin"),
+				false
+			)
+		}
+
+		// TODO: REMOVE THIS; FOR DEBUG USES ONLY
+		for (edge in WaypointManager.mainGraph.edgeSet()) {
+			if (edge.source.loc.world == edge.target.loc.world) {
+				debugWaypointMarkerSet.createPolyLineMarker(
+					edge.source.name + "_to_" + edge.target.name,
+					edge.source.name + " to " + edge.target.name,
+					false,
+					edge.source.loc.world.name,
+					listOf(edge.source.loc.x, edge.target.loc.x).toDoubleArray(),
+					listOf(edge.source.loc.y, edge.target.loc.y).toDoubleArray(),
+					listOf(edge.source.loc.z, edge.target.loc.z).toDoubleArray(),
+					false
+				)
+			}
 		}
 	}
 
