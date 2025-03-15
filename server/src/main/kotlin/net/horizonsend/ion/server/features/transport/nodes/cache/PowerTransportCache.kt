@@ -9,17 +9,17 @@ import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
-import net.horizonsend.ion.server.features.transport.nodes.util.DestinationCache
+import net.horizonsend.ion.server.features.transport.nodes.util.MonoDestinationCache
 import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass
 
-class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportCache(holder) {
+class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportCache(holder), DestinationCacheHolder {
 	override val type: CacheType = CacheType.POWER
 	override val extractorNodeClass: KClass<out Node> = PowerNode.PowerExtractorNode::class
-	override val destinationCache = DestinationCache(this)
+	override val destinationCache = MonoDestinationCache(this)
 
 	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) {
 		val solarCache = holder.transportManager.solarPanelManager.cache
@@ -61,6 +61,12 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
 		val destinations: Collection<PathfindingNodeWrapper> = getOrCacheNetworkDestinations<PowerInputNode>(
 			originPos = extractorLocation,
+			cachingFunction = { destinations ->
+				destinationCache.set(PowerNode.PowerExtractorNode::class, extractorLocation, destinations)
+			},
+			cacheGetter = {
+				destinationCache.get(PowerNode.PowerExtractorNode::class, extractorLocation)
+			},
 			originNode = holder.getOrCacheGlobalNode(extractorLocation) ?: return null
 		) { node ->
 			getInputEntitiesTyped<PoweredMultiblockEntity>(node.position).any { entity -> !entity.powerStorage.isFull() }
