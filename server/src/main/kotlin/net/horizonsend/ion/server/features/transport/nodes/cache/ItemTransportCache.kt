@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
-import net.horizonsend.ion.server.features.transport.nodes.util.DestinationCache
+import net.horizonsend.ion.server.features.transport.nodes.util.MappedDestinationCache
 import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.getBlockEntity
@@ -35,10 +35,10 @@ import org.bukkit.inventory.ItemStack
 import java.util.SequencedCollection
 import kotlin.reflect.KClass
 
-class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): TransportCache(holder) {
+class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): TransportCache(holder), DestinationCacheHolder {
 	override val type: CacheType = CacheType.ITEMS
 	override val extractorNodeClass: KClass<out Node> = ItemNode.ItemExtractorNode::class
-	override val destinationCache = DestinationCache(this)
+	override val destinationCache = MappedDestinationCache<ItemStack>(this)
 
 	override fun tickExtractor(
 		location: BlockKey,
@@ -80,14 +80,20 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 	private fun getTransferDestinations(
 		extractorLocation: BlockKey,
-		originNode: Node,
+		extractorNode: Node,
 		singletonItem: ItemStack,
 		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
 		availableItemReferences: ArrayDeque<ItemReference>
 	): Collection<PathfindingNodeWrapper>? {
 		val destinations: Collection<PathfindingNodeWrapper> = getOrCacheNetworkDestinations<ItemNode.InventoryNode>(
 			originPos = extractorLocation,
-			originNode = originNode,
+			originNode = extractorNode,
+			cachingFunction = { destinations ->
+				destinationCache.set(extractorNode::class, singletonItem, extractorLocation, destinations)
+			},
+			cacheGetter = {
+				destinationCache.get(extractorNode::class, singletonItem, extractorLocation)
+			},
 			pathfindingFilter = pathfindingFilter@{ intermediateNode, _ ->
 				if (intermediateNode !is ItemNode.FilterNode) return@pathfindingFilter true
 
@@ -145,7 +151,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 	) {
 		val destinations: List<PathfindingNodeWrapper> = getTransferDestinations(
 			extractorLocation = originKey,
-			originNode = originNode,
+			extractorNode = originNode,
 			singletonItem = singletonItem,
 			destinationInvCache = destinationInvCache,
 			availableItemReferences = availableItemReferences
