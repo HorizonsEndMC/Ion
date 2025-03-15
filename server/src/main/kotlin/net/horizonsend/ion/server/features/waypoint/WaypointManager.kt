@@ -150,6 +150,8 @@ object WaypointManager : IonServerComponent() {
         graph: SimpleDirectedWeightedGraph<WaypointVertex, WaypointEdge>,
         vertex: WaypointVertex
     ) {
+		if (vertex.well) return //dont add outgoing edges from planets
+
         // find vertices that are in the same world as the current vertex
         val verticesSameWorld = graph.vertexSet()
             .filter { otherVertex -> otherVertex.loc.world == vertex.loc.world && vertex != otherVertex }
@@ -162,16 +164,16 @@ object WaypointManager : IonServerComponent() {
                 target = otherVertex,
                 hyperspaceEdge = false
             )
-            val inEdge = WaypointEdge(
-                source = otherVertex,
-                target = vertex,
-                hyperspaceEdge = false
-            )
+            //val inEdge = WaypointEdge(
+            //    source = otherVertex,
+            //    target = vertex,
+            //    hyperspaceEdge = false
+            //)
             // add edges to graph and set edge weights (returns false if already exists)
             graph.addEdge(vertex, otherVertex, outEdge)
             graph.setEdgeWeight(outEdge, vertex.loc.distance(otherVertex.loc))
-            graph.addEdge(otherVertex, vertex, inEdge)
-            graph.setEdgeWeight(inEdge, otherVertex.loc.distance(vertex.loc))
+            //graph.addEdge(otherVertex, vertex, inEdge)
+            //graph.setEdgeWeight(inEdge, otherVertex.loc.distance(vertex.loc))
         }
     }
 
@@ -239,7 +241,8 @@ object WaypointManager : IonServerComponent() {
             val vertex = WaypointVertex(
                 name = planet.name,
                 icon = SidebarIcon.PLANET_ICON.text.first(),
-                loc = planet.location.toLocation(planet.spaceWorld!!)
+                loc = planet.location.toLocation(planet.spaceWorld!!),
+				well = true
             )
             mainGraph.addVertex(vertex)
 			addCageVertices(planet.name,planet,1.25,5)
@@ -593,7 +596,8 @@ data class WaypointVertex(
     val icon: Char,
     var loc: Location,
     var linkedWaypoint: String? = null,
-	val hidden : Boolean = false
+	val hidden : Boolean = false,
+	val well : Boolean = false
 )
 
 data class WaypointEdge(
