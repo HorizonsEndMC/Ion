@@ -32,6 +32,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 3,
 		maxSneakFlyAccel = 3,
 		interdictionRange = 10,
+		jumpStrength = 0.0,
+		wellStrength = 0.0,
 		hyperspaceRangeMultiplier = 3.0,
 		shieldPowerMultiplier = 1.0
 	),
@@ -40,6 +42,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 5,
 		maxSneakFlyAccel = 2,
 		interdictionRange = 300,
+		jumpStrength = 1.0,
+		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.2,
 		shieldPowerMultiplier = 1.0
 	),
@@ -47,6 +51,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 10,
 		maxSneakFlyAccel = 3,
 		interdictionRange = 600,
+		jumpStrength = 1.0,
+		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.25,
 		shieldPowerMultiplier = 1.0
 	),
@@ -54,6 +60,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 10,
 		maxSneakFlyAccel = 3,
 		interdictionRange = 900,
+		jumpStrength = 1.0,
+		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.3,
 		shieldPowerMultiplier = 1.0,
 		weapons = StarshipWeapons(
@@ -86,6 +94,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 10,
 		maxSneakFlyAccel = 3,
 		interdictionRange = 1200,
+		jumpStrength = 1.0,
+		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.35,
 		shieldPowerMultiplier = 1.0
 	),
@@ -93,6 +103,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 10,
 		maxSneakFlyAccel = 3,
 		interdictionRange = 1500,
+		jumpStrength = 1.0,
+		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.4,
 		shieldPowerMultiplier = 1.0
 	),
@@ -100,6 +112,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 4,
 		maxSneakFlyAccel = 4,
 		interdictionRange = 10,
+		jumpStrength = 1.0,
+		wellStrength = 0.0,
 		hyperspaceRangeMultiplier = 1.5,
 		shieldPowerMultiplier = 1.0
 	),
@@ -107,6 +121,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 4,
 		maxSneakFlyAccel = 4,
 		interdictionRange = 10,
+		jumpStrength = 0.0,
+		wellStrength = 0.0,
 		hyperspaceRangeMultiplier = 1.5,
 		shieldPowerMultiplier = 1.0
 	),
@@ -114,6 +130,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 4,
 		maxSneakFlyAccel = 4,
 		interdictionRange = 10,
+		jumpStrength = 1.0,
+		wellStrength = 0.0,
 		hyperspaceRangeMultiplier = 0.0,
 		shieldPowerMultiplier = 0.33,
 		cruiseSpeedMultiplier = 1.1,
@@ -215,6 +233,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 5,
 		maxSneakFlyAccel = 2,
 		interdictionRange = 1200,
+		jumpStrength = 1.0,
+		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.6,
 		shieldPowerMultiplier = 1.0,
 		weapons = StarshipWeapons(
@@ -270,6 +290,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 6,
 		maxSneakFlyAccel = 2,
 		interdictionRange = 1800,
+		jumpStrength = 1.0,
+		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.7,
 		shieldPowerMultiplier = 1.0,
 		weapons = StarshipWeapons(
@@ -347,6 +369,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 6,
 		maxSneakFlyAccel = 2,
 		interdictionRange = 2400,
+		jumpStrength = 1.0,
+		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.8,
 		shieldPowerMultiplier = 1.0,
 		weapons = StarshipWeapons(
@@ -380,6 +404,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 5,
 		maxSneakFlyAccel = 3,
 		interdictionRange = 3000,
+		jumpStrength = 1.0,
+		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.9,
 		shieldPowerMultiplier = 1.0
 	),
@@ -387,6 +413,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 5,
 		maxSneakFlyAccel = 3,
 		interdictionRange = 3500,
+		jumpStrength = 3.0,
+		wellStrength = 3.0,
 		hyperspaceRangeMultiplier = 1.9,
 		cruiseSpeedMultiplier = 0.98,
 		shieldPowerMultiplier = 1.10,
@@ -488,6 +516,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 3,
 		maxSneakFlyAccel = 3,
 		interdictionRange = 4500,
+		jumpStrength = 5.0,
+		wellStrength = 5.0,
 		hyperspaceRangeMultiplier = 2.5,
 		cruiseSpeedMultiplier = 0.88,
 		shieldPowerMultiplier = 1.60,
@@ -589,6 +619,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 3,
 		maxSneakFlyAccel = 3,
 		interdictionRange = 4500,
+		jumpStrength = 1.0,
+		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 3.0,
 		cruiseSpeedMultiplier = 0.88,
 		shieldPowerMultiplier = 1.30,
@@ -664,6 +696,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 3,
 		maxSneakFlyAccel = 3,
 		interdictionRange = 5200,
+		jumpStrength = 5.0,
+		wellStrength = 5.0,
 		hyperspaceRangeMultiplier = 2.75,
 		cruiseSpeedMultiplier = 0.80,
 		shieldPowerMultiplier = 1.75,
@@ -745,6 +779,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 3,
 		maxSneakFlyAccel = 2,
 		interdictionRange = 6000,
+		jumpStrength = 5.0,
+		wellStrength = 5.0,
 		hyperspaceRangeMultiplier = 3.0,
 		cruiseSpeedMultiplier = 0.70,
 		shieldPowerMultiplier = 2.0,
@@ -833,6 +869,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 4,
 		maxSneakFlyAccel = 4,
 		interdictionRange = 600,
+		jumpStrength = 1.0,
+		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.5,
 		weapons = StarshipWeapons(
 			pulseCannon = StarshipWeapons.StarshipWeapon(
@@ -865,6 +903,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 5,
 		maxSneakFlyAccel = 5,
 		interdictionRange = 1800,
+		jumpStrength = 1.0,
+		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.7,
 		weapons = corvette.weapons
 	),
@@ -872,6 +912,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 3,
 		maxSneakFlyAccel = 10,
 		interdictionRange = 1800,
+		jumpStrength = 1.0,
+		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.7,
 		weapons = corvette.weapons
 	),
@@ -882,6 +924,8 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 3,
 		maxSneakFlyAccel = 3,
 		interdictionRange = 4500,
+		jumpStrength = 5.0,
+		wellStrength = 5.0,
 		hyperspaceRangeMultiplier = 2.5,
 		cruiseSpeedMultiplier = 0.88,
 		shieldPowerMultiplier = 1.20,
@@ -894,12 +938,16 @@ data class StarshipTypeBalancing(
 		sneakFlyAccelDistance = 0,
 		maxSneakFlyAccel = 0,
 		interdictionRange = 0,
+		jumpStrength = 0.0,
+		wellStrength = 0.0,
 		hyperspaceRangeMultiplier = 0.0
 	),
 	val eventShipBalancing: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 10,
 		maxSneakFlyAccel = 3,
 		interdictionRange = 2000,
+		jumpStrength = 1.0,
+		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 10.0,
 		shieldPowerMultiplier = 2.0
 	),
@@ -932,7 +980,12 @@ data class StarshipBalancing(
 
 	val sneakFlyAccelDistance: Int,
 	val maxSneakFlyAccel: Int,
+
+	//interdiction
 	val interdictionRange: Int,
+	val jumpStrength: Double,
+	val wellStrength: Double,
+
 	val hyperspaceRangeMultiplier: Double,
 	val cruiseSpeedMultiplier: Double = 1.0,
 	val shieldPowerMultiplier: Double = 1.0,
