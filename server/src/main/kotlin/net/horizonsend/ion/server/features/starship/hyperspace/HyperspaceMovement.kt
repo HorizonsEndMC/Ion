@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.hyperspace
 
 import net.horizonsend.ion.common.extensions.alertAction
+import net.horizonsend.ion.common.extensions.alertActionMessage
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
@@ -64,17 +65,36 @@ class HyperspaceMovement(
 
 		// Don't check for mass shadows if jumping to another world
 		if (originWorld == dest.world) {
-			val shadow: MassShadows.MassShadowInfo? = MassShadows.find(dest.world, x, z)
-			if (shadow != null) {
-				ship.onlinePassengers.forEach { player ->
-					player.alertAction(
-						"Ship caught by a mass shadow! Mass Shadow: ${shadow.description.plainText()} at ${shadow.x}, ${shadow.z} " +
-								"with radius ${shadow.radius} (${shadow.distance} blocks away)"
-					)
-				}
+			val shadows = MassShadows.find(dest.world, x, z)
+			if (shadows != null) {
+				var combinedWellStrength = 0.0
+				shadows.forEach { combinedWellStrength += it.wellStrength }
+				if (ship.balancing.jumpStrength < combinedWellStrength) {
+					if (shadows.size == 1) {
+						val shadow = shadows.first()
+						val message = "Ship caught by a mass shadow! Mass Shadow: ${shadow.description.plainText()} at ${shadow.x}, ${shadow.z} " +
+							"with a well strength of ${shadow.wellStrength} with radius ${shadow.radius} (${shadow.distance} blocks away)"
+						ship.onlinePassengers.forEach { player ->
+							player.alertActionMessage(message)
+						}
+					}
+					else {
+						val message =
+							"Ship caught by ${shadows.size} mass shadows! With a combined well strength of $combinedWellStrength!\n"
+						shadows.forEach {
+							message.plus(
+								"Mass Shadow: ${it.description.plainText()} at ${it.x}, ${it.z} " +
+									"with a well strength of ${it.wellStrength} with radius ${it.radius} (${it.distance} blocks away)"
+							)
+						}
+						ship.onlinePassengers.forEach { player ->
+							player.alertActionMessage(message)
+						}
+					}
 
-				cancel()
-				return
+					cancel()
+					return
+				}
 			}
 		}
 

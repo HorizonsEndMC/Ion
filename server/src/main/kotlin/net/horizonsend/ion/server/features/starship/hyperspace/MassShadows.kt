@@ -16,9 +16,10 @@ object MassShadows {
 	const val PLANET_RADIUS = 1000
 	const val STAR_RADIUS = 1800
 
-	data class MassShadowInfo(val description: Component, val x: Int, val z: Int, val radius: Int, val distance: Int)
+	data class MassShadowInfo(val description: Component, val x: Int, val z: Int, val radius: Int, val distance: Int, val wellStrength: Int)
 
-	fun find(world: World, x: Double, z: Double): MassShadowInfo? {
+	fun find(world: World, x: Double, z: Double): List<MassShadowInfo>? {
+		val allMassShadows = mutableListOf<MassShadowInfo>()
 		val realWorld = (if (Hyperspace.isHyperspaceWorld(world)) Hyperspace.getRealspaceWorld(world) else world)
 			?: return null
 
@@ -31,7 +32,7 @@ object MassShadows {
 			if (dist > PLANET_RADIUS.squared()) continue
 
 			dist = sqrt(dist)
-			return MassShadowInfo(text("Planet ${planet.name}"), loc.x, loc.z, PLANET_RADIUS, dist.toInt())
+			allMassShadows.add(MassShadowInfo(text("Planet ${planet.name}"), loc.x, loc.z, PLANET_RADIUS, dist.toInt(), 1000000))
 		}
 
 		for (star in Space.getStars()) {
@@ -44,7 +45,7 @@ object MassShadows {
 
 			dist = sqrt(dist)
 
-			return MassShadowInfo(text("Star ${star.name}"), loc.x, loc.z, STAR_RADIUS, dist.toInt())
+			allMassShadows.add(MassShadowInfo(text("Star ${star.name}"), loc.x, loc.z, STAR_RADIUS, dist.toInt(), 10000000))
 		}
 
 		for (otherShip in ActiveStarships.getInWorld(realWorld)) {
@@ -63,19 +64,23 @@ object MassShadows {
 			val interdictingShip = otherShip as? ActiveControlledStarship
 			val interdictingShipName = interdictingShip?.data?.let { getDisplayName(it) } ?: otherShip.type.displayNameComponent
 
-			return MassShadowInfo(
-				text()
-					.append(interdictingShipName)
-					.append(text(" piloted by "))
-					.append(interdictingShip?.controller?.getPilotName() ?: text("none"))
-					.build(),
-				otherX,
-				otherZ,
-				Interdiction.starshipInterdictionRangeEquation(otherShip).toInt(),
-				dist.toInt()
+			allMassShadows.add(
+				MassShadowInfo(
+					text()
+						.append(interdictingShipName)
+						.append(text(" piloted by "))
+						.append(interdictingShip?.controller?.getPilotName() ?: text("none"))
+						.build(),
+					otherX,
+					otherZ,
+					Interdiction.starshipInterdictionRangeEquation(otherShip).toInt(),
+					dist.toInt(),
+					otherShip.balancing.wellStrength.toInt()
+				)
 			)
 		}
 
-		return null
+		if (allMassShadows.isEmpty()) return null
+		else return allMassShadows
 	}
 }
