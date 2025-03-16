@@ -35,6 +35,7 @@ import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
+import net.horizonsend.ion.server.features.starship.modules.StandardRewardsProvider
 import net.horizonsend.ion.server.features.starship.subsystem.misc.LandingGearSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
@@ -469,6 +470,10 @@ object PilotedStarships : IonServerComponent() {
 			}
 
 			val pilotSound = data.starshipType.actualType.balancingSupplier.get().sounds.pilot.sound
+			if (activePlayerStarship.rewardsProviders.filterIsInstance<StandardRewardsProvider>().isEmpty()) {
+				activePlayerStarship.rewardsProviders.add(StandardRewardsProvider(activePlayerStarship))
+			}
+
 			playSoundInRadius(player.location, 10_000.0, pilotSound)
 
 			callback(activePlayerStarship)
