@@ -19,6 +19,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
+import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
@@ -340,15 +341,18 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			"Destination coordinates are outside the world border!"
 		}
 
-		val massShadowInfo = MassShadows.find(
+		val massShadows = MassShadows.find(
 			starship.world,
 			starship.centerOfMass.x.toDouble(),
 			starship.centerOfMass.z.toDouble()
 		)
-
-		if (massShadowInfo != null) {
+		var combinedWellStrength = 0.0
+		massShadows?.forEach { combinedWellStrength += it.wellStrength }
+		if (massShadows != null && combinedWellStrength > starship.balancing.jumpStrength) {
 			val escapeVector = starship.centerOfMass.toVector().setY(128)
-			escapeVector.subtract(Vector(massShadowInfo.x, 128, massShadowInfo.z)).rotateAroundY(PI / 2)
+			massShadows.forEach { massShadow->
+				escapeVector.subtract(Vector(massShadow.x, 128, massShadow.z)).rotateAroundY(PI / 2)
+			}
 			escapeVector.normalize()
 
 			// directionString differs from ContactsDisplay as this vector was rotated pi/2 radians
@@ -367,19 +371,22 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				.color(NamedTextColor.GRAY)
 				.append(text("Starship is within a gravity well; jump aborted. Move away from the gravity well source:", NamedTextColor.RED))
 				.append(newline())
-				.append(text("Object: "))
-				.append(massShadowInfo.description)
+			massShadows.forEach {
+				message.append(text("Object: "))
+				.append(it.description)
 				.append(newline())
 				.append(text("Location: "))
-				.append(text("${massShadowInfo.x}, ${massShadowInfo.z}", WHITE))
-				.append(newline())
+				.append(text("${it.x}, ${it.z}, ", WHITE))
 				.append(text("Gravity well radius: "))
-				.append(text(massShadowInfo.radius, WHITE))
+				.append(text(it.radius, WHITE))
 				.append(newline())
 				.append(text("Current distance from center: "))
-				.append(text(massShadowInfo.distance, WHITE))
+				.append(text(it.distance, WHITE))
+				.append(text(", Well Strength: "))
+				.append(text(it.wellStrength, WHITE))
 				.append(newline())
-				.append(text("Cruise direction to escape: "))
+			}
+			message.append(text("Cruise direction to escape: "))
 				.append(text(directionString, NamedTextColor.GREEN))
 				.append(text(" (${(atan2(escapeVector.z, escapeVector.x) * 180 / PI).toInt()})", WHITE))
 

@@ -58,14 +58,18 @@ object Hyperspace : IonServerComponent() {
 		destinationWorld: World,
 		useFuel: Boolean
 	) {
-		if (MassShadows.find(
-				starship.world,
-				starship.centerOfMass.x.toDouble(),
-				starship.centerOfMass.z.toDouble()
-			) != null
-		) {
-			starship.userError("Ship is within Gravity Well, jump cancelled")
-			return
+		val massShadows = MassShadows.find(
+			starship.world,
+			starship.centerOfMass.x.toDouble(),
+			starship.centerOfMass.z.toDouble()
+		)
+		if (massShadows != null) {
+			var combinedWellStrength = 0.0
+			massShadows.forEach { combinedWellStrength += it.wellStrength }
+			if (starship.balancing.jumpStrength < combinedWellStrength) {
+				starship.userError("Ship is within a strong Gravity Well! Jump cancelled")
+				return
+			}
 		}
 
 		if (starship.type == PLATFORM) {
