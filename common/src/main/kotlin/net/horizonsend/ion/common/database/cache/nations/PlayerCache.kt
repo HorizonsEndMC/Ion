@@ -724,6 +724,9 @@ abstract class AbstractPlayerCache : ManualCache() {
 			soundCruiseIndicator = data.soundCruiseIndicator,
 			enableCombatTimerAlerts = data.enableCombatTimerAlerts,
 			hitmarkerOnHull = data.hitmarkerOnHull,
+			shortenChatChannels = data.shortenChatChannels,
+			hideUserPrefixes = data.hideUserPrefixes,
+			hideGlobalPrefixes = data.hideGlobalPrefixes
 		)
 	}
 
