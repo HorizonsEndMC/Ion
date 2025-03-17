@@ -94,6 +94,20 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 			val yaw = if (newWorld != null) passenger.yaw else 0f
 			val pitch = if (newWorld != null) passenger.pitch else 0f
 
+			// If changing worlds don't need to worry about jitter
+			if (newWorld != null) {
+				passenger.teleport(
+					location,
+					PlayerTeleportEvent.TeleportCause.PLUGIN,
+					*TeleportFlag.Relative.entries.toTypedArray(),
+					TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY,
+					TeleportFlag.EntityState.RETAIN_VEHICLE
+				)
+
+				return
+			}
+
+			// Jitter fix
 			passenger.minecraft.teleportTo(
 				location.world.minecraft,
 				location.x,
