@@ -161,9 +161,4 @@ class PowerArmorItem(
 			entity.world.playSound(entity.location, Sound.BLOCK_FIRE_AMBIENT, 1.0f, 2.0f)
 		}
 	}
-	fun restrictToRanges(num: Double): Double {
-		if(num > 0) return num.coerceAtLeast(0.2)
-		if(num < 0) return num.coerceAtMost(-0.2)
-		return num // num = 0
-	}
 }
