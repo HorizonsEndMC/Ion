@@ -459,7 +459,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 
 	val TYPE_V11 = registerTemplate(StarshipTemplate(
 		schematicName = "typeV11",
-		type = AI_LIGHT_FREIGHTER,
+		type = AI_STARFIGHTER,
 		miniMessageName = "<$MINING_CORP_LIGHT_ORANGE>Type <$HE_LIGHT_GRAY>V-11",
 	))
 
