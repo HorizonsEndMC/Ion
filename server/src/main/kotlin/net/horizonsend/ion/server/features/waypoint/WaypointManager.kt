@@ -164,16 +164,17 @@ object WaypointManager : IonServerComponent() {
                 target = otherVertex,
                 hyperspaceEdge = false
             )
-            //val inEdge = WaypointEdge(
-            //    source = otherVertex,
-            //    target = vertex,
-            //    hyperspaceEdge = false
-            //)
+            val inEdge = WaypointEdge(
+                source = otherVertex,
+                target = vertex,
+                hyperspaceEdge = false
+            )
             // add edges to graph and set edge weights (returns false if already exists)
             graph.addEdge(vertex, otherVertex, outEdge)
             graph.setEdgeWeight(outEdge, vertex.loc.distance(otherVertex.loc))
-            //graph.addEdge(otherVertex, vertex, inEdge)
-            //graph.setEdgeWeight(inEdge, otherVertex.loc.distance(vertex.loc))
+			if (otherVertex.well) continue //dont add outgoing edges from planets
+            graph.addEdge(otherVertex, vertex, inEdge)
+            graph.setEdgeWeight(inEdge, otherVertex.loc.distance(vertex.loc))
         }
     }
 
