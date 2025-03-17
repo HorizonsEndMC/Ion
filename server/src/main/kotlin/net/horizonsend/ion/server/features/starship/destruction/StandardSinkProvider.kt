@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongIterator
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.d
+import net.horizonsend.ion.server.features.machine.AreaShields.getNearbyAreaShields
 import net.horizonsend.ion.server.features.starship.Hangars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
@@ -142,10 +143,20 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 				continue
 			}
 
-			if (!world.worldBorder.isInside(Location(world, x.toDouble(), y.toDouble(), z.toDouble()))) {
+			val location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
+
+			if (!world.worldBorder.isInside(location)) {
 				obstructedLocations.add(key)
 				continue
 			}
+
+			val areaShields = getNearbyAreaShields(location, 1.0)
+			if (areaShields.any { it.powerStorage.getPower() > 0 }) {
+				obstructedLocations.add(key)
+				continue
+			}
+
+
 
 			// Check here, also when exploding
 			if (!isBlockLoaded(world, newX, newY, newZ)) {
