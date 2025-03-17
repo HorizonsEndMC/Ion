@@ -159,26 +159,31 @@ abstract class SimpleProjectile(
 			"shieldDamageMultiplier = $starshipShieldDamageMultiplier, \n" +
 			"result = ${fraction * explosionPower * starshipShieldDamageMultiplier}"
 		)
+
 		var explosionOccurred = false
+
 		StarshipShields.withExplosionPowerOverride(fraction * explosionPower * starshipShieldDamageMultiplier) {
 			AreaShields.withExplosionPowerOverride(fraction * explosionPower * areaShieldDamageMultiplier) {
 				if (!hasHit) {
 					// shields/area shields cancel explosion damage
 					explosionOccurred = world.createExplosion(newLoc, explosionPower)
 
-					world.spawnParticle(
-						Particle.FLASH,
-						newLoc.x,
-						newLoc.y,
-						newLoc.z,
-						explosionPower.toInt(),
-						explosionPower.toDouble() / 2,
-						explosionPower.toDouble() / 2,
-						explosionPower.toDouble() / 2,
-						0.0,
-						null,
-						true
-					)
+					if (explosionPower > 0) {
+						world.spawnParticle(
+							Particle.FLASH,
+							newLoc.x,
+							newLoc.y,
+							newLoc.z,
+							explosionPower.toInt(),
+							explosionPower.toDouble() / 2,
+							explosionPower.toDouble() / 2,
+							explosionPower.toDouble() / 2,
+							0.0,
+							null,
+							true
+						)
+					}
+
 					hasHit = true
 				}
 			}
