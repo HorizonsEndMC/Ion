@@ -17,6 +17,8 @@ import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.LegacyPowerArmorModule
 import org.bukkit.Chunk
 import org.bukkit.Material
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
 import org.bukkit.craftbukkit.inventory.CraftBlockInventoryHolder
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -817,6 +819,86 @@ object DataMigrators : IonServerComponent() {
 				CustomItemRegistry.CHARGED_SHELL, CustomItemRegistry.ARSENAL_MISSILE, CustomItemRegistry.UNLOADED_ARSENAL_MISSILE,
 				CustomItemRegistry.ACTIVATED_ARSENAL_MISSILE
 			))
+			.build()
+		)
+
+		registerDataVersion(DataVersion.builder(6)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.POWER_ARMOR_BOOTS)
+				.addConsumer {
+					it.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
+						.itemAttributes()
+						.addModifier(
+							Attribute.ARMOR,
+							AttributeModifier(
+								NamespacedKeys.key(CustomItemRegistry.POWER_ARMOR_BOOTS.identifier),
+								2.0,
+								AttributeModifier.Operation.ADD_NUMBER,
+								CustomItemRegistry.POWER_ARMOR_BOOTS.slot.group
+							)
+						)
+						.build()
+					)
+				}
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.POWER_ARMOR_LEGGINGS)
+				.addConsumer {
+					it.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
+						.itemAttributes()
+						.addModifier(
+							Attribute.ARMOR,
+							AttributeModifier(
+								NamespacedKeys.key(CustomItemRegistry.POWER_ARMOR_LEGGINGS.identifier),
+								2.0,
+								AttributeModifier.Operation.ADD_NUMBER,
+								CustomItemRegistry.POWER_ARMOR_LEGGINGS.slot.group
+							)
+						)
+						.build()
+					)
+				}
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.POWER_ARMOR_CHESTPLATE)
+				.addConsumer {
+					it.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
+						.itemAttributes()
+						.addModifier(
+							Attribute.ARMOR,
+							AttributeModifier(
+								NamespacedKeys.key(CustomItemRegistry.POWER_ARMOR_CHESTPLATE.identifier),
+								2.0,
+								AttributeModifier.Operation.ADD_NUMBER,
+								CustomItemRegistry.POWER_ARMOR_CHESTPLATE.slot.group
+							)
+						)
+						.build()
+					)
+				}
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.POWER_ARMOR_HELMET)
+				.addConsumer {
+					it.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
+						.itemAttributes()
+						.addModifier(
+							Attribute.ARMOR,
+							AttributeModifier(
+								NamespacedKeys.key(CustomItemRegistry.POWER_ARMOR_HELMET.identifier),
+								2.0,
+								AttributeModifier.Operation.ADD_NUMBER,
+								CustomItemRegistry.POWER_ARMOR_HELMET.slot.group
+							)
+						)
+						.build()
+					)
+				}
+				.build()
+			)
 			.build()
 		)
 	}

@@ -60,8 +60,8 @@ class PowerArmorItem(
 		)
 		.addData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
 			.itemAttributes()
-			.addModifier(Attribute.ARMOR, AttributeModifier(NamespacedKeys.key(identifier), 5.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
-			.addModifier(Attribute.ARMOR_TOUGHNESS, AttributeModifier(NamespacedKeys.key(identifier), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
+			.addModifier(Attribute.ARMOR, AttributeModifier(NamespacedKeys.key(identifier), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
+//			.addModifier(Attribute.ARMOR_TOUGHNESS, AttributeModifier(NamespacedKeys.key(identifier), 2.0, AttributeModifier.Operation.ADD_NUMBER, slot.group))
 			.build())
 		.build()
 ) {

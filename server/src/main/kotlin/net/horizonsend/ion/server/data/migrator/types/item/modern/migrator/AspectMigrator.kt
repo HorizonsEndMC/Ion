@@ -5,6 +5,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ChangeIdentifierMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ChangeTypeMigrator
+import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ConsumerMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.CustomNameMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ItemAspectMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ItemComponentMigrator
@@ -18,6 +19,7 @@ import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import java.util.function.Consumer
 
 class AspectMigrator private constructor(
 	val customItem: CustomItem,
@@ -103,6 +105,11 @@ class AspectMigrator private constructor(
 
 		fun pullName(from: CustomItem): Builder {
 			aspects.add(PullLoreMigrator(from))
+			return this
+		}
+
+		fun addConsumer(consumer: Consumer<ItemStack>): Builder {
+			aspects.add(ConsumerMigrator(consumer))
 			return this
 		}
 
