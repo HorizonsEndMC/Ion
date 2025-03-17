@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Sound
@@ -35,6 +36,9 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
+import org.bukkit.util.Vector
+import kotlin.math.cos
+import kotlin.math.sin
 
 class PowerArmorItem(
 	identifier: String,
@@ -128,22 +132,38 @@ class PowerArmorItem(
 		}
 
 		entity.isGliding = true
-		val strafeVelocity = entity.velocity.midpoint(entity.location.direction.multiply(0.6))
-		when(RocketBoostingMod.strafingMode[entity.uniqueId]) {
-			StrafingMode.LEFT -> strafeVelocity.rotateAroundY(0.26)
-			StrafingMode.RIGHT -> strafeVelocity.rotateAroundY(-0.26)
-			else -> {}
+		val dir = entity.location.direction
+		val strafeVel = entity.velocity.midpoint(dir.multiply(0.6))
+		if(RocketBoostingMod.strafingMode[entity.uniqueId] == null) entity.velocity = strafeVel
+		else {
+			val strafeRight = Vector(-(dir.z), 0.0, (dir.x)).multiply(0.4)
+
+			val relativeUpAxis = when(entity.pitch) {
+				 90f -> Vector(-sin(entity.yaw * 0.017444) , 0.0, cos(entity.yaw * 0.017444)) // straight down
+				-90f -> Vector( sin(entity.yaw * 0.017444) , 0.0,-cos(entity.yaw * 0.017444)) // straight up
+				else -> strafeRight.clone().crossProduct(strafeVel) // anything else
+			}
+
+			when (RocketBoostingMod.strafingMode[entity.uniqueId]) {
+				StrafingMode.LEFT -> entity.velocity = strafeVel.clone().rotateAroundAxis(relativeUpAxis, 0.26)
+				StrafingMode.RIGHT -> entity.velocity = strafeVel.clone().rotateAroundAxis(relativeUpAxis, -0.26)
+				else -> {}
+			}
 		}
-		entity.velocity = strafeVelocity
 
 		entity.world.spawnParticle(Particle.SMOKE, entity.location, 5)
 
-		if (!entity.world.hasFlag(WorldFlag.ARENA)) {
+		if (!entity.world.hasFlag(WorldFlag.ARENA) && entity.gameMode != GameMode.CREATIVE) {
 			powerManager.removePower(itemStack, this, 5)
 		}
 
 		Tasks.sync {
 			entity.world.playSound(entity.location, Sound.BLOCK_FIRE_AMBIENT, 1.0f, 2.0f)
 		}
+	}
+	fun restrictToRanges(num: Double): Double {
+		if(num > 0) return num.coerceAtLeast(0.2)
+		if(num < 0) return num.coerceAtMost(-0.2)
+		return num // num = 0
 	}
 }
