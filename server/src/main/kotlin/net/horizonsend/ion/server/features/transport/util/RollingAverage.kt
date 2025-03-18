@@ -5,6 +5,7 @@ class RollingAverage {
 	data class TransferredPower(val transferred: Int, val time: Long = System.currentTimeMillis())
 
 	companion object { private const val NUMBER_STORED_AVERAGES = 20 }
+
 	// Use array deque as a stack
 	private val averages = ArrayDeque<TransferredPower?>(NUMBER_STORED_AVERAGES).apply {
 		// Initialize with 0 transferred
@@ -12,7 +13,7 @@ class RollingAverage {
 	}
 
 	fun addEntry(amount: Int) {
-		if (averages.size == NUMBER_STORED_AVERAGES) averages.removeFirst()
+		if (averages.size >= NUMBER_STORED_AVERAGES) averages.removeFirst()
 		averages.addLast(TransferredPower(amount))
 	}
 
