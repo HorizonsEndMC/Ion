@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
-import org.bukkit.block.Block
+import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import kotlin.collections.set
@@ -44,17 +44,17 @@ class BoxShieldSubsystem(
 		cacheShape { face -> face.oppositeFace }
 	}
 
-	override fun containsBlock(block: Block): Boolean {
-		if (starship.world.uid != block.world.uid) {
+	override fun containsPosition(world: World, blockPos: Vec3i): Boolean {
+		if (starship.world.uid != world.uid) {
 			return false
 		}
 
 		val shape = getShape()
 		val min = shape.min
 		val max = shape.max
-		val lx = block.x - pos.x
-		val ly = block.y - pos.y
-		val lz = block.z - pos.z
+		val lx = blockPos.x - pos.x
+		val ly = blockPos.y - pos.y
+		val lz = blockPos.z - pos.z
 
 		return lx >= min.x && ly >= min.y && lz >= min.z && lx <= max.x && ly <= max.y && lz <= max.z
 	}
