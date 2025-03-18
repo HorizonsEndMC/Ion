@@ -67,8 +67,8 @@ object IonServer : JavaPlugin() {
 						if((input.forward && input.backward) || (!input.forward && !input.backward)) { // both or neither pressed
 							RocketBoostingMod.ascendingMode.remove(player.uniqueId)
 						} else {
-							if(input.forward) RocketBoostingMod.ascendingMode[player.uniqueId] = AscendingMode.ASCENDING
-							if(input.backward) RocketBoostingMod.ascendingMode[player.uniqueId] = AscendingMode.DESCENDING
+							if(input.forward) RocketBoostingMod.ascendingMode[player.uniqueId] = AscendingMode.DESCENDING
+							if(input.backward) RocketBoostingMod.ascendingMode[player.uniqueId] = AscendingMode.ASCENDING
 						}
 
 					}
