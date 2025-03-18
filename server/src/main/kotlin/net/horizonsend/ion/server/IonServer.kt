@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.configurationFolder
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
+import net.horizonsend.ion.server.features.custom.items.type.armor.AscendingMode
 import net.horizonsend.ion.server.features.custom.items.type.armor.StrafingMode
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod
 import net.horizonsend.ion.server.features.misc.WorldReset
@@ -53,19 +54,21 @@ object IonServer : JavaPlugin() {
 				protocolManager.addPacketListener(object: PacketAdapter(IonServer, PacketType.Play.Client.STEER_VEHICLE) {
 					override fun onPacketReceiving(event: PacketEvent) {
 						val player = event.player
-						if (!player.isGliding && !event.player.isSneaking) {  // power boot conditions
-							RocketBoostingMod.strafingMode.remove(player.uniqueId)
-							return
-						}
 						val input = (event.packet.handle as ServerboundPlayerInputPacket).input
 
 						if ((input.left && input.right) || (!input.left && !input.right)) { // both or neither pressed
 							RocketBoostingMod.strafingMode.remove(player.uniqueId)
-							return
+						} else {
+							if(input.left) RocketBoostingMod.strafingMode[player.uniqueId] = StrafingMode.LEFT
+							if(input.right) RocketBoostingMod.strafingMode[player.uniqueId] = StrafingMode.RIGHT
+						}
+						if((input.forward && input.backward) || (!input.forward && !input.backward)) { // both or neither pressed
+							RocketBoostingMod.ascendingMode.remove(player.uniqueId)
+						} else {
+							if(input.forward) RocketBoostingMod.ascendingMode[player.uniqueId] = AscendingMode.ASCENDING
+							if(input.backward) RocketBoostingMod.ascendingMode[player.uniqueId] = AscendingMode.DESCENDING
 						}
 
-						if(input.left) RocketBoostingMod.strafingMode[player.uniqueId] = StrafingMode.LEFT
-						if(input.right) RocketBoostingMod.strafingMode[player.uniqueId] = StrafingMode.RIGHT
 					}
 				})
 

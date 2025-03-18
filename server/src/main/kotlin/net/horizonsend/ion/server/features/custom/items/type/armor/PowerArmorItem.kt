@@ -134,19 +134,23 @@ class PowerArmorItem(
 		entity.isGliding = true
 		val dir = entity.location.direction
 		val strafeVel = entity.velocity.midpoint(dir.multiply(0.6))
-		if(RocketBoostingMod.strafingMode[entity.uniqueId] == null) entity.velocity = strafeVel
+		if(RocketBoostingMod.strafingMode[entity.uniqueId] == null && RocketBoostingMod.ascendingMode[entity.uniqueId] == null) entity.velocity = strafeVel
 		else {
-			val strafeRight = Vector(-(dir.z), 0.0, (dir.x)).multiply(0.4)
-
 			val relativeUpAxis = when(entity.pitch) {
-				 90f -> Vector(-sin(entity.yaw * 0.017444) , 0.0, cos(entity.yaw * 0.017444)) // straight down
+				90f -> Vector(-sin(entity.yaw * 0.017444) , 0.0, cos(entity.yaw * 0.017444)) // straight down
 				-90f -> Vector( sin(entity.yaw * 0.017444) , 0.0,-cos(entity.yaw * 0.017444)) // straight up
-				else -> strafeRight.clone().crossProduct(strafeVel) // anything else
+				else -> Vector(-(dir.z), 0.0, (dir.x)).crossProduct(strafeVel) // anything else
 			}
-
+			val strafeRight = strafeVel.clone().crossProduct(relativeUpAxis)
+			val finalVel = strafeVel.clone()
 			when (RocketBoostingMod.strafingMode[entity.uniqueId]) {
-				StrafingMode.LEFT -> entity.velocity = strafeVel.clone().rotateAroundAxis(relativeUpAxis, 0.26)
-				StrafingMode.RIGHT -> entity.velocity = strafeVel.clone().rotateAroundAxis(relativeUpAxis, -0.26)
+				StrafingMode.LEFT -> entity.velocity = finalVel.rotateAroundAxis(relativeUpAxis, 0.26)
+				StrafingMode.RIGHT -> entity.velocity = finalVel.rotateAroundAxis(relativeUpAxis, -0.26)
+				else -> {}
+			}
+			when(RocketBoostingMod.ascendingMode[entity.uniqueId]) {
+				AscendingMode.ASCENDING -> entity.velocity = finalVel.rotateAroundAxis(strafeRight, 0.2)
+				AscendingMode.DESCENDING -> entity.velocity = finalVel.rotateAroundAxis(strafeRight, -0.2)
 				else -> {}
 			}
 		}
