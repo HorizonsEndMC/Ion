@@ -10,7 +10,7 @@ import net.kyori.adventure.sound.Sound
 import org.bukkit.inventory.FurnaceInventory
 import org.bukkit.inventory.ItemStack
 
-class FurnaceEnviornment(
+open class FurnaceEnviornment(
 	override val multiblock: MultiblockEntity,
 	val furnaceInventory: FurnaceInventory,
 	val powerStorage: PowerStorage,

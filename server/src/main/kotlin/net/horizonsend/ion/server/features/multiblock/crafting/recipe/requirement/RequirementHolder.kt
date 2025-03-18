@@ -11,10 +11,10 @@ open class RequirementHolder<T: RecipeEnviornment, V: Any?, out R: RecipeRequire
 		return requirement.ensureAvailable(resourceValue)
 	}
 
-	open fun consume(enviornment: T) {
+	open fun consume(environment: T) {
 		if (requirement is Consumable<*, *>) {
 			@Suppress("UNCHECKED_CAST")
-			(requirement as Consumable<V, T>).consume(enviornment)
+			(requirement as Consumable<V, T>).consume(environment)
 		}
 	}
 
@@ -24,13 +24,13 @@ open class RequirementHolder<T: RecipeEnviornment, V: Any?, out R: RecipeRequire
 		requirement: R,
 		private val slotModificationWrapper: (T) -> SlotModificationWrapper
 	) : RequirementHolder<T, V, R>(dataTypeClass, getter, requirement) {
-		override fun consume(enviornment: T) {
-			val wrapper = slotModificationWrapper.invoke(enviornment)
+		override fun consume(environment: T) {
+			val wrapper = slotModificationWrapper.invoke(environment)
 
 			if (requirement is ItemRequirement) { //TODO generalize for new
 				wrapper.consume consumer@{ item: ItemStack? ->
 					if (item == null) return@consumer
-					requirement.consume(item)
+					requirement.consume(item, environment)
 				}
 			}
 		}
