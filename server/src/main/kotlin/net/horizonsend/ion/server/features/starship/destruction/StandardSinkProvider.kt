@@ -4,10 +4,12 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongIterator
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.d
+import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.machine.AreaShields.getNearbyAreaShields
 import net.horizonsend.ion.server.features.starship.Hangars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -121,6 +123,12 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 	) = Tasks.getSyncBlocking {
 		val start = System.nanoTime()
 
+		val nearbyShipShields = ActiveStarships.getInWorld(world)
+			.flatMap { it.shields }
+			.associateBy { it.pos }
+
+		val shieldCheckY = 100.squared()
+
 		while (iterator.hasNext()) {
 			if (System.nanoTime() - start > limitPerTick) {
 				return@getSyncBlocking false
@@ -143,20 +151,25 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 				continue
 			}
 
-			val location = Location(world, x.toDouble(), y.toDouble(), z.toDouble())
+			val newLocation = Location(world, newX.toDouble(), newY.toDouble(), newZ.toDouble())
 
-			if (!world.worldBorder.isInside(location)) {
+			if (!world.worldBorder.isInside(Location(world, x.toDouble(), y.toDouble(), z.toDouble()))) {
 				obstructedLocations.add(key)
 				continue
 			}
 
-			val areaShields = getNearbyAreaShields(location, 1.0)
+			val areaShields = getNearbyAreaShields(newLocation, 1.0)
 			if (areaShields.any { it.powerStorage.getPower() > 0 }) {
 				obstructedLocations.add(key)
 				continue
 			}
 
+			val shipShields = nearbyShipShields.filterKeys { distanceSquared(it.x, it.y, it.z, newX, newY, newZ) < shieldCheckY }
 
+			if (shipShields.any { it.value.containsPosition(world, Vec3i(newX, newY, newZ)) }) {
+				obstructedLocations.add(key)
+				continue
+			}
 
 			// Check here, also when exploding
 			if (!isBlockLoaded(world, newX, newY, newZ)) {
