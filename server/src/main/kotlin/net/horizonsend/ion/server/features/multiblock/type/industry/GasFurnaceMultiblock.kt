@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.industry
 
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.input.GasFurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.IndustryEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
@@ -11,6 +13,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.inventory.FurnaceInventory
 
 object GasFurnaceMultiblock : Multiblock(), EntityMultiblock<GasFurnaceMultiblock.GasFurnaceMultiblockEntity>, DisplayNameMultilblock {
 	override val name = "gasfurnace"
@@ -88,5 +91,16 @@ object GasFurnaceMultiblock : Multiblock(), EntityMultiblock<GasFurnaceMultibloc
 		z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : IndustryEntity(data, GasFurnaceMultiblock, manager, x, y, z, world, structureFace, 250_000)
+	) : IndustryEntity(data, GasFurnaceMultiblock, manager, x, y, z, world, structureFace, 250_000) {
+		override fun buildRecipeEnviornment(): FurnaceEnviornment {
+			return GasFurnaceEnviornment(
+				this,
+				getInventory(0, 0, 0) as FurnaceInventory,
+				getInventory(0, 0, 3)!!,
+				powerStorage,
+				tickingManager,
+				progressManager
+			)
+		}
+	}
 }
