@@ -7,6 +7,8 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
+import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
@@ -38,6 +40,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.PotionSplashEvent
+import org.bukkit.event.inventory.FurnaceBurnEvent
 import org.bukkit.event.inventory.PrepareItemCraftEvent
 import org.bukkit.event.player.PlayerFishEvent
 import org.bukkit.event.player.PlayerInteractEvent
@@ -244,6 +247,13 @@ class CancelListeners : SLEventListener() {
 			entity.config = disabledVaultConfig
 			vaultServerDataResumeField.set(entity.getServerData(), Long.MAX_VALUE)
 		}
+	}
+
+	@EventHandler
+	fun onFurnaceTick(event: FurnaceBurnEvent) {
+		val entity = MultiblockEntities.getMultiblockEntity(event.block)
+		if (entity !is FurnaceBasedMultiblockEntity) return
+		event.isCancelled = true
 	}
 
 	private val vaultServerDataResumeField: Field = VaultServerData::class.java.getDeclaredField("stateUpdatingResumesAt").apply { isAccessible = true }
