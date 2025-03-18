@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.crafting.recipe.requireme
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.RecipeRequirement
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
@@ -13,7 +14,7 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 
 	fun matches(item: ItemStack?): Boolean
 
-	fun consume(item: ItemStack) {
+	fun consume(item: ItemStack, environment: RecipeEnviornment) {
 		item.amount--
 	}
 
