@@ -52,11 +52,15 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 		return FurnaceEnviornment(this)
 	}
 
+	private var furnaceActive = false
+
 	override fun tick() {
 		if (!tryProcessRecipe()) {
 			progressManager.reset()
-			putOutFurnace()
+			if (furnaceActive) putOutFurnace()
+			return
 		}
+		furnaceActive = true
 	}
 
 	override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
