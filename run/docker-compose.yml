@@ -36,7 +36,8 @@ services:
       - ./config/velocity/velocity.toml:/server/velocity.toml
       - ./config/velocity/forwarding.secret:/server/forwarding.secret
     environment:
-      TYPE: "VELOCITY"
+      TYPE: "CUSTOM"
+      BUNGEE_JAR_URL: "https://api.papermc.io/v2/projects/velocity/versions/3.4.0-SNAPSHOT/builds/458/downloads/velocity-3.4.0-SNAPSHOT-458.jar"
       JVM_XX_OPTS: "-XX:+UseG1GC -XX:G1HeapRegionSize=4M -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch"
 
   paper:
@@ -55,11 +56,11 @@ services:
       - ./config/paper:/config
     environment:
       TYPE: "PAPER"
-      VERSION: "1.21.3"
+      VERSION: "1.21.4"
       EULA: "TRUE"
       USE_AIKAR_FLAGS: "TRUE"
       COPY_CONFIG_DEST: "/data"
       SYNC_SKIP_NEWER_IN_DESTINATION: "FALSE"
       JVM_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
       CREATE_CONSOLE_IN_PIPE: "TRUE"
-
+      PAPER_CHANNEL: "experimental"
