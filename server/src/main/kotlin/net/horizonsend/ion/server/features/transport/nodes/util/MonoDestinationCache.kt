@@ -12,11 +12,11 @@ import kotlin.concurrent.withLock
 import kotlin.reflect.KClass
 
 class MonoDestinationCache(parentCache: TransportCache) : DestinationCache(parentCache) {
-	private val rawCache: Object2ObjectOpenHashMap<KClass<out Node>, Long2ObjectOpenHashMap<CacedDestinations>> = Object2ObjectOpenHashMap()
+	private val rawCache: Object2ObjectOpenHashMap<KClass<out Node>, Long2ObjectOpenHashMap<CachedDestinations>> = Object2ObjectOpenHashMap()
 
 	private val lock = ReentrantReadWriteLock(true)
 
-	private fun getCache(nodeType: KClass<out Node>): Long2ObjectOpenHashMap<CacedDestinations> {
+	private fun getCache(nodeType: KClass<out Node>): Long2ObjectOpenHashMap<CachedDestinations> {
 		return rawCache.getOrPut(nodeType) { Long2ObjectOpenHashMap() }
 	}
 
@@ -45,7 +45,7 @@ class MonoDestinationCache(parentCache: TransportCache) : DestinationCache(paren
 	fun set(nodeType: KClass<out Node>, origin: BlockKey, value: Set<PathfindingNodeWrapper>) {
 		lock.writeLock().lock()
 		try {
-			getCache(nodeType)[origin] = CacedDestinations(System.currentTimeMillis(), ObjectOpenHashSet(value))
+			getCache(nodeType)[origin] = CachedDestinations(System.currentTimeMillis(), ObjectOpenHashSet(value))
 		} finally {
 			lock.writeLock().unlock()
 		}
