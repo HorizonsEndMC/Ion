@@ -6,12 +6,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed interface DomainWarpConfiguration {
 	fun apply(noiseLite: FastNoiseLite)
-	fun build(): NoiseWrapper3d.DomainWarp
+	fun build(): AsteroidNoise3d.DomainWarp
 
 	@Serializable
 	data object None : DomainWarpConfiguration {
 		override fun apply(noiseLite: FastNoiseLite) {}
-		override fun build(): NoiseWrapper3d.DomainWarp = NoiseWrapper3d.DomainWarp.None
+		override fun build(): AsteroidNoise3d.DomainWarp = AsteroidNoise3d.DomainWarp.None
 	}
 
 	@Serializable
@@ -29,12 +29,12 @@ sealed interface DomainWarpConfiguration {
 			noiseLite.SetDomainWarpAmp(amplitude)
 		}
 
-		override fun build(): NoiseWrapper3d.DomainWarp {
+		override fun build(): AsteroidNoise3d.DomainWarp {
 			val domainWarpNoise = FastNoiseLite()
 			noiseType.apply(domainWarpNoise)
 			fractalSettings.apply(domainWarpNoise)
 
-			return NoiseWrapper3d.DomainWarp.NoiseWarp(domainWarpNoise, domainWarpMultiplier)
+			return AsteroidNoise3d.DomainWarp.NoiseWarp(domainWarpNoise, domainWarpMultiplier)
 		}
 	}
 }

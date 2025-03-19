@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.world.generation.feature.meta.astero
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.IterativeValueProvider
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.weightedEntry
 import net.horizonsend.ion.server.miscellaneous.utils.weightedRandom
@@ -47,7 +48,7 @@ class NoiseAsteroidMaterial(
 		meta: ConfigurableAsteroidMeta,
 		start: FeatureStart,
 	): BlockState {
-		val noiseValue = noiseProvider.getValue(x, y, z, meta, start)
+		val noiseValue = noiseProvider.getValue(x, y, z, Vec3i(start.x, start.y, start.z))
 		return blocks.weightedEntry(noiseValue) { it.weight }.material.getValue(x, y, z, distanceSquared, noise, meta, start)
 	}
 }

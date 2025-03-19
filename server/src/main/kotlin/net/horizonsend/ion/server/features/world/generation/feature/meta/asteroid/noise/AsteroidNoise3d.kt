@@ -3,16 +3,17 @@ package net.horizonsend.ion.server.features.world.generation.feature.meta.astero
 import com.github.auburn.FastNoiseLite
 import com.github.auburn.FastNoiseLite.Vector3
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
-import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import kotlin.random.Random
 
-class NoiseWrapper3d(
+class AsteroidNoise3d(
+	val meta: ConfigurableAsteroidMeta,
 	private val noise: FastNoiseLite,
 	private val domainWarp: DomainWarp,
 	val amplitude: Double,
 	private val normalizedPositive: Boolean
 ) : IterativeValueProvider {
-	override fun getFallbackValue(meta: ConfigurableAsteroidMeta): Double {
+	override fun getFallbackValue(): Double {
 		return amplitude
 	}
 
@@ -21,7 +22,7 @@ class NoiseWrapper3d(
 		domainWarp.setSeed(random.nextInt())
 	}
 
-	override fun getValue(x: Double, y: Double, z: Double, meta: ConfigurableAsteroidMeta, start: FeatureStart): Double {
+	override fun getValue(x: Double, y: Double, z: Double, origin: Vec3i): Double {
 		val vector = Vector3(x.toFloat(), y.toFloat(), z.toFloat())
 		domainWarp.warp(vector)
 		var noiseValue = noise.GetNoise(vector.x, vector.y, vector.z)
