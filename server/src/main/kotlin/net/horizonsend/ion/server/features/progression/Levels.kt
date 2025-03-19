@@ -33,7 +33,7 @@ data class LevelsConfig(val creditsPerXP: Double = 2.5, val cost: CostSection = 
 }
 
 /** Maximum attainable level */
-internal const val MAX_LEVEL = 100
+internal const val MAX_LEVEL = 900
 
 object Levels : IonServerComponent() {
 	private val queue = ConcurrentLinkedQueue<UUID>()
