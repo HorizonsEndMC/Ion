@@ -1,32 +1,22 @@
 package net.horizonsend.ion.server.features.transport.nodes.util
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import java.util.concurrent.locks.ReentrantReadWriteLock
-import kotlin.concurrent.withLock
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
 class MonoDestinationCache(parentCache: TransportCache) : DestinationCache(parentCache) {
-	private val rawCache: Object2ObjectOpenHashMap<KClass<out Node>, Long2ObjectOpenHashMap<CachedDestinations>> = Object2ObjectOpenHashMap()
+	private val rawCache: ConcurrentHashMap<KClass<out Node>, ConcurrentHashMap<BlockKey, CachedDestinations>> = ConcurrentHashMap()
 
-	private val lock = ReentrantReadWriteLock(true)
-
-	private fun getCache(nodeType: KClass<out Node>): Long2ObjectOpenHashMap<CachedDestinations> {
-		return rawCache.getOrPut(nodeType) { Long2ObjectOpenHashMap() }
+	private fun getCache(nodeType: KClass<out Node>): ConcurrentHashMap<BlockKey, CachedDestinations> {
+		return rawCache.getOrPut(nodeType) { ConcurrentHashMap() }
 	}
 
 	fun contains(nodeType: KClass<out Node>, origin: BlockKey): Boolean {
-		lock.readLock().lock()
-		try {
-			return getCache(nodeType).containsKey(origin)
-		} finally {
-			lock.readLock().unlock()
-		}
+		return getCache(nodeType).containsKey(origin)
 	}
 
 	fun getOrPut(nodeType: KClass<out Node>, origin: BlockKey, cachingFunction: () -> Set<PathfindingNodeWrapper>?): Set<PathfindingNodeWrapper>? {
@@ -39,25 +29,15 @@ class MonoDestinationCache(parentCache: TransportCache) : DestinationCache(paren
 	}
 
 	fun get(nodeType: KClass<out Node>, origin: BlockKey): Set<PathfindingNodeWrapper>? {
-		return lock.readLock().withLock { getCache(nodeType)[origin] }?.takeIf { !it.isExpired() }?.destinations
+		return getCache(nodeType)[origin]?.takeIf { !it.isExpired() }?.destinations
 	}
 
 	fun set(nodeType: KClass<out Node>, origin: BlockKey, value: Set<PathfindingNodeWrapper>) {
-		lock.writeLock().lock()
-		try {
-			getCache(nodeType)[origin] = CachedDestinations(System.currentTimeMillis(), ObjectOpenHashSet(value))
-		} finally {
-			lock.writeLock().unlock()
-		}
+		getCache(nodeType)[origin] = CachedDestinations(System.currentTimeMillis(), ObjectOpenHashSet(value))
 	}
 
 	override fun remove(nodeType: KClass<out Node>, origin: BlockKey) {
-		lock.writeLock().lock()
-		try {
-			getCache(nodeType).remove(origin)?.destinations
-		} finally {
-			lock.writeLock().unlock()
-		}
+		getCache(nodeType).remove(origin)?.destinations
 	}
 
 	override fun invalidatePaths(nodeType: KClass<out Node>, pos: BlockKey, node: Node) {
@@ -76,14 +56,10 @@ class MonoDestinationCache(parentCache: TransportCache) : DestinationCache(paren
 		}
 
 		// Remove all the paths after being found
-		lock.writeLock().lock()
-		try {
-			for (key in toRemove.iterator()) {
-				getCache(nodeType).remove(key)
-			}
-		} finally {
-			lock.writeLock().unlock()
+		for (key in toRemove.iterator()) {
+			getCache(nodeType).remove(key)
 		}
+
 	}
 
 	override fun invalidatePaths(pos: BlockKey, node: Node) {

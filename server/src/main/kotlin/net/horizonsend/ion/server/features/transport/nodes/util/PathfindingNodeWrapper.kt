@@ -6,11 +6,20 @@ import net.horizonsend.ion.server.features.transport.nodes.types.Node
  * @param node The cached node at this position
  * @param parent The parent node
  **/
-data class PathfindingNodeWrapper(
-	val node: Node.NodePositionData,
-	var parent: PathfindingNodeWrapper?
-) {
+class PathfindingNodeWrapper(val node: Node.NodePositionData, parent: PathfindingNodeWrapper?) : Comparable<PathfindingNodeWrapper> {
+	var depth: Int = (parent?.depth ?: 0) + 1
+
+	var parent: PathfindingNodeWrapper? = parent
+		set(value) {
+			field = value
+			depth = (value?.depth ?: 0) + 1
+		}
+
+	private var cachedPath: Path? = null
+
 	fun buildPath(): Path {
+		cachedPath?.let { return it }
+
 		val list = arrayListOf(this.node)
 		var current: PathfindingNodeWrapper? = this
 
@@ -19,24 +28,13 @@ data class PathfindingNodeWrapper(
 			list.add(current.node)
 		}
 
-		return Path(list.toTypedArray())
+		val path = Path(list.toTypedArray())
+		cachedPath = path
+
+		return path
 	}
 
-	override fun equals(other: Any?): Boolean {
-		if (this === other) return true
-		if (javaClass != other?.javaClass) return false
-
-		other as PathfindingNodeWrapper
-
-		if (node != other.node) return false
-		if (parent != other.parent) return false
-
-		return true
-	}
-
-	override fun hashCode(): Int {
-		var result = node.hashCode()
-		result = 31 * result + (parent?.hashCode() ?: 0)
-		return result
+	override fun compareTo(other: PathfindingNodeWrapper): Int {
+		return depth.compareTo(other.depth)
 	}
 }

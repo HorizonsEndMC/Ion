@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.items.util
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap
+import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.ItemStack
@@ -10,13 +10,9 @@ class BackedItemTransaction(
 	val source: ItemReference,
 	val item: ItemStack,
 	val amount: Int,
-	val destinations: Long2ObjectRBTreeMap<CraftInventory>,
-	val destinationSelector: (Long2ObjectRBTreeMap<CraftInventory>) -> Pair<BlockKey, CraftInventory>
+	val destinations: Object2ObjectRBTreeMap<PathfindingNodeWrapper, CraftInventory>,
+	val destinationSelector: (Object2ObjectRBTreeMap<PathfindingNodeWrapper, CraftInventory>) -> Pair<PathfindingNodeWrapper, CraftInventory>
 ) {
-	fun check(): Boolean {
-		return true
-	}
-
 	fun execute() {
 		val cloned = source.inventory.getItem(source.index)?.clone() ?: return
 		val notRemoved = tryRemove()

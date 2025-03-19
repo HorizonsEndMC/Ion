@@ -6,9 +6,9 @@ import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.transport.items.LegacyFilterData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.types.Node.Companion.adjacentMinusBackwards
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
@@ -34,19 +34,16 @@ interface ItemNode : Node {
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = false
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf()
 
-		override val pathfindingResistance: Double = 0.0
-
-		fun getBlockData(holder: CacheHolder<*>): BlockData? {
+        fun getBlockData(holder: CacheHolder<*>): BlockData? {
 			val (x, y, z) = holder.transportManager.getGlobalCoordinate(toVec3i(position))
 			return getBlockDataSafe(holder.getWorld(), x, y, z)
 		}
 	}
 
 	data object ItemExtractorNode : ItemNode {
-		override val pathfindingResistance: Double = 0.5
-		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = false
+        override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = false
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is InventoryNode
-		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
 	}
 
 	sealed interface ChanneledItemNode {
@@ -64,16 +61,15 @@ interface ItemNode : Node {
 	data class SolidGlassNode(override val channel: PipeChannel) : ItemNode, ChanneledItemNode, PaneAlwaysTransfersForward {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = channelCheck(other)
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = channelCheck(other)
-		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
 
-		override val pathfindingResistance: Double = 1.0
-	}
+    }
 
 	data class PaneGlassNode(override val channel: PipeChannel) : ItemNode, ChanneledItemNode, PaneAlwaysTransfersForward {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = channelCheck(other)
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = channelCheck(other)
 
-		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
 
 		override fun filterPositionData(nextNodes: List<NodePositionData>, backwards: BlockFace): List<NodePositionData> {
 			val forward = backwards.oppositeFace
@@ -94,21 +90,19 @@ interface ItemNode : Node {
 			return nextNodes
 		}
 
-		override val pathfindingResistance: Double = 0.5
-	}
+    }
 
 	data object WildcardSolidGlassNode : ItemNode, PaneAlwaysTransfersForward {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true
-		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
 
-		override val pathfindingResistance: Double = 1.0
-	}
+    }
 
 	data class ItemMergeNode(val direction: BlockFace) : ItemNode, PaneAlwaysTransfersForward {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true
-		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
 
 		override fun filterPositionData(nextNodes: List<NodePositionData>, backwards: BlockFace): List<NodePositionData> {
 			return nextNodes.filter { node ->
@@ -116,17 +110,15 @@ interface ItemNode : Node {
 			}
 		}
 
-		override val pathfindingResistance: Double = 1.0
-	}
+    }
 
 	sealed interface FilterNode : ItemNode {
 		fun matches(itemStack: ItemStack) : Boolean
 	}
 
 	data class AdvancedFilterNode(val position: BlockKey, val cache: ItemTransportCache, val face: BlockFace) : FilterNode {
-		override val pathfindingResistance: Double = 1.0
 
-		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(face)
+        override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(face)
 
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is ItemExtractorNode  && other !is FilterNode
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = other !is ItemExtractorNode  && other !is FilterNode
@@ -139,9 +131,8 @@ interface ItemNode : Node {
 
 	data class HopperFilterNode(val position: BlockKey, var face: BlockFace, val cache: ItemTransportCache) : FilterNode, ComplexNode {
 		private val globalPosition get() = cache.holder.transportManager.getGlobalCoordinate(toVec3i(position))
-		override val pathfindingResistance: Double = 1.0
 
-		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(face)
+        override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(face)
 
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is InventoryNode && other !is FilterNode
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = other !is ItemExtractorNode  && other !is FilterNode
