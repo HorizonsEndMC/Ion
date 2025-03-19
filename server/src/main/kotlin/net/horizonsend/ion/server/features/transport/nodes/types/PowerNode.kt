@@ -7,10 +7,10 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.FlowMeterDisplayModule
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.types.Node.Companion.adjacentMinusBackwards
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.RollingAverage
-import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.axisOrNull
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -30,16 +30,14 @@ sealed interface PowerNode : Node {
 	override fun getMaxPathfinds(): Int = 1
 
     data object SpongeNode : PowerNode {
-        override val pathfindingResistance: Double = 1.0
-        override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
         override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true
-        override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+        override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
 		override fun getMaxPathfinds(): Int = 2
     }
 
     data class EndRodNode(var axis: Axis) : PowerNode, ComplexNode {
-        override val pathfindingResistance: Double = 0.5
-        override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = offset.axisOrNull == this.axis
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = offset.axisOrNull == this.axis
         override fun canTransferTo(other: Node, offset: BlockFace): Boolean = offset.axisOrNull == this.axis
         override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(backwards.oppositeFace)
         override fun displace(movement: StarshipMovement) {
@@ -48,23 +46,21 @@ sealed interface PowerNode : Node {
     }
 
     data object PowerExtractorNode : PowerNode {
-        override val pathfindingResistance: Double = 0.5
-        override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = false
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = false
         override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is PowerInputNode
-        override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+        override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
     }
 
 	data object PowerInputNode : PowerNode {
-		override val pathfindingResistance: Double = 0.0
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = false
-		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf()
 	}
 
 	interface MergeNode : PowerNode {
 		override fun getMaxPathfinds(): Int = 6
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
-		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
 
 		override fun filterPositionData(nextNodes: List<NodePositionData>, backwards: BlockFace): List<NodePositionData> {
 			val forward = backwards.oppositeFace
@@ -89,17 +85,14 @@ sealed interface PowerNode : Node {
     }
 
 	data object RedstoneMergeNode : StandardMergeNode {
-		override val pathfindingResistance: Double = 0.5
 	}
 
 	data object IronMergeNode : StandardMergeNode {
-		override val pathfindingResistance: Double = 0.5
 	}
 
     data object InvertedMergeNode : PowerNode, MergeNode {
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is EndRodNode && mergeNodeTransferCheck(other)
-		override val pathfindingResistance: Double = 0.5
-    }
+	}
 
     data class PowerFlowMeter(val cache: PowerTransportCache, var face: BlockFace, var world: World, var location: BlockKey) : PowerNode, ComplexNode, DisplayHandlerHolder {
 		var lastRefreshed = 0L
@@ -128,10 +121,9 @@ sealed interface PowerNode : Node {
             return ofChildren(firstLine, text(format.format(avg), GREEN),)
         }
 
-        override val pathfindingResistance: Double = 0.5
-        override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
         override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true
-        override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
+        override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
 
         override fun onInvalidate() {
 			isAlive = false
