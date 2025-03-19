@@ -11,7 +11,6 @@ import org.bukkit.block.BlockFace
 
 interface Node {
 	val cacheType: CacheType
-	val pathfindingResistance: Double
 
 	fun getTransferableDirections(backwards: BlockFace): Set<BlockFace>
 
@@ -109,4 +108,9 @@ interface Node {
 	}
 
 	fun onInvalidate() {}
+
+	companion object {
+		private val minusBackwards = Array(6) { ADJACENT_BLOCK_FACES.minus(BlockFace.entries[it]) }
+		fun adjacentMinusBackwards(backwards: BlockFace) = if (backwards != BlockFace.SELF) minusBackwards[backwards.ordinal] else ADJACENT_BLOCK_FACES
+	}
 }

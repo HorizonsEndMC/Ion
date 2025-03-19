@@ -27,8 +27,7 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 
 		// Unneeded, just piggyback off of the node cache for speed
 		override val cacheType: CacheType get() = CacheType.SOLAR_PANELS
-		override val pathfindingResistance: Double get() = 0.0
-		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf()
+        override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf()
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = false
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = false
 	}
