@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.nodes.util
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
@@ -10,14 +9,13 @@ import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
 class MappedDestinationCache<K : Any>(parentCache: TransportCache) : DestinationCache(parentCache) {
-	private val rawCache: ConcurrentHashMap<KClass<out Node>, ConcurrentHashMap<K, Long2ObjectOpenHashMap<CachedDestinations>>> = ConcurrentHashMap()
+	private val rawCache: ConcurrentHashMap<KClass<out Node>, ConcurrentHashMap<K, ConcurrentHashMap<BlockKey, CachedDestinations>>> = ConcurrentHashMap()
 
-	private fun getCache(nodeType: KClass<out Node>, mapKey: K): Long2ObjectOpenHashMap<CachedDestinations> {
-		return rawCache.computeIfAbsent(nodeType) { ConcurrentHashMap() }.computeIfAbsent(mapKey) { Long2ObjectOpenHashMap() }
+	private fun getCache(nodeType: KClass<out Node>, mapKey: K): ConcurrentHashMap<BlockKey, CachedDestinations> {
+		return rawCache.computeIfAbsent(nodeType) { ConcurrentHashMap() }.computeIfAbsent(mapKey) { ConcurrentHashMap() }
 	}
 
-
-	private fun getCache(nodeType: KClass<out Node>): ConcurrentHashMap<K, Long2ObjectOpenHashMap<CachedDestinations>> {
+	private fun getCache(nodeType: KClass<out Node>): ConcurrentHashMap<K, ConcurrentHashMap<BlockKey, CachedDestinations>> {
 		return rawCache.computeIfAbsent(nodeType) { ConcurrentHashMap() }
 	}
 
