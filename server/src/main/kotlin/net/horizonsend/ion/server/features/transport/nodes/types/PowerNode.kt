@@ -62,6 +62,7 @@ sealed interface PowerNode : Node {
 	}
 
 	interface MergeNode : PowerNode {
+		override fun getMaxPathfinds(): Int = 6
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = ADJACENT_BLOCK_FACES.minus(backwards)
 
