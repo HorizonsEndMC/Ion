@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap
+import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.features.transport.items.util.ItemTransaction
@@ -32,7 +32,6 @@ import net.minecraft.world.level.block.state.properties.ChestType
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest
 import org.bukkit.inventory.ItemStack
-import java.util.SequencedCollection
 import kotlin.reflect.KClass
 
 class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): TransportCache(holder), DestinationCacheHolder {
@@ -149,22 +148,21 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
 		availableItemReferences: ArrayDeque<ItemReference>,
 	) {
-		val destinations: List<PathfindingNodeWrapper> = getTransferDestinations(
+		val destinations: MutableList<PathfindingNodeWrapper> = getTransferDestinations(
 			extractorLocation = originKey,
 			extractorNode = originNode,
 			singletonItem = singletonItem,
 			destinationInvCache = destinationInvCache,
 			availableItemReferences = availableItemReferences
-		)?.toList() ?: return
+		)?.toMutableList() ?: return
 
 		val transaction = ItemTransaction()
 
 		val destinationInventories = getDestinations(
 			singletonItem,
 			destinationInvCache,
-			destinations.mapTo(mutableListOf()) { it.node.position },
-			meta,
-			originKey
+			destinations,
+			meta
 		)
 
 		val room = getTransferSpaceFor(destinationInventories.values, singletonItem)
@@ -179,13 +177,8 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 				singletonItem,
 				amount
 			) { invs ->
-				val key = getDestination(
-					meta,
-					originKey,
-					invs.keys
-				)
-
-				key to invs[key]!!
+				val destination = getDestination(meta, invs.keys)
+				destination to invs[destination]!!
 			}
 		}
 
@@ -197,46 +190,44 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 	private fun getDestinations(
 		singletonItem: ItemStack,
 		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
-		validDestinations: MutableList<BlockKey>,
-		meta: ItemExtractorMetaData?,
-		extractorKey: BlockKey
-	): Long2ObjectRBTreeMap<CraftInventory> {
+		validDestinations: MutableList<PathfindingNodeWrapper>,
+		meta: ItemExtractorMetaData?
+	): Object2ObjectRBTreeMap<PathfindingNodeWrapper, CraftInventory> {
 		// Ordered map to preserve order
-		val foundDestinationInventories = Long2ObjectRBTreeMap<CraftInventory>()
+		val foundDestinationInventories = Object2ObjectRBTreeMap<PathfindingNodeWrapper, CraftInventory>()
 
 		for (n in validDestinations.indices) {
-			val newLocation: BlockKey = getDestination(meta, extractorKey, validDestinations.toSortedSet())
-			val destinationInventory = destinationInvCache[newLocation]
+			val destination: PathfindingNodeWrapper = getDestination(meta, validDestinations)
+			val destinationInventory = destinationInvCache[destination.node.position]
 
 			if (destinationInventory == null) {
-				validDestinations.remove(newLocation)
+				validDestinations.remove(destination)
 				if (validDestinations.isEmpty()) break
 
 				continue
 			}
 
 			if (getTransferSpaceFor(destinationInventory, singletonItem) == 0) {
-				validDestinations.remove(newLocation)
+				validDestinations.remove(destination)
 				if (validDestinations.isEmpty()) break
 
 				continue
 			}
 
-			foundDestinationInventories[newLocation] = destinationInventory
-			validDestinations.remove(newLocation)
+			foundDestinationInventories[destination] = destinationInventory
+			validDestinations.remove(destination)
 			if (validDestinations.isEmpty()) break
 		}
 
 		return foundDestinationInventories
 	}
 
-	fun getDestination(meta: ItemExtractorMetaData?, extractorKey: BlockKey, destinations: SequencedCollection<BlockKey>): BlockKey {
+	fun getDestination(meta: ItemExtractorMetaData?, destinations: Collection<PathfindingNodeWrapper>): PathfindingNodeWrapper {
 		if (meta != null) {
 			return meta.sortingOrder.getDestination(meta, destinations)
 		}
 
-		val extractorPosition = toVec3i(extractorKey)
-		return destinations.minBy { key -> extractorPosition.distance(toVec3i(key)) }
+		return destinations.minBy { wrapper -> wrapper.depth }
 	}
 
 	/**

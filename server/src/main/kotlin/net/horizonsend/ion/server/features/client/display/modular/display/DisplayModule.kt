@@ -112,8 +112,13 @@ abstract class DisplayModule(
 		entity.text = PaperAdventure.asVanilla(text)
 	}
 
+	private var lastTextUpdate: Long = System.currentTimeMillis()
+
 	open fun runUpdates() {
-		updateText(buildText())
+		if (System.currentTimeMillis() - lastTextUpdate > 1000L) {
+			updateText(buildText())
+			lastTextUpdate = System.currentTimeMillis()
+		}
 
 		playerManager.runUpdates()
 	}
