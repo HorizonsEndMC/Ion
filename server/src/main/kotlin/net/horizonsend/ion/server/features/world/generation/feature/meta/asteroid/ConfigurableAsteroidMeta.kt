@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroi
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.WeightedMaterialConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.WeightedRandomConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.AddConfiguration
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.AsteroidSize
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.DomainWarpConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.EvaluationConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.FractalSettings
@@ -20,11 +21,11 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroi
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.NoiseConfiguration2d
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.NoiseConfiguration3d
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.NoiseTypeConfiguration
-import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.SizeConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.StaticConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.SubtractConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.SumConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
+import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.minecraft.nbt.CompoundTag
 import org.bukkit.Material
 import org.bukkit.util.noise.PerlinOctaveGenerator
@@ -75,7 +76,7 @@ private val standardLayers =
 private val coronavirus =
 	AddConfiguration(
 		MultiplyConfiguration(
-			SizeConfiguration,
+			AsteroidSize,
 			StaticConfiguration(0.75)
 		),
 		SumConfiguration(
@@ -447,11 +448,11 @@ class ConfigurableAsteroidMeta(
 	private val normalizingFactor = size / totalDisplacement
 
 	fun getNoise(x: Double, y: Double, z: Double, start: FeatureStart): Double {
-		return noiseLayers.getValue(x, y, z, this, start) * normalizingFactor
+		return noiseLayers.getValue(x, y, z, Vec3i(start.x, start.y, start.z)) * normalizingFactor
 	}
 
 	private fun getMaxDisplacement(): Double {
-		return noiseLayers.getFallbackValue(this)
+		return noiseLayers.getFallbackValue()
 	}
 
 	object Factory : FeatureMetadataFactory<ConfigurableAsteroidMeta>() {

@@ -21,13 +21,13 @@ data class NoiseConfiguration3d(
 	override val amplitude: Double = 1.0,
 	override val normalizedPositive: Boolean = true
 ) : NoiseConfiguration {
-	override fun build(meta: ConfigurableAsteroidMeta): NoiseWrapper3d {
+	override fun build(meta: ConfigurableAsteroidMeta): AsteroidNoise3d {
 		val instance = FastNoiseLite()
 		noiseTypeConfiguration.apply(instance)
 		fractalSettings.apply(instance)
 		domainWarpConfiguration.apply(instance)
 
-		val wrapper = NoiseWrapper3d(instance, domainWarpConfiguration.build(), amplitude, normalizedPositive)
+		val wrapper = AsteroidNoise3d(meta, instance, domainWarpConfiguration.build(), amplitude, normalizedPositive)
 		wrapper.setSeed(meta.random)
 		return wrapper
 	}
@@ -41,13 +41,13 @@ data class NoiseConfiguration2d(
 	override val amplitude: Double = 1.0,
 	override val normalizedPositive: Boolean = true
 ) : NoiseConfiguration {
-	override fun build(meta: ConfigurableAsteroidMeta): NoiseWrapper2d {
+	override fun build(meta: ConfigurableAsteroidMeta): AsteroidNoise2d {
 		val instance = FastNoiseLite()
 		noiseTypeConfiguration.apply(instance)
 		fractalSettings.apply(instance)
 		domainWarpConfiguration.apply(instance)
 
-		val wrapper = NoiseWrapper2d(instance, domainWarpConfiguration.build(), amplitude, normalizedPositive)
+		val wrapper = AsteroidNoise2d(meta, instance, domainWarpConfiguration.build(), amplitude, normalizedPositive)
 		wrapper.setSeed(meta.random)
 		return wrapper
 	}
