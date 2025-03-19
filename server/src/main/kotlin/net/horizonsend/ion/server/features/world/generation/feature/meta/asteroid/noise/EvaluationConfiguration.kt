@@ -65,8 +65,8 @@ data class StaticConfiguration(val value: Double) : EvaluationConfiguration {
 }
 
 @Serializable
-data object SizeConfiguration : EvaluationConfiguration {
+data object AsteroidSize : EvaluationConfiguration {
 	override fun build(meta: ConfigurableAsteroidMeta): IterativeValueProvider {
-		return Size
+		return Static(meta.size)
 	}
 }
