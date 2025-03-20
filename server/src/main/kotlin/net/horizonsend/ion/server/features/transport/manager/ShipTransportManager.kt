@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.transport.manager
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.NewTransport
-import net.horizonsend.ion.server.features.transport.filters.manager.FilterManager
-import net.horizonsend.ion.server.features.transport.filters.manager.ShipFilterManager
+import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
+import net.horizonsend.ion.server.features.transport.filters.manager.ShipFilterCache
 import net.horizonsend.ion.server.features.transport.manager.extractors.ShipExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ShipCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
@@ -17,7 +17,7 @@ import org.bukkit.World
 
 class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheHolder<*>>() {
 	override val extractorManager: ShipExtractorManager = ShipExtractorManager(this)
-	override val filterManager: FilterManager = ShipFilterManager(this)
+	override val filterCache: FilterCache = ShipFilterCache(this)
 	val inputManager = ShipInputManager(this)
 
 	override fun getWorld(): World = starship.world
@@ -74,6 +74,6 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 
 	fun clearData() {
 		extractorManager.extractors.clear()
-		filterManager.filters.clear()
+		filterCache.filters.clear()
 	}
 }
