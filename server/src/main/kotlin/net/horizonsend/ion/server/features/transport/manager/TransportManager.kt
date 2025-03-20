@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.manager
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.features.transport.filters.manager.FilterManager
+import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
@@ -14,7 +14,7 @@ import org.bukkit.World
 
 abstract class TransportManager<T: CacheHolder<*>> {
 	abstract val extractorManager: ExtractorManager
-	abstract val filterManager: FilterManager
+	abstract val filterCache: FilterCache
 
 	abstract val powerNodeManager: CacheHolder<PowerTransportCache>
 	abstract val solarPanelManager: CacheHolder<SolarPanelCache>

@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.features.transport.filters.FilterEntry
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta
 import net.horizonsend.ion.server.features.transport.filters.FilterMethod
 import net.horizonsend.ion.server.features.transport.filters.FilterType
-import net.horizonsend.ion.server.features.transport.filters.manager.FilterManager
+import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.block.TileState
@@ -35,7 +35,7 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack, 
 		data.isWhitelist = !data.isWhitelist
 		updateSlotOverlay(event.view)
 
-		FilterManager.save(tileState.get(), data)
+		FilterCache.save(tileState.get(), data)
 	}
 
 	override fun open() {
@@ -101,7 +101,7 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack, 
 			notifyWindows()
 			updateSlotOverlay(event.view)
 
-			FilterManager.save(tileState.get(), data)
+			FilterCache.save(tileState.get(), data)
 		}
 
 		override fun getItemProvider(viewer: Player): ItemProvider = provider
@@ -121,7 +121,7 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack, 
 			notifyWindows()
 			updateSlotOverlay(event.view)
 
-			FilterManager.save(tileState.get(), data)
+			FilterCache.save(tileState.get(), data)
 		}
 
 		override fun getItemProvider(viewer: Player): ItemProvider = provider
