@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.nations.NationsMap.dynmapLoaded
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
@@ -81,7 +82,8 @@ class LocusScheduler(
 		center = calculateNewCenter()
 		active = true
 		markDynmapZone()
-		if (announcementMessage != null) IonServer.server.sendMessage(template(
+
+		if (announcementMessage != null) Notify.chatAndGlobal(template(
 			announcementMessage,
 			paramColor = HE_LIGHT_GRAY,
 			useQuotesAroundObjects = false,
