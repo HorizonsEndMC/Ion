@@ -16,9 +16,9 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
-import net.horizonsend.ion.server.miscellaneous.utils.toVec3i
-import net.minecraft.core.BlockPos
 import org.bukkit.entity.Player
 
 @CommandPermission("ion.command.admin.forbiddenblocks")
@@ -37,7 +37,7 @@ object ForbiddenBlocksCommand : SLCommand() {
 
 		for (blockVector in selection) {
 			if (!mask.test(blockVector)) continue
-			new.add(BlockPos.asLong(blockVector.x(), blockVector.y(), blockVector.z()))
+			new.add(toBlockKey(blockVector.x(), blockVector.y(), blockVector.z()))
 		}
 
 		blocks.addAll(new)
@@ -58,7 +58,7 @@ object ForbiddenBlocksCommand : SLCommand() {
 		(mask as? AbstractExtentMask)?.extent = BukkitAdapter.adapt(sender.world)
 
 		blocks.removeAll {
-			val pos = BlockPos.of(it)
+			val pos = toVec3i(it)
 			selection.contains(pos.x, pos.y, pos.z) && mask.test(BlockVector3.at(pos.x, pos.y, pos.z))
 		}
 
@@ -83,7 +83,7 @@ object ForbiddenBlocksCommand : SLCommand() {
 
 	@Subcommand("show all")
 	fun showAll(sender: Player) {
-		val blocks = sender.world.ion.detectionForbiddenBlocks.map { BlockPos.of(it).toVec3i() }
+		val blocks = sender.world.ion.detectionForbiddenBlocks.map(::toVec3i)
 		sender.highlightBlocks(blocks, 40L)
 	}
 
@@ -92,9 +92,9 @@ object ForbiddenBlocksCommand : SLCommand() {
 		val selection = sender.getSelection() ?: return sender.userError("You must make a selection!")
 		val blocks = sender.world.ion.detectionForbiddenBlocks
 		val intersect = blocks.filterTo(mutableSetOf()) {
-			val pos = BlockPos.of(it)
-			selection.contains(pos.x, pos.y, pos.z)
-		}.map { BlockPos.of(it).toVec3i() }
+			val (x, y, z) = toVec3i(it)
+			selection.contains(x, y, z)
+		}.map(::toVec3i)
 
 		sender.highlightBlocks(intersect, 40L)
 	}
