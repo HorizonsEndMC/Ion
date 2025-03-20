@@ -90,6 +90,8 @@ object CustomBlockListeners : SLEventListener() {
 				block.world.dropItem(location, drop)
 			}
         }
+
+		customBlock.removeCallback(block)
     }
 
 	@EventHandler

@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.manager.holders
 
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
 import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
@@ -53,6 +54,10 @@ class ChunkCacheHolder<T: TransportCache> private constructor (override val tran
 
 	override fun getExtractorManager(): ExtractorManager {
 		return transportManager.extractorManager
+	}
+
+	override fun getFilterManager(): FilterCache {
+		return transportManager.filterCache
 	}
 
 	override val globalGetter: CacheProvider = nodeProvider@{ currentCache, world, pos ->

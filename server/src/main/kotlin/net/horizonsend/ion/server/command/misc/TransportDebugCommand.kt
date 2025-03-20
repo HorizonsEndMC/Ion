@@ -147,6 +147,30 @@ object TransportDebugCommand : SLCommand() {
 		}
 	}
 
+	@Subcommand("dump filters chunk")
+	fun dumpFiltersChunk(sender: Player, network: CacheType) {
+		val ionChunk = sender.chunk.ion()
+		val filters = network.get(ionChunk).holder.getFilterManager()
+
+		sender.information("${filters.getFilters().size} covered position(s).")
+
+		filters.getFilters().forEach { filterData ->
+			sender.highlightBlock(toVec3i(filterData.position), 50L)
+		}
+	}
+
+	@Subcommand("dump filters ship")
+	fun dumpFiltersShip(sender: Player, network: CacheType) {
+		val ship = getStarshipRiding(sender)
+		val filters = network.get(ship).holder.getFilterManager()
+
+		sender.information("${filters.getFilters().size} covered position(s).")
+
+		filters.getFilters().forEach { filterData ->
+			sender.highlightBlock(toVec3i(filterData.position), 50L)
+		}
+	}
+
 	private fun requireLookingAt(sender: Player, network: (Block) -> TransportCache): Pair<Node, BlockKey> {
 		val targeted = sender.getTargetBlockExact(10) ?: fail { "No block in range" }
 		val grid = network(targeted)

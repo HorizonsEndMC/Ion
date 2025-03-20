@@ -117,14 +117,13 @@ interface ItemNode : Node {
 	}
 
 	data class AdvancedFilterNode(val position: BlockKey, val cache: ItemTransportCache, val face: BlockFace) : FilterNode {
-
         override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(face)
 
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is ItemExtractorNode  && other !is HopperFilterNode
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = other !is ItemExtractorNode  && other !is HopperFilterNode
 
 		override fun matches(itemStack: ItemStack): Boolean {
-			val filterData = cache.holder.transportManager.filterManager.getFilter(position, FilterType.ItemType) ?: return false
+			val filterData = cache.holder.getFilterManager().getFilter(position, FilterType.ItemType) ?: return false
 			return filterData.matchesFilter(itemStack)
 		}
 	}

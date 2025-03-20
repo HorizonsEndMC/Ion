@@ -2,13 +2,17 @@ package net.horizonsend.ion.server.features.transport
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.custom.blocks.filter.CustomFilterBlock
 import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlockEvent
 import net.horizonsend.ion.server.features.starship.event.build.StarshipPlaceBlockEvent
+import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.isExtractorData
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import org.bukkit.Material
 import org.bukkit.World
@@ -85,6 +89,10 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		return IonChunk.getFromWorldCoordinates(world, x, z)?.transportNetwork?.extractorManager
 	}
 
+	private fun getFilterCache(world: World, x: Int, z: Int): FilterCache? {
+		return IonChunk.getFromWorldCoordinates(world, x, z)?.transportNetwork?.filterCache
+	}
+
 	fun addExtractor(world: World, x: Int, y: Int, z: Int) {
 		getExtractorManager(world, x, z)?.registerExtractor(x, y, z)
 	}
@@ -105,6 +113,30 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 		if (isExtractor && !isExtractorPresent) addExtractor(world, x, y, z)
 		if (!isExtractor && isExtractorPresent) removeExtractor(world, x, y, z)
+	}
+
+	fun removeFilter(world: World, x: Int, y: Int, z: Int) {
+		getFilterCache(world, x, z)?.removeFilter(toBlockKey(x, y, z))
+	}
+
+	fun isFilter(world: World, x: Int, y: Int, z: Int): Boolean {
+		return getFilterCache(world, x, z)?.isFilterPresent(toBlockKey(x, y, z)) ?: false
+	}
+
+	fun ensureFilter(world: World, x: Int, y: Int, z: Int) = Tasks.sync {
+		val data = getBlockDataSafe(world, x, y, z) ?: return@sync
+		val customBlock = CustomBlocks.getByBlockData(data)
+
+		if (customBlock is CustomFilterBlock<*, *>) {
+			if (!isFilter(world, x, y, z)) {
+				getFilterCache(world, x, z)?.registerFilter(toBlockKey(x, y, z), customBlock)
+			}
+
+			return@sync
+		}
+
+		println("removing filter")
+		removeFilter(world, x, y, z)
 	}
 
 	fun handleBlockEvent(world: World, x: Int, y: Int, z: Int, previousData: BlockData, newData: BlockData) = Tasks.async {
@@ -131,6 +163,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	fun onPlayerBlockBreak(event: BlockBreakEvent) {
 		val block = event.block
 		handleBlockEvent(block.world, block.x, block.y, block.z, block.blockData, Material.AIR.createBlockData())
+		ensureFilter(block.world, block.x, block.y, block.z)
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -153,10 +186,12 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 			for (block in event.blocks) {
 				ensureExtractor(block.world, block.x, block.y, block.z)
+				ensureFilter(block.world, block.x, block.y, block.z)
 				invalidateCache(block.world, block.x, block.y, block.z)
 
 				val relative = block.getRelative(event.direction)
 				ensureExtractor(block.world, relative.x, relative.y, relative.z)
+				ensureFilter(block.world, block.x, block.y, block.z)
 				invalidateCache(block.world, relative.x, relative.y, relative.z)
 			}
 		}
@@ -170,10 +205,12 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 			for (block in event.blocks) {
 				ensureExtractor(block.world, block.x, block.y, block.z)
+				ensureFilter(block.world, block.x, block.y, block.z)
 				invalidateCache(block.world, block.x, block.y, block.z)
 
 				val relative = block.getRelative(event.direction)
 				ensureExtractor(block.world, relative.x, relative.y, relative.z)
+				ensureFilter(block.world, block.x, block.y, block.z)
 				invalidateCache(block.world, relative.x, relative.y, relative.z)
 			}
 		}

@@ -112,7 +112,7 @@ object ItemFilterBlock : DirectionalCustomBlock(
 
 		val key = toBlockKey(block.x, block.y, block.z)
 
-		val filterManager = chunk.transportNetwork.filterManager
+		val filterManager = chunk.transportNetwork.filterCache
 		@Suppress("UNCHECKED_CAST")
 		val filterData = (filterManager.getFilter(key) ?: filterManager.registerFilter(key, this)) as FilterData<ItemStack, ItemFilterMeta>
 
@@ -131,5 +131,9 @@ object ItemFilterBlock : DirectionalCustomBlock(
 				gui.open()
 			}
 		}
+	}
+
+	override fun removeCallback(block: Block) {
+		removeFilter(block)
 	}
 }

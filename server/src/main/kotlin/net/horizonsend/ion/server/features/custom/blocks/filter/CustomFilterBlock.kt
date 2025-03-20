@@ -38,7 +38,7 @@ interface CustomFilterBlock<T: Any, M: FilterMeta> : WrenchRemovable, Interactab
 
 		val key = toBlockKey(block.x, block.y, block.z)
 
-		val filterManager = chunk.transportNetwork.filterManager
+		val filterManager = chunk.transportNetwork.filterCache
 		val filterData = filterManager.getFilter(key) ?: filterManager.registerFilter(key, this)
 
 		filterInteractCooldown.tryExec(event.player) {
@@ -68,5 +68,13 @@ interface CustomFilterBlock<T: Any, M: FilterMeta> : WrenchRemovable, Interactab
 			.updatePersistentDataContainer {
 				set(NamespacedKeys.FILTER_DATA, FilterData, data)
 			}
+	}
+
+	fun removeFilter(block: Block) {
+		val chunk = IonChunk[block.world, block.x.shr(4), block.z.shr(4)] ?: return
+		val key = toBlockKey(block.x, block.y, block.z)
+
+		val filterManager = chunk.transportNetwork.filterCache
+		filterManager.removeFilter(key)
 	}
 }

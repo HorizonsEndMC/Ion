@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.manager.holders
 
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
@@ -40,6 +41,8 @@ interface CacheHolder<T: TransportCache> {
 	fun getMultiblockManager(): MultiblockManager
 
 	fun getExtractorManager(): ExtractorManager
+
+	fun getFilterManager(): FilterCache
 
 	fun getInputManager(): InputManager
 

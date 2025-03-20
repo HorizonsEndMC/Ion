@@ -74,7 +74,6 @@ class IonChunk(val inner: Chunk) {
 	fun save() {
 		multiblockManager.save()
 		transportNetwork.extractorManager.save()
-		transportNetwork.filterManager.save()
 	}
 
 	/**
