@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.block.TileState
 
-abstract class FilterManager(open val manager: TransportManager<*>) {
+abstract class FilterCache(open val manager: TransportManager<*>) {
 	val filters = Long2ObjectOpenHashMap<FilterData<*, *>>()
 
 	private val mutex = Any()
@@ -85,16 +85,17 @@ abstract class FilterManager(open val manager: TransportManager<*>) {
 		return data
 	}
 
-	fun removeFilter(key: BlockKey) = synchronized(mutex) {
+	fun removeFilter(key: BlockKey) {
 		val local = manager.getLocalCoordinate(toVec3i(key))
+
+		synchronized(mutex) {
+			filters.remove(toBlockKey(local))
+		}
 	}
 
 	fun isFilterPresent(key: BlockKey): Boolean = synchronized(mutex) {
 		return filters.containsKey(key)
 	}
-
-	abstract fun save()
-	abstract fun load()
 
 	companion object {
 		fun save(tileState: TileState, data: FilterData<*, *>) {
