@@ -27,7 +27,7 @@ import kotlin.reflect.KClass
 class FortuneModifier(
 	val level: Int,
 	color: String,
-	override val modItem: IonRegistryKey<CustomItem>?
+	override val modItem: IonRegistryKey<CustomItem, out CustomItem>?
 ) : ItemModification, DropSource {
 	override val crouchingDisables: Boolean = false
 	override val identifier: String = "FORTUNE_$level"
