@@ -31,7 +31,7 @@ import java.util.ArrayDeque
 import kotlin.math.roundToInt
 
 class PowerChainsaw(
-	key: IonRegistryKey<CustomItem>,
+	key: IonRegistryKey<CustomItem, out CustomItem>,
 	displayName: Component,
 	modLimit: Int,
 	basePowerCapacity: Int,

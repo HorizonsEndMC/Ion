@@ -2,8 +2,11 @@ package net.horizonsend.ion.server.core.registries.keys
 
 import net.horizonsend.ion.server.core.registries.IonRegistries
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.extractor.AdvancedItemExtractorBlock
+import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
+import net.horizonsend.ion.server.features.custom.blocks.misc.MultiblockWorkbench
 
-object CustomBlockKeys : KeyRegistry<CustomBlock>(IonRegistries.CUSTOM_BLOCKS) {
+object CustomBlockKeys : KeyRegistry<CustomBlock>(IonRegistries.CUSTOM_BLOCKS, CustomBlock::class) {
 	val ALUMINUM_ORE = registerKey("ALUMINUM_ORE")
 	val ALUMINUM_BLOCK = registerKey("ALUMINUM_BLOCK")
 	val RAW_ALUMINUM_BLOCK = registerKey("ARAW_ALUMINUM_BLOCK")
@@ -28,7 +31,7 @@ object CustomBlockKeys : KeyRegistry<CustomBlock>(IonRegistries.CUSTOM_BLOCKS) {
 	val BARGE_REACTOR_CORE = registerKey("BARGE_REACTOR_CORE")
 	val CRUISER_REACTOR_CORE = registerKey("CRUISER_REACTOR_CORE")
 
-	val MULTIBLOCK_WORKBENCH = registerKey("MULTIBLOCK_WORKBENCH")
-	val ADVANCED_ITEM_EXTRACTOR = registerKey("ADVANCED_ITEM_EXTRACTOR")
-	val ITEM_FILTER = registerKey("ITEM_FILTER")
+	val MULTIBLOCK_WORKBENCH = registerTypedKey<MultiblockWorkbench>("MULTIBLOCK_WORKBENCH")
+	val ADVANCED_ITEM_EXTRACTOR = registerTypedKey<AdvancedItemExtractorBlock>("ADVANCED_ITEM_EXTRACTOR")
+	val ITEM_FILTER = registerTypedKey<ItemFilterBlock>("ITEM_FILTER")
 }

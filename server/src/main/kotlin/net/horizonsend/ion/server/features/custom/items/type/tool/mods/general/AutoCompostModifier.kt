@@ -29,7 +29,7 @@ object AutoCompostModifier : ItemModification, DropModifier {
 		ApplicationPredicate.ClassPredicate(PowerChainsaw::class)
 	)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
-	override val modItem: IonRegistryKey<CustomItem> = CustomItemKeys.TOOL_MODIFICATION_AUTO_COMPOST
+	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.TOOL_MODIFICATION_AUTO_COMPOST
 
 	override val crouchingDisables: Boolean = false
 

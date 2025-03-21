@@ -19,7 +19,7 @@ import org.bukkit.persistence.PersistentDataType
 import xyz.xenondevs.invui.item.ItemProvider
 
 open class CustomItem(
-	val key: IonRegistryKey<CustomItem>,
+	val key: IonRegistryKey<CustomItem, out CustomItem>,
 	val displayName: Component,
 	baseItemFactory: ItemFactory,
 ) : ItemProvider {
@@ -105,6 +105,6 @@ open class CustomItem(
 
 	open fun getBazaarString(itemStack: ItemStack): String = key.key
 	open fun fromBazaarString(string: String): ItemStack = constructItemStack(1)
-	
+
 	val identifier get() = key.key
 }
