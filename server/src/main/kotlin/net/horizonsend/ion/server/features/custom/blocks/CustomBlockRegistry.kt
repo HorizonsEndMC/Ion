@@ -12,8 +12,6 @@ import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.MultiblockWorkbench
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
-import net.horizonsend.ion.server.miscellaneous.utils.getMatchingMaterials
 import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
@@ -255,67 +253,3 @@ class CustomBlockRegistry : Registry<CustomBlock>("CUSTOM_BLOCKS") {
 	}
 }
 
-open class CustomBlock(
-	val key: IonRegistryKey<CustomBlock>,
-	val blockData: BlockData,
-	val drops: BlockLoot,
-	private val customBlockItem: IonRegistryKey<CustomItem>
-) {
-	val customItem get() = customBlockItem.getValue()
-
-	open fun placeCallback(placedItem: ItemStack, block: Block) {}
-	open fun removeCallback(block: Block) {}
-}
-
-data class BlockLoot(
-	val requiredTool: Supplier<Tool>? = Supplier { Tool.PICKAXE },
-	val drops: Supplier<Collection<ItemStack>>,
-	val silkTouchDrops: Supplier<Collection<ItemStack>> = drops,
-) {
-	fun getDrops(tool: ItemStack?, silkTouch: Boolean): Collection<ItemStack> {
-		if (tool != null && requiredTool != null) {
-			if (!requiredTool.get().matches(tool)) return listOf()
-		}
-
-		if (silkTouch) return silkTouchDrops.get().map { it.clone() }
-
-		return drops.get().map { it.clone() }
-	}
-
-	companion object ToolPredicate {
-		fun matchMaterial(material: Material): (ItemStack) -> Boolean {
-			return { it.type == material }
-		}
-
-		fun matchAnyMaterial(materials: Iterable<Material>): (ItemStack) -> Boolean {
-			return { materials.contains(it.type) }
-		}
-
-		fun customItem(customItem: IonRegistryKey<CustomItem>): (ItemStack) -> Boolean {
-			return { it.customItem?.key == customItem }
-		}
-	}
-
-	enum class Tool(vararg val checks: (ItemStack) -> Boolean) {
-		PICKAXE(
-			customItem(CustomItemKeys.POWER_DRILL_BASIC),
-			matchAnyMaterial(getMatchingMaterials { it.name.endsWith("PICKAXE") })
-		),
-		SHOVEL(
-			customItem(CustomItemKeys.POWER_DRILL_BASIC),
-			matchAnyMaterial(getMatchingMaterials { it.name.endsWith("SHOVEL") })
-
-		),
-		AXE(
-			customItem(CustomItemKeys.POWER_DRILL_BASIC),
-			matchAnyMaterial(getMatchingMaterials { it.name.endsWith("AXE") })
-
-		),
-		SHEARS(
-			customItem(CustomItemKeys.POWER_DRILL_BASIC),
-			matchMaterial(Material.SHEARS)
-		);
-
-		fun matches(itemStack: ItemStack): Boolean = checks.any { it.invoke(itemStack) }
-	}
-}
