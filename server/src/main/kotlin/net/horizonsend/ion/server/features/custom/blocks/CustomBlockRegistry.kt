@@ -264,6 +264,7 @@ open class CustomBlock(
 	val customItem get() = customBlockItem.getValue()
 
 	open fun placeCallback(placedItem: ItemStack, block: Block) {}
+	open fun removeCallback(block: Block) {}
 }
 
 data class BlockLoot(
