@@ -25,7 +25,7 @@ import kotlin.reflect.KClass
 
 class PowerCapacityIncrease(
 	private val increaseAmount: Int,
-	override val modItem: IonRegistryKey<CustomItem>
+	override val modItem: IonRegistryKey<CustomItem, out CustomItem>
 ) : ItemModification {
 	override val crouchingDisables: Boolean = false
 	override val identifier: String = "POWER_CAPACITY_$increaseAmount"
