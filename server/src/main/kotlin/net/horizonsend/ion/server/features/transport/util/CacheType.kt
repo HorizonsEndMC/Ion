@@ -143,7 +143,7 @@ enum class CacheType(val namespacedKey: NamespacedKey, val inputType: KClass<out
 
 				ItemNode.ItemMergeNode(outFace)
 			}
-			.addDataHandler<Vault>(CustomBlockKeys.ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(key, holder.cache as ItemTransportCache, (CustomBlockKeys.ITEM_FILTER.getValue() as DirectionalCustomBlock).getFace(data)) }
+			.addDataHandler<Vault>(CustomBlockKeys.ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(key, holder.cache as ItemTransportCache, CustomBlockKeys.ITEM_FILTER.getValue().getFace(data)) }
 			.addDataHandler<Hopper>(HOPPER) { data, key, holder -> ItemNode.HopperFilterNode(key, data.facing, holder.cache as ItemTransportCache) }
 			.addSimpleNode(
 				CHEST,
