@@ -24,7 +24,7 @@ class AOEDMod(
 		ApplicationPredicate.ClassPredicate(PowerDrill::class),
 		ApplicationPredicate.ClassPredicate(PowerHoe::class),
 	),
-	override val modItem: IonRegistryKey<CustomItem>
+	override val modItem: IonRegistryKey<CustomItem, out CustomItem>
 ) : ItemModification, net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.BlockListModifier {
 
 	override val identifier: String = "AOE_$radius"

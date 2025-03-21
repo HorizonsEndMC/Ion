@@ -17,7 +17,7 @@ import kotlin.reflect.KClass
 object EnvironmentMod : ItemModification {
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.SpecificPredicate(CustomItemKeys.POWER_ARMOR_HELMET))
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(NightVisionMod::class, PressureFieldMod::class)
-	override val modItem: IonRegistryKey<CustomItem>? = CustomItemKeys.ARMOR_MODIFICATION_ENVIRONMENT
+	override val modItem: IonRegistryKey<CustomItem, out CustomItem>? = CustomItemKeys.ARMOR_MODIFICATION_ENVIRONMENT
 	override val crouchingDisables: Boolean = false
 	override val identifier: String = "environment"
 	override val displayName: Component = ofChildren(Component.text("Environment", GRAY), Component.text(" Module", GOLD))

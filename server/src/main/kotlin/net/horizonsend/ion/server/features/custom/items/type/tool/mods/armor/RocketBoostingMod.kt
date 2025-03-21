@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
 object RocketBoostingMod : ItemModification {
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.SpecificPredicate(CustomItemKeys.POWER_ARMOR_BOOTS))
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
-	override val modItem: IonRegistryKey<CustomItem> = CustomItemKeys.ARMOR_MODIFICATION_ROCKET_BOOSTING
+	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.ARMOR_MODIFICATION_ROCKET_BOOSTING
 	override val crouchingDisables: Boolean = false
 	override val identifier: String = "ROCKET_BOOSTING"
 	override val displayName: Component = ofChildren(Component.text("Rocket Boosting", GRAY), Component.text(" Module", GOLD))
