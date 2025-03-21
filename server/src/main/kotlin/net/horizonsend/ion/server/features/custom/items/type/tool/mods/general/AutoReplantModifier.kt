@@ -25,7 +25,7 @@ object AutoReplantModifier: ItemModification {
 		ApplicationPredicate.ClassPredicate(PowerChainsaw::class)
 	)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
-	override val modItem: IonRegistryKey<CustomItem> = CustomItemKeys.TOOL_MODIFICATION_AUTO_REPLANT
+	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.TOOL_MODIFICATION_AUTO_REPLANT
 
 	// Just a range extender for something that already vein mines
 	override val crouchingDisables: Boolean = true

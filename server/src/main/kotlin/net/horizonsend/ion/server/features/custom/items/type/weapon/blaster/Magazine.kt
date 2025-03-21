@@ -11,7 +11,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
-class Magazine(key: IonRegistryKey<CustomItem>, displayName: Component, itemFactory: ItemFactory, private val balancingSupplier: Supplier<AmmoStorage>) : CustomItem(
+class Magazine(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, itemFactory: ItemFactory, private val balancingSupplier: Supplier<AmmoStorage>) : CustomItem(
 	key,
 	displayName,
 	itemFactory,

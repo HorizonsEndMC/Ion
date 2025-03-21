@@ -20,7 +20,7 @@ import org.bukkit.block.Sign
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 
-class Battery(key: IonRegistryKey<CustomItem>, type: Char, color: TextColor, maxPower: Int) : CustomItem(
+class Battery(key: IonRegistryKey<CustomItem, out CustomItem>, type: Char, color: TextColor, maxPower: Int) : CustomItem(
 	key = key,
 	displayName = ofChildren(text("Size", BLUE), text("-", GRAY), text("$type", color), text(" Battery", BLUE)),
 	baseItemFactory = ItemFactory.stackableCustomItem(maxStackSize = 16, "battery/battery_${type.toString().lowercase()}")

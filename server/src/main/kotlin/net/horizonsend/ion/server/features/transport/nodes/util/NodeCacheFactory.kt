@@ -36,7 +36,7 @@ class NodeCacheFactory private constructor(private val materialHandlers: Multima
 			return this
 		}
 
-		inline fun <reified T: BlockData> addDataHandler(customBlock: IonRegistryKey<CustomBlock>, noinline constructor: (T, BlockKey, CacheHolder<*>) -> Node?): Builder {
+		inline fun <reified T: BlockData> addDataHandler(customBlock: IonRegistryKey<CustomBlock, out CustomBlock>, noinline constructor: (T, BlockKey, CacheHolder<*>) -> Node?): Builder {
 			val blockData = customBlock.getValue().blockData
 			require(blockData is T)
 
@@ -76,7 +76,7 @@ class NodeCacheFactory private constructor(private val materialHandlers: Multima
 			return this
 		}
 
-		inline fun <reified T: BlockData> addSimpleNode(customBlock: IonRegistryKey<CustomBlock>, node: Node): Builder {
+		inline fun <reified T: BlockData> addSimpleNode(customBlock: IonRegistryKey<CustomBlock, out CustomBlock>, node: Node): Builder {
 			return addDataHandler<T>(customBlock.getValue().blockData.material) { data, lng, _ ->
 				if (data.customBlock?.key != customBlock) return@addDataHandler null
 				node

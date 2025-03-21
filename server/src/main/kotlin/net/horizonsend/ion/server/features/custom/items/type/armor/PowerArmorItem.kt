@@ -38,7 +38,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 
 class PowerArmorItem(
-	key: IonRegistryKey<CustomItem>,
+	key: IonRegistryKey<CustomItem, PowerArmorItem>,
 	displayName: Component,
 	itemModel: String,
 	val slot: EquipmentSlot

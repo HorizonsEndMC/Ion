@@ -17,7 +17,7 @@ object ExtendedBar : ItemModification {
 
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.ClassPredicate(PowerChainsaw::class))
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
-	override val modItem: IonRegistryKey<CustomItem> = CustomItemKeys.TOOL_MODIFICATION_EXTENDED_BAR
+	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.TOOL_MODIFICATION_EXTENDED_BAR
 
 	// Just a range extender for something that already vein mines
 	override val crouchingDisables: Boolean = false
