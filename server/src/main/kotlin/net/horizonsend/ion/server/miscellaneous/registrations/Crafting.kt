@@ -780,7 +780,7 @@ object Crafting : IonServerComponent() {
 		}
 
 
-		fun registerBatteryRecipe(battery: IonRegistryKey<CustomItem>, material: Material) = shaped(battery.key.lowercase(), battery.getValue().constructItemStack()) {
+		fun registerBatteryRecipe(battery: IonRegistryKey<CustomItem, out CustomItem>, material: Material) = shaped(battery.key.lowercase(), battery.getValue().constructItemStack()) {
 			shape("aba", "aba", "aba")
 			setIngredient('a', ExactChoice(ALUMINUM_INGOT.getValue().constructItemStack()))
 			setIngredient('b', material)
@@ -789,7 +789,7 @@ object Crafting : IonServerComponent() {
 		registerBatteryRecipe(BATTERY_M, REDSTONE)
 		registerBatteryRecipe(BATTERY_G, SEA_LANTERN)
 
-		fun registerArmorRecipe(result: IonRegistryKey<CustomItem>, vararg shape: String) = shaped(result.key.lowercase(), result.getValue().constructItemStack()) {
+		fun registerArmorRecipe(result: IonRegistryKey<CustomItem, out CustomItem>, vararg shape: String) = shaped(result.key.lowercase(), result.getValue().constructItemStack()) {
 			shape(*shape)
 			setIngredient('*', TITANIUM_INGOT)
 			setIngredient('b', BATTERY_G)
@@ -799,7 +799,7 @@ object Crafting : IonServerComponent() {
 		registerArmorRecipe(POWER_ARMOR_LEGGINGS, "*b*", "* *", "* *")
 		registerArmorRecipe(POWER_ARMOR_BOOTS, "* *", "*b*")
 
-		fun registerPowerArmorModule(result: IonRegistryKey<CustomItem>, center: RecipeChoice) = shaped(result.key.lowercase(), result.getValue().constructItemStack()) {
+		fun registerPowerArmorModule(result: IonRegistryKey<CustomItem, out CustomItem>, center: RecipeChoice) = shaped(result.key.lowercase(), result.getValue().constructItemStack()) {
 			shape("aga", "g*g", "aga")
 			setIngredient('a', ALUMINUM_INGOT)
 			setIngredient('g', GLASS_PANE)
@@ -813,7 +813,7 @@ object Crafting : IonServerComponent() {
 		registerPowerArmorModule(ARMOR_MODIFICATION_ENVIRONMENT, MaterialChoice(CHAINMAIL_HELMET))
 		registerPowerArmorModule(ARMOR_MODIFICATION_PRESSURE_FIELD, ExactChoice(GAS_CANISTER_EMPTY.getValue().constructItemStack()))
 
-		fun registerSwordRecipes(sword: IonRegistryKey<CustomItem>, choice: RecipeChoice) = shaped(sword.key.lowercase(), sword) {
+		fun registerSwordRecipes(sword: IonRegistryKey<CustomItem, out CustomItem>, choice: RecipeChoice) = shaped(sword.key.lowercase(), sword) {
 			shape("aga", "a*a", "ata")
 			setIngredient('a', ALUMINUM_INGOT)
 			setIngredient('g', GLASS_PANE)
@@ -831,7 +831,7 @@ object Crafting : IonServerComponent() {
 	}
 
 	private fun registerOreFurnaceRecipes() {
-		fun registerFurnaceRecipe(smelted: IonRegistryKey<CustomItem>, result: IonRegistryKey<CustomItem>) {
+		fun registerFurnaceRecipe(smelted: IonRegistryKey<CustomItem, out CustomItem>, result: IonRegistryKey<CustomItem, out CustomItem>) {
 			Bukkit.addRecipe(FurnaceRecipe(
 				NamespacedKey(IonServer, "${smelted.key.lowercase()}_smelting"),
 				result.getValue().constructItemStack(),
@@ -849,7 +849,7 @@ object Crafting : IonServerComponent() {
 			))
 		}
 
-		fun registerOreType(rawType: IonRegistryKey<CustomItem>, oreType: IonRegistryKey<CustomItem>, smeltedType: IonRegistryKey<CustomItem>) {
+		fun registerOreType(rawType: IonRegistryKey<CustomItem, out CustomItem>, oreType: IonRegistryKey<CustomItem, out CustomItem>, smeltedType: IonRegistryKey<CustomItem, out CustomItem>) {
 			registerFurnaceRecipe(rawType, smeltedType)
 			registerFurnaceRecipe(oreType, smeltedType)
 		}
@@ -904,7 +904,7 @@ object Crafting : IonServerComponent() {
 		Bukkit.addRecipe(recipe)
 	}
 
-	private fun shapedCustomItem(name: String, result: Material, shape1: String, shape2: String, shape3: String, vararg ingredients: Pair<Char, IonRegistryKey<CustomItem>>) {
+	private fun shapedCustomItem(name: String, result: Material, shape1: String, shape2: String, shape3: String, vararg ingredients: Pair<Char, IonRegistryKey<CustomItem, out CustomItem>>) {
 		val recipe = ShapedRecipe(NamespacedKeys.key(name), ItemStack(result))
 		recipe.shape(shape1, shape2, shape3)
 		for ((key, ingredient) in ingredients) recipe.setIngredient(key, ingredient)
@@ -923,7 +923,7 @@ object Crafting : IonServerComponent() {
 		Bukkit.addRecipe(recipe)
 	}
 
-	private fun shaped(name: String, result: IonRegistryKey<CustomItem>, execute: ShapedRecipe.() -> Unit) {
+	private fun shaped(name: String, result: IonRegistryKey<CustomItem, out CustomItem>, execute: ShapedRecipe.() -> Unit) {
 		val recipe = ShapedRecipe(NamespacedKeys.key(name), result.getValue().constructItemStack())
 		execute(recipe)
 		Bukkit.addRecipe(recipe)
@@ -935,7 +935,7 @@ object Crafting : IonServerComponent() {
 		Bukkit.addRecipe(recipe)
 	}
 
-	private fun shapeless(name: String, result: IonRegistryKey<CustomItem>, execute: ShapelessRecipe.() -> Unit) {
+	private fun shapeless(name: String, result: IonRegistryKey<CustomItem, out CustomItem>, execute: ShapelessRecipe.() -> Unit) {
 		val recipe = ShapelessRecipe(NamespacedKeys.key(name), result.getValue().constructItemStack())
 		execute(recipe)
 		Bukkit.addRecipe(recipe)
@@ -957,7 +957,7 @@ object Crafting : IonServerComponent() {
 		Bukkit.addRecipe(recipe)
 	}
 
-	private fun shapeless(name: String, result: ItemStack, vararg ingredients: IonRegistryKey<CustomItem>) {
+	private fun shapeless(name: String, result: ItemStack, vararg ingredients: IonRegistryKey<CustomItem, out CustomItem>) {
 		val recipe = ShapelessRecipe(NamespacedKeys.key(name), result)
 		for (ingreidient in ingredients) {
 			recipe.addIngredient(ingreidient.getValue().constructItemStack())
@@ -965,9 +965,9 @@ object Crafting : IonServerComponent() {
 		Bukkit.addRecipe(recipe)
 	}
 
-	private fun ShapedRecipe.setIngredient(key: Char, customItem: IonRegistryKey<CustomItem>) = setIngredient(key, customItem.getValue().constructItemStack())
+	private fun ShapedRecipe.setIngredient(key: Char, customItem: IonRegistryKey<CustomItem, out CustomItem>) = setIngredient(key, customItem.getValue().constructItemStack())
 
-	private fun materialBlockRecipes(blockItem: IonRegistryKey<CustomItem>, ingotItem: IonRegistryKey<CustomItem>) {
+	private fun materialBlockRecipes(blockItem: IonRegistryKey<CustomItem, out CustomItem>, ingotItem: IonRegistryKey<CustomItem, out CustomItem>) {
 		shapeless(blockItem.key.lowercase(), blockItem.getValue().constructItemStack()) {
 			addIngredient(ingotItem.getValue().constructItemStack(9))
 		}

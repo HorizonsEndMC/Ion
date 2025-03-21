@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.Legac
 import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.ReplacementMigrator
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.MOD_MANAGER
-import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.LegacyPowerArmorModule
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.isPipedInventory
@@ -835,7 +834,7 @@ object DataMigrators : IonServerComponent() {
 								NamespacedKeys.key(CustomItemKeys.POWER_ARMOR_BOOTS.key),
 								2.0,
 								AttributeModifier.Operation.ADD_NUMBER,
-								(CustomItemKeys.POWER_ARMOR_BOOTS.getValue() as PowerArmorItem).slot.group
+								CustomItemKeys.POWER_ARMOR_BOOTS.getValue().slot.group
 							)
 						)
 						.build()
@@ -854,7 +853,7 @@ object DataMigrators : IonServerComponent() {
 								NamespacedKeys.key(CustomItemKeys.POWER_ARMOR_LEGGINGS.key),
 								2.0,
 								AttributeModifier.Operation.ADD_NUMBER,
-								(CustomItemKeys.POWER_ARMOR_LEGGINGS.getValue() as PowerArmorItem).slot.group
+								CustomItemKeys.POWER_ARMOR_LEGGINGS.getValue().slot.group
 							)
 						)
 						.build()
@@ -873,7 +872,7 @@ object DataMigrators : IonServerComponent() {
 								NamespacedKeys.key(CustomItemKeys.POWER_ARMOR_CHESTPLATE.key),
 								2.0,
 								AttributeModifier.Operation.ADD_NUMBER,
-								(CustomItemKeys.POWER_ARMOR_CHESTPLATE.getValue() as PowerArmorItem).slot.group
+								CustomItemKeys.POWER_ARMOR_CHESTPLATE.getValue().slot.group
 							)
 						)
 						.build()
@@ -892,7 +891,7 @@ object DataMigrators : IonServerComponent() {
 								NamespacedKeys.key(CustomItemKeys.POWER_ARMOR_HELMET.key),
 								2.0,
 								AttributeModifier.Operation.ADD_NUMBER,
-								(CustomItemKeys.POWER_ARMOR_HELMET.getValue() as PowerArmorItem).slot.group
+								CustomItemKeys.POWER_ARMOR_HELMET.getValue().slot.group
 							)
 						)
 						.build()

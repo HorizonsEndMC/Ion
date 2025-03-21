@@ -33,7 +33,7 @@ data class BlockLoot(
 			return { materials.contains(it.type) }
 		}
 
-		fun customItem(customItem: IonRegistryKey<CustomItem>): (ItemStack) -> Boolean {
+		fun customItem(customItem: IonRegistryKey<CustomItem, out CustomItem>): (ItemStack) -> Boolean {
 			return { it.customItem?.key == customItem }
 		}
 	}

@@ -13,7 +13,7 @@ import org.bukkit.Material
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 
-abstract class PowerTool(key: IonRegistryKey<CustomItem>, displayName: Component, private val modLimit: Int, private val basePowerCapacity: Int, val model: String) : CustomItem(
+abstract class PowerTool(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, private val modLimit: Int, private val basePowerCapacity: Int, val model: String) : CustomItem(
 	key,
 	displayName,
 	ItemFactory

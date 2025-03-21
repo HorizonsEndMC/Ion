@@ -12,7 +12,7 @@ interface ItemModification {
 	val displayName: Component
 	val applicationPredicates: Array<ApplicationPredicate>
 	val incompatibleWithMods: Array<KClass<out ItemModification>>
-	val modItem: IonRegistryKey<CustomItem>?
+	val modItem: IonRegistryKey<CustomItem, out CustomItem>?
 
 	val crouchingDisables: Boolean
 

@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
 class GasCanister(
-	key: IonRegistryKey<CustomItem>,
+	key: IonRegistryKey<CustomItem, out CustomItem>,
 
 	val model: String,
 	displayName: Component,

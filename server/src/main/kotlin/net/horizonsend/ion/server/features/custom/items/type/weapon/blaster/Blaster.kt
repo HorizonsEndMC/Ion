@@ -42,7 +42,7 @@ import org.bukkit.util.Vector
 import java.util.function.Supplier
 
 open class Blaster<T : Balancing>(
-	key: IonRegistryKey<CustomItem>,
+	key: IonRegistryKey<CustomItem, out CustomItem>,
 	displayName: Component,
 	itemFactory: ItemFactory,
 	private val balancingSupplier: Supplier<T>

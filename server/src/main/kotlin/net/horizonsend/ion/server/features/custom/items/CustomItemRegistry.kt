@@ -93,7 +93,7 @@ class CustomItemRegistry : Registry<CustomItem>("CUSTOM_ITEMS") {
 
 	private fun registerThrowables() {
 		fun registerThrowable(
-			key: IonRegistryKey<CustomItem>,
+			key: IonRegistryKey<CustomItem, out CustomItem>,
 			customModel: String,
 			displayName: Component,
 			balancing: Supplier<PVPBalancingConfiguration.Throwables.ThrowableBalancing>,
@@ -224,17 +224,17 @@ class CustomItemRegistry : Registry<CustomItem>("CUSTOM_ITEMS") {
 
 	// Minerals start
 	private fun registerMinerals() {
-		fun registerRawOre(key: IonRegistryKey<CustomItem>, name: String) = register(key, text("Raw ${name.replaceFirstChar { it.uppercase() }}"), stackableCustomItem(model = "mineral/raw_$name"))
-		fun registerOreIngot(key: IonRegistryKey<CustomItem>, name: String, useSuffix: Boolean) =
+		fun registerRawOre(key: IonRegistryKey<CustomItem, out CustomItem>, name: String) = register(key, text("Raw ${name.replaceFirstChar { it.uppercase() }}"), stackableCustomItem(model = "mineral/raw_$name"))
+		fun registerOreIngot(key: IonRegistryKey<CustomItem, out CustomItem>, name: String, useSuffix: Boolean) =
 			register(key, text("${name.replaceFirstChar { it.uppercase() }}${if (useSuffix) " Ingot" else ""}"), stackableCustomItem(model = "mineral/$name"))
 
-		fun registerOreBlock(key: IonRegistryKey<CustomItem>, name: String, block: IonRegistryKey<CustomBlock>) =
+		fun registerOreBlock(key: IonRegistryKey<CustomItem, out CustomItem>, name: String, block: IonRegistryKey<CustomBlock, out CustomBlock>) =
 			customBlockItem(key, "mineral/${name}_ore", text("${name.replaceFirstChar { it.uppercase() }} Ore"), block)
 
-		fun registerIngotBlock(key: IonRegistryKey<CustomItem>, name: String, block: IonRegistryKey<CustomBlock>) =
+		fun registerIngotBlock(key: IonRegistryKey<CustomItem, out CustomItem>, name: String, block: IonRegistryKey<CustomBlock, out CustomBlock>) =
 			customBlockItem(key, "mineral/${name}_block", text("${name.replaceFirstChar { it.uppercase() }} Block"), block)
 
-		fun registerRawBlock(key: IonRegistryKey<CustomItem>, name: String, block: IonRegistryKey<CustomBlock>) =
+		fun registerRawBlock(key: IonRegistryKey<CustomItem, out CustomItem>, name: String, block: IonRegistryKey<CustomBlock, out CustomBlock>) =
 			customBlockItem(key, "mineral/raw_${name}_block", text("Raw ${name.replaceFirstChar { it.uppercase() }} Block"), block)
 
 		registerOreIngot(CustomItemKeys.ALUMINUM_INGOT, "aluminum", true)
@@ -679,19 +679,19 @@ class CustomItemRegistry : Registry<CustomItem>("CUSTOM_ITEMS") {
 		unStackable(key = CustomItemKeys.PLANET_SELECTOR, displayName = text("PLANET_SELECTOR"), model = "planet/planet_selector")
 	}
 
-	private fun register(key: IonRegistryKey<CustomItem>, displayName: Component, factory: ItemFactory) {
+	private fun register(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, factory: ItemFactory) {
 		register(key, CustomItem(key, displayName, factory))
 	}
 
-	private fun stackable(key: IonRegistryKey<CustomItem>, displayName: Component, model: String) {
+	private fun stackable(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, model: String) {
 		register(key, CustomItem(key, displayName, stackableCustomItem(model = model)))
 	}
 
-	private fun unStackable(key: IonRegistryKey<CustomItem>, displayName: Component, model: String) {
+	private fun unStackable(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, model: String) {
 		register(key, CustomItem(key, displayName, unStackableCustomItem(model = model)))
 	}
 
-	private fun customBlockItem(key: IonRegistryKey<CustomItem>, model: String, displayName: Component, customBlock: IonRegistryKey<CustomBlock>) {
+	private fun customBlockItem(key: IonRegistryKey<CustomItem, out CustomItem>, model: String, displayName: Component, customBlock: IonRegistryKey<CustomBlock, out CustomBlock>) {
 		register(key, CustomBlockItem(key, model, displayName, customBlock))
 	}
 

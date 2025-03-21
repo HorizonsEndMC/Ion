@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import org.bukkit.inventory.ItemStack
 
-class ReplacementMigrator(vararg items: IonRegistryKey<CustomItem>) : CustomItemStackMigrator(CustomItemsPredicate(*Array(items.size) { items[it].key })) {
+class ReplacementMigrator(vararg items: IonRegistryKey<CustomItem, out CustomItem>) : CustomItemStackMigrator(CustomItemsPredicate(*Array(items.size) { items[it].key })) {
 	private val items = listOf(*items)
 
 	override fun performMigration(subject: ItemStack): MigratorResult<ItemStack> {

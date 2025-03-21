@@ -8,12 +8,12 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Material
 
 open class CustomBlockItem(
-	identifier: IonRegistryKey<CustomItem>,
+	identifier: IonRegistryKey<CustomItem, out CustomItem>,
 
 	val customModel: String,
 	displayName: Component,
 
-	val customBlockKey: IonRegistryKey<CustomBlock>
+	val customBlockKey: IonRegistryKey<CustomBlock, out CustomBlock>
 ) : CustomItem(
 	identifier,
 	displayName,

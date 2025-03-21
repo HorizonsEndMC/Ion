@@ -25,7 +25,7 @@ object FertilizerDispenser : ItemModification {
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.ClassPredicate(PowerHoe::class))
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 
-	override val modItem: IonRegistryKey<CustomItem> = CustomItemKeys.TOOL_MODIFICATION_FERTILIZER_DISPENSER
+	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.TOOL_MODIFICATION_FERTILIZER_DISPENSER
 
 	override val crouchingDisables: Boolean = true
 

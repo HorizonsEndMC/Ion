@@ -29,7 +29,7 @@ interface ItemResult<E: ItemResultEnviornment> : RecipeResult<E> {
 
 	companion object {
 		fun <E: ItemResultEnviornment> simpleResult(itemStack: ItemStack): SimpleResult<E> = SimpleResult(itemStack)
-		fun <E: ItemResultEnviornment> simpleResult(customItem: IonRegistryKey<CustomItem>): SimpleResult<E> = SimpleResult(customItem.getValue().constructItemStack())
+		fun <E: ItemResultEnviornment> simpleResult(customItem: IonRegistryKey<CustomItem, out CustomItem>): SimpleResult<E> = SimpleResult(customItem.getValue().constructItemStack())
 		fun <E: ItemResultEnviornment> simpleResult(material: Material): SimpleResult<E> = SimpleResult(ItemStack(material, 1))
 	}
 

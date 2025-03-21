@@ -13,7 +13,7 @@ interface ApplicationPredicate {
 		}
 	}
 
-	class SpecificPredicate(val customItem: IonRegistryKey<CustomItem>) : ApplicationPredicate {
+	class SpecificPredicate(val customItem: IonRegistryKey<CustomItem, out CustomItem>) : ApplicationPredicate {
 		override fun canApplyTo(customItem: CustomItem): Boolean {
 			return customItem.key == this.customItem
 		}

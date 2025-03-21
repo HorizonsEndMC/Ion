@@ -33,7 +33,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.EnumSet
 import kotlin.math.roundToInt
 
-class PowerHoe(key: IonRegistryKey<CustomItem>, displayName: Component, modLimit: Int, basePowerCapacity: Int, model: String) : PowerTool(key, displayName, modLimit, basePowerCapacity, model) {
+class PowerHoe(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, modLimit: Int, basePowerCapacity: Int, model: String) : PowerTool(key, displayName, modLimit, basePowerCapacity, model) {
 	override val customComponents: CustomItemComponentManager = super.customComponents.apply {
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@PowerHoe) { event, _, item ->
 			handleLeftClick(event.player, item, event)

@@ -26,7 +26,7 @@ import kotlin.reflect.KClass
 class VeinMinerMod(
 	val depth: Int,
 	override val identifier: String = "DRILL_VEIN_$depth",
-	override val modItem: IonRegistryKey<CustomItem>
+	override val modItem: IonRegistryKey<CustomItem, out CustomItem>
 ) : DrillModification(), net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.BlockListModifier {
 	override val displayName: Component = ofChildren(text("Vein ", HE_LIGHT_ORANGE), text("Mining", GRAY)).decoration(TextDecoration.ITALIC, false)
 

@@ -1,22 +1,41 @@
 package net.horizonsend.ion.server.core.registries.keys
 
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
+import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.core.registries.IonRegistries
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
+import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
+import net.horizonsend.ion.server.features.custom.items.misc.Wrench
+import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
+import net.horizonsend.ion.server.features.custom.items.type.GasCanister
+import net.horizonsend.ion.server.features.custom.items.type.PersonalTransporter
+import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
+import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrowableCustomItem
+import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
+import net.horizonsend.ion.server.features.custom.items.type.tool.CratePlacer
+import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
+import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
+import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
+import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Blaster
+import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Magazine
+import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergySword
 
-object CustomItemKeys : KeyRegistry<CustomItem>(IonRegistries.CUSTOM_ITEMS) {
-	val DETONATOR = registerKey("DETONATOR")
-	val SMOKE_GRENADE = registerKey("SMOKE_GRENADE")
-	val PUMPKIN_GRENADE = registerKey("PUMPKIN_GRENADE")
+object CustomItemKeys : KeyRegistry<CustomItem>(IonRegistries.CUSTOM_ITEMS, CustomItem::class) {
+	val DETONATOR = registerTypedKey<ThrowableCustomItem>("DETONATOR")
+	val SMOKE_GRENADE = registerTypedKey<ThrowableCustomItem>("SMOKE_GRENADE")
+	val PUMPKIN_GRENADE = registerTypedKey<ThrowableCustomItem>("PUMPKIN_GRENADE")
 
-	val STANDARD_MAGAZINE = registerKey("STANDARD_MAGAZINE")
-	val SPECIAL_MAGAZINE = registerKey("SPECIAL_MAGAZINE")
+	val STANDARD_MAGAZINE = registerTypedKey<Magazine>("STANDARD_MAGAZINE")
+	val SPECIAL_MAGAZINE = registerTypedKey<Magazine>("SPECIAL_MAGAZINE")
 
-	val BLASTER_PISTOL = registerKey("BLASTER_PISTOL")
-	val BLASTER_RIFLE = registerKey("BLASTER_RIFLE")
-	val SUBMACHINE_BLASTER = registerKey("SUBMACHINE_BLASTER")
-	val BLASTER_SHOTGUN = registerKey("BLASTER_SHOTGUN")
-	val BLASTER_SNIPER = registerKey("BLASTER_SNIPER")
-	val BLASTER_CANNON = registerKey("BLASTER_CANNON")
+	val BLASTER_PISTOL = registerTypedKey<Blaster<Singleshot>>("BLASTER_PISTOL")
+	val BLASTER_RIFLE = registerTypedKey<Blaster<Singleshot>>("BLASTER_RIFLE")
+	val SUBMACHINE_BLASTER = registerTypedKey<Blaster<Singleshot>>("SUBMACHINE_BLASTER")
+	val BLASTER_SHOTGUN = registerTypedKey<Blaster<Multishot>>("BLASTER_SHOTGUN")
+	val BLASTER_SNIPER = registerTypedKey<Blaster<Singleshot>>("BLASTER_SNIPER")
+	val BLASTER_CANNON = registerTypedKey<Blaster<Singleshot>>("BLASTER_CANNON")
 
 	val GUN_BARREL = registerKey("GUN_BARREL")
 	val CIRCUITRY = registerKey("CIRCUITRY")
@@ -30,29 +49,29 @@ object CustomItemKeys : KeyRegistry<CustomItem>(IonRegistries.CUSTOM_ITEMS) {
 
 	val ALUMINUM_INGOT = registerKey("ALUMINUM_INGOT")
 	val RAW_ALUMINUM = registerKey("RAW_ALUMINUM")
-	val ALUMINUM_ORE = registerKey("ALUMINUM_ORE")
-	val ALUMINUM_BLOCK = registerKey("ALUMINUM_BLOCK")
-	val RAW_ALUMINUM_BLOCK = registerKey("RAW_ALUMINUM_BLOCK")
+	val ALUMINUM_ORE = registerTypedKey<CustomBlockItem>("ALUMINUM_ORE")
+	val ALUMINUM_BLOCK = registerTypedKey<CustomBlockItem>("ALUMINUM_BLOCK")
+	val RAW_ALUMINUM_BLOCK = registerTypedKey<CustomBlockItem>("RAW_ALUMINUM_BLOCK")
 
 	val CHETHERITE = registerKey("CHETHERITE")
-	val CHETHERITE_ORE = registerKey("CHETHERITE_ORE")
-	val CHETHERITE_BLOCK = registerKey("CHETHERITE_BLOCK")
+	val CHETHERITE_ORE = registerTypedKey<CustomBlockItem>("CHETHERITE_ORE")
+	val CHETHERITE_BLOCK = registerTypedKey<CustomBlockItem>("CHETHERITE_BLOCK")
 
 	val TITANIUM_INGOT = registerKey("TITANIUM_INGOT")
 	val RAW_TITANIUM = registerKey("RAW_TITANIUM")
-	val TITANIUM_ORE = registerKey("TITANIUM_ORE")
-	val TITANIUM_BLOCK = registerKey("TITANIUM_BLOCK")
-	val RAW_TITANIUM_BLOCK = registerKey("RAW_TITANIUM_BLOCK")
+	val TITANIUM_ORE = registerTypedKey<CustomBlockItem>("TITANIUM_ORE")
+	val TITANIUM_BLOCK = registerTypedKey<CustomBlockItem>("TITANIUM_BLOCK")
+	val RAW_TITANIUM_BLOCK = registerTypedKey<CustomBlockItem>("RAW_TITANIUM_BLOCK")
 
 	val URANIUM = registerKey("URANIUM")
 	val RAW_URANIUM = registerKey("RAW_URANIUM")
-	val URANIUM_ORE = registerKey("URANIUM_ORE")
-	val URANIUM_BLOCK = registerKey("URANIUM_BLOCK")
-	val RAW_URANIUM_BLOCK = registerKey("RAW_URANIUM_BLOCK")
+	val URANIUM_ORE = registerTypedKey<CustomBlockItem>("URANIUM_ORE")
+	val URANIUM_BLOCK = registerTypedKey<CustomBlockItem>("URANIUM_BLOCK")
+	val RAW_URANIUM_BLOCK = registerTypedKey<CustomBlockItem>("RAW_URANIUM_BLOCK")
 
-	val NETHERITE_CASING = registerKey("NETHERITE_CASING")
+	val NETHERITE_CASING = registerTypedKey<CustomBlockItem>("NETHERITE_CASING")
 	val ENRICHED_URANIUM = registerKey("ENRICHED_URANIUM")
-	val ENRICHED_URANIUM_BLOCK = registerKey("ENRICHED_URANIUM_BLOCK")
+	val ENRICHED_URANIUM_BLOCK = registerTypedKey<CustomBlockItem>("ENRICHED_URANIUM_BLOCK")
 	val URANIUM_CORE = registerKey("URANIUM_CORE")
 	val URANIUM_ROD = registerKey("URANIUM_ROD")
 	val FUEL_ROD_CORE = registerKey("FUEL_ROD_CORE")
@@ -76,7 +95,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(IonRegistries.CUSTOM_ITEMS) {
 	val SUPERCONDUCTOR_CORE = registerKey("SUPERCONDUCTOR_CORE")
 
 	val STEEL_INGOT = registerKey("STEEL_INGOT")
-	val STEEL_BLOCK = registerKey("STEEL_BLOCK")
+	val STEEL_BLOCK = registerTypedKey<CustomBlockItem>("STEEL_BLOCK")
 	val STEEL_PLATE = registerKey("STEEL_PLATE")
 	val STEEL_CHASSIS = registerKey("STEEL_CHASSIS")
 	val STEEL_MODULE = registerKey("STEEL_MODULE")
@@ -95,86 +114,86 @@ object CustomItemKeys : KeyRegistry<CustomItem>(IonRegistries.CUSTOM_ITEMS) {
 
 	val PROGRESS_HOLDER = registerKey("PROGRESS_HOLDER")
 
-	val BATTLECRUISER_REACTOR_CORE = registerKey("BATTLECRUISER_REACTOR_CORE")
-	val BARGE_REACTOR_CORE = registerKey("BARGE_REACTOR_CORE")
-	val CRUISER_REACTOR_CORE = registerKey("CRUISER_REACTOR_CORE")
+	val BATTLECRUISER_REACTOR_CORE = registerTypedKey<CustomBlockItem>("BATTLECRUISER_REACTOR_CORE")
+	val BARGE_REACTOR_CORE = registerTypedKey<CustomBlockItem>("BARGE_REACTOR_CORE")
+	val CRUISER_REACTOR_CORE = registerTypedKey<CustomBlockItem>("CRUISER_REACTOR_CORE")
 
 	val GAS_CANISTER_EMPTY = registerKey("GAS_CANISTER_EMPTY")
-	val GAS_CANISTER_HYDROGEN = registerKey("GAS_CANISTER_HYDROGEN")
-	val GAS_CANISTER_NITROGEN = registerKey("GAS_CANISTER_NITROGEN")
-	val GAS_CANISTER_METHANE = registerKey("GAS_CANISTER_METHANE")
-	val GAS_CANISTER_OXYGEN = registerKey("GAS_CANISTER_OXYGEN")
-	val GAS_CANISTER_CHLORINE = registerKey("GAS_CANISTER_CHLORINE")
-	val GAS_CANISTER_FLUORINE = registerKey("GAS_CANISTER_FLUORINE")
-	val GAS_CANISTER_HELIUM = registerKey("GAS_CANISTER_HELIUM")
-	val GAS_CANISTER_CARBON_DIOXIDE = registerKey("GAS_CANISTER_CARBON_DIOXIDE")
+	val GAS_CANISTER_HYDROGEN = registerTypedKey<GasCanister>("GAS_CANISTER_HYDROGEN")
+	val GAS_CANISTER_NITROGEN = registerTypedKey<GasCanister>("GAS_CANISTER_NITROGEN")
+	val GAS_CANISTER_METHANE = registerTypedKey<GasCanister>("GAS_CANISTER_METHANE")
+	val GAS_CANISTER_OXYGEN = registerTypedKey<GasCanister>("GAS_CANISTER_OXYGEN")
+	val GAS_CANISTER_CHLORINE = registerTypedKey<GasCanister>("GAS_CANISTER_CHLORINE")
+	val GAS_CANISTER_FLUORINE = registerTypedKey<GasCanister>("GAS_CANISTER_FLUORINE")
+	val GAS_CANISTER_HELIUM = registerTypedKey<GasCanister>("GAS_CANISTER_HELIUM")
+	val GAS_CANISTER_CARBON_DIOXIDE = registerTypedKey<GasCanister>("GAS_CANISTER_CARBON_DIOXIDE")
 
-	val BATTERY_A = registerKey("BATTERY_A")
-	val BATTERY_M = registerKey("BATTERY_M")
-	val BATTERY_G = registerKey("BATTERY_G")
+	val BATTERY_A = registerTypedKey<Battery>("BATTERY_A")
+	val BATTERY_M = registerTypedKey<Battery>("BATTERY_M")
+	val BATTERY_G = registerTypedKey<Battery>("BATTERY_G")
 
-	val CRATE_PLACER = registerKey("CRATE_PLACER")
+	val CRATE_PLACER = registerTypedKey<CratePlacer>("CRATE_PLACER")
 
 	val MULTIMETER = registerKey("MULTIMETER")
 
-	val MULTIBLOCK_TOKEN = registerKey("MULTIBLOCK_TOKEN")
-	val PACKAGED_MULTIBLOCK = registerKey("PACKAGED_MULTIBLOCK")
-	val MULTIBLOCK_WORKBENCH = registerKey("MULTIBLOCK_WORKBENCH")
-	val WRENCH = registerKey("WRENCH")
+	val MULTIBLOCK_TOKEN = registerTypedKey<MultiblockToken>("MULTIBLOCK_TOKEN")
+	val PACKAGED_MULTIBLOCK = registerTypedKey<PackagedMultiblock>("PACKAGED_MULTIBLOCK")
+	val MULTIBLOCK_WORKBENCH = registerTypedKey<CustomBlockItem>("MULTIBLOCK_WORKBENCH")
+	val WRENCH = registerTypedKey<Wrench>("WRENCH")
 
-	val ADVANCED_ITEM_EXTRACTOR = registerKey("ADVANCED_ITEM_EXTRACTOR")
-	val ITEM_FILTER = registerKey("ITEM_FILTER")
+	val ADVANCED_ITEM_EXTRACTOR = registerTypedKey<CustomBlockItem>("ADVANCED_ITEM_EXTRACTOR")
+	val ITEM_FILTER = registerTypedKey<CustomBlockItem>("ITEM_FILTER")
 
-	val POWER_DRILL_BASIC = registerKey("POWER_DRILL_BASIC")
-	val POWER_DRILL_ENHANCED = registerKey("POWER_DRILL_ENHANCED")
-	val POWER_DRILL_ADVANCED = registerKey("POWER_DRILL_ADVANCED")
+	val POWER_DRILL_BASIC = registerTypedKey<PowerDrill>("POWER_DRILL_BASIC")
+	val POWER_DRILL_ENHANCED = registerTypedKey<PowerDrill>("POWER_DRILL_ENHANCED")
+	val POWER_DRILL_ADVANCED = registerTypedKey<PowerDrill>("POWER_DRILL_ADVANCED")
 
-	val POWER_CHAINSAW_BASIC = registerKey("POWER_CHAINSAW_BASIC")
-	val POWER_CHAINSAW_ENHANCED = registerKey("POWER_CHAINSAW_ENHANCED")
-	val POWER_CHAINSAW_ADVANCED = registerKey("POWERwPOWER_CHAINSAW_ADVANCED_DRILL_ADVANCED")
+	val POWER_CHAINSAW_BASIC = registerTypedKey<PowerChainsaw>("POWER_CHAINSAW_BASIC")
+	val POWER_CHAINSAW_ENHANCED = registerTypedKey<PowerChainsaw>("POWER_CHAINSAW_ENHANCED")
+	val POWER_CHAINSAW_ADVANCED = registerTypedKey<PowerChainsaw>("POWERwPOWER_CHAINSAW_ADVANCED_DRILL_ADVANCED")
 
-	val POWER_HOE_BASIC = registerKey("POWER_HOE_BASIC")
-	val POWER_HOE_ENHANCED = registerKey("POWER_HOE_ENHANCED")
-	val POWER_HOE_ADVANCED = registerKey("POWER_HOE_ADVANCED")
+	val POWER_HOE_BASIC = registerTypedKey<PowerHoe>("POWER_HOE_BASIC")
+	val POWER_HOE_ENHANCED = registerTypedKey<PowerHoe>("POWER_HOE_ENHANCED")
+	val POWER_HOE_ADVANCED = registerTypedKey<PowerHoe>("POWER_HOE_ADVANCED")
 
-	val POWER_ARMOR_HELMET = registerKey("POWER_ARMOR_HELMET")
-	val POWER_ARMOR_CHESTPLATE = registerKey("POWER_ARMOR_CHESTPLATE")
-	val POWER_ARMOR_LEGGINGS = registerKey("POWER_ARMOR_LEGGINGS")
-	val POWER_ARMOR_BOOTS = registerKey("POWER_ARMOR_BOOTS")
+	val POWER_ARMOR_HELMET = registerTypedKey<PowerArmorItem>("POWER_ARMOR_HELMET")
+	val POWER_ARMOR_CHESTPLATE = registerTypedKey<PowerArmorItem>("POWER_ARMOR_CHESTPLATE")
+	val POWER_ARMOR_LEGGINGS = registerTypedKey<PowerArmorItem>("POWER_ARMOR_LEGGINGS")
+	val POWER_ARMOR_BOOTS = registerTypedKey<PowerArmorItem>("POWER_ARMOR_BOOTS")
 
-	val ENERGY_SWORD_BLUE = registerKey("ENERGY_SWORD_BLUE")
-	val ENERGY_SWORD_RED = registerKey("ENERGY_SWORD_RED")
-	val ENERGY_SWORD_YELLOW = registerKey("ENERGY_SWORD_YELLOW")
-	val ENERGY_SWORD_GREEN = registerKey("ENERGY_SWORD_GREEN")
-	val ENERGY_SWORD_PURPLE = registerKey("ENERGY_SWORD_PURPLE")
-	val ENERGY_SWORD_ORANGE = registerKey("ENERGY_SWORD_ORANGE")
-	val ENERGY_SWORD_PINK = registerKey("ENERGY_SWORD_PINK")
-	val ENERGY_SWORD_BLACK = registerKey("ENERGY_SWORD_BLACK")
+	val ENERGY_SWORD_BLUE = registerTypedKey<EnergySword>("ENERGY_SWORD_BLUE")
+	val ENERGY_SWORD_RED = registerTypedKey<EnergySword>("ENERGY_SWORD_RED")
+	val ENERGY_SWORD_YELLOW = registerTypedKey<EnergySword>("ENERGY_SWORD_YELLOW")
+	val ENERGY_SWORD_GREEN = registerTypedKey<EnergySword>("ENERGY_SWORD_GREEN")
+	val ENERGY_SWORD_PURPLE = registerTypedKey<EnergySword>("ENERGY_SWORD_PURPLE")
+	val ENERGY_SWORD_ORANGE = registerTypedKey<EnergySword>("ENERGY_SWORD_ORANGE")
+	val ENERGY_SWORD_PINK = registerTypedKey<EnergySword>("ENERGY_SWORD_PINK")
+	val ENERGY_SWORD_BLACK = registerTypedKey<EnergySword>("ENERGY_SWORD_BLACK")
 
-	val ARMOR_MODIFICATION_ENVIRONMENT = registerKey("ARMOR_MODIFICATION_ENVIRONMENT")
-	val ARMOR_MODIFICATION_NIGHT_VISION = registerKey("ARMOR_MODIFICATION_NIGHT_VISION")
-	val ARMOR_MODIFICATION_PRESSURE_FIELD = registerKey("ARMOR_MODIFICATION_PRESSURE_FIELD")
-	val ARMOR_MODIFICATION_ROCKET_BOOSTING = registerKey("ARMOR_MODIFICATION_ROCKET_BOOSTING")
-	val ARMOR_MODIFICATION_SHOCK_ABSORBING = registerKey("ARMOR_MODIFICATION_SHOCK_ABSORBING")
-	val ARMOR_MODIFICATION_SPEED_BOOSTING = registerKey("ARMOR_MODIFICATION_SPEED_BOOSTING")
+	val ARMOR_MODIFICATION_ENVIRONMENT = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_ENVIRONMENT")
+	val ARMOR_MODIFICATION_NIGHT_VISION = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_NIGHT_VISION")
+	val ARMOR_MODIFICATION_PRESSURE_FIELD = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_PRESSURE_FIELD")
+	val ARMOR_MODIFICATION_ROCKET_BOOSTING = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_ROCKET_BOOSTING")
+	val ARMOR_MODIFICATION_SHOCK_ABSORBING = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_SHOCK_ABSORBING")
+	val ARMOR_MODIFICATION_SPEED_BOOSTING = registerTypedKey<ModificationItem>("ARMOR_MODIFICATION_SPEED_BOOSTING")
 
-	val TOOL_MODIFICATION_RANGE_1 = registerKey("TOOL_MODIFICATION_RANGE_1")
-	val TOOL_MODIFICATION_RANGE_2 = registerKey("TOOL_MODIFICATION_RANGE_2")
-	val TOOL_MODIFICATION_VEIN_MINER_25 = registerKey("TOOL_MODIFICATION_VEIN_MINER_25")
-	val TOOL_MODIFICATION_SILK_TOUCH_MOD = registerKey("TOOL_MODIFICATION_SILK_TOUCH_MOD")
-	val TOOL_MODIFICATION_AUTO_SMELT = registerKey("TOOL_MODIFICATION_AUTO_SMELT")
-	val TOOL_MODIFICATION_FORTUNE_1 = registerKey("TOOL_MODIFICATION_FORTUNE_1")
-	val TOOL_MODIFICATION_FORTUNE_2 = registerKey("TOOL_MODIFICATION_FORTUNE_2")
-	val TOOL_MODIFICATION_FORTUNE_3 = registerKey("TOOL_MODIFICATION_FORTUNE_3")
-	val TOOL_MODIFICATION_POWER_CAPACITY_25 = registerKey("TOOL_MODIFICATION_POWER_CAPACITY_25")
-	val TOOL_MODIFICATION_POWER_CAPACITY_50 = registerKey("TOOL_MODIFICATION_POWER_CAPACITY_50")
-	val TOOL_MODIFICATION_AUTO_REPLANT = registerKey("TOOL_MODIFICATION_AUTO_REPLANT")
-	val TOOL_MODIFICATION_AUTO_COMPOST = registerKey("TOOL_MODIFICATION_AUTO_COMPOST")
-	val TOOL_MODIFICATION_RANGE_3 = registerKey("TOOL_MODIFICATION_RANGE_3")
-	val TOOL_MODIFICATION_EXTENDED_BAR = registerKey("TOOL_MODIFICATION_EXTENDED_BAR")
-	val TOOL_MODIFICATION_FERTILIZER_DISPENSER = registerKey("TOOL_MODIFICATION_FERTILIZER_DISPENSER")
+	val TOOL_MODIFICATION_RANGE_1 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_RANGE_1")
+	val TOOL_MODIFICATION_RANGE_2 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_RANGE_2")
+	val TOOL_MODIFICATION_VEIN_MINER_25 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_VEIN_MINER_25")
+	val TOOL_MODIFICATION_SILK_TOUCH_MOD = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_SILK_TOUCH_MOD")
+	val TOOL_MODIFICATION_AUTO_SMELT = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_AUTO_SMELT")
+	val TOOL_MODIFICATION_FORTUNE_1 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_FORTUNE_1")
+	val TOOL_MODIFICATION_FORTUNE_2 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_FORTUNE_2")
+	val TOOL_MODIFICATION_FORTUNE_3 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_FORTUNE_3")
+	val TOOL_MODIFICATION_POWER_CAPACITY_25 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_POWER_CAPACITY_25")
+	val TOOL_MODIFICATION_POWER_CAPACITY_50 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_POWER_CAPACITY_50")
+	val TOOL_MODIFICATION_AUTO_REPLANT = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_AUTO_REPLANT")
+	val TOOL_MODIFICATION_AUTO_COMPOST = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_AUTO_COMPOST")
+	val TOOL_MODIFICATION_RANGE_3 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_RANGE_3")
+	val TOOL_MODIFICATION_EXTENDED_BAR = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_EXTENDED_BAR")
+	val TOOL_MODIFICATION_FERTILIZER_DISPENSER = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_FERTILIZER_DISPENSER")
 
-	val PERSONAL_TRANSPORTER = registerKey("PERSONAL_TRANSPORTER")
+	val PERSONAL_TRANSPORTER = registerTypedKey<PersonalTransporter>("PERSONAL_TRANSPORTER")
 
 	val AERACH = registerKey("AERACH")
 	val ARET = registerKey("ARET")

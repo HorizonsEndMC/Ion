@@ -42,7 +42,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import kotlin.math.roundToInt
 
-class PowerDrill(key: IonRegistryKey<CustomItem>, displayName: Component, modLimit: Int, basePowerCapacity: Int, model: String) : PowerTool(key, displayName, modLimit, basePowerCapacity, model) {
+class PowerDrill(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, modLimit: Int, basePowerCapacity: Int, model: String) : PowerTool(key, displayName, modLimit, basePowerCapacity, model) {
 	override val customComponents: CustomItemComponentManager = super.customComponents.apply {
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@PowerDrill) { event, _, item ->
 			handleClick(event.player, item, event)

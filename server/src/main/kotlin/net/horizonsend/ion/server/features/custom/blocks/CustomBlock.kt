@@ -7,10 +7,10 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.inventory.ItemStack
 
 open class CustomBlock(
-    val key: IonRegistryKey<CustomBlock>,
+    val key: IonRegistryKey<CustomBlock, *>,
     val blockData: BlockData,
     val drops: BlockLoot,
-    private val customBlockItem: IonRegistryKey<CustomItem>
+    private val customBlockItem: IonRegistryKey<CustomItem, *>
 ) {
 	val customItem get() = customBlockItem.getValue()
 

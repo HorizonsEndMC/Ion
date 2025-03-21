@@ -30,10 +30,10 @@ import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
 
 abstract class CustomExtractorBlock<T: ExtractorData>(
-	identifier: IonRegistryKey<CustomBlock>,
+	identifier: IonRegistryKey<CustomBlock, out CustomBlock>,
 	blockData: BlockData,
 	drops: BlockLoot,
-	customBlockItem: IonRegistryKey<CustomItem>,
+	customBlockItem: IonRegistryKey<CustomItem, out CustomItem>,
 	val extractorDataType: KClass<T>
 ) : CustomBlock(identifier, blockData, drops, customBlockItem), InteractableCustomBlock, WrenchRemovable  {
 	val cooldown = PerPlayerCooldown(5L)

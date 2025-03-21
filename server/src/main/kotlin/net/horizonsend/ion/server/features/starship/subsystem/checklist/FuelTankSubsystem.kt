@@ -35,12 +35,12 @@ class FuelTankSubsystem(starship: ActiveStarship, sign: Sign, multiblock: FuelTa
 
 		if (fuelCanisters.isEmpty()) return 0
 
-		val byFuel = fuelCanisters.map { it to (GAS_CANISTER_HYDROGEN.getValue() as GasCanister).getFill(it) }.sortedBy { it.second }
+		val byFuel = fuelCanisters.map { it to GAS_CANISTER_HYDROGEN.getValue().getFill(it) }.sortedBy { it.second }
 
 		for ((itemStack, fuelAmount) in byFuel) {
 			val toRemove = min(remaining, fuelAmount)
 
-			(GAS_CANISTER_HYDROGEN.getValue() as GasCanister).setFill(itemStack, fuelAmount - toRemove)
+			GAS_CANISTER_HYDROGEN.getValue().setFill(itemStack, fuelAmount - toRemove)
 			remaining -= toRemove
 
 			if (remaining == 0) break

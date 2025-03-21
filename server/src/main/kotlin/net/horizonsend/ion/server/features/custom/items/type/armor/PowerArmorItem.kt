@@ -42,7 +42,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 class PowerArmorItem(
-	key: IonRegistryKey<CustomItem>,
+	key: IonRegistryKey<CustomItem, PowerArmorItem>,
 	displayName: Component,
 	itemModel: String,
 	val slot: EquipmentSlot

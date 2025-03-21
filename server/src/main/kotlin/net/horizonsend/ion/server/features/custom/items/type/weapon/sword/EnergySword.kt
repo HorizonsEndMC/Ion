@@ -28,7 +28,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.Action
 import org.bukkit.inventory.EquipmentSlotGroup
 
-class EnergySword(key: IonRegistryKey<CustomItem>, type: String, color: TextColor) : CustomItem(
+class EnergySword(key: IonRegistryKey<CustomItem, out CustomItem>, type: String, color: TextColor) : CustomItem(
 	key = key,
 	displayName = ofChildren(Component.text(type.lowercase().replaceFirstChar { it.uppercase() }, color), Component.text(" Energy Sword", YELLOW)),
 	baseItemFactory = ItemFactory.builder()
