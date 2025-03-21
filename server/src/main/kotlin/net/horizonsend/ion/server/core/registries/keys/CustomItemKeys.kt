@@ -150,7 +150,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(IonRegistries.CUSTOM_ITEMS, Cust
 
 	val POWER_CHAINSAW_BASIC = registerTypedKey<PowerChainsaw>("POWER_CHAINSAW_BASIC")
 	val POWER_CHAINSAW_ENHANCED = registerTypedKey<PowerChainsaw>("POWER_CHAINSAW_ENHANCED")
-	val POWER_CHAINSAW_ADVANCED = registerTypedKey<PowerChainsaw>("POWERwPOWER_CHAINSAW_ADVANCED_DRILL_ADVANCED")
+	val POWER_CHAINSAW_ADVANCED = registerTypedKey<PowerChainsaw>("POWER_CHAINSAW_ADVANCED")
 
 	val POWER_HOE_BASIC = registerTypedKey<PowerHoe>("POWER_HOE_BASIC")
 	val POWER_HOE_ENHANCED = registerTypedKey<PowerHoe>("POWER_HOE_ENHANCED")
