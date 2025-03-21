@@ -11,7 +11,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import org.bukkit.inventory.ItemStack
-import java.util.function.Supplier
 
 class ModificationItem(
 	key: IonRegistryKey<CustomItem, out CustomItem>,
@@ -19,7 +18,7 @@ class ModificationItem(
 	val model: String,
 	displayName: Component,
 	vararg description: Component,
-	private val modSupplier: Supplier<ItemModification>,
+	val modKey: IonRegistryKey<ItemModification, out ItemModification>,
 ) : CustomItem(
 	key,
 	displayName,
@@ -33,7 +32,7 @@ class ModificationItem(
 	override fun assembleLore(itemStack: ItemStack): List<Component> {
 		val applicableTo = CustomItemKeys.allkeys()
 			.filter { customItem ->
-				modSupplier.get().applicationPredicates.any { predicate -> predicate.canApplyTo(customItem.getValue()) }
+				modKey.getValue().applicationPredicates.any { predicate -> predicate.canApplyTo(customItem.getValue()) }
 			}
 			.map { customItem -> customItem.getValue().displayName.itemLore }
 			.toTypedArray()
@@ -45,7 +44,4 @@ class ModificationItem(
 			*applicableTo
 		)
 	}
-
-	/** The tool modification this item represents */
-	val modification get() = modSupplier.get()
 }
