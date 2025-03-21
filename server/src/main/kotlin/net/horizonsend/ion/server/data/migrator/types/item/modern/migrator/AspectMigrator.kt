@@ -23,7 +23,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.function.Consumer
 
 class AspectMigrator private constructor(
-	val customItem: IonRegistryKey<CustomItem>,
+	val customItem: IonRegistryKey<CustomItem, out CustomItem>,
 	predicate: ItemMigratorPredicate,
 	private val aspects: Set<ItemAspectMigrator>,
 	private val additionalIdentifiers: Set<String> = setOf()
@@ -50,7 +50,7 @@ class AspectMigrator private constructor(
 		return if (replaced) MigratorResult.Replacement(item) else MigratorResult.Mutation()
 	}
 
-	class Builder(private val customItem: IonRegistryKey<CustomItem>) {
+	class Builder(private val customItem: IonRegistryKey<CustomItem, out CustomItem>) {
 		private val aspects: MutableSet<ItemAspectMigrator> = mutableSetOf()
 		private val additionalIdentifiers: MutableSet<String> = mutableSetOf()
 
@@ -89,12 +89,12 @@ class AspectMigrator private constructor(
 			return this
 		}
 
-		fun pullLore(from: IonRegistryKey<CustomItem>): Builder {
+		fun pullLore(from: IonRegistryKey<CustomItem, out CustomItem>): Builder {
 			aspects.add(PullLoreMigrator(from.getValue()))
 			return this
 		}
 
-		fun pullModel(from: IonRegistryKey<CustomItem>): Builder {
+		fun pullModel(from: IonRegistryKey<CustomItem, out CustomItem>): Builder {
 			aspects.add(PullModelMigrator(from.getValue()))
 			return this
 		}
@@ -104,7 +104,7 @@ class AspectMigrator private constructor(
 			return this
 		}
 
-		fun pullName(from: IonRegistryKey<CustomItem>): Builder {
+		fun pullName(from: IonRegistryKey<CustomItem, out CustomItem>): Builder {
 			aspects.add(PullLoreMigrator(from.getValue()))
 			return this
 		}
@@ -122,11 +122,11 @@ class AspectMigrator private constructor(
 	}
 
 	companion object {
-		fun builder(customItem: IonRegistryKey<CustomItem>): Builder {
+		fun builder(customItem: IonRegistryKey<CustomItem, out CustomItem>): Builder {
 			return Builder(customItem)
 		}
 
-		fun fixModel(customItem: IonRegistryKey<CustomItem>): AspectMigrator {
+		fun fixModel(customItem: IonRegistryKey<CustomItem, out CustomItem>): AspectMigrator {
 			return builder(customItem).pullModel(customItem).build()
 		}
 	}

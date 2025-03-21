@@ -21,7 +21,7 @@ import org.bukkit.util.Vector
 import java.util.function.Supplier
 
 abstract class ThrowableCustomItem(
-	key: IonRegistryKey<CustomItem>,
+	key: IonRegistryKey<CustomItem, out CustomItem>,
 
 	customModel: String,
 	displayName: Component,
