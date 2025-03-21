@@ -4,19 +4,27 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.core.registries.Registry
+import kotlin.reflect.KClass
 
-abstract class KeyRegistry<T : Any>(val registry: Registry<T>) {
-	private val keys = Object2ObjectOpenHashMap<String, IonRegistryKey<T>>()
-	private val allKeys = ObjectOpenHashSet<IonRegistryKey<T>>()
+abstract class KeyRegistry<T : Any>(val registry: Registry<T>, private val type: KClass<T>) {
+	protected val keys = Object2ObjectOpenHashMap<String, IonRegistryKey<T, out T>>()
+	protected val allKeys = ObjectOpenHashSet<IonRegistryKey<T, out T>>()
 
-	protected fun registerKey(key: String): IonRegistryKey<T> {
-		val registryKey = registry.createKey(key)
+	protected inline fun <reified Z : T> registerTypedKey(key: String): IonRegistryKey<T, Z> {
+		val registryKey = registry.createKey<Z>(key, Z::class)
 		keys[key] = registryKey
 		allKeys.add(registryKey)
 		return registryKey
 	}
 
-	operator fun get(string: String) = keys[string]
+	protected fun registerKey(key: String): IonRegistryKey<T, T> {
+		val registryKey = registry.createKey(key, type)
+		keys[key] = registryKey
+		allKeys.add(registryKey)
+		return registryKey
+	}
+
+	operator fun get(string: String): IonRegistryKey<T, out T>? = keys[string]
 
 	fun allStrings() = keys.keys
 	fun allkeys() = allKeys

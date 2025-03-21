@@ -12,7 +12,7 @@ import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
-class MagazineType<T : Balancing>(val balancing: Supplier<T>, private val magazineType: IonRegistryKey<CustomItem>) : CustomItemComponent, LoreManager {
+class MagazineType<T : Balancing>(val balancing: Supplier<T>, private val magazineType: IonRegistryKey<CustomItem, out CustomItem>) : CustomItemComponent, LoreManager {
 
 	override fun decorateBase(baseItem: ItemStack, customItem: CustomItem) {}
 

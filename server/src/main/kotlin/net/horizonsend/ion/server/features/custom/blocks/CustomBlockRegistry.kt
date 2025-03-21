@@ -208,7 +208,7 @@ class CustomBlockRegistry : Registry<CustomBlock>("CUSTOM_BLOCKS") {
 		register(CustomBlockKeys.ITEM_FILTER, ItemFilterBlock)
 	}
 
-	override fun registerAdditional(key: IonRegistryKey<CustomBlock>, value: CustomBlock) {
+	override fun registerAdditional(key: IonRegistryKey<CustomBlock, *>, value: CustomBlock) {
 		customBlocksData[value.blockData.nms] = value
 
 		if (value is DirectionalCustomBlock) {
@@ -244,7 +244,7 @@ class CustomBlockRegistry : Registry<CustomBlock>("CUSTOM_BLOCKS") {
 			return customItem.map { item -> listOf(item.constructItemStack(amount)) }
 		}
 
-		fun customItemDrop(key: IonRegistryKey<CustomItem>, amount: Int = 1): Supplier<Collection<ItemStack>> {
+		fun customItemDrop(key: IonRegistryKey<CustomItem, out CustomItem>, amount: Int = 1): Supplier<Collection<ItemStack>> {
 			return Supplier {
 				val itemStack = key.getValue().constructItemStack()
 				itemStack.amount = amount
