@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCon
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
+import net.horizonsend.ion.server.features.starship.type.GroundVehicleType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.isTankPassable
@@ -65,7 +66,7 @@ class ShiftFlightHandler(controller: PlayerController) : PlayerMovementInputHand
 		val dx = if (vertical) 0 else sin(-yawRadians).roundToInt() * distance
 		var dy = sin(-pitchRadians).roundToInt() * distance
 
-		if (starship.type == StarshipType.TANK) {
+		if (starship.type is GroundVehicleType<*>) {
 			dy = getHoverHeight(starship, Vec3i(dx, 0, dy))
 		}
 
@@ -78,6 +79,8 @@ class ShiftFlightHandler(controller: PlayerController) : PlayerMovementInputHand
 
 	companion object {
 		fun getHoverHeight(starship: Starship, delta: Vec3i): Int {
+			val hoverHeight = (starship.type as GroundVehicleType<*>).groundClearanceHeight
+
 			val min = starship.min + delta
 			val max = starship.max + delta
 			val center = starship.centerOfMass + delta
@@ -92,7 +95,7 @@ class ShiftFlightHandler(controller: PlayerController) : PlayerMovementInputHand
 			)
 
 			// Start with 3 blocks clearance
-			var down = 3
+			var down = hoverHeight
 			val downMax = 10
 
 			for (y in 0..downMax) {

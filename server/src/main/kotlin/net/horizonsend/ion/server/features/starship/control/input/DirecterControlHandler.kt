@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.starship.control.input
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
+import net.horizonsend.ion.server.features.starship.type.GroundVehicleType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
 import org.bukkit.event.player.PlayerMoveEvent
@@ -76,7 +76,7 @@ class DirecterControlHandler(controller: PlayerController) : PlayerMovementInput
 
 		var (dx, dy, dz) = deltaV
 
-		if (starship.type == StarshipType.TANK) {
+		if (starship.type is GroundVehicleType<*>) {
 			dy = ShiftFlightHandler.getHoverHeight(starship, Vec3i(dx, 0, dy))
 		}
 

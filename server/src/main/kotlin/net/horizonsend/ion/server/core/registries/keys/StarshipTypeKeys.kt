@@ -1,0 +1,47 @@
+package net.horizonsend.ion.server.core.registries.keys
+
+import net.horizonsend.ion.server.configuration.StarshipBalancing
+import net.horizonsend.ion.server.core.registries.IonRegistries
+import net.horizonsend.ion.server.features.starship.type.StarshipType
+
+object StarshipTypeKeys : KeyRegistry<StarshipType<*>>(IonRegistries.STARSHIP_TYPE, StarshipType::class) {
+	val SPEEDER = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_SPEEDER = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val STARFIGHTER = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_STARFIGHTER = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val INTERCEPTOR = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_INTERCEPTOR = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val GUNSHIP = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_GUNSHIP = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val CORVETTE = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_CORVETTE = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val AI_CORVETTE_LOGISTIC = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val FRIGATE = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_FRIGATE = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val DESTROYER = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_DESTROYER = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val CRUISER = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_CRUISER = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val BATTLECRUISER = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_BATTLECRUISER = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val BATTLESHIP = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_BATTLESHIP = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val DREADNOUGHT = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_DREADNOUGHT = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val TANK = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_TANK = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val SHUTTLE = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_SHUTTLE = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val TRANSPORT = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_TRANSPORT = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val LIGHT_FREIGHTER = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_LIGHT_FREIGHTER = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val MEDIUM_FREIGHTER = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_MEDIUM_FREIGHTER = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val HEAVY_FREIGHTER = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_HEAVY_FREIGHTER = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val BARGE = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val AI_BARGE = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+	val PLATFORM = registerTypedKey<StarshipType<StarshipBalancing>>("SPEEDER")
+	val UNIDENTIFIEDSHIP = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
+}

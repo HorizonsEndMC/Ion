@@ -13,9 +13,9 @@ import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.CommonPlayer
 import net.horizonsend.ion.common.utils.luckPerms
+import net.horizonsend.ion.server.core.registries.keys.StarshipTypeKeys
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.StarshipSchematic
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.kyori.adventure.text.Component
 import net.luckperms.api.model.user.User
 import org.bukkit.Bukkit
@@ -27,7 +27,7 @@ import java.util.UUID
 
 val SLTextStyleDB.actualStyle get() = SLTextStyle.valueOf(this)
 
-val StarshipTypeDB.actualType get() = StarshipType.valueOf(this)
+val StarshipTypeDB.actualType get() = StarshipTypeKeys[this] ?: StarshipTypeKeys.SHUTTLE
 
 val Player.slPlayerId: SLPlayerId get() = uniqueId.slPlayerId
 
