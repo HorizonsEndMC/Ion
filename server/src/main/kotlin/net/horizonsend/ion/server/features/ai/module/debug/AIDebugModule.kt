@@ -71,6 +71,9 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 		}
 		val dirOffset = shownContexts.size * debugOffsetIncrement + debugOffset + shipOffset
 		output.add(VectorDisplay(mod::thrustOut ,mapColor(DebugColor.BLUE), controller.starship, Vector(0.0,dirOffset,0.0)))
+
+		val powerModeOffset = dirOffset + 0.5
+		output.addAll(addPowerModeDisplay(Vector(0.0,powerModeOffset,0.0)))
 		return output
 	}
 
@@ -83,6 +86,19 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 			val display = VectorDisplay(context, i,model, identifier, offset)
 			display
 		}
+	}
+
+	private fun addPowerModeDisplay(baseOffset : Vector) : List<VectorDisplay>{
+		val shieldOffset = baseOffset.clone().add(Vector(-0.2,0.0,0.0))
+		val weaponsOffset = baseOffset.clone()
+		val thrustOffset = baseOffset.clone().add(Vector(0.2,0.0,0.0))
+		val powerDist = controller.starship.reactor.powerDistributor
+
+		val up = Vector(0.0,1.0,0.0)
+		return listOf(
+		VectorDisplay(powerDist::shieldPortion,up,mapColor(DebugColor.BLUE), controller.starship,shieldOffset),
+		VectorDisplay(powerDist::weaponPortion,up,mapColor(DebugColor.RED), controller.starship,weaponsOffset),
+		VectorDisplay(powerDist::thrusterPortion,up,mapColor(DebugColor.GREEN), controller.starship,thrustOffset))
 	}
 
 	private fun renderDebug() {

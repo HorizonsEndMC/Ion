@@ -1,11 +1,7 @@
 package net.horizonsend.ion.server.features.ai.configuration
 
-import kotlinx.serialization.Contextual
+
 import kotlinx.serialization.Serializable
-import net.horizonsend.ion.server.features.ai.util.AITarget
-import net.horizonsend.ion.server.features.ai.util.PlayerTarget
-import net.horizonsend.ion.server.features.ai.util.StarshipTarget
-import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 
 @Serializable
 data class AIEmities(

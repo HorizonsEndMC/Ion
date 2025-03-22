@@ -6,19 +6,19 @@ data class AISteeringConfiguration(
 	val defaultBasicSteeringConfiguration : BasicSteeringConfiguration =
 		BasicSteeringConfiguration(),
 	val starfighterBasicSteeringConfiguration : BasicSteeringConfiguration =
-		BasicSteeringConfiguration(defaultMaxSpeed = 30.0, defaultRotationMixingRatio = 0.6),
+		BasicSteeringConfiguration(defaultMaxSpeed = 30.0, defaultRotationMixingBias = 0.6, defaultRotationMixingGain = 6.0),
 	val gunshipBasicSteeringConfiguration : BasicSteeringConfiguration =
-		BasicSteeringConfiguration(defaultMaxSpeed = 25.0, defaultRotationMixingRatio = 0.2),
+		BasicSteeringConfiguration(defaultMaxSpeed = 25.0, defaultRotationMixingBias = 0.5, defaultRotationMixingGain = 2.0),
 	val corvetteBasicSteeringConfiguration : BasicSteeringConfiguration =
-		BasicSteeringConfiguration(defaultMaxSpeed = 23.0, defaultRotationMixingRatio = 0.2),
+		BasicSteeringConfiguration(defaultMaxSpeed = 23.0, defaultRotationMixingBias = 0.3, defaultRotationMixingGain = 1.0),
 	val miniFrigateBasicSteeringConfiguration : BasicSteeringConfiguration =
-		BasicSteeringConfiguration(defaultMaxSpeed = 22.0, defaultRotationMixingRatio = 0.3),
+		BasicSteeringConfiguration(defaultMaxSpeed = 22.0, defaultRotationMixingBias = 0.6,defaultRotationMixingGain = 2.0),
 	val frigateBasicSteeringConfiguration : BasicSteeringConfiguration =
-		BasicSteeringConfiguration(defaultMaxSpeed = 20.0, defaultRotationMixingRatio = 0.1, defaultRotationContribution = 0.5),
+		BasicSteeringConfiguration(defaultMaxSpeed = 20.0, defaultRotationMixingBias = 0.1, defaultRotationContribution = 0.5),
 	val destroyerBasicSteeringConfiguration : BasicSteeringConfiguration =
-		BasicSteeringConfiguration(defaultMaxSpeed = 19.0, defaultRotationMixingRatio = 0.1, defaultRotationContribution = 0.5),
+		BasicSteeringConfiguration(defaultMaxSpeed = 19.0, defaultRotationMixingBias = 0.1, defaultRotationContribution = 0.5),
 	val battlecruiserBasicSteeringConfiguration : BasicSteeringConfiguration =
-		BasicSteeringConfiguration(defaultMaxSpeed = 15.0, defaultRotationMixingRatio = 0.1, defaultRotationContribution = 0.0),
+		BasicSteeringConfiguration(defaultMaxSpeed = 15.0, defaultRotationMixingBias = 0.1, defaultRotationContribution = 0.5),
 
 	val starfighterDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(
 		fleeDist = 600.0, minDist = 30.0 , optimalDist = 100.0, maxDist = 180.0),
@@ -44,8 +44,9 @@ data class AISteeringConfiguration(
 	data class BasicSteeringConfiguration(
 		val defaultMaxSpeed : Double = 20.0,
 		val defaultRotationContribution : Double = 0.2,
-		val defaultRotationMixingRatio : Double = 0.0,
-		val defaultRotationMixingPower : Double = 0.5
+		val defaultRotationBleed : Double = 0.1,
+		val defaultRotationMixingBias : Double = 0.5,
+		val defaultRotationMixingGain : Double = 1.0
 	)
 
 	@Serializable

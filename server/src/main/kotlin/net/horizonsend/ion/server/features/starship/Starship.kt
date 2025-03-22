@@ -626,14 +626,18 @@ class Starship (
 		}
 	}
 
-	fun updatePower(sender: String, shield: Int, weapon: Int, thruster: Int) {
-		reactor.powerDistributor.setDivision(shield / 100.0, weapon / 100.0, thruster / 100.0)
+	fun updatePower(sender: String, shield: Double, weapon: Double, thruster: Double, bypassCheck : Boolean = false) {
+		reactor.powerDistributor.setDivision(shield, weapon, thruster, bypassCheck)
 
 		onlinePassengers.forEach { player ->
 			player.informationAction(
-				"<green>$sender</green> updated the power mode to <aqua>$shield% shield <red>$weapon% weapon <yellow>$thruster% thruster"
+				"<green>$sender</green> updated the power mode to <aqua>${(shield * 100).toInt()}% shield <red>${(weapon * 100).toInt()}% weapon <yellow>${(thruster * 100).toInt()}% thruster"
 			)
 		}
+	}
+
+	fun updatePower(sender: String, shield: Int, weapon: Int, thruster: Int) {
+		updatePower(sender,shield/100.0,weapon/100.0,thruster/100.0)
 	}
 
 	fun getEntryRange(planet: CachedPlanet): Int {

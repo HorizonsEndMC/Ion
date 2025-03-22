@@ -64,6 +64,23 @@ abstract class ContextMap {
 
 			return first to second
 		}
+
+		inline fun <reified A : ContextMap,reified B : ContextMap>
+			mixBy(first : A, second : B, ratio : Double,
+				  firstFun : (Double) -> Double, secondFun : (Double) -> Double) :Pair<A,B>{
+			val temp = object : ContextMap(first) {}
+			val firstWeight = firstFun(ratio)
+			first.multScalar(firstWeight)
+			first.addContext(
+				scaled(second,1 - firstWeight)
+			)
+			val secondWeight = secondFun(ratio)
+			if (secondWeight < 0) throw RuntimeException()
+			second.multScalar(secondWeight)
+			second.addContext(scaled(temp, 1 - secondWeight))
+
+			return first to second
+		}
     }
 
     val bins = DoubleArray(NUMBINS)

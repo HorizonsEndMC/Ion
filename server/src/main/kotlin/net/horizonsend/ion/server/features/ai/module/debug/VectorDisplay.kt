@@ -33,6 +33,12 @@ class VectorDisplay private constructor(
 				offset: Vector
 	) : this(FunctionVectorBox(directionSupplier), item, parent, offset)
 
+	constructor(magSupplier: () -> Double,dir: Vector,
+				item : ItemStack,
+				parent: ActiveStarship,
+				offset: Vector
+	) : this (MagiitudeBox(dir,magSupplier), item, parent, offset)
+
 	constructor(map : ContextMap,
 				binIndex : Int,
 				item : ItemStack,
@@ -100,6 +106,16 @@ class VectorDisplay private constructor(
 			return ContextMap.bindir[index]
 		}
 
+	}
+
+	class MagiitudeBox(private val dir : Vector, val mag : () -> Double) : Box() {
+		override fun getMag(): Double {
+			return mag()
+		}
+
+		override fun getDir(): Vector {
+			return dir
+		}
 	}
 
 	class FunctionVectorBox(val func: () -> Vector) : Box() {

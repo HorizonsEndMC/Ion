@@ -65,6 +65,10 @@ class DifficultyModule(
 		}
 	}
 
+	val powerModeSwitch get() = internalDifficulty >= 2
+	val useSpecialPowerModes  get() = internalDifficulty >= 4
+
+
 	companion object {
 
 		val maxDifficulty = 2

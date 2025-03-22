@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.ai.module.steering.context
 
 import SteeringModule
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextConfiguration
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
@@ -161,6 +162,7 @@ class OffsetSeekContext(
 	private val config get() = configSupplier.get()
 	private val offsetDist get() =  offsetSupplier.get()
 	override fun populateContext() {
+		ship.debug(offsetDist.toString())
 		clearContext()
 		val seekPos =  generalTarget.get()?.getLocation()?.toVector()
 		seekPos ?: return

@@ -8,6 +8,9 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovementExc
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.util.Vector
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.exp
+import kotlin.math.ln
+import kotlin.math.pow
 
 /**
 Context steering based control for AI
@@ -66,7 +69,7 @@ abstract class SteeringModule(controller: AIController, val difficulty: Difficul
 
 	fun decision(thrustContext : ContextMap, headingContext : ContextMap) {
 		val heading = headingContext.maxDir().setY(0)
-		heading.normalize()
+		if (heading.lengthSquared() > 1e-4) heading.normalize()
 		val thrustMag = thrustContext.lincontext!!.interpolotedMax()
 		val thrust = thrustContext.maxDir().normalize()
 
@@ -80,5 +83,14 @@ abstract class SteeringModule(controller: AIController, val difficulty: Difficul
 		location?.let {
 			obstructions[location] = time
 		}
+	}
+
+	fun biasGain(x: Double, gain: Double, bias: Double): Double {
+		// Compute the bias term based on the target midpoint p
+		val b = ln(ln(0.5) / ln(bias))
+		// Compute the adjusted input z
+		val z = x.pow(exp(b))
+		// Apply the S-curve function
+		return z.pow(gain) / (z.pow(gain) + (1 - z).pow(gain))
 	}
 }

@@ -28,6 +28,7 @@ import org.bukkit.Color
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
+import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 import kotlin.reflect.KClass
@@ -148,6 +149,7 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 		for (module in utilModules) {
 			module.tick()
 		}
+		SpeedTracker.addSpeed(starship.velocity.length())
 	}
 
 	override fun destroy() {
@@ -262,6 +264,35 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 			}
 		}
 	}
+
+	val maxSpeed get() = SpeedTracker.getMaxSpeed()
+
+	private object SpeedTracker {
+		private val deque: Deque<Pair<Long, Double>> = LinkedList()
+		private val windowSizeMillis = 10_000L  // 10 seconds in milliseconds
+
+		fun addSpeed(speed: Double) {
+			val currentTime = System.currentTimeMillis()
+
+			// Remove elements outside the 10-second window
+			while (deque.isNotEmpty() && deque.first.first <= currentTime - windowSizeMillis) {
+				deque.removeFirst()
+			}
+
+			// Remove smaller elements from the back of the deque
+			while (deque.isNotEmpty() && deque.last.second < speed) {
+				deque.removeLast()
+			}
+
+			// Add new element to the back
+			deque.addLast(Pair(currentTime, speed))
+		}
+
+		fun getMaxSpeed(): Double {
+			return (if (deque.isNotEmpty()) deque.first.second else 0.0) + 1e-4
+		}
+	}
+
 
 	override fun toString(): String {
 		return "AI Controller[Display Name: ${pilotName.plainText()} Starship: ${starship.identifier}]"

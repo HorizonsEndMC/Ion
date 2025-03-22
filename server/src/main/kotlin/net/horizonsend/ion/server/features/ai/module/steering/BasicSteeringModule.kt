@@ -19,6 +19,9 @@ import net.horizonsend.ion.server.features.ai.module.steering.context.WorldBlock
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import java.util.function.Supplier
+import kotlin.math.exp
+import kotlin.math.ln
+import kotlin.math.pow
 
 /** Basic implementation of a Steering Module, showcasing all the different modulues for */
 open class BasicSteeringModule(
@@ -106,12 +109,16 @@ open class BasicSteeringModule(
         // A current issue is that if the movement and rotation maps are equal and opposing
         // magnitude then it will lead to an agent jittering under a certain ship.velocity threshold.
         //mixing
-		val clamp = {input : Double, min : Double, max: Double -> min + (input * (max-min))}
-        val rotationMovementPrior = clamp((ship.velocity.length()/config.defaultMaxSpeed).coerceIn(0.0,1.0),
-									     config.defaultRotationMixingRatio * 0.5,
-									     config.defaultRotationMixingRatio * 2).coerceIn(0.0,1.0)
+        val rotationMovementPrior = (ship.velocity.length()/controller.maxSpeed).coerceIn(0.0,1.0)
         //println(rotationMovementPrior)
-		ContextMap.mix(contexts["movementInterest"]!!,contexts["rotationInterest"]!!, rotationMovementPrior,config.defaultRotationMixingPower)
+		val movementMix = {ratio : Double ->
+			ratio.pow(config.defaultRotationBleed)
+		}
+		val rotationMix = {ratio : Double ->
+			biasGain(ratio, config.defaultRotationMixingGain,config.defaultRotationMixingBias)
+		}
+		ContextMap.mixBy(contexts["movementInterest"]!!,contexts["rotationInterest"]!!, rotationMovementPrior,
+			movementMix, rotationMix)
 
         //masking, if the danger for a certain direction is greater than the threshold then it is
         // masked out

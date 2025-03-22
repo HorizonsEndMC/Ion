@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.ai.module.misc.ContactsJammerModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.misc.GravityWellModule
 import net.horizonsend.ion.server.features.ai.module.misc.NavigationModule
+import net.horizonsend.ion.server.features.ai.module.misc.PowerModeModule
 import net.horizonsend.ion.server.features.ai.module.steering.BasicSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.CapitalSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.DistancePositioningModule
@@ -21,12 +22,7 @@ import net.horizonsend.ion.server.features.ai.module.steering.GunshipSteeringMod
 import net.horizonsend.ion.server.features.ai.module.steering.StarfighterSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.SteeringSolverModule
 import net.horizonsend.ion.server.features.ai.module.steering.TravelSteeringModule
-import net.horizonsend.ion.server.features.ai.module.targeting.ClosestLargeStarshipTargetingModule
-import net.horizonsend.ion.server.features.ai.module.targeting.ClosestPlayerTargetingModule
-import net.horizonsend.ion.server.features.ai.module.targeting.ClosestSmallStarshipTargetingModule
-import net.horizonsend.ion.server.features.ai.module.targeting.ClosestTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EmityModule
-import net.horizonsend.ion.server.features.ai.module.targeting.HighestDamagerTargetingModule
 import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -42,6 +38,7 @@ import kotlin.random.Random
 object AIControllerFactories : IonServerComponent() {
 	val presetControllers = mutableMapOf<String, AIControllerFactory>()
 	val aiSteeringConfig get() = ConfigurationFiles.aiSteeringConfiguration()
+	val aiPowerModeConfig get() = ConfigurationFiles.aiPowerModeConfiguration()
 
 	val starfighter = registerFactory("STARFIGHTER") {
 		setCoreModuleBuilder { controller: AIController, difficulty, targetAI ->
@@ -75,6 +72,16 @@ object AIControllerFactories : IonServerComponent() {
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
 			)
+			)
+
+			builder.addModule(
+				PowerModeModule::class,PowerModeModule(
+				controller,
+				difficultyManager,
+				targeting::findTarget,
+				steering,
+				configSupplier = Supplier(aiPowerModeConfig::starfighterPowerModeConfiguration)
+				)
 			)
 			if (difficultyManager.doNavigation) {
 				builder.addModule(NavigationModule::class, NavigationModule(
@@ -127,6 +134,16 @@ object AIControllerFactories : IonServerComponent() {
 			)
 			)
 
+			builder.addModule(
+				PowerModeModule::class,PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = Supplier(aiPowerModeConfig::gunshipPowerModeConfiguration)
+				)
+			)
+
 			if (difficultyManager.doNavigation) {
 				builder.addModule(NavigationModule::class, NavigationModule(
 					controller,
@@ -172,6 +189,15 @@ object AIControllerFactories : IonServerComponent() {
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
 			)
+			)
+
+			builder.addModule(
+				PowerModeModule::class,PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+				)
 			)
 
 			if (difficultyManager.doNavigation) {
@@ -222,6 +248,16 @@ object AIControllerFactories : IonServerComponent() {
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
 			)
+			)
+
+			builder.addModule(
+				PowerModeModule::class,PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = Supplier(aiPowerModeConfig::gunshipPowerModeConfiguration)
+				)
 			)
 
 			if (difficultyManager.doNavigation) {
@@ -276,6 +312,16 @@ object AIControllerFactories : IonServerComponent() {
 			)
 			)
 
+			builder.addModule(
+				PowerModeModule::class,PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = Supplier(aiPowerModeConfig::corvettePowerModeConfiguration)
+				)
+			)
+
 			if (difficultyManager.doNavigation) {
 				builder.addModule(NavigationModule::class, NavigationModule(
 					controller,
@@ -325,6 +371,16 @@ object AIControllerFactories : IonServerComponent() {
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
 			)
+			)
+
+			builder.addModule(
+				PowerModeModule::class,PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = Supplier(aiPowerModeConfig::corvettePowerModeConfiguration)
+				)
 			)
 
 			if (difficultyManager.doNavigation) {
@@ -379,6 +435,16 @@ object AIControllerFactories : IonServerComponent() {
 			)
 			)
 
+			builder.addModule(
+				PowerModeModule::class,PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = Supplier(aiPowerModeConfig::corvettePowerModeConfiguration)
+				)
+			)
+
 			if (difficultyManager.doNavigation) {
 				builder.addModule(NavigationModule::class, NavigationModule(
 					controller,
@@ -431,6 +497,16 @@ object AIControllerFactories : IonServerComponent() {
 			)
 			)
 
+			builder.addModule(
+				PowerModeModule::class,PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = Supplier(aiPowerModeConfig::corvettePowerModeConfiguration)
+				)
+			)
+
 			if (difficultyManager.doNavigation) {
 				builder.addModule(NavigationModule::class, NavigationModule(
 					controller,
@@ -477,6 +553,16 @@ object AIControllerFactories : IonServerComponent() {
 				targeting::findTarget,
 				SteeringSolverModule.MovementType.CRUISE
 			)
+			)
+
+			builder.addModule(
+				PowerModeModule::class,PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = Supplier(aiPowerModeConfig::capitalPowerModeConfiguration)
+				)
 			)
 
 			if (difficultyManager.doNavigation) {
@@ -526,6 +612,16 @@ object AIControllerFactories : IonServerComponent() {
 				targeting::findTarget,
 				SteeringSolverModule.MovementType.CRUISE
 			)
+			)
+
+			builder.addModule(
+				PowerModeModule::class,PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = Supplier(aiPowerModeConfig::capitalPowerModeConfiguration)
+				)
 			)
 
 			if (difficultyManager.doNavigation) {
@@ -579,6 +675,16 @@ object AIControllerFactories : IonServerComponent() {
 			)
 			)
 
+			builder.addModule(
+				PowerModeModule::class,PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = Supplier(aiPowerModeConfig::capitalPowerModeConfiguration)
+				)
+			)
+
 			if (difficultyManager.doNavigation) {
 				builder.addModule(NavigationModule::class, NavigationModule(
 					controller,
@@ -629,6 +735,16 @@ object AIControllerFactories : IonServerComponent() {
 			)
 			)
 
+			builder.addModule(
+				PowerModeModule::class,PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = Supplier(aiPowerModeConfig::capitalPowerModeConfiguration)
+				)
+			)
+
 			if (difficultyManager.doNavigation) {
 				builder.addModule(NavigationModule::class, NavigationModule(
 					controller,
@@ -677,6 +793,16 @@ object AIControllerFactories : IonServerComponent() {
 				targeting::findTarget,
 				SteeringSolverModule.MovementType.CRUISE
 			))
+
+			builder.addModule(
+				PowerModeModule::class,PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = Supplier(aiPowerModeConfig::superCapitalPowerModeConfiguration)
+				)
+			)
 
 			if (difficultyManager.doNavigation) {
 				builder.addModule(NavigationModule::class, NavigationModule(
@@ -765,6 +891,16 @@ object AIControllerFactories : IonServerComponent() {
 				targeting::findTarget ,
 				SteeringSolverModule.MovementType.DC
 			))
+
+			builder.addModule(
+				PowerModeModule::class,PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = Supplier(aiPowerModeConfig::gunshipPowerModeConfiguration)
+				)
+			)
 
 			if (difficultyManager.doNavigation) {
 				builder.addModule(NavigationModule::class, NavigationModule(
