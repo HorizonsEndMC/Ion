@@ -182,8 +182,10 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 			}
 		}
 
-		Tasks.sync {
-			transaction.commit()
+		if (!transaction.isEmpty()) {
+			Tasks.sync {
+				transaction.commit()
+			}
 		}
 	}
 
@@ -198,7 +200,15 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 		for (n in validDestinations.indices) {
 			val destination: PathfindingNodeWrapper = getDestination(meta, validDestinations)
-			val destinationInventory = destinationInvCache[destination.node.position]
+			var destinationInventory = destinationInvCache[destination.node.position]
+
+			if (destinationInventory == null) {
+				val found = getInventory(destination.node.position)
+				if (found != null) {
+					destinationInventory = found
+					destinationInvCache.put(destination.node.position, found)
+				}
+			}
 
 			if (destinationInventory == null) {
 				validDestinations.remove(destination)

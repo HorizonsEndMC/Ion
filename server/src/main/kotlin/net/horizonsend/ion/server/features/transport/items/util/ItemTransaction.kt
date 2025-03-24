@@ -18,6 +18,8 @@ class ItemTransaction {
 		transactions += BackedItemTransaction(sourceReference, transferredItem, transferredAmount, destinationInventories, destinationSelector)
 	}
 
+	fun isEmpty() = transactions.isEmpty()
+
 	fun commit() {
 		transactions.forEach { t -> t.execute() }
 	}
