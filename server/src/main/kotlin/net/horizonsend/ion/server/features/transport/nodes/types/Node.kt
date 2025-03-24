@@ -90,7 +90,7 @@ interface Node {
 			))
 		}
 
-		return nodes
+		return filterPositionDataBackwards(nodes, backwards)
 	}
 
 	/**
@@ -105,6 +105,30 @@ interface Node {
 
 		fun getPreviousNodes(cachedNodeProvider: CacheProvider, filter: ((Node, BlockFace) -> Boolean)?): List<NodePositionData> =
 				type.getPreviousNodes(this, cachedNodeProvider, filter)
+
+		fun getAllNeighbors(cachedNodeProvider: CacheProvider, filter: ((Node, BlockFace) -> Boolean)?): List<NodePositionData> {
+			val nodes = mutableListOf<NodePositionData>()
+
+			for (adjacentFace in ADJACENT_BLOCK_FACES) {
+				val relativePos = getRelative(position, adjacentFace)
+				val cacheResult = cachedNodeProvider.invoke(cache, world, relativePos) ?: continue
+				val (cache, cached) = cacheResult
+				if (cached == null) continue
+
+				if (!(cached.canTransferTo(type, adjacentFace.oppositeFace) || type.canTransferFrom(cached, adjacentFace.oppositeFace))) continue
+				if (filter != null && !filter.invoke(cached, adjacentFace.oppositeFace)) continue
+
+				nodes.add(NodePositionData(
+					type = cached,
+					world = world,
+					position = relativePos,
+					offset = adjacentFace.oppositeFace,
+					cache = cache,
+				))
+			}
+
+			return nodes
+		}
 	}
 
 	fun onInvalidate() {}

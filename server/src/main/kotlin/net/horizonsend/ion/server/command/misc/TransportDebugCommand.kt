@@ -2,18 +2,24 @@ package net.horizonsend.ion.server.command.misc
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import io.papermc.paper.util.StacktraceDeobfuscator
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
+import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
+import net.horizonsend.ion.server.features.transport.nodes.cache.DestinationCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.nodes.util.CacheState
+import net.horizonsend.ion.server.features.transport.nodes.util.MappedDestinationCache
+import net.horizonsend.ion.server.features.transport.nodes.util.MonoDestinationCache
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
@@ -24,8 +30,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.kyori.adventure.text.event.ClickEvent.callback
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.slf4j.Logger
 import java.lang.management.ManagementFactory
 import java.lang.management.ThreadInfo
@@ -192,37 +200,47 @@ object TransportDebugCommand : SLCommand() {
 		sender.information("Targeted node: $node at ${toVec3i(location)}")
 	}
 
-//	@Subcommand("get cached destinations chunk")
-//	fun getCachedDestinationsChunk(sender: Player, network: CacheType, @Optional pageNumber: Int?) {
-//		var cacheHolder: TransportCache? = null
-//		val (node, location) = requireLookingAt(sender) { network.get(it.chunk.ion()).apply { cacheHolder = this } }
-//		sender.information("Targeted node: $node at ${toVec3i(location)}")
-//
-//		val cache = cacheHolder?.destinationCache ?: fail { "Something went wrong" }
-//		val destinations = cache.rawCache
-//
-//		for (key in destinations.keys) {
-//			val paths = cache.getCache(key)[location] ?: continue
-//			val vectors = paths.destinations.map { toVec3i(it.node.position) }
-//			sender.sendMessage(formatPaginatedMenu(vectors, "/get cached destinations chunk", pageNumber ?: 1) { vec, _ -> vec.toComponent() })
-//		}
-//	}
-//
-//	@Subcommand("get cached destinations ship")
-//	fun getCachedDestinationsShip(sender: Player, network: CacheType, @Optional pageNumber: Int?) {
-//		var cacheHolder: DestinationCacheHolder? = null
-//		val (node, location) = requireLookingAt(sender) { network.get(getStarshipRiding(sender)).apply { cacheHolder = this as? DestinationCacheHolder } }
-//		sender.information("Targeted node: $node at ${toVec3i(location)}")
-//
-//		val cache = cacheHolder?.destinationCache ?: fail { "Something went wrong" }
-//		val destinations = cache.rawCache
-//
-//		for (key in destinations.keys) {
-//			val paths = cache.getCache(key)[location] ?: continue
-//			val vectors = paths.destinations.map { toVec3i(it.node.position) }
-//			sender.sendMessage(formatPaginatedMenu(vectors, "/get cached destinations ship", pageNumber ?: 1) { vec, _ -> vec.toComponent() })
-//		}
-//	}
+	@Subcommand("get cached destinations chunk")
+	fun getCachedDestinationsChunk(sender: Player, network: CacheType, @Optional pageNumber: Int?) {
+		var cacheHolder: DestinationCacheHolder? = null
+		val (node, location) = requireLookingAt(sender) { network.get(sender.chunk.ion()).apply { cacheHolder = this as? DestinationCacheHolder } }
+		sender.information("Targeted node: $node at ${toVec3i(location)}")
+
+		val cache = cacheHolder?.destinationCache ?: fail { "Something went wrong" }
+
+		if (cache is MonoDestinationCache) {
+			val paths = cache.get(node::class, location) ?: fail { "Expired Cache" }
+			val vectors = paths.map { toVec3i(it.node.position) }
+			sender.sendMessage(formatPaginatedMenu(vectors, "/get cached destinations chunk", pageNumber ?: 1) { vec, _ -> vec.toComponent() })
+		} else if (cache is MappedDestinationCache<*>) {
+			cache as MappedDestinationCache<ItemStack>
+
+			val paths = cache.get(node::class, sender.inventory.itemInMainHand, location) ?: fail { "Expired Cache" }
+			val vectors = paths.map { toVec3i(it.node.position) }
+			sender.sendMessage(formatPaginatedMenu(vectors, "/get cached destinations chunk", pageNumber ?: 1) { vec, _ -> vec.toComponent() })
+		}
+	}
+
+	@Subcommand("get cached destinations ship")
+	fun getCachedDestinationsShip(sender: Player, network: CacheType, @Optional pageNumber: Int?) {
+		var cacheHolder: DestinationCacheHolder? = null
+		val (node, location) = requireLookingAt(sender) { network.get(getStarshipRiding(sender)).apply { cacheHolder = this as? DestinationCacheHolder } }
+		sender.information("Targeted node: $node at ${toVec3i(location)}")
+
+		val cache = cacheHolder?.destinationCache ?: fail { "Something went wrong" }
+
+		if (cache is MonoDestinationCache) {
+			val paths = cache.get(node::class, location) ?: fail { "Expired Cache" }
+			val vectors = paths.map { toVec3i(it.node.position) }
+			sender.sendMessage(formatPaginatedMenu(vectors, "/get cached destinations ship", pageNumber ?: 1) { vec, _ -> vec.toComponent().clickEvent(callback { audience -> audience.highlightBlock(vec, 10L) }) })
+		} else if (cache is MappedDestinationCache<*>) {
+			cache as MappedDestinationCache<ItemStack>
+
+			val paths = cache.get(node::class, sender.inventory.itemInMainHand, location) ?: fail { "Expired Cache" }
+			val vectors = paths.map { toVec3i(it.node.position) }
+			sender.sendMessage(formatPaginatedMenu(vectors, "/get cached destinations ship", pageNumber ?: 1) { vec, _ -> vec.toComponent().clickEvent(callback { audience -> audience.highlightBlock(vec, 10L) }) })
+		}
+	}
 
 	@Subcommand("test extractor")
 	fun onTick(sender: Player, type: CacheType) {
