@@ -13,6 +13,7 @@ class RollingAverage {
 	// Use array deque as a stack
 	private val averages = ArrayDeque<TransferredPower>()
 
+	@Synchronized
 	fun addEntry(amount: Int) {
 		val now = System.currentTimeMillis()
 

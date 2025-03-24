@@ -123,6 +123,8 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 			if (it.type !is PowerNode.PowerFlowMeter) return@forEach
 			it.type.onCompleteChain(amountTaken)
 		}
+	}.onFailure { e ->
+		e.printStackTrace()
 	}
 
 	/**
