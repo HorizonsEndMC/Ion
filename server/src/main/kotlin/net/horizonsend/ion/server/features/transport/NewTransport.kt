@@ -36,11 +36,10 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	private lateinit var monitorThread: Timer
 	private lateinit var executor: ExecutorService
 
-	override fun onEnable() {
+	fun reload() {
 		executor = Executors.newFixedThreadPool(16, Tasks.namedThreadFactory("wire-transport"))
 
 		val interval: Long = ConfigurationFiles.transportSettings().extractorConfiguration.extractorTickIntervalMS
-
 		monitorThread = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = interval, period = interval) {
 			transportManagers.forEach {
 				try {
@@ -50,6 +49,10 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 				}
 			}
 		}
+	}
+
+	override fun onEnable() {
+		reload()
 
 		Tasks.asyncRepeat(120L, 120L, ::saveExtractors)
 	}
