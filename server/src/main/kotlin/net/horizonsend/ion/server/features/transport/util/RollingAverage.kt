@@ -1,27 +1,38 @@
 package net.horizonsend.ion.server.features.transport.util
 
+import java.util.concurrent.TimeUnit
+
 class RollingAverage {
 	/** Data entry of transferred power, contains the amount and the timestamp if the transfer */
 	data class TransferredPower(val transferred: Int, val time: Long = System.currentTimeMillis())
 
-	companion object { private const val NUMBER_STORED_AVERAGES = 20 }
-
-	// Use array deque as a stack
-	private val averages = ArrayDeque<TransferredPower?>(NUMBER_STORED_AVERAGES).apply {
-		// Initialize with 0 transferred
-		add(TransferredPower(0, System.currentTimeMillis()))
+	companion object {
+		private val DURATION_STORED_AVERAGES = TimeUnit.SECONDS.toMillis(5)
 	}
 
+	// Use array deque as a stack
+	private val averages = ArrayDeque<TransferredPower>()
+
 	fun addEntry(amount: Int) {
-		if (averages.size >= NUMBER_STORED_AVERAGES) averages.removeFirst()
+		val now = System.currentTimeMillis()
+
+		val iterator = averages.iterator()
+		while (iterator.hasNext()) {
+			val entry = iterator.next()
+			if (now - entry.time < DURATION_STORED_AVERAGES) break
+			iterator.remove()
+		}
+
 		averages.addLast(TransferredPower(amount))
 	}
 
 	fun getAverage(): Double {
-		val nonNull = averages.filterNotNull()
-		val sum = nonNull.sumOf { it.transferred }
+		if (averages.isEmpty()) {
+			return 0.0
+		}
 
-		val timeDiff = (System.currentTimeMillis() - nonNull.minOf { it.time }) / 1000.0
+		val sum = averages.sumOf { it.transferred }
+		val timeDiff = maxOf(System.currentTimeMillis() - averages.first().time, 1) / 1000.0
 
 		val rate = sum / timeDiff
 		return rate
