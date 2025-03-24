@@ -67,10 +67,11 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 			cacheGetter = {
 				destinationCache.get(PowerNode.PowerExtractorNode::class, extractorLocation)
 			},
-			originNode = holder.getOrCacheGlobalNode(extractorLocation) ?: return null
-		) { node ->
-			getInputEntitiesTyped<PoweredMultiblockEntity>(node.position).any { entity -> !entity.powerStorage.isFull() }
-		}
+			originNode = holder.getOrCacheGlobalNode(extractorLocation) ?: return null,
+			destinationCheck = { node ->
+				getInputEntitiesTyped<PoweredMultiblockEntity>(node.position).any { entity -> !entity.powerStorage.isFull() }
+			}
+		)
 
 		if (destinations.isEmpty()) return null
 

@@ -2,9 +2,12 @@ package net.horizonsend.ion.server.features.transport.nodes.util
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KClass
 
@@ -58,8 +61,9 @@ class MappedDestinationCache<K : Any>(parentCache: TransportCache) : Destination
 
 		// Perform a flood fill to find all network destinations, then remove all destination columns
 		parentCache.getNetworkDestinations(destinationTypeClass = parentCache.extractorNodeClass, originPos = pos, originNode = node) {
+			debugAudience.highlightBlock(toVec3i(position), 5L)
 			// Traverse network backwards
-			getAllNeighbors(cache.holder.globalCacherGetter, null)
+			getAllNeighbors(cache.holder.globalGetter, null)
 		}.forEach { inputPos ->
 			toRemove.add(inputPos.node.position)
 		}
@@ -67,6 +71,7 @@ class MappedDestinationCache<K : Any>(parentCache: TransportCache) : Destination
 		// Remove all the paths after being found
 		for (removePos in toRemove.iterator()) {
 			val rawNodeCache = getCache(nodeType)
+			debugAudience.highlightBlock(toVec3i(removePos), 120L)
 			rawNodeCache.keys.forEach { key -> rawNodeCache[key]?.remove(removePos) }
 		}
 	}

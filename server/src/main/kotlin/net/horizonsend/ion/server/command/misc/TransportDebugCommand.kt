@@ -194,6 +194,17 @@ object TransportDebugCommand : SLCommand() {
 		sender.information("Targeted node: $node at ${toVec3i(location)}")
 	}
 
+	@Subcommand("check node look chunk")
+	fun checkNodeChunk(sender: Player, network: CacheType) {
+		val targeted = sender.getTargetBlockExact(10) ?: fail { "No block in range" }
+		val grid = network.get(targeted.chunk.ion())
+		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
+
+		sender.information("Present: ${grid.isCached(key)}")
+		val node = grid.getOrCache(key) ?: fail { "You aren't looking at a node!" }
+		sender.information("Targeted node: $node at ${toVec3i(key)}")
+	}
+
 	@Subcommand("get node look ship")
 	fun getNodeShip(sender: Player, network: CacheType) {
 		val (node, location) = requireLookingAt(sender) { network.get(getStarshipRiding(sender)) }
@@ -268,7 +279,7 @@ object TransportDebugCommand : SLCommand() {
 		val (node, location) = requireLookingAt(sender) { type.get(it.chunk.ion()) }
 		val cache = type.get(sender.chunk.ion())
 
-		val destinations = cache.getNetworkDestinations<PowerInputNode>(location, node) { true }
+		val destinations = cache.getNetworkDestinations<PowerInputNode>(location, node)
 		sender.information("${destinations.size} destinations")
 		sender.highlightBlocks(destinations.map { toVec3i(it.node.position) }, 50L)
 	}
