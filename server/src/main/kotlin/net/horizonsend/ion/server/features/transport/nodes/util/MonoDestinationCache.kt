@@ -50,7 +50,7 @@ class MonoDestinationCache(parentCache: TransportCache) : DestinationCache(paren
 		// Perform a flood fill to find all network destinations, then remove all destination columns
 		parentCache.getNetworkDestinations(destinationTypeClass = parentCache.extractorNodeClass, originPos = pos, originNode = node) {
 			// Traverse network backwards
-			getPreviousNodes(cache.holder.globalCacherGetter, null)
+			getAllNeighbors(cache.holder.globalCacherGetter, null)
 		}.forEach { inputPos ->
 			toRemove.add(inputPos.node.position)
 		}
