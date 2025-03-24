@@ -135,7 +135,6 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 			return@sync
 		}
 
-		println("removing filter")
 		removeFilter(world, x, y, z)
 	}
 
