@@ -46,7 +46,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 
 	abstract fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?)
 
-	private fun isCached(at: BlockKey): Boolean = nodeCache.containsKey(at)
+	fun isCached(at: BlockKey): Boolean = nodeCache.containsKey(at)
 
 	fun getCached(at: BlockKey): Node? = nodeCache[at]?.get()
 
@@ -147,14 +147,15 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		cachingFunction: Consumer<Set<PathfindingNodeWrapper>>,
 
 		noinline pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null,
-		noinline destinationCheck: ((NodePositionData) -> Boolean)? = null
+		noinline destinationCheck: ((NodePositionData) -> Boolean)? = null,
+		noinline nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalCacherGetter, pathfindingFilter) }
 	): Collection<PathfindingNodeWrapper> {
 		val cachedEntry = cacheGetter.get()
 		if (cachedEntry != null) return cachedEntry
 
-		val destinations = getNetworkDestinations(T::class, originPos, originNode, destinationCheck, pathfindingFilter)
+		val destinations = getNetworkDestinations(T::class, originPos, originNode, destinationCheck, pathfindingFilter, null, nextNodeProvider)
 		cachingFunction.accept(destinations)
-		
+
 		return destinations
 	}
 
@@ -162,8 +163,9 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		originPos: BlockKey,
 		originNode: Node,
 		noinline pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null,
-		noinline destinationCheck: ((NodePositionData) -> Boolean)? = null
-	): Set<PathfindingNodeWrapper> = getNetworkDestinations(T::class, originPos, originNode, destinationCheck, pathfindingFilter)
+		noinline destinationCheck: ((NodePositionData) -> Boolean)? = null,
+		noinline nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalCacherGetter, pathfindingFilter) }
+	): Set<PathfindingNodeWrapper> = getNetworkDestinations(T::class, originPos, originNode, destinationCheck, pathfindingFilter, null, nextNodeProvider)
 
 	/**
 	 * This is a weird combination of A* and a flood fill. It keeps track of paths, and returned destinations have those available.
@@ -175,7 +177,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		destinationCheck: ((NodePositionData) -> Boolean)? = null,
 		pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null,
 		debug: Audience? = null,
-		nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalGetter, pathfindingFilter) }
+		nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalCacherGetter, pathfindingFilter) }
 	): Set<PathfindingNodeWrapper> {
 		val visitQueue = Long2ObjectRBTreeMap<PathfindingNodeWrapper>()
 		val visited = Long2IntOpenHashMap()
