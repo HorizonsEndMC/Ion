@@ -56,7 +56,11 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.*
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.command.CommandSender
