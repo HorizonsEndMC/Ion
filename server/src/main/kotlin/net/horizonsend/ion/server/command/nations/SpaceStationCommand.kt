@@ -26,11 +26,13 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.common.utils.text.lineBreak
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.trade.EcoStations
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -50,11 +52,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.distance
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.AQUA
-import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
+import net.kyori.adventure.text.format.NamedTextColor.*
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.command.CommandSender
@@ -64,6 +66,7 @@ import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.setValue
 import java.time.Duration
 import java.util.UUID
+import kotlin.reflect.KClass
 
 @CommandAlias("spacestation|nspacestation|nstation|sstation|station|nationspacestation")
 object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
@@ -427,6 +430,172 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			stationName,
 			trustLevel,
 		))
+	}
+
+	/**
+	 * Lists all stations that a player has access to
+	 * @param sender the player to check station access for
+	 * @param currentPage the current station to look at
+	 */
+	@Subcommand("list")
+	fun onList(sender: Player, @Optional currentPage: Int?) {
+		val ownedStations = getOwnedStationList(sender, Any::class)
+		val trustedStations = getTrustedStationList(sender, Any::class)
+		sender.sendMessage(formatStationList(ownedStations, trustedStations, currentPage ?: 1))
+	}
+
+	/**
+	 * Lists all stations that a player, or their settlement or nation, explicitly owns
+	 * @param sender the player to check station access for
+	 * @param currentPage the current station to look at
+	 */
+	@Subcommand("list owned")
+	fun onListOwned(sender: Player, @Optional currentPage: Int?) {
+		val ownedStations = getOwnedStationList(sender, Any::class)
+		sender.sendMessage(formatStationList(ownedStations, listOf(), currentPage ?: 1, " owned"))
+	}
+
+	/**
+	 * Lists all stations that a player explicitly owns
+	 * @param sender the player to check station access for
+	 * @param currentPage the current station to look at
+	 */
+	@Subcommand("list owned player")
+	fun onListOwnedPlayer(sender: Player, @Optional currentPage: Int?) {
+		val ownedStations = getOwnedStationList(sender, PlayerSpaceStation::class)
+		sender.sendMessage(formatStationList(ownedStations, listOf(), currentPage ?: 1, " owned player"))
+	}
+
+	/**
+	 * Lists all stations that a player's settlement explicitly owns
+	 * @param sender the player to check station access for
+	 * @param currentPage the current station to look at
+	 */
+	@Subcommand("list owned settlement")
+	fun onListOwnedSettlement(sender: Player, @Optional currentPage: Int?) {
+		val ownedStations = getOwnedStationList(sender, SettlementSpaceStation::class)
+		sender.sendMessage(formatStationList(ownedStations, listOf(), currentPage ?: 1, " owned settlement"))
+	}
+
+	/**
+	 * Lists all stations that a player's nation explicitly owns
+	 * @param sender the player to check station access for
+	 * @param currentPage the current station to look at
+	 */
+	@Subcommand("list owned nation")
+	fun onListOwnedNation(sender: Player, @Optional currentPage: Int?) {
+		val ownedStations = getOwnedStationList(sender, NationSpaceStation::class)
+		sender.sendMessage(formatStationList(ownedStations, listOf(), currentPage ?: 1, " owned nation"))
+	}
+
+	/**
+	 * Lists all stations that a player, or their settlement or nation, is trusted to
+	 * @param sender the player to check station access for
+	 * @param currentPage the current station to look at
+	 */
+	@Subcommand("list trusted")
+	fun onListTrusted(sender: Player, @Optional currentPage: Int?) {
+		val trustedStations = getTrustedStationList(sender, Any::class)
+		sender.sendMessage(formatStationList(listOf(), trustedStations, currentPage ?: 1, " trusted"))
+	}
+
+	/**
+	 * Lists all stations that a player is trusted to
+	 * @param sender the player to check station access for
+	 * @param currentPage the current station to look at
+	 */
+	@Subcommand("list trusted player")
+	fun onListTrustedPlayer(sender: Player, @Optional currentPage: Int?) {
+		val trustedStations = getTrustedStationList(sender, PlayerSpaceStation::class)
+		sender.sendMessage(formatStationList(listOf(), trustedStations, currentPage ?: 1, " trusted player"))
+	}
+
+	/**
+	 * Lists all stations that a player's settlement is trusted to
+	 * @param sender the player to check station access for
+	 * @param currentPage the current station to look at
+	 */
+	@Subcommand("list trusted settlement")
+	fun onListTrustedSettlement(sender: Player, @Optional currentPage: Int?) {
+		val trustedStations = getTrustedStationList(sender, SettlementSpaceStation::class)
+		sender.sendMessage(formatStationList(listOf(), trustedStations, currentPage ?: 1, " trusted settlement"))
+	}
+
+	/**
+	 * Lists all stations that a player's nation is trusted to
+	 * @param sender the player to check station access for
+	 * @param currentPage the current station to look at
+	 */
+	@Subcommand("list trusted nation")
+	fun onListTrustedNation(sender: Player, @Optional currentPage: Int?) {
+		val trustedStations = getTrustedStationList(sender, NationSpaceStation::class)
+		sender.sendMessage(formatStationList(listOf(), trustedStations, currentPage ?: 1, " trusted nation"))
+	}
+
+	/**
+	 * Formats a paginated menu containing space station data
+	 * @param ownedStations stations that are owned by the player
+	 * @param trustedStations stations that are trusted to the player
+	 * @param currentPage the current page of the paginated menu
+	 * @param subcommand the subcommand that the user used
+	 */
+	private fun formatStationList(
+		ownedStations: List<CachedSpaceStation<*, *, *>>,
+		trustedStations: List<CachedSpaceStation<*, *, *>>,
+		currentPage: Int,
+		subcommand: String = ""
+	): Component {
+		val header = lineBreakWithCenterText(text("Space Stations With Access"))
+		val body = formatPaginatedMenu(
+			ownedStations.count() + trustedStations.count(),
+			"/spacestation list$subcommand",
+			currentPage
+		) { page ->
+			val combinedStations = ownedStations + trustedStations
+			val station = combinedStations[page]
+			val x = station.x
+			val z = station.z
+
+			template(
+				text("{0} at {1} {2} {3} in {4}{5}{6}"),
+				station.name,
+				x, z,
+				template(text("with radius {0}", GREEN), station.radius),
+				station.world,
+				template(text(" owned by {0}", AQUA), station.ownerName),
+				if (station in trustedStations) text(" (Trusted)", GOLD) else empty()
+			)
+		}
+
+		return ofChildren(header, newline(), body)
+	}
+
+	/**
+	 * Gets the stations that the player (or their settlement/nation) owns
+	 * @param sender the player to check
+	 * @param clazz the type of space station to check for (Any for default)
+	 */
+	private fun <T : Any> getOwnedStationList(sender: Player, clazz: KClass<T>): List<CachedSpaceStation<*, *, *>> {
+		return SpaceStationCache.all().filter { station ->
+			station.hasOwnershipContext(sender.slPlayerId) &&
+			station::class == clazz
+		}
+	}
+
+	/**
+	 * Gets the stations that the player (or their settlement/nation) is trusted to
+	 * @param sender the player to check
+	 * @param clazz the type of space station to check for (Any for default)
+	 */
+	private fun <T : Any> getTrustedStationList(sender: Player, clazz: KClass<T>): List<CachedSpaceStation<*, *, *>> {
+		val playerData = PlayerCache.getIfOnline(sender)
+
+		return SpaceStationCache.all().filter { station ->
+			(station.trustedPlayers.contains(sender.slPlayerId) ||
+					station.trustedSettlements.contains(playerData?.settlementOid) ||
+					station.trustedNations.contains(playerData?.nationOid)) &&
+					station::class == clazz
+		}
 	}
 
 	@Subcommand("trusted list")
