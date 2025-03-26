@@ -182,7 +182,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun handlePistonExtend(event: BlockPistonExtendEvent) {
-		Tasks.syncDelay(3L) {
+		Tasks.asyncDelay(3L) {
 			val piston = event.block
 			invalidateCache(piston.world, piston.x, piston.y, piston.z)
 
@@ -201,7 +201,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun handlePistonRetract(event: BlockPistonRetractEvent) {
-		Tasks.syncDelay(3L) {
+		Tasks.asyncDelay(3L) {
 			val piston = event.block
 			invalidateCache(piston.world, piston.x, piston.y, piston.z)
 
