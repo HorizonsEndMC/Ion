@@ -65,9 +65,11 @@ class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTran
 	}
 
 	fun release() {
-		cache.getRawCache().keys.forEach { key -> cache.getCached(key)?.onInvalidate() }
-		transportManager.starship.iterateBlocks { x, y, z ->
-			NewTransport.invalidateCache(getWorld(), x, y, z)
+		Tasks.async {
+			cache.getRawCache().keys.forEach { key -> cache.getCached(key)?.onInvalidate() }
+			transportManager.starship.iterateBlocks { x, y, z ->
+				NewTransport.invalidateCache(getWorld(), x, y, z)
+			}
 		}
 	}
 
