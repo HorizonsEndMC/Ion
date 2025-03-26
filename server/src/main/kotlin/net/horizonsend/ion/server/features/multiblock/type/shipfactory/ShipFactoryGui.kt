@@ -182,8 +182,8 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 				return@InputValidator ValidatorResult.ResultsResult(filtered.map { it.toComponent() })
 			}
 		) { string ->
-			val blueprint = playerBlueprints[string]!!
-			entity.setBlueprint(blueprint)
+			val blueprint = playerBlueprints.entries.firstOrNull { it.key.contains(string) } ?: return@anvilInputText
+			entity.setBlueprint(blueprint.value)
 
 			entity.ensureBlueprintLoaded(player)
 			entity.openMenu(player)
