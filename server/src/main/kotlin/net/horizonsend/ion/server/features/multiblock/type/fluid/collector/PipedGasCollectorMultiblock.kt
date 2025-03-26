@@ -129,7 +129,7 @@ object PipedGasCollectorMultiblock : Multiblock(),
 		).register()
 
 		override val inputsData: InputsData = InputsData.builder(this)
-			.addFluidInput(0, -1, 0)
+//			.addFluidInput(0, -1, 0)
 			.build()
 
 		private val worldConfig get() = world.ion.configuration.gasConfiguration
