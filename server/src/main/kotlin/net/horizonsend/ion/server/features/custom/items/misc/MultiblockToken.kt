@@ -33,7 +33,7 @@ object MultiblockToken : CustomItem(
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.MULTIBLOCK_TYPE, StoredMultiblock)
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@MultiblockToken) { event, _, itemStack ->
-			handleSecondaryInteract(event.player, itemStack, event)
+			PrePackaged.cooldown.tryExec(event.player) { tryPlace(event.player, itemStack, event) }
 		})
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@MultiblockToken) { event, _, itemStack ->
 			PrePackaged.tryPreview(event.player, itemStack, event)
@@ -50,8 +50,7 @@ object MultiblockToken : CustomItem(
 		.updateData(DataComponentTypes.ITEM_MODEL, multiblock.getModel())
 		.apply(::refreshLore)
 
-
-	private fun handleSecondaryInteract(livingEntity: Player, itemStack: ItemStack, event: PlayerInteractEvent) {
+	private fun tryPlace(livingEntity: Player, itemStack: ItemStack, event: PlayerInteractEvent) {
 		if (itemStack.type.isAir) return
 
 		val packagedData = getTokenData(itemStack) ?: run {

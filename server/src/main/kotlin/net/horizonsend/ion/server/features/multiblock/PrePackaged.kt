@@ -103,9 +103,9 @@ object PrePackaged : SLEventListener() {
 		return obstructed
 	}
 
-	private val cooldown = PerPlayerCooldown(100L)
+	val cooldown = PerPlayerCooldown(100L)
 
-	fun place(player: Player, origin: Block, direction: BlockFace, multiblock: Multiblock, itemSource: List<ItemStack>?, entityData: PersistentMultiblockData?) = cooldown.tryExec(player) {
+	fun place(player: Player, origin: Block, direction: BlockFace, multiblock: Multiblock, itemSource: List<ItemStack>?, entityData: PersistentMultiblockData?) {
 		val requirements = multiblock.shape.getRequirementMap(direction)
 		val placements = mutableMapOf<Block, BlockData>()
 
@@ -136,7 +136,7 @@ object PrePackaged : SLEventListener() {
 				EquipmentSlot.HAND
 			).callEvent()
 
-			if (!event) return@tryExec player.userError("You can't build here!")
+			if (!event) return player.userError("You can't build here!")
 
 			val placement = if (usedItem == null) {
 				requirement.example.clone()
@@ -156,11 +156,11 @@ object PrePackaged : SLEventListener() {
 			origin.world.playSound(block.location, soundGroup.placeSound, soundGroup.volume, soundGroup.pitch)
 		}
 
-		if (multiblock is SignlessStarshipWeaponMultiblock<*>) return@tryExec
+		if (multiblock is SignlessStarshipWeaponMultiblock<*>) return
 		val signItem: ItemStack? = itemSource?.firstOrNull { it.type.isSign == true }
 
 		// If there is an item source but no sign then there is not one available
-		if (itemSource != null && signItem == null) return@tryExec
+		if (itemSource != null && signItem == null) return
 
 		val signType = signItem?.type?.let { getWallSignType(it) } ?: Material.OAK_WALL_SIGN
 
@@ -206,7 +206,7 @@ object PrePackaged : SLEventListener() {
 				sign.update()
 
 				signItem.amount--
-				return@tryExec
+				return
 			}
 		}
 
