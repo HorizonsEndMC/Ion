@@ -251,8 +251,8 @@ object ElectrolysisMultiblock : Multiblock(), EntityMultiblock<ElectrolysisMulti
 
 		override val inputsData: InputsData = InputsData.builder(this)
 			.addPowerInput(0, -1, 0)
-			.addFluidInput(-2, -1, 1)
-			.addFluidInput(+2, -1, 1)
+//			.addFluidInput(-2, -1, 1)
+//			.addFluidInput(+2, -1, 1)
 			.build()
 
 //		override fun toString(): String = "Structure direction $structureDirection, display direction ${displayHandler.facing}"
