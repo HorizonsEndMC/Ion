@@ -62,9 +62,9 @@ class InputsData private constructor (val holder: MultiblockEntity, private val 
 			return addInput(CacheType.POWER, offsetRight, offsetUp, offsetForward)
 		}
 
-		fun addFluidInput(offsetRight: Int, offsetUp: Int, offsetForward: Int): Builder {
-			return addInput(CacheType.FLUID, offsetRight, offsetUp, offsetForward)
-		}
+//		fun addFluidInput(offsetRight: Int, offsetUp: Int, offsetForward: Int): Builder {
+//			return addInput(CacheType.FLUID, offsetRight, offsetUp, offsetForward)
+//		}
 
 		fun build(): InputsData {
 			return InputsData(holder, data)

@@ -62,7 +62,7 @@ abstract class FluidStorageMultiblock(val capacity: Int) : Multiblock(), EntityM
 		).register()
 
 		override val inputsData: InputsData = InputsData.builder(this)
-			.addFluidInput(0, -1, 0)
+//			.addFluidInput(0, -1, 0)
 			.build()
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
