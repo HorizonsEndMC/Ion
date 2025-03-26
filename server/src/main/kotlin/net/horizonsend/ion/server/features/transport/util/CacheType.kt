@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.SolidGlassNode
-import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
@@ -53,10 +52,9 @@ import org.bukkit.block.data.type.Observer
 import org.bukkit.block.data.type.Vault
 import org.bukkit.craftbukkit.block.impl.CraftEndRod
 import org.bukkit.craftbukkit.block.impl.CraftGrindstone
-import kotlin.reflect.KClass
 
-enum class CacheType(val namespacedKey: NamespacedKey, val inputType: KClass<out Node>) {
-	POWER(NamespacedKeys.POWER_TRANSPORT, PowerInputNode::class) {
+enum class CacheType(val namespacedKey: NamespacedKey) {
+	POWER(NamespacedKeys.POWER_TRANSPORT) {
 		override val nodeCacheFactory: NodeCacheFactory = NodeCacheFactory.builder()
 			.addSimpleNode(CRAFTING_TABLE, PowerNode.PowerExtractorNode)
 			.addSimpleNode(SPONGE, PowerNode.SpongeNode)
@@ -76,7 +74,7 @@ enum class CacheType(val namespacedKey: NamespacedKey, val inputType: KClass<out
 			return ship.transportManager.powerNodeManager.cache
 		}
 	},
-	SOLAR_PANELS(NamespacedKeys.POWER_TRANSPORT, PowerInputNode::class) {
+	SOLAR_PANELS(NamespacedKeys.POWER_TRANSPORT) {
 		override val nodeCacheFactory: NodeCacheFactory = NodeCacheFactory.builder()
 			.addSimpleNode(CRAFTING_TABLE, SolarPanelComponent.CraftingTable)
 			.addSimpleNode(DIAMOND_BLOCK, SolarPanelComponent.DiamondBlock)
@@ -116,7 +114,7 @@ enum class CacheType(val namespacedKey: NamespacedKey, val inputType: KClass<out
 ////			return ship.transportManager.fluidNodeManager.cache
 //		}
 //	},
-	ITEMS(NamespacedKeys.ITEM_TRANSPORT, ItemNode.InventoryNode::class) {
+	ITEMS(NamespacedKeys.ITEM_TRANSPORT) {
 		override val nodeCacheFactory: NodeCacheFactory = NodeCacheFactory.builder()
 			.addSimpleNode(CRAFTING_TABLE, ItemNode.ItemExtractorNode)
 			.addDataHandler<Vault>(CustomBlocks.ADVANCED_ITEM_EXTRACTOR) { _, _, _ -> ItemNode.ItemExtractorNode }
