@@ -36,7 +36,7 @@ object PackagedMultiblock : CustomItem(
 		addComponent(CustomComponentTypes.MULTIBLOCK_TYPE, StoredMultiblock)
 
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@PackagedMultiblock) { event, _, itemStack ->
-			tryPlace(event.player, itemStack, event)
+			PrePackaged.cooldown.tryExec(event.player) { tryPlace(event.player, itemStack, event) }
 		})
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@PackagedMultiblock) { event, _, itemStack ->
 			PrePackaged.tryPreview(event.player, itemStack, event)
