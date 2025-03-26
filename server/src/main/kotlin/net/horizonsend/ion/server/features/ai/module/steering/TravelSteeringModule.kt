@@ -118,7 +118,7 @@ open class TravelSteeringModule(
 		val rotationMovementPrior = (ship.velocity.length()/controller.maxSpeed).coerceIn(0.0,1.0)
 		//println(rotationMovementPrior)
 		val movementMix = {ratio : Double ->
-			ratio.pow(config.defaultRotationBleed)
+			(ratio+ 0.1).coerceIn(0.0,1.0).pow(config.defaultRotationBleed)
 		}
 		val rotationMix = {ratio : Double ->
 			biasGain(ratio, config.defaultRotationMixingGain,config.defaultRotationMixingBias)

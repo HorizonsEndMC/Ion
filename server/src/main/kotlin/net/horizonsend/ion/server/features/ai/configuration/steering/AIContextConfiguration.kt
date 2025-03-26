@@ -19,7 +19,7 @@ data class AIContextConfiguration(
 
 	val defaultFaceSeekContextConfiguration: FaceSeekContextConfiguration = FaceSeekContextConfiguration(),
 	val starfighterFaceSeekContextConfiguration: FaceSeekContextConfiguration =
-		FaceSeekContextConfiguration(weight = 2.0, maxWeight = 4.0),
+		FaceSeekContextConfiguration(weight = 4.0, maxWeight = 6.0),
 	val gunshipFaceSeekContextConfiguration: FaceSeekContextConfiguration =
 		FaceSeekContextConfiguration(weight = 0.5, maxWeight = 1.0),
 
@@ -72,7 +72,7 @@ data class AIContextConfiguration(
 	@Serializable
 	data class FaceSeekContextConfiguration(
 		val weight: Double = 0.0,
-		val faceWeight: Double = 8.0,
+		val faceWeight: Double = 10.0,
 		val maxWeight: Double = 0.0,
 		val falloff: Double = 300.0
 	)

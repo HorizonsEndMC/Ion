@@ -71,6 +71,7 @@ class AIDebugModule(controller : AIController ) : AIModule(controller) {
 		}
 		val dirOffset = shownContexts.size * debugOffsetIncrement + debugOffset + shipOffset
 		output.add(VectorDisplay(mod::thrustOut ,mapColor(DebugColor.BLUE), controller.starship, Vector(0.0,dirOffset,0.0)))
+		output.add(VectorDisplay(mod::headingOut ,mapColor(DebugColor.RED), controller.starship, Vector(0.0,dirOffset,0.0)))
 
 		val powerModeOffset = dirOffset + 0.5
 		output.addAll(addPowerModeDisplay(Vector(0.0,powerModeOffset,0.0)))

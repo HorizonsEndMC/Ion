@@ -162,7 +162,6 @@ class OffsetSeekContext(
 	private val config get() = configSupplier.get()
 	private val offsetDist get() =  offsetSupplier.get()
 	override fun populateContext() {
-		ship.debug(offsetDist.toString())
 		clearContext()
 		val seekPos =  generalTarget.get()?.getLocation()?.toVector()
 		seekPos ?: return
@@ -170,7 +169,7 @@ class OffsetSeekContext(
 		val center = seekPos.clone()
 		val yDiff = shipPos.clone().add(center.clone().multiply(-1.0)).y
 		center.y += sign(yDiff) * min(abs(yDiff),config.maxHeightDiff)//adjust center to account for height diff
-		val tetherl = offsetDist * PI * 2 * 0.1
+		val tetherl = offsetDist * PI * 2 * 0.05
 		val shipvel = ship.velocity.clone()
 		shipvel.y = 0.0
 		if (shipvel.lengthSquared() > 1e-5) shipvel.normalize()
@@ -632,8 +631,10 @@ class WorldBlockDangerContext(
 			val result = world.rayTraceBlocks(shipPos,dir, config.maxDist, FluidCollisionMode.ALWAYS, false) {
 					block -> !ship.contains(block.x, block.y, block.z)} ?: continue
 			val dist = result.hitPosition.add(shipPos.toVector().multiply(-1.0)).length()
+			val velocityWeight = ship.velocity.dot(dir).coerceAtLeast(0.0).pow(0.5)
 			val falloff = config.falloff * ship.currentBlockCount.toDouble().pow(1/3.0)
-			dotContext(dir, 0.0, falloff/ dist, config.dotPower)
+			val weight = falloff * velocityWeight / dist
+			dotContext(dir, 0.0, weight, config.dotPower)
 		}
 	}
 }

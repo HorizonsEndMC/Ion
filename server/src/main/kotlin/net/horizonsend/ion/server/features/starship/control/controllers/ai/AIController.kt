@@ -269,7 +269,7 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 
 	private object SpeedTracker {
 		private val deque: Deque<Pair<Long, Double>> = LinkedList()
-		private val windowSizeMillis = 10_000L  // 10 seconds in milliseconds
+		private val windowSizeMillis = 60_000L  // 10 seconds in milliseconds
 
 		fun addSpeed(speed: Double) {
 			val currentTime = System.currentTimeMillis()

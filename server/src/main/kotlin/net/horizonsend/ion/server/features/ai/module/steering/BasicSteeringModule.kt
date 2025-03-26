@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.ai.module.steering
 
 import SteeringModule
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.steering.context.AvoidIlliusContext
@@ -110,9 +111,10 @@ open class BasicSteeringModule(
         // magnitude then it will lead to an agent jittering under a certain ship.velocity threshold.
         //mixing
         val rotationMovementPrior = (ship.velocity.length()/controller.maxSpeed).coerceIn(0.0,1.0)
+		starship.debug("speed ratio: $rotationMovementPrior")
         //println(rotationMovementPrior)
 		val movementMix = {ratio : Double ->
-			ratio.pow(config.defaultRotationBleed)
+			(ratio+ 0.1).coerceIn(0.0,1.0).pow(config.defaultRotationBleed)
 		}
 		val rotationMix = {ratio : Double ->
 			biasGain(ratio, config.defaultRotationMixingGain,config.defaultRotationMixingBias)
