@@ -42,6 +42,9 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.body.CachedMoon
 import net.horizonsend.ion.server.features.space.body.CachedStar
+import net.horizonsend.ion.server.features.space.spacestations.CachedNationSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.CachedPlayerSpaceStation
+import net.horizonsend.ion.server.features.space.spacestations.CachedSettlementSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation
 import net.horizonsend.ion.server.features.space.spacestations.CachedSpaceStation.Companion.calculateCost
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
@@ -466,7 +469,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	 */
 	@Subcommand("list owned player")
 	fun onListOwnedPlayer(sender: Player, @Optional currentPage: Int?) {
-		val ownedStations = getOwnedStationList(sender, PlayerSpaceStation::class)
+		val ownedStations = getOwnedStationList(sender, CachedPlayerSpaceStation::class)
 		sender.sendMessage(formatStationList(ownedStations, listOf(), currentPage ?: 1, " owned player"))
 	}
 
@@ -477,7 +480,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	 */
 	@Subcommand("list owned settlement")
 	fun onListOwnedSettlement(sender: Player, @Optional currentPage: Int?) {
-		val ownedStations = getOwnedStationList(sender, SettlementSpaceStation::class)
+		val ownedStations = getOwnedStationList(sender, CachedSettlementSpaceStation::class)
 		sender.sendMessage(formatStationList(ownedStations, listOf(), currentPage ?: 1, " owned settlement"))
 	}
 
@@ -488,7 +491,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	 */
 	@Subcommand("list owned nation")
 	fun onListOwnedNation(sender: Player, @Optional currentPage: Int?) {
-		val ownedStations = getOwnedStationList(sender, NationSpaceStation::class)
+		val ownedStations = getOwnedStationList(sender, CachedNationSpaceStation::class)
 		sender.sendMessage(formatStationList(ownedStations, listOf(), currentPage ?: 1, " owned nation"))
 	}
 
@@ -510,7 +513,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	 */
 	@Subcommand("list trusted player")
 	fun onListTrustedPlayer(sender: Player, @Optional currentPage: Int?) {
-		val trustedStations = getTrustedStationList(sender, PlayerSpaceStation::class)
+		val trustedStations = getTrustedStationList(sender, CachedPlayerSpaceStation::class)
 		sender.sendMessage(formatStationList(listOf(), trustedStations, currentPage ?: 1, " trusted player"))
 	}
 
@@ -521,7 +524,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	 */
 	@Subcommand("list trusted settlement")
 	fun onListTrustedSettlement(sender: Player, @Optional currentPage: Int?) {
-		val trustedStations = getTrustedStationList(sender, SettlementSpaceStation::class)
+		val trustedStations = getTrustedStationList(sender, CachedSettlementSpaceStation::class)
 		sender.sendMessage(formatStationList(listOf(), trustedStations, currentPage ?: 1, " trusted settlement"))
 	}
 
@@ -532,7 +535,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	 */
 	@Subcommand("list trusted nation")
 	fun onListTrustedNation(sender: Player, @Optional currentPage: Int?) {
-		val trustedStations = getTrustedStationList(sender, NationSpaceStation::class)
+		val trustedStations = getTrustedStationList(sender, CachedNationSpaceStation::class)
 		sender.sendMessage(formatStationList(listOf(), trustedStations, currentPage ?: 1, " trusted nation"))
 	}
 
@@ -549,7 +552,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 		currentPage: Int,
 		subcommand: String = ""
 	): Component {
-		val header = lineBreakWithCenterText(text("Space Stations With Access"))
+		val header = lineBreakWithCenterText(text("Space Stations With Access"), 6)
 		val body = formatPaginatedMenu(
 			ownedStations.count() + trustedStations.count(),
 			"/spacestation list$subcommand",
@@ -582,7 +585,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	private fun <T : Any> getOwnedStationList(sender: Player, clazz: KClass<T>): List<CachedSpaceStation<*, *, *>> {
 		return SpaceStationCache.all().filter { station ->
 			station.hasOwnershipContext(sender.slPlayerId) &&
-			station::class == clazz
+			if (clazz != Any::class) station::class == clazz else true
 		}
 	}
 
@@ -598,7 +601,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 			(station.trustedPlayers.contains(sender.slPlayerId) ||
 					station.trustedSettlements.contains(playerData?.settlementOid) ||
 					station.trustedNations.contains(playerData?.nationOid)) &&
-					station::class == clazz
+					if (clazz != Any::class) station::class == clazz else true
 		}
 	}
 
