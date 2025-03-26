@@ -28,6 +28,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
 import net.horizonsend.ion.server.miscellaneous.utils.isPipedInventory
 import net.horizonsend.ion.server.miscellaneous.utils.isRedstoneLamp
 import net.horizonsend.ion.server.miscellaneous.utils.isSlab
+import net.horizonsend.ion.server.miscellaneous.utils.isStainedGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isStairs
 import net.horizonsend.ion.server.miscellaneous.utils.isTerracotta
 import net.horizonsend.ion.server.miscellaneous.utils.isTrapdoor
@@ -295,6 +296,7 @@ class MultiblockShape {
 		fun anyConcrete() = anyType("any concrete block", CONCRETE_TYPES) { setExample(Material.GRAY_CONCRETE.createBlockData()) }
 		fun anyTerracotta() = anyType("any terracotta", TERRACOTTA_TYPES) { setExample(Material.CYAN_TERRACOTTA.createBlockData()) }
 		fun anyGlass() = filteredTypes("any glass block", { setExample(Material.BLACK_STAINED_GLASS.createBlockData()) }) { it.isGlass }
+		fun stainedGlass() = filteredTypes("any glass block", { setExample(Material.BLACK_STAINED_GLASS.createBlockData()) }) { it.isStainedGlass }
 		fun anyGlassPane(edit: BlockRequirement.() -> Unit = {}) = filteredTypes("any stained glass pane", edit = edit) { it.isGlassPane }
 
 		fun stoneBrick() = type(Material.STONE_BRICKS)
