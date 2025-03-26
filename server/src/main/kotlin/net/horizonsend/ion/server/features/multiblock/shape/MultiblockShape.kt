@@ -296,8 +296,8 @@ class MultiblockShape {
 		fun anyConcrete() = anyType("any concrete block", CONCRETE_TYPES) { setExample(Material.GRAY_CONCRETE.createBlockData()) }
 		fun anyTerracotta() = anyType("any terracotta", TERRACOTTA_TYPES) { setExample(Material.CYAN_TERRACOTTA.createBlockData()) }
 		fun anyGlass() = filteredTypes("any glass block", { setExample(Material.BLACK_STAINED_GLASS.createBlockData()) }) { it.isGlass }
-		fun stainedGlass() = filteredTypes("any glass block", { setExample(Material.BLACK_STAINED_GLASS.createBlockData()) }) { it.isStainedGlass }
-		fun anyGlassPane(edit: BlockRequirement.() -> Unit = {}) = filteredTypes("any stained glass pane", edit = edit) { it.isGlassPane }
+		fun stainedGlass() = filteredTypes("any stained glass block", { setExample(Material.BLACK_STAINED_GLASS.createBlockData()) }) { it.isStainedGlass }
+		fun anyGlassPane(edit: BlockRequirement.() -> Unit = { setExample(Material.BLACK_STAINED_GLASS.createBlockData()) }) = filteredTypes("any stained glass pane", edit = edit) { it.isGlassPane }
 
 		fun stoneBrick() = type(Material.STONE_BRICKS)
 
