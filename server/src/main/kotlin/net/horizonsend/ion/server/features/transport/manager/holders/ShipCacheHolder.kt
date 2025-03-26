@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -26,12 +27,12 @@ class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTran
 
 	override fun getWorld(): World = transportManager.starship.world
 
-	override fun handleLoad() {
+	override fun handleLoad() = Tasks.async {
 		transportManager.starship.iterateBlocks { x, y, z ->
 			IonChunk[transportManager.starship.world, x.shr(4), z.shr(4)]?.let { cache.type.get(it).invalidate(x, y, z) }
 
 			val local = transportManager.getLocalCoordinate(Vec3i(x, y, z))
-			val block = getBlockIfLoaded(transportManager.starship.world, x, y, z) ?: return
+			val block = getBlockIfLoaded(transportManager.starship.world, x, y, z) ?: return@async
 
 			// Cache at local coordinate
 			cache.cache(toBlockKey(local), block)
