@@ -139,6 +139,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		if (entities.size == 1) return entities.first().powerStorage.addPower(power)
 
 		var remainingPower = power
+		var previousLoop = remainingPower
 
 		while (remainingPower > 0) {
 			if (entities.isEmpty()) break
@@ -156,6 +157,9 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 				remainingPower -= (distributed - r)
 			}
+
+			if (remainingPower == previousLoop) break
+			previousLoop = remainingPower
 		}
 
 		return remainingPower
