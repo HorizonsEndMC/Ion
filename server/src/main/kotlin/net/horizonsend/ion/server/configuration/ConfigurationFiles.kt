@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.configuration
 
 import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.ai.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.TransportConfiguration
 import net.horizonsend.ion.server.miscellaneous.LegacyConfig
@@ -27,8 +26,6 @@ object ConfigurationFiles {
 	val globalGassesConfiguration = defineConfigurationFile<GlobalGassesConfiguration>(configurationFolder, "gasses")
 
 	val tradeConfiguration = defineConfigurationFile<TradeConfiguration>(configurationFolder, "trade")
-
-	val aiSpawningConfiguration = defineConfigurationFile<AISpawningConfiguration>(configurationFolder, "aiSpawning")
 
 	val discordSettings = defineConfigurationFile<DiscordConfiguration>(configurationFolder, "discord")
 
