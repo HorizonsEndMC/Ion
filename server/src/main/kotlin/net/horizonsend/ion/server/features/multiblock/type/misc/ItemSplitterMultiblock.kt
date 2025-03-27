@@ -94,15 +94,15 @@ object ItemSplitterMultiblock : Multiblock(), InteractableMultiblock, EntityMult
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		val pdc = sign.persistentDataContainer
+		val entity = getMultiblockEntity(sign, false) ?: return
 
 		if (isBlacklist(sign)) {
 			player.success("Switched sorter to whitelist!")
-			pdc.set(SPLITTER_DIRECTION, BOOLEAN, false)
+			entity.setBlackist(false)
 			sign.getSide(Side.FRONT).line(3, LEFT)
 		} else {
 			player.success("Switched sorter to blacklist!")
-			pdc.set(SPLITTER_DIRECTION, BOOLEAN, true)
+			entity.setBlackist(true)
 			sign.getSide(Side.FRONT).line(3, RIGHT)
 		}
 
@@ -114,7 +114,8 @@ object ItemSplitterMultiblock : Multiblock(), InteractableMultiblock, EntityMult
 	}
 
 	private fun isBlacklist(sign: Sign): Boolean {
-		return sign.persistentDataContainer.getOrDefault(SPLITTER_DIRECTION, BOOLEAN, true)
+		val entity = getMultiblockEntity(sign, false) ?: return false
+		return entity.isBlackist()
 	}
 
 	private val RIGHT_OLD = text("<-----", AQUA)
@@ -141,14 +142,22 @@ object ItemSplitterMultiblock : Multiblock(), InteractableMultiblock, EntityMult
 			val filterItems = getBlacklist() ?: return
 
 			val inputInventory = getInventory(0, 1, 0) ?: return
-			val remainderInventory = getInventory(-2, 1, 1) ?: return
-			val filteredInventory = getInventory(+2, 1, 1) ?: return
+			val leftInventory = getInventory(-2, 1, 1) ?: return
+			val rightInventory = getInventory(+2, 1, 1) ?: return
 
 			if (isBlacklist) {
-				doFilter(inputInventory, filteredInventory, remainderInventory) { it?.filterContains(filterItems) == false }
+				doFilter(sourceInventory = inputInventory, destinationInventory = leftInventory, remainderInventory = rightInventory) { it?.filterContains(filterItems) == false }
 			} else {
-				doFilter(inputInventory, filteredInventory, remainderInventory) { it?.filterContains(filterItems) == true }
+				doFilter(sourceInventory = inputInventory, destinationInventory = leftInventory, remainderInventory = rightInventory) { it?.filterContains(filterItems) == true }
 			}
+		}
+
+		fun setBlackist(blacklist: Boolean) {
+			isBlacklist = blacklist
+		}
+
+		fun isBlackist(): Boolean {
+			return isBlacklist
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
