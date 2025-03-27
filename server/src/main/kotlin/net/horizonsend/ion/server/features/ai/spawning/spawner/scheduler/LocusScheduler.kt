@@ -32,6 +32,7 @@ class LocusScheduler(
 	private val dynmapColor: TextColor,
 	private val duration: Supplier<Duration>,
 	private val separation: Supplier<Duration>,
+	private val difficultySupplier: (String) -> Supplier<Int>,
 	private val announcementMessage: Component?,
 	private val endMessage: Component?,
 	private val radius: Double,
@@ -51,6 +52,7 @@ class LocusScheduler(
 
 	var active: Boolean = false
 	lateinit var center: Location
+	var difficulty: Int = 2
 
 	private var lastActiveTime = System.currentTimeMillis()
 	private var lastDuration: Duration = duration.get()
@@ -80,6 +82,7 @@ class LocusScheduler(
 		lastDuration = duration.get()
 
 		center = calculateNewCenter()
+		difficulty = difficultySupplier(center.world.name).get()
 		active = true
 		markDynmapZone()
 

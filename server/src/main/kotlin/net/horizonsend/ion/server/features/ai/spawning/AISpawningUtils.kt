@@ -62,28 +62,31 @@ fun createAIShipFromTemplate(
 	template: AITemplate,
 	location: Location,
 	createController: (ActiveControlledStarship) -> Controller,
+	suffix: String,
 	callback: (ActiveControlledStarship) -> Unit = {}
-) = createShipFromTemplate(logger, template.starshipInfo, location, createController) { starship ->
+) = createShipFromTemplate(logger, template.starshipInfo, location, createController, suffix) { starship ->
 	logger.info("Attempting to spawn AI starship ${template.identifier}")
 	starship.rewardsProviders.addAll(template.rewardProviders.map { it.createRewardsProvider(starship, template) })
 
 	val controller = starship.controller
-	if (controller is AIController) template.behaviorInformation.additionalModules.forEach {
-		controller.modules[it.name] = it.createModule(controller)
-	}
+
+	if (controller is AIController) template.behaviorInformation.additionalModules
+		.map { it.createModule(controller) }
+		.forEach(controller::addUtilModule)
 
 	starship.sinkMessageFactory = AISinkMessageFactory(starship)
-	(starship.controller as AIController).modules["Glow"] = GlowModule(starship.controller as AIController)
+	(starship.controller as AIController).addUtilModule((GlowModule(starship.controller as AIController)))
 
 	callback(starship)
 }
 
 fun createShipFromTemplate(
-    logger: Logger,
-    template: StarshipTemplate,
-    location: Location,
-    createController: (ActiveControlledStarship) -> Controller,
-    callback: (ActiveControlledStarship) -> Unit = {}
+	logger: Logger,
+	template: StarshipTemplate,
+	location: Location,
+	createController: (ActiveControlledStarship) -> Controller,
+	suffix: String,
+	callback: (ActiveControlledStarship) -> Unit = {}
 ) {
 	val schematic = template.getSchematic() ?: throw SpawningException(
 		"Schematic not found for ${template.schematicName} at ${template.schematicFile.toURI()}",
@@ -96,7 +99,7 @@ fun createShipFromTemplate(
 		location,
 		schematic,
 		template.type,
-		template.miniMessageName,
+		template.miniMessageName + suffix,
 		createController
 	) { starship ->
 		callback(starship)
@@ -259,4 +262,8 @@ fun formatLocationSupplier(centerSupplier: Supplier<Location>, minDistance: Doub
 	debugAudience.debug("Too many attempts to find location")
 
 	return@Supplier null
+}
+
+private fun formatPilotName(fullName : String) : String{
+	return fullName.replace(Regex("""(.?)(?:^|\s|-)+([^\s-])[^\s-]*(?:(?:\s+)(?:the\s+)?(?:jr|sr|II|2nd|III|3rd|IV|4th)\.?${'$'})?"""), "$2.").uppercase()
 }
