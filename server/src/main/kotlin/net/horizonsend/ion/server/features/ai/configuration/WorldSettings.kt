@@ -14,5 +14,5 @@ data class WorldSettings(
 
 	val templates: List<AITemplate.SpawningInformationHolder>
 ) {
-	fun getWorld(): World = Bukkit.getWorld(worldName)!!
+	fun getWorld(): World? = Bukkit.getWorld(worldName)
 }
