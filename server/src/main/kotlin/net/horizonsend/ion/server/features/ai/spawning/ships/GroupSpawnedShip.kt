@@ -12,6 +12,7 @@ import java.util.function.Supplier
 data class GroupSpawnedShip(
     override val template: AITemplate,
     val nameProvider: Supplier<Component>,
+	val suffixProvider: Supplier<String>,
     val controllerModifier: AIController.() -> Unit = {},
 ) : SpawnedShip {
 	override val offsets: MutableList<Supplier<Vector>> = mutableListOf()
@@ -41,4 +42,8 @@ data class GroupSpawnedShip(
 		}
 		return pilotName!!
     }
+
+	override fun getSuffix(difficulty: Int): String {
+		return  suffixProvider.get()
+	}
 }

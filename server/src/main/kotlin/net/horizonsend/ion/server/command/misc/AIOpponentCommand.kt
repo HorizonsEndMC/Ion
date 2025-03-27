@@ -88,7 +88,7 @@ object AIOpponentCommand : SLCommand() {
 						controller.validateWeaponSets()
 						controller
 					},
-					""
+					"✦".repeat((difficulty ?: template.difficulty.get())+1)
 				) {
 					summoner.success("Summoned ${template.starshipInfo.miniMessageName}")
 				}

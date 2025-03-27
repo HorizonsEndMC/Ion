@@ -41,4 +41,8 @@ class FactionShip(
 		}
 		return pilotName!!
 	}
+
+	override fun getSuffix(difficulty: Int): String {
+		return faction.suffixes[difficulty]!!
+	}
 }

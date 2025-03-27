@@ -22,6 +22,8 @@ interface SpawnedShip {
 
 	fun getName(difficulty: Int): Component
 
+	fun getSuffix(difficulty: Int): String
+
 	fun spawn(logger: Logger, location: Location,difficulty : Int, modifyController: AIController.() -> Unit = {}) = createAIShipFromTemplate(
 		logger,
 		template,
@@ -31,7 +33,7 @@ interface SpawnedShip {
 			modifyController.invoke(controller)
 			controller
 		},
-		getName(difficulty).plainText()
+		getSuffix(difficulty)
 	)
 
 	fun withRandomRadialOffset(minDistance: Double, maxDistance: Double, y: Double, absoluteHeight: Double? = null): SpawnedShip {

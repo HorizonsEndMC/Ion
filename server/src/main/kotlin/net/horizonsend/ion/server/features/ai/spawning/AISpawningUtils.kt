@@ -62,9 +62,9 @@ fun createAIShipFromTemplate(
 	template: AITemplate,
 	location: Location,
 	createController: (ActiveControlledStarship) -> Controller,
-	pilotName: String,
+	suffix: String,
 	callback: (ActiveControlledStarship) -> Unit = {}
-) = createShipFromTemplate(logger, template.starshipInfo, location, createController, pilotName) { starship ->
+) = createShipFromTemplate(logger, template.starshipInfo, location, createController, suffix) { starship ->
 	logger.info("Attempting to spawn AI starship ${template.identifier}")
 	starship.rewardsProviders.addAll(template.rewardProviders.map { it.createRewardsProvider(starship, template) })
 
@@ -81,12 +81,12 @@ fun createAIShipFromTemplate(
 }
 
 fun createShipFromTemplate(
-    logger: Logger,
-    template: StarshipTemplate,
-    location: Location,
-    createController: (ActiveControlledStarship) -> Controller,
-	pilotName: String,
-    callback: (ActiveControlledStarship) -> Unit = {}
+	logger: Logger,
+	template: StarshipTemplate,
+	location: Location,
+	createController: (ActiveControlledStarship) -> Controller,
+	suffix: String,
+	callback: (ActiveControlledStarship) -> Unit = {}
 ) {
 	val schematic = template.getSchematic() ?: throw SpawningException(
 		"Schematic not found for ${template.schematicName} at ${template.schematicFile.toURI()}",
@@ -99,7 +99,7 @@ fun createShipFromTemplate(
 		location,
 		schematic,
 		template.type,
-		 formatPilotName(pilotName) +" " + template.miniMessageName,
+		template.miniMessageName + suffix,
 		createController
 	) { starship ->
 		callback(starship)
