@@ -9,4 +9,5 @@ data class FeatureFlags(
 	val tutorials: Boolean = false,
 	val combatNPCs: Boolean = true,
 	val combatTimers: Boolean = true,
+	val aiSpawns: Boolean = true,
 )
