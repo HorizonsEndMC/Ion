@@ -8,7 +8,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -25,9 +24,6 @@ import java.util.concurrent.TimeUnit
 object AISpawningManager : IonServerComponent(true) {
 	// The coroutine context in which the heavy spawning work will be handled
 	val context = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
-	// General AI configuration
-	val config get() = ConfigurationFiles.aiSpawningConfiguration()
 
 	override fun onEnable() {
 		Tasks.syncRepeat(0L, 0L, AISpawningManager::tickSpawners)
