@@ -25,9 +25,9 @@ class LegacyFactionSpawner(
 	SingleSpawn(
 		WeightedShipSupplier(*worlds.flatMap { it.templates }.toTypedArray()),
 		Supplier {
-			val occupiedWorlds = worlds.filter { isSystemOccupied(it.getWorld()) }
+			val occupiedWorlds = worlds.filter { isSystemOccupied(it.getWorld() ?: return@filter false) }
 			val worldConfig = occupiedWorlds.weightedRandomOrNull { it.probability } ?: return@Supplier null
-			val bukkitWorld = worldConfig.getWorld()
+			val bukkitWorld = worldConfig.getWorld() ?: return@Supplier null
 
 			return@Supplier formatLocationSupplier(bukkitWorld, worldConfig.minDistanceFromPlayer, worldConfig.maxDistanceFromPlayer) { player -> !player.hasProtection() }.get()
 		},
