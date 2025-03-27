@@ -59,6 +59,7 @@ class WanderContext(
 ) : ContextMap(linearbins = true) {
 	val config get() = configSupplier.get()
 	val generator = SimplexOctaveGenerator(1, 1)
+	val upVector = Vector(0.0,1.0,0.0)
 
 	override fun populateContext() {
 		clearContext()
@@ -66,16 +67,44 @@ class WanderContext(
 		val finalRate = config.jitterRate * (ship.currentBlockCount.toDouble().pow(1/3.0) / config.sizeFactor)
 		val timeoffset = offset * finalRate
 
+		// --- Altitude Wander Component ---
+		val worldMinY = 0.0
+		val worldMaxY = 384.0
+		val heightRange = worldMaxY - worldMinY
+
+		val time = System.currentTimeMillis()
+		val wanderAltitudeNoise = generator.noise(
+			0.0,
+			((time / finalRate) % finalRate + timeoffset) / 10,
+			0.0,
+			0.5, 0.5)
+
+		// Scale noise [-1,1] → target Y within range
+		val preferredAltitude = ((wanderAltitudeNoise + 1.0) / 2.0) * heightRange * 0.8 + heightRange * 0.1
+		val currentAltitude = ship.centerOfMass.y.toDouble()
+
+		// How far off are we from desired height
+		val verticalBias = (preferredAltitude - currentAltitude) / heightRange
+
+		// Create a vertical vector pointing up or down
+		val altitudeVector = upVector.clone().multiply(verticalBias)
+		if (altitudeVector.lengthSquared() > 1e-4) {
+			altitudeVector.normalize()
+			// This pulls the ship toward its current "preferred altitude"
+			dotContext(altitudeVector, 0.0, config.weight * abs(verticalBias), clipZero = false)
+		}
+
 		for (i in 0 until NUMBINS) {
 			val dir = bindir[i]
 			val response = generator.noise(dir.x,
-										dir.y + ((System.currentTimeMillis() / finalRate) % finalRate + timeoffset),
+				                          ((time / finalRate) % finalRate + timeoffset),
 										   dir.z, 0.5, 0.5) + 1
-			bins[i] += response*config.weight
+			bins[i] += response*config.weight*upVector.clone().crossProduct(dir).length()
 		}
 
 		lincontext!!.apply(lincontext!!.populatePeak(1.0, config.weight))
 		checkContext()
+		clipZero()
 	}
 }
 
@@ -163,28 +192,56 @@ class OffsetSeekContext(
 	private val offsetDist get() =  offsetSupplier.get()
 	override fun populateContext() {
 		clearContext()
-		val seekPos =  generalTarget.get()?.getLocation()?.toVector()
-		seekPos ?: return
+
+		val seekPos = generalTarget.get()?.getLocation()?.toVector() ?: return
 		val shipPos = ship.centerOfMass.toVector()
 		val center = seekPos.clone()
-		val yDiff = shipPos.clone().add(center.clone().multiply(-1.0)).y
-		center.y += sign(yDiff) * min(abs(yDiff),config.maxHeightDiff)//adjust center to account for height diff
-		val tetherl = offsetDist * PI * 2 * 0.05
-		val shipvel = ship.velocity.clone()
-		shipvel.y = 0.0
-		if (shipvel.lengthSquared() > 1e-5) shipvel.normalize()
-		val frowardTether = shipPos.clone().add(shipvel.multiply(tetherl))
-		val tetherOffset = frowardTether.add(center.clone().multiply(-1.0))
-		tetherOffset.y = 0.0
-		tetherOffset.normalize()
-		val target = center.clone().add(tetherOffset.multiply(offsetDist))
+
+		// Clamp height difference
+		val yDiff = shipPos.y - center.y
+		center.y += sign(yDiff) * min(abs(yDiff), config.maxHeightDiff)
+
+		// Compute vector from center to ship (flattened)
+		val toShip = shipPos.clone().subtract(center)
+		toShip.y = 0.0
+		if (toShip.lengthSquared() < 1e-5) return
+		toShip.normalize()
+
+		// Tangential orbit direction (perpendicular)
+		var orbitDir = Vector(0.0, 1.0, 0.0).crossProduct(toShip).normalize()
+
+		// Current horizontal velocity direction
+		val shipVel = ship.velocity.clone()
+		shipVel.y = 0.0
+
+		if (shipVel.lengthSquared() > 1e-5) {
+			val velocityDir = shipVel.normalize()
+			// Flip orbit direction if against current motion
+			if (orbitDir.dot(velocityDir) < 0) {
+				orbitDir.multiply(-1)
+			}
+		}
+
+		// Move a bit ahead in orbit direction
+		val leadDistance = offsetDist * 2 * PI * 0.05
+		val leadPoint = shipPos.clone().add(orbitDir.multiply(leadDistance))
+
+		// From center to leadPoint = orbit offset
+		val orbitOffset = leadPoint.clone().subtract(center)
+		orbitOffset.y = 0.0
+		if (orbitOffset.lengthSquared() < 1e-5) return
+		orbitOffset.normalize()
+
+		val target = center.clone().add(orbitOffset.multiply(offsetDist))
 		module.orbitTarget = target.clone()
-		val targetOffset = target.clone().add(shipPos.clone().multiply(-1.0))
-		val dist = targetOffset.length()
+
+		val targetOffset = target.clone().subtract(shipPos)
 		targetOffset.normalize()
+
 		dotContext(targetOffset, config.dotShift, config.weight)
 		checkContext()
 	}
+
 }
 
 /**
