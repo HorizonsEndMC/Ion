@@ -178,7 +178,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 	}
 
 	fun clearData() {
-		multiblockEntities.forEachKey(1) { key ->
+		multiblockEntities.keys.forEach { key ->
 			removeMultiblockEntity(key)
 		}
 	}
