@@ -26,7 +26,7 @@ object SignFixerEntrance {
 		Tasks.sync {
 			for ((x, y, z) in signBlocks) {
 				val block = chunk.inner.getBlock(x, y, z)
-				val state = block.state as Sign
+				val state = block.state as? Sign ?: continue
 
 				DataFixers.handleSignLoad(state)
 			}
