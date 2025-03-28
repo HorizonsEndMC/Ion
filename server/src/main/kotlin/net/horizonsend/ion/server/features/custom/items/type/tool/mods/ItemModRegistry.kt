@@ -31,20 +31,20 @@ class ItemModRegistry() : Registry<ItemModification>("ITEM_MODIFICATIONS") {
 	}
 
 	fun bootstrapToolMods() {
-		register(ItemModKeys.AOE_1, AOEDMod(radius = 1, modItem = CustomItemKeys.TOOL_MODIFICATION_RANGE_1))
-		register(ItemModKeys.AOE_2, AOEDMod(radius = 2, modItem = CustomItemKeys.TOOL_MODIFICATION_RANGE_2))
-		register(ItemModKeys.AOE_3, AOEDMod(radius = 3, applicationPredicates = arrayOf(ApplicationPredicate.ClassPredicate(PowerHoe::class)), CustomItemKeys.TOOL_MODIFICATION_RANGE_3))
-		register(ItemModKeys.VEIN_MINER_25, VeinMinerMod(depth = 25, modItem = CustomItemKeys.TOOL_MODIFICATION_VEIN_MINER_25))
+		register(ItemModKeys.AOE_1, AOEDMod(key = ItemModKeys.AOE_1, radius = 1, modItem = CustomItemKeys.TOOL_MODIFICATION_RANGE_1))
+		register(ItemModKeys.AOE_2, AOEDMod(key = ItemModKeys.AOE_2, radius = 2, modItem = CustomItemKeys.TOOL_MODIFICATION_RANGE_2))
+		register(ItemModKeys.AOE_3, AOEDMod(key = ItemModKeys.AOE_3, radius = 3, applicationPredicates = arrayOf(ApplicationPredicate.ClassPredicate(PowerHoe::class)), CustomItemKeys.TOOL_MODIFICATION_RANGE_3))
+		register(ItemModKeys.VEIN_MINER_25, VeinMinerMod(key = ItemModKeys.VEIN_MINER_25, depth = 25, modItem = CustomItemKeys.TOOL_MODIFICATION_VEIN_MINER_25))
 
 		register(ItemModKeys.SILK_TOUCH, SilkTouchSource)
 		register(ItemModKeys.AUTO_SMELT, AutoSmeltModifier)
 
-		register(ItemModKeys.FORTUNE_1, FortuneModifier(1, "#E196E1", CustomItemKeys.TOOL_MODIFICATION_FORTUNE_1))
-		register(ItemModKeys.FORTUNE_2, FortuneModifier(2, "#E164E1", CustomItemKeys.TOOL_MODIFICATION_FORTUNE_2))
-		register(ItemModKeys.FORTUNE_3, FortuneModifier(3, "#E132E1", CustomItemKeys.TOOL_MODIFICATION_FORTUNE_3))
+		register(ItemModKeys.FORTUNE_1, FortuneModifier(key = ItemModKeys.FORTUNE_1, 1, "#E196E1", CustomItemKeys.TOOL_MODIFICATION_FORTUNE_1))
+		register(ItemModKeys.FORTUNE_2, FortuneModifier(key = ItemModKeys.FORTUNE_2, 2, "#E164E1", CustomItemKeys.TOOL_MODIFICATION_FORTUNE_2))
+		register(ItemModKeys.FORTUNE_3, FortuneModifier(key = ItemModKeys.FORTUNE_3, 3, "#E132E1", CustomItemKeys.TOOL_MODIFICATION_FORTUNE_3))
 
-		register(ItemModKeys.POWER_CAPACITY_25, PowerCapacityIncrease(25_000, CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_25))
-		register(ItemModKeys.POWER_CAPACITY_50, PowerCapacityIncrease(50_000, CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_50))
+		register(ItemModKeys.POWER_CAPACITY_25, PowerCapacityIncrease(key = ItemModKeys.POWER_CAPACITY_25, 25_000, CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_25))
+		register(ItemModKeys.POWER_CAPACITY_50, PowerCapacityIncrease(key = ItemModKeys.POWER_CAPACITY_50, 50_000, CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_50))
 
 		register(ItemModKeys.AUTO_REPLANT, AutoReplantModifier)
 		register(ItemModKeys.AUTO_COMPOST, AutoCompostModifier)
