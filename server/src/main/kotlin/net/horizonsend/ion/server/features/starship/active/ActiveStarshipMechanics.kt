@@ -22,6 +22,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserR
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import org.bukkit.Bukkit.getPluginManager
@@ -128,6 +130,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 			.filter { it.type == StarshipType.BATTLECRUISER || it.type == StarshipType.CRUISER || it.type == StarshipType.BARGE }
 			//TODO replace this system with something better
 			.filter { it.controller is ActivePlayerController }
+			.filter { !it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) } // consume fuel if world did not disable supercapital requirements
 			.forEach { superCapital: ActiveStarship ->
 
 			var remaining = SUPERCAPITAL_FUEL_CONSUMPTION
@@ -147,7 +150,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		//TODO replace this system with something better
 
 		// Destroy BCs without intact reactors
-		ActiveStarships.all().filter { it.type == StarshipType.BATTLECRUISER }.forEach { ship ->
+		ActiveStarships.all().filter { it.type == StarshipType.BATTLECRUISER && !it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<BattlecruiserReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)
@@ -155,14 +158,14 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		}
 
 		// Destroy Cruisers without intact reactors
-		ActiveStarships.all().filter { it.type == StarshipType.CRUISER }.forEach { ship ->
+		ActiveStarships.all().filter { it.type == StarshipType.CRUISER && !it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<CruiserReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)
 			}
 		}
 
-		ActiveStarships.all().filter { it.type == StarshipType.BARGE }.forEach { ship ->
+		ActiveStarships.all().filter { it.type == StarshipType.BARGE && !it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<BargeReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)

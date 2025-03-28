@@ -43,6 +43,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsy
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
@@ -430,11 +431,14 @@ object PilotedStarships : IonServerComponent() {
 			}
 
 			// Check required subsystems
-			for (requiredSubsystem in activePlayerStarship.balancing.requiredMultiblocks) {
-				if (!requiredSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
-					player.userError("Subsystem requirement not met! ${requiredSubsystem.failMessage}")
-					DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
-					return@activateAsync
+			// TODO: band-aid to override multiblock requirements in creative
+			if (!activePlayerStarship.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS)) {
+				for (requiredSubsystem in activePlayerStarship.balancing.requiredMultiblocks) {
+					if (!requiredSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
+						player.userError("Subsystem requirement not met! ${requiredSubsystem.failMessage}")
+						DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+						return@activateAsync
+					}
 				}
 			}
 

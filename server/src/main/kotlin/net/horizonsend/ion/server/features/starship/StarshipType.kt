@@ -746,6 +746,8 @@ enum class StarshipType(
 	fun canPilotIn(world: IonWorld): Boolean {
 		val flags = world.configuration.flags
 
+		// TODO: band-aid to override space world requirements in creative
+		if (world.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS)) return true
 		if (requiredWorldFlags.toMutableSet().subtract(flags).isNotEmpty()) return false
 		return disallowedWorldFlags.none { flags.contains(it) }
 	}
