@@ -28,4 +28,6 @@ object IonRegistries : IonComponent() {
 		allRegistries.add(registry)
 		return registry
 	}
+
+	operator fun get(registryID: String): Registry<*> = byId[registryID]!!
 }
