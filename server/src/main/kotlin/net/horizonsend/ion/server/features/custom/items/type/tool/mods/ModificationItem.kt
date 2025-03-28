@@ -14,11 +14,11 @@ import org.bukkit.inventory.ItemStack
 
 class ModificationItem(
 	key: IonRegistryKey<CustomItem, out CustomItem>,
+	val modKey: IonRegistryKey<ItemModification, out ItemModification>,
 
 	val model: String,
 	displayName: Component,
 	vararg description: Component,
-	val modKey: IonRegistryKey<ItemModification, out ItemModification>,
 ) : CustomItem(
 	key,
 	displayName,
