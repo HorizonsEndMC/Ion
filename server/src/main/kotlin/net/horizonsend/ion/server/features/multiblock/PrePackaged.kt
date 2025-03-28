@@ -99,7 +99,7 @@ object PrePackaged : SLEventListener() {
 		return obstructed
 	}
 
-	private val cooldown = PerPlayerCooldown(100L)
+	val cooldown = PerPlayerCooldown(100L)
 
 	fun place(player: Player, origin: Block, direction: BlockFace, multiblock: Multiblock, itemSource: List<ItemStack>?, entityData: PersistentMultiblockData?) = cooldown.tryExec(player) {
 		val requirements = multiblock.shape.getRequirementMap(direction)
