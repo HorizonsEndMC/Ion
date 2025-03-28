@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
@@ -347,5 +348,11 @@ abstract class MultiblockEntity(
 
 	override fun handlerGetWorld(): World {
 		return world
+	}
+
+	fun cleanup() {
+		val globalPos = globalVec3i
+		val block = getBlockTypeSafe(world, globalPos.x, globalPos.y, globalPos.z) ?: return
+		if (block.isAir) remove()
 	}
 }
