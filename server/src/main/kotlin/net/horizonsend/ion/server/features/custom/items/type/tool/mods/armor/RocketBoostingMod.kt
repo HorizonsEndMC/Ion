@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.type.armor.AscendingMode
@@ -17,11 +18,11 @@ import java.util.UUID
 import kotlin.reflect.KClass
 
 object RocketBoostingMod : ItemModification {
+	override val key = ItemModKeys.ROCKET_BOOSTING
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.SpecificPredicate(CustomItemKeys.POWER_ARMOR_BOOTS))
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.ARMOR_MODIFICATION_ROCKET_BOOSTING
 	override val crouchingDisables: Boolean = false
-	override val identifier: String = "ROCKET_BOOSTING"
 	override val displayName: Component = ofChildren(Component.text("Rocket Boosting", GRAY), Component.text(" Module", GOLD))
 
 	override fun getAttributes(): List<CustomItemAttribute> = listOf()
