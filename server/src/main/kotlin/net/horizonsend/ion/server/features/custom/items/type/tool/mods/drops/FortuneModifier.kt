@@ -25,12 +25,12 @@ import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
 
 class FortuneModifier(
+	override val key: IonRegistryKey<ItemModification, out ItemModification>,
 	val level: Int,
 	color: String,
-	override val modItem: IonRegistryKey<CustomItem, out CustomItem>?
+	override val modItem: IonRegistryKey<CustomItem, out CustomItem>?,
 ) : ItemModification, DropSource {
 	override val crouchingDisables: Boolean = false
-	override val identifier: String = "FORTUNE_$level"
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(
 		ApplicationPredicate.ClassPredicate(PowerDrill::class),
 		ApplicationPredicate.ClassPredicate(PowerHoe::class),

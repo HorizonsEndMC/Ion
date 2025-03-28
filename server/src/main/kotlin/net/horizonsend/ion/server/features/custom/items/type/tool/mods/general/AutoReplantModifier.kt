@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
@@ -17,7 +18,7 @@ import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import kotlin.reflect.KClass
 
 object AutoReplantModifier: ItemModification {
-	override val identifier: String = "AUTO_REPLANT"
+	override val key = ItemModKeys.AUTO_REPLANT
 	override val displayName: Component = ofChildren(text("Auto ", GRAY), text("Replant", GREEN)).decoration(ITALIC, false)
 
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(
