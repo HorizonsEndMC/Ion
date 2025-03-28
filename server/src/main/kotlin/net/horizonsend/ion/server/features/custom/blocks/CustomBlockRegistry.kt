@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.core.registries.Registry
 import net.horizonsend.ion.server.core.registries.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registries.keys.KeyRegistry
 import net.horizonsend.ion.server.features.custom.blocks.extractor.AdvancedItemExtractorBlock
 import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
@@ -30,6 +31,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
 class CustomBlockRegistry : Registry<CustomBlock>("CUSTOM_BLOCKS") {
+	override val keySet: KeyRegistry<CustomBlock> = CustomBlockKeys
 	private val directionalCustomBlocksData = HashBasedTable.create<BlockState, CustomBlock, BlockFace>()
 	private val customBlocksData = Object2ObjectOpenHashMap<BlockState, CustomBlock>()
 

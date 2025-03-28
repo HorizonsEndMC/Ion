@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods
 import net.horizonsend.ion.server.core.registries.Registry
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
+import net.horizonsend.ion.server.core.registries.keys.KeyRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.EnvironmentMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.NightVisionMod
@@ -23,6 +24,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.dril
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.hoe.FertilizerDispenser
 
 class ItemModRegistry() : Registry<ItemModification>("ITEM_MODIFICATIONS") {
+	override val keySet: KeyRegistry<ItemModification> = ItemModKeys
 	override fun boostrap() {
 		bootstrapToolMods()
 		bootstrapArmorMods()

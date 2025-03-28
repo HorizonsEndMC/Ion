@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.core.registries.Registry
 import net.horizonsend.ion.server.core.registries.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registries.keys.KeyRegistry
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule.Companion.powerPrefix
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItemListeners.sortCustomItemListeners
@@ -76,6 +77,7 @@ import java.util.function.Supplier
 import kotlin.math.roundToInt
 
 class CustomItemRegistry : Registry<CustomItem>("CUSTOM_ITEMS") {
+	override val keySet: KeyRegistry<CustomItem> = CustomItemKeys
 	override fun boostrap() {
 		registerThrowables()
 		registerGuns()
