@@ -50,6 +50,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.createData
+import net.horizonsend.ion.server.miscellaneous.utils.getValue
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.audience.Audience
@@ -291,7 +292,7 @@ object PilotedStarships : IonServerComponent() {
 			return false
 		}
 
-		if (!data.starshipType.actualType.canUse(player)) {
+		if (!data.starshipType.getValue().canPilot(player)) {
 			player.userErrorActionMessage("You are not high enough level to pilot this!")
 			return false
 		}
