@@ -24,11 +24,11 @@ import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
 
 class PowerCapacityIncrease(
+	override val key: IonRegistryKey<ItemModification, out ItemModification>,
 	private val increaseAmount: Int,
-	override val modItem: IonRegistryKey<CustomItem, out CustomItem>
+	override val modItem: IonRegistryKey<CustomItem, out CustomItem>,
 ) : ItemModification {
 	override val crouchingDisables: Boolean = false
-	override val identifier: String = "POWER_CAPACITY_$increaseAmount"
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(
 		ApplicationPredicate.ClassPredicate(PowerDrill::class),
 		ApplicationPredicate.ClassPredicate(PowerHoe::class),

@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.hoe
 import net.horizonsend.ion.common.utils.text.ITALIC
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
@@ -19,7 +20,7 @@ import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
 
 object FertilizerDispenser : ItemModification {
-	override val identifier: String = "FERTILIZER_DISPENSER"
+	override val key = ItemModKeys.FERTILIZER_DISPENSER
 	override val displayName: Component = text("Fertilizer Sprayer", DARK_GREEN).decoration(ITALIC, false)
 
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.ClassPredicate(PowerHoe::class))

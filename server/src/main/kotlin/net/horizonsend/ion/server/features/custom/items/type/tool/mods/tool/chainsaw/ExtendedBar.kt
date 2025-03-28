@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.cha
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
@@ -12,7 +13,7 @@ import net.kyori.adventure.text.Component
 import kotlin.reflect.KClass
 
 object ExtendedBar : ItemModification {
-	override val identifier: String = "EXTENDED_BAR"
+	override val key = ItemModKeys.EXTENDED_BAR
 	override val displayName: Component = "<i><gradient:#a0a0a0:#6c6c6c>Extended Bar</gradient></i>".miniMessage()
 
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.ClassPredicate(PowerChainsaw::class))

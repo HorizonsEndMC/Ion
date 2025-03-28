@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.attribute.PotionEffectAttribute
@@ -19,11 +20,11 @@ import org.bukkit.potion.PotionEffectType.SPEED
 import kotlin.reflect.KClass
 
 object SpeedBoostingMod : ItemModification {
+	override val key = ItemModKeys.SPEED_BOOSTING
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.SpecificPredicate(CustomItemKeys.POWER_ARMOR_LEGGINGS))
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf()
 	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.ARMOR_MODIFICATION_SPEED_BOOSTING
 	override val crouchingDisables: Boolean = false
-	override val identifier: String = "SPEED_BOOSTING"
 	override val displayName: Component = ofChildren(Component.text("Speed Boosting", GRAY), Component.text(" Module", GOLD))
 
 	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(SPEED, 60, 2, 1) { entity, _, _ ->

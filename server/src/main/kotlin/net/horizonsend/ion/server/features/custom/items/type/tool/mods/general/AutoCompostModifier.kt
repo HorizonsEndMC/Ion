@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
@@ -21,7 +22,7 @@ import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
 
 object AutoCompostModifier : ItemModification, DropModifier {
-	override val identifier: String = "AUTO_COMPOST"
+	override val key = ItemModKeys.AUTO_COMPOST
 	override val displayName: Component = text("Auto Composter", HEColorScheme.HE_LIGHT_GRAY)
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(
 		ApplicationPredicate.ClassPredicate(PowerDrill::class),

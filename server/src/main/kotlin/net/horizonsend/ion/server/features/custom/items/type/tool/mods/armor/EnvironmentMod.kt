@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.attribute.PotionEffectAttribute
@@ -15,11 +16,11 @@ import org.bukkit.potion.PotionEffectType.WATER_BREATHING
 import kotlin.reflect.KClass
 
 object EnvironmentMod : ItemModification {
+	override val key = ItemModKeys.ENVIRONMENT
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(ApplicationPredicate.SpecificPredicate(CustomItemKeys.POWER_ARMOR_HELMET))
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(NightVisionMod::class, PressureFieldMod::class)
 	override val modItem: IonRegistryKey<CustomItem, out CustomItem>? = CustomItemKeys.ARMOR_MODIFICATION_ENVIRONMENT
 	override val crouchingDisables: Boolean = false
-	override val identifier: String = "environment"
 	override val displayName: Component = ofChildren(Component.text("Environment", GRAY), Component.text(" Module", GOLD))
 
 	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(WATER_BREATHING, 20, 1, 1) { _, _, _ -> true })

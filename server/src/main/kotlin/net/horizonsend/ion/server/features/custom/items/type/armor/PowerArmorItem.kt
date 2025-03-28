@@ -5,6 +5,7 @@ import io.papermc.paper.datacomponent.item.Equippable
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import io.papermc.paper.datacomponent.item.Unbreakable
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.PotionEffectAttribute
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
@@ -15,7 +16,6 @@ import net.horizonsend.ion.server.features.custom.items.component.Listener.Compa
 import net.horizonsend.ion.server.features.custom.items.component.ModManager
 import net.horizonsend.ion.server.features.custom.items.component.PowerStorage
 import net.horizonsend.ion.server.features.custom.items.component.TickReceiverModule
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.setGliding
@@ -99,7 +99,7 @@ class PowerArmorItem(
 		val attributes = getAttributes(itemStack)
 		for (attribute in attributes.filterIsInstance<PotionEffectAttribute>()) attribute.addPotionEffect(entity, this, itemStack)
 
-		if (!getComponent(MOD_MANAGER).getMods(itemStack).contains(ItemModRegistry.ROCKET_BOOSTING)) return
+		if (!getComponent(MOD_MANAGER).getModKeys(itemStack).contains(ItemModKeys.ROCKET_BOOSTING)) return
 		if (entity !is Player) return
 		if (entity.isGliding && !entity.world.hasFlag(WorldFlag.ARENA)) {
 			powerManager.removePower(itemStack, this, 5)
@@ -112,8 +112,8 @@ class PowerArmorItem(
 
 		if (ActiveStarships.findByPilot(entity) != null && entity.inventory.itemInMainHand.type == Material.CLOCK) return
 
-		val mods = getComponent(MOD_MANAGER).getMods(itemStack)
-		if (!mods.contains(ItemModRegistry.ROCKET_BOOSTING)) {
+		val mods = getComponent(MOD_MANAGER).getModKeys(itemStack)
+		if (!mods.contains(ItemModKeys.ROCKET_BOOSTING)) {
 			return setGliding(entity, false)
 		}
 
