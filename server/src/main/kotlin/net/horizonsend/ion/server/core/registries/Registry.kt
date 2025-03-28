@@ -1,9 +1,11 @@
 package net.horizonsend.ion.server.core.registries
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import net.horizonsend.ion.server.core.registries.keys.KeyRegistry
 import kotlin.reflect.KClass
 
 abstract class Registry<T : Any>(val id: String) {
+	abstract val keySet: KeyRegistry<T>
 	private val byRawString = Object2ObjectOpenHashMap<String, T>()
 
 	abstract fun boostrap()

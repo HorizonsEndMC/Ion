@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.type
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipBalancing
 import net.horizonsend.ion.server.core.registries.Registry
+import net.horizonsend.ion.server.core.registries.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registries.keys.StarshipTypeKeys
 import net.horizonsend.ion.server.features.starship.FLYABLE_BLOCKS
 import net.horizonsend.ion.server.features.starship.TypeCategory
@@ -14,6 +15,7 @@ import net.horizonsend.ion.server.features.starship.type.restriction.SubsystemRe
 import net.horizonsend.ion.server.features.starship.type.restriction.WorldRestrictions
 
 class StarshipTypeRegistry : Registry<StarshipType<*>>("STARSHIP_TYPE") {
+	override val keySet: KeyRegistry<StarshipType<*>> = StarshipTypeKeys
 	override fun boostrap() {
 		register(StarshipTypeKeys.SPEEDER, StarshipType<StarshipBalancing>(
 			key = StarshipTypeKeys.SPEEDER,
