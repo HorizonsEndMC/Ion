@@ -366,7 +366,7 @@ enum class StarshipType(
 	),
 	BATTLECRUISER(
 		displayName = "Battlecruiser",
-		icon = SidebarIcon.BATTLESHIP_ICON.text,
+		icon = SidebarIcon.BATTLECRUISER_ICON.text,
 		minSize = 16000,
 		maxSize = 20000,
 		minLevel = 80,

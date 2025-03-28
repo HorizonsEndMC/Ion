@@ -6,11 +6,13 @@ import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
-import net.horizonsend.ion.server.features.starship.type.restriction.DetectionParameters
+import net.horizonsend.ion.server.features.starship.type.restriction.DetectionParmeterHolder
 import net.horizonsend.ion.server.features.starship.type.restriction.PilotRestrictions
 import net.horizonsend.ion.server.features.starship.type.restriction.SubsystemRestrictions
 import net.horizonsend.ion.server.features.starship.type.restriction.WorldRestrictions
 import net.horizonsend.ion.server.features.world.IonWorld
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player
 import java.util.function.Supplier
 
@@ -21,9 +23,9 @@ open class StarshipType<T: StarshipBalancing>(
 	val displayName: String,
 	val icon: String = SidebarIcon.GENERIC_STARSHIP_ICON.text,
 	val color: String,
-	val dynmapIcon: String = "anchor",
+	val dynmapIcon: String,
 
-	val detectionParameters: DetectionParameters,
+	val detectionParameters: DetectionParmeterHolder,
 	val typeCategory: TypeCategory,
 	val menuConfiguration: ComputerMenuConfiguration,
 
@@ -47,4 +49,7 @@ open class StarshipType<T: StarshipBalancing>(
 	open fun canPilotIn(starship: Starship, newWorld: IonWorld): Boolean {
 		return worldRestrictions.canPilotIn(newWorld)
 	}
+
+	val textColor = TextColor.fromHexString(color)!!
+	val displayNameComponent = Component.text(displayName, textColor)
 }

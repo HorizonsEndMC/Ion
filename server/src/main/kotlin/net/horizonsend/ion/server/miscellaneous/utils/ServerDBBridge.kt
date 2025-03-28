@@ -28,6 +28,7 @@ import java.util.UUID
 val SLTextStyleDB.actualStyle get() = SLTextStyle.valueOf(this)
 
 val StarshipTypeDB.actualType get() = StarshipTypeKeys[this] ?: StarshipTypeKeys.SHUTTLE
+fun StarshipTypeDB.getValue() = (StarshipTypeKeys[this] ?: StarshipTypeKeys.SHUTTLE).getValue()
 
 val Player.slPlayerId: SLPlayerId get() = uniqueId.slPlayerId
 
