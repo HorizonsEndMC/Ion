@@ -6,6 +6,7 @@ import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerConsumption
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
@@ -29,8 +30,8 @@ import kotlin.jvm.optionals.getOrNull
 import kotlin.reflect.KClass
 
 object AutoSmeltModifier : ItemModification, DropModifier {
+	override val key = ItemModKeys.AUTO_SMELT
 	override val displayName: Component = "<gradient:red:yellow>Auto Smelt".miniMessage().decoration(TextDecoration.ITALIC, false)
-	override val identifier: String = "AUTO_SMELT"
 
 	override val crouchingDisables: Boolean = false
 

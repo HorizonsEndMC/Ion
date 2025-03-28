@@ -227,7 +227,7 @@ object DataMigrators : IonServerComponent() {
 					@Suppress("DEPRECATION")
 					val oldMods = old.lore
 						?.filter { it.startsWith("Module: ") }
-						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern?.get() }
+						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern }
 						?.toSet()
 						?: setOf()
 
@@ -248,7 +248,7 @@ object DataMigrators : IonServerComponent() {
 					@Suppress("DEPRECATION")
 					val oldMods = old.lore
 						?.filter { it.startsWith("Module: ") }
-						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern?.get() }
+						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern }
 						?.toSet()
 						?: setOf()
 
@@ -269,7 +269,7 @@ object DataMigrators : IonServerComponent() {
 					@Suppress("DEPRECATION")
 					val oldMods = old.lore
 						?.filter { it.startsWith("Module: ") }
-						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern?.get() }
+						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern }
 						?.toSet()
 						?: setOf()
 
@@ -290,7 +290,7 @@ object DataMigrators : IonServerComponent() {
 					@Suppress("DEPRECATION")
 					val oldMods = old.lore
 						?.filter { it.startsWith("Module: ") }
-						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern?.get() }
+						?.mapNotNull { LegacyPowerArmorModule[it.split(" ")[1]]?.modern }
 						?.toSet()
 						?: setOf()
 
