@@ -70,7 +70,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
@@ -649,42 +648,29 @@ class Starship(
 
 	// Region coordinate utils
 	// This bit of code adds the ability to have relative coordinates within the starship, may be useful in the future
-	var referenceForward = BlockFace.NORTH
+	var rotation = 0.0
 
 	// Get a Vec3i relative to the ship's center of mass from a world coordinate
 	fun getGlobalCoordinate(localVec3i: Vec3i): Vec3i {
 		val globalReference = centerOfMass
-		val starshipDirection = forward
 
 		// Shortcut
-		if (starshipDirection == referenceForward) return localVec3i + globalReference
+		if (rotation == 0.0) return localVec3i + globalReference
 
-		return getAdjusted(referenceForward, starshipDirection, localVec3i) + globalReference
+		return getAdjusted(localVec3i) + globalReference
 	}
 
 	// Get a world coordinate from a Vec3i relative to the ship's center of mass
 	fun getLocalCoordinate(globalVec3i: Vec3i): Vec3i {
 		val local = globalVec3i - centerOfMass
-		val starshipDirection = forward
 
 		// Shortcut
-		if (starshipDirection == referenceForward) return local
+		if (rotation == 0.0) return local
 
-		return getAdjusted(starshipDirection, referenceForward, local)
+		return getAdjusted(local)
 	}
 
-	fun getAdjusted(from: BlockFace, to: BlockFace, vec3i: Vec3i): Vec3i {
-		val relativeFace = RelativeFace[from, to]
-
-		// Get rotation to match the offset of the to face from the from face
-		val rotation = when (relativeFace) {
-			RelativeFace.FORWARD -> 0.0
-			RelativeFace.RIGHT -> 90.0
-			RelativeFace.LEFT -> -90.0
-			RelativeFace.BACKWARD -> 180.0
-			else -> throw IllegalArgumentException("Illegal forward face: $to")
-		}
-
+	fun getAdjusted(vec3i: Vec3i): Vec3i {
 		val cosTheta: Double = cos(Math.toRadians(rotation))
 		val sinTheta: Double = sin(Math.toRadians(rotation))
 

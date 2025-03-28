@@ -137,6 +137,7 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 		thrusterMap.putAll(thrusterMap.mapKeys { (face: BlockFace, _) -> rotateBlockFace(face) })
 
 		starship.forward = rotateBlockFace(starship.forward)
+		starship.rotation += theta
 
 		if (starship is ActiveControlledStarship) {
 			val dir = starship.cruiseData.targetDir
