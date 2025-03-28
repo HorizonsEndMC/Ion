@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.gui.GuiWrapper
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.getValue
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
@@ -43,7 +43,7 @@ class BlueprintMenu(val player: Player, private val backButton: Item? = null, va
 			val items = blueprints.map { blueprint ->
 				AsyncItem(
 					{
-						blueprint.type.actualType.menuItem.clone()
+						blueprint.type.getValue().menuItem.clone()
 							.updateDisplayName(text(blueprint.name))
 							.updateLore(blueprintInfo(blueprint).map(String::miniMessage))
 					},
