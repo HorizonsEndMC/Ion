@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_L
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerConsumption
@@ -26,9 +27,9 @@ import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
 
 object SilkTouchSource : ItemModification, DropSource {
+	override val key = ItemModKeys.SILK_TOUCH
 	override val crouchingDisables: Boolean = false
 	override val displayName: Component = ofChildren(text("Silk Touch ", HE_LIGHT_BLUE, BOLD).decoration(TextDecoration.ITALIC, false))
-	override val identifier: String = "SILK_TOUCH"
 
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(
 		ApplicationPredicate.ClassPredicate(PowerDrill::class),

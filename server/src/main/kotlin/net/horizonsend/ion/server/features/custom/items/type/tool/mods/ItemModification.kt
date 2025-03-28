@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack
 import kotlin.reflect.KClass
 
 interface ItemModification {
-	val identifier: String
+	val key: IonRegistryKey<ItemModification, out ItemModification>
 	val displayName: Component
 	val applicationPredicates: Array<ApplicationPredicate>
 	val incompatibleWithMods: Array<KClass<out ItemModification>>
