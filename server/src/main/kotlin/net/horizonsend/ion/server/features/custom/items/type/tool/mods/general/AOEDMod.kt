@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ApplicationPredicate
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.BlockListModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.drill.VeinMinerMod
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -19,15 +20,14 @@ import org.bukkit.block.BlockFace
 import kotlin.reflect.KClass
 
 class AOEDMod(
+	override val key: IonRegistryKey<ItemModification, out ItemModification>,
 	val radius: Int,
 	override val applicationPredicates: Array<ApplicationPredicate> = arrayOf(
 		ApplicationPredicate.ClassPredicate(PowerDrill::class),
 		ApplicationPredicate.ClassPredicate(PowerHoe::class),
 	),
-	override val modItem: IonRegistryKey<CustomItem, out CustomItem>
-) : ItemModification, net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.BlockListModifier {
-
-	override val identifier: String = "AOE_$radius"
+	override val modItem: IonRegistryKey<CustomItem, out CustomItem>,
+) : ItemModification, BlockListModifier {
 
 	override val crouchingDisables: Boolean = true
 

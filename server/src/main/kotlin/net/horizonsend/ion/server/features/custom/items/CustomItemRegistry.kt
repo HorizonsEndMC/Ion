@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.core.registries.Registry
 import net.horizonsend.ion.server.core.registries.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registries.keys.KeyRegistry
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule.Companion.powerPrefix
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
@@ -34,7 +35,6 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.CratePlacer
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
 import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Blaster
 import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Magazine
@@ -479,175 +479,196 @@ class CustomItemRegistry : Registry<CustomItem>("CUSTOM_ITEMS") {
 		register(
 			CustomItemKeys.ARMOR_MODIFICATION_ENVIRONMENT, ModificationItem(
 				CustomItemKeys.ARMOR_MODIFICATION_ENVIRONMENT,
+				ItemModKeys.ENVIRONMENT,
 				"power_armor/module/environment",
 				ofChildren(text("Enviornment", GRAY), text(" Module", GOLD)),
 				text("Allows the user to survive inhospitable planetary enviornments.")
-			) { ItemModRegistry.ENVIRONMENT }
+			)
 		)
 		register(
 			CustomItemKeys.ARMOR_MODIFICATION_NIGHT_VISION, ModificationItem(
 				CustomItemKeys.ARMOR_MODIFICATION_NIGHT_VISION,
+				ItemModKeys.NIGHT_VISION,
 				"power_armor/module/night_vision",
 				ofChildren(text("Night Vision", GRAY), text(" Module", GOLD)),
 				text("Allows the user to see in dark enviornments. ")
-			) { ItemModRegistry.NIGHT_VISION }
+			)
 		)
 		register(CustomItemKeys.ARMOR_MODIFICATION_PRESSURE_FIELD,
 			ModificationItem(
 				CustomItemKeys.ARMOR_MODIFICATION_PRESSURE_FIELD,
+				ItemModKeys.PRESSURE_FIELD,
 				"power_armor/module/pressure_field",
 				ofChildren(text("Pressure Field", GRAY), text(" Module", GOLD)),
 				text("Allows the user to breathe in space.")
-			) { ItemModRegistry.PRESSURE_FIELD }
+			)
 		)
 		register(CustomItemKeys.ARMOR_MODIFICATION_ROCKET_BOOSTING,
 			ModificationItem(
 				CustomItemKeys.ARMOR_MODIFICATION_ROCKET_BOOSTING,
+				ItemModKeys.ROCKET_BOOSTING,
 				"power_armor/module/rocket_boosting",
 				ofChildren(text("Rocket Boosting", GRAY), text(" Module", GOLD)),
 				text("Allows propelled flight.")
-			) { ItemModRegistry.ROCKET_BOOSTING }
+			)
 		)
 		register(
 			CustomItemKeys.ARMOR_MODIFICATION_SHOCK_ABSORBING, ModificationItem(
 				CustomItemKeys.ARMOR_MODIFICATION_SHOCK_ABSORBING,
+				ItemModKeys.SHOCK_ABSORBING,
 				"power_armor/module/shock_absorbing",
 				ofChildren(text("Shock Absorbing", GRAY), text(" Module", GOLD)),
 				text("Reduces knockback.")
-			) { ItemModRegistry.SHOCK_ABSORBING }
+			)
 		)
 		register(
 			CustomItemKeys.ARMOR_MODIFICATION_SPEED_BOOSTING, ModificationItem(
 				CustomItemKeys.ARMOR_MODIFICATION_SPEED_BOOSTING,
+				ItemModKeys.SPEED_BOOSTING,
 				"power_armor/module/speed_boosting",
 				ofChildren(text("Speed Boosting", GRAY), text(" Module", GOLD)),
 				text("Boosts the user's running speed.")
-			) { ItemModRegistry.SPEED_BOOSTING }
+			)
 		)
 
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_RANGE_1, ModificationItem(
 				CustomItemKeys.TOOL_MODIFICATION_RANGE_1,
+				ItemModKeys.AOE_1,
 				"tool/modification/drill_aoe_1",
 				text("Range Addon +1"),
 				text("Expands the working area by 1 block", GRAY)
-			) { ItemModRegistry.AOE_1 }
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_RANGE_2, ModificationItem(
 				CustomItemKeys.TOOL_MODIFICATION_RANGE_2,
+				ItemModKeys.AOE_2,
 				"tool/modification/drill_aoe_2",
 				text("Range Addon +2"),
 				text("Expands the working area by 2 blocks", GRAY)
-			) { ItemModRegistry.AOE_2 }
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_VEIN_MINER_25, ModificationItem(
 				CustomItemKeys.TOOL_MODIFICATION_VEIN_MINER_25,
+				ItemModKeys.VEIN_MINER_25,
 				"tool/modification/drill_vein_miner_25",
 				text("Vein Miner"),
 				text("Allows a drill to mine veins of connected blocks, up to 25.", GRAY)
-			) { ItemModRegistry.VEIN_MINER_25 }
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_SILK_TOUCH_MOD, ModificationItem(
 				CustomItemKeys.TOOL_MODIFICATION_SILK_TOUCH_MOD,
+				ItemModKeys.SILK_TOUCH,
 				"tool/modification/silk_touch",
 				text("Silk Touch Modifier"),
 				text("Applies silk touch to drops", GRAY),
 				text("Incurs a power usage penalty", RED)
-			) { ItemModRegistry.SILK_TOUCH }
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_AUTO_SMELT, ModificationItem(
 				CustomItemKeys.TOOL_MODIFICATION_AUTO_SMELT,
+				ItemModKeys.AUTO_SMELT,
 				"tool/modification/auto_smelt",
 				text("Auto Smelt Modifier"),
 				text("Sears the drops before they hit the ground", GRAY),
 				text("Incurs a power usage penalty", RED)
-			) { ItemModRegistry.AUTO_SMELT }
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_FORTUNE_1, ModificationItem(
 				CustomItemKeys.TOOL_MODIFICATION_FORTUNE_1,
+				ItemModKeys.FORTUNE_1,
 				"tool/modification/fortune_1",
 				text("Fortune 1 Modifier"),
 				text("Applies fortune 1 touch to drops", GRAY),
 				text("Incurs a power usage penalty", RED)
-			) { ItemModRegistry.FORTUNE_1 }
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_FORTUNE_2, ModificationItem(
 				CustomItemKeys.TOOL_MODIFICATION_FORTUNE_2,
+				ItemModKeys.FORTUNE_2,
 				"tool/modification/fortune_2",
 				text("Fortune 2 Modifier"),
 				text("Applies fortune 2 touch to drops", GRAY),
 				text("Incurs a power usage penalty", RED)
-			) { ItemModRegistry.FORTUNE_2 }
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_FORTUNE_3, ModificationItem(
 				CustomItemKeys.TOOL_MODIFICATION_FORTUNE_3,
+				ItemModKeys.FORTUNE_3,
 				"tool/modification/fortune_3",
 				text("Fortune 3 Modifier"),
 				text("Applies fortune 3 touch to drops", GRAY),
 				text("Incurs a power usage penalty", RED)
-			) { ItemModRegistry.FORTUNE_3 }
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_25, ModificationItem(
 				CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_25,
+				ItemModKeys.POWER_CAPACITY_25,
 				"tool/modification/power_capacity_25",
 				text("Small Auxiliary battery"),
 				ofChildren(text("Increases power storage by ", HE_MEDIUM_GRAY), powerPrefix, text(25000, GREEN))
-			) { ItemModRegistry.POWER_CAPACITY_25 }
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_50, ModificationItem(
 				CustomItemKeys.TOOL_MODIFICATION_POWER_CAPACITY_50,
+				ItemModKeys.POWER_CAPACITY_50,
 				"tool/modification/power_capacity_50",
 				text("Medium Auxiliary battery"),
 				ofChildren(text("Increases power storage by ", HE_MEDIUM_GRAY), powerPrefix, text(50000, GREEN))
-			) { ItemModRegistry.POWER_CAPACITY_50 })
+			))
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_AUTO_REPLANT, ModificationItem(
 				CustomItemKeys.TOOL_MODIFICATION_AUTO_REPLANT,
+				ItemModKeys.AUTO_REPLANT,
 				"tool/modification/auto_replant",
 				text("Auto Replant Modifier"),
 				text("Automatically plants back harvested crops and cut trees", GRAY)
-			) { ItemModRegistry.AUTO_REPLANT }
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_AUTO_COMPOST, ModificationItem(
 				CustomItemKeys.TOOL_MODIFICATION_AUTO_COMPOST,
+				ItemModKeys.AUTO_COMPOST,
 				"tool/modification/auto_compost",
 				text("Auto Compost Modifier"),
 				text("Sends applicable drops through a composter, turning them into bonemeal.", GRAY)
-			) { ItemModRegistry.AUTO_COMPOST }
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_RANGE_3, ModificationItem(
 				CustomItemKeys.TOOL_MODIFICATION_RANGE_3,
+				ItemModKeys.AOE_3,
 				"tool/modification/drill_aoe_3",
 				text("Range Addon +3"),
 				text("Expands the working area by 3 blocks", GRAY)
-			) { ItemModRegistry.AOE_3 }
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_EXTENDED_BAR, ModificationItem(
 				CustomItemKeys.TOOL_MODIFICATION_EXTENDED_BAR,
+				ItemModKeys.EXTENDED_BAR,
 				"tool/modification/extended_bar",
 				text("Extended Chainsaw Bar"),
 				text("Allows a chainsaw to cut down larger trees", GRAY)
-			) { ItemModRegistry.EXTENDED_BAR }
+			)
 		)
 		register(
 			CustomItemKeys.TOOL_MODIFICATION_FERTILIZER_DISPENSER, ModificationItem(
 				CustomItemKeys.TOOL_MODIFICATION_FERTILIZER_DISPENSER,
+				ItemModKeys.FERTILIZER_DISPENSER,
 				"tool/modification/fertilizer_dispenser",
 				text("Fertilizer Sprayer"),
 				text("Applies bonemeal to crops in the effected area, if available in the user's inventory", GRAY)
-			) { ItemModRegistry.FERTILIZER_DISPENSER }
+			)
 		)
 	}
 
