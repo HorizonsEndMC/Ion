@@ -25,16 +25,16 @@ import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipComputers
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.StarshipSchematic
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.factory.PrintItem
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.gui.invui.misc.BlueprintMenu
+import net.horizonsend.ion.server.features.starship.type.StarshipType
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.createData
+import net.horizonsend.ion.server.miscellaneous.utils.getValue
 import net.horizonsend.ion.server.miscellaneous.utils.loadClipboard
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
@@ -210,7 +210,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			checkObstruction(sender.location, schematic, Vec3i(pilotLoc))
 
 			loadSchematic(sender.location, schematic, Vec3i(pilotLoc)) { origin ->
-				tryPilot(sender, origin, blueprint.type.actualType, blueprint.name)
+				tryPilot(sender, origin, blueprint.type.getValue(), blueprint.name)
 			}
 		}
 	}
@@ -228,7 +228,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			checkObstruction(sender.location, schematic, Vec3i(pilotLoc))
 
 			loadSchematic(sender.location, schematic, Vec3i(pilotLoc)) { origin ->
-				tryPilot(sender, origin, blueprint.type.actualType, blueprint.name) { starship ->
+				tryPilot(sender, origin, blueprint.type.getValue(), blueprint.name) { starship ->
 
 					starship.iterateBlocks { x, y, z ->
 						val block = starship.world.getBlockAt(x, y, z)
@@ -273,7 +273,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	fun tryPilot(
         sender: Player,
         origin: Vec3i,
-        type: StarshipType,
+        type: StarshipType<*>,
         name: String,
         callback: (Starship) -> Unit = {}
 	) {
