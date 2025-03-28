@@ -304,7 +304,7 @@ object SubsystemDetector {
 			return null
 		}
 
-		val multiblock = MultiblockAccess.getMultiblock(sign)
+		val multiblock = MultiblockAccess.getStored(sign)
 
 		if (multiblock !is SubsystemMultiblock<*>) {
 			return null

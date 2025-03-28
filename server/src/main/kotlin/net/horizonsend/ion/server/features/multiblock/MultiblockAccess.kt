@@ -3,9 +3,6 @@ package net.horizonsend.ion.server.features.multiblock
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
@@ -49,7 +46,6 @@ import java.util.concurrent.TimeUnit
 import kotlin.jvm.optionals.getOrNull
 
 object MultiblockAccess : IonServerComponent() {
-	val multiblockCoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 	private val multiblockCache: MutableMap<World, LoadingCache<Pair<Vec3i, BlockFace>, Optional<Multiblock>>> = mutableMapOf()
 
 	/**
@@ -61,6 +57,11 @@ object MultiblockAccess : IonServerComponent() {
 		val cached = getCachedMultiblock(sign.world, x, y, z, sign.getFacing().oppositeFace)
 		if (cached != null) return cached
 
+		return getStored(sign)
+	}
+
+
+	fun getStored(sign: Sign): Multiblock? {
 		val value = sign.persistentDataContainer.get(MULTIBLOCK, STRING) ?: return null
 
 		return MultiblockRegistration.getByStorageName(value)
