@@ -160,7 +160,9 @@ object MultiblockEntities : IonServerComponent() {
 
 	fun performCleaup() {
 		MultiblockTicking.iterateManagers {
-
+			it.getAllMultiblockEntities().values.forEach { entity ->
+				entity.cleanup()
+			}
 		}
 	}
 }
