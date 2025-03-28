@@ -58,9 +58,9 @@ class PowerDrill(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: C
 
 		val modManger = getComponent(CustomComponentTypes.MOD_MANAGER)
 		val powerManager = getComponent(CustomComponentTypes.POWER_STORAGE)
-		val mods = modManger.getMods(itemStack)
+		val mods = modManger.getModKeys(itemStack)
 
-		mods.filterNot { it.crouchingDisables && player.isSneaking }
+		mods.filterNot { it.getValue().crouchingDisables && player.isSneaking }
 			.filterIsInstance<net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.BlockListModifier>()
 			.sortedBy { it.priority }
 			.forEach {
@@ -110,7 +110,7 @@ class PowerDrill(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: C
 		fun tryBreakBlock(
 			player: Player,
 			block: Block,
-			mods: Array<ItemModification>,
+			mods: Array<IonRegistryKey<ItemModification, out ItemModification>>,
 			drops: MutableMap<BlockKey, Collection<ItemStack>>,
 			usage: PowerHoe.UsageReference
 		): Boolean {
@@ -129,7 +129,7 @@ class PowerDrill(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: C
 			}
 
 			val dropSource = mods
-				.filterNot { it.crouchingDisables && player.isSneaking }
+				.filterNot { it.getValue().crouchingDisables && player.isSneaking }
 				.filterIsInstance<DropSource>()
 				.firstOrNull() ?: DropSource.DEFAULT_DROP_PROVIDER
 
