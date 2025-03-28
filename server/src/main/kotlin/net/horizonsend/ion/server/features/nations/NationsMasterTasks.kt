@@ -176,26 +176,30 @@ object NationsMasterTasks : IonServerComponent() {
 			val taxCredits = tax.toCreditsString()
 
 			if (willBeActive) {
+				// City has enough money in its balance to pay tax
 				Settlement.withdraw(settlementId, tax)
 
-				if (!isActive) {
-					Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<dark_green>Player Trade City $name has paid its hourly tax of $taxCredits, so it's protected!"))
-				}
-			} else {
-				val message = "<red>Player Trade City $name failed to pay its hourly tax of $taxCredits! " +
-					"Until it pays its tax, it does not have settlement city protection."
-				Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize(message))
-			}
-
-			if (willBeActive) {
+				// Perform member activity check
 				val activeMembers: Long = SLPlayer.count(
 					and(SLPlayer::settlement eq settlementId, SLPlayer::lastSeen gte ACTIVE_AFTER_TIME)
 				)
 
 				if (activeMembers < NATIONS_BALANCE.settlement.cityMinActive) {
+					// active members is below the minimum requirement
 					Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<red>Player Trade City $name paid its tax but didn't have enough active members! It needs at least ${NATIONS_BALANCE.settlement.cityMinActive} for protection."))
 					willBeActive = false
 				}
+				else {
+					// active members is above the minimum requirement; only display this message if the city is currently inactive
+					if (!isActive) {
+						Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<dark_green>Player Trade City $name has paid its hourly tax of $taxCredits, so it's protected!"))
+					}
+				}
+			} else {
+				// City does not have enough money to pay tax
+				val message = "<red>Player Trade City $name failed to pay its hourly tax of $taxCredits! " +
+					"Until it pays its tax, it does not have settlement city protection."
+				Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize(message))
 			}
 
 			if (isActive == willBeActive) {
