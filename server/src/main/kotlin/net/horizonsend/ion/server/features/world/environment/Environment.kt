@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.world.environment
 
+import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isInside
@@ -38,7 +38,7 @@ enum class Environment {
 
 			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) return false
 			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getMods(helmet)
-			if (!mods.contains(ItemModRegistry.PRESSURE_FIELD)) return false
+			if (!mods.contains(ItemModKeys.PRESSURE_FIELD.getValue())) return false
 
 			val powerUsage = 10
 
