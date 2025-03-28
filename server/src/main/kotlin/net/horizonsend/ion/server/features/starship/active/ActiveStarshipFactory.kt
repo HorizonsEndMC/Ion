@@ -37,6 +37,7 @@ object ActiveStarshipFactory {
 
 		starship.multiblockManager.processLoad()
 		initSubsystems(feedbackDestination, starship)
+		starship.transportManager.processLoad()
 
 		return starship
 	}

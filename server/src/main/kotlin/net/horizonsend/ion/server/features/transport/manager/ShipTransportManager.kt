@@ -40,11 +40,7 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 //		fluidNodeManager
 	)
 
-	init {
-		load()
-	}
-
-	fun load() {
+	fun processLoad() {
 		cacheHolders.forEach { it.handleLoad() }
 		extractorManager.loadExtractors()
 		NewTransport.registerTransportManager(this)
