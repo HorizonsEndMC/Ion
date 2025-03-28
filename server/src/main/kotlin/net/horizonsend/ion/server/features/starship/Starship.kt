@@ -69,7 +69,6 @@ import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
@@ -77,6 +76,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
+import net.horizonsend.ion.server.miscellaneous.utils.getValue
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.audience.Audience
@@ -121,7 +121,7 @@ class Starship(
 ) : ForwardingAudience {
 	// Data Aliases
 	val dataId: Oid<out StarshipData> = data._id
-	val type: StarshipType = data.starshipType.actualType
+	val type: StarshipType = data.starshipType.getValue()
 	val balancing = type.balancingSupplier.get()
 	val interdictionRange: Int = balancing.interdictionRange
 	val charIdentifier = randomString(5L) // Created once

@@ -27,6 +27,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipDetectedEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.getValue
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
@@ -53,7 +54,7 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 	fun open() {
 		val state: StarshipState? = DeactivatedPlayerStarships.getSavedState(data)
 		val title = if (state != null)
-			(data as? PlayerStarshipData)?.name?.miniMessage() ?: data.starshipType.actualType.displayNameComponent
+			data.name?.miniMessage() ?: data.starshipType.getValue().displayNameComponent
 			else text("Starship Computer")
 
 		Window.single()
