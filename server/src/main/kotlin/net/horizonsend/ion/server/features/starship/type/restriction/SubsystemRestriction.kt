@@ -13,7 +13,7 @@ abstract class SubsystemRestriction(val clazz: KClass<out StarshipSubsystem>) {
 		}
 	}
 
-	class BannedSubsystem(clazz: KClass<out StarshipSubsystem>, val maxCount: Int) : SubsystemRestriction(clazz) {
+	class CappedSubsystem(clazz: KClass<out StarshipSubsystem>, val maxCount: Int) : SubsystemRestriction(clazz) {
 		override fun check(starship: Starship): Boolean {
 			return starship.subsystems.filterIsInstance(clazz.java).count() <= maxCount
 		}
@@ -21,6 +21,6 @@ abstract class SubsystemRestriction(val clazz: KClass<out StarshipSubsystem>) {
 
 	companion object {
 		inline fun <reified T: StarshipSubsystem> require(minAmount: Int): SubsystemRestriction = RequiredSubsystem(T::class, minAmount)
-		inline fun <reified T: StarshipSubsystem> ban(maxCount: Int): SubsystemRestriction = BannedSubsystem(T::class, maxCount)
+		inline fun <reified T: StarshipSubsystem> ban(maxCount: Int): SubsystemRestriction = CappedSubsystem(T::class, maxCount)
 	}
 }
