@@ -29,6 +29,15 @@ class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClas
 		return stored as Z
 	}
 
+	fun isBound(): Boolean {
+		return registry.isBound(this)
+	}
+
+	/** Throws an error if this registry value is not bound */
+	fun checkBound() {
+		if (!isBound()) error("Unbound registry key $this")
+	}
+
 	val ionNapespacedKey = NamespacedKey(IonServer, key)
 
 	companion object : KSerializer<IonRegistryKey<*, *>> {
