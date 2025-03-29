@@ -31,13 +31,13 @@ object StarshipDestruction {
 
 		if (urgent) {
 			return Tasks.syncBlocking {
-				DeactivatedPlayerStarships.deactivateNow(starship, true)
+				DeactivatedPlayerStarships.deactivateNow(starship = starship, ephemeral = true)
 
 				vanishShip(starship)
 			}
 		}
 
-		DeactivatedPlayerStarships.deactivateAsync(starship) {
+		DeactivatedPlayerStarships.deactivateAsync(starship, ephemeral = true) {
 			DeactivatedPlayerStarships.destroyAsync(starship.data) {
 				vanishShip(starship)
 			}
@@ -67,7 +67,7 @@ object StarshipDestruction {
 
 		val previousController = starship.controller
 
-		DeactivatedPlayerStarships.deactivateAsync(starship) {
+		DeactivatedPlayerStarships.deactivateAsync(starship, ephemeral = true) {
 			DeactivatedPlayerStarships.destroyAsync(starship.data) {
 				StarshipSunkEvent(starship, previousController).callEvent()
 				destroyShip(starship)

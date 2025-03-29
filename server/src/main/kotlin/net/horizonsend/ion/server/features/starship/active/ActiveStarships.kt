@@ -26,7 +26,6 @@ import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import java.util.UUID
-import kotlin.collections.set
 
 object ActiveStarships : IonServerComponent() {
 	private val set = ObjectOpenHashSet<ActiveStarship>()
@@ -83,8 +82,13 @@ object ActiveStarships : IonServerComponent() {
 
 		worldMap[starship.world].remove(starship)
 
-		if (starship.world.hasFlag(WorldFlag.ARENA) && !starship.isExploding) {
-			StarshipDestruction.vanish(starship)
+		runCatching {
+			if (starship.world.hasFlag(WorldFlag.ARENA) && !starship.isExploding) {
+				StarshipDestruction.vanish(starship)
+			}
+		}.onFailure { exception ->
+			log.warn("There was an error trying to vanish a ship in the arena!")
+			exception.printStackTrace()
 		}
 
 		StarshipDeactivatedEvent(starship).callEvent()
