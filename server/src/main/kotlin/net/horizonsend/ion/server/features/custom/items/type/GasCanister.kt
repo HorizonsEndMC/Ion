@@ -12,24 +12,23 @@ import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import java.util.function.Supplier
 
 class GasCanister(
 	key: IonRegistryKey<CustomItem, out CustomItem>,
 
 	val model: String,
 	displayName: Component,
-	private val gasSupplier: Supplier<Gas>
+	private val gasKey: IonRegistryKey<Gas, out Gas>
 ) : CustomItem(
 	key,
 	displayName,
 	ItemFactory.unStackableCustomItem(model)
 ) {
-	val gas get() = gasSupplier.get()
+	val gas get() = gasKey.getValue()
 	val maximumFill = gas.configuration.maxStored
 
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
-		addComponent(GAS_STORAGE, GasStorage(maximumFill, true, gasSupplier))
+		addComponent(GAS_STORAGE, GasStorage(maximumFill, true))
 	}
 
 	fun createWithFill(fill: Int): ItemStack {

@@ -91,7 +91,6 @@ import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCoold
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.FilterType
-import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry
 import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld
@@ -155,9 +154,6 @@ val components: List<IonComponent> = listOf(
 	ShipmentBalancing,
 	ShipmentGenerator,
 	ShipmentManager,
-
-	Gasses,
-	FluidRegistry,
 
 	Bazaars,
 	Merchants,
