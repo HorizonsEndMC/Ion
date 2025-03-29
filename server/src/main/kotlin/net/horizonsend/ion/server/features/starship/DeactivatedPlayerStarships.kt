@@ -284,7 +284,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		return carriedShipMap
 	}
 
-	fun deactivateAsync(starship: ActiveControlledStarship, callback: () -> Unit = {}) {
+	fun deactivateAsync(starship: ActiveControlledStarship, ephemeral: Boolean = false, callback: () -> Unit = {}) {
 		Tasks.checkMainThread()
 
 		if (PilotedStarships.isPiloted(starship)) {
@@ -292,7 +292,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		}
 
 		Tasks.async {
-			deactivateNow(starship)
+			deactivateNow(starship, ephemeral)
 			Tasks.sync(callback)
 		}
 	}
