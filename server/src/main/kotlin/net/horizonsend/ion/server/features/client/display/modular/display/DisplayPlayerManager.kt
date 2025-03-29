@@ -20,7 +20,11 @@ class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display, priva
 	}
 
 	fun sendAllRemove() {
-		sendPacket(shownPlayers, ClientboundRemoveEntitiesPacket(entity.id))
+		sendPacket(
+			getPossibleViewers(false) ?: return,
+			ClientboundRemoveEntitiesPacket(entity.id)
+		)
+
 		shownPlayers = mutableSetOf()
 	}
 
@@ -38,10 +42,7 @@ class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display, priva
 	}
 
 	fun runUpdates() {
-		val chunk = entity.level().getChunkIfLoaded(entity.x.toInt().shr(4), entity.z.toInt().shr(4)) ?: return
-		val viewerPlayers = chunk.`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false).filter(playerFilter)
-
-		val viewerIDs = viewerPlayers.mapTo(mutableSetOf(), ServerPlayer::getUUID)
+		val viewerIDs = getPossibleViewers() ?: return
 
 		val new = viewerIDs.minus(shownPlayers)
 		val retained = viewerIDs.intersect(shownPlayers)
@@ -57,5 +58,13 @@ class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display, priva
 		}
 
 		shownPlayers = viewerIDs
+	}
+
+	fun getPossibleViewers(useFilter: Boolean = true): MutableSet<UUID>? {
+		val chunk = entity.level().getChunkIfLoaded(entity.x.toInt().shr(4), entity.z.toInt().shr(4)) ?: return null
+		val viewerPlayers = chunk.`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false)
+
+		if (!useFilter) return viewerPlayers.mapTo(mutableSetOf(), ServerPlayer::getUUID)
+		return viewerPlayers.filter(playerFilter).mapTo(mutableSetOf(), ServerPlayer::getUUID)
 	}
 }
