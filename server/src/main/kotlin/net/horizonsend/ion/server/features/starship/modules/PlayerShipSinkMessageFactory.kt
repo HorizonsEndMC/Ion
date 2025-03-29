@@ -45,6 +45,8 @@ class PlayerShipSinkMessageFactory(private val sunkShip: ActiveStarship) : Messa
 			.sortedByDescending { it.value.lastDamaged }
 			.iterator()
 
+		if (!sortedByTime.hasNext()) return //TODO send special message for sinking without damager
+
 		val (killerDamager, _) = sortedByTime.next()
 		if (sunkShip.playerPilot?.isDead == true) sendPilotKilledMessage(killerDamager, sortedByTime) else sendSinkMessage(killerDamager, sortedByTime)
 	}
