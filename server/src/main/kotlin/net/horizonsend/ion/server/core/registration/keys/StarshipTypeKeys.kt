@@ -1,7 +1,7 @@
-package net.horizonsend.ion.server.core.registries.keys
+package net.horizonsend.ion.server.core.registration.keys
 
 import net.horizonsend.ion.server.configuration.StarshipBalancing
-import net.horizonsend.ion.server.core.registries.IonRegistries
+import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.starship.type.StarshipType
 
 object StarshipTypeKeys : KeyRegistry<StarshipType<*>>(IonRegistries.STARSHIP_TYPE, StarshipType::class) {

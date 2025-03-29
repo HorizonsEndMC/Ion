@@ -1,9 +1,9 @@
-package net.horizonsend.ion.server.core.registries.keys
+package net.horizonsend.ion.server.core.registration.keys
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.server.core.registries.IonRegistryKey
-import net.horizonsend.ion.server.core.registries.Registry
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.registries.Registry
 import kotlin.reflect.KClass
 
 abstract class KeyRegistry<T : Any>(val registry: Registry<T>, private val type: KClass<T>) {

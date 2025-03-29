@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.type.throwables
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Throwables.ThrowableBalancing
-import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager

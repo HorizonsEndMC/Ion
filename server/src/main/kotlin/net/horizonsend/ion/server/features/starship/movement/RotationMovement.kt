@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.movement
 
 import io.papermc.paper.entity.TeleportFlag
-import net.horizonsend.ion.server.core.registries.IonRegistries
+import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.gas.type
 
 import net.horizonsend.ion.server.configuration.Gasses
-import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.gas.collection.Factor

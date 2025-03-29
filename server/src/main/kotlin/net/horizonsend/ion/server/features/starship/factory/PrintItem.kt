@@ -4,7 +4,7 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
