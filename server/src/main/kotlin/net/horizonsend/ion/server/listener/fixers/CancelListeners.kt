@@ -27,6 +27,7 @@ import net.minecraft.world.phys.AABB
 import org.bukkit.Material
 import org.bukkit.craftbukkit.block.CraftVault
 import org.bukkit.entity.EnderPearl
+import org.bukkit.entity.Item
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
@@ -91,7 +92,12 @@ class CancelListeners : SLEventListener() {
 	@EventHandler
 	@Suppress("Unused")
 	fun onPlayerFishEvent(event: PlayerFishEvent) {
-		event.isCancelled = true
+		if (event.state != PlayerFishEvent.State.CAUGHT_FISH) return
+		val item = event.caught as? Item ?: return
+
+		if (item.itemStack.type == Material.ENCHANTED_BOOK || item.itemStack.type == Material.BOW) {
+			event.isCancelled = true
+		}
 	}
 
 	@EventHandler
