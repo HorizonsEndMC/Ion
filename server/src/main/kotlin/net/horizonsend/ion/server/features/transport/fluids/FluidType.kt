@@ -1,13 +1,11 @@
 package net.horizonsend.ion.server.features.transport.fluids
 
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registries.keys.Keyed
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.kyori.adventure.text.Component
 
-abstract class Fluid(val identifier: String) {
+abstract class FluidType(override val key: IonRegistryKey<FluidType, out FluidType>) : Keyed<FluidType> {
 	abstract val displayName: Component
 	abstract val categories: Array<FluidCategory>
-
-	override fun toString(): String {
-		return "FLUID[$identifier]"
-	}
 }

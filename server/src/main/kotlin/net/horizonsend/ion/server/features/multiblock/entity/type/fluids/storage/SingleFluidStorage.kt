@@ -1,15 +1,15 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 
-import net.horizonsend.ion.server.features.transport.fluids.Fluid
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
+import net.horizonsend.ion.server.features.transport.fluids.FluidType
 
 class SingleFluidStorage(
 	private val storageCapacity: Int,
-	private val allowedFluid: Fluid,
+	private val allowedFluid: FluidType,
 	override val inputAllowed: Boolean,
 	override val extractionAllowed: Boolean
 ) : InternalStorage() {
-	override var fluidUnsafe: Fluid = allowedFluid
+	override var fluidTypeUnsafe: FluidType = allowedFluid
 
 	override fun getCapacity(): Int = storageCapacity
 
@@ -18,7 +18,7 @@ class SingleFluidStorage(
 		return fluid.amount + getAmount() <= getCapacity()
 	}
 
-	override fun canStore(type: Fluid): Boolean {
+	override fun canStore(type: FluidType): Boolean {
 		return type == allowedFluid
 	}
 }
