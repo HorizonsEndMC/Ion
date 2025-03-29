@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemLore
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registries.keys.Keyed
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponent
@@ -19,10 +20,10 @@ import org.bukkit.persistence.PersistentDataType
 import xyz.xenondevs.invui.item.ItemProvider
 
 open class CustomItem(
-	val key: IonRegistryKey<CustomItem, out CustomItem>,
+	override val key: IonRegistryKey<CustomItem, out CustomItem>,
 	val displayName: Component,
 	baseItemFactory: ItemFactory,
-) : ItemProvider {
+) : ItemProvider, Keyed<CustomItem> {
 	protected val serializationManager: SerializationManager = SerializationManager()
 	open val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager)
 
