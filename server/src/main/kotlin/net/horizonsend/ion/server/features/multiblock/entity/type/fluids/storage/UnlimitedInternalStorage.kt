@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 
-import net.horizonsend.ion.server.features.transport.fluids.Fluid
-import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry.EMPTY
+import net.horizonsend.ion.server.core.registries.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
+import net.horizonsend.ion.server.features.transport.fluids.FluidType
 
 /**
  * Internal storage with no limits on what fluid can be stored
@@ -15,11 +15,11 @@ class UnlimitedInternalStorage(private val storageCapacity: Int, override val in
 		return fluid.amount + getAmount() <= getCapacity()
 	}
 
-	override fun canStore(type: Fluid): Boolean {
-		if (type == EMPTY) return false // Cannot add an empty fluid stack
+	override fun canStore(type: FluidType): Boolean {
+		if (type.key == FluidTypeKeys.EMPTY) return false // Cannot add an empty fluid stack
 		if (type == getFluidType()) return true // If it is the same as the current fluid
 
 		// Can only store if empty, since we know it isn't the current fluid
-		return getFluidType() == EMPTY
+		return getFluidType().key == FluidTypeKeys.EMPTY
 	}
 }
