@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 
-import net.horizonsend.ion.server.features.transport.fluids.Fluid
-import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry
-import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry.EMPTY
+import net.horizonsend.ion.server.core.registries.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
+import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -15,14 +14,14 @@ import org.bukkit.persistence.PersistentDataType
  **/
 abstract class InternalStorage {
 	private var amountUnsafe: Int = 0
-	protected open var fluidUnsafe: Fluid = EMPTY
+	protected open var fluidTypeUnsafe: FluidType = FluidTypeKeys.EMPTY.getValue()
 
 	abstract val inputAllowed: Boolean
 	abstract val extractionAllowed: Boolean
 
 	protected val mutex: Any = Any()
 
-	fun getFluidType(): Fluid = synchronized(mutex) { fluidUnsafe }
+	fun getFluidType(): FluidType = synchronized(mutex) { fluidTypeUnsafe }
 	fun getAmount(): Int = synchronized(mutex) { amountUnsafe }
 
 	abstract fun getCapacity(): Int
@@ -31,11 +30,11 @@ abstract class InternalStorage {
 
 	abstract fun canStore(fluid: FluidStack): Boolean
 
-	abstract fun canStore(type: Fluid): Boolean
+	abstract fun canStore(type: FluidType): Boolean
 
-	fun isEmpty(): Boolean = getFluidType() == EMPTY || getAmount() == 0
+	fun isEmpty(): Boolean = getFluidType().key == FluidTypeKeys.EMPTY || getAmount() == 0
 
-	fun isFull(): Boolean = getFluidType() != EMPTY && getAmount() == getCapacity()
+	fun isFull(): Boolean = getFluidType().key != FluidTypeKeys.EMPTY && getAmount() == getCapacity()
 
 	fun removeAmount(amount: Int): Int {
 		val newAmount = synchronized(mutex) {
@@ -79,14 +78,14 @@ abstract class InternalStorage {
 			corrected
 		}
 
-		if (new == 0) setFluid(EMPTY)
+		if (new == 0) setFluid(FluidTypeKeys.EMPTY.getValue())
 
 		runUpdates()
 	}
 
-	fun setFluid(fluid: Fluid) {
+	fun setFluid(fluidType: FluidType) {
 		synchronized(mutex) {
-			this.fluidUnsafe = fluid
+			this.fluidTypeUnsafe = fluidType
 		}
 
 		runUpdates()
@@ -96,10 +95,10 @@ abstract class InternalStorage {
 	 * Load storage data from the provided persistent data container
 	 **/
 	fun loadData(pdc: PersistentDataContainer) {
-		val fluid = pdc.get(NamespacedKeys.FLUID, PersistentDataType.STRING)?.let { FluidRegistry[it] } ?: EMPTY
+		val fluid = pdc.get(NamespacedKeys.FLUID, PersistentDataType.STRING)?.let { FluidTypeKeys[it] } ?: FluidTypeKeys.EMPTY
 		val amount = pdc.getOrDefault(NamespacedKeys.FLUID_AMOUNT, PersistentDataType.INTEGER, 0)
 
-		setFluid(fluid)
+		setFluid(fluid.getValue())
 		setAmount(amount)
 	}
 
@@ -110,7 +109,7 @@ abstract class InternalStorage {
 		val fluid = getFluidType()
 		val amount = getAmount()
 
-		destination.set(NamespacedKeys.FLUID, PersistentDataType.STRING, fluid.identifier)
+		destination.set(NamespacedKeys.FLUID, PersistentDataType.STRING, fluid.key.key)
 		destination.set(NamespacedKeys.FLUID_AMOUNT, PersistentDataType.INTEGER, amount)
 	}
 
