@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.recipe.result
 
-import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.multiblock.crafting.input.ItemResultEnviornment
 import org.bukkit.Material
