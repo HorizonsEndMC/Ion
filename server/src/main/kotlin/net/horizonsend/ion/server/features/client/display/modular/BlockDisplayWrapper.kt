@@ -90,7 +90,7 @@ class BlockDisplayWrapper(
 	}
 
 	fun remove() {
-		playerManager.sendRemove()
+		playerManager.sendAllRemove()
 	}
 
 	fun update() {

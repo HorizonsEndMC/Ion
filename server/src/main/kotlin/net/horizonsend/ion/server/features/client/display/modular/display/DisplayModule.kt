@@ -124,6 +124,6 @@ abstract class DisplayModule(
 	}
 
 	open fun remove() {
-		playerManager.sendRemove()
+		playerManager.sendAllRemove()
 	}
 }
