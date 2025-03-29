@@ -4,13 +4,13 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
 import net.horizonsend.ion.server.data.migrator.types.item.legacy.LegacyCustomItemMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.AspectMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.LegacyNameFixer
 import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.ReplacementMigrator
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.MOD_MANAGER
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.LegacyPowerArmorModule
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
