@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.globalGassesConfiguration
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.core.registration.registries.AtmosphericGasRegistry
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
-import net.horizonsend.ion.server.features.gas.AtmosphericGasRegistry
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
