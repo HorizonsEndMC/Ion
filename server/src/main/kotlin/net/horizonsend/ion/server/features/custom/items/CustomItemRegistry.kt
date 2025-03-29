@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Energy
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.core.registries.Registry
+import net.horizonsend.ion.server.core.registries.keys.AtmosphericGasKeys
 import net.horizonsend.ion.server.core.registries.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
@@ -42,7 +43,6 @@ import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.Energy
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.stackableCustomItem
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory.Preset.unStackableCustomItem
-import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ITEM
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
@@ -329,14 +329,14 @@ class CustomItemRegistry : Registry<CustomItem>("CUSTOM_ITEMS") {
 		fun canisterName(gasName: Component): Component = ofChildren(gasName, text(" Gas Canister", GRAY))
 
 		unStackable(CustomItemKeys.GAS_CANISTER_EMPTY, model = "gas/gas_canister_empty", displayName = text("Empty Gas Canister"))
-		register(CustomItemKeys.GAS_CANISTER_HYDROGEN, GasCanister(CustomItemKeys.GAS_CANISTER_HYDROGEN, "gas/gas_canister_hydrogen", canisterName(text("Hydrogen", RED)), Gasses::HYDROGEN))
-		register(CustomItemKeys.GAS_CANISTER_NITROGEN, GasCanister(CustomItemKeys.GAS_CANISTER_NITROGEN, "gas/gas_canister_nitrogen", canisterName(text("Nitrogen", RED)), Gasses::NITROGEN))
-		register(CustomItemKeys.GAS_CANISTER_METHANE, GasCanister(CustomItemKeys.GAS_CANISTER_METHANE, "gas/gas_canister_methane", canisterName(text("Methane", RED)), Gasses::METHANE))
-		register(CustomItemKeys.GAS_CANISTER_OXYGEN, GasCanister(CustomItemKeys.GAS_CANISTER_OXYGEN, "gas/gas_canister_oxygen", canisterName(text("Oxygen", YELLOW)), Gasses::OXYGEN))
-		register(CustomItemKeys.GAS_CANISTER_CHLORINE, GasCanister(CustomItemKeys.GAS_CANISTER_CHLORINE, "gas/gas_canister_chlorine", canisterName(text("Chlorine", YELLOW)), Gasses::CHLORINE))
-		register(CustomItemKeys.GAS_CANISTER_FLUORINE, GasCanister(CustomItemKeys.GAS_CANISTER_FLUORINE, "gas/gas_canister_fluorine", canisterName(text("Fluorine", YELLOW)), Gasses::FLUORINE))
-		register(CustomItemKeys.GAS_CANISTER_HELIUM, GasCanister(CustomItemKeys.GAS_CANISTER_HELIUM, "gas/gas_canister_helium", canisterName(text("Helium", BLUE)), Gasses::HELIUM))
-		register(CustomItemKeys.GAS_CANISTER_CARBON_DIOXIDE, GasCanister(CustomItemKeys.GAS_CANISTER_CARBON_DIOXIDE, "gas/gas_canister_carbon_dioxide", canisterName(text("Carbon Dioxide", BLUE)), Gasses::CARBON_DIOXIDE))
+		register(CustomItemKeys.GAS_CANISTER_HYDROGEN, GasCanister(CustomItemKeys.GAS_CANISTER_HYDROGEN, "gas/gas_canister_hydrogen", canisterName(text("Hydrogen", RED)), AtmosphericGasKeys.HYDROGEN))
+		register(CustomItemKeys.GAS_CANISTER_NITROGEN, GasCanister(CustomItemKeys.GAS_CANISTER_NITROGEN, "gas/gas_canister_nitrogen", canisterName(text("Nitrogen", RED)), AtmosphericGasKeys.NITROGEN))
+		register(CustomItemKeys.GAS_CANISTER_METHANE, GasCanister(CustomItemKeys.GAS_CANISTER_METHANE, "gas/gas_canister_methane", canisterName(text("Methane", RED)), AtmosphericGasKeys.METHANE))
+		register(CustomItemKeys.GAS_CANISTER_OXYGEN, GasCanister(CustomItemKeys.GAS_CANISTER_OXYGEN, "gas/gas_canister_oxygen", canisterName(text("Oxygen", YELLOW)), AtmosphericGasKeys.OXYGEN))
+		register(CustomItemKeys.GAS_CANISTER_CHLORINE, GasCanister(CustomItemKeys.GAS_CANISTER_CHLORINE, "gas/gas_canister_chlorine", canisterName(text("Chlorine", YELLOW)), AtmosphericGasKeys.CHLORINE))
+		register(CustomItemKeys.GAS_CANISTER_FLUORINE, GasCanister(CustomItemKeys.GAS_CANISTER_FLUORINE, "gas/gas_canister_fluorine", canisterName(text("Fluorine", YELLOW)), AtmosphericGasKeys.FLUORINE))
+		register(CustomItemKeys.GAS_CANISTER_HELIUM, GasCanister(CustomItemKeys.GAS_CANISTER_HELIUM, "gas/gas_canister_helium", canisterName(text("Helium", BLUE)), AtmosphericGasKeys.HELIUM))
+		register(CustomItemKeys.GAS_CANISTER_CARBON_DIOXIDE, GasCanister(CustomItemKeys.GAS_CANISTER_CARBON_DIOXIDE, "gas/gas_canister_carbon_dioxide", canisterName(text("Carbon Dioxide", BLUE)), AtmosphericGasKeys.CARBON_DIOXIDE))
 	}
 
 	private fun registerTools() {

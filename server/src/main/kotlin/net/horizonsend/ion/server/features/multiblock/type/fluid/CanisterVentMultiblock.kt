@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.globalGassesConfiguration
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
-import net.horizonsend.ion.server.features.gas.Gasses
+import net.horizonsend.ion.server.features.gas.AtmosphericGasRegistry
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -80,7 +80,7 @@ object CanisterVentMultiblock : Multiblock(), EntityMultiblock<CanisterVentMulti
 			if (customItem !is GasCanister) return
 
 			furnaceInventory.fuel = null
-			furnaceInventory.result = Gasses.EMPTY_CANISTER
+			furnaceInventory.result = AtmosphericGasRegistry.EMPTY_CANISTER
 		}
 
 		override val inputsData: InputsData = none()

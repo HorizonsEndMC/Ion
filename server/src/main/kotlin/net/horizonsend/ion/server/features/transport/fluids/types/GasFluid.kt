@@ -8,15 +8,14 @@ import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCate
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import java.util.function.Supplier
 
 class GasFluid(
 	key: IonRegistryKey<FluidType, out FluidType>,
-	private val gasSupplier: Supplier<Gas>,
+	private val gasKey: IonRegistryKey<Gas, out Gas>,
 ) : FluidType(key) {
 	override val categories: Array<FluidCategory> = arrayOf(FluidCategory.GAS)
 
 	override val displayName: Component get() = ofChildren(gas.displayName, text(" Gas", GRAY))
 
-	val gas get() = gasSupplier.get()
+	val gas get() = gasKey.getValue()
 }

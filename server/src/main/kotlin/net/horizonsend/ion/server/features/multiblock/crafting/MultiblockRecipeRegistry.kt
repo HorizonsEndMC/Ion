@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.crafting
 
 import io.papermc.paper.util.Tick
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registries.keys.AtmosphericGasKeys
 import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
-import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.AutoMasonRecipe
@@ -89,7 +89,7 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 		identifier = "STEEL_PRODUCTION",
 		clazz = GasFurnaceMultiblock.GasFurnaceMultiblockEntity::class,
 		smeltingItem = MaterialRequirement(Material.IRON_INGOT),
-		fuelItem = GasCanisterRequirement(Gasses.OXYGEN, 5),
+		fuelItem = GasCanisterRequirement(AtmosphericGasKeys.OXYGEN.getValue(), 5),
 		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 			duration = Duration.ofSeconds(10),
@@ -277,7 +277,7 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 				identifier = "${ingredient}_OXIDATION",
 				clazz = GasFurnaceMultiblock.GasFurnaceMultiblockEntity::class,
 				smeltingItem = MaterialRequirement(ingredient),
-				fuelItem = GasCanisterRequirement(Gasses.OXYGEN, 5),
+				fuelItem = GasCanisterRequirement(AtmosphericGasKeys.OXYGEN.getValue(), 5),
 				power = PowerRequirement(100),
 				result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 					duration = Duration.ofSeconds(10),

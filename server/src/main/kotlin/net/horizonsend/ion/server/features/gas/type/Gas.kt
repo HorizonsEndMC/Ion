@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.features.gas.type
 
 import net.horizonsend.ion.server.configuration.Gasses
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.gas.collection.Factor
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
@@ -10,10 +12,10 @@ import net.kyori.adventure.text.Component
 import org.bukkit.World
 import java.util.function.Supplier
 
-abstract class Gas(
+open class Gas(
 	val identifier: String,
 	val displayName: Component,
-	val containerIdentifier: String,
+	val containerKey: IonRegistryKey<CustomItem, GasCanister>,
 
 	private val configurationSupplier: Supplier<Gasses.GasConfiguration>,
 	private val transportedFluidSupplier: IonRegistryKey<FluidType, GasFluid>
