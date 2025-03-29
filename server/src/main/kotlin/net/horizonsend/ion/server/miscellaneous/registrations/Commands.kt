@@ -68,7 +68,6 @@ import net.horizonsend.ion.server.command.qol.DisplayShieldsCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.command.qol.PersonalTransporterCommand
 import net.horizonsend.ion.server.command.qol.SearchCommand
-import net.horizonsend.ion.server.command.qol.SetFluidCommand
 import net.horizonsend.ion.server.command.qol.SetPowerCommand
 import net.horizonsend.ion.server.command.space.PlanetCommand
 import net.horizonsend.ion.server.command.space.SpaceGenCommand
@@ -168,7 +167,6 @@ val commands: List<SLCommand> = listOf(
 	CheckProtectionCommand,
 	FixExtractorsCommand,
 	SetPowerCommand,
-	SetFluidCommand,
 	RegenerateCommand,
 	RemoveGhostShipCommand,
 	DisplayShieldsCommand,
