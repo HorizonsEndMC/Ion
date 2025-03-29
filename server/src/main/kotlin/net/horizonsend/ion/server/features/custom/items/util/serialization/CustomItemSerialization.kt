@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.util.serialization
 
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 
 object CustomItemSerialization : IonServerComponent() {

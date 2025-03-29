@@ -3,10 +3,10 @@ package net.horizonsend.ion.server.features.custom.items.misc
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.WrenchRemovable
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes

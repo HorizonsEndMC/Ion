@@ -13,7 +13,7 @@ import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.CommonPlayer
 import net.horizonsend.ion.common.utils.luckPerms
-import net.horizonsend.ion.server.core.registries.keys.StarshipTypeKeys
+import net.horizonsend.ion.server.core.registration.keys.StarshipTypeKeys
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.StarshipSchematic
 import net.kyori.adventure.text.Component

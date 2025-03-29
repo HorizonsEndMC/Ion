@@ -1,10 +1,11 @@
-package net.horizonsend.ion.server.features.custom.items.type.tool.mods
+package net.horizonsend.ion.server.core.registration.registries
 
-import net.horizonsend.ion.server.core.registries.Registry
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
-import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
-import net.horizonsend.ion.server.core.registries.keys.KeyRegistry
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
+import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ApplicationPredicate
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.EnvironmentMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.NightVisionMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.PressureFieldMod
@@ -33,7 +34,10 @@ class ItemModRegistry() : Registry<ItemModification>("ITEM_MODIFICATIONS") {
 	fun bootstrapToolMods() {
 		register(ItemModKeys.AOE_1, AOEDMod(key = ItemModKeys.AOE_1, radius = 1, modItem = CustomItemKeys.TOOL_MODIFICATION_RANGE_1))
 		register(ItemModKeys.AOE_2, AOEDMod(key = ItemModKeys.AOE_2, radius = 2, modItem = CustomItemKeys.TOOL_MODIFICATION_RANGE_2))
-		register(ItemModKeys.AOE_3, AOEDMod(key = ItemModKeys.AOE_3, radius = 3, applicationPredicates = arrayOf(ApplicationPredicate.ClassPredicate(PowerHoe::class)), CustomItemKeys.TOOL_MODIFICATION_RANGE_3))
+		register(
+            ItemModKeys.AOE_3,
+            AOEDMod(key = ItemModKeys.AOE_3, radius = 3, applicationPredicates = arrayOf(ApplicationPredicate.ClassPredicate(PowerHoe::class)), CustomItemKeys.TOOL_MODIFICATION_RANGE_3)
+        )
 		register(ItemModKeys.VEIN_MINER_25, VeinMinerMod(key = ItemModKeys.VEIN_MINER_25, depth = 25, modItem = CustomItemKeys.TOOL_MODIFICATION_VEIN_MINER_25))
 
 		register(ItemModKeys.SILK_TOUCH, SilkTouchSource)
