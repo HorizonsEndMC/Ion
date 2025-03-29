@@ -2,16 +2,17 @@ package net.horizonsend.ion.server.features.gas.collection
 
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.gas.Gasses
+import net.horizonsend.ion.server.core.registries.IonRegistryKey
 import net.horizonsend.ion.server.features.gas.type.Gas
 import org.bukkit.Location
 
 @Serializable
 data class CollectedGas(
-	private val gasIdentifier: String,
+	@Serializable(with = IonRegistryKey.Companion::class)
+	private val gasIdentifier: IonRegistryKey<Gas, out Gas>,
 	val factorStack: Factor
 ) {
-	val gas get() = Gasses[gasIdentifier]
+	val gas get() = gasIdentifier.getValue()
 
 	/**
 	 * Returns the amount collected
