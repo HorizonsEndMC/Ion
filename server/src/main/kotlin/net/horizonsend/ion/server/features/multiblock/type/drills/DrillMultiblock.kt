@@ -220,7 +220,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 			val sign = getSign() ?: return
 
 			userManager.clear()
-			sign.front().line(3, empty())
+			sign.front().line(3, DISABLED)
 			sign.update(false, false)
 		}
 
