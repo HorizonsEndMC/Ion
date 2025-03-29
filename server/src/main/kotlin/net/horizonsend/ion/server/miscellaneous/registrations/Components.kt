@@ -26,7 +26,6 @@ import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.collectors.CollectionMissions
 import net.horizonsend.ion.server.features.economy.collectors.Collectors
 import net.horizonsend.ion.server.features.economy.misc.StationRentalZones
-import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.misc.AutoRestart
@@ -91,7 +90,6 @@ import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCoold
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.FilterType
-import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry
 import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld
@@ -155,9 +153,6 @@ val components: List<IonComponent> = listOf(
 	ShipmentBalancing,
 	ShipmentGenerator,
 	ShipmentManager,
-
-	Gasses,
-	FluidRegistry,
 
 	Bazaars,
 	Merchants,
