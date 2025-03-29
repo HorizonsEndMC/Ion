@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.type
 
 import net.horizonsend.ion.server.configuration.StarshipBalancing
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registries.keys.Keyed
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.TypeCategory
@@ -17,7 +18,7 @@ import org.bukkit.entity.Player
 import java.util.function.Supplier
 
 open class StarshipType<T: StarshipBalancing>(
-	val key: IonRegistryKey<StarshipType<*>, out StarshipType<T>>,
+	override val key: IonRegistryKey<StarshipType<*>, out StarshipType<T>>,
 
 	// Display settings
 	val displayName: String,
@@ -35,7 +36,7 @@ open class StarshipType<T: StarshipBalancing>(
 
 	val sinkProvider: SinkProvider.SinkProviders = SinkProvider.SinkProviders.STANDARD,
 	private val balancingProvider: Supplier<T>
-) : Cloneable {
+) : Keyed<StarshipType<*>> {
 	val balancing get() = balancingProvider.get()
 
 	open fun canPilot(player: Player): Boolean {
