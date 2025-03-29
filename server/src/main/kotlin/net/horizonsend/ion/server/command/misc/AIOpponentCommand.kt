@@ -109,7 +109,7 @@ object AIOpponentCommand : SLCommand() {
 
 			Tasks.sync {
 				toRemove.forEach {
-					StarshipDestruction.vanish(it, true)
+					StarshipDestruction.vanish(starship = it, urgent = true)
 					sender.success("Removed ${it.identifier}")
 				}
 			}
@@ -118,7 +118,7 @@ object AIOpponentCommand : SLCommand() {
 
 	class OpponentTrackerModule(controller: AIController, val opponent: UUID) : AIModule(controller) {
 		override fun tick() {
-			if (Bukkit.getPlayer(opponent) == null) StarshipDestruction.vanish(starship, true)
+			if (Bukkit.getPlayer(opponent) == null) StarshipDestruction.vanish(starship = starship, urgent = true)
 		}
 	}
 }

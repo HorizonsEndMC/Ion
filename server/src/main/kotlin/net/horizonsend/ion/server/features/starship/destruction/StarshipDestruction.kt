@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.destruction
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.event.StarshipExplodeEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
@@ -18,8 +19,9 @@ object StarshipDestruction {
 	 * 1984 the ship
 	 *
 	 * If urgent, all will be done on the main thread.
+	 * @param ephemeral Whether to skip saving the deactivated ship data to the cache.
 	 **/
-	fun vanish(starship: ActiveStarship, urgent: Boolean = false) {
+	fun vanish(starship: Starship, ephemeral: Boolean = false, urgent: Boolean = false) {
 		if (starship.isExploding) {
 			return
 		}
@@ -31,13 +33,14 @@ object StarshipDestruction {
 
 		if (urgent) {
 			return Tasks.syncBlocking {
-				DeactivatedPlayerStarships.deactivateNow(starship = starship, ephemeral = true)
+				DeactivatedPlayerStarships.deactivateNow(starship = starship, ephemeral = ephemeral)
+				DeactivatedPlayerStarships.destroy(starship.data)
 
 				vanishShip(starship)
 			}
 		}
 
-		DeactivatedPlayerStarships.deactivateAsync(starship, ephemeral = true) {
+		DeactivatedPlayerStarships.deactivateAsync(starship = starship, ephemeral = ephemeral) {
 			DeactivatedPlayerStarships.destroyAsync(starship.data) {
 				vanishShip(starship)
 			}

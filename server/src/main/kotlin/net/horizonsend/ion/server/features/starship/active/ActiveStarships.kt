@@ -84,7 +84,7 @@ object ActiveStarships : IonServerComponent() {
 
 		runCatching {
 			if (starship.world.hasFlag(WorldFlag.ARENA) && !starship.isExploding) {
-				StarshipDestruction.vanish(starship)
+				StarshipDestruction.vanish(starship, ephemeral = true)
 			}
 		}.onFailure { exception ->
 			log.warn("There was an error trying to vanish a ship in the arena!")
