@@ -227,4 +227,13 @@ object StarshipDebugCommand : SLCommand() {
 
 		abstract fun apply(controller: ActivePlayerController)
 	}
+
+
+	@Subcommand("dump weaponsets")
+	fun dumpWeaponSets(sender: Player) {
+		val starship = getStarshipRiding(sender)
+		for ((name, subsystems) in starship.weaponSets.entries().groupBy { entry -> entry.key }) {
+			sender.information("[$name]={${subsystems.joinToString { it.value.javaClass.simpleName }}}")
+		}
+	}
 }

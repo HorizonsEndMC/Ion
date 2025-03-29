@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsy
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.kyori.adventure.text.Component
@@ -39,7 +40,7 @@ import org.bukkit.util.Vector
 class MiningLaserSubsystem(
     override val starship: ActiveControlledStarship,
 	override val entity: MiningLaserMultiblock.MiningLaserMultiblockEntity,
-) : WeaponSubsystem(starship, entity.globalVec3i), ManualWeaponSubsystem, DirectionalSubsystem, MultiblockEntitySubsystem {
+) : WeaponSubsystem(starship, toVec3i(entity.getSignKey())), ManualWeaponSubsystem, DirectionalSubsystem, MultiblockEntitySubsystem {
 
 	val multiblock = entity.multiblock
 	override var face: BlockFace = entity.structureDirection
