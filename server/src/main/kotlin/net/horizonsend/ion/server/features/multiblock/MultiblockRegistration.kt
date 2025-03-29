@@ -421,7 +421,7 @@ object MultiblockRegistration : IonServerComponent() {
 			if (multi.alternativeDetectionNames.isEmpty()) continue
 
 			for (altName in multi.alternativeDetectionNames) {
-				byDetectionName[multi.name].add(multi)
+				byDetectionName[altName].add(multi)
 			}
 		}
 	}

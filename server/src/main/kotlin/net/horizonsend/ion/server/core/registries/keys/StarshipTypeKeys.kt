@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.core.registries.IonRegistries
 import net.horizonsend.ion.server.features.starship.type.StarshipType
 
 object StarshipTypeKeys : KeyRegistry<StarshipType<*>>(IonRegistries.STARSHIP_TYPE, StarshipType::class) {
-	val AI_SPEEDER = registerTypedKey<StarshipType<StarshipBalancing>>("AI_SPEEDER")
 	val STARFIGHTER = registerTypedKey<StarshipType<StarshipBalancing>>("STARFIGHTER")
 	val INTERCEPTOR = registerTypedKey<StarshipType<StarshipBalancing>>("INTERCEPTOR")
 	val GUNSHIP = registerTypedKey<StarshipType<StarshipBalancing>>("GUNSHIP")
@@ -19,7 +18,7 @@ object StarshipTypeKeys : KeyRegistry<StarshipType<*>>(IonRegistries.STARSHIP_TY
 	val DREADNOUGHT = registerTypedKey<StarshipType<StarshipBalancing>>("DREADNOUGHT")
 
 	val TANK = registerTypedKey<StarshipType<StarshipBalancing>>("TANK")
-	
+
 	val SHUTTLE = registerTypedKey<StarshipType<StarshipBalancing>>("SHUTTLE")
 	val TRANSPORT = registerTypedKey<StarshipType<StarshipBalancing>>("TRANSPORT")
 	val LIGHT_FREIGHTER = registerTypedKey<StarshipType<StarshipBalancing>>("LIGHT_FREIGHTER")
