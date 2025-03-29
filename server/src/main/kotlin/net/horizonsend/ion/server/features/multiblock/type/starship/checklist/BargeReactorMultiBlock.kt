@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.checklist
 
-import net.horizonsend.ion.server.core.registries.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 

@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.data.migrator.types.item.modern.migrator
 
-import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
 import net.horizonsend.ion.server.data.migrator.types.item.predicate.CustomItemsPredicate
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import org.bukkit.inventory.ItemStack
 
 class ReplacementMigrator(vararg items: IonRegistryKey<CustomItem, out CustomItem>) : CustomItemStackMigrator(CustomItemsPredicate(*Array(items.size) { items[it].key })) {

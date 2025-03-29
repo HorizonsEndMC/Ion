@@ -11,12 +11,12 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayCurrentBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayItem
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import org.bukkit.Location

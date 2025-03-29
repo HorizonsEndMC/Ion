@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
-import net.horizonsend.ion.server.core.registries.keys.CustomBlockKeys
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.horizonsend.ion.server.miscellaneous.utils.isGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane

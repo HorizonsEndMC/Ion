@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.registrations.legacy
 
-import net.horizonsend.ion.server.core.registries.IonRegistryKey
-import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import java.util.Locale
 

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.type
 
-import net.horizonsend.ion.server.core.registries.IonRegistryKey
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.GAS_STORAGE
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager

@@ -3,9 +3,9 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.core.registries.IonRegistryKey
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
-import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ApplicationPredicate
@@ -18,7 +18,6 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.attribute.AttributeModifier
 import org.bukkit.inventory.EquipmentSlotGroup
 import org.bukkit.inventory.ItemStack
-import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 object ShockAbsorbingMod : ItemModification {

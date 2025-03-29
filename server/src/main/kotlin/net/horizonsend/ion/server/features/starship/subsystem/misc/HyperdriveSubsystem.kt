@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.starship.subsystem.misc
 
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.CHETHERITE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.data.migrator.DataMigrators
 import net.horizonsend.ion.server.data.migrator.DataMigrators.migrateInventory
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace

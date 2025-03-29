@@ -1,6 +1,6 @@
-package net.horizonsend.ion.server.core.registries.keys
+package net.horizonsend.ion.server.core.registration.keys
 
-import net.horizonsend.ion.server.core.registries.IonRegistries
+import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer

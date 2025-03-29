@@ -1,6 +1,6 @@
-package net.horizonsend.ion.server.core.registries.keys
+package net.horizonsend.ion.server.core.registration.keys
 
-import net.horizonsend.ion.server.core.registries.IonRegistries
+import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
 

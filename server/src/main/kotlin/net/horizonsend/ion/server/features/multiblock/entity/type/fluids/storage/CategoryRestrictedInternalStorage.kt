@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 
-import net.horizonsend.ion.server.core.registries.keys.FluidTypeKeys
+import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory

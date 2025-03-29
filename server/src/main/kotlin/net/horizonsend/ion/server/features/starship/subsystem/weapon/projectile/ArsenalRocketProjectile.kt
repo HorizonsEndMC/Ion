@@ -4,7 +4,7 @@ import com.mojang.math.Transformation
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.getAddEntityPacket
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager

@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.custom.items
 import com.destroystokyo.paper.event.server.ServerTickEndEvent
 import io.papermc.paper.event.block.BlockPreDispenseEvent
 import net.horizonsend.ion.server.command.misc.DyeCommand
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.Listener
 import net.horizonsend.ion.server.features.custom.items.component.TickReceiverModule
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem

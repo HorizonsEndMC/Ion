@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.type.restriction
 
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.configuration.StarshipBalancing
-import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.starship.type.StarshipType
 
 sealed interface DetectionParmeterHolder {

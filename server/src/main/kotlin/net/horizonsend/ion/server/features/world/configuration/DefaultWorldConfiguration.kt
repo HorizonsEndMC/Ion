@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.world.configuration
 
 import net.horizonsend.ion.server.configuration.util.StaticDoubleAmount
 import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
-import net.horizonsend.ion.server.core.registries.keys.AtmosphericGasKeys
+import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
 import net.horizonsend.ion.server.features.gas.collection.ChildWeight
 import net.horizonsend.ion.server.features.gas.collection.CollectedGas
 import net.horizonsend.ion.server.features.gas.collection.HeightRamp

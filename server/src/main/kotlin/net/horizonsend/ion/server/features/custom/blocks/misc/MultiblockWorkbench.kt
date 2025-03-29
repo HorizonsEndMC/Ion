@@ -7,12 +7,12 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.core.registries.keys.CustomBlockKeys
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customItemDrop
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customItemDrop
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI

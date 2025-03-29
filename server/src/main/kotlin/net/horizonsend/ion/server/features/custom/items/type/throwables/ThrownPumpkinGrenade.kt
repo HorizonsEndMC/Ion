@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.type.throwables
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.starship.damager.damager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag

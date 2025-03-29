@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.filters.manager
 
 import github.scarsz.discordsrv.dependencies.alexh.Fluent.ConcurrentHashMap
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.blocks.filter.CustomFilterBlock
 import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta

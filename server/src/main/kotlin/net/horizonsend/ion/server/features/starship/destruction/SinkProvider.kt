@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.starship.destruction
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.destruction.RemoveBlockSink.Companion.BlockWrapper.CustomBlockWrapper
 import net.horizonsend.ion.server.features.starship.destruction.RemoveBlockSink.Companion.BlockWrapper.MaterialWrapper

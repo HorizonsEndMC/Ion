@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.data.migrator.types.item.modern.migrator
 
 import io.papermc.paper.datacomponent.DataComponentType.Valued
 import io.papermc.paper.datacomponent.DataComponentTypes
-import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ChangeIdentifierMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.aspect.ChangeTypeMigrator

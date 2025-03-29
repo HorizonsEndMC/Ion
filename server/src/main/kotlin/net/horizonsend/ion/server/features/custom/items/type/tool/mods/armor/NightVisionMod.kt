@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor
 
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.core.registries.IonRegistryKey
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
-import net.horizonsend.ion.server.core.registries.keys.ItemModKeys
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.attribute.PotionEffectAttribute

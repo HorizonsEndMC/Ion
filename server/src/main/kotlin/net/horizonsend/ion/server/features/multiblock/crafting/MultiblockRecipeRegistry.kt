@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.crafting
 
 import io.papermc.paper.util.Tick
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.core.registries.keys.AtmosphericGasKeys
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.AutoMasonRecipe

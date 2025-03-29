@@ -2,12 +2,12 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid.collector
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.globalGassesConfiguration
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.AtmosphericGasRegistry
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
-import net.horizonsend.ion.server.features.gas.AtmosphericGasRegistry
 import net.horizonsend.ion.server.features.gas.collection.CollectedGas
 import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.features.multiblock.Multiblock

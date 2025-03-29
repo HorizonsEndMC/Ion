@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.core.registries
+package net.horizonsend.ion.server.core.registration
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
@@ -9,6 +9,7 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.encoding.encodeStructure
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.core.registration.registries.Registry
 import org.bukkit.NamespacedKey
 import kotlin.reflect.KClass
 

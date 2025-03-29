@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.transport.filters
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.POWER_DRILL_BASIC
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_DRILL_BASIC
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.updateData

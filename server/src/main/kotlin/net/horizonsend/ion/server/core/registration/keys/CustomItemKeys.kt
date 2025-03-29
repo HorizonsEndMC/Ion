@@ -1,8 +1,8 @@
-package net.horizonsend.ion.server.core.registries.keys
+package net.horizonsend.ion.server.core.registration.keys
 
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
-import net.horizonsend.ion.server.core.registries.IonRegistries
+import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock

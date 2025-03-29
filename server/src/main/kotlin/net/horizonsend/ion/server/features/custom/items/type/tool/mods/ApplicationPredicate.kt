@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool.mods
 
-import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import kotlin.reflect.KClass
 

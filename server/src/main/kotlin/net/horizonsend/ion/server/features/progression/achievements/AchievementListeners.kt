@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.features.progression.achievements
 
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.ALUMINUM_INGOT
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.CHETHERITE
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.TITANIUM_INGOT
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.URANIUM
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ALUMINUM_INGOT
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.TITANIUM_INGOT
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDetectedEvent

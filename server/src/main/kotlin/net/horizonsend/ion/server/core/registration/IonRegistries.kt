@@ -1,14 +1,15 @@
-package net.horizonsend.ion.server.core.registries
+package net.horizonsend.ion.server.core.registration
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.IonComponent
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
-import net.horizonsend.ion.server.features.gas.AtmosphericGasRegistry
+import net.horizonsend.ion.server.core.registration.registries.AtmosphericGasRegistry
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry
+import net.horizonsend.ion.server.core.registration.registries.FluidTypeRegistry
+import net.horizonsend.ion.server.core.registration.registries.ItemModRegistry
+import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.starship.type.StarshipTypeRegistry
-import net.horizonsend.ion.server.features.transport.fluids.FluidTypeRegistry
 
 object IonRegistries : IonComponent() {
 	private val allRegistries = ObjectOpenHashSet<Registry<*>>()

@@ -1,6 +1,6 @@
-package net.horizonsend.ion.server.core.registries.keys
+package net.horizonsend.ion.server.core.registration.keys
 
-import net.horizonsend.ion.server.core.registries.IonRegistries
+import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 
 object ItemModKeys : KeyRegistry<ItemModification>(IonRegistries.ITEM_MODIFICATIONS, ItemModification::class) {

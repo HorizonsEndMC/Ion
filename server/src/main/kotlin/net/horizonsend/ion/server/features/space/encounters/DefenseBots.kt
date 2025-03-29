@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.space.encounters
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.utils.castSpawnEntity
