@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.features.starship.type
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipBalancing
-import net.horizonsend.ion.server.core.registries.Registry
-import net.horizonsend.ion.server.core.registries.keys.KeyRegistry
-import net.horizonsend.ion.server.core.registries.keys.StarshipTypeKeys
+import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
+import net.horizonsend.ion.server.core.registration.keys.StarshipTypeKeys
+import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
