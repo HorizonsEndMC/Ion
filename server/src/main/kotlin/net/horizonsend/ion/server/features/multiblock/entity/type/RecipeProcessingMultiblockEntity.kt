@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
+import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 
@@ -16,10 +16,10 @@ interface RecipeProcessingMultiblockEntity<E: RecipeEnviornment> {
 		// Optimization step, avoid checking all recipes
 		if (lastRecipe?.verifyAllRequirements(enviornment) == true) return lastRecipe
 
-		val recipes = MultiblockRecipeRegistry.getRecipesFor(this)
+		val recipes = IonRegistries.MULTIBLOCK_RECIPE.getRecipesFor(this)
 		val match = recipes.filter { recipe -> recipe.verifyAllRequirements(enviornment) }
 
-		if (match.size > 1) IonServer.slF4JLogger.warn("Multiple recipes match input! This should not happen!!! Infringing recipes: ${match.joinToString { it.identifier }}")
+		if (match.size > 1) IonServer.slF4JLogger.warn("Multiple recipes match input! This should not happen!!! Infringing recipes: ${match.joinToString { it.key.toString() }}")
 
 		return match.firstOrNull()
 	}
