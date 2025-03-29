@@ -28,7 +28,6 @@ import net.horizonsend.ion.server.features.multiblock.type.farming.planter.Plant
 import net.horizonsend.ion.server.features.multiblock.type.fluid.CanisterVentMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.PipedGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
@@ -292,17 +291,11 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(MiningLaserMultiblockTier4SideMirrored)
 
 		// Gas
-		registerMultiblock(PipedGasCollectorMultiblock)
 		registerMultiblock(CanisterGasCollectorMultiblock, "GasCollectorMultiblock")
 		registerMultiblock(CanisterGasCollectorMultiblock)
 		registerMultiblock(CanisterVentMultiblock, "VentMultiblock")
 		registerMultiblock(CanisterVentMultiblock)
 		registerMultiblock(GasPowerPlantMultiblock)
-
-//		registerMultiblock(ElectrolysisMultiblock)
-//		registerMultiblock(FluidTankSmall)
-//		registerMultiblock(FluidTankMedium)
-//		registerMultiblock(FluidTankLarge)
 
 		// Defenses
 		registerMultiblock(AreaShield5)
