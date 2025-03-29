@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool
 
 import net.horizonsend.ion.common.extensions.alertAction
-import net.horizonsend.ion.server.core.registries.IonRegistryKey
-import net.horizonsend.ion.server.core.registries.keys.ItemModKeys.AUTO_REPLANT
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys.AUTO_REPLANT
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes

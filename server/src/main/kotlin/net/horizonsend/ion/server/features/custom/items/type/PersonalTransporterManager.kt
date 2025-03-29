@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.type
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.PERSONAL_TRANSPORTER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.PERSONAL_TRANSPORTER
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
