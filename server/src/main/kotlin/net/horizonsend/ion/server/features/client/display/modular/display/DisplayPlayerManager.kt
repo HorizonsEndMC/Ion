@@ -19,9 +19,13 @@ class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display, priva
 		sendPacket(shownPlayers, ClientboundTeleportEntityPacket.teleport(entity.id, PositionMoveRotation.of(entity), setOf<Relative>(), entity.onGround))
 	}
 
-	fun sendRemove() {
+	fun sendAllRemove() {
 		sendPacket(shownPlayers, ClientboundRemoveEntitiesPacket(entity.id))
 		shownPlayers = mutableSetOf()
+	}
+
+	fun sendRemove(players: Collection<UUID>) {
+		sendPacket(players, ClientboundRemoveEntitiesPacket(entity.id))
 	}
 
 	fun sendPacket(players: Collection<UUID>, packet: Packet<*>) {
@@ -41,8 +45,10 @@ class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display, priva
 
 		val new = viewerIDs.minus(shownPlayers)
 		val retained = viewerIDs.intersect(shownPlayers)
+		val lost = shownPlayers.minus(viewerIDs)
 
 		if (new.isNotEmpty()) sendAddEntity(new)
+		if (lost.isNotEmpty()) sendRemove(lost)
 
 		val all = retained.union(new)
 		if (all.isNotEmpty() && System.currentTimeMillis() - lastUpdate > updateInvervalMS) {
