@@ -1,9 +1,9 @@
-package net.horizonsend.ion.server.features.transport.fluids
+package net.horizonsend.ion.server.core.registration.registries
 
-import net.horizonsend.ion.server.core.registries.Registry
-import net.horizonsend.ion.server.core.registries.keys.AtmosphericGasKeys
-import net.horizonsend.ion.server.core.registries.keys.FluidTypeKeys
-import net.horizonsend.ion.server.core.registries.keys.KeyRegistry
+import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
+import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
+import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
+import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
 import net.horizonsend.ion.server.features.transport.fluids.types.SimpleFluid

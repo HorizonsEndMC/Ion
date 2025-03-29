@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.starship.destruction
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.core.registries.keys.CustomBlockKeys
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import org.bukkit.scheduler.BukkitRunnable
 

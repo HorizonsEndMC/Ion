@@ -1,8 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.checklist
 
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.GAS_CANISTER_HYDROGEN
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
-import net.horizonsend.ion.server.features.custom.items.type.GasCanister
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GAS_CANISTER_HYDROGEN
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.AbstractMultiblockSubsystem
