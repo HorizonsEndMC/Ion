@@ -39,7 +39,6 @@ import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
-import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.NationsMasterTasks
@@ -224,7 +223,6 @@ val components: List<IonComponent> = listOf(
 	DisplayHandlers,
 	PlanetTeleportCooldown,
 	MultiBlockDisplay,
-	MultiblockRecipeRegistry,
 	StationRentalZones,
 	ServerInboxes
 )
