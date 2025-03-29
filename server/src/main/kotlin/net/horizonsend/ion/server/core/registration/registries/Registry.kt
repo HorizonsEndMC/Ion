@@ -18,8 +18,12 @@ abstract class Registry<T : Any>(val id: String) {
 
 	protected open fun registerAdditional(key: IonRegistryKey<T, out T>, value: T) {}
 
-	operator fun get(key: IonRegistryKey<T, *>): T {
-		return byRawString[key.key] ?: error("Unregistered value $key!")
+	operator fun get(key: IonRegistryKey<T, out T>): T {
+		return byRawString[key.key] ?: error("Unbound registy value $key!")
+	}
+
+	fun isBound(key: IonRegistryKey<T, out T>): Boolean {
+		return byRawString.containsKey(key.key)
 	}
 
 	fun <Z : T> createKey(key: String, clazz: KClass<Z>): IonRegistryKey<T, Z> = IonRegistryKey(this, clazz, key)
