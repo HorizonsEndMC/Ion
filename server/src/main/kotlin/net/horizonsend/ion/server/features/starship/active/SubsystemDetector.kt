@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
@@ -48,6 +49,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsy
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isFroglight
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
@@ -122,7 +124,7 @@ object SubsystemDetector {
 		for (block in potentialSignBlocks) {
 			try {
 				detectSign(starship, block)
-			} catch (e: NumberFormatException) {
+			} catch (_: NumberFormatException) {
 				feedbackDestination.userError("Box shield at ${Vec3i(block.location)} could not be parsed!")
 				continue
 			}
@@ -141,7 +143,7 @@ object SubsystemDetector {
 			throw ActiveStarshipFactory.StarshipActivationException("Starships cannot fly with area shields!")
 		}
 
-		if (sign.type.isWallSign && sign.getLine(0).lowercase(Locale.getDefault()).contains("node")) {
+		if (sign.type.isWallSign && sign.front().line(0).plainText().lowercase(Locale.getDefault()).contains("node")) {
 			val inwardFace = sign.getFacing().oppositeFace
 			val location = sign.block.getRelative(inwardFace).location
 			val pos = Vec3i(location)
@@ -150,9 +152,10 @@ object SubsystemDetector {
 				.filter { it.pos == pos }
 
 			for (weaponSubsystem in weaponSubsystems) {
-				val nodes = sign.lines.slice(1..3)
+				val nodes = sign.front().lines().map { component -> component.plainText() }.slice(1..3)
 					.filter { it.isNotEmpty() }
 					.map { it.lowercase(Locale.getDefault()) }
+
 				for (node in nodes) {
 					starship.weaponSets[node].add(weaponSubsystem)
 				}
@@ -231,7 +234,7 @@ object SubsystemDetector {
 			val thrusterType: ThrusterType = ThrusterType.entries
 				.firstOrNull { it.matchesStructure(starship, block.x, block.y, block.z, face) }
 				?: continue
-			val pos = Vec3i(block.blockKey)
+			val pos = Vec3i(block.x, block.y, block.z)
 			starship.subsystems += ThrusterSubsystem(starship, pos, face, thrusterType)
 		}
 	}
