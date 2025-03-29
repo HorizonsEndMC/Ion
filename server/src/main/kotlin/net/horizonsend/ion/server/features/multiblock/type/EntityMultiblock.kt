@@ -45,7 +45,7 @@ interface EntityMultiblock<T : MultiblockEntity> {
 
 		if (ship != null && !ignoreShips) {
 			@Suppress("UNCHECKED_CAST")
-			val multi = ship.multiblockManager[origin.x, origin.y, origin.z] as T?
+			val multi = ship.multiblockManager[sign] as T?
 			if (multi != null) return multi
 		}
 
