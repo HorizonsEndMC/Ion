@@ -205,25 +205,25 @@ class CustomItemRegistry : Registry<CustomItem>("CUSTOM_ITEMS") {
 	}
 
 	private fun registerGunParts() {
-		register(CustomItemKeys.GUN_BARREL, Component.text("Gun Barrel"), ItemFactory.Preset.unStackableCustomItem("industry/gun_barrel"))
-		register(CustomItemKeys.CIRCUITRY, Component.text("Circuitry"), ItemFactory.Preset.unStackableCustomItem("industry/circuitry"))
+		simple(CustomItemKeys.GUN_BARREL, Component.text("Gun Barrel"), ItemFactory.Preset.unStackableCustomItem("industry/gun_barrel"))
+		simple(CustomItemKeys.CIRCUITRY, Component.text("Circuitry"), ItemFactory.Preset.unStackableCustomItem("industry/circuitry"))
 
-		register(CustomItemKeys.PISTOL_RECEIVER, Component.text("Pistol Receiver"), ItemFactory.Preset.unStackableCustomItem("industry/pistol_receiver"))
-		register(CustomItemKeys.RIFLE_RECEIVER, Component.text("Rifle Receiver"), ItemFactory.Preset.unStackableCustomItem("industry/rifle_receiver"))
-		register(CustomItemKeys.SMB_RECEIVER, Component.text("SMB Receiver"), ItemFactory.Preset.unStackableCustomItem("industry/smb_receiver"))
-		register(CustomItemKeys.SNIPER_RECEIVER, Component.text("Sniper Receiver"), ItemFactory.Preset.unStackableCustomItem("industry/sniper_receiver"))
-		register(CustomItemKeys.SHOTGUN_RECEIVER, Component.text("Shotgun Receiver"), ItemFactory.Preset.unStackableCustomItem("industry/shotgun_receiver"))
-		register(CustomItemKeys.CANNON_RECEIVER, Component.text("Cannon Receiver"), ItemFactory.Preset.unStackableCustomItem("industry/cannon_receiver"))
+		simple(CustomItemKeys.PISTOL_RECEIVER, Component.text("Pistol Receiver"), ItemFactory.Preset.unStackableCustomItem("industry/pistol_receiver"))
+		simple(CustomItemKeys.RIFLE_RECEIVER, Component.text("Rifle Receiver"), ItemFactory.Preset.unStackableCustomItem("industry/rifle_receiver"))
+		simple(CustomItemKeys.SMB_RECEIVER, Component.text("SMB Receiver"), ItemFactory.Preset.unStackableCustomItem("industry/smb_receiver"))
+		simple(CustomItemKeys.SNIPER_RECEIVER, Component.text("Sniper Receiver"), ItemFactory.Preset.unStackableCustomItem("industry/sniper_receiver"))
+		simple(CustomItemKeys.SHOTGUN_RECEIVER, Component.text("Shotgun Receiver"), ItemFactory.Preset.unStackableCustomItem("industry/shotgun_receiver"))
+		simple(CustomItemKeys.CANNON_RECEIVER, Component.text("Cannon Receiver"), ItemFactory.Preset.unStackableCustomItem("industry/cannon_receiver"))
 	}
 
 	// Minerals start
 	private fun registerMinerals() {
-		fun registerRawOre(key: IonRegistryKey<CustomItem, out CustomItem>, name: String) = register(key,
+		fun registerRawOre(key: IonRegistryKey<CustomItem, out CustomItem>, name: String) = simple(key,
             Component.text("Raw ${name.replaceFirstChar { it.uppercase() }}"),
             ItemFactory.Preset.stackableCustomItem(model = "mineral/raw_$name")
         )
 		fun registerOreIngot(key: IonRegistryKey<CustomItem, out CustomItem>, name: String, useSuffix: Boolean) =
-			register(key, Component.text("${name.replaceFirstChar { it.uppercase() }}${if (useSuffix) " Ingot" else ""}"), ItemFactory.Preset.stackableCustomItem(model = "mineral/$name"))
+			simple(key, Component.text("${name.replaceFirstChar { it.uppercase() }}${if (useSuffix) " Ingot" else ""}"), ItemFactory.Preset.stackableCustomItem(model = "mineral/$name"))
 
 		fun registerOreBlock(key: IonRegistryKey<CustomItem, out CustomItem>, name: String, block: IonRegistryKey<CustomBlock, out CustomBlock>) =
 			customBlockItem(key, "mineral/${name}_ore", Component.text("${name.replaceFirstChar { it.uppercase() }} Ore"), block)
@@ -771,7 +771,7 @@ class CustomItemRegistry : Registry<CustomItem>("CUSTOM_ITEMS") {
 		unStackable(key = CustomItemKeys.PLANET_SELECTOR, displayName = Component.text("PLANET_SELECTOR"), model = "planet/planet_selector")
 	}
 
-	private fun register(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, factory: ItemFactory) {
+	private fun simple(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, factory: ItemFactory) {
 		register(key, CustomItem(key, displayName, factory))
 	}
 
