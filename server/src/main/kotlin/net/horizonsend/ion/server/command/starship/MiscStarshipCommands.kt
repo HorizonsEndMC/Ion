@@ -522,7 +522,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandAlias("nukeship")
 	@CommandPermission("starships.nukeship")
 	fun onNukeShip(sender: Player) {
-		val ship = getStarshipRiding(sender) as? ActiveControlledStarship ?: return
+		val ship = getStarshipRiding(sender)
 		StarshipDestruction.vanish(ship)
 	}
 
