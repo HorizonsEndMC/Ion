@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.type.power.charger
 
 import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.Multiblock

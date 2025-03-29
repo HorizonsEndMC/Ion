@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.type
 
-import net.horizonsend.ion.server.core.registries.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 
 sealed interface ComputerMenuConfiguration {
 	//TODO

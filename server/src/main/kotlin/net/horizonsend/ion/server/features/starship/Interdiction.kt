@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.core.registries.keys.CustomItemKeys.CHETHERITE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
