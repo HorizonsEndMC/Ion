@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
 import net.horizonsend.ion.server.core.registries.IonRegistryKey
-import net.horizonsend.ion.server.core.registries.keys.Keyed
+import net.horizonsend.ion.server.core.registries.Keyed
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import org.bukkit.block.Block
 import org.bukkit.block.data.BlockData
