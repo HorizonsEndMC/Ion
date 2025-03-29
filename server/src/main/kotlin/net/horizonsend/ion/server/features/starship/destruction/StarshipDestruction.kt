@@ -70,7 +70,7 @@ object StarshipDestruction {
 
 		val previousController = starship.controller
 
-		DeactivatedPlayerStarships.deactivateAsync(starship, ephemeral = true) {
+		DeactivatedPlayerStarships.deactivateAsync(starship) {
 			DeactivatedPlayerStarships.destroyAsync(starship.data) {
 				StarshipSunkEvent(starship, previousController).callEvent()
 				destroyShip(starship)
