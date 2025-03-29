@@ -16,8 +16,9 @@ object IonRegistries : IonComponent() {
 	private val byId = Object2ObjectOpenHashMap<String, Registry<*>>()
 
 	override fun onEnable() {
-		allRegistries.forEach { value ->
-			value.boostrap()
+		allRegistries.forEach { registry ->
+			registry.boostrap()
+			registry.keySet.allkeys().forEach { key -> key.checkBound() }
 		}
 	}
 
