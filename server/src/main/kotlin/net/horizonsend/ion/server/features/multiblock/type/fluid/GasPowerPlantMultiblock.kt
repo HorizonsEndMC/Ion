@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.client.display.modular.display.PowerE
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
-import net.horizonsend.ion.server.features.gas.Gasses.EMPTY_CANISTER
+import net.horizonsend.ion.server.features.gas.AtmosphericGasRegistry.Companion.EMPTY_CANISTER
 import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.features.multiblock.Multiblock

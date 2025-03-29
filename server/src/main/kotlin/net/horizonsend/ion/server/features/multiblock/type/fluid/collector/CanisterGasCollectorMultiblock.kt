@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
-import net.horizonsend.ion.server.features.gas.Gasses
+import net.horizonsend.ion.server.features.gas.AtmosphericGasRegistry
 import net.horizonsend.ion.server.features.gas.collection.CollectedGas
 import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.features.multiblock.Multiblock
@@ -68,7 +68,7 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		val available = Gasses.findAvailableGasses(sign.location).joinToString { it.identifier }
+		val available = AtmosphericGasRegistry.findAvailableGasses(sign.location).joinToString { it.identifier }
 
 		player.information("Available gasses: $available")
 	}
@@ -103,7 +103,7 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 				return
 			}
 
-			if (!Gasses.isCanister(furnaceInventory.fuel)) {
+			if (!AtmosphericGasRegistry.isCanister(furnaceInventory.fuel)) {
 				sleepWithStatus(text("No canister.", RED), configuration.collectorTickInterval)
 				return
 			}
@@ -158,18 +158,13 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 			}
 
 			when (customItem) {
-				CustomItemKeys.GAS_CANISTER_EMPTY -> fillEmptyCanister(furnaceInventory, gas, amount)
+				CustomItemKeys.GAS_CANISTER_EMPTY.getValue() -> fillEmptyCanister(furnaceInventory, gas, amount)
 				is GasCanister -> fillGasCanister(canisterItem, furnaceInventory, hopperInventory, amount) // Don't even bother with the gas
 			}
 		}
 
 		private fun fillEmptyCanister(furnaceInventory: FurnaceInventory, gas: Gas, amount: Int): Boolean {
-			val newType = CustomItemKeys[gas.containerIdentifier]?.getValue() as? GasCanister
-			if (newType == null) {
-				sleepWithStatus(text("Invalid canister.", RED), configuration.collectorTickInterval)
-				return false
-			}
-
+			val newType = gas.containerKey.getValue()
 			val newCanister = newType.createWithFill(amount)
 
 			furnaceInventory.fuel = newCanister
