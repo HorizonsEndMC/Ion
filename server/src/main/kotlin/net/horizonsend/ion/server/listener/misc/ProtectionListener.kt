@@ -332,11 +332,16 @@ object ProtectionListener : SLEventListener() {
 		}
 
 		// Prevent combat if defender is not combat tagged and is in a protected city, or attacker is not combat tagged and is in a protected city
-		if (((!CombatTimer.isPvpCombatTagged(defender) && isProtectedCity(defender.location)) ||
-					(!CombatTimer.isPvpCombatTagged(attacker) && isProtectedCity(attacker.location))
-			)) {
+		if ((!CombatTimer.isPvpCombatTagged(defender) && isProtectedCity(defender.location)) ||
+			(!CombatTimer.isPvpCombatTagged(attacker) && isProtectedCity(attacker.location))) {
+			// if this is in an szone with friendly fire, allow pvp
+			val zone = RegionSettlementZone.getRegionSettlementZone(defender.location)
+
+			if (zone != null && zone.allowFriendlyFire == true) return
+
+			// neither player is combat tagged; prevent pvp
 			event.isCancelled = true
-		} else  {
+		} else {
 			// If combat occurs on ground, apply combat tag
 			evaluatePvp(attacker, defender, REASON_PVP_GROUND_COMBAT)
 		}
