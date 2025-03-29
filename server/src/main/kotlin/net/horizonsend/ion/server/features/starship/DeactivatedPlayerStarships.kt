@@ -17,8 +17,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import net.kyori.adventure.audience.Audience
 import org.bukkit.Bukkit
@@ -284,7 +284,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		return carriedShipMap
 	}
 
-	fun deactivateAsync(starship: ActiveControlledStarship, callback: () -> Unit = {}) {
+	fun deactivateAsync(starship: ActiveControlledStarship, ephemeral: Boolean = false, callback: () -> Unit = {}) {
 		Tasks.checkMainThread()
 
 		if (PilotedStarships.isPiloted(starship)) {
@@ -292,7 +292,7 @@ object DeactivatedPlayerStarships : IonServerComponent() {
 		}
 
 		Tasks.async {
-			deactivateNow(starship)
+			deactivateNow(starship, ephemeral)
 			Tasks.sync(callback)
 		}
 	}

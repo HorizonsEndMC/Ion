@@ -18,15 +18,14 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import java.util.UUID
-import kotlin.collections.set
 
 object ActiveStarships : IonServerComponent() {
 	private val set = ObjectOpenHashSet<ActiveStarship>()
@@ -83,8 +82,13 @@ object ActiveStarships : IonServerComponent() {
 
 		worldMap[starship.world].remove(starship)
 
-		if (starship.world.hasFlag(WorldFlag.ARENA) && !starship.isExploding) {
-			StarshipDestruction.vanish(starship)
+		runCatching {
+			if (starship.world.hasFlag(WorldFlag.ARENA) && !starship.isExploding) {
+				StarshipDestruction.vanish(starship, ephemeral = true)
+			}
+		}.onFailure { exception ->
+			log.warn("There was an error trying to vanish a ship in the arena!")
+			exception.printStackTrace()
 		}
 
 		StarshipDeactivatedEvent(starship).callEvent()

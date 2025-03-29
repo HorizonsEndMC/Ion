@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomItemComp
 import net.horizonsend.ion.server.features.custom.items.component.LoreManager
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.custom.items.util.serialization.SerializationManager
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemStack
@@ -101,4 +101,7 @@ open class CustomItem(
 	fun getParamaterKeys() = serializationManager.parameterKeys()
 
 	fun getItemFactory() = baseItemFactory
+
+	open fun getBazaarString(itemStack: ItemStack): String = identifier
+	open fun fromBazaarString(string: String): ItemStack = constructItemStack(1)
 }

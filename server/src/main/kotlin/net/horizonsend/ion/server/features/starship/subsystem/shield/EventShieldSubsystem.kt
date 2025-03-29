@@ -2,7 +2,8 @@ package net.horizonsend.ion.server.features.starship.subsystem.shield
 
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventShieldMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import org.bukkit.block.Block
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import org.bukkit.World
 import org.bukkit.block.Sign
 
 class EventShieldSubsystem(starship: ActiveStarship, sign: Sign) : ShieldSubsystem(starship, sign, EventShieldMultiblock) {
@@ -15,7 +16,7 @@ class EventShieldSubsystem(starship: ActiveStarship, sign: Sign) : ShieldSubsyst
 			field = value.coerceIn(0, maxPower)
 		}
 
-	override fun containsBlock(block: Block): Boolean {
-		return block.world.uid == starship.world.uid && starship.contains(block.x, block.y, block.z)
+	override fun containsPosition(world: World, blockPos: Vec3i): Boolean {
+		return world.uid == starship.world.uid && starship.contains(blockPos.x, blockPos.y, blockPos.z)
 	}
 }

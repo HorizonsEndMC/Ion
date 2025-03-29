@@ -68,6 +68,5 @@ data class AIStarshipTemplate(
         val activationThreshold: Double,
         val delay: Long,
         val broadcastMessage: String?,
-        val configuration: AISpawningConfiguration.AISpawnerConfiguration
     )
 }
