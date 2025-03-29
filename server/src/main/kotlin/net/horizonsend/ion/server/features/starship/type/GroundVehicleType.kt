@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.starship.type.restriction.WorldRestri
 import java.util.function.Supplier
 
 class GroundVehicleType<T : StarshipBalancing>(
-	key: IonRegistryKey<StarshipType<T>, out StarshipType<T>>,
+	key: IonRegistryKey<StarshipType<*>, out StarshipType<T>>,
 	displayName: String,
 	icon: String = SidebarIcon.GENERIC_STARSHIP_ICON.text,
 	color: String,
