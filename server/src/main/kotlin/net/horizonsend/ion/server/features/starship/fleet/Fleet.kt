@@ -125,6 +125,14 @@ class Fleet(var leaderId: UUID) : ForwardingAudience {
         }
     }
 
+    fun useBeaconFleet() {
+        for (memberId in memberIds) {
+            val player = Bukkit.getPlayer(memberId) ?: continue
+
+            MiscStarshipCommands.onUseBeacon(player)
+        }
+    }
+
     fun list(player: Player) {
         player.sendMessage(lineBreakWithCenterText(ofChildren(
             text(FLEET_ICON.text, HE_LIGHT_ORANGE).font(Sidebar.fontKey),
