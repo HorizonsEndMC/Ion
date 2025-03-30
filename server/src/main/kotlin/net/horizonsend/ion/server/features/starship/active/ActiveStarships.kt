@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.features.starship.StarshipType.SPEEDER
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDeactivatedEvent
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -81,15 +80,6 @@ object ActiveStarships : IonServerComponent() {
 		}
 
 		worldMap[starship.world].remove(starship)
-
-		runCatching {
-			if (starship.world.hasFlag(WorldFlag.ARENA) && !starship.isExploding) {
-				StarshipDestruction.vanish(starship, ephemeral = true)
-			}
-		}.onFailure { exception ->
-			log.warn("There was an error trying to vanish a ship in the arena!")
-			exception.printStackTrace()
-		}
 
 		StarshipDeactivatedEvent(starship).callEvent()
 
