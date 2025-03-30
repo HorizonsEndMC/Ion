@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -26,10 +27,14 @@ object MultiblockTicking : IonServerComponent() {
 	}
 
 	private fun tickSyncMultiblocks() = iterateManagers { manager ->
-		for ((key, syncTicking) in manager.syncTickingMultiblockEntities) runCatching {
+		var multiblock: SyncTickingMultiblockEntity? = null
+
+		for (key in manager.syncTickingMultiblockEntities.keys) runCatching {
+			val syncTicking = manager.syncTickingMultiblockEntities[key] ?: return@runCatching
+			multiblock = syncTicking
 			checkStructureAsyncThenTick(syncTicking)
 		}.onFailure { e ->
-			log.warn("Exception ticking multiblock ${syncTicking.javaClass.simpleName} at ${toVec3i(key)}: ${e.message}")
+			log.warn("Exception ticking multiblock ${multiblock?.javaClass?.simpleName} at ${toVec3i(key)}: ${e.message}")
 			e.printStackTrace()
 		}
 	}
@@ -41,10 +46,14 @@ object MultiblockTicking : IonServerComponent() {
 	}
 
 	private fun tickAsyncMultiblocks() = iterateManagers { manager ->
-		for ((key, asyncTicking) in manager.asyncTickingMultiblockEntities) runCatching {
+		var multiblock: AsyncTickingMultiblockEntity? = null
+
+		for (key in manager.asyncTickingMultiblockEntities.keys) runCatching {
+			val asyncTicking = manager.asyncTickingMultiblockEntities[key] ?: return@runCatching
+			multiblock = asyncTicking
 			if (SyncTickingMultiblockEntity.preTick(asyncTicking as MultiblockEntity)) asyncTicking.tickAsync()
 		}.onFailure { e ->
-			log.warn("Exception ticking async multiblock ${asyncTicking.javaClass.simpleName} at ${toVec3i(key)}: ${e.message}")
+			log.warn("Exception ticking async multiblock ${multiblock?.javaClass?.simpleName} at ${toVec3i(key)}: ${e.message}")
 			e.printStackTrace()
 		}
 	}
