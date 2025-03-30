@@ -209,7 +209,7 @@ object MultiblockRecipes : IonServerComponent() {
 				FurnaceMultiblockRecipe(
 					multiblock = GasFurnaceMultiblock,
 					smelting = ConsumedItemIngredient(ItemStack(inputMat), 1),
-					fuel = GasCanisterIngredient(CustomItemRegistry.GAS_CANISTER_OXYGEN, 50),
+					fuel = GasCanisterIngredient(CustomItemRegistry.GAS_CANISTER_OXYGEN, 5),
 					resources = listOf(power(100)),
 					result = ItemResult(ItemStack(resultMat))
 				)
