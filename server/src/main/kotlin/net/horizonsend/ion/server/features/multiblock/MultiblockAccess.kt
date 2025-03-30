@@ -61,10 +61,13 @@ object MultiblockAccess : IonServerComponent() {
 	}
 
 
-	fun getStored(sign: Sign): Multiblock? {
+	fun getStored(sign: Sign, checkStructure: Boolean = true): Multiblock? {
 		val value = sign.persistentDataContainer.get(MULTIBLOCK, STRING) ?: return null
 
-		return MultiblockRegistration.getByStorageName(value)
+		val stored = MultiblockRegistration.getByStorageName(value)
+		if (!checkStructure) return stored
+
+		return stored?.takeIf { it.signMatchesStructure(sign, loadChunks = false, particles = false) }
 	}
 
 	/**
