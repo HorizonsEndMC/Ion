@@ -141,6 +141,8 @@ import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_INGOT
 import org.bukkit.Material.DARK_PRISMARINE
+import org.bukkit.Material.DEEPSLATE_GOLD_ORE
+import org.bukkit.Material.DEEPSLATE_REDSTONE_ORE
 import org.bukkit.Material.DIAMOND
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.DISPENSER
@@ -241,6 +243,8 @@ object Crafting : IonServerComponent() {
 		}
 		shapedMaterial("nametag", NAME_TAG, "s", "t", "p", 's' to STRING, 't' to TRIPWIRE_HOOK, 'p' to PAPER)
 		shapedMaterial("gilded_blackstone", GILDED_BLACKSTONE, "gbg", "bgb", "gbg", 'g' to GOLD_NUGGET, 'b' to BLACKSTONE)
+		shapedMaterial("deepslate_restone_ore", DEEPSLATE_REDSTONE_ORE, "gbg", "bgb", "gbg", 'g' to REDSTONE, 'b' to Material.DEEPSLATE)
+		shapedMaterial("deepslate_gold_ore", DEEPSLATE_GOLD_ORE, "gbg", "bgb", "gbg", 'g' to RAW_GOLD, 'b' to Material.DEEPSLATE)
 		shapedMaterial("sniffer_egg", SNIFFER_EGG, "rdr", "ded", "rdr", 'r' to RED_TERRACOTTA, 'd' to DARK_PRISMARINE, 'e' to TURTLE_EGG)
 		shapedMaterial("ochre_froglight", OCHRE_FROGLIGHT, " x ", "xlx", " x ", 'x' to HONEYCOMB, 'l' to SHROOMLIGHT)
 		shapeless("pale_oak", ItemStack(Material.PALE_OAK_SAPLING), Material.OAK_SAPLING, Material.BONE)
@@ -260,6 +264,10 @@ object Crafting : IonServerComponent() {
 		shapeless("nether_warts", ItemStack(NETHER_WART, 9), NETHER_WART_BLOCK)
 		shapeless("honeycomb", ItemStack(HONEYCOMB, 9), HONEYCOMB_BLOCK)
 		shapedMaterial("cobweb", COBWEB, "s s", " s ", "s s", 's' to STRING)
+		shapedMaterial("small_dripleaf" , Material.SMALL_DRIPLEAF, shape1 = "xx ", shape2 = " y ", shape3 = "",'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
+		shapedMaterial("big_dripleaf" , Material.BIG_DRIPLEAF, shape1 = "xxx", shape2 = "  y", shape3 = "  y",'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
+
+		Bukkit.removeRecipe(Material.ENDER_CHEST.key)
 		shaped("Unloaded__Shell", UNLOADED_SHELL.constructItemStack()) {
 			shape(" y ", " z ")
 
