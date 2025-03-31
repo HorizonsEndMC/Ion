@@ -243,7 +243,7 @@ object Crafting : IonServerComponent() {
 		}
 		shapedMaterial("nametag", NAME_TAG, "s", "t", "p", 's' to STRING, 't' to TRIPWIRE_HOOK, 'p' to PAPER)
 		shapedMaterial("gilded_blackstone", GILDED_BLACKSTONE, "gbg", "bgb", "gbg", 'g' to GOLD_NUGGET, 'b' to BLACKSTONE)
-		shapedMaterial("deepslate_restone_ore", DEEPSLATE_REDSTONE_ORE, "gbg", "bgb", "gbg", 'g' to REDSTONE, 'b' to Material.DEEPSLATE)
+		shapedMaterial("deepslate_restone_ore", DEEPSLATE_REDSTONE_ORE, "ggg", "gbg", "ggg", 'g' to REDSTONE, 'b' to Material.DEEPSLATE)
 		shapedMaterial("deepslate_gold_ore", DEEPSLATE_GOLD_ORE, "gbg", "bgb", "gbg", 'g' to RAW_GOLD, 'b' to Material.DEEPSLATE)
 		shapedMaterial("sniffer_egg", SNIFFER_EGG, "rdr", "ded", "rdr", 'r' to RED_TERRACOTTA, 'd' to DARK_PRISMARINE, 'e' to TURTLE_EGG)
 		shapedMaterial("ochre_froglight", OCHRE_FROGLIGHT, " x ", "xlx", " x ", 'x' to HONEYCOMB, 'l' to SHROOMLIGHT)
