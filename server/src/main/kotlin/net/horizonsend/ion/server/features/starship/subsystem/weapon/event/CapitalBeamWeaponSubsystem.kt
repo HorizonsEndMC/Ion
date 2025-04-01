@@ -9,23 +9,21 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.proje
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
-import java.util.concurrent.TimeUnit
 
 class CapitalBeamWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
-) : WeaponSubsystem(starship, pos),
+) : WeaponSubsystem<StarshipWeapons.CapitalCannonBalancing>(starship, pos, starship.balancingManager.getSupplier()),
 	ManualWeaponSubsystem,
 	HeavyWeaponSubsystem,
 	PermissionWeaponSubsystem {
-	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.capitalBeam
 	override val permission: String = "ioncore.eventweapon"
-	override val powerUsage: Int = balancing.powerUsage
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)
+	override val boostChargeNanos: Long = balancing.boostChargeNanos
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
 		return true
@@ -45,7 +43,7 @@ class CapitalBeamWeaponSubsystem(
 		return dir
 	}
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
-		CapitalBeamCannonProjectile(starship, getName(), getFirePos().toLocation(starship.world), dir, shooter).fire()
+		CapitalBeamCannonProjectile(StarshipProjectileSource(starship), getName(), getFirePos().toLocation(starship.world), dir, shooter).fire()
 	}
 
 	override fun isIntact(): Boolean {

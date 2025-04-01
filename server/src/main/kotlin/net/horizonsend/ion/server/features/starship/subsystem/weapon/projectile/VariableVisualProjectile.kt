@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.configuration.AntiAirCannonBalancing
-import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.damager.noOpDamager
 import org.bukkit.Location
 import org.bukkit.util.Vector
@@ -12,19 +10,7 @@ class VariableVisualProjectile(
 	val range: Double,
 	val speed: Double,
 	val drawParticle: (Location, Double) -> Unit
-) : Projectile(null, noOpDamager) {
-	override val balancing: StarshipWeapons.ProjectileBalancing = AntiAirCannonBalancing(
-		range = 0.0,
-		speed = 0.0,
-		areaShieldDamageMultiplier = 0.0,
-		starshipShieldDamageMultiplier = 0.0,
-		particleThickness = 0.0,
-		explosionPower = 0.0f,
-		volume = 0,
-		pitch = 0.0f,
-		soundName = "",
-	)
-
+) : Projectile(noOpDamager) {
 	private var distance: Double = 0.0
 	private var firedAtNanos: Long = -1
 	private var lastTick: Long = -1
