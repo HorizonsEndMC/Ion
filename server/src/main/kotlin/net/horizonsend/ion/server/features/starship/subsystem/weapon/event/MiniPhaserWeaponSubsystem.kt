@@ -22,7 +22,7 @@ class MiniPhaserWeaponSubsystem(
     face: BlockFace
 ) : CannonWeaponSubsystem<StarshipWeapons.MiniPhaserBalancing>(starship, pos, face, starship.balancingManager.getSupplier()), AmmoConsumingWeaponSubsystem, PermissionWeaponSubsystem {
 	override val permission: String = "ioncore.eventweapon"
-	override val length: Int = 5
+	override val length: Int = 6
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 
