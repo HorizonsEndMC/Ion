@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.defense.active.proje
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.configuration.StarshipSounds
+import net.horizonsend.ion.server.configuration.StandardStarshipSounds
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.configuration.StarshipWeapons.StarshipParticleProjectileBalancing
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -42,7 +42,7 @@ class AntiAirCannonProjectile(
 		override val starshipShieldDamageMultiplier: Double = TODO("Not yet implemented")
 		override val areaShieldDamageMultiplier: Double = TODO("Not yet implemented")
 		override val entityDamage: StarshipWeapons.ProjectileBalancing.EntityDamage = TODO("Not yet implemented")
-		override val fireSound: StarshipSounds.SoundInfo = TODO("Not yet implemented")
+		override val fireSound: StandardStarshipSounds.SoundInfo = TODO("Not yet implemented")
 	}
 
 	private fun getColor(shooter: Player): Color {
