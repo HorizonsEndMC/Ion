@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.RocketProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
@@ -19,22 +20,18 @@ import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
-import java.util.concurrent.TimeUnit
 
 class RocketWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     override var face: BlockFace,
     private val multiblock: RocketStarshipWeaponMultiblock
-) : WeaponSubsystem(starship, pos),
+) : WeaponSubsystem<StarshipWeapons.RocketBalancing>(starship, pos, starship.balancingManager.get()),
 	HeavyWeaponSubsystem,
 	DirectionalSubsystem,
 	ManualWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {
-	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.rocket
-	override val powerUsage: Int = balancing.powerUsage
-
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)
+	override val boostChargeNanos: Long = balancing.boostChargeNanos
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
 		return true
@@ -82,7 +79,7 @@ class RocketWeaponSubsystem(
 
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		val origin = getFirePos().toLocation(starship.world)
-		val projectile = RocketProjectile(starship, getName(), origin, this.face, shooter)
+		val projectile = RocketProjectile(StarshipProjectileSource(starship), getName(), origin, this.face, shooter)
 		projectile.fire()
 	}
 
