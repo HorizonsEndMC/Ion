@@ -13,9 +13,9 @@ import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.npcs.traits.ShipDealerTrait
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
-import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
+import net.horizonsend.ion.server.features.starship.type.restriction.PilotRestrictions
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
@@ -88,8 +88,10 @@ object StarshipDealers : IonServerComponent(true) {
 			}
 		}
 
-		if (Levels[player] < ship.shipType.minLevel) {
-			player.userError("You are not a high enough level to pilot that ship!")
+		val pilotResult = ship.shipType.pilotRestrictions.canPilot(player)
+
+		if (!pilotResult.success) {
+			player.sendMessage((pilotResult as PilotRestrictions.PilotResult.Failure).asComponent())
 			return
 		}
 
