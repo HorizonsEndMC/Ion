@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsyst
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PointDefenseLaserProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
@@ -15,11 +16,12 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import kotlin.math.sqrt
 
-class PointDefenseSubsystem(starship: ActiveStarship, pos: Vec3i, override var face: BlockFace) :
-	WeaponSubsystem(starship, pos), DirectionalSubsystem, AutoWeaponSubsystem {
-	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.pointDefence
-	override val powerUsage: Int = balancing.powerUsage
-	override val range: Double = balancing.range
+class PointDefenseSubsystem(
+	starship: ActiveStarship,
+	pos: Vec3i,
+	override var face: BlockFace,
+) : WeaponSubsystem<StarshipWeapons.PointDefenseBalancing>(starship, pos, starship.balancingManager.getSupplier()), DirectionalSubsystem, AutoWeaponSubsystem {
+	override val range: Double get() = balancing.range
 
 	override fun getMaxPerShot(): Int {
 		return (sqrt(starship.initialBlockCount.toDouble()) / 32).toInt()
@@ -62,7 +64,7 @@ class PointDefenseSubsystem(starship: ActiveStarship, pos: Vec3i, override var f
 		lastFire = System.nanoTime()
 
 		val loc = getFirePos().toCenterVector().toLocation(starship.world)
-		PointDefenseLaserProjectile(starship, getName(), loc, dir, range, starship.controller.damager).fire()
+		PointDefenseLaserProjectile(StarshipProjectileSource(starship), getName(), loc, dir, starship.controller.damager).fire()
 	}
 
 	override fun shouldTargetRandomBlock(target: Player): Boolean {
