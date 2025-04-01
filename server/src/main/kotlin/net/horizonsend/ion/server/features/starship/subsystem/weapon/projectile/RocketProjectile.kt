@@ -1,11 +1,12 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HorizontalRocketStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
@@ -16,14 +17,12 @@ import org.bukkit.block.data.MultipleFacing
 import org.bukkit.entity.Entity
 
 class RocketProjectile(
-	starship: ActiveStarship?,
+	source: ProjectileSource,
 	name: Component,
 	loc: Location,
 	face: BlockFace,
 	shooter: Damager
-) : BlockProjectile(starship, name, loc, face.direction, shooter, HorizontalRocketStarshipWeaponMultiblock.damageType) {
-	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.heavyLaser ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.heavyLaser
-
+) : BlockProjectile<StarshipWeapons.RocketBalancing.RocketProjectileBalancing>(source, name, loc, face.direction, shooter, HorizontalRocketStarshipWeaponMultiblock.damageType) {
 	companion object {
 		private fun getBlockData(
 			down: Boolean,
@@ -110,17 +109,11 @@ class RocketProjectile(
 
 	override val blockMap: Map<Vec3i, BlockData> = blockMaps.getValue(face)
 
-	override val range: Double = balancing.range
 	override var speed: Double = balancing.speed
-	override val starshipShieldDamageMultiplier = balancing.starshipShieldDamageMultiplier
-	override val areaShieldDamageMultiplier: Double = balancing.areaShieldDamageMultiplier
-	override val explosionPower: Float = balancing.explosionPower
-	override val volume: Int = balancing.volume
-	override val soundName: String = balancing.soundName
 
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		super.impact(newLoc, block, entity)
-		playCustomSound(newLoc, "horizonsend:starship.weapon.rocket.impact", 30)
+		playCustomSound(newLoc, Sound.sound(Key.key("horizonsend:starship.weapon.rocket.impact"), Sound.Source.PLAYER, 30f, 1f))
 	}
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {

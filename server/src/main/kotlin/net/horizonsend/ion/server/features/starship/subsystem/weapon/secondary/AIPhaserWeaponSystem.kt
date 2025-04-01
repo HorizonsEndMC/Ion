@@ -1,13 +1,14 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.StarshipWeapons.PhaserBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PhaserProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
@@ -16,24 +17,17 @@ import org.bukkit.block.data.FaceAttachable
 import org.bukkit.block.data.type.Grindstone
 import org.bukkit.block.data.type.Hopper
 import org.bukkit.util.Vector
-import java.util.concurrent.TimeUnit
 
 class AIPhaserWeaponSystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	face: BlockFace
-) : CannonWeaponSubsystem(starship, pos, face),
+) : CannonWeaponSubsystem<PhaserBalancing>(starship, pos, face, starship.balancingManager.getSupplier(PhaserWeaponSubsystem::class)),
 	HeavyWeaponSubsystem,
 	PermissionWeaponSubsystem {
 	override val permission: String = "ion.weapon.ai"
-	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.phaser
-	override val length: Int = balancing.length
-	override val convergeDist: Double = balancing.convergeDistance
-	override val extraDistance: Int = balancing.extraDistance
-	override val angleRadiansHorizontal: Double = Math.toRadians(balancing.angleRadiansHorizontal)
-	override val angleRadiansVertical: Double = Math.toRadians(balancing.angleRadiansVertical) // unrestricted
-	override val powerUsage: Int = balancing.powerUsage
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)
+	override val length: Int = 8
+	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 
 	override fun isAcceptableDirection(face: BlockFace) = true
 
@@ -44,7 +38,7 @@ class AIPhaserWeaponSystem(
 		}
 
 		fixDirections(loc)
-		PhaserProjectile(starship, getName(), loc, dir, shooter).fire()
+		PhaserProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter).fire()
 	}
 
 	private fun fixDirections(loc: Location) {

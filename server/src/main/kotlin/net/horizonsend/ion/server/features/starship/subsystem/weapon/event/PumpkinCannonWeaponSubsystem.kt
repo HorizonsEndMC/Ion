@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsy
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.PumpkinCannonProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
@@ -21,13 +22,11 @@ class PumpkinCannonWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     override var face: BlockFace
-) : WeaponSubsystem(starship, pos),
+) : WeaponSubsystem<StarshipWeapons.PumpkinCannonBalancing>(starship, pos, starship.balancingManager.getSupplier()),
 	ManualWeaponSubsystem,
 	DirectionalSubsystem,
 	PermissionWeaponSubsystem {
-	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.pumpkinCannon
 	override val permission: String = "ioncore.eventweapon"
-	override val powerUsage: Int = 1000
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
 		return true
@@ -77,7 +76,7 @@ class PumpkinCannonWeaponSubsystem(
 
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		val origin = getFirePos().toLocation(starship.world)
-		val projectile = PumpkinCannonProjectile(starship, getName(), origin, dir, shooter)
+		val projectile = PumpkinCannonProjectile(StarshipProjectileSource(starship), getName(), origin, dir, shooter)
 		projectile.fire()
 	}
 

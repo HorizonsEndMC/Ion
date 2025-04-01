@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PulseLaserProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
@@ -14,24 +15,19 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
-import java.util.concurrent.TimeUnit
 
 
-class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace) :
-	CannonWeaponSubsystem(starship, pos, face) {
-	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.pulseCannon
+class PulseCannonWeaponSubsystem(
+	starship: ActiveStarship,
+	pos: Vec3i,
+	face: BlockFace,
+) : CannonWeaponSubsystem<StarshipWeapons.PulseCannonBalancing>(starship, pos, face, starship.balancingManager.getSupplier()) {
+	override val length: Int = 2
+
 	companion object {
 		private val colorMap: Map<Material, Color> = STAINED_GLASS_TYPES
 			.associateWith { DyeColor.valueOf(it.name.removeSuffix("_STAINED_GLASS")).color }
 	}
-
-	override val powerUsage: Int = balancing.powerUsage
-	override val length: Int = balancing.length
-	override val angleRadiansHorizontal: Double = Math.toRadians(balancing.angleRadiansHorizontal)
-	override val angleRadiansVertical: Double = Math.toRadians(balancing.angleRadiansVertical) // unrestricted
-	override val convergeDist: Double = balancing.convergeDistance
-	override val extraDistance: Int = balancing.extraDistance
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(balancing.fireCooldownMillis)
 
 	private val color: Color = getColor(starship, pos, face)
 
@@ -50,7 +46,7 @@ class PulseCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, face: Blo
         shooter: Damager,
         target: Vector
 	) {
-		PulseLaserProjectile(starship, getName(), loc, dir, color, shooter).fire()
+		PulseLaserProjectile(StarshipProjectileSource(starship), getName(), loc, dir, color, shooter).fire()
 	}
 
 	override fun getName(): Component {

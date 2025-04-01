@@ -722,8 +722,9 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 		val dir = shooter.location.direction
 
 		AntiAirCannonProjectile(
-			loc = barrelEndPosition.toLocation(shooter.world).toCenterLocation(),
-			dir = dir,
+			source = TODO(),
+			location = barrelEndPosition.toLocation(shooter.world).toCenterLocation(),
+			direction = dir,
 			shooter
 		).fire()
 

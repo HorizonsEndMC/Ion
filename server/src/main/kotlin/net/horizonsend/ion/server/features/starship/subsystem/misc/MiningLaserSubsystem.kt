@@ -40,32 +40,14 @@ import org.bukkit.util.Vector
 class MiningLaserSubsystem(
     override val starship: ActiveControlledStarship,
 	override val entity: MiningLaserMultiblock.MiningLaserMultiblockEntity,
-) : WeaponSubsystem(starship, toVec3i(entity.getSignKey())), ManualWeaponSubsystem, DirectionalSubsystem, MultiblockEntitySubsystem {
+) : WeaponSubsystem<StarshipWeapons.StarshipWeaponBalancing<*>>(
+	starship,
+	toVec3i(entity.getSignKey()),
+	starship.balancingManager.getSupplier()
+), ManualWeaponSubsystem, DirectionalSubsystem, MultiblockEntitySubsystem {
 
 	val multiblock = entity.multiblock
 	override var face: BlockFace = entity.structureDirection
-
-	override val balancing: StarshipWeapons.StarshipWeapon = StarshipWeapons.StarshipWeapon(
-		range = 0.0,
-		speed = 0.0,
-		areaShieldDamageMultiplier = 0.0,
-		starshipShieldDamageMultiplier = 0.0,
-		particleThickness = 0.0,
-		explosionPower = 0.0f,
-		volume = 0,
-		pitch = 0.0f,
-		soundName = "",
-		powerUsage = 0,
-		length = 0 ,
-		angleRadiansHorizontal = 0.0,
-		angleRadiansVertical = 0.0,
-		convergeDistance = 0.0,
-		extraDistance = 0,
-		fireCooldownMillis = 0,
-		boostChargeSeconds = 0,
-		aimDistance = 0,
-		applyCooldownToAll = false
-	)
 
 	private val firingTasks = mutableListOf<BukkitTask>()
 	private var isFiring = false
@@ -304,7 +286,7 @@ class MiningLaserSubsystem(
 		val MINING_LASER_NOT_MINED = enumSetOf(Material.AIR, Material.BEDROCK, Material.REINFORCED_DEEPSLATE, Material.BARRIER)
 	}
 
-	override val powerUsage: Int = 0
+	override val firePowerConsumption: Int = 0
 
 	override fun getName(): Component {
 		return text("Mining Laser [how]")

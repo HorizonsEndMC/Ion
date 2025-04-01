@@ -111,7 +111,7 @@ object StarshipWeaponry : IonServerComponent() {
 
 	private fun queueShots(
         shooter: Damager,
-        weapons: List<WeaponSubsystem>,
+        weapons: List<WeaponSubsystem<*>>,
         leftClick: Boolean,
         facing: BlockFace,
         dir: Vector,
@@ -121,7 +121,7 @@ object StarshipWeaponry : IonServerComponent() {
 
 		shooter.starship?.debugBanner("Queuing shots")
 
-		for (weapon: WeaponSubsystem in weapons) {
+		for (weapon: WeaponSubsystem<*> in weapons) {
 			shooter.starship?.debug("Weapon: ${weapon.name}")
 
 			if (weapon !is ManualWeaponSubsystem) {
@@ -151,7 +151,7 @@ object StarshipWeaponry : IonServerComponent() {
 
 			val targetedDir: Vector = weapon.getAdjustedDir(dir, target)
 
-			if (weapon is TurretWeaponSubsystem && !weapon.ensureOriented(targetedDir)) {
+			if (weapon is TurretWeaponSubsystem<*, *> && !weapon.ensureOriented(targetedDir)) {
 				shooter.starship?.debug("Continue, turret not oriented properly")
 				continue
 			}

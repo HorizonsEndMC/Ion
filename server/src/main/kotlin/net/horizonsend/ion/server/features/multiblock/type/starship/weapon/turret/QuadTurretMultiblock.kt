@@ -1,12 +1,14 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.StarshipWeapons.QuadTurretBalancing.QuadTurretProjectileBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.QuadTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.QuadTurretProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -16,10 +18,10 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
-sealed class QuadTurretMultiblock : TurretMultiblock() {
+sealed class QuadTurretMultiblock : TurretMultiblock<QuadTurretProjectileBalancing>() {
 	override val requiredPermission = "ion.multiblock.quadturret"
 
-	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TurretWeaponSubsystem {
+	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): QuadTurretWeaponSubsystem {
 		return QuadTurretWeaponSubsystem(starship, pos, getFacing(pos, starship), this)
 	}
 
@@ -190,7 +192,16 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 		}
 	}
 
-	override fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Damager, subSystem: TurretWeaponSubsystem, isAuto: Boolean) {
+	override fun shoot(
+		world: World,
+		pos: Vec3i,
+		face: BlockFace,
+		dir: Vector,
+		starship: ActiveStarship,
+		shooter: Damager,
+		subSystem: TurretWeaponSubsystem<out StarshipWeapons.StarshipTurretWeaponBalancing<QuadTurretProjectileBalancing>, QuadTurretProjectileBalancing>,
+		isAuto: Boolean
+	) {
 		val speed = getProjectileSpeed(starship)
 
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
@@ -199,19 +210,12 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 			val loc = point.toLocation(world).toCenterLocation()
 
 			QuadTurretProjectile(
-				starship,
+				StarshipProjectileSource(starship),
 				subSystem.getName(),
 				loc,
 				dir,
 				speed,
 				shooter.color,
-				getRange(starship),
-				getParticleThickness(starship),
-				getExplosionPower(starship),
-				getStarshipShieldDamageMultiplier(starship),
-				getAreaShieldDamageMultiplier(starship),
-				getSound(starship),
-				starship.balancing.weapons.quadTurret, // Not used by anything
 				shooter
 			).fire()
 		}

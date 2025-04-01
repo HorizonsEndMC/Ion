@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.StarshipWeapons.PhaserBalancing.PhaserProjectileBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.PhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.iterateVector
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lightning
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
@@ -15,24 +15,15 @@ import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.util.Vector
-import java.util.concurrent.TimeUnit
 
 class PhaserProjectile(
-	starship: ActiveStarship?,
+	source: ProjectileSource,
 	name: Component,
 	loc: Location,
 	dir: Vector,
 	shooter: Damager
-) : ParticleProjectile(starship, name, loc, dir, shooter, PhaserStarshipWeaponMultiblock.damageType) {
-	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.phaser ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.phaser
-	override val range: Double = balancing.range
-	override var speed: Double = balancing.speed
-	override val starshipShieldDamageMultiplier = balancing.starshipShieldDamageMultiplier
-	override val areaShieldDamageMultiplier: Double = balancing.areaShieldDamageMultiplier
-	override val explosionPower: Float = balancing.explosionPower
-	override val volume: Int = balancing.volume
-	override val pitch: Float = balancing.pitch
-	override val soundName: String = balancing.soundName
+) : ParticleProjectile<PhaserProjectileBalancing>(source, name, loc, dir, shooter, PhaserStarshipWeaponMultiblock.damageType) {
+	override var speed: Double = balancing.speed; get() = balancing.speed
 
 	private val blueParticleData = Particle.DustTransition(
 		Color.fromARGB(255, 0, 255, 255),
