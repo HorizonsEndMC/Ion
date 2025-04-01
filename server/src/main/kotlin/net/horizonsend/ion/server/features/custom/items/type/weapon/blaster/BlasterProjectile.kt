@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.ProjectileBalancing
-import net.horizonsend.ion.server.configuration.StarshipSounds
+import net.horizonsend.ion.server.configuration.StandardStarshipSounds
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
@@ -41,7 +41,7 @@ class RayTracedParticleProjectile(
 	val particle: Particle,
 	private val explosiveShot: Boolean,
 	private val dustOptions: DustOptions?,
-	private val soundWhizz: StarshipSounds.SoundInfo
+	private val soundWhizz: StandardStarshipSounds.SoundInfo
 ) {
 	var damage = balancing.damage
 
