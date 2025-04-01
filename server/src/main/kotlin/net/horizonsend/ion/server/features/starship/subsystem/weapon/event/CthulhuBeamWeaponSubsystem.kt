@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.StarshipWeapons.CthulhuBeamBalancing
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.proje
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
@@ -19,16 +20,14 @@ import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import kotlin.math.sqrt
 
-class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var face: BlockFace) :
-	WeaponSubsystem(starship, pos),
-	DirectionalSubsystem,
-	AutoWeaponSubsystem,
-	PermissionWeaponSubsystem,
-	ManualWeaponSubsystem {
-	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.cthulhuBeam
+class CthulhuBeamSubsystem(
+	starship: ActiveStarship,
+	pos: Vec3i,
+	override var face: BlockFace,
+) : WeaponSubsystem<CthulhuBeamBalancing>(starship, pos, starship.balancingManager.getSupplier()), DirectionalSubsystem, AutoWeaponSubsystem, PermissionWeaponSubsystem, ManualWeaponSubsystem {
 	override val permission: String = "ioncore.eventweapon"
-	override val powerUsage: Int = balancing.powerUsage
-	override val range: Double = balancing.range
+
+	override val range: Double get() = balancing.range
 
 	override fun getMaxPerShot(): Int {
 		return (sqrt(starship.initialBlockCount.toDouble()) / 32).toInt()
@@ -74,14 +73,14 @@ class CthulhuBeamSubsystem(starship: ActiveStarship, pos: Vec3i, override var fa
 
 		val shooter = (starship as? ActiveControlledStarship)?.controller ?: return
 		val loc = getFirePos().toCenterVector().toLocation(world)
-		CthulhuBeamProjectile(starship, getName(), loc, dir, shooter.damager).fire()
+		CthulhuBeamProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter.damager).fire()
 	}
 
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		lastFire = System.nanoTime()
 		val loc = getFirePos().toCenterVector().toLocation(starship.world)
 
-		CthulhuBeamProjectile(starship, getName(), loc, dir, shooter).fire()
+		CthulhuBeamProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter).fire()
 	}
 
 	override fun shouldTargetRandomBlock(target: Player): Boolean {
