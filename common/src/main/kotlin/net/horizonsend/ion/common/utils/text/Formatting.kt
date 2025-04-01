@@ -27,6 +27,8 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
+typealias MiniMessageString = String
+
 /**
  * @return A line break of '=' characters on both sides of the provided component
  **/
