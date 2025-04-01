@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret
 
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.StarshipWeapons.TriTurretBalancing.TriTurretProjectileBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.TriTurretWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
@@ -12,8 +12,8 @@ import org.bukkit.Material.GRINDSTONE
 import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.block.BlockFace
 
-sealed class TriTurretMultiblock : TurretMultiblock() {
-	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TurretWeaponSubsystem {
+sealed class TriTurretMultiblock : TurretMultiblock<TriTurretProjectileBalancing>() {
+	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TriTurretWeaponSubsystem {
 		return TriTurretWeaponSubsystem(starship, pos, getFacing(pos, starship), this)
 	}
 

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.StarshipWeapons.ArsenalRocketBalancing
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.ArsenalRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopArsenalStarshipWeaponMultiblock
@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ArsenalRocketProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
@@ -19,7 +20,6 @@ import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
-import java.util.concurrent.TimeUnit
 
 class ArsenalRocketStarshipWeaponSubsystem(
     starship: ActiveStarship,
@@ -27,12 +27,9 @@ class ArsenalRocketStarshipWeaponSubsystem(
     override var face: BlockFace,
     private val multiblock: ArsenalRocketStarshipWeaponMultiblock,
     private val upOrDown: BlockFace
-	) :
-	WeaponSubsystem(starship, pos), HeavyWeaponSubsystem, ManualWeaponSubsystem, DirectionalSubsystem, AmmoConsumingWeaponSubsystem {
-	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.arsenalMissile
-	override val powerUsage: Int = balancing.powerUsage
+) : WeaponSubsystem<ArsenalRocketBalancing>(starship, pos, starship.balancingManager.get()), HeavyWeaponSubsystem, ManualWeaponSubsystem, DirectionalSubsystem, AmmoConsumingWeaponSubsystem {
+	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
 		return dir
 	}
@@ -74,7 +71,7 @@ class ArsenalRocketStarshipWeaponSubsystem(
 	}
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		val origin = getFirePos().toLocation(starship.world)
-		val projectile = ArsenalRocketProjectile(starship, getName(), origin, dir, shooter, upOrDown, TopArsenalStarshipWeaponMultiblock.damageType)
+		val projectile = ArsenalRocketProjectile(StarshipProjectileSource(starship), getName(), origin, dir, shooter, upOrDown, TopArsenalStarshipWeaponMultiblock.damageType)
 		projectile.fire()
 	}
 
