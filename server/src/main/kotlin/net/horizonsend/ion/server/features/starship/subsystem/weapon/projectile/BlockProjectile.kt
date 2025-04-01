@@ -1,9 +1,10 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.Projectiles
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
@@ -20,14 +21,14 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
-abstract class BlockProjectile(
-	starship: ActiveStarship?,
+abstract class BlockProjectile<B : StarshipWeapons.StarshipProjectileBalancing>(
+	source: ProjectileSource,
 	name: Component,
 	loc: Location,
 	dir: Vector,
 	shooter: Damager,
 	damageType: DamageType
-) : SimpleProjectile(starship, name, loc, dir, shooter, damageType) {
+) : SimpleProjectile<B>(source, name, loc, dir, shooter, damageType) {
 	abstract val blockMap: Map<Vec3i, BlockData>
 	private val refreshedBlocks = LongOpenHashSet()
 
