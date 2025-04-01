@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons.IncterceptorCannonBalancing.IncterceptorCannonProjectileBalancing
+import net.horizonsend.ion.server.configuration.StarshipWeapons.InterceptorCannonBalancing.IncterceptorCannonProjectileBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.InterceptorCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
