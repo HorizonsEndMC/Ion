@@ -13,7 +13,7 @@ import org.bukkit.block.Sign
 import org.bukkit.damage.DamageType
 
 // TODO: Make signless multiblocks an actual thing
-abstract class SignlessStarshipWeaponMultiblock<TSubsystem : WeaponSubsystem> : Multiblock(), SubsystemMultiblock<TSubsystem> {
+abstract class SignlessStarshipWeaponMultiblock<TSubsystem : WeaponSubsystem<*>> : Multiblock(), SubsystemMultiblock<TSubsystem> {
 	abstract val key: String
 	val damageTypeKey: TypedKey<DamageType> by lazy { DamageTypeKeys.create(Key.key("hoizonsend", key)) }
 	val damageType: DamageType by lazy { RegistryAccess.registryAccess().getRegistry(RegistryKey.DAMAGE_TYPE).getOrThrow(damageTypeKey) }

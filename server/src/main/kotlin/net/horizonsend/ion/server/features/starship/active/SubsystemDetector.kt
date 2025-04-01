@@ -147,7 +147,7 @@ object SubsystemDetector {
 			val location = sign.block.getRelative(inwardFace).location
 			val pos = Vec3i(location)
 			val weaponSubsystems = starship.subsystems
-				.filterIsInstance<WeaponSubsystem>()
+				.filterIsInstance<WeaponSubsystem<*>>()
 				.filter { it.pos == pos }
 
 			for (weaponSubsystem in weaponSubsystems) {
@@ -262,7 +262,7 @@ object SubsystemDetector {
 				continue
 			}
 
-			if (subsystem is WeaponSubsystem && !subsystem.canCreateSubsystem()) {
+			if (subsystem is WeaponSubsystem<*> && !subsystem.canCreateSubsystem()) {
 //				feedbackDestination.userError("Could not create subsystem ${subsystem.name}!") TODO wait for preference system
 				continue
 			}
@@ -281,7 +281,7 @@ object SubsystemDetector {
 
 	private fun isDuplicate(starship: ActiveControlledStarship, subsystem: StarshipSubsystem): Boolean {
 		return subsystem is DirectionalSubsystem && starship.subsystems
-			.filterIsInstance<WeaponSubsystem>()
+			.filterIsInstance<WeaponSubsystem<*>>()
 			.filter { it.pos == subsystem.pos }
 			.filterIsInstance<DirectionalSubsystem>()
 			.any { it.face == subsystem.face }
