@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons.CycleTurretBalancing
+import net.horizonsend.ion.server.configuration.starship.CycleTurretBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.CycleTurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -13,7 +13,7 @@ class CycleTurretWeaponSubsystem(
     pos: Vec3i,
     face: BlockFace,
     override val multiblock: CycleTurretMultiblock
-) : TurretWeaponSubsystem<CycleTurretBalancing, CycleTurretBalancing.CycleTurretProjectileBalancing>(ship, pos, face, ship.balancingManager.getSupplier()) {
+) : TurretWeaponSubsystem<CycleTurretBalancing, CycleTurretBalancing.CycleTurretProjectileBalancing>(ship, pos, face, ship.balancingManager.getWeaponSupplier()) {
     override val inaccuracyRadians: Double get() = Math.toRadians(balancing.inaccuracyRadians)
     override fun getMaxPerShot(): Int = balancing.maxPerShot
 

@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.CycleTurretBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.CycleTurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -25,7 +25,7 @@ class CycleTurretProjectile(
 	shooter: Damager,
 	private val shotIndex: Int,
 	private val multiblock: CycleTurretMultiblock
-) : LaserProjectile<StarshipWeapons.CycleTurretBalancing.CycleTurretProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
+) : LaserProjectile<CycleTurretBalancing.CycleTurretProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
     override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
         super.moveVisually(oldLocation, newLocation, travel)
 

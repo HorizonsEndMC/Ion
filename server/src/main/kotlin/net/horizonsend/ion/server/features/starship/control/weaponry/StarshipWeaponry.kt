@@ -6,7 +6,8 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.ManualQueuedShot
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.fireQueuedShots
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
@@ -52,7 +53,7 @@ object StarshipWeaponry : IonServerComponent() {
 		val fireTask = {
 			val queuedShots = queueShots(shooter, weapons, leftClick, facing, dir, target)
 			starship.debug("Queued shots: ${queuedShots.joinToString { it.weapon.name }}")
-			StarshipWeapons.fireQueuedShots(queuedShots, starship)
+			fireQueuedShots(queuedShots, starship)
 		}
 
 		if (!leftClick) cooldown.tryExec(shooter, fireTask) else fireTask()
@@ -116,8 +117,8 @@ object StarshipWeaponry : IonServerComponent() {
         facing: BlockFace,
         dir: Vector,
         target: Vector
-	): LinkedList<StarshipWeapons.ManualQueuedShot> {
-		val queuedShots = LinkedList<StarshipWeapons.ManualQueuedShot>()
+	): LinkedList<ManualQueuedShot> {
+		val queuedShots = LinkedList<ManualQueuedShot>()
 
 		shooter.starship?.debugBanner("Queuing shots")
 
@@ -161,7 +162,7 @@ object StarshipWeaponry : IonServerComponent() {
 				continue
 			}
 
-			queuedShots.add(StarshipWeapons.ManualQueuedShot(weapon, shooter, targetedDir, target))
+			queuedShots.add(ManualQueuedShot(weapon, shooter, targetedDir, target))
 		}
 
 		shooter.debugBanner("Queuing shots end")

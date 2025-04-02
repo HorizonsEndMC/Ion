@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.type
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.configuration.StarshipBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.StarshipTypeKeys
 import net.horizonsend.ion.server.core.registration.registries.Registry
@@ -27,34 +27,34 @@ class StarshipTypeRegistry : Registry<StarshipType<*>>("STARSHIP_TYPE") {
 	}
 
 	fun registerTradeShips() {
-		register(StarshipTypeKeys.SHUTTLE, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.SHUTTLE, StarshipType(
 			key = StarshipTypeKeys.SHUTTLE,
 
 		))
-		register(StarshipTypeKeys.TRANSPORT, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.TRANSPORT, StarshipType(
 			key = StarshipTypeKeys.TRANSPORT,
 
 		))
-		register(StarshipTypeKeys.LIGHT_FREIGHTER, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.LIGHT_FREIGHTER, StarshipType(
 			key = StarshipTypeKeys.LIGHT_FREIGHTER,
 
 		))
-		register(StarshipTypeKeys.MEDIUM_FREIGHTER, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.MEDIUM_FREIGHTER, StarshipType(
 			key = StarshipTypeKeys.MEDIUM_FREIGHTER,
 
 		))
-		register(StarshipTypeKeys.HEAVY_FREIGHTER, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.HEAVY_FREIGHTER, StarshipType(
 			key = StarshipTypeKeys.HEAVY_FREIGHTER,
 
 		))
-		register(StarshipTypeKeys.BARGE, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.BARGE, StarshipType(
 			key = StarshipTypeKeys.BARGE,
 
 		))
 	}
 
 	fun registerCombatShips() {
-		register(StarshipTypeKeys.STARFIGHTER, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.STARFIGHTER, StarshipType<StarshipTypeBalancing>(
 			key = StarshipTypeKeys.STARFIGHTER,
 			displayName = "Starfighter",
 			icon = SidebarIcon.STARFIGHTER_ICON.text,
@@ -67,9 +67,9 @@ class StarshipTypeRegistry : Registry<StarshipType<*>>("STARSHIP_TYPE") {
 			subsystemRestrictions = SubsystemRestrictions(CappedSubsystem(MiningLaserSubsystem::class, 0)),
 			worldRestrictions = WorldRestrictions(),
 			sinkProvider = SinkProvider.SinkProviders.STANDARD,
-			balancingProvider = ConfigurationFiles.starshipBalancing()::starfighter
+			balancingProvider = ConfigurationFiles.starshipBalancing().shipClasses::starfighter
 		))
-		register(StarshipTypeKeys.INTERCEPTOR, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.INTERCEPTOR, StarshipType<StarshipTypeBalancing>(
 			key = StarshipTypeKeys.INTERCEPTOR,
 			displayName = "Interceptor",
 			icon = SidebarIcon.INTERCEPTOR_ICON.text,
@@ -82,9 +82,9 @@ class StarshipTypeRegistry : Registry<StarshipType<*>>("STARSHIP_TYPE") {
 			subsystemRestrictions = SubsystemRestrictions(CappedSubsystem(MiningLaserSubsystem::class, 0)),
 			worldRestrictions = WorldRestrictions(),
 			sinkProvider = SinkProvider.SinkProviders.STANDARD,
-			balancingProvider = ConfigurationFiles.starshipBalancing()::interceptor
+			balancingProvider = ConfigurationFiles.starshipBalancing().shipClasses::interceptor
 		))
-		register(StarshipTypeKeys.GUNSHIP, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.GUNSHIP, StarshipType<StarshipTypeBalancing>(
 			key = StarshipTypeKeys.GUNSHIP,
 			displayName = "Gunship",
 			icon = SidebarIcon.GUNSHIP_ICON.text,
@@ -97,9 +97,9 @@ class StarshipTypeRegistry : Registry<StarshipType<*>>("STARSHIP_TYPE") {
 			subsystemRestrictions = SubsystemRestrictions(CappedSubsystem(MiningLaserSubsystem::class, 0)),
 			worldRestrictions = WorldRestrictions(),
 			sinkProvider = SinkProvider.SinkProviders.STANDARD,
-			balancingProvider = ConfigurationFiles.starshipBalancing()::gunship
+			balancingProvider = ConfigurationFiles.starshipBalancing().shipClasses::gunship
 		))
-		register(StarshipTypeKeys.CORVETTE, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.CORVETTE, StarshipType<StarshipTypeBalancing>(
 			key = StarshipTypeKeys.CORVETTE,
 			displayName = "Corvette",
 			icon = SidebarIcon.CORVETTE_ICON.text,
@@ -112,9 +112,9 @@ class StarshipTypeRegistry : Registry<StarshipType<*>>("STARSHIP_TYPE") {
 			subsystemRestrictions = SubsystemRestrictions(CappedSubsystem(MiningLaserSubsystem::class, 0)),
 			worldRestrictions = WorldRestrictions(),
 			sinkProvider = SinkProvider.SinkProviders.STANDARD,
-			balancingProvider = ConfigurationFiles.starshipBalancing()::corvette
+			balancingProvider = ConfigurationFiles.starshipBalancing().shipClasses::corvette
 		))
-		register(StarshipTypeKeys.LOGISTICS_CORVETTE, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.LOGISTICS_CORVETTE, StarshipType<StarshipTypeBalancing>(
 			key = StarshipTypeKeys.LOGISTICS_CORVETTE,
 			displayName = "Logistic Corvette",
 			icon = SidebarIcon.CORVETTE_ICON.text,
@@ -127,9 +127,9 @@ class StarshipTypeRegistry : Registry<StarshipType<*>>("STARSHIP_TYPE") {
 			subsystemRestrictions = SubsystemRestrictions(),
 			worldRestrictions = WorldRestrictions(),
 			sinkProvider = SinkProvider.SinkProviders.STANDARD,
-			balancingProvider = ConfigurationFiles.starshipBalancing()::aiCorvetteLogistic
+			balancingProvider = ConfigurationFiles.starshipBalancing().shipClasses::corvette
 		))
-		register(StarshipTypeKeys.FRIGATE, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.FRIGATE, StarshipType<StarshipTypeBalancing>(
 			key = StarshipTypeKeys.FRIGATE,
 			displayName = "Frigate",
 			icon = SidebarIcon.FRIGATE_ICON.text,
@@ -142,9 +142,9 @@ class StarshipTypeRegistry : Registry<StarshipType<*>>("STARSHIP_TYPE") {
 			subsystemRestrictions = SubsystemRestrictions(),
 			worldRestrictions = WorldRestrictions(),
 			sinkProvider = SinkProvider.SinkProviders.STANDARD,
-			balancingProvider = ConfigurationFiles.starshipBalancing()::frigate
+			balancingProvider = ConfigurationFiles.starshipBalancing().shipClasses::frigate
 		))
-		register(StarshipTypeKeys.DESTROYER, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.DESTROYER, StarshipType<StarshipTypeBalancing>(
 			key = StarshipTypeKeys.DESTROYER,
 			displayName = "Destroyer",
 			icon = SidebarIcon.DESTROYER_ICON.text,
@@ -152,7 +152,7 @@ class StarshipTypeRegistry : Registry<StarshipType<*>>("STARSHIP_TYPE") {
 			dynmapIcon = "destroyer",
 
 		))
-		register(StarshipTypeKeys.CRUISER, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.CRUISER, StarshipType<StarshipTypeBalancing>(
 			key = StarshipTypeKeys.CRUISER,
 			displayName = "Cruiser",
 			icon = SidebarIcon.BATTLECRUISER_ICON.text,
@@ -160,7 +160,7 @@ class StarshipTypeRegistry : Registry<StarshipType<*>>("STARSHIP_TYPE") {
 			dynmapIcon = "cruiser",
 
 		))
-		register(StarshipTypeKeys.BATTLECRUISER, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.BATTLECRUISER, StarshipType<StarshipTypeBalancing>(
 			key = StarshipTypeKeys.BATTLECRUISER,
 			displayName = "Battlecruiser",
 			icon = SidebarIcon.BATTLECRUISER_ICON.text,
@@ -168,21 +168,21 @@ class StarshipTypeRegistry : Registry<StarshipType<*>>("STARSHIP_TYPE") {
 			dynmapIcon = "battlecruiser",
 
 		))
-		register(StarshipTypeKeys.BATTLESHIP, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.BATTLESHIP, StarshipType<StarshipTypeBalancing>(
 			key = StarshipTypeKeys.BATTLESHIP,
 			displayName = "Battleship",
 			icon = SidebarIcon.BATTLESHIP_ICON.text,
 			color = "#0c1cff",
 			dynmapIcon = "anchor",
 		))
-		register(StarshipTypeKeys.DREADNOUGHT, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.DREADNOUGHT, StarshipType<StarshipTypeBalancing>(
 			key = StarshipTypeKeys.DREADNOUGHT,
 			displayName = "Dreadnought",
 			icon = SidebarIcon.DREADNOUGHT_ICON.text,
 			color = "#320385",
 			dynmapIcon = "anchor",
 		))
-		register(StarshipTypeKeys.TANK, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.TANK, StarshipType<StarshipTypeBalancing>(
 			key = StarshipTypeKeys.TANK,
 			displayName = "Tank",
 			icon = SidebarIcon.STARFIGHTER_ICON.text,
@@ -192,7 +192,7 @@ class StarshipTypeRegistry : Registry<StarshipType<*>>("STARSHIP_TYPE") {
 	}
 
 	fun registerMiscShips() {
-		register(StarshipTypeKeys.SPEEDER, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.SPEEDER, StarshipType<StarshipTypeBalancing>(
 			key = StarshipTypeKeys.SPEEDER,
 			displayName = "Speeder",
 			color = "#ffff32",
@@ -209,14 +209,14 @@ class StarshipTypeRegistry : Registry<StarshipType<*>>("STARSHIP_TYPE") {
 			subsystemRestrictions = SubsystemRestrictions(),
 			worldRestrictions = WorldRestrictions(),
 			sinkProvider = SinkProvider.SinkProviders.STANDARD,
-			balancingProvider = ConfigurationFiles.starshipBalancing()::speeder
+			balancingProvider = ConfigurationFiles.starshipBalancing().shipClasses::speeder
 		))
-		register(StarshipTypeKeys.PLATFORM, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.PLATFORM, StarshipType<StarshipTypeBalancing>(
 			key = StarshipTypeKeys.PLATFORM,
 
 			dynmapIcon = "anchor",
 		))
-		register(StarshipTypeKeys.UNIDENTIFIEDSHIP, StarshipType<StarshipBalancing>(
+		register(StarshipTypeKeys.UNIDENTIFIEDSHIP, StarshipType<StarshipTypeBalancing>(
 			key = StarshipTypeKeys.UNIDENTIFIEDSHIP,
 
 			dynmapIcon = "anchor",

@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.DisintegratorBeamBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.DisintegratorBeamWeaponSubsystem
@@ -25,7 +25,7 @@ class DisintegratorBeamProjectile(
 	shooter: Damager,
 	private val subsystem: DisintegratorBeamWeaponSubsystem,
 	damage: Double
-) : LaserProjectile<StarshipWeapons.DisintegratorBeamBalancing.DisintegratorBeamProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
+) : LaserProjectile<DisintegratorBeamBalancing.DisintegratorBeamProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
 
     companion object {
         private const val RESET_STACK_TIME_MILLIS = 4000L

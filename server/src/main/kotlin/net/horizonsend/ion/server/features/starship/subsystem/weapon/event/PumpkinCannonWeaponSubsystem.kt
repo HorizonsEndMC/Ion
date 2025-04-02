@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.PumpkinCannonBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.PumpkinCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -22,7 +22,7 @@ class PumpkinCannonWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     override var face: BlockFace
-) : WeaponSubsystem<StarshipWeapons.PumpkinCannonBalancing>(starship, pos, starship.balancingManager.getSupplier()),
+) : WeaponSubsystem<PumpkinCannonBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier()),
 	ManualWeaponSubsystem,
 	DirectionalSubsystem,
 	PermissionWeaponSubsystem {
