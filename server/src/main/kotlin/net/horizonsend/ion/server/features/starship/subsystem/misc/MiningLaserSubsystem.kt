@@ -8,7 +8,7 @@ import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblock
@@ -40,10 +40,10 @@ import org.bukkit.util.Vector
 class MiningLaserSubsystem(
     override val starship: ActiveControlledStarship,
 	override val entity: MiningLaserMultiblock.MiningLaserMultiblockEntity,
-) : WeaponSubsystem<StarshipWeapons.StarshipWeaponBalancing<*>>(
+) : WeaponSubsystem<StarshipWeaponBalancing<*>>(
 	starship,
 	toVec3i(entity.getSignKey()),
-	starship.balancingManager.getSupplier()
+	starship.balancingManager.getWeaponSupplier()
 ), ManualWeaponSubsystem, DirectionalSubsystem, MultiblockEntitySubsystem {
 
 	val multiblock = entity.multiblock
