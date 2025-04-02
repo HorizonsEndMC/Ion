@@ -9,9 +9,9 @@ import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.miscellaneous.utils.AbstractCooldown
+import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
-import net.horizonsend.ion.server.miscellaneous.utils.getValue
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -40,7 +40,7 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		sender.sendRichMessage(
 			"<aqua>${ship.getDisplayNameMiniMessage()} <white>(${
-				ship.data.starshipType.getValue().displayName}) ($size blocks)\n" +
+				ship.data.starshipType.actualType.displayName}) ($size blocks)\n" +
 				"   <gray>Mass:<white> ${"%.2f".format(ship.mass)}\n" +
 				"   <gray>World:<white> ${ship.world.name}\n" +
 				"   <gray>Pilot:<white> ${ship.controller.name}"

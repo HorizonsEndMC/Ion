@@ -8,6 +8,8 @@ import net.horizonsend.ion.server.configuration.util.Pos
 import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
 import net.horizonsend.ion.server.features.world.WorldSettings
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
+import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.getValue
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Bukkit
