@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.MiniPhaserBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
@@ -20,7 +20,7 @@ class MiniPhaserWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace
-) : CannonWeaponSubsystem<StarshipWeapons.MiniPhaserBalancing>(starship, pos, face, starship.balancingManager.getSupplier()), AmmoConsumingWeaponSubsystem, PermissionWeaponSubsystem {
+) : CannonWeaponSubsystem<MiniPhaserBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()), AmmoConsumingWeaponSubsystem, PermissionWeaponSubsystem {
 	override val permission: String = "ioncore.eventweapon"
 	override val length: Int = 6
 

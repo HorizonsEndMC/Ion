@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 import com.mojang.math.Transformation
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.ArsenalRocketBalancing
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.getAddEntityPacket
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -43,7 +43,7 @@ class ArsenalRocketProjectile(
 	shooter: Damager,
 	var face: BlockFace, //Up = true, down = false
 	damageType: DamageType
-) : SimpleProjectile<StarshipWeapons.ArsenalRocketBalancing.ArsenalRocketProjectileBalancing>(source, name, loc, direction, shooter, damageType), DisplayEntityProjectile {
+) : SimpleProjectile<ArsenalRocketBalancing.ArsenalRocketProjectileBalancing>(source, name, loc, direction, shooter, damageType), DisplayEntityProjectile {
 	override var displayEntities: MutableMap<Player, ItemDisplay?> = mutableMapOf()
 	override val originLocation: Location = loc
 	private var age: Int = 0 //Ticks

@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.CycleTurretBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTurretWeaponBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -16,7 +18,7 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
-sealed class CycleTurretMultiblock : TurretMultiblock<StarshipWeapons.CycleTurretBalancing.CycleTurretProjectileBalancing>() {
+sealed class CycleTurretMultiblock : TurretMultiblock<CycleTurretBalancing.CycleTurretProjectileBalancing>() {
 
     val slowedStarships = mutableMapOf<ActiveControlledStarship, Long>()
 
@@ -29,7 +31,7 @@ sealed class CycleTurretMultiblock : TurretMultiblock<StarshipWeapons.CycleTurre
 
     protected abstract fun getYFactor(): Int
 
-    override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.cycleTurret
+    override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<CycleTurretBalancing.CycleTurretProjectileBalancing> = starship.balancingManager.getWeapon()
 
     override fun buildFirePointOffsets(): List<Vec3i> = listOf(
         Vec3i(-2, getYFactor() * 4, +2),
@@ -146,7 +148,7 @@ sealed class CycleTurretMultiblock : TurretMultiblock<StarshipWeapons.CycleTurre
 		dir: Vector,
 		starship: ActiveStarship,
 		shooter: Damager,
-		subSystem: TurretWeaponSubsystem<out StarshipWeapons.StarshipTurretWeaponBalancing<StarshipWeapons.CycleTurretBalancing.CycleTurretProjectileBalancing>, StarshipWeapons.CycleTurretBalancing.CycleTurretProjectileBalancing>,
+		subSystem: TurretWeaponSubsystem<out StarshipTurretWeaponBalancing<CycleTurretBalancing.CycleTurretProjectileBalancing>, CycleTurretBalancing.CycleTurretProjectileBalancing>,
 		isAuto: Boolean
 	) {
         for ((index, point) in getAdjustedFirePoints(pos, face).withIndex()) {

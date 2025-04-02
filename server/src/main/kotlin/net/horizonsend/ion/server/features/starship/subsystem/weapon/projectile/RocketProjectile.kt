@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.RocketBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HorizontalRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
@@ -22,7 +22,7 @@ class RocketProjectile(
 	loc: Location,
 	face: BlockFace,
 	shooter: Damager
-) : BlockProjectile<StarshipWeapons.RocketBalancing.RocketProjectileBalancing>(source, name, loc, face.direction, shooter, HorizontalRocketStarshipWeaponMultiblock.damageType) {
+) : BlockProjectile<RocketBalancing.RocketProjectileBalancing>(source, name, loc, face.direction, shooter, HorizontalRocketStarshipWeaponMultiblock.damageType) {
 	companion object {
 		private fun getBlockData(
 			down: Boolean,

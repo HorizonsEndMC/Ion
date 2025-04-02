@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons.TorpedoBalancing
+import net.horizonsend.ion.server.configuration.starship.TorpedoBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
@@ -17,7 +17,7 @@ class TorpedoWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace,
-) : TargetTrackingCannonWeaponSubsystem<TorpedoBalancing>(starship, pos, face, starship.balancingManager.getSupplier()), HeavyWeaponSubsystem {
+) : TargetTrackingCannonWeaponSubsystem<TorpedoBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()), HeavyWeaponSubsystem {
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 	override val length = 3
 

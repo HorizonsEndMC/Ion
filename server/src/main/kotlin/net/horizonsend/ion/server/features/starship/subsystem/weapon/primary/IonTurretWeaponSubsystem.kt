@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons.IonTurretBalancing
+import net.horizonsend.ion.server.configuration.starship.IonTurretBalancing
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.IonTurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -18,7 +18,7 @@ class IonTurretWeaponSubsystem(
 	pos: Vec3i,
 	face: BlockFace,
 	override val multiblock: IonTurretMultiblock
-) : TurretWeaponSubsystem<IonTurretBalancing, IonTurretBalancing.IonTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getSupplier()), AmmoConsumingWeaponSubsystem {
+) : TurretWeaponSubsystem<IonTurretBalancing, IonTurretBalancing.IonTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()), AmmoConsumingWeaponSubsystem {
 
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		multiblock.shoot(starship.world, pos, face, dir, starship, shooter, this, false)

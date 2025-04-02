@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalancing
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.Projectiles
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
@@ -21,7 +21,7 @@ import org.bukkit.block.data.BlockData
 import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
-abstract class BlockProjectile<B : StarshipWeapons.StarshipProjectileBalancing>(
+abstract class BlockProjectile<B : StarshipProjectileBalancing>(
 	source: ProjectileSource,
 	name: Component,
 	loc: Location,

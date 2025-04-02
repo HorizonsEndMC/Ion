@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons.StarshipHeavyWeaponBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipHeavyWeaponBalancing
 
 interface HeavyWeaponSubsystem {
 	val balancing: StarshipHeavyWeaponBalancing<*>

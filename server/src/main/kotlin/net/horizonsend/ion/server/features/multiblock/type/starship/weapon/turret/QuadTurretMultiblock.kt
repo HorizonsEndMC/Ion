@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.configuration.StarshipWeapons.QuadTurretBalancing.QuadTurretProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.QuadTurretBalancing.QuadTurretProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTurretWeaponBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -30,7 +31,7 @@ sealed class QuadTurretMultiblock : TurretMultiblock<QuadTurretProjectileBalanci
 	override val displayName: Component get() = text("Quad Turret (${if (getSign() == 1) "Top" else "Bottom"})")
 	override val description: Component get() = text("Rotating weapon system effective against the largest targets. Manual fire only. Consumes ammo.")
 
-	override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.quadTurret
+	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<QuadTurretProjectileBalancing> = starship.balancingManager.getWeapon()
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
 		listOf(Vec3i(-2, getSign() * 4, +3), Vec3i(-1, getSign() * 4, +4), Vec3i(1, getSign() * 4, +4), Vec3i(2, getSign() * 4, +3))
@@ -199,7 +200,7 @@ sealed class QuadTurretMultiblock : TurretMultiblock<QuadTurretProjectileBalanci
 		dir: Vector,
 		starship: ActiveStarship,
 		shooter: Damager,
-		subSystem: TurretWeaponSubsystem<out StarshipWeapons.StarshipTurretWeaponBalancing<QuadTurretProjectileBalancing>, QuadTurretProjectileBalancing>,
+		subSystem: TurretWeaponSubsystem<out StarshipTurretWeaponBalancing<QuadTurretProjectileBalancing>, QuadTurretProjectileBalancing>,
 		isAuto: Boolean
 	) {
 		val speed = getProjectileSpeed(starship)

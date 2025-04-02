@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.type.restriction
 
 import kotlinx.serialization.Serializable
-import net.horizonsend.ion.server.configuration.StarshipBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.starship.type.StarshipType
 
@@ -9,7 +9,7 @@ sealed interface DetectionParmeterHolder {
 	fun getDetectionParameters(): DetectionParameters
 }
 
-class BalancingProvided(val typeKey: IonRegistryKey<StarshipType<*>, StarshipType<StarshipBalancing>>): DetectionParmeterHolder {
+class BalancingProvided(val typeKey: IonRegistryKey<StarshipType<*>, StarshipType<StarshipTypeBalancing>>): DetectionParmeterHolder {
 	override fun getDetectionParameters(): DetectionParameters {
 		return (typeKey.getValue().balancing as DetectionBalancing).parameters
 	}

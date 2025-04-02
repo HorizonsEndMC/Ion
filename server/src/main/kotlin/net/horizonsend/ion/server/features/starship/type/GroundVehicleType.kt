@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.type
 
-import net.horizonsend.ion.server.configuration.StarshipBalancing
+import net.horizonsend.ion.server.configuration.starship.GroundStarshipBalancing
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.starship.TypeCategory
@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.starship.type.restriction.SubsystemRe
 import net.horizonsend.ion.server.features.starship.type.restriction.WorldRestrictions
 import java.util.function.Supplier
 
-class GroundVehicleType<T : StarshipBalancing>(
+class GroundVehicleType<T : GroundStarshipBalancing>(
 	key: IonRegistryKey<StarshipType<*>, out StarshipType<T>>,
 	displayName: String,
 	icon: String = SidebarIcon.GENERIC_STARSHIP_ICON.text,

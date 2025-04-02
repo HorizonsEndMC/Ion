@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.StarshipCannonWeaponBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
@@ -19,7 +19,7 @@ import kotlin.math.sign
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-abstract class CannonWeaponSubsystem<T : StarshipWeapons.StarshipCannonWeaponBalancing<*>>(
+abstract class CannonWeaponSubsystem<T : StarshipCannonWeaponBalancing<*>>(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	override var face: BlockFace,

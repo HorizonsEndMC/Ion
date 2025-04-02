@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.starship.control.input
 
 import net.horizonsend.ion.common.extensions.userErrorAction
+import net.horizonsend.ion.server.core.registration.keys.StarshipTypeKeys
 import net.horizonsend.ion.server.features.starship.Starship
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
@@ -35,7 +35,7 @@ class ShiftFlightHandler(controller: PlayerController) : PlayerMovementInputHand
 	override fun tick() {
 		if (!controller.isSneakFlying()) return
 
-		if (starship.type == StarshipType.PLATFORM) {
+		if (starship.type.key == StarshipTypeKeys.PLATFORM) {
 			controller.userErrorAction("This ship type is not capable of moving.")
 			return
 		}

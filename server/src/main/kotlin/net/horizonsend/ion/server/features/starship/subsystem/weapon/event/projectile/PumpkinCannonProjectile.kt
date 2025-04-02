@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons.PumpkinCannonBalancing.PumpkinCannonProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.PumpkinCannonBalancing.PumpkinCannonProjectileBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.PumpkinCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.BlockProjectile

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.SonicMissileBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
@@ -21,7 +21,7 @@ class SonicMissileWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace
-) : CannonWeaponSubsystem<StarshipWeapons.SonicMissileBalancing>(starship, pos, face, starship.balancingManager.getSupplier()),
+) : CannonWeaponSubsystem<SonicMissileBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()),
 	HeavyWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem,
 	PermissionWeaponSubsystem {

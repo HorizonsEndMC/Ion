@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.StarshipWaveProjectileBalancing
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import kotlin.math.PI
 
-abstract class AOEWave<T: StarshipWeapons.StarshipWaveProjectileBalancing>(
+abstract class AOEWave<T: StarshipWaveProjectileBalancing>(
 	val source: ProjectileSource,
 	shooter: Damager,
 	val firePos: Location,

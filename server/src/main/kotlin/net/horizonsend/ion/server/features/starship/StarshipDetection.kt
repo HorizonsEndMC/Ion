@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
@@ -15,7 +16,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
-import net.horizonsend.ion.server.miscellaneous.utils.getValue
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -63,7 +63,7 @@ object StarshipDetection : IonServerComponent() {
 	//endregion
 
 	fun detectNewState(data: StarshipData, detector: Audience? = null, loadChunks: Boolean = false): StarshipState =
-		detectNewState(data.bukkitWorld(), Vec3i(data.blockKey), data.starshipType.getValue(), detector, loadChunks)
+		detectNewState(data.bukkitWorld(), Vec3i(data.blockKey), data.starshipType.actualType.getValue(), detector, loadChunks)
 
 	fun detectNewState(world: World, computerLocation: Vec3i, type: StarshipType, detector: Audience? = null, loadChunks: Boolean = false): StarshipState {
 		val forbiddenBlocks = world.ion.detectionForbiddenBlocks

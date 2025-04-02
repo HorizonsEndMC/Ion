@@ -51,7 +51,7 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.balancing.StarshipTypeBalancing
+import net.horizonsend.ion.server.features.starship.subsystem.balancing.DefaultStarshipTypeWeaponBalancing
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
@@ -65,11 +65,13 @@ import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterS
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.CustomTurretSubsystem
+import net.horizonsend.ion.server.features.starship.type.StarshipType
 import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
@@ -124,10 +126,9 @@ class Starship(
 	// Data Aliases
 	val dataId: Oid<out StarshipData> = data._id
 
-	val type: StarshipType = data.starshipType.getValue()
-	val balancingManager = StarshipTypeBalancing(data.starshipType.getValue())
-
-	val balancing = type.balancingSupplier.get()
+	val type: StarshipType<*> = data.starshipType.actualType.getValue()
+	val balancingManager = DefaultStarshipTypeWeaponBalancing(data.starshipType.getValue())
+	val balancing = type.balancing
 
 	val interdictionRange: Int = balancing.interdictionRange
 	val charIdentifier = randomString(5L) // Created once
@@ -650,7 +651,9 @@ class Starship(
 	fun getDisplayNamePlain(): String = getDisplayName().plainText()
 	//endregion
 
-	fun isOversized() = this.initialBlockCount > this.type.maxSize && (this.initialBlockCount <= (this.type.maxSize * StarshipDetection.OVERSIZE_MODIFIER).toInt())
+	fun isOversized() =
+		this.initialBlockCount > this.type.detectionParameters.getDetectionParameters().maxSize
+		&& (this.initialBlockCount <= (this.type.detectionParameters.getDetectionParameters().maxSize * StarshipDetection.OVERSIZE_MODIFIER).toInt())
 
 	init {
 		IonWorld[world].starships.add(this)

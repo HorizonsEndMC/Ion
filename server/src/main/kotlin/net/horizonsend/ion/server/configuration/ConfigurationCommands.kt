@@ -9,6 +9,9 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.configuration.starship.StarshipBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipWeapons
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.command.CommandSender
 import kotlin.reflect.KMutableProperty
@@ -22,7 +25,7 @@ object ConfigurationCommands : SLCommand() {
 	private val starshipTypes = StarshipTypeBalancing::class.memberProperties
 	private val starshipBalancingOptions = StarshipBalancing::class.memberProperties
 	private val weaponTypes = StarshipWeapons::class.memberProperties
-	private val weaponFields = StarshipWeapons.StarshipWeapon::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
+	private val weaponFields = StarshipWeapon::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
 	private val starshipFields = StarshipBalancing::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
 
 	override fun onEnable(manager: PaperCommandManager) {
@@ -86,7 +89,7 @@ object ConfigurationCommands : SLCommand() {
 		}
 
 		val starshipBalancing = (starshipType.get(ConfigurationFiles.starshipBalancing()) as? StarshipBalancing)?.weapons ?: return sender.userError("$starshipType is not StarshipBalancing!")
-		val weapon = weaponType.get(starshipBalancing) as? StarshipWeapons.StarshipWeapon  ?: return sender.userError("$starshipType is not StarshipBalancing!")
+		val weapon = weaponType.get(starshipBalancing) as? StarshipWeapon  ?: return sender.userError("$starshipType is not StarshipBalancing!")
 
 		try { setField(field, weapon, value) } catch (e: Throwable) { return sender.userError("Error: ${e.message}") }
 
@@ -162,7 +165,7 @@ object ConfigurationCommands : SLCommand() {
 		}
 
 		val starshipBalancing = (starshipType.get(ConfigurationFiles.starshipBalancing()) as? StarshipBalancing)?.weapons ?: return sender.userError("$starshipType is not StarshipBalancing!")
-		val weapon = weaponType.get(starshipBalancing) as? StarshipWeapons.StarshipWeapon  ?: return sender.userError("$starshipType is not StarshipBalancing!")
+		val weapon = weaponType.get(starshipBalancing) as? StarshipWeapon  ?: return sender.userError("$starshipType is not StarshipBalancing!")
 
 		val fieldValue = field.getter.call(weapon)
 		sender.success("$starshipTypeName's $weaponName's $fieldName is $fieldValue")

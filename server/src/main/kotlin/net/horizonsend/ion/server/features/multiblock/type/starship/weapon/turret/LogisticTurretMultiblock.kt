@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.configuration.StarshipWeapons.LogisticsTurretBalancing.LogisticsTurretProjectileBalancing
-import net.horizonsend.ion.server.configuration.StarshipWeapons.StarshipTurretWeaponBalancing
+import net.horizonsend.ion.server.configuration.starship.LogisticsTurretBalancing.LogisticsTurretProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTurretWeaponBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -30,7 +30,7 @@ sealed class LogisticTurretMultiblock : TurretMultiblock<LogisticsTurretProjecti
 
     protected abstract fun getSign(): Int
 
-    override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.logisticTurret
+    override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<LogisticsTurretProjectileBalancing> = starship.balancingManager.getWeapon()
 
     override fun buildFirePointOffsets(): List<Vec3i> = listOf(Vec3i(0, +4 * getSign(), +2))
 

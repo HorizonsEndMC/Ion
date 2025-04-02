@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.server.configuration.StarshipWeapons.CthulhuBeamBalancing
+import net.horizonsend.ion.server.configuration.starship.CthulhuBeamBalancing
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -24,7 +24,7 @@ class CthulhuBeamSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	override var face: BlockFace,
-) : WeaponSubsystem<CthulhuBeamBalancing>(starship, pos, starship.balancingManager.getSupplier()), DirectionalSubsystem, AutoWeaponSubsystem, PermissionWeaponSubsystem, ManualWeaponSubsystem {
+) : WeaponSubsystem<CthulhuBeamBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier()), DirectionalSubsystem, AutoWeaponSubsystem, PermissionWeaponSubsystem, ManualWeaponSubsystem {
 	override val permission: String = "ioncore.eventweapon"
 
 	override val range: Double get() = balancing.range

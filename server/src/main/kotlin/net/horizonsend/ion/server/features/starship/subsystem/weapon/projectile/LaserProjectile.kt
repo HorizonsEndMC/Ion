@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.StarshipParticleProjectileBalancing
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.kyori.adventure.text.Component
@@ -10,7 +10,7 @@ import org.bukkit.Particle
 import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
-abstract class LaserProjectile<out B : StarshipWeapons.StarshipParticleProjectileBalancing>(
+abstract class LaserProjectile<out B : StarshipParticleProjectileBalancing>(
 	source: ProjectileSource,
 	name: Component,
 	loc: Location,

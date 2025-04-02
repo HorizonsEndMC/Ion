@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.configuration.StarshipWeapons.TriTurretBalancing.TriTurretProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
+import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriTurretProjectileBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.TriTurretWeaponSubsystem
@@ -22,7 +22,7 @@ sealed class TriTurretMultiblock : TurretMultiblock<TriTurretProjectileBalancing
 	override val displayName: Component get() = text("Tri Turret (${if (getYFactor() == 1) "Top" else "Bottom"})")
 	override val description: Component get() = text("Rotating weapon system effective against large targets. Can be auto-targeting.")
 
-	override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.triTurret
+	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<TriTurretProjectileBalancing> = starship.balancingManager.getWeapon()
 
 	override fun buildFirePointOffsets(): List<Vec3i> = listOf(
 		Vec3i(-2, getYFactor() * 4, +3),

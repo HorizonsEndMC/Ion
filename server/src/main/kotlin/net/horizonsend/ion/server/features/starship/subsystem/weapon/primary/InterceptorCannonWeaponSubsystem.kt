@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.command.admin.debug
-import net.horizonsend.ion.server.configuration.StarshipWeapons.InterceptorCannonBalancing
+import net.horizonsend.ion.server.configuration.starship.InterceptorCannonBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
@@ -17,7 +17,7 @@ class InterceptorCannonWeaponSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	face: BlockFace,
-) : CannonWeaponSubsystem<InterceptorCannonBalancing>(starship, pos, face, starship.balancingManager.getSupplier()) {
+) : CannonWeaponSubsystem<InterceptorCannonBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()) {
 	override val length: Int = 2
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {

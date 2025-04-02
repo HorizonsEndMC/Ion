@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.proj
 
 import fr.skytasul.guardianbeam.Laser
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.StarshipWeapons.CthulhuBeamBalancing.CthulhuBeamProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.CthulhuBeamBalancing.CthulhuBeamProjectileBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CthulhuBeamStarshipWeaponMultiblockTop
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HitscanProjectile

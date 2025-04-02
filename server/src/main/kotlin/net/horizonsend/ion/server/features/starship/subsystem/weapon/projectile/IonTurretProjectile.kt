@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
-import net.horizonsend.ion.server.configuration.StarshipWeapons.IonTurretBalancing.IonTurretProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.IonTurretBalancing.IonTurretProjectileBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager

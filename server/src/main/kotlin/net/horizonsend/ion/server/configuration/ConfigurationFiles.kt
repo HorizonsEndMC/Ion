@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.configuration
 
 import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.TransportConfiguration
 import net.horizonsend.ion.server.miscellaneous.LegacyConfig
@@ -19,7 +20,7 @@ object ConfigurationFiles {
 
 	val serverConfiguration = defineConfigurationFile<ServerConfiguration>(configurationFolder, "server")
 
-	val starshipBalancing = defineConfigurationFile<StarshipTypeBalancing>(configurationFolder, "starshipbalancing")
+	val starshipBalancing = defineConfigurationFile<NewStarshipBalancing>(configurationFolder, "starshipbalancing")
 
 	val pvpBalancing = defineConfigurationFile<PVPBalancingConfiguration>(configurationFolder, "pvpBalancing")
 

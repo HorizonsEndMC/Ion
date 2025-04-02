@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.type
 
-import net.horizonsend.ion.server.configuration.StarshipBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.Keyed
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
@@ -14,10 +14,9 @@ import net.horizonsend.ion.server.features.starship.type.restriction.WorldRestri
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
-import org.bukkit.entity.Player
 import java.util.function.Supplier
 
-open class StarshipType<T: StarshipBalancing>(
+open class StarshipType<T: StarshipTypeBalancing>(
 	override val key: IonRegistryKey<StarshipType<*>, out StarshipType<T>>,
 
 	// Display settings
@@ -38,10 +37,6 @@ open class StarshipType<T: StarshipBalancing>(
 	private val balancingProvider: Supplier<T>
 ) : Keyed<StarshipType<*>> {
 	val balancing get() = balancingProvider.get()
-
-	open fun canPilot(player: Player): Boolean {
-		return pilotRestrictions.canPilot(player)
-	}
 
 	open fun canFinishPiloting(starship: Starship): Boolean {
 		return subsystemRestrictions.check(starship)
