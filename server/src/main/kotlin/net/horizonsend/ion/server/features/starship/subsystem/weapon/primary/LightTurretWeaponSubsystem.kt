@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons.LightTurretBalancing
-import net.horizonsend.ion.server.configuration.StarshipWeapons.LightTurretBalancing.LightTurretProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.LightTurretBalancing
+import net.horizonsend.ion.server.configuration.starship.LightTurretBalancing.LightTurretProjectileBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.LightTurretMultiblock
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting.AutoTurretTarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -18,7 +18,7 @@ class LightTurretWeaponSubsystem(
 	pos: Vec3i,
 	face: BlockFace,
 	override val multiblock: LightTurretMultiblock
-) : TurretWeaponSubsystem<LightTurretBalancing, LightTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getSupplier()), AutoWeaponSubsystem {
+) : TurretWeaponSubsystem<LightTurretBalancing, LightTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()), AutoWeaponSubsystem {
 	override val range: Double get() = balancing.range
 
 	override fun autoFire(target: AutoTurretTarget<*>, dir: Vector) {

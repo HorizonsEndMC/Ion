@@ -3,9 +3,8 @@ package net.horizonsend.ion.server.features.multiblock.type.defense.active.proje
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.configuration.StandardStarshipSounds
-import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.configuration.StarshipWeapons.StarshipParticleProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StandardStarshipSounds
+import net.horizonsend.ion.server.configuration.starship.StarshipParticleProjectileBalancing
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.damager.damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ParticleProjectile
@@ -41,7 +40,7 @@ class AntiAirCannonProjectile(
 		override val explosionPower: Float = TODO("Not yet implemented")
 		override val starshipShieldDamageMultiplier: Double = TODO("Not yet implemented")
 		override val areaShieldDamageMultiplier: Double = TODO("Not yet implemented")
-		override val entityDamage: StarshipWeapons.ProjectileBalancing.EntityDamage = TODO("Not yet implemented")
+		override val entityDamage: ProjectileBalancing.EntityDamage = TODO("Not yet implemented")
 		override val fireSound: StandardStarshipSounds.SoundInfo = TODO("Not yet implemented")
 	}
 

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons.SonicMissileBalancing.SonicMissileProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.SonicMissileBalancing.SonicMissileProjectileBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.SonicMissileWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ParticleProjectile
