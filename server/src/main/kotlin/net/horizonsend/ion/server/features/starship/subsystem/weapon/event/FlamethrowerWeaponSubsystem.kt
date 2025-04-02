@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.FlamethrowerCannonBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
@@ -17,7 +17,7 @@ class FlamethrowerWeaponSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	face: BlockFace,
-) : CannonWeaponSubsystem<StarshipWeapons.FlamethrowerCannonBalancing>(starship, pos, face, starship.balancingManager.getSupplier()), PermissionWeaponSubsystem {
+) : CannonWeaponSubsystem<FlamethrowerCannonBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()), PermissionWeaponSubsystem {
 	override val permission: String = "ioncore.eventweapon"
 	override val length: Int = 8
 

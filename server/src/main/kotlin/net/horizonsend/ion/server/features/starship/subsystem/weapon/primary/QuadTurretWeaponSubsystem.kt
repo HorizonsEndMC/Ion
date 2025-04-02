@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons.QuadTurretBalancing
+import net.horizonsend.ion.server.configuration.starship.QuadTurretBalancing
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.QuadTurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -17,7 +17,7 @@ class QuadTurretWeaponSubsystem(
 	pos: Vec3i,
 	face: BlockFace,
 	override val multiblock: QuadTurretMultiblock
-) : TurretWeaponSubsystem<QuadTurretBalancing, QuadTurretBalancing.QuadTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getSupplier()), PermissionWeaponSubsystem, AmmoConsumingWeaponSubsystem {
+) : TurretWeaponSubsystem<QuadTurretBalancing, QuadTurretBalancing.QuadTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()), PermissionWeaponSubsystem, AmmoConsumingWeaponSubsystem {
 	override val permission: String = "ion.multiblock.quadturret"
 
 	override fun getName(): Component {

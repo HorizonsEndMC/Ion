@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.RocketBalancing
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.RocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -26,7 +26,7 @@ class RocketWeaponSubsystem(
     pos: Vec3i,
     override var face: BlockFace,
     private val multiblock: RocketStarshipWeaponMultiblock
-) : WeaponSubsystem<StarshipWeapons.RocketBalancing>(starship, pos, starship.balancingManager.get()),
+) : WeaponSubsystem<RocketBalancing>(starship, pos, starship.balancingManager.getWeapon()),
 	HeavyWeaponSubsystem,
 	DirectionalSubsystem,
 	ManualWeaponSubsystem,

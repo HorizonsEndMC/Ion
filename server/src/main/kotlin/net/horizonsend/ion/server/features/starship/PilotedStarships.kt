@@ -41,6 +41,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSu
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
+import net.horizonsend.ion.server.features.starship.type.restriction.PilotRestrictions
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -293,8 +294,10 @@ object PilotedStarships : IonServerComponent() {
 			return false
 		}
 
-		if (!data.starshipType.getValue().canPilot(player)) {
-			player.userErrorActionMessage("You are not high enough level to pilot this!")
+		val pilotResult = data.starshipType.getValue().pilotRestrictions.canPilot(player)
+
+		if (!pilotResult.success) {
+			player.userErrorActionMessage((pilotResult as PilotRestrictions.PilotResult.Failure).reason)
 			return false
 		}
 
@@ -404,7 +407,7 @@ object PilotedStarships : IonServerComponent() {
 				return@activateAsync
 			}
 
-			if (!activePlayerStarship.type.canPilotIn(world.ion)) {
+			if (!activePlayerStarship.type.canPilotIn(activePlayerStarship, world.ion)) {
 				player.userError("${activePlayerStarship.type} can't be piloted in this world!")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
@@ -453,7 +456,7 @@ object PilotedStarships : IonServerComponent() {
 				)
 			}
 
-			val pilotSound = data.starshipType.actualType.balancingSupplier.get().sounds.pilot.sound
+			val pilotSound = data.starshipType.actualType.getValue().balancing.standardSounds.pilot.sound
 			if (activePlayerStarship.rewardsProviders.filterIsInstance<StandardRewardsProvider>().isEmpty()) {
 				activePlayerStarship.rewardsProviders.add(StandardRewardsProvider(activePlayerStarship))
 			}
@@ -542,6 +545,6 @@ object PilotedStarships : IonServerComponent() {
 		}
 	}
 
-	fun getDisplayName(data: StarshipData): Component = data.name?.let { MiniMessage.miniMessage().deserialize(it) } ?: data.starshipType.actualType.displayNameComponent
+	fun getDisplayName(data: StarshipData): Component = data.name?.let { MiniMessage.miniMessage().deserialize(it) } ?: data.starshipType.actualType.getValue().displayNameComponent
 
 }
