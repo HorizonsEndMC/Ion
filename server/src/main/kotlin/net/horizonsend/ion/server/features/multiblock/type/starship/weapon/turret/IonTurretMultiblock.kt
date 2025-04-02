@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.configuration.StarshipWeapons.IonTurretBalancing.IonTurretProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.IonTurretBalancing.IonTurretProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTurretWeaponBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -29,7 +30,7 @@ sealed class IonTurretMultiblock : TurretMultiblock<IonTurretProjectileBalancing
 	override val displayName: Component get() = text("Ion Turret (${if (getSign() == 1) "Top" else "Bottom"})")
 	override val description: Component get() = text("Rotating weapon system that slows down starships that are cruising and in Direct Control mode. Manual fire only. Consumes ammo.")
 
-	override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.ionTurret
+	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<IonTurretProjectileBalancing> = starship.balancingManager.getWeapon()
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
 		listOf(Vec3i(-1, getSign() * 4, +3), Vec3i(1, getSign() * 4, +3))
@@ -150,7 +151,7 @@ sealed class IonTurretMultiblock : TurretMultiblock<IonTurretProjectileBalancing
 		dir: Vector,
 		starship: ActiveStarship,
 		shooter: Damager,
-		subSystem: TurretWeaponSubsystem<out StarshipWeapons.StarshipTurretWeaponBalancing<IonTurretProjectileBalancing>, IonTurretProjectileBalancing>,
+		subSystem: TurretWeaponSubsystem<out StarshipTurretWeaponBalancing<IonTurretProjectileBalancing>, IonTurretProjectileBalancing>,
 		isAuto: Boolean
 	) {
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
