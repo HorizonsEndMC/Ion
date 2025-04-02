@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.world.generation.generators.configuration
 
 import kotlinx.serialization.Serializable
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.world.level.ChunkPos
 import kotlin.random.Random
 

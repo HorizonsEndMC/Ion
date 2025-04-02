@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.world.generation.feature.meta
 
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.util.RandomSource
 

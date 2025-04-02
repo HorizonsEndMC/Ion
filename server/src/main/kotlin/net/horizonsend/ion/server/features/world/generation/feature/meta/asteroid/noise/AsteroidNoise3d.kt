@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.world.generation.feature.meta.astero
 import com.github.auburn.FastNoiseLite
 import com.github.auburn.FastNoiseLite.Vector3
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import kotlin.random.Random
 
 class AsteroidNoise3d(

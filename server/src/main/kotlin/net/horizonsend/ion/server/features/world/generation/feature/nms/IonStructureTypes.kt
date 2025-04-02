@@ -3,11 +3,11 @@ package net.horizonsend.ion.server.features.world.generation.feature.nms
 import com.mojang.serialization.Codec
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.world.generation.feature.FeatureRegistry
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Holder
 import net.minecraft.core.MappedRegistry
