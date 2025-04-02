@@ -236,7 +236,6 @@ class IonWorld private constructor(
 
 		private fun saveAll(world: IonWorld) {
 			world.transportManager.save()
-			world.terrainGenerator?.save()
 
 			for ((_, chunk) in world.chunks) {
 				chunk.save()
