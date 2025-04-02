@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.configuration.StarshipWeapons.PhaserBalancing
+import net.horizonsend.ion.server.configuration.starship.PhaserBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
@@ -22,7 +22,7 @@ class AIPhaserWeaponSystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	face: BlockFace
-) : CannonWeaponSubsystem<PhaserBalancing>(starship, pos, face, starship.balancingManager.getSupplier(PhaserWeaponSubsystem::class)),
+) : CannonWeaponSubsystem<PhaserBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(PhaserWeaponSubsystem::class)),
 	HeavyWeaponSubsystem,
 	PermissionWeaponSubsystem {
 	override val permission: String = "ion.weapon.ai"

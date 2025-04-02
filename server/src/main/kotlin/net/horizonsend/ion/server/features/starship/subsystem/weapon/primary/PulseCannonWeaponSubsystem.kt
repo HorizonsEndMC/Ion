@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.PulseCannonBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
@@ -21,7 +21,7 @@ class PulseCannonWeaponSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	face: BlockFace,
-) : CannonWeaponSubsystem<StarshipWeapons.PulseCannonBalancing>(starship, pos, face, starship.balancingManager.getSupplier()) {
+) : CannonWeaponSubsystem<PulseCannonBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()) {
 	override val length: Int = 2
 
 	companion object {

@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.debug
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalancing
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.player.CombatTimer
@@ -35,7 +35,7 @@ import org.bukkit.util.Vector
 import java.util.Locale
 import kotlin.math.roundToInt
 
-abstract class SimpleProjectile<out B : StarshipWeapons.StarshipProjectileBalancing>(
+abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 	val source: ProjectileSource,
 	val name: Component,
 

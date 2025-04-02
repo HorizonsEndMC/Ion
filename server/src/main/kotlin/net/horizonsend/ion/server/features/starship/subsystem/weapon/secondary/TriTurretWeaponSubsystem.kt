@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons.TriTurretBalancing
+import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TriTurretMultiblock
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting.AutoTurretTarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -17,7 +17,7 @@ class TriTurretWeaponSubsystem(
 	pos: Vec3i,
 	face: BlockFace,
 	override val multiblock: TriTurretMultiblock
-) : TurretWeaponSubsystem<TriTurretBalancing, TriTurretBalancing.TriTurretProjectileBalancing>(ship, pos, face, ship.balancingManager.getSupplier()), HeavyWeaponSubsystem, AutoWeaponSubsystem {
+) : TurretWeaponSubsystem<TriTurretBalancing, TriTurretBalancing.TriTurretProjectileBalancing>(ship, pos, face, ship.balancingManager.getWeaponSupplier()), HeavyWeaponSubsystem, AutoWeaponSubsystem {
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 
 	override val range: Double get() = multiblock.getRange(starship)

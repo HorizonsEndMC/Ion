@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.StarshipParticleProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTurretWeaponBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -14,7 +15,7 @@ import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
 import java.util.function.Supplier
 
-abstract class TurretWeaponSubsystem<T : StarshipWeapons.StarshipTurretWeaponBalancing<Z>, Z : StarshipWeapons.StarshipParticleProjectileBalancing>(
+abstract class TurretWeaponSubsystem<T : StarshipTurretWeaponBalancing<Z>, Z : StarshipParticleProjectileBalancing>(
     ship: ActiveStarship,
     pos: Vec3i,
     override var face: BlockFace,

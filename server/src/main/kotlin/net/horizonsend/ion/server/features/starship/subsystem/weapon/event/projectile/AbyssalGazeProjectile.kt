@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons.AbyssalGazeBalancing.AbyssalGazeProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.AbyssalGazeBalancing.AbyssalGazeProjectileBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.GazeStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.starship.damager.Damager

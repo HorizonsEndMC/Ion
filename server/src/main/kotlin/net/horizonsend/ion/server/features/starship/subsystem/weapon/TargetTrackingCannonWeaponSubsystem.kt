@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.StarshipTrackingWeaponBalancing
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import java.util.function.Supplier
 
-abstract class TargetTrackingCannonWeaponSubsystem<T : StarshipWeapons.StarshipTrackingWeaponBalancing<*>>(
+abstract class TargetTrackingCannonWeaponSubsystem<T : StarshipTrackingWeaponBalancing<*>>(
     starship: Starship,
     pos: Vec3i,
     face: BlockFace,
