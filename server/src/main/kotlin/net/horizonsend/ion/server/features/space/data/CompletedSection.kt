@@ -4,8 +4,6 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.PALETTE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.Y
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.component1
-import net.horizonsend.ion.server.miscellaneous.utils.component2
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.chunk.LevelChunk

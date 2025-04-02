@@ -1,13 +1,10 @@
 package net.horizonsend.ion.server.configuration
 
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 import net.horizonsend.ion.common.utils.NavigationObject
-import net.horizonsend.ion.server.configuration.ServerConfiguration.AsteroidConfig.Palette
 import net.horizonsend.ion.server.configuration.util.Pos
 import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
 import net.horizonsend.ion.server.features.world.WorldSettings
-import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import java.time.DayOfWeek
 
 @Serializable

@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.world.generation.feature.start
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
 import net.horizonsend.ion.server.features.world.generation.feature.nms.IonStructureTypes
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.levelgen.structure.StructureStart
 import net.minecraft.world.level.levelgen.structure.pieces.PiecesContainer
