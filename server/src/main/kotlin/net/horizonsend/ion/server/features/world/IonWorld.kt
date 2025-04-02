@@ -211,9 +211,6 @@ class IonWorld private constructor(
 		@EventHandler
 		fun onWorldSave(event: WorldSaveEvent) {
 			saveAllChunks(event.world.ion)
-
-			val world = event.world.ion
-			world.terrainGenerator?.save()
 		}
 
 		override fun onDisable() {
