@@ -32,9 +32,9 @@ import net.horizonsend.ion.server.gui.invui.misc.BlueprintMenu
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.createData
-import net.horizonsend.ion.server.miscellaneous.utils.getValue
 import net.horizonsend.ion.server.miscellaneous.utils.loadClipboard
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
@@ -210,7 +210,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			checkObstruction(sender.location, schematic, Vec3i(pilotLoc))
 
 			loadSchematic(sender.location, schematic, Vec3i(pilotLoc)) { origin ->
-				tryPilot(sender, origin, blueprint.type.getValue(), blueprint.name)
+				tryPilot(sender, origin, blueprint.type.actualType, blueprint.name)
 			}
 		}
 	}
@@ -228,7 +228,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			checkObstruction(sender.location, schematic, Vec3i(pilotLoc))
 
 			loadSchematic(sender.location, schematic, Vec3i(pilotLoc)) { origin ->
-				tryPilot(sender, origin, blueprint.type.getValue(), blueprint.name) { starship ->
+				tryPilot(sender, origin, blueprint.type.actualType, blueprint.name) { starship ->
 
 					starship.iterateBlocks { x, y, z ->
 						val block = starship.world.getBlockAt(x, y, z)
@@ -271,11 +271,11 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	fun tryPilot(
-        sender: Player,
-        origin: Vec3i,
-        type: StarshipType<*>,
-        name: String,
-        callback: (Starship) -> Unit = {}
+		sender: Player,
+		origin: Vec3i,
+		type: StarshipType,
+		name: String,
+		callback: (Starship) -> Unit = {}
 	) {
 		val block = sender.world.getBlockAtKey(origin.toBlockKey())
 

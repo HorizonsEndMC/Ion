@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.starship.control.movement
 
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.core.registration.keys.StarshipTypeKeys.BATTLECRUISER
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -83,7 +83,7 @@ object StarshipControl : IonServerComponent() {
 			?: return false
 
 		// Don't allow battlecruisers to enter planets
-		if (starship.type == BATTLECRUISER && !starship.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) ) return false
+		if (starship.type == StarshipType.BATTLECRUISER && !starship.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) ) return false
 
 		// Don't allow players that have recently entered planets to re-enter again
 		val controller = starship.controller

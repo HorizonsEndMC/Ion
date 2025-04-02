@@ -63,7 +63,7 @@ object StarshipDetection : IonServerComponent() {
 	//endregion
 
 	fun detectNewState(data: StarshipData, detector: Audience? = null, loadChunks: Boolean = false): StarshipState =
-		detectNewState(data.bukkitWorld(), Vec3i(data.blockKey), data.starshipType.actualType.getValue(), detector, loadChunks)
+		detectNewState(data.bukkitWorld(), Vec3i(data.blockKey), data.starshipType.actualType, detector, loadChunks)
 
 	fun detectNewState(world: World, computerLocation: Vec3i, type: StarshipType, detector: Audience? = null, loadChunks: Boolean = false): StarshipState {
 		val forbiddenBlocks = world.ion.detectionForbiddenBlocks

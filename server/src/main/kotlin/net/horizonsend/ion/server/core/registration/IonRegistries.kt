@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.core.registration.registries.FluidTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.ItemModRegistry
 import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
-import net.horizonsend.ion.server.features.starship.type.StarshipTypeRegistry
 
 object IonRegistries : IonComponent() {
 	private val allRegistries = ObjectOpenHashSet<Registry<*>>()
@@ -28,7 +27,6 @@ object IonRegistries : IonComponent() {
 	val CUSTOM_ITEMS = register(CustomItemRegistry())
 	val CUSTOM_BLOCKS = register(CustomBlockRegistry())
 	val ITEM_MODIFICATIONS = register(ItemModRegistry())
-	val STARSHIP_TYPE = register(StarshipTypeRegistry())
 	val MULTIBLOCK_RECIPE = register(MultiblockRecipeRegistry())
 
 	fun <T : Registry<*>> register(registry: T): T {

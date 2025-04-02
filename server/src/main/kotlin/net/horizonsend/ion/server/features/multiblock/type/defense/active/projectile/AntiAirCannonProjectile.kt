@@ -3,12 +3,10 @@ package net.horizonsend.ion.server.features.multiblock.type.defense.active.proje
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.server.configuration.starship.StandardStarshipSounds
 import net.horizonsend.ion.server.configuration.starship.StarshipParticleProjectileBalancing
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.damager.damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ParticleProjectile
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.Projectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
@@ -17,7 +15,6 @@ import org.bukkit.Particle
 import org.bukkit.damage.DamageType
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
-import kotlin.reflect.KClass
 
 class AntiAirCannonProjectile(
 	source: ProjectileSource,
@@ -32,18 +29,6 @@ class AntiAirCannonProjectile(
 	playerShooter.damager(),
 	DamageType.GENERIC
 ) {
-	override val balancing = object : StarshipParticleProjectileBalancing {
-		override val particleThickness: Double = TODO("Not yet implemented")
-		override val clazz: KClass<out Projectile> = TODO("Not yet implemented")
-		override val range: Double = TODO("Not yet implemented")
-		override val speed: Double = TODO("Not yet implemented")
-		override val explosionPower: Float = TODO("Not yet implemented")
-		override val starshipShieldDamageMultiplier: Double = TODO("Not yet implemented")
-		override val areaShieldDamageMultiplier: Double = TODO("Not yet implemented")
-		override val entityDamage: ProjectileBalancing.EntityDamage = TODO("Not yet implemented")
-		override val fireSound: StandardStarshipSounds.SoundInfo = TODO("Not yet implemented")
-	}
-
 	private fun getColor(shooter: Player): Color {
 		val nation: Oid<Nation>? = PlayerCache[shooter].nationOid
 
