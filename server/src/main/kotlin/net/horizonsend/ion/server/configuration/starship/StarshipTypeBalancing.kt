@@ -314,6 +314,19 @@ data class NewStarshipBalancing(
 					maxPerShot = 5
 				)
 			)
+		),
+		val platform: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 0,
+			maxSneakFlyAccel = 0,
+			interdictionRange = 0,
+			hyperspaceRangeMultiplier = 0.0
+		),
+		val unidentified: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 10,
+			maxSneakFlyAccel = 3,
+			interdictionRange = 2000,
+			hyperspaceRangeMultiplier = 10.0,
+			shieldPowerMultiplier = 2.0
 		)
 	)
 }
