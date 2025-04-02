@@ -21,6 +21,8 @@ import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.serialize
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.starship.PulseCannonBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_BATTLECRUISER
@@ -504,11 +506,13 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 
 	// END_MINING_GUILD
 	// START_TSAII
-
 	val SWARMER = registerTemplate(StarshipTemplate(
 		schematicName = "Swarmer",
 		type = AI_STARFIGHTER,
 		miniMessageName = "<$TSAII_DARK_ORANGE>Swarmer",
+		balancingOverrides = listOf(
+			PulseCannonBalancing(fireRestrictions = StarshipWeaponBalancing.FireRestrictions(canFire = true))
+		)
 	))
 
 	val SCYTHE = registerTemplate(StarshipTemplate(
