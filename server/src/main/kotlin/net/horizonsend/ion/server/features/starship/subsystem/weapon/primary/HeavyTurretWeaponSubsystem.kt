@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons.HeavyTurretBalancing
+import net.horizonsend.ion.server.configuration.starship.HeavyTurretBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.HeavyTurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -13,7 +13,7 @@ class HeavyTurretWeaponSubsystem(
 	pos: Vec3i,
 	face: BlockFace,
 	override val multiblock: HeavyTurretMultiblock
-) : TurretWeaponSubsystem<HeavyTurretBalancing, HeavyTurretBalancing.HeavyTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getSupplier()) {
+) : TurretWeaponSubsystem<HeavyTurretBalancing, HeavyTurretBalancing.HeavyTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()) {
 
 	override fun getName(): Component {
 		return Component.text("Heavy Turret")
