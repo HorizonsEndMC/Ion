@@ -5,11 +5,12 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ServerConfiguration.AsteroidConfig.Palette
 import net.horizonsend.ion.server.configuration.util.Pos
-import net.horizonsend.ion.server.features.starship.type.StarshipType
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.world.WorldSettings
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
-import net.horizonsend.ion.server.miscellaneous.utils.getValue
+import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.minecraft.world.level.block.state.BlockState
@@ -196,7 +197,7 @@ data class ServerConfiguration(
 		private val shipClass: StarshipTypeDB,
 		val lore: List<String>
 	) {
-		val shipType: StarshipType<*> get() = shipClass.getValue()
+		val shipType: StarshipType get() = shipClass.actualType
 
 		@Transient
 		val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$schematicName.schem")
