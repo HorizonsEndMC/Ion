@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.keys.StarshipTypeKeys
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -19,7 +20,8 @@ import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.AutoQueuedShot
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.fireQueuedShots
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -72,12 +74,12 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	private fun fireAutoWeapons() {
 		for (ship in ActiveStarships.all()) {
 			val queuedShots = queueAutoShots(ship)
-			StarshipWeapons.fireQueuedShots(queuedShots, ship)
+			fireQueuedShots(queuedShots, ship)
 		}
 	}
 
-	private fun queueAutoShots(ship: ActiveStarship): LinkedList<StarshipWeapons.AutoQueuedShot> {
-		val queuedShots = LinkedList<StarshipWeapons.AutoQueuedShot>()
+	private fun queueAutoShots(ship: ActiveStarship): LinkedList<AutoQueuedShot> {
+		val queuedShots = LinkedList<AutoQueuedShot>()
 
 		for ((node, target) in ship.autoTurretTargets) {
 			val targetLocation = target.location(ship) ?: continue
@@ -96,11 +98,11 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 				val dir = weapon.getAdjustedDir(direct, targetVec)
 
-				if (weapon is TurretWeaponSubsystem && !weapon.ensureOriented(dir)) continue
+				if (weapon is TurretWeaponSubsystem<*, *> && !weapon.ensureOriented(dir)) continue
 				if (!weapon.isCooledDown()) continue
 				if (!weapon.canFire(dir, targetVec)) continue
 
-				queuedShots.add(StarshipWeapons.AutoQueuedShot(weapon, target, dir))
+				queuedShots.add(AutoQueuedShot(weapon, target, dir))
 			}
 		}
 
@@ -146,7 +148,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		//TODO replace this system with something better
 
 		// Destroy BCs without intact reactors
-		ActiveStarships.all().filter { it.type == StarshipType.BATTLECRUISER }.forEach { ship ->
+		ActiveStarships.all().filter { it.type.key == StarshipTypeKeys.BATTLECRUISER }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<BattlecruiserReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)
@@ -154,14 +156,14 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		}
 
 		// Destroy Cruisers without intact reactors
-		ActiveStarships.all().filter { it.type == StarshipType.CRUISER }.forEach { ship ->
+		ActiveStarships.all().filter { it.type.key == StarshipTypeKeys.CRUISER }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<CruiserReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)
 			}
 		}
 
-		ActiveStarships.all().filter { it.type == StarshipType.BARGE }.forEach { ship ->
+		ActiveStarships.all().filter { it.type.key == StarshipTypeKeys.BARGE }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<BargeReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)

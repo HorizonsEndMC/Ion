@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons.ArsenalRocketBalancing
+import net.horizonsend.ion.server.configuration.starship.ArsenalRocketBalancing
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.ArsenalRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopArsenalStarshipWeaponMultiblock
@@ -27,7 +27,7 @@ class ArsenalRocketStarshipWeaponSubsystem(
     override var face: BlockFace,
     private val multiblock: ArsenalRocketStarshipWeaponMultiblock,
     private val upOrDown: BlockFace
-) : WeaponSubsystem<ArsenalRocketBalancing>(starship, pos, starship.balancingManager.get()), HeavyWeaponSubsystem, ManualWeaponSubsystem, DirectionalSubsystem, AmmoConsumingWeaponSubsystem {
+) : WeaponSubsystem<ArsenalRocketBalancing>(starship, pos, starship.balancingManager.getWeapon()), HeavyWeaponSubsystem, ManualWeaponSubsystem, DirectionalSubsystem, AmmoConsumingWeaponSubsystem {
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
