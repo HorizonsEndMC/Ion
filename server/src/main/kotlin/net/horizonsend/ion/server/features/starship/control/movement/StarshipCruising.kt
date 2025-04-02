@@ -9,11 +9,11 @@ import net.horizonsend.ion.common.utils.text.colors.Colors
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.core.registration.keys.StarshipTypeKeys
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSettingsCommand
 import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
@@ -27,7 +27,6 @@ import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
-import net.horizonsend.ion.server.miscellaneous.utils.getValue
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
@@ -167,7 +166,7 @@ object StarshipCruising : IonServerComponent() {
 	}
 
 	fun startCruising(controller: Controller, starship: ActiveControlledStarship, dir: Vector) {
-		if (starship.type.key == StarshipTypeKeys.PLATFORM) {
+		if (starship.type == StarshipType.PLATFORM) {
 			controller.userErrorAction("This ship type is not capable of moving.")
 			return
 		}
@@ -246,7 +245,7 @@ object StarshipCruising : IonServerComponent() {
 						if (tick >= length) cancel()
 						if (length != 0) {
 							val startCruiseSound =
-								starship.data.starshipType.getValue().balancing.standardSounds.startCruise.sound
+								starship.data.starshipType.actualType.balancing.standardSounds.startCruise.sound
 							playSoundInRadius(passenger.location, 1.0, startCruiseSound)
 							tick += 1
 						} else cancel()
@@ -274,7 +273,7 @@ object StarshipCruising : IonServerComponent() {
 						if (tick >= length) cancel()
 						if (length != 0) {
 							val startCruiseSound =
-								starship.data.starshipType.actualType.getValue().balancing.standardSounds.startCruise.sound
+								starship.data.starshipType.actualType.balancing.standardSounds.startCruise.sound
 							playSoundInRadius(passenger.location, 1.0, startCruiseSound)
 							tick += 1
 						} else cancel()
@@ -285,7 +284,7 @@ object StarshipCruising : IonServerComponent() {
 	}
 
 	fun stopCruising(controller: Controller, starship: ActiveControlledStarship) {
-		if (starship.type.key == StarshipTypeKeys.PLATFORM) {
+		if (starship.type == StarshipType.PLATFORM) {
 			controller.userErrorAction("This ship type is not capable of moving.")
 			return
 		}
@@ -323,7 +322,7 @@ object StarshipCruising : IonServerComponent() {
 					if (tick >= length) cancel()
 					if (length != 0) {
 						val stopCruiseSound =
-							starship.data.starshipType.actualType.getValue().balancing.standardSounds.stopCruise.sound
+							starship.data.starshipType.actualType.balancing.standardSounds.stopCruise.sound
 						playSoundInRadius(passenger.location, 1.0, stopCruiseSound)
 						tick += 1
 					} else cancel()
