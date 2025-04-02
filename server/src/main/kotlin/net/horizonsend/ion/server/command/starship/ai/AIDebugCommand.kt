@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
@@ -22,6 +23,7 @@ import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
+import net.horizonsend.ion.server.features.ai.spawning.ships.spawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.AISpawnerTicker
@@ -219,9 +221,11 @@ object AIDebugCommand : SLCommand() {
 	@Subcommand("spawn")
 	fun spawn(sender: Player, spawner: AISpawner, template: SpawnedShip, difficulty: Int) {
 		failIf(difficulty < 0) { "ILLEGAL DIFFICULTY" }
-		template.spawn(log, sender.location,difficulty)
 
-		sender.success("Spawned ship")
+		AISpawningManager.context.launch {
+			template.spawn(log, sender.location, difficulty)
+			sender.success("Spawned ship")
+		}
 	}
 
 	@Suppress("Unused")

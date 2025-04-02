@@ -22,7 +22,7 @@ import net.horizonsend.ion.server.features.ai.module.steering.GunshipSteeringMod
 import net.horizonsend.ion.server.features.ai.module.steering.StarfighterSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.SteeringSolverModule
 import net.horizonsend.ion.server.features.ai.module.steering.TravelSteeringModule
-import net.horizonsend.ion.server.features.ai.module.targeting.EmityModule
+import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -46,7 +46,7 @@ object AIControllerFactories : IonServerComponent() {
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val targeting = builder.addModule(EmityModule::class, EmityModule(
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
 				controller,
 				difficultyManager,
 				targetAI))
@@ -106,7 +106,7 @@ object AIControllerFactories : IonServerComponent() {
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val targeting = builder.addModule(EmityModule::class, EmityModule(
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
 				controller,
 				difficultyManager,
 				targetAI))
@@ -166,7 +166,7 @@ object AIControllerFactories : IonServerComponent() {
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val targeting = builder.addModule(EmityModule::class, EmityModule(
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
 				controller,
 				difficultyManager,
 				targetAI))
@@ -222,7 +222,7 @@ object AIControllerFactories : IonServerComponent() {
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val targeting = builder.addModule(EmityModule::class, EmityModule(
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
 				controller,
 				difficultyManager,
 				targetAI))
@@ -283,7 +283,7 @@ object AIControllerFactories : IonServerComponent() {
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val targeting = builder.addModule(EmityModule::class, EmityModule(
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
 				controller,
 				difficultyManager,
 				targetAI))
@@ -344,7 +344,7 @@ object AIControllerFactories : IonServerComponent() {
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val targeting = builder.addModule(EmityModule::class, EmityModule(
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
 				controller,
 				difficultyManager,
 				targetAI))
@@ -406,7 +406,7 @@ object AIControllerFactories : IonServerComponent() {
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val targeting = builder.addModule(EmityModule::class, EmityModule(
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
 				controller,
 				difficultyManager,
 				true))
@@ -468,7 +468,7 @@ object AIControllerFactories : IonServerComponent() {
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val targeting = builder.addModule(EmityModule::class, EmityModule(
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
 				controller,
 				difficultyManager,
 				targetAI))
@@ -529,7 +529,7 @@ object AIControllerFactories : IonServerComponent() {
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val targeting = builder.addModule(EmityModule::class, EmityModule(
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
 				controller,
 				difficultyManager,
 				targetAI))
@@ -588,7 +588,7 @@ object AIControllerFactories : IonServerComponent() {
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val targeting = builder.addModule(EmityModule::class, EmityModule(
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
 				controller,
 				difficultyManager,
 				targetAI))
@@ -648,7 +648,7 @@ object AIControllerFactories : IonServerComponent() {
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val targeting = builder.addModule(EmityModule::class, EmityModule(
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
 				controller,
 				difficultyManager,
 				targetAI))
@@ -708,7 +708,7 @@ object AIControllerFactories : IonServerComponent() {
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val targeting = builder.addModule(EmityModule::class, EmityModule(
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
 				controller,
 				difficultyManager,
 				targetAI))
@@ -768,7 +768,7 @@ object AIControllerFactories : IonServerComponent() {
 
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val targeting = builder.addModule(EmityModule::class, EmityModule(
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
 				controller,
 				difficultyManager,
 				targetAI))
@@ -863,7 +863,7 @@ object AIControllerFactories : IonServerComponent() {
 			// Combat handling
 			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val targeting = builder.addModule(EmityModule::class, EmityModule(
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
 				controller,
 				difficultyManager,
 				targetAI))

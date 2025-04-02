@@ -2,9 +2,12 @@ package net.horizonsend.ion.server.features.ai.spawning
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import kotlinx.coroutines.withContext
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.misc.GlowModule
+import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SpawnerMechanic
 import net.horizonsend.ion.server.features.ai.starship.StarshipTemplate
 import net.horizonsend.ion.server.features.npcs.StarshipDealers
 import net.horizonsend.ion.server.features.space.Space
@@ -30,6 +33,8 @@ import org.bukkit.World
 import org.bukkit.entity.Player
 import org.slf4j.Logger
 import java.util.function.Supplier
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
 
 /** Handle any exceptions with spawning */
 fun handleException(logger: Logger, exception: SpawningException) {
@@ -57,7 +62,7 @@ fun handleException(logger: Logger, exception: SpawningException) {
  *
  * The returned deferred is completed once the ship has been piloted.
  **/
-fun createAIShipFromTemplate(
+suspend fun createAIShipFromTemplate(
 	logger: Logger,
 	template: AITemplate,
 	location: Location,
@@ -266,4 +271,25 @@ fun formatLocationSupplier(centerSupplier: Supplier<Location>, minDistance: Doub
 
 private fun formatPilotName(fullName : String) : String{
 	return fullName.replace(Regex("""(.?)(?:^|\s|-)+([^\s-])[^\s-]*(?:(?:\s+)(?:the\s+)?(?:jr|sr|II|2nd|III|3rd|IV|4th)\.?${'$'})?"""), "$2.").uppercase()
+}
+
+fun applyPostSpawnBehavior(
+	mechanic: SpawnerMechanic,
+	postSpawn: (AIController) -> Unit
+): SpawnerMechanic {
+	return object : SpawnerMechanic() {
+		override suspend fun trigger(logger: Logger) {
+			withContext(PostSpawnBehaviorContext(postSpawn)) {
+				mechanic.trigger(logger)
+			}
+		}
+
+		override fun getAvailableShips(): Collection<SpawnedShip> = mechanic.getAvailableShips()
+	}
+}
+
+class PostSpawnBehaviorContext(
+	val hook: (AIController) -> Unit
+) : AbstractCoroutineContextElement(Key) {
+	companion object Key : CoroutineContext.Key<PostSpawnBehaviorContext>
 }

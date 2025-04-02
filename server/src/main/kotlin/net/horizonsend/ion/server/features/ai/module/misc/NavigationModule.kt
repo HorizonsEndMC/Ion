@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.ai.module.misc
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.ai.module.AIModule
-import net.horizonsend.ion.server.features.ai.module.targeting.EmityModule
+import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.util.GoalTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.multiblock.type.navigationcomputer.VerticalNavigationComputerMultiblockAdvanced
@@ -26,10 +26,10 @@ import kotlin.math.ln
 import kotlin.math.roundToInt
 
 class NavigationModule(
-	controller : AIController,
-	val targetModule : EmityModule,
-	val difficulty : DifficultyModule,
-	val engageHyperdiveRange : Double = 1000.0,
+    controller : AIController,
+    val targetModule : EnmityModule,
+    val difficulty : DifficultyModule,
+    val engageHyperdiveRange : Double = 1000.0,
 ) : AIModule(controller){
 	private val tickRate = 20 * 10
 	private var ticks = 0 + randomInt(0,tickRate) //randomly offset navigation updates

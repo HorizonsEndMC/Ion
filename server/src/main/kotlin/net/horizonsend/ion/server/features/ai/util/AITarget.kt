@@ -11,8 +11,9 @@ import org.bukkit.entity.Player
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.random.asKotlinRandom
 
-abstract class AITarget {
+abstract class AITarget(val attack : Boolean = true) {
 	abstract var offset: Vec3i
+
 
 	abstract fun getLocation(random: Boolean = false): Location
 	abstract fun getVec3i(random: Boolean = false): Vec3i
@@ -25,7 +26,7 @@ abstract class AITarget {
 	abstract fun isActive(): Boolean
 }
 
-class PlayerTarget(val player: Player) : AITarget() {
+class PlayerTarget(val player: Player, attack: Boolean = true) : AITarget(attack) {
 	override var offset = Vec3i(0, 0, 0)
 
 	override fun getWorld(): World = player.world
@@ -61,6 +62,8 @@ class PlayerTarget(val player: Player) : AITarget() {
 
 		other as PlayerTarget
 
+		if (attack != other.attack) return false
+
 		return player.uniqueId == other.player.uniqueId
 	}
 
@@ -69,7 +72,7 @@ class PlayerTarget(val player: Player) : AITarget() {
 	}
 }
 
-class StarshipTarget(val ship: ActiveStarship) : AITarget() {
+class StarshipTarget(val ship: ActiveStarship, attack: Boolean = true) : AITarget(attack) {
 	override var offset = Vec3i(0, 0, 0)
 
 	override fun getWorld(): World = ship.world
@@ -110,6 +113,7 @@ class StarshipTarget(val ship: ActiveStarship) : AITarget() {
 		if (javaClass != other?.javaClass) return false
 
 		other as StarshipTarget
+		if (attack != other.attack) return false
 
 		return ship == other.ship
 	}
@@ -119,7 +123,7 @@ class StarshipTarget(val ship: ActiveStarship) : AITarget() {
 	}
 }
 
-class GoalTarget(val position : Vec3i, private val world: World, var hyperspace : Boolean) : AITarget() {
+class GoalTarget(val position : Vec3i, private val world: World, var hyperspace : Boolean, attack: Boolean = false) : AITarget(attack) {
 	override var offset: Vec3i = Vec3i(0,0,0)
 
 	override fun getLocation(random: Boolean): Location {
@@ -152,6 +156,7 @@ class GoalTarget(val position : Vec3i, private val world: World, var hyperspace 
 
 		other as GoalTarget
 
+		if (attack != other.attack) return false
 		if (position != other.position) return false
 		if (world != other.world) return false
 

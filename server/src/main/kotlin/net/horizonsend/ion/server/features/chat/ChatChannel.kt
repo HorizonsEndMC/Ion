@@ -368,14 +368,14 @@ enum class ChatChannel(
 
 			val message = formatChatMessage(this, event, messageColor)
 
-			for (fleetMember in fleet.memberIds) {
+			for (fleetMember in fleet.members) {
 				val other = Bukkit.getPlayer(fleetMember)!!
 
 				other.sendMessage(message.buildChatComponent(
 					useLevelsPrefix = false,
 					useChannelPrefix = true,
 					useShortenedPrefix = PlayerCache[other].shortenChatChannels,
-					additionalPrefix = leaderPrefix.takeIf { component -> fleet.leaderId == player.uniqueId },
+					additionalPrefix = leaderPrefix.takeIf { component -> fleet.leader == player.uniqueId },
 					showLuckPermsPrefix = !PlayerCache[player].hideGlobalPrefixes
 				))
 			}

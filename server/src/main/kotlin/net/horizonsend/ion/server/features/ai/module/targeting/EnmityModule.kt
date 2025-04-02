@@ -5,7 +5,6 @@ import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.AIEmities
-import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.listeners.AIModuleHandlePlayerDeath
 import net.horizonsend.ion.server.features.ai.module.listeners.AIModuleHandleShipSink
@@ -24,21 +23,20 @@ import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
-import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
 import java.util.function.Supplier
 import kotlin.math.cbrt
 
-open class EmityModule(
+open class EnmityModule(
 	controller: AIController,
 	val difficulty : DifficultyModule,
 	val targetAI : Boolean,
 	val configSupplier: Supplier<AIEmities.AIEmityConfiguration>
 	= Supplier(ConfigurationFiles.aiEmityConfiguration()::defaultAIEmityConfiguration),
-	val emityFilter : (starship : Starship, AITarget : AITarget, targetAI : Boolean) -> Boolean = Companion::targetFilter
+	val enmityFilter : (starship : Starship, AITarget : AITarget, targetAI : Boolean) -> Boolean = Companion::targetFilter
 ) : AIModule(controller), AIModuleHandlePlayerDeath, AIModuleHandleShipSink{
 	val config get() = configSupplier.get()
-	val emityList : MutableList<AIOpponent> = mutableListOf()
+	val enmityList : MutableList<AIOpponent> = mutableListOf()
 	var findTargetOverride : (() -> AITarget)? = null
 
 	val tickRate = 20 * 2
@@ -48,11 +46,11 @@ open class EmityModule(
 		ticks++
 		if (ticks % tickRate != 0) return
 		ticks = 0
-		decayEmity()
-		generateEmity()
+		decayEnmity()
+		generateEnmity()
 		updateAggro()
-		debugAudience.information("Number of targets: ${emityList.size}")
-		sortEmity()
+		debugAudience.information("Number of targets: ${enmityList.size}")
+		sortEnmity()
 	}
 
 	/**
@@ -83,10 +81,10 @@ open class EmityModule(
 		return findTargetsAnywhere().firstOrNull()
 	}
 	fun findTargetsAnywhere() : List<AITarget>{
-		return emityList.map { it.target }
+		return enmityList.map { it.target }
 	}
 
-	fun generateEmity() {
+	fun generateEnmity() {
 		aggroOnWell()
 		aggroOnDistance()
 		aggroOnDamager()
@@ -96,15 +94,15 @@ open class EmityModule(
 		for (otherStarship in ActiveStarships.getInWorld(starship.world)) {
 			if (!otherStarship.isInterdicting) continue
 			val tempTarget = AIOpponent(StarshipTarget(otherStarship))
-			if (!emityFilter(starship,tempTarget.target,targetAI)) continue
+			if (!enmityFilter(starship,tempTarget.target,targetAI)) continue
 			val dist = getOpponentDistance(tempTarget.target)!!
 			if (dist > Interdiction.starshipInterdictionRangeEquation(otherStarship)) continue
-			val index = emityList.indexOf(tempTarget)
+			val index = enmityList.indexOf(tempTarget)
 			if (index != -1) {
-				emityList[index].baseWeight += config.gravityWellAggro * 0.1 //kepping a well up will make ai pissed on you
+				enmityList[index].baseWeight += config.gravityWellAggro * 0.1 //kepping a well up will make ai pissed on you
 			} else {
 				tempTarget.baseWeight = config.gravityWellAggro
-				emityList.add(tempTarget)
+				enmityList.add(tempTarget)
 			}
 
 		}
@@ -113,7 +111,7 @@ open class EmityModule(
 	private fun aggroOnDistance() {
 		for (otherStarship in ActiveStarships.getInWorld(starship.world)) {
 			val tempTarget = AIOpponent(StarshipTarget(otherStarship))
-			if (!emityFilter(starship,tempTarget.target,targetAI)) continue
+			if (!enmityFilter(starship,tempTarget.target,targetAI)) continue
 			val dist = getOpponentDistance(tempTarget.target)!! + 1e-4
 			val weight : Double
 			if (dist > config.aggroRange) {
@@ -121,29 +119,29 @@ open class EmityModule(
 			} else {
 				weight = config.distanceAggroWeight
 			}
-			val index = emityList.indexOf(tempTarget)
+			val index = enmityList.indexOf(tempTarget)
 			if (index != -1) {
-				val entry = emityList[index]
+				val entry = enmityList[index]
 				if (!entry.aggroed) entry.baseWeight += weight
 			} else {
 				tempTarget.baseWeight += weight
-				emityList.add(tempTarget)
+				enmityList.add(tempTarget)
 			}
 		}
 
 		for (player in starship.world.players) {
 			if (ActiveStarships.findByPassenger(player) != null) continue
 			val tempTarget = AIOpponent(PlayerTarget(player))
-			if (!emityFilter(starship,tempTarget.target,targetAI)) continue
+			if (!enmityFilter(starship,tempTarget.target,targetAI)) continue
 			val dist = getOpponentDistance(tempTarget.target)!!
 			if (dist > config.aggroRange ) continue
-			val index = emityList.indexOf(tempTarget)
+			val index = enmityList.indexOf(tempTarget)
 			if (index != -1) {
-				val entry = emityList[index]
+				val entry = enmityList[index]
 				if (!entry.aggroed) entry.baseWeight += config.distanceAggroWeight
 			} else {
 				tempTarget.baseWeight += config.distanceAggroWeight
-				emityList.add(tempTarget)
+				enmityList.add(tempTarget)
 			}
 		}
 	}
@@ -151,24 +149,24 @@ open class EmityModule(
 	private fun aggroOnDamager() {
 		val topDamager = starship.damagers.maxByOrNull { it.value.points.get() } ?: return
 		val tempTarget  = topDamager.key.getAITarget()?.let { AIOpponent(it) } ?: return
-		if (!emityFilter(starship,tempTarget.target,targetAI)) return
-		val index = emityList.indexOf(tempTarget)
+		if (!enmityFilter(starship,tempTarget.target,targetAI)) return
+		val index = enmityList.indexOf(tempTarget)
 		if (index != -1) {
-			emityList[index].damagerWeight += config.damagerAggroWeight * 0.5 //the highest damager will generate base emity
+			enmityList[index].damagerWeight += config.damagerAggroWeight * 0.5 //the highest damager will generate base emity
 		} else {
 			tempTarget.damagerWeight = config.damagerAggroWeight
-			emityList.add(tempTarget)
+			enmityList.add(tempTarget)
 		}
 	}
 
 	private fun updateAggro() {
-		emityList.forEach {
+		enmityList.forEach {
 			if (it.baseWeight >= config.initialAggroThreshold) it.aggroed = true
 		}
 	}
 
-	fun decayEmity() {
-		emityList.forEach {
+	fun decayEnmity() {
+		enmityList.forEach {
 			if (it.decay && randomDouble(0.0,1.0) < difficulty.decayEmityThreshold) {
 				val dist = getOpponentDistance(it.target)
 				if (dist == null) {
@@ -179,16 +177,16 @@ open class EmityModule(
 			}
 			it.damagerWeight *= config.damagerDeacy
 		}
-		emityList.removeAll { it.baseWeight + it.damagerWeight < 1e-4 }
+		enmityList.removeAll { it.baseWeight + it.damagerWeight < 1e-4 }
 	}
 
-	open fun sortEmity() {
+	open fun sortEnmity() {
 
 		val damagersMap = starship.damagers.entries.associate {
 			Pair(it.key.getAITarget(), it.value.points.get())
 		}
 
-		emityList.sortBy {-1 *(//descending
+		enmityList.sortBy {-1 *(//descending
 			it.baseWeight
 			+ config.damagerWeight * it.damagerWeight
 			+ config.sizeWeight * cbrt((it.target as? StarshipTarget)?.ship?.initialBlockCount?.toDouble() ?: 0.0)
@@ -207,15 +205,26 @@ open class EmityModule(
 		return target.getLocation(false).toVector().distance(location.toVector())
 	}
 
+	fun addTarget(target: AITarget,baseWeight : Double = 1.0, aggroed: Boolean = false, decay: Boolean = true,  ) {
+		val existing = enmityList.find { it.target == target }
+		if (existing != null) return
+
+		enmityList.add(AIOpponent(target, baseWeight, aggroed = aggroed, decay = decay))
+	}
+
+	fun removeTarget(target: AITarget) {
+		enmityList.removeIf { it.target == target }
+	}
+
 
 	override fun onShipSink(event : StarshipSunkEvent) {
 		val tempTarget = AIOpponent(StarshipTarget(event.starship))
-		emityList.remove(tempTarget)
+		enmityList.remove(tempTarget)
 	}
 
 	override fun onPLayerDeath(event: PlayerDeathEvent) {
 		val tempTarget = AIOpponent(PlayerTarget(event.player))
-		emityList.remove(tempTarget)
+		enmityList.remove(tempTarget)
 	}
 
 	data class AIOpponent(

@@ -193,7 +193,7 @@ object FleetCommand : SLCommand() {
         for (fleet in fleetInvites) {
             val inviter = Bukkit.getPlayer(inviterName) ?: continue
 
-            if (fleet.leaderId == inviter.uniqueId) {
+            if (fleet.leader == inviter.uniqueId) {
                 fleet.information(("${sender.name} has joined your fleet"))
                 fleet.add(sender)
                 fleet.removeInvite(sender)
@@ -295,6 +295,6 @@ object FleetCommand : SLCommand() {
     private fun isFleetCommand(sender: Player): Boolean? {
         val fleet = Fleets.findByMember(sender) ?: return null
 
-        return fleet.leaderId == sender.uniqueId
+        return fleet.leader == sender.uniqueId
     }
 }
