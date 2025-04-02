@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons.PointDefenseBalancing.PointDefenseProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.PointDefenseBalancing.PointDefenseProjectileBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource

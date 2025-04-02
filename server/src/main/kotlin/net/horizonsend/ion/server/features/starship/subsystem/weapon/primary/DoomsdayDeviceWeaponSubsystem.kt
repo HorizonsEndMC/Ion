@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.DoomsdayDeviceBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
@@ -23,7 +23,7 @@ class DoomsdayDeviceWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace,
-) : CannonWeaponSubsystem<StarshipWeapons.DoomsdayDeviceBalancing>(starship, pos, face, starship.balancingManager.getSupplier()), HeavyWeaponSubsystem {
+) : CannonWeaponSubsystem<DoomsdayDeviceBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()), HeavyWeaponSubsystem {
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 
     companion object {

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons.PhaserBalancing.PhaserProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.PhaserBalancing.PhaserProjectileBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.PhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.iterateVector
