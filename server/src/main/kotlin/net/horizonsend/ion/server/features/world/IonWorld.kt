@@ -16,11 +16,8 @@ import net.horizonsend.ion.server.features.world.data.DataFixers
 import net.horizonsend.ion.server.features.world.environment.Environment
 import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawner
 import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
-import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.DATA_VERSION
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.FORBIDDEN_BLOCKS
-import net.horizonsend.ion.server.features.world.generation.IonWorldGenerator
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.FORBIDDEN_BLOCKS
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
 import org.bukkit.Bukkit
@@ -209,9 +206,6 @@ class IonWorld private constructor(
 		@EventHandler
 		fun onWorldSave(event: WorldSaveEvent) {
 			saveAllChunks(event.world.ion)
-
-			val world = event.world.ion
-			world.terrainGenerator?.save()
 		}
 
 		override fun onDisable() {
