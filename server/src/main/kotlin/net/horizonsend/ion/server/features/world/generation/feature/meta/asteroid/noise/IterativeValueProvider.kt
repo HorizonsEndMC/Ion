@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise
 
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 
 interface IterativeValueProvider {
 	/** Gets a maximum value ignoring any state introduced by the coordinates. */

@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.Feature
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.FeaturePlacementConfiguration
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.core.Holder.Reference
 import net.minecraft.core.registries.Registries
 import net.minecraft.resources.ResourceKey
@@ -18,7 +18,6 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.levelgen.structure.Structure
 import org.bukkit.NamespacedKey
-import kotlin.collections.map
 import kotlin.random.Random
 
 abstract class GeneratedFeature<T: FeatureMetaData>(val key: NamespacedKey, val placementConfiguration: FeaturePlacementConfiguration) {
