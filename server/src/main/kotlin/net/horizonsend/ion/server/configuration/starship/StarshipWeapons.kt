@@ -85,6 +85,17 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.PI
 import kotlin.reflect.KClass
 
+class AntiAirProjectileBalancing : StarshipParticleProjectileBalancing {
+	override val particleThickness: Double = TODO("Not yet implemented")
+	override val clazz: KClass<out Projectile> = TODO("Not yet implemented")
+	override val range: Double = TODO("Not yet implemented")
+	override val speed: Double = TODO("Not yet implemented")
+	override val explosionPower: Float = TODO("Not yet implemented")
+	override val starshipShieldDamageMultiplier: Double = TODO("Not yet implemented")
+	override val areaShieldDamageMultiplier: Double = TODO("Not yet implemented")
+	override val entityDamage: EntityDamage = TODO("Not yet implemented")
+	override val fireSound: StandardStarshipSounds.SoundInfo = TODO("Not yet implemented")
+}
 
 @Serializable
 data class TorpedoBalancing(
