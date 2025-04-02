@@ -10,11 +10,11 @@ import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.core.registration.keys.StarshipTypeKeys
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -70,7 +70,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 		check(newWorld != world1) { "New world can't be the same as the current world" }
 
-		if (!starship.type.canPilotIn(starship, world2.ion)) {
+		if (!starship.type.canPilotIn(world2.ion)) {
 			throw StarshipMovementException("Ships of this class can't be piloted in ${world2.name}")
 		}
 
@@ -85,7 +85,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		}
 
 		if (displaceY(starship.max.y) >= world1.maxHeight) {
-			if (playerShip != null && playerShip.type.key != StarshipTypeKeys.SPEEDER && exitPlanet(world1, playerShip)) {
+			if (playerShip != null && playerShip.type != StarshipType.SPEEDER && exitPlanet(world1, playerShip)) {
 				starship.information("Exiting Planet")
 				return
 			}

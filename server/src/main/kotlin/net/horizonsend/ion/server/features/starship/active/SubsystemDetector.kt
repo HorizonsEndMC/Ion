@@ -105,7 +105,7 @@ object SubsystemDetector {
 			if (type == Material.LOOM) potentialTurretBases.add(block)
 		}
 
-		val oversizeModifier = if (starship.initialBlockCount > starship.type.detectionParameters.getDetectionParameters().maxSize) ReactorSubsystem.OVERSIZE_POWER_PENALTY else 1.0
+		val oversizeModifier = if (starship.initialBlockCount > starship.type.maxSize) ReactorSubsystem.OVERSIZE_POWER_PENALTY else 1.0
 		starship.reactor = ReactorSubsystem(starship, oversizeModifier)
 		starship.subsystems += starship.reactor
 

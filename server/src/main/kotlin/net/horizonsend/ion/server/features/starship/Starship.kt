@@ -64,7 +64,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterS
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.CustomTurretSubsystem
-import net.horizonsend.ion.server.features.starship.type.StarshipType
 import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
@@ -78,7 +77,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
-import net.horizonsend.ion.server.miscellaneous.utils.getValue
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.audience.Audience
@@ -125,8 +123,8 @@ class Starship(
 	// Data Aliases
 	val dataId: Oid<out StarshipData> = data._id
 
-	val type: StarshipType<*> = data.starshipType.actualType.getValue()
-	val balancingManager = DefaultStarshipTypeWeaponBalancing(data.starshipType.getValue())
+	val type: StarshipType = data.starshipType.actualType
+	val balancingManager = DefaultStarshipTypeWeaponBalancing(data.starshipType.actualType)
 	val balancing = type.balancing
 
 	val interdictionRange: Int = balancing.interdictionRange
@@ -647,8 +645,8 @@ class Starship(
 	//endregion
 
 	fun isOversized() =
-		this.initialBlockCount > this.type.detectionParameters.getDetectionParameters().maxSize
-		&& (this.initialBlockCount <= (this.type.detectionParameters.getDetectionParameters().maxSize * StarshipDetection.OVERSIZE_MODIFIER).toInt())
+		this.initialBlockCount > this.type.maxSize
+		&& (this.initialBlockCount <= (this.type.maxSize * StarshipDetection.OVERSIZE_MODIFIER).toInt())
 
 	init {
 		IonWorld[world].starships.add(this)
