@@ -52,6 +52,7 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovementExc
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.balancing.DefaultStarshipTypeWeaponBalancing
+import net.horizonsend.ion.server.features.starship.subsystem.balancing.StarshipWeaponBalancingManager
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
@@ -125,7 +126,7 @@ class Starship(
 	val dataId: Oid<out StarshipData> = data._id
 
 	val type: StarshipType = data.starshipType.actualType
-	val balancingManager = DefaultStarshipTypeWeaponBalancing(data.starshipType.actualType)
+	var balancingManager: StarshipWeaponBalancingManager = DefaultStarshipTypeWeaponBalancing(data.starshipType.actualType)
 	val balancing = type.balancing
 
 	val interdictionRange: Int = balancing.interdictionRange
