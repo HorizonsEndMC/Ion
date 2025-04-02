@@ -5,7 +5,6 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.core.registration.keys.StarshipTypeKeys
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -148,7 +147,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		//TODO replace this system with something better
 
 		// Destroy BCs without intact reactors
-		ActiveStarships.all().filter { it.type.key == StarshipTypeKeys.BATTLECRUISER }.forEach { ship ->
+		ActiveStarships.all().filter { it.type == StarshipType.BATTLECRUISER }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<BattlecruiserReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)
@@ -156,14 +155,14 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		}
 
 		// Destroy Cruisers without intact reactors
-		ActiveStarships.all().filter { it.type.key == StarshipTypeKeys.CRUISER }.forEach { ship ->
+		ActiveStarships.all().filter { it.type == StarshipType.CRUISER }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<CruiserReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)
 			}
 		}
 
-		ActiveStarships.all().filter { it.type.key == StarshipTypeKeys.BARGE }.forEach { ship ->
+		ActiveStarships.all().filter { it.type == StarshipType.BARGE }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<BargeReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)
