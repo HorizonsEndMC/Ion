@@ -18,6 +18,7 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.levelgen.structure.Structure
 import org.bukkit.NamespacedKey
+import org.bukkit.World
 import kotlin.random.Random
 
 abstract class GeneratedFeature<T: FeatureMetaData>(val key: NamespacedKey, val placementConfiguration: FeaturePlacementConfiguration<T>) {
@@ -76,8 +77,8 @@ abstract class GeneratedFeature<T: FeatureMetaData>(val key: NamespacedKey, val 
 		return pair
 	}
 
-	fun buildStartsData(chunkPos: ChunkPos, random: Random): List<FeatureStart> {
-		return placementConfiguration.generatePlacements(chunkPos, random).map { (context, meta) ->
+	fun buildStartsData(world: World, chunkPos: ChunkPos, random: Random): List<FeatureStart> {
+		return placementConfiguration.generatePlacements(world, chunkPos, random).map { (context, meta) ->
 			FeatureStart(
 				this,
 				context.x,
