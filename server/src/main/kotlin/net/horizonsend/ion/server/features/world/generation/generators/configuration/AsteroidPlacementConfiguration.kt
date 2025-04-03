@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroi
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.world.level.ChunkPos
 import org.bukkit.Material
+import org.bukkit.World
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
 
@@ -12,7 +13,7 @@ import kotlin.random.asJavaRandom
 class AsteroidPlacementConfiguration : FeaturePlacementConfiguration<ConfigurableAsteroidMeta> {
 	override val placementPriority: Int = 0
 
-	override fun generatePlacements(chunk: ChunkPos, random: Random): List<Pair<Vec3i, ConfigurableAsteroidMeta>> {
+	override fun generatePlacements(world: World, chunk: ChunkPos, random: Random): List<Pair<Vec3i, ConfigurableAsteroidMeta>> {
 		val density = 0.0612
 		val stdev = density * 4.0
 
@@ -31,11 +32,9 @@ class AsteroidPlacementConfiguration : FeaturePlacementConfiguration<Configurabl
 			val x = chunkStartX + random.nextInt(0, 15)
 			val z = chunkStartZ + random.nextInt(0, 15)
 
-			val meta = generateMetaData(random, x, z)
+			val meta = generateMetaData(random, world, x, z)
 
-			val y = random.asJavaRandom()
-				.nextGaussian(84.0, 196 / 2.0).toInt()
-				.coerceIn(1 + meta.totalDisplacement.toInt(), 383 - meta.totalDisplacement.toInt())
+			val y = random.nextInt(world.minHeight + meta.totalDisplacement.toInt(), world.maxHeight - meta.totalDisplacement.toInt())
 
 			list.add(Vec3i(x, y, z) to meta)
 		}
@@ -43,7 +42,10 @@ class AsteroidPlacementConfiguration : FeaturePlacementConfiguration<Configurabl
 		return list
 	}
 
-	fun generateMetaData(chunkRandom: Random, x: Int, z: Int): ConfigurableAsteroidMeta {
+	private fun generateMetaData(chunkRandom: Random, world: World, x: Int, z: Int): ConfigurableAsteroidMeta {
+		val biome = world.getBiome(x, world.minHeight, z)
+		biome
+
 //		val material = Material.entries.filter { material -> material.isBlock }.random(chunkRandom)
 		// chunkRandom.nextDouble(5.0, 40.0)
 		return ConfigurableAsteroidMeta(chunkRandom.nextLong(), 150.0, Material.STONE)
