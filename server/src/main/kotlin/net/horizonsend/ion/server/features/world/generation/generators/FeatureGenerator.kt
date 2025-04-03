@@ -92,7 +92,7 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 		val chunkRandom = Random(chunk.longKey)
 
 		for (feature in features.filter { feature -> feature.canPlace() }) {
-			val featureStarts = feature.buildStartsData(chunk, chunkRandom)
+			val featureStarts = feature.buildStartsData(world.world, chunk, chunkRandom)
 			starts.addAll(featureStarts)
 		}
 
