@@ -7,14 +7,14 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.Feature
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
-import net.horizonsend.ion.server.features.world.generation.generators.configuration.AsteroidPlacementConfiguration
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.state.BlockState
 import kotlin.math.abs
 
-object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(NamespacedKeys.key("asteroid_normal"), AsteroidPlacementConfiguration()) {
+object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(NamespacedKeys.key("asteroid_normal")) {
+	override val placementPriority: Int = 0
 	override val metaFactory: FeatureMetadataFactory<ConfigurableAsteroidMeta> = ConfigurableAsteroidMeta.Factory
 
 	override suspend fun generateSection(
