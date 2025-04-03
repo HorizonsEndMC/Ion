@@ -1,12 +1,11 @@
 package net.horizonsend.ion.server.core.registration.keys
 
-import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.extractor.AdvancedItemExtractorBlock
 import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.MultiblockWorkbench
 
-object CustomBlockKeys : KeyRegistry<CustomBlock>(IonRegistries.CUSTOM_BLOCKS, CustomBlock::class) {
+object CustomBlockKeys : KeyRegistry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS, CustomBlock::class) {
 	val ALUMINUM_ORE = registerKey("ALUMINUM_ORE")
 	val ALUMINUM_BLOCK = registerKey("ALUMINUM_BLOCK")
 	val RAW_ALUMINUM_BLOCK = registerKey("ARAW_ALUMINUM_BLOCK")

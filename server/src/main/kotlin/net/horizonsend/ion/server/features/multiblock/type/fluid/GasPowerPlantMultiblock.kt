@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.core.registration.registries.AtmosphericGasRegistry.Companion.EMPTY_CANISTER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
@@ -265,8 +265,8 @@ object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMul
 		/** Returns whether the process should be aborted due to a problem **/
 		private fun clearEmpty(furnaceInventory: Inventory, itemStack: ItemStack): Boolean {
 			val discardChest = getInventory(0, 0, 6) ?: return true
-			if (!LegacyItemUtils.canFit(discardChest, EMPTY_CANISTER)) return true
-			discardChest.addItem(EMPTY_CANISTER.clone())
+			if (!LegacyItemUtils.canFit(discardChest, CustomItemKeys.GAS_CANISTER_EMPTY.getValue().constructItemStack())) return true
+			discardChest.addItem(CustomItemKeys.GAS_CANISTER_EMPTY.getValue().constructItemStack().clone())
 
 			furnaceInventory.remove(itemStack)
 			return false

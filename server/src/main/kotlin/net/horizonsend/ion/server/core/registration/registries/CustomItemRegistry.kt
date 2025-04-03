@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
+import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
@@ -55,8 +56,8 @@ import org.bukkit.persistence.PersistentDataType
 import java.util.function.Supplier
 import kotlin.math.roundToInt
 
-class CustomItemRegistry : Registry<CustomItem>("CUSTOM_ITEMS") {
-	override val keySet: KeyRegistry<CustomItem> = CustomItemKeys
+class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
+	override fun getKeySet(): KeyRegistry<CustomItem> = CustomItemKeys
 	override fun boostrap() {
 		registerThrowables()
 		registerGuns()
@@ -776,11 +777,11 @@ class CustomItemRegistry : Registry<CustomItem>("CUSTOM_ITEMS") {
 	}
 
 	private fun stackable(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, model: String) {
-		register(key, CustomItem(key, displayName, ItemFactory.Preset.stackableCustomItem(model = model)))
+		register(key, CustomItem(key, displayName, ItemFactory.stackableCustomItem(model = model)))
 	}
 
 	private fun unStackable(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, model: String) {
-		register(key, CustomItem(key, displayName, ItemFactory.Preset.unStackableCustomItem(model = model)))
+		register(key, CustomItem(key, displayName, ItemFactory.unStackableCustomItem(model = model)))
 	}
 
 	private fun customBlockItem(key: IonRegistryKey<CustomItem, out CustomItem>, model: String, displayName: Component, customBlock: IonRegistryKey<CustomBlock, out CustomBlock>) {
