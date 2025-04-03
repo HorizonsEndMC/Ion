@@ -70,3 +70,15 @@ data object AsteroidSize : EvaluationConfiguration {
 		return Static(meta.size)
 	}
 }
+
+@Serializable
+data class ThresholdConfiguration(
+	val a: EvaluationConfiguration,
+	val b: EvaluationConfiguration,
+	val threshold: EvaluationConfiguration,
+	val selector: EvaluationConfiguration,
+) : EvaluationConfiguration {
+	override fun build(meta: ConfigurableAsteroidMeta): IterativeValueProvider {
+		return Threshhold(a.build(meta), b.build(meta), threshold.build(meta), selector.build(meta))
+	}
+}
