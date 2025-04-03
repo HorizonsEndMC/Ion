@@ -8,6 +8,9 @@ import org.bukkit.util.Vector
 import kotlin.random.Random
 
 class AsteroidNoise2d(
+	private val xScale: Double = 1.0,
+	private val yScale: Double = 1.0,
+	private val zScale: Double = 1.0,
 	val meta: ConfigurableAsteroidMeta,
 	private val noise: FastNoiseLite,
 	private val domainWarp: AsteroidNoise3d.DomainWarp,
@@ -24,7 +27,7 @@ class AsteroidNoise2d(
 	}
 
 	override fun getValue(x: Double, y: Double, z: Double, origin: Vec3i): Double {
-		val diff = Vector(x - origin.x, y - origin.y, z - origin.z).normalize().multiply(meta.size)
+		val diff = Vector((x * xScale) - origin.x, (y * yScale) - origin.y, (z * zScale) - origin.z).normalize().multiply(meta.size)
 
 		val vector = Vector3(
 			diff.x.toFloat() + origin.x,
