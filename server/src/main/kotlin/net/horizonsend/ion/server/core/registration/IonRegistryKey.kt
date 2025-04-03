@@ -9,16 +9,17 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.encoding.encodeStructure
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.core.registration.keys.RegistryKeys.RegistryId
 import net.horizonsend.ion.server.core.registration.registries.Registry
 import org.bukkit.NamespacedKey
 import kotlin.reflect.KClass
 
-class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClass<out Z>, val key: String) {
+class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClass<out Z>, key: String) : IonResourceKey<Z>(key) {
 	override fun toString(): String {
 		return "RegistryKey[${registry.id}:$key]"
 	}
 
-	fun getValue(): Z {
+	override fun getValue(): Z {
 		val stored =  registry[this]
 
 		if (!clazz.isInstance(stored)) {
@@ -45,7 +46,7 @@ class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClas
 
 		override fun serialize(encoder: Encoder, value: IonRegistryKey<*, *>) {
 			encoder.encodeStructure(descriptor) {
-				encodeStringElement(descriptor, 0, value.registry.id)
+				encodeStringElement(descriptor, 0, value.registry.id.key)
 				encodeStringElement(descriptor, 1, value.key)
 			}
 		}
@@ -55,7 +56,7 @@ class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClas
 				val registryId = decodeStringElement(descriptor, 0)
 				val registryKey = decodeStringElement(descriptor, 1)
 
-				IonRegistries[registryId].keySet[registryKey]!!
+				IonRegistries[RegistryId<Any>(registryId)].getKeySet()[registryKey]!!
 			}
 		}
 	}
