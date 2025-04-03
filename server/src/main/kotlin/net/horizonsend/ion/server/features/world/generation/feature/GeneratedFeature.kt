@@ -20,7 +20,7 @@ import net.minecraft.world.level.levelgen.structure.Structure
 import org.bukkit.NamespacedKey
 import kotlin.random.Random
 
-abstract class GeneratedFeature<T: FeatureMetaData>(val key: NamespacedKey, val placementConfiguration: FeaturePlacementConfiguration) {
+abstract class GeneratedFeature<T: FeatureMetaData>(val key: NamespacedKey, val placementConfiguration: FeaturePlacementConfiguration<T>) {
 	abstract val metaFactory: FeatureMetadataFactory<T>
 	abstract suspend fun generateSection(generator: IonWorldGenerator<*>, chunkPos: ChunkPos, start: FeatureStart, metaData: T, sectionY: Int, sectionMin: Int, sectionMax: Int): CompletedSection
 
@@ -77,12 +77,16 @@ abstract class GeneratedFeature<T: FeatureMetaData>(val key: NamespacedKey, val 
 	}
 
 	fun buildStartsData(chunkPos: ChunkPos, random: Random): List<FeatureStart> {
-		return placementConfiguration.generatePlacements(chunkPos, random).map { context ->
-			FeatureStart(this, context.x, context.y, context.z, generateMetaData(random))
+		return placementConfiguration.generatePlacements(chunkPos, random).map { (context, meta) ->
+			FeatureStart(
+				this,
+				context.x,
+				context.y,
+				context.z,
+				meta
+			)
 		}
 	}
-
-	abstract fun generateMetaData(chunkRandom: Random): T
 
 	fun canPlace(): Boolean = true
 }
