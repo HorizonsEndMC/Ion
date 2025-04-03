@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.world.generation.generators.configuration
 
 import kotlinx.serialization.Serializable
+import net.horizonsend.ion.server.features.world.generation.feature.FeatureRegistry
+import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.world.level.ChunkPos
@@ -10,11 +12,14 @@ import kotlin.random.Random
 import kotlin.random.asJavaRandom
 
 @Serializable
-class AsteroidPlacementConfiguration : FeaturePlacementConfiguration<ConfigurableAsteroidMeta> {
+data class AsteroidPlacementConfiguration(
+	val density: Double = 0.0612,
+) : FeaturePlacementConfiguration<ConfigurableAsteroidMeta> {
 	override val placementPriority: Int = 0
 
+	override fun getFeature(): GeneratedFeature<ConfigurableAsteroidMeta> = FeatureRegistry.ASTEROID
+
 	override fun generatePlacements(world: World, chunk: ChunkPos, random: Random): List<Pair<Vec3i, ConfigurableAsteroidMeta>> {
-		val density = 0.0612
 		val stdev = density * 4.0
 
 		val count = random.asJavaRandom()
@@ -44,10 +49,12 @@ class AsteroidPlacementConfiguration : FeaturePlacementConfiguration<Configurabl
 
 	private fun generateMetaData(chunkRandom: Random, world: World, x: Int, z: Int): ConfigurableAsteroidMeta {
 		val biome = world.getBiome(x, world.minHeight, z)
-		biome
 
-//		val material = Material.entries.filter { material -> material.isBlock }.random(chunkRandom)
-		// chunkRandom.nextDouble(5.0, 40.0)
-		return ConfigurableAsteroidMeta(chunkRandom.nextLong(), 150.0, Material.STONE)
+		return ConfigurableAsteroidMeta(
+			chunkRandom.nextLong(),
+			chunkRandom.nextDouble(75.0, 150.0),
+
+			Material.STONE
+		)
 	}
 }
