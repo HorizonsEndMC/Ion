@@ -87,7 +87,7 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 		}
 	}
 
-	fun addStructureStarts(chunk: ChunkPos): MutableList<FeatureStart> {
+	private fun addStructureStarts(chunk: ChunkPos): MutableList<FeatureStart> {
 		val starts = mutableListOf<FeatureStart>()
 		val chunkRandom = Random(chunk.longKey)
 
