@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.core.registration.keys
 
-import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 
-object ItemModKeys : KeyRegistry<ItemModification>(IonRegistries.ITEM_MODIFICATIONS, ItemModification::class) {
+object ItemModKeys : KeyRegistry<ItemModification>(RegistryKeys.ITEM_MODIFICATIONS, ItemModification::class) {
 	val AOE_1 = registerKey("AOE_1")
 	val AOE_2 = registerKey("AOE_2")
 	val VEIN_MINER_25 = registerKey("VEIN_MINER_25")

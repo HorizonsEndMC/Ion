@@ -1,10 +1,9 @@
 package net.horizonsend.ion.server.core.registration.keys
 
-import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
 
-object FluidTypeKeys : KeyRegistry<FluidType>(IonRegistries.FLUID_TYPE, FluidType::class) {
+object FluidTypeKeys : KeyRegistry<FluidType>(RegistryKeys.FLUID_TYPE, FluidType::class) {
 	val EMPTY = registerKey("EMPTY")
 
 	val HYDROGEN = registerTypedKey<GasFluid>("HYDROGEN")

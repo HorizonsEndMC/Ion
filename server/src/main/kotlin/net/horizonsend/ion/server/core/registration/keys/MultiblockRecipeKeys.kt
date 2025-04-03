@@ -1,10 +1,9 @@
 package net.horizonsend.ion.server.core.registration.keys
 
-import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 
-object MultiblockRecipeKeys : KeyRegistry<MultiblockRecipe<*>>(IonRegistries.MULTIBLOCK_RECIPE, MultiblockRecipe::class) {
+object MultiblockRecipeKeys : KeyRegistry<MultiblockRecipe<*>>(RegistryKeys.MULTIBLOCK_RECIPE, MultiblockRecipe::class) {
 	val URANIUM_ENRICHMENT = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("URANIUM_ENRICHMENT")
 	val URANIUM_CORE_COMPRESSION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("URANIUM_CORE_COMPRESSION")
 	val STEEL_PRODUCTION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("STEEL_PRODUCTION")

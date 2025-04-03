@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
+import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
 import net.horizonsend.ion.server.features.gas.type.Gas
@@ -16,8 +17,8 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
 
-class AtmosphericGasRegistry : Registry<Gas>("ATMOSPHERIC_GASSES") {
-	override val keySet: KeyRegistry<Gas> = AtmosphericGasKeys
+class AtmosphericGasRegistry : Registry<Gas>(RegistryKeys.ATMOSPHERIC_GAS) {
+	override fun getKeySet(): KeyRegistry<Gas> = AtmosphericGasKeys
 
 	override fun boostrap() {
 		register(
@@ -104,8 +105,6 @@ class AtmosphericGasRegistry : Registry<Gas>("ATMOSPHERIC_GASSES") {
 	}
 
 	companion object {
-		val EMPTY_CANISTER: ItemStack = CustomItemKeys.GAS_CANISTER_EMPTY.getValue().constructItemStack()
-
 		fun isEmptyCanister(itemStack: ItemStack?): Boolean {
 			return itemStack?.customItem?.key == CustomItemKeys.GAS_CANISTER_EMPTY
 		}

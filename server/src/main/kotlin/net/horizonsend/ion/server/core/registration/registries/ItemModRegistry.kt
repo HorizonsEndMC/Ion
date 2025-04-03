@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.core.registration.registries
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
+import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ApplicationPredicate
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
@@ -24,8 +25,8 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.chai
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.drill.VeinMinerMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.hoe.FertilizerDispenser
 
-class ItemModRegistry() : Registry<ItemModification>("ITEM_MODIFICATIONS") {
-	override val keySet: KeyRegistry<ItemModification> = ItemModKeys
+class ItemModRegistry() : Registry<ItemModification>(RegistryKeys.ITEM_MODIFICATIONS) {
+	override fun getKeySet(): KeyRegistry<ItemModification> = ItemModKeys
 	override fun boostrap() {
 		bootstrapToolMods()
 		bootstrapArmorMods()

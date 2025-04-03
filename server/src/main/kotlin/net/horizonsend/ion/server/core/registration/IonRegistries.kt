@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.core.registration
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.server.core.registration.registries.AtmosphericGasRegistry
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry
@@ -12,13 +11,14 @@ import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
 
 object IonRegistries : IonComponent() {
-	private val allRegistries = ObjectOpenHashSet<Registry<*>>()
-	private val byId = Object2ObjectOpenHashMap<String, Registry<*>>()
+	private val allRegistries = mutableListOf<Registry<*>>()
+	private val byId = Object2ObjectOpenHashMap<IonResourceKey<out Registry<*>>, Registry<*>>()
 
 	override fun onEnable() {
 		allRegistries.forEach { registry ->
+			log.info("Bootstrapping ${registry.id.key}")
 			registry.boostrap()
-			registry.keySet.allkeys().forEach { key -> key.checkBound() }
+			registry.getKeySet().allkeys().forEach { key -> key.checkBound() }
 		}
 	}
 
@@ -35,5 +35,5 @@ object IonRegistries : IonComponent() {
 		return registry
 	}
 
-	operator fun get(registryID: String): Registry<*> = byId[registryID]!!
+	operator fun get(registryID: IonResourceKey<out Registry<*>>): Registry<*> = byId[registryID]!!
 }
