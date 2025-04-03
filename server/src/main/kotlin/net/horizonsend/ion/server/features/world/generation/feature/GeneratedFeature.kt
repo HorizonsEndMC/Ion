@@ -21,7 +21,9 @@ import org.bukkit.NamespacedKey
 import org.bukkit.World
 import kotlin.random.Random
 
-abstract class GeneratedFeature<T: FeatureMetaData>(val key: NamespacedKey, val placementConfiguration: FeaturePlacementConfiguration<T>) {
+abstract class GeneratedFeature<T: FeatureMetaData>(val key: NamespacedKey) {
+	abstract val placementPriority: Int
+
 	abstract val metaFactory: FeatureMetadataFactory<T>
 	abstract suspend fun generateSection(generator: IonWorldGenerator<*>, chunkPos: ChunkPos, start: FeatureStart, metaData: T, sectionY: Int, sectionMin: Int, sectionMax: Int): CompletedSection
 
@@ -77,7 +79,7 @@ abstract class GeneratedFeature<T: FeatureMetaData>(val key: NamespacedKey, val 
 		return pair
 	}
 
-	fun buildStartsData(world: World, chunkPos: ChunkPos, random: Random): List<FeatureStart> {
+	fun buildStartsData(world: World, chunkPos: ChunkPos, random: Random, placementConfiguration: FeaturePlacementConfiguration<T>): List<FeatureStart> {
 		return placementConfiguration.generatePlacements(world, chunkPos, random).map { (context, meta) ->
 			FeatureStart(
 				this,
