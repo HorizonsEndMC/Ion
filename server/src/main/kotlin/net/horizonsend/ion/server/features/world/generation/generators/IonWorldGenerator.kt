@@ -19,6 +19,7 @@ abstract class IonWorldGenerator<T: GenerationConfiguration>(val world: IonWorld
 
 	@Synchronized
 	fun addReference(toChunk: ChunkPos, feature: GeneratedFeature<*>, orignChunk: ChunkPos) {
+		if (toChunk.getChessboardDistance(orignChunk) > 8) return
 		Tasks.sync {
 			val worldGenChunk = world.world.minecraft.getChunk(toChunk.x, toChunk.z, ChunkStatus.STRUCTURE_REFERENCES)
 			worldGenChunk.addReferenceForStructure(feature.ionStructure.value(), orignChunk.toLong())
