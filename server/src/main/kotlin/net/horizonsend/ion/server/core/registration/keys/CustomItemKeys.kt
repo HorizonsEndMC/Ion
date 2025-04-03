@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.core.registration.keys
 
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Multishot
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.Singleshot
-import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
@@ -22,7 +21,7 @@ import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Blas
 import net.horizonsend.ion.server.features.custom.items.type.weapon.blaster.Magazine
 import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.EnergySword
 
-object CustomItemKeys : KeyRegistry<CustomItem>(IonRegistries.CUSTOM_ITEMS, CustomItem::class) {
+object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, CustomItem::class) {
 	val DETONATOR = registerTypedKey<ThrowableCustomItem>("DETONATOR")
 	val SMOKE_GRENADE = registerTypedKey<ThrowableCustomItem>("SMOKE_GRENADE")
 	val PUMPKIN_GRENADE = registerTypedKey<ThrowableCustomItem>("PUMPKIN_GRENADE")
