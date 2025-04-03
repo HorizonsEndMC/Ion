@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.world.generation.generators.IonWorldG
 
 @Serializable
 data class FeatureGeneratorConfiguration(
-	val features: Set<FeatureConfiguration>
+	val features: Set<FeaturePlacementConfiguration<*>>
 ) : GenerationConfiguration {
 	override fun buildGenerator(world: IonWorld): IonWorldGenerator<*> {
 		return FeatureGenerator(world, this)
