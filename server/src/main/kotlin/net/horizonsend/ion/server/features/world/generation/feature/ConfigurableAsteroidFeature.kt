@@ -12,9 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.state.BlockState
-import org.bukkit.Material
 import kotlin.math.abs
-import kotlin.random.Random
 
 object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(NamespacedKeys.key("asteroid_normal"), AsteroidPlacementConfiguration()) {
 	override val metaFactory: FeatureMetadataFactory<ConfigurableAsteroidMeta> = ConfigurableAsteroidMeta.Factory
@@ -98,11 +96,5 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 				metaData.size.toInt(),
 				metaData.size.toInt()
 			)
-	}
-
-	override fun generateMetaData(chunkRandom: Random): ConfigurableAsteroidMeta {
-//		val material = Material.entries.filter { material -> material.isBlock }.random(chunkRandom)
-		// chunkRandom.nextDouble(5.0, 40.0)
-		return ConfigurableAsteroidMeta(chunkRandom.nextLong(), 150.0, Material.STONE)
 	}
 }

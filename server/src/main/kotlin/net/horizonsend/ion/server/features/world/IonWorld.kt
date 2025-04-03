@@ -268,4 +268,8 @@ class IonWorld private constructor(
 	}
 
 	fun getAllChunks() = chunks.values
+
+	override fun toString(): String {
+		return "IonWorld[${world.key}]"
+	}
 }
