@@ -6,10 +6,9 @@ import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.space.data.CompletedSection
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
-import net.horizonsend.ion.server.features.world.generation.feature.ConfigurableAsteroidFeature
 import net.horizonsend.ion.server.features.world.generation.feature.nms.IonStructureTypes
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
-import net.horizonsend.ion.server.features.world.generation.generators.configuration.FeatureConfiguration
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.AsteroidPlacementConfiguration
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.FeatureGeneratorConfiguration
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.world.level.ChunkPos
@@ -18,7 +17,7 @@ import org.bukkit.Chunk
 import kotlin.random.Random
 
 class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfiguration) : IonWorldGenerator<FeatureGeneratorConfiguration>(world, configuration) {
-	val features = configuration.features.map(FeatureConfiguration::loadFeature).plus(ConfigurableAsteroidFeature)
+	val features = configuration.features.plus(AsteroidPlacementConfiguration())
 
 	override suspend fun generateChunk(chunk: Chunk) {
 //		if (features.isEmpty()) return
@@ -64,7 +63,7 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 			}
 
 		sectionsB.values.awaitAll()
-		val sections = sectionsB.entries.sortedBy { it.key.feature.placementConfiguration.placementPriority }
+		val sections = sectionsB.entries.sortedBy { it.key.feature.placementPriority }
 
 		sections.forEach { t -> t.value.await().forEach { section -> section.place(nmsChunk) } }
 		nmsChunk.`moonrise$getChunkAndHolder`().holder.broadcastChanges(nmsChunk)
@@ -91,8 +90,9 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 		val starts = mutableListOf<FeatureStart>()
 		val chunkRandom = Random(chunk.longKey)
 
-		for (feature in features.filter { feature -> feature.canPlace() }) {
+		for (feature in features.filter { feature -> feature.getFeature().canPlace() }) {
 			val featureStarts = feature.buildStartsData(world.world, chunk, chunkRandom)
+
 			starts.addAll(featureStarts)
 		}
 
