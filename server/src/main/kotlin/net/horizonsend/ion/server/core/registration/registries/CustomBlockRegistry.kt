@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
+import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.extractor.AdvancedItemExtractorBlock
@@ -25,8 +26,8 @@ import org.bukkit.block.data.MultipleFacing
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
-class CustomBlockRegistry : Registry<CustomBlock>("CUSTOM_BLOCKS") {
-	override val keySet: KeyRegistry<CustomBlock> = CustomBlockKeys
+class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
+	override fun getKeySet(): KeyRegistry<CustomBlock> = CustomBlockKeys
 	private val directionalCustomBlocksData = HashBasedTable.create<BlockState, CustomBlock, BlockFace>()
 	private val customBlocksData = Object2ObjectOpenHashMap<BlockState, CustomBlock>()
 

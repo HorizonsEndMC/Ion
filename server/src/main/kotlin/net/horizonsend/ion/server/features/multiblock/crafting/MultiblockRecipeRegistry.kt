@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.MultiblockRecipeKeys
+import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
@@ -49,8 +50,8 @@ import org.bukkit.inventory.StonecuttingRecipe
 import java.time.Duration
 import kotlin.reflect.KClass
 
-class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>("MULTIBLOCK_RECIPE") {
-	override val keySet: KeyRegistry<MultiblockRecipe<*>> = MultiblockRecipeKeys
+class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULTIBLOCK_RECIPE) {
+	override fun getKeySet(): KeyRegistry<MultiblockRecipe<*>> = MultiblockRecipeKeys
 
 	private val byMultiblock = multimapOf<KClass<out RecipeProcessingMultiblockEntity<*>>, MultiblockRecipe<*>>()
 
