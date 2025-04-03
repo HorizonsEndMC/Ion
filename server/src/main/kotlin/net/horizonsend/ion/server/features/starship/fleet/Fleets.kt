@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.fleet
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerQuitEvent
@@ -10,7 +11,7 @@ object Fleets : IonServerComponent() {
 
 	override fun onEnable() {
 		Tasks.syncRepeat(200,20) {
-			cleanupDeadAiMembers()
+			cleanUp()
 			fleetList.forEach {
 				it.logic?.tick() }
 		}
@@ -35,30 +36,44 @@ object Fleets : IonServerComponent() {
     fun onPlayerLeave(event: PlayerQuitEvent) {
         val player = event.player
 
-        findByMember(player)?.remove(player.toFleetMember()) ?: return
-        for (fleet in findInvitesByMember(player)) {
-            fleet.removeInvite(player.toFleetMember())
-        }
-    }
-
-	private fun cleanupDeadAiMembers() {
-		val toRemove = mutableListOf<Fleet>()
-
-		for (fleet in fleetList) {
-			fleet.members.removeIf {
-				it is FleetMember.AIShipMember && it.shipRef.get() == null
-			}
-
-			// If leader is an AiShipMember and was GC'd, reassign
-			if (fleet.leader is FleetMember.AIShipMember && (fleet.leader as FleetMember.AIShipMember).shipRef.get() == null) {
-				fleet.leader = null
-			}
-
-			if (fleet.members.isEmpty()) {
-				toRemove.add(fleet)
+		Tasks.syncDelay(2 * 60 * 20L) { //if still offline, kick the player
+			if (Bukkit.getPlayer(player.uniqueId) != null) return@syncDelay
+			findByMember(player)?.remove(player.toFleetMember()) ?: return@syncDelay
+			for (fleet in findInvitesByMember(player)) {
+				fleet.removeInvite(player.toFleetMember())
 			}
 		}
 
+    }
+
+	private fun cleanUp() {
+		val toRemove = mutableSetOf<Fleet>()
+		for (fleet in fleetList) {
+			cleanupDeadAiMembers(fleet) ?: toRemove.add(fleet)
+			reassignLeader(fleet)
+		}
 		toRemove.forEach(Fleets::delete)
+	}
+
+	private fun cleanupDeadAiMembers(fleet: Fleet) : Fleet?{
+
+		fleet.members.removeIf {
+			it is FleetMember.AIShipMember && it.shipRef.get() == null
+		}
+
+		// If leader is an AiShipMember and was GC'd, reassign
+		if (fleet.leader is FleetMember.AIShipMember && (fleet.leader as FleetMember.AIShipMember).shipRef.get() == null) {
+			fleet.leader = null
+		}
+
+		if (fleet.members.isEmpty()) {
+			return fleet
+		}
+		return null
+	}
+
+	private fun reassignLeader(fleet: Fleet) {
+		if (fleet.logic != null) return //let the logic handle reassignments if it exist
+		fleet.leader = Fleet.firstPlayer(fleet) ?: Fleet.largestAIShip(fleet)
 	}
 }

@@ -44,13 +44,10 @@ class Fleet(var leader: FleetMember?) : ForwardingAudience {
 		invited.remove(member)
 	}
 
-	fun remove(member: FleetMember) {
+	fun remove(member: FleetMember, newLeader : ((Fleet) -> FleetMember?)? = null) {
 		members.remove(member)
 		if (leader == member) {
-			leader = members.firstOrNull()
-			if (leader == null) {// if the first player id is not valid, delete the fleet (there is likely an error)
-				delete()
-			}
+			leader = if (newLeader == null) null else newLeader(this)
 		}
 	}
 
@@ -216,6 +213,17 @@ class Fleet(var leader: FleetMember?) : ForwardingAudience {
 		when (it) {
 			is FleetMember.PlayerMember -> Bukkit.getPlayer(it.uuid)
 			is FleetMember.AIShipMember -> null // AI ships aren't audiences
+		}
+	}
+
+	companion object {
+		fun largestAIShip(fleet : Fleet) : FleetMember? {
+			return fleet.members.filter { (it as? FleetMember.AIShipMember)?.shipRef?.get() != null}
+				.maxByOrNull {(it as FleetMember.AIShipMember).shipRef.get()!!.initialBlockCount}
+		}
+
+		fun firstPlayer(fleet: Fleet) : FleetMember? {
+			return fleet.members.firstOrNull { (it as? FleetMember.PlayerMember) != null }
 		}
 	}
 }

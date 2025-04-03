@@ -19,8 +19,14 @@ import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.toComponent
+import net.horizonsend.ion.server.features.ai.configuration.AIEmities
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
+import net.horizonsend.ion.server.features.ai.module.misc.EnmityMessageModule.Companion.betrayalAggro
+import net.horizonsend.ion.server.features.ai.module.misc.EnmityMessageModule.Companion.escalatedFriendlyFire
+import net.horizonsend.ion.server.features.ai.module.misc.EnmityMessageModule.Companion.triggeredByFriendlyFire
+import net.horizonsend.ion.server.features.ai.module.misc.EnmityTriggerMessage
 import net.horizonsend.ion.server.features.ai.module.misc.FactionManagerModule
+import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager.allAIStarships
 import net.horizonsend.ion.server.features.ai.spawning.ships.FactionShip
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
@@ -81,6 +87,8 @@ class AIFaction private constructor(
 
 		private val suffixes: MutableMap<Int,String> = mutableMapOf()
 
+		private val enmityMessages = mutableListOf<EnmityTriggerMessage>()
+
 		/**
 		 * Prefix used for smack talk and radius messages
 		 **/
@@ -128,14 +136,65 @@ class AIFaction private constructor(
 			return this
 		}
 
+		fun addEnmityMessages(vararg messages: Pair<String, Pair<Double, String>>): Builder {
+			messages.forEach { (id, pair) ->
+				val (multiplier, msg) = pair
+				enmityMessages += EnmityTriggerMessage(
+					id = id,
+					message = msg.miniMessage(),
+					shouldTrigger = { opponent, config ->
+						opponent.baseWeight >= (config.initialAggroThreshold * multiplier) && !opponent.aggroed
+					}
+				)
+			}
+			return this
+		}
+
+		fun addAggroMessage(idAndMsg: Pair<String, String>): Builder {
+			val (id, msg) = idAndMsg
+			enmityMessages += EnmityTriggerMessage(
+				id = id,
+				message = msg.miniMessage(),
+				shouldTrigger = { opponent, _ -> opponent.aggroed }
+			)
+			return this
+		}
+
+		fun addFriendlyFireMessages(
+			suspicion: Pair<String, String>,
+			warning: Pair<String, String>,
+			betrayal: Pair<String, String>
+		): Builder {
+			val (id1, msg1) = suspicion
+			val (id2, msg2) = warning
+			val (id3, msg3) = betrayal
+
+			enmityMessages += EnmityTriggerMessage(id1, msg1.miniMessage(), triggeredByFriendlyFire)
+			enmityMessages += EnmityTriggerMessage(id2, msg2.miniMessage(), escalatedFriendlyFire)
+			enmityMessages += EnmityTriggerMessage(id3, msg3.miniMessage(), betrayalAggro)
+			return this
+		}
+
+
+
 		fun build(): AIFaction {
 			val faction = AIFaction(identifier, color, names, suffixes)
 
 			factions += faction
 
+			this@Builder.templateProcessing += {
+				if (enmityMessages.isNotEmpty()) {
+					addAdditionalModule(
+						BehaviorConfiguration.EnmityMessageInformation(messagePrefix, enmityMessages)
+					)
+				}
+			}
+
 			faction.templateProcess = {
 				this@Builder.templateProcessing.forEach { it(this) }
 			}
+
+
 
 			return faction
 		}
@@ -186,7 +245,16 @@ class AIFaction private constructor(
 				"<$WATCHER_STANDARD>Engaging defensive maneuvers.",
 				"<$WATCHER_STANDARD>Re-routing aortal flow to drone locomotion systems."
 			)
-			.addRadiusMessages(2500.0 to "<$WATCHER_STANDARD>Hostile vessel subsystem lock-on confirmed. Engaging.")
+			.addEnmityMessages(
+				"warn" to (0.1 to "<gray>..."),
+				"threat" to (0.5 to "<$WATCHER_STANDARD>Unknown heat signature detected")
+			)
+			.addAggroMessage("aggro" to "<$WATCHER_STANDARD>Hostile vessel subsystem lock-on confirmed. Engaging.")
+			.addFriendlyFireMessages(
+				"scan" to "<gray>Cross-signature event logged.",
+				"anomaly" to "<gray>Unit violating observation protocols.",
+				"engage" to "<$WATCHER_STANDARD>Hostile signal confirmed. Locking subsystems."
+			)
 			.addDifficultySuffix(0,"✦")
 			.addDifficultySuffix(1,"✦✦")
 			.addDifficultySuffix(2,"👁️")
@@ -321,9 +389,15 @@ class AIFaction private constructor(
 				text("Executive Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
 				text("Executive Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
 			)
-			.addRadiusMessages(
-				550.0 * 1.5 to "<#FFA500>You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.",
-				550.0 to "<RED>You have violated restricted airspace. Your vessel will be fired upon."
+			.addEnmityMessages(
+				"notice" to (0.1 to "<gray>Unregistered vessel detected near Guild claim."),
+				"warn" to (0.5 to "<#FFA500>Warning: You are trespassing on Mining Guild property.")
+			)
+			.addAggroMessage("aggro" to "<red>Defense protocols active. You will be removed.")
+			.addFriendlyFireMessages(
+				"suspect" to "<gray>Watch where your aiming! We have expensive equipment.",
+				"warn" to "<#FFA500>Manager is gonna tear me a new one if you keep this up.",
+				"betrayal" to "<red>That's it! For the trouble im selling your ship for scrap!"
 			)
 			.addDifficultySuffix(0,"✦")
 			.addDifficultySuffix(1,"✦✦")
@@ -363,6 +437,11 @@ class AIFaction private constructor(
 				"<$EXPLORER_LIGHT_CYAN>Super Eye <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Trailblazer".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Ultimate Veteran Captain".miniMessage(),
+			)
+			.addFriendlyFireMessages(
+				"suspect" to "<gray>You okay buddy?",
+				"warn" to "<#FFA500>Hey stop that",
+				"betrayal" to "<red>Dammit, I knew I shouldn't have trusted you "
 			)
 			.addSmackMessages(
 				"<white>Please no, I've done nothing wrong!",
@@ -413,9 +492,15 @@ class AIFaction private constructor(
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Legendary Paine".miniMessage(),
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Hero Wilsimm".miniMessage(),
 			)
-			.addRadiusMessages(
-				650.0 * 1.5 to "<#FFA500>You are entering restricted airspace. If you hear this transmission, turn away immediately or you will be fired upon.",
-				650.0 to "<RED>You have violated restricted airspace. Your vessel will be fired upon."
+			.addEnmityMessages(
+				"notice" to (0.1 to "<gray>Monitoring unidentified contact."),
+				"warn" to (0.5 to "<#FFA500>You are entering restricted airspace. Turn back immediately.")
+			)
+			.addAggroMessage("aggro" to "<red>You have violated restricted airspace. Weapons lock in progress.")
+			.addFriendlyFireMessages(
+				"suspect" to "<gray>Watch your fire, pilot.",
+				"warn" to "<#FFA500>That last hit wasn't an accident.",
+				"betrayal" to "<red>You’ve turned on your squadron. Consider yourself expelled."
 			)
 			.addSmackMessages(
 				"<white>Stand down, we have you outmatched!",
@@ -465,8 +550,15 @@ class AIFaction private constructor(
 				"I'll cut you to bacon",
 				"When I'm done with you, I'll mantle your skull!"
 			)
-			.addRadiusMessages(
-				1500.0 to "Get off our turf!"
+			.addEnmityMessages(
+				"notice" to (0.1 to "<gray>Heh. What's this then?"),
+				"warn" to (0.4 to "<#FFA500>Is the prey approaching the hunter?"),
+			)
+			.addAggroMessage("aggro" to "<red>You're my dinner!")
+			.addFriendlyFireMessages(
+				"laugh" to "<gray>Someone is fiesty today.",
+				"growl" to "<#FFA500>Better shut it before the beat down.",
+				"rage" to "<red>Thanks for the knife backstabber!"
 			)
 			.addDifficultySuffix(0,"✦")
 			.addDifficultySuffix(1,"✦✦")
@@ -511,9 +603,15 @@ class AIFaction private constructor(
 				"Someones too curious for their own good.",
 				"Don't say I didn't warn ya, mate."
 			)
-			.addRadiusMessages(
-				750.0 * 1.5 to "<#FFA500>Back off!.",
-				750.0 to "<RED>I'll make an example of you!."
+			.addEnmityMessages(
+				"notice" to (0.1 to "<gray>They're watching us..."),
+				"warn" to (0.4 to "<#FFA500>Back off!")
+			)
+			.addAggroMessage("aggro" to "<RED>I'll make an example of you!")
+			.addFriendlyFireMessages(
+				"laugh" to "<gray>Oi! That better be a mistake.",
+				"growl" to "<#FFA500>You're asking for it.",
+				"rage" to "<red>You just bought yourself a death warrant!"
 			)
 			.addDifficultySuffix(0,"✦")
 			.addDifficultySuffix(1,"✦✦")

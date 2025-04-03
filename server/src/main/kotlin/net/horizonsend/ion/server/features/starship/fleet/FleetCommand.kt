@@ -54,7 +54,7 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        fleet.remove(sender)
+        fleet.remove(sender.toFleetMember())
         fleet.information("${sender.name} has left your fleet")
     }
 
@@ -84,7 +84,7 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        fleet.remove(player)
+        fleet.remove(player.toFleetMember())
         player.userError("You were kicked from ${sender.name}'s fleet!")
         sender.success("Removed ${player.name} from fleet")
     }

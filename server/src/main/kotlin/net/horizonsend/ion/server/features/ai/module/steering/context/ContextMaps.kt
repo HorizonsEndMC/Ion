@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.fleet.FleetMember
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.vectorToPitchYaw
@@ -340,11 +341,13 @@ class FleetGravityContext(
 	override fun populateContext() {
 		clearContext()
 		val fleet = (ship.controller as AIController) //get ships in the same fleet in the same world
-			.getUtilModule(AIFleetManageModule::class.java)?.fleet?.members?.filter {it.get()?.world == ship.world}
+			.getUtilModule(AIFleetManageModule::class.java)?.fleet?.members
+			?.filter {(it as? FleetMember.AIShipMember)?.shipRef?.get()?.world == ship.world
+			}?.mapNotNull {(it as FleetMember.AIShipMember).shipRef.get()}
 		fleet ?: return
 		if (fleet.size <= 1) return
 		val com = Vector()
-		fleet.forEach{ it.get()?.centerOfMass?.let { it1 -> com.add(it1.toVector()) } }
+		fleet.forEach{ com.add(it.centerOfMass.toVector()) }
 		com.multiply(1/fleet.size.toDouble())
 
 		val shipPos = ship.centerOfMass.toVector()
@@ -354,7 +357,7 @@ class FleetGravityContext(
 		offset.normalize()
 
 		var R3BlockCount = 0.0
-		fleet.forEach {it.get()?.let { other -> R3BlockCount += other.currentBlockCount.toDouble()}}
+		fleet.forEach {R3BlockCount += it.initialBlockCount.toDouble()}
 		R3BlockCount = R3BlockCount.pow(1/3.0) + 1e-4
 		//R3BlockCount /= fleet.size.toDouble()
 
