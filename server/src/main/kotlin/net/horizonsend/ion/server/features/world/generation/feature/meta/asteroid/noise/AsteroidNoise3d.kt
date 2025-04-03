@@ -7,6 +7,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import kotlin.random.Random
 
 class AsteroidNoise3d(
+	private val xScale: Double = 1.0,
+	private val yScale: Double = 1.0,
+	private val zScale: Double = 1.0,
 	val meta: ConfigurableAsteroidMeta,
 	private val noise: FastNoiseLite,
 	private val domainWarp: DomainWarp,
@@ -23,7 +26,7 @@ class AsteroidNoise3d(
 	}
 
 	override fun getValue(x: Double, y: Double, z: Double, origin: Vec3i): Double {
-		val vector = Vector3(x.toFloat(), y.toFloat(), z.toFloat())
+		val vector = Vector3((x * xScale).toFloat(), (y * yScale).toFloat(), (z * zScale).toFloat())
 		domainWarp.warp(vector)
 		var noiseValue = noise.GetNoise(vector.x, vector.y, vector.z)
 
