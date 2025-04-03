@@ -137,6 +137,7 @@ class ConfigurableAsteroidMeta(
 	noiseLayers: EvaluationConfiguration = AddConfiguration(
 		SumConfiguration(listOf(
 			NoiseConfiguration3d(
+				yScale = 3.5,
 				noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
 					featureSize = 150f,
 				),
@@ -152,6 +153,7 @@ class ConfigurableAsteroidMeta(
 				amplitude = 100.0
 			),
 			NoiseConfiguration3d(
+				yScale = 3.5,
 				noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(
 					featureSize = 25f,
 				),
@@ -160,14 +162,14 @@ class ConfigurableAsteroidMeta(
 				amplitude = 15.0
 			),
 			NoiseConfiguration3d(
-				NoiseTypeConfiguration.Voronoi(
+				noiseTypeConfiguration = NoiseTypeConfiguration.Voronoi(
 					featureSize = 10f,
 					distanceFunction = FastNoiseLite.CellularDistanceFunction.Euclidean,
 					returnType = FastNoiseLite.CellularReturnType.Distance,
 				),
-				FractalSettings.None,
-				DomainWarpConfiguration.None,
-				10.0,
+				fractalSettings = FractalSettings.None,
+				domainWarpConfiguration = DomainWarpConfiguration.None,
+				amplitude = 10.0,
 				normalizedPositive = false
 			)
 		)),
