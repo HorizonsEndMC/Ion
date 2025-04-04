@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.TransportConfiguration
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.GlobalAsteroidConfiguration
 import net.horizonsend.ion.server.miscellaneous.LegacyConfig
 import java.io.File
 
@@ -33,6 +34,8 @@ object ConfigurationFiles {
 	val nationConfiguration = defineConfigurationFile<NationsConfiguration>(configurationFolder, "nation")
 
 	val transportSettings = defineConfigurationFile<TransportConfiguration>(configurationFolder, "transport") { NewTransport.reload() }
+
+	val globalAsteroidConfiguration = defineConfigurationFile<GlobalAsteroidConfiguration>(configurationFolder, "asteroidDefinitions")
 
 	private inline fun <reified T: Any> defineConfigurationFile(directory: File, fileName: String, noinline callback: () -> Unit = {}): ConfigurationFile<T> {
 		val new = ConfigurationFile(T::class, directory, fileName, callback)
