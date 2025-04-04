@@ -20,7 +20,7 @@ sealed interface FractalSettings {
 
 	@Serializable
 	data class FractalParameters(
-		val type: NoiseFractalType,
+		val fractalType: NoiseFractalType,
 		val octaves: Int,
 		val lunacrity: Float,
 		val gain: Float,
@@ -28,7 +28,7 @@ sealed interface FractalSettings {
 		val pingPongStrength: Float
 	) : FractalSettings {
 		override fun apply(noiseLite: FastNoiseLite) {
-			noiseLite.SetFractalType(type.internal)
+			noiseLite.SetFractalType(fractalType.internal)
 			noiseLite.SetFractalOctaves(octaves)
 			noiseLite.SetFractalLacunarity(lunacrity)
 			noiseLite.SetFractalGain(gain)
