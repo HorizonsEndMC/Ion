@@ -16,8 +16,8 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedM
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.factory.BoundingBoxTask
-import net.horizonsend.ion.server.features.starship.factory.NewShipFactoryTask
 import net.horizonsend.ion.server.features.starship.factory.PreviewTask
+import net.horizonsend.ion.server.features.starship.factory.ShipFactoryTask
 import net.horizonsend.ion.server.features.transport.nodes.util.Path
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -55,7 +55,7 @@ abstract class ShipFactoryEntity(
 	y,
 	z,
 	structureDirection
-), StatusTickedMultiblockEntity, AsyncTickingMultiblockEntity, UserManagedMultiblockEntity, DisplayMultiblockEntity, TaskHandlingMultiblockEntity<NewShipFactoryTask> {
+), StatusTickedMultiblockEntity, AsyncTickingMultiblockEntity, UserManagedMultiblockEntity, DisplayMultiblockEntity, TaskHandlingMultiblockEntity<ShipFactoryTask> {
 	val settings = ShipFactorySettings.load(data)
 
 	override val userManager: UserManagedMultiblockEntity.UserManager = UserManagedMultiblockEntity.UserManager(data, persistent = false)
@@ -90,7 +90,7 @@ abstract class ShipFactoryEntity(
 		store.addAdditionalData(NamespacedKeys.BLUEPRINT_NAME, PersistentDataType.STRING, blueprintName)
 	}
 
-	override var task: NewShipFactoryTask? = null
+	override var task: ShipFactoryTask? = null
 
 	fun enable(user: Player) {
 		if (userManager.currentlyUsed()) return
@@ -101,7 +101,7 @@ abstract class ShipFactoryEntity(
 		if (!checkBlueprintPermissions(blueprint, user)) return
 
 		userManager.setUser(user)
-		startTask(NewShipFactoryTask(blueprint, settings,this, getInventories(), user))
+		startTask(ShipFactoryTask(blueprint, settings,this, getInventories(), user))
 	}
 
 	fun disable() {

@@ -14,6 +14,7 @@ import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.Companion.formatProgress
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock
@@ -42,7 +43,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.atomic.AtomicInteger
 
-class NewShipFactoryTask(
+class ShipFactoryTask(
 	blueprint: Blueprint,
 	settings: ShipFactorySettings,
 	entity: ShipFactoryEntity,
@@ -145,7 +146,7 @@ class NewShipFactoryTask(
 				}
 			}
 
-			val price = ShipFactoryMaterialCosts.getPrice(blockData)
+			val price = if (ConfigurationFiles.featureFlags().economy) ShipFactoryMaterialCosts.getPrice(blockData) else 0.0
 
 			var toBreak = false
 
