@@ -264,7 +264,7 @@ object Crafting : IonServerComponent() {
 		shapeless("nether_warts", ItemStack(NETHER_WART, 9), NETHER_WART_BLOCK)
 		shapeless("honeycomb", ItemStack(HONEYCOMB, 9), HONEYCOMB_BLOCK)
 		shapedMaterial("cobweb", COBWEB, "s s", " s ", "s s", 's' to STRING)
-		shapedMaterial("small_dripleaf" , Material.SMALL_DRIPLEAF, shape1 = "xx ", shape2 = " y ", shape3 = "",'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
+		shapedMaterial("small_dripleaf" , Material.SMALL_DRIPLEAF, shape1 = "xx ", shape2 = " y ", shape3 = "   ",'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
 		shapedMaterial("big_dripleaf" , Material.BIG_DRIPLEAF, shape1 = "xxx", shape2 = "  y", shape3 = "  y",'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
 
 		Bukkit.removeRecipe(Material.ENDER_CHEST.key)
