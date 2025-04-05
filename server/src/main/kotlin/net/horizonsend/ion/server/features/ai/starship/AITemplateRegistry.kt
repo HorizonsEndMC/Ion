@@ -84,7 +84,7 @@ object AITemplateRegistry {
 	val VERDOLITH_REINFORCEMENT = registerTemplate(builder(
 		identifier = "VERDOLITH_REINFORCEMENT",
 		template = StarshipTemplateRegistry.VERDOLITH,
-		controllerFactory = AIControllerFactories.frigate,
+		controllerFactory = AIControllerFactories.advancedFrigate,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(WATCHERS)
@@ -97,7 +97,7 @@ object AITemplateRegistry {
 	val VERDOLITH_REINFORCED = registerTemplate(builder(
 			identifier = "VERDOLITH_REINFORCED",
 			template = StarshipTemplateRegistry.VERDOLITH,
-			controllerFactory = AIControllerFactories.frigate,
+			controllerFactory = AIControllerFactories.watcherSpecialFrigate,
 			engagementRange = 2500.0
 		)
 		.addFactionConfiguration(WATCHERS)
@@ -116,7 +116,7 @@ object AITemplateRegistry {
 	val TERALITH = registerTemplate(builder(
 			identifier = "TERALITH",
 			template = StarshipTemplateRegistry.TERALITH,
-			controllerFactory = AIControllerFactories.frigate,
+			controllerFactory = AIControllerFactories.watcherSpecialFrigate,
 			engagementRange = 2500.0
 		)
 		.addFactionConfiguration(WATCHERS)
@@ -142,7 +142,7 @@ object AITemplateRegistry {
 	val MALINGSHU_REINFORCEMENT = registerTemplate(builder(
 		identifier = "MALINGSHU_REINFORCEMENT",
 		template = StarshipTemplateRegistry.MALINGSHU,
-		controllerFactory = AIControllerFactories.frigate,
+		controllerFactory = AIControllerFactories.watcherSpecialFrigate,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
@@ -155,7 +155,7 @@ object AITemplateRegistry {
 	val MIANBAO_REINFORCEMENT = registerTemplate(builder(
 		identifier = "MIANBAO_REINFORCEMENT",
 		template = StarshipTemplateRegistry.MIANBAO,
-		controllerFactory = AIControllerFactories.frigate,
+		controllerFactory = AIControllerFactories.watcherSpecialFrigate,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
@@ -168,7 +168,7 @@ object AITemplateRegistry {
 	val MALINGSHU_REINFORCED = registerTemplate(builder(
 		identifier = "MALINGSHU_REINFORCED",
 		template = StarshipTemplateRegistry.MALINGSHU,
-		controllerFactory = AIControllerFactories.frigate,
+		controllerFactory = AIControllerFactories.watcherSpecialFrigate,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)

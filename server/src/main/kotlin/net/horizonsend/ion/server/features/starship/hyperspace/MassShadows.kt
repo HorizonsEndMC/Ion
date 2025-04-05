@@ -1,15 +1,19 @@
 package net.horizonsend.ion.server.features.starship.hyperspace
 
 import net.horizonsend.ion.common.utils.miscellaneous.squared
+import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.PilotedStarships.getDisplayName
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.miscellaneous.utils.distance
 import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.World
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 object MassShadows {
@@ -74,6 +78,14 @@ object MassShadows {
 				Interdiction.starshipInterdictionRangeEquation(otherShip).toInt(),
 				dist.toInt()
 			)
+		}
+
+		for (locusScheduler in AISpawners.getAllSpawners().mapNotNull { it.scheduler as? LocusScheduler }) {
+			if (!locusScheduler.active) continue
+			val center = locusScheduler.center
+
+			val dist = distance(x, 128.0, z, center.x, 128.0, center.z)
+			return MassShadowInfo(text("AI locus"), center.blockX, center.blockY, locusScheduler.radius.roundToInt(), dist.toInt())
 		}
 
 		return null

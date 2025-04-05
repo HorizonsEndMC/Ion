@@ -34,7 +34,7 @@ class LocusScheduler(
 	private val separation: Supplier<Duration>,
 	private val announcementMessage: Component?,
 	private val endMessage: Component?,
-	private val radius: Double,
+	val radius: Double,
 	private val spawnSeparation: Supplier<Duration>,
 	private val worlds: List<String>
 ) : SpawnerScheduler, TickedScheduler {
@@ -82,6 +82,7 @@ class LocusScheduler(
 		center = calculateNewCenter()
 		active = true
 		markDynmapZone()
+		addGravityWell()
 
 		if (announcementMessage != null) Notify.chatAndGlobal(template(
 			announcementMessage,
@@ -97,6 +98,7 @@ class LocusScheduler(
 	fun end() {
 		active = false
 		removeDynmapZone()
+		removeGravityWell()
 		if (endMessage != null) IonServer.server.sendMessage(endMessage)
 	}
 
@@ -209,6 +211,14 @@ class LocusScheduler(
 			if (!dynmapLoaded) return
 			markerSet.findCircleMarker("${locus.getSpawner().identifier}_LOCUS")?.deleteMarker()
 		}
+	}
+
+	private fun addGravityWell() {
+
+	}
+
+	private fun removeGravityWell() {
+
 	}
 
 	override fun getTickInfo(): String {

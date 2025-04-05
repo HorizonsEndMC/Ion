@@ -173,6 +173,26 @@ object AIControllerFactories : IonServerComponent() {
         build()
     }
 
+	val watcherSpecialFrigate = registerFactory("WATCHER_SPECIAL") {
+        setControllerTypeName("Frigate")
+
+        setModuleBuilder {
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 1500.0, null).apply { sticky = true })
+			builder.addModule("gravityWell", GravityWellModule(it, 2400.0, true) { targeting.findTarget() })
+			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+
+			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
+			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
+			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+
+			builder
+        }
+
+        build()
+    }
+
 	val advancedFrigate = registerFactory("ADVANCED_FRIGATE") {
         setControllerTypeName("Advanced Frigate")
 
