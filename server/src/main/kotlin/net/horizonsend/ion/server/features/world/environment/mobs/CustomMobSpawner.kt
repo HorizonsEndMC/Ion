@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.WorldSettings
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.CUSTOM_ENTITY
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CUSTOM_ENTITY
 import net.horizonsend.ion.server.miscellaneous.utils.weightedRandomOrNull
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.entity.LivingEntity

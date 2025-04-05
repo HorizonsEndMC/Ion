@@ -5,12 +5,11 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.FLYABLE_BLOCKS
 import net.horizonsend.ion.server.features.starship.Mass
 import net.horizonsend.ion.server.miscellaneous.utils.ANVIL_TYPES
-import net.horizonsend.ion.server.miscellaneous.utils.GLAZED_TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.SLAB_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
-import net.horizonsend.ion.server.miscellaneous.utils.STAINED_TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAIR_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TRAPDOOR_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WALL_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -105,6 +104,7 @@ object GameplayTweaks : IonServerComponent() {
 		setBlastResistance(Material.FURNACE, 6.0f)
 		setBlastResistance(Material.DISPENSER, 6.0f)
 		setBlastResistance(Material.IRON_TRAPDOOR, 6.0f)
+		setBlastResistance(Material.VAULT, 6.0f)
 		STAINED_GLASS_TYPES.forEach { setBlastResistance(it, 5.0f) }
 		setBlastResistance(Material.END_STONE, 5.0f)
 		setBlastResistance(Material.END_PORTAL_FRAME, 5.0f)
@@ -114,8 +114,7 @@ object GameplayTweaks : IonServerComponent() {
 		setBlastResistance(Material.QUARTZ_STAIRS, 6.0f)
 		setBlastResistance(Material.SANDSTONE_STAIRS, 6.0f)
 		setBlastResistance(Material.RED_SANDSTONE_STAIRS, 6.0f)
-		STAINED_TERRACOTTA_TYPES.forEach { setBlastResistance(it, 6.0f) }
-		GLAZED_TERRACOTTA_TYPES.forEach { setBlastResistance(it, 6.0f) }
+		TERRACOTTA_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		SLAB_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		STAIR_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		STAINED_GLASS_PANE_TYPES.forEach { setBlastResistance(it, 5.0f) }

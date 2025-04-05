@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.custom.items.util
 
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule.Companion.powerPrefix
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component
@@ -32,7 +32,7 @@ enum class StoredValues(
 
 	POWER(NamespacedKeys.POWER) {
 		override fun formatLore(amount: Int, maxAmount: Int): Component = ofChildren(
-			PowerMachines.prefixComponent,
+			powerPrefix,
 			text(amount, GREEN),
 			text(" / ", GRAY),
 			text(maxAmount, YELLOW)

@@ -8,9 +8,9 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockPos
 import net.horizonsend.ion.server.miscellaneous.utils.gayColors
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component

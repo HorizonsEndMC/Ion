@@ -4,13 +4,15 @@ import com.manya.pdc.DataTypes
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isDoor
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
@@ -23,6 +25,8 @@ import org.bukkit.persistence.PersistentDataType
 object DisconnectedDockingTubeMultiblock : DockingTubeMultiblock(
 	MiniMessage.miniMessage().deserialize("[Disconnected]").color(TextColor.fromHexString("#FF5555"))
 ) {
+	override val displayName: Component get() = text("Docking Tube (Disconnected)")
+
 	override fun MultiblockShape.RequirementBuilder.tubeStateExtension() = anyButton()
 
 	override fun toggle(sign: Sign, player: Player) {
