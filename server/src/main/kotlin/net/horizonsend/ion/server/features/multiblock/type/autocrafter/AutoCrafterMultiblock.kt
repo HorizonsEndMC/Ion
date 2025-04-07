@@ -178,7 +178,7 @@ abstract class AutoCrafterMultiblock(
 			val result = recipeCache[grid].orElse(null)?.clone()
 
 			if (result == null) {
-				sleepWithStatus(text("Invalid Recipe", RED), 200)
+				sleepWithStatus(text("Invalid Recipe", RED), 50)
 				return
 			}
 
