@@ -32,6 +32,7 @@ import net.minecraft.world.level.block.state.properties.ChestType
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.craftbukkit.inventory.CraftInventoryDoubleChest
 import org.bukkit.inventory.ItemStack
+import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): TransportCache(holder), DestinationCacheHolder {
@@ -165,11 +166,13 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 			meta
 		)
 
-		val room = getTransferSpaceFor(destinationInventories.values, singletonItem)
-
 		for (reference in availableItemReferences) {
-			val amount = minOf(reference.get()?.amount ?: 0, room)
-			if (amount == 0) continue
+			val amount = Supplier {
+				val room = getTransferSpaceFor(destinationInventories.values, singletonItem)
+				minOf(reference.get()?.amount ?: 0, room)
+			}
+
+			if (amount.get() == 0) continue
 
 			transaction.addTransfer(
 				reference,

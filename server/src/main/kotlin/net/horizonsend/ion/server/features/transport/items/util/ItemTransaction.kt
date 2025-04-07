@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap
 import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.ItemStack
+import java.util.function.Supplier
 
 class ItemTransaction {
 	private val transactions = mutableListOf<BackedItemTransaction>()
@@ -12,10 +13,10 @@ class ItemTransaction {
 		sourceReference: ItemReference,
 		destinationInventories: Object2ObjectRBTreeMap<PathfindingNodeWrapper, CraftInventory>,
 		transferredItem: ItemStack,
-		transferredAmount: Int,
+		transferredAmountProvider: Supplier<Int>,
 		destinationSelector: (Object2ObjectRBTreeMap<PathfindingNodeWrapper, CraftInventory>) -> Pair<PathfindingNodeWrapper, CraftInventory>
 	) {
-		transactions += BackedItemTransaction(sourceReference, transferredItem, transferredAmount, destinationInventories, destinationSelector)
+		transactions += BackedItemTransaction(sourceReference, transferredItem, transferredAmountProvider, destinationInventories, destinationSelector)
 	}
 
 	fun isEmpty() = transactions.isEmpty()
