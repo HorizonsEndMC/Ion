@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.configurationFolder
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
-import net.horizonsend.ion.server.features.transport.TransportConfiguration
+import net.horizonsend.ion.server.features.misc.WorldReset
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.generators.bukkit.EmptyChunkGenerator
 import net.horizonsend.ion.server.features.world.generation.generators.bukkit.SpaceBiomeProvider
@@ -34,6 +34,10 @@ import kotlin.system.measureTimeMillis
 
 object IonServer : JavaPlugin() {
 	val configProvider = ConfigurationFiles // Ensure initialization
+
+	override fun onLoad() {
+		WorldReset.onStartup()
+	}
 
 	override fun onEnable(): Unit =
 		runCatching(::internalEnable).fold(

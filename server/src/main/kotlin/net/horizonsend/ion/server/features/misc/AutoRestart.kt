@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 object AutoRestart : IonServerComponent() {
 	private val file = File(IonServer.dataFolder, "this_is_a_restart")
 
-	private val isRestart = file.exists()
+	val isRestart = file.exists()
 
 	override fun onEnable() {
 		if (isRestart) {

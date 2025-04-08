@@ -5,17 +5,18 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ServerConfiguration.AsteroidConfig.Palette
 import net.horizonsend.ion.server.configuration.util.Pos
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.world.WorldSettings
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import java.time.DayOfWeek
 
 @Serializable
 data class ServerConfiguration(
@@ -31,6 +32,7 @@ data class ServerConfiguration(
 	val nearMaxRange: Double = 1200.0,
 	val restartHour: Int = 8,
 	val globalCustomSpawns: List<WorldSettings.SpawnedMob> = listOf(),
+	val worldResetSettings: AutoWorldReset = AutoWorldReset()
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
@@ -204,4 +206,10 @@ data class ServerConfiguration(
 
 		fun schematic(): Clipboard = readSchematic(schematicFile)!!
 	}
+
+	@Serializable
+	data class AutoWorldReset(
+		val worldResetDay: DayOfWeek = DayOfWeek.WEDNESDAY,
+		val worldResetDirectories: List<String> = listOf()
+	)
 }
