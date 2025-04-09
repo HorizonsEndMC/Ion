@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.misc
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
+import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
@@ -53,6 +54,7 @@ object Wrench : CustomItem(
 		}
 
 		MultiblockCommand.onCheck(player, multiblock, sign.x, sign.y, sign.z)
+		FixExtractorsCommand.tryFixMultiblock(player, sign)
 	}
 
 	private fun handleRightClick(player: Player, event: PlayerInteractEvent?) {
