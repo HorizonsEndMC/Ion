@@ -164,15 +164,15 @@ abstract class AutoCrafterMultiblock(
 		private var resultHash: Int? = null
 
 		override fun tick() {
-			val inputInventory: Inventory = getInput() ?: return sleepWithStatus(text("Not Intact", RED), 500)
-			val recipeHolder: Inventory = getRecipeHolder() ?: return sleepWithStatus(text("Not Intact", RED), 500)
-			val output: Inventory = getOutput() ?: return sleepWithStatus(text("Not Intact", RED), 500)
+			val inputInventory: Inventory = getInput() ?: return sleepWithStatus(text("Not Intact", RED), 50)
+			val recipeHolder: Inventory = getRecipeHolder() ?: return sleepWithStatus(text("Not Intact", RED), 50)
+			val output: Inventory = getOutput() ?: return sleepWithStatus(text("Not Intact", RED), 50)
 
 			// material data of each item in the recipe holder, used as the crafting transportNetwork
 			val grid: List<ItemStack?> = recipeHolder.contents.toList()
 
 			val startPower = powerStorage.getPower()
-			if (startPower < POWER_USAGE_PER_INGREDIENT) return sleepWithStatus(text("Low Power", RED), 250)
+			if (startPower < POWER_USAGE_PER_INGREDIENT) return sleepWithStatus(text("Low Power", RED), 50)
 
 			// result item of this recipe
 			val result = recipeCache[grid].orElse(null)?.clone()
@@ -188,7 +188,7 @@ abstract class AutoCrafterMultiblock(
 			try {
 				for (iteration in (1..multiblock.iterations)) {
 					if (power < powerUsage) {
-						sleepWithStatus(text("Low Power", RED), 150)
+						sleepWithStatus(text("Low Power", RED), 50)
 						break
 					}
 
