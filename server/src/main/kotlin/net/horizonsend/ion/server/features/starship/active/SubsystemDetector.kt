@@ -121,6 +121,10 @@ object SubsystemDetector {
 //		for (block in potentialTurretBases) {
 //			detectCustomTurretBase(starship, block)
 //		}
+
+		// Create entities for the subsystems before the nodes are checked
+		processMultiblockEntities(starship)
+
 		for (block in potentialSignBlocks) {
 			try {
 				detectSign(starship, block)
@@ -220,10 +224,14 @@ object SubsystemDetector {
 			is GravityWellMultiblock -> {
 				starship.subsystems += GravityWellSubsystem(starship, sign, multiblock)
 			}
+		}
+	}
 
-			is MiningLaserMultiblock -> {
-				// Multiblocks are loaded onto ships before his step
-				val entity = starship.multiblockManager[sign] as? MiningLaserMultiblock.MiningLaserMultiblockEntity ?: return
+	private fun processMultiblockEntities(starship: ActiveControlledStarship) {
+		for ((_, entity) in starship.multiblockManager.getAllMultiblockEntities()) {
+			if (!entity.isIntact(true)) continue
+
+			if (entity is MiningLaserMultiblock.MiningLaserMultiblockEntity) {
 				starship.subsystems += MiningLaserSubsystem(starship, entity)
 			}
 		}
