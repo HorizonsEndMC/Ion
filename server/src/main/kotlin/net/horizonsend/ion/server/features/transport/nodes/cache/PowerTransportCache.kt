@@ -40,7 +40,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		val source = sources.randomOrNull() ?: return //TODO take from all
 
 		runPowerTransfer(
-			destinations = getTransferDestinations(location) ?: return,
+			rawDestinations = getTransferDestinations(location) ?: return,
 			transferLimit = (transportSettings().powerConfiguration.powerTransferRate * delta).roundToInt(),
 			powerStorage = source.powerStorage
 		)
@@ -51,7 +51,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		if (transportPower == 0) return
 
 		runPowerTransfer(
-			destinations = getTransferDestinations(location) ?: return,
+			rawDestinations = getTransferDestinations(location) ?: return,
 			transferLimit = transportPower,
 			powerStorage = null
 		)
@@ -81,8 +81,8 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	/**
 	 * Runs the power transfer from the source to the destinations. pending rewrite
 	 **/
-	private fun runPowerTransfer(destinations: Collection<PathfindingNodeWrapper>, transferLimit: Int, powerStorage: PowerStorage?) {
-		val numDestinations = destinations.size
+	private fun runPowerTransfer(rawDestinations: Collection<PathfindingNodeWrapper>, transferLimit: Int, powerStorage: PowerStorage?) {
+		val numDestinations = rawDestinations.size
 
 		val removeAmount = minOf(
 			a = numDestinations * transferLimit,
@@ -93,7 +93,12 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 		// Remove all at the start
 		val missing = powerStorage?.removePower(removeAmount) ?: 0
-		val individualAmount = (removeAmount - missing) / numDestinations
+		val availableForTransfer = (removeAmount - missing)
+
+		// Ensure that all get at least 1
+		val destinations = rawDestinations.take(availableForTransfer)
+
+		val individualAmount = availableForTransfer / destinations.size
 
 		// The amount of power that has not been removed
 		var remainingPower = removeAmount - missing
