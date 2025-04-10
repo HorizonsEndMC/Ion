@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.destruction
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement
@@ -19,43 +20,39 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.core.SectionPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.world.level.block.BaseEntityBlock
+import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
-import java.util.PriorityQueue
 import kotlin.math.sqrt
 import kotlin.random.Random
 
 class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 	private var velocity: Vec3i = Vec3i(0, -1, 0)
+		set(value) {
+			field = value
+			inverseVelocity = Vec3i(-value.x, -value.y, -value.z)
+		}
+
+	private var inverseVelocity = Vec3i(-velocity.x, -velocity.y, -velocity.z)
 
 	private var iteration = 0
 	private val maxIteration = sqrt(starship.blocks.size.toDouble())
 
+	// Positions that have been obstructed. Blocks inside these will not be moved.
 	private val obstructedPositions = LongOpenHashSet()
 
-	private val keyComparator = if (velocity.y != 0) Comparator { a: BlockKey, b: BlockKey -> getY(b).compareTo(getY(a)) }
-		else if (velocity.x != 0) Comparator { a: BlockKey, b: BlockKey -> getX(b).compareTo(getX(a)) }
-		else Comparator { a: BlockKey, b: BlockKey -> getZ(b).compareTo(getZ(a)) }
-
 	// Prioritize the lowest positions first, so that the bottom iterates, then hits the ground, then everything above it, and so on.
-	private var sinkPositions = PriorityQueue(keyComparator)
-
-	private var minX = 0
-	private var maxX = 0
-
-	private var minY = 0
-	private var maxY = 0
-
-	private var minZ = 0
-	private var maxZ = 0
+	private var sinkPositions = longArrayOf()
 
 	override fun setup() {
+		// Handle random velocity in space
 		if (starship.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			velocity = Vec3i(
 				Random.nextInt(-1, 1),
@@ -64,14 +61,18 @@ class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 			)
 		}
 
-		// Populate the initial block queue
-		sinkPositions.addAll(starship.blocks.map { toBlockKey(Vec3i(it)) })
+		// Populate the initial sinking list
+		val newArray = starship.blocks.toLongArray()
+		for (index in newArray.indices) {
+			newArray[index] = toBlockKey(Vec3i(newArray[index]))
+		}
+		sinkPositions = newArray
 	}
 
 	override fun tick() {
 		iteration++
 
-		if (iteration > maxIteration || ActiveStarships.isActive(starship)) {
+		if (iteration > maxIteration || ActiveStarships.isActive(starship) || sinkPositions.isEmpty()) {
 			cancel()
 			Tasks.sync {
 				finalExplosion()
@@ -90,9 +91,9 @@ class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 		var newMaxZ = baseline.z
 
 		// Calculate the new positions from the velocity, and note the new min and max coordinates
-		val newPositions = PriorityQueue<BlockKey> { a, b -> getY(b).compareTo(getY(a)) }
-		sinkPositions.mapNotNullTo(newPositions) {
-			if (obstructedPositions.contains(it)) return@mapNotNullTo null
+		val newPositions = LongArray(sinkPositions.size) { index ->
+			val it = sinkPositions[index]
+
 			val newKey = toBlockKey(toVec3i(it).plus(velocity))
 
 			val x = getX(newKey)
@@ -109,8 +110,8 @@ class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 			newKey
 		}
 
-		val oldChunkMap = getChunkMap(sinkPositions.toLongArray())
-		val newChunkMap = getChunkMap(newPositions.toLongArray())
+		val oldChunkMap = getChunkMap(sinkPositions)
+		val newChunkMap = getChunkMap(newPositions)
 
 		val n = sinkPositions.size
 		val capturedStates = Array(n) { AIR }
@@ -128,6 +129,8 @@ class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 					val section = nmsChunk.getSection(sectionKey)
 
 					for ((blockKey, index) in positionMap) {
+						if (obstructedPositions.contains(blockKey)) continue
+
 						val x = getX(blockKey)
 						val y = getY(blockKey)
 						val z = getZ(blockKey)
@@ -156,6 +159,8 @@ class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 				}
 			}
 
+			val trimmedPositions = LongOpenHashSet()
+
 			for ((chunkKey, sectionMap) in newChunkMap) {
 				val chunk = starship.world.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
 				val nmsChunk = chunk.minecraft
@@ -164,6 +169,8 @@ class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 					val section = nmsChunk.getSection(sectionKey)
 
 					for ((blockKey, index) in positionMap) {
+						if (obstructedPositions.contains(blockKey)) continue
+
 						val x = getX(blockKey)
 						val y = getY(blockKey)
 						val z = getZ(blockKey)
@@ -173,13 +180,15 @@ class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 						val localZ = z and 0xF
 
 						val data = capturedStates[index]
+						if (data.isAir) continue
 
 						val blockPos = BlockPos(x, y, z)
 						nmsChunk.`moonrise$getChunkAndHolder`().holder.blockChanged(blockPos)
-						nmsChunk.level.onBlockStateChange(blockPos, AIR /*TODO hangars */, data)
+						nmsChunk.level.onBlockStateChange(blockPos, AIR, data)
 
 						section.setBlockState(localX, localY, localZ, data, false)
 						lightModule.checkBlock(BlockPos(x, y, z))
+						trimmedPositions.add(blockKey)
 					}
 				}
 
@@ -187,15 +196,30 @@ class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 				nmsChunk.markUnsaved()
 			}
 
-			OptimizedMovement.sendChunkUpdatesToPlayers(starship.world, starship.world, oldChunkMap, newChunkMap)
-			maxX = newMaxX
-			minX = newMinX
-			maxY = newMaxY
-			minY = newMinY
-			maxZ = newMaxZ
-			minZ = newMinZ
+			for ((index, tile) in capturedTiles) {
+				val blockKey = newPositions[index]
+				if (obstructedPositions.contains(blockKey)) continue
 
-			sinkPositions = newPositions
+				val x = getX(blockKey)
+				val y = getY(blockKey)
+				val z = getZ(blockKey)
+
+				val newPos = BlockPos(x, y, z)
+				val chunk = starship.world.getChunkAt(x shr 4, z shr 4)
+
+				val blockEntity = BlockEntity.loadStatic(
+					newPos,
+					tile.first,
+					tile.second,
+					starship.world.minecraft.registryAccess()
+				) ?: continue
+
+				chunk.minecraft.addAndRegisterBlockEntity(blockEntity)
+			}
+
+			OptimizedMovement.sendChunkUpdatesToPlayers(starship.world, starship.world, oldChunkMap, newChunkMap)
+
+			sinkPositions = trimmedPositions.toLongArray()
 		}
 	}
 
@@ -219,18 +243,22 @@ class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 //	}
 
 	private fun populateObstructionList(
-		newPositions: PriorityQueue<BlockKey>,
+		newPositions: LongArray,
 		minX: Int = 0, maxX: Int = 0,
 		minY: Int = 0, maxY: Int = 0,
 		minZ: Int = 0, maxZ: Int = 0,
 	) {
 		for (position in newPositions) {
 			if (obstructedPositions.contains(position)) continue
+			if (sinkPositions.contains(position)) continue
 			val type = getBlockTypeSafe(starship.world, getX(position), getY(position), getZ(position))
 			if (type == null || !type.isAir) addObstructedPosition(position, minX, maxX, minY, maxY, minZ, maxZ)
 		}
 	}
 
+	/**
+	 * Adds the provided position to the obstructed list, and searches out in the opposite direction of the velocity
+	 **/
 	private fun addObstructedPosition(
 		position: BlockKey,
 		minX: Int = 0, maxX: Int = 0,
@@ -239,11 +267,14 @@ class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 	) {
 		var nextPosition = toVec3i(position)
 		obstructedPositions.add(position)
+		debugAudience.highlightBlock(nextPosition, 120L)
+
+
 
 		var iterations = 0
 		while (iterations < 100) {
 			iterations++
-			val newPosition = nextPosition.plus(velocity)
+			val newPosition = nextPosition.plus(inverseVelocity)
 			if (obstructedPositions.contains(toBlockKey(newPosition))) break
 
 			if (newPosition.x > maxX || newPosition.x < minX) break
@@ -251,11 +282,13 @@ class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 			if (newPosition.z > maxZ || newPosition.z < minZ) break
 
 			nextPosition = newPosition
+			obstructedPositions.add(toBlockKey(newPosition))
+			debugAudience.highlightBlock(nextPosition, 120L)
 		}
 	}
 
 	private fun finalExplosion() {
-
+		println("Final explosion")
 	}
 
 	private fun getChunkMap(positionArray: LongArray): SinkChunkMap {
