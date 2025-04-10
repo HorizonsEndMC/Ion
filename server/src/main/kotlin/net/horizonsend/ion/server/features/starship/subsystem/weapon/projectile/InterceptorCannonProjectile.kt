@@ -35,13 +35,13 @@ class InterceptorCannonProjectile(
 		if (starship.initialBlockCount < 700) {
 			impactLocation.createExplosion(explosionSize)
 		}
-		else if (starship.initialBlockCount < 1400) {
+		else if (starship.initialBlockCount < 1000) {
 			impactLocation.createExplosion(explosionSize * explosionCalc(starship.initialBlockCount))
 		}
 	}
 
 	fun explosionCalc(blockCount: Int): Float {
-		// 1.0f for 700, 0.98f for 800, 0.81f for 1000, 0.49f for 1200
-		return ((-0.00000204082 * blockCount * blockCount) + (0.00285714 * blockCount)).toFloat()
+		// 1.0f for 700, 0.75f for 850, 0.0f for 1000
+		return ((-0.0000111111 * blockCount * blockCount) + (0.0155556 * blockCount) - 4.44444).toFloat()
 	}
 }
