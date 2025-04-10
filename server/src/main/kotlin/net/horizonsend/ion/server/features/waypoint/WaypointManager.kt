@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.waypoint
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
@@ -393,6 +394,7 @@ object WaypointManager : IonServerComponent() {
             val vertex = playerDestinations[player.uniqueId]?.first() ?: return
             if (player.location.world == vertex.loc.world &&
                 player.location.distance(vertex.loc) <= WAYPOINT_REACHED_DISTANCE) {
+                player.success("Waypoint ${playerDestinations[player.uniqueId]?.firstOrNull()?.name} on route reached; removing from route")
                 playerDestinations[player.uniqueId]?.removeFirstOrNull()
 
                 if (!mainGraph.containsVertex(vertex)) {
