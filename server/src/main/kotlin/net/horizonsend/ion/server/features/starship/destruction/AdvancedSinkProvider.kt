@@ -1,12 +1,15 @@
 package net.horizonsend.ion.server.features.starship.destruction
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement
 import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement.AIR
 import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement.updateHeightMaps
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.SupercapitalReactorSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -24,6 +27,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.minecraft.core.BlockPos
 import net.minecraft.core.SectionPos
 import net.minecraft.nbt.CompoundTag
@@ -32,11 +36,16 @@ import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
 import org.bukkit.Material
+import org.bukkit.Particle
+import org.bukkit.util.Vector
 import java.util.LinkedList
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
+open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 	private var velocity: Vec3i = Vec3i(0, -1, 0)
 		set(value) {
 			field = value
@@ -73,13 +82,51 @@ class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 		}
 
 		sinkPositions = newArray
+
+		tryReactorParticles()
+		playSinkSound()
+	}
+
+	private fun tryReactorParticles() {
+		val reactor = starship.subsystems.filterIsInstance<SupercapitalReactorSubsystem<*>>().firstOrNull() ?: return
+		val center = (reactor.pos).toCenterVector()
+
+		val tickRate = 4L
+		val growRate = 4.5 * (tickRate.toDouble() / 20.0)
+
+		var particleRadius = 0.0
+
+		runnable {
+			particleRadius += growRate
+			val number = (2.0 * PI * particleRadius).toInt()
+
+			for (count in 0..number) {
+				// Get the fraction around the circle
+				val degrees = 360.0 - (360.0 * (count.toDouble() / number.toDouble()))
+				val radians = degrees * (PI / 180.0)
+
+				val xOffset = cos(radians) * particleRadius
+				val zOffset = sin(radians) * particleRadius
+
+				val newLoc = center.clone().add(Vector(xOffset, 0.0, zOffset))
+
+				starship.world.spawnParticle(Particle.SONIC_BOOM, newLoc.x, newLoc.y, newLoc.z, 1, 0.0, 0.0, 0.0, 0.0, null,true)
+
+				if (particleRadius >= 150.0) cancel()
+			}
+		}.runTaskTimer(IonServer, tickRate, tickRate)
+	}
+
+	fun playSinkSound() {
+		starship.balancing.sounds.explode?.let {
+			playSoundInRadius(starship.centerOfMass.toLocation(starship.world), 7_500.0, it.sound)
+		}
 	}
 
 	override fun cancel() {
 		super.cancel()
 
 		Tasks.sync {
-			println("Final explosion")
 			finalExplosion()
 		}
 	}
