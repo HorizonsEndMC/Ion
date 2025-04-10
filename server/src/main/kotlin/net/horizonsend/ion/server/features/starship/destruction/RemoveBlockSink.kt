@@ -11,8 +11,6 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 class RemoveBlockSink(starship: ActiveStarship, val checkRemove: (Block) -> Boolean) : StandardSinkProvider(starship) {
-	val standard = StandardSinkProvider(starship)
-
 	override fun setup() {
 		starship.iterateBlocks { x, y, z ->
 			if (checkRemove(starship.world.getBlockAt(x, y, z))) {
@@ -51,7 +49,7 @@ class RemoveBlockSink(starship: ActiveStarship, val checkRemove: (Block) -> Bool
 
 			val newLoc = center.clone().add(xOffset, 0.0, zOffset)
 
-			world.spawnParticle(Particle.SONIC_BOOM, newLoc, 1)
+			world.spawnParticle(Particle.SONIC_BOOM, newLoc.x, newLoc.y, newLoc.z, 1, 0.0, 0.0, 0.0, 0.0, null,true)
 		}
 	}
 
