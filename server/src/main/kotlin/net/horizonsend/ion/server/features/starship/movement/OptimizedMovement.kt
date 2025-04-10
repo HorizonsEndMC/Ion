@@ -162,7 +162,7 @@ object OptimizedMovement {
 		}
 	}
 
-	private val AIR = Blocks.AIR.defaultBlockState()
+	val AIR: BlockState = Blocks.AIR.defaultBlockState()
 
 	private fun processOldBlocks(
 		oldChunkMap: ChunkMap,
@@ -192,11 +192,11 @@ object OptimizedMovement {
 					val type = section.getBlockState(localX, localY, localZ)
 					capturedStates[index] = type
 
+					val blockPos = BlockPos(x, y, z)
 					if (type.block is BaseEntityBlock) {
-						processOldTile(blockKey, nmsChunk, capturedTiles, index, world1, world2)
+						processOldTile(blockPos, nmsChunk, capturedTiles, index)
 					}
 
-					val blockPos = BlockPos(x, y, z)
 					nmsChunk.`moonrise$getChunkAndHolder`().holder.blockChanged(blockPos)
 					nmsChunk.level.onBlockStateChange(blockPos, type, AIR)
 
@@ -270,24 +270,16 @@ object OptimizedMovement {
 		}
 	}
 
-	private fun updateHeightMaps(nmsLevelChunk: LevelChunk) {
+	fun updateHeightMaps(nmsLevelChunk: LevelChunk) {
 		Heightmap.primeHeightmaps(nmsLevelChunk, nmsLevelChunk.heightmaps.keys)
 	}
 
 	private fun processOldTile(
-		blockKey: Long,
+		blockPos: BlockPos,
 		chunk: LevelChunk,
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>,
 		index: Int,
-		world1: World,
-		world2: World
 	) {
-		val blockPos = BlockPos(
-			blockKeyX(blockKey),
-			blockKeyY(blockKey),
-			blockKeyZ(blockKey)
-		)
-
 		val blockEntity = chunk.getBlockEntity(blockPos) ?: return
 		capturedTiles[index] = Pair(blockEntity.blockState, blockEntity.saveWithFullMetadata(chunk.level.registryAccess()))
 
