@@ -84,7 +84,11 @@ object MassShadows {
 			if (!locusScheduler.active) continue
 			val center = locusScheduler.center
 
+			if (center.world.uid != realWorld.uid) continue
+
 			val dist = distance(x, 128.0, z, center.x, 128.0, center.z)
+			if (dist > locusScheduler.radius) continue
+
 			return MassShadowInfo(text("AI locus"), center.blockX, center.blockY, locusScheduler.radius.roundToInt(), dist.toInt())
 		}
 
