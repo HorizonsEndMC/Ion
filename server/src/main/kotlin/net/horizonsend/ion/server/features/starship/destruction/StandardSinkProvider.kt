@@ -74,6 +74,7 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 
 		if (iteration > maxIteration) {
 			cancel()
+
 			Tasks.sync {
 				explode(starship.world, blocks)
 			}
