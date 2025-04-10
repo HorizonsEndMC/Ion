@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.destruction
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement
 import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement.AIR
 import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement.updateHeightMaps
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -64,7 +65,7 @@ class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 		}
 
 		// Populate the initial block queue
-		sinkPositions.addAll(starship.blocks)
+		sinkPositions.addAll(starship.blocks.map { toBlockKey(Vec3i(it)) })
 	}
 
 	override fun tick() {
@@ -185,6 +186,16 @@ class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 				updateHeightMaps(nmsChunk)
 				nmsChunk.markUnsaved()
 			}
+
+			OptimizedMovement.sendChunkUpdatesToPlayers(starship.world, starship.world, oldChunkMap, newChunkMap)
+			maxX = newMaxX
+			minX = newMinX
+			maxY = newMaxY
+			minY = newMinY
+			maxZ = newMaxZ
+			minZ = newMinZ
+
+			sinkPositions = newPositions
 		}
 	}
 
@@ -260,6 +271,8 @@ class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starship) {
 			val chunkKey = chunkKey(x shr 4, z shr 4)
 
 			val sectionKey = starship.world.minecraft.getSectionIndexFromSectionY(SectionPos.blockToSectionCoord(y))
+
+
 			val sectionMap = chunkMap.getOrPut(chunkKey) { mutableMapOf() }
 			val positionMap = sectionMap.getOrPut(sectionKey) { mutableMapOf() }
 

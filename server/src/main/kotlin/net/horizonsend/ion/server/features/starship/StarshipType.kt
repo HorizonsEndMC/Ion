@@ -281,6 +281,7 @@ enum class StarshipType(
 		dynmapIcon = "destroyer",
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
+		sinkProvider = SinkProvider.SinkProviders.TEST,
 		balancingSupplier = ConfigurationFiles.starshipBalancing()::destroyer
 	),
 	AI_DESTROYER(

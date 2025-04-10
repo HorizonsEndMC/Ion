@@ -331,7 +331,7 @@ object OptimizedMovement {
 		return chunkMap
 	}
 
-	private fun sendChunkUpdatesToPlayers(world1: World, world2: World, oldChunkMap: ChunkMap, newChunkMap: ChunkMap) {
+	fun sendChunkUpdatesToPlayers(world1: World, world2: World, oldChunkMap: ChunkMap, newChunkMap: ChunkMap) {
 		for ((chunkMap, world) in listOf(oldChunkMap to world1.uid, newChunkMap to world2.uid)) {
 			for ((chunkKey, _) in chunkMap) {
 				val nmsChunk = Bukkit.getWorld(world)!!.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft
