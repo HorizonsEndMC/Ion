@@ -56,7 +56,7 @@ abstract class SinkProvider(
 	enum class SinkProviders {
 		STANDARD {
 			override fun getSinkProvider(starship: ActiveStarship): SinkProvider {
-				return StandardSinkProvider(starship)
+				return AdvancedSinkProvider(starship)
 			}
 		},
 
@@ -69,12 +69,6 @@ abstract class SinkProvider(
 		BARGE {
 			override fun getSinkProvider(starship: ActiveStarship): SinkProvider {
 				return RemoveBlockSink(starship) { it.customBlock == CustomBlocks.BARGE_REACTOR_CORE }
-			}
-		},
-
-		TEST {
-			override fun getSinkProvider(starship: ActiveStarship): SinkProvider {
-				return AdvancedSinkProvider(starship)
 			}
 		},
 
