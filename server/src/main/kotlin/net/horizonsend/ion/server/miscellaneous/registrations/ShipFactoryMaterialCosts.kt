@@ -165,8 +165,8 @@ object ShipFactoryMaterialCosts {
 	var blockprice = mapOf(
 		IRON_BLOCK to 50.0,
 		DIAMOND_BLOCK to 50.0,
-		COPPER_BLOCK to 175.0,
 		GOLD_BLOCK to 50.0,
+		COPPER_BLOCK to 175.0,
 		EXPOSED_COPPER to 175.0,
 		WEATHERED_COPPER to 175.0,
 		OXIDIZED_COPPER to 175.0,

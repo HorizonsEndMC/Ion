@@ -24,12 +24,12 @@ class RemoveBlockSink(starship: ActiveStarship, val checkRemove: (Block) -> Bool
 	companion object {
 		private const val MAX_PARTICLE_RADIUS = 100.0
 
-		fun withChance(chances: Map<BlockWrapper, Double>): (Starship) -> SinkProvider {
-			return { RemoveBlockSink(it, { block ->
+		fun withChance(starship: Starship, chances: Map<BlockWrapper, Double>): SinkProvider {
+			return RemoveBlockSink(starship) { block ->
 				val wrapped = BlockWrapper.getWrapper(block.blockData)
 				val chance = chances[wrapped] ?: return@RemoveBlockSink false
 				return@RemoveBlockSink testRandom(chance)
-			}) }
+			}
 		}
 
 		sealed interface BlockWrapper {
@@ -39,11 +39,37 @@ class RemoveBlockSink(starship: ActiveStarship, val checkRemove: (Block) -> Bool
 				override fun matches(block: Block): Boolean {
 					return block.customBlock?.identifier == customBlock.identifier
 				}
+
+				override fun equals(other: Any?): Boolean {
+					if (this === other) return true
+					if (javaClass != other?.javaClass) return false
+
+					other as CustomBlockWrapper
+
+					return customBlock == other.customBlock
+				}
+
+				override fun hashCode(): Int {
+					return customBlock.hashCode()
+				}
 			}
 
 			class MaterialWrapper(val material: Material) : BlockWrapper {
 				override fun matches(block: Block): Boolean {
 					return block.type == material
+				}
+
+				override fun equals(other: Any?): Boolean {
+					if (this === other) return true
+					if (javaClass != other?.javaClass) return false
+
+					other as MaterialWrapper
+
+					return material == other.material
+				}
+
+				override fun hashCode(): Int {
+					return material.hashCode()
 				}
 			}
 
