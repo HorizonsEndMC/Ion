@@ -2,8 +2,10 @@ package net.horizonsend.ion.server.features.starship.destruction
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.destruction.RemoveBlockSink.Companion.BlockWrapper.CustomBlockWrapper
+import net.horizonsend.ion.server.features.starship.destruction.RemoveBlockSink.Companion.BlockWrapper.MaterialWrapper
+import org.bukkit.Material
 import org.bukkit.scheduler.BukkitRunnable
 
 /**
@@ -54,27 +56,65 @@ abstract class SinkProvider(
 	}
 
 	enum class SinkProviders {
-		STANDARD {
+		AI_LARGE {
+			override fun getSinkProvider(starship: ActiveStarship): SinkProvider {
+				return RemoveBlockSink.withChance(starship, mapOf(
+					MaterialWrapper(Material.IRON_BLOCK) to 0.25,
+					MaterialWrapper(Material.GOLD_BLOCK) to 0.25,
+					MaterialWrapper(Material.DIAMOND_BLOCK) to 0.25,
+					MaterialWrapper(Material.EMERALD_BLOCK) to 0.25,
+					MaterialWrapper(Material.REDSTONE_BLOCK) to 0.25,
+					MaterialWrapper(Material.NETHERITE_BLOCK) to 0.25,
+					MaterialWrapper(Material.COPPER_BLOCK) to 0.25,
+					MaterialWrapper(Material.EXPOSED_COPPER) to 0.25,
+					MaterialWrapper(Material.WEATHERED_COPPER) to 0.25,
+					MaterialWrapper(Material.OXIDIZED_COPPER) to 0.25,
+					MaterialWrapper(Material.WAXED_COPPER_BLOCK) to 0.25,
+					MaterialWrapper(Material.WAXED_EXPOSED_COPPER) to 0.25,
+					MaterialWrapper(Material.WAXED_WEATHERED_COPPER) to 0.25,
+					MaterialWrapper(Material.WAXED_OXIDIZED_COPPER) to 0.25,
+					CustomBlockWrapper(CustomBlocks.TITANIUM_BLOCK) to 0.25,
+					CustomBlockWrapper(CustomBlocks.ALUMINUM_BLOCK) to 0.25,
+					CustomBlockWrapper(CustomBlocks.URANIUM_BLOCK) to 0.25,
+					CustomBlockWrapper(CustomBlocks.ENRICHED_URANIUM_BLOCK) to 0.25,
+					CustomBlockWrapper(CustomBlocks.BARGE_REACTOR_CORE) to 1.0,
+					CustomBlockWrapper(CustomBlocks.CRUISER_REACTOR_CORE) to 1.0,
+					CustomBlockWrapper(CustomBlocks.BATTLECRUISER_REACTOR_CORE) to 1.0,
+				))
+			}
+		},
+
+		NO_REMOVAL {
 			override fun getSinkProvider(starship: ActiveStarship): SinkProvider {
 				return AdvancedSinkProvider(starship)
 			}
 		},
 
-		CRUISER {
+		PLAYER {
 			override fun getSinkProvider(starship: ActiveStarship): SinkProvider {
-				return RemoveBlockSink(starship) { it.customBlock == CustomBlocks.CRUISER_REACTOR_CORE }
-			}
-		},
-
-		BARGE {
-			override fun getSinkProvider(starship: ActiveStarship): SinkProvider {
-				return RemoveBlockSink(starship) { it.customBlock == CustomBlocks.BARGE_REACTOR_CORE }
-			}
-		},
-
-		BATTLECRUISER {
-			override fun getSinkProvider(starship: ActiveStarship): SinkProvider {
-				return RemoveBlockSink(starship) { it.customBlock == CustomBlocks.BATTLECRUISER_REACTOR_CORE }
+				return RemoveBlockSink.withChance(starship, mapOf(
+					MaterialWrapper(Material.IRON_BLOCK) to 1.0,
+					MaterialWrapper(Material.GOLD_BLOCK) to 1.0,
+					MaterialWrapper(Material.DIAMOND_BLOCK) to 1.0,
+					MaterialWrapper(Material.EMERALD_BLOCK) to 1.0,
+					MaterialWrapper(Material.REDSTONE_BLOCK) to 1.0,
+					MaterialWrapper(Material.NETHERITE_BLOCK) to 1.0,
+					MaterialWrapper(Material.COPPER_BLOCK) to 1.0,
+					MaterialWrapper(Material.EXPOSED_COPPER) to 1.0,
+					MaterialWrapper(Material.WEATHERED_COPPER) to 1.0,
+					MaterialWrapper(Material.OXIDIZED_COPPER) to 1.0,
+					MaterialWrapper(Material.WAXED_COPPER_BLOCK) to 1.0,
+					MaterialWrapper(Material.WAXED_EXPOSED_COPPER) to 1.0,
+					MaterialWrapper(Material.WAXED_WEATHERED_COPPER) to 1.0,
+					MaterialWrapper(Material.WAXED_OXIDIZED_COPPER) to 1.0,
+					CustomBlockWrapper(CustomBlocks.TITANIUM_BLOCK) to 1.0,
+					CustomBlockWrapper(CustomBlocks.ALUMINUM_BLOCK) to 1.0,
+					CustomBlockWrapper(CustomBlocks.URANIUM_BLOCK) to 1.0,
+					CustomBlockWrapper(CustomBlocks.ENRICHED_URANIUM_BLOCK) to 1.0,
+					CustomBlockWrapper(CustomBlocks.BARGE_REACTOR_CORE) to 1.0,
+					CustomBlockWrapper(CustomBlocks.CRUISER_REACTOR_CORE) to 1.0,
+					CustomBlockWrapper(CustomBlocks.BATTLECRUISER_REACTOR_CORE) to 1.0,
+				))
 			}
 		};
 
