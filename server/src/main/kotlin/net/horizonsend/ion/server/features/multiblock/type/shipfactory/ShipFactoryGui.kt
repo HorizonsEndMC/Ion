@@ -177,13 +177,14 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 			backButtonHandler = { entity.openMenu(player) },
 			inputValidator = InputValidator { text ->
 				if (playerBlueprints.isEmpty()) return@InputValidator ValidatorResult.FailureResult(Component.text("You don't have any blueprints!"))
-				val filtered = playerBlueprints.keys.filter { it.contains(text) }
+				val filtered = playerBlueprints.keys.filter { it.startsWith(text) }
 				if (filtered.isEmpty()) return@InputValidator ValidatorResult.FailureResult(Component.text("Blueprint not found!"))
 				return@InputValidator ValidatorResult.ResultsResult(filtered.map { it.toComponent() })
 			}
 		) { string ->
-			val blueprint = playerBlueprints.entries.firstOrNull { it.key.contains(string) } ?: return@anvilInputText
-			entity.setBlueprint(blueprint.value)
+			val exactMatch = playerBlueprints.entries.firstOrNull { it.value.name == string }?.value
+			val blueprint = exactMatch ?: playerBlueprints.entries.firstOrNull { it.key.startsWith(string) }?.value ?: return@anvilInputText
+			entity.setBlueprint(blueprint)
 
 			entity.ensureBlueprintLoaded(player)
 			entity.openMenu(player)
