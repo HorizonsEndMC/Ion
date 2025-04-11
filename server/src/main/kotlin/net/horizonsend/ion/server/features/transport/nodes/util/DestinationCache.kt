@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 
 abstract class DestinationCache(protected val parentCache: TransportCache) {
 	companion object {
-		val EXPIRES_AFTER = TimeUnit.SECONDS.toMillis(15)
+		val EXPIRES_AFTER = TimeUnit.SECONDS.toMillis(5)
 	}
 
 	data class CachedDestinations(val cachTimestamp: Long, val destinations: ObjectOpenHashSet<PathfindingNodeWrapper>) {
