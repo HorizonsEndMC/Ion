@@ -153,6 +153,7 @@ class Starship(
 
 		multiblockManager.onDestroy()
 		transportManager.onDestroy()
+		subsystems.forEach { it.onDestroy() }
 	}
 
 	//region Pilot & Controller

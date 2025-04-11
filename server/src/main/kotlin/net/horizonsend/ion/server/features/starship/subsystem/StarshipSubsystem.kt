@@ -12,7 +12,15 @@ abstract class StarshipSubsystem(open val starship: ActiveStarship, var pos: Vec
 	 */
 	abstract fun isIntact(): Boolean
 
+	/**
+	 * Called when the world that the starship is in ticks
+	 **/
 	open fun tick() {}
+
+	/**
+	 * Called when the starship is destroyed
+	 **/
+	open fun onDestroy() {}
 
 	open fun handleRelease() {}
 

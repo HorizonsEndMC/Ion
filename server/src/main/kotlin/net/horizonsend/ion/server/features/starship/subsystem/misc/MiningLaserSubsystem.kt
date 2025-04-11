@@ -102,6 +102,10 @@ class MiningLaserSubsystem(
 		// If it is within range, the raycast will move it forward.
 	}
 
+	override fun onDestroy() {
+		setFiring(false)
+	}
+
 	private fun setFiring(firing: Boolean) {
 		val alreadyFiring = starship.subsystems.filterIsInstance<MiningLaserSubsystem>().count { it.isFiring }
 
@@ -121,7 +125,6 @@ class MiningLaserSubsystem(
 
 		isFiring = false
 		starship.informationAction("Disabled mining laser at $pos")
-		starship
 		cancelTask()
 	}
 
