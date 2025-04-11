@@ -223,7 +223,7 @@ abstract class MultiblockEntity(
 
 		for (h in -radius .. radius) {
 			for (v in -radius .. radius) {
-				for (d in 0..depth) {
+				for (d in 1..depth) {
 					val block = center.getRelative(right, h).getRelative(BlockFace.UP, v)
 					if (filterNot(block)) continue
 					blocks.add(block)
