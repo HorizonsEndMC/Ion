@@ -20,7 +20,6 @@ import org.bukkit.damage.DamageSource
 import org.bukkit.damage.DamageType
 import org.bukkit.entity.Entity
 import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
 import java.util.LinkedList
 import kotlin.math.PI
 
@@ -1801,23 +1800,6 @@ class StarshipWeapons(
 					is PlayerDamager -> target.damage(amount, getCause(shooter.player, type))
 					is EntityDamager -> target.damage(amount, getCause(shooter.entity, type))
 					else -> target.damage(amount, getCause(null, type))
-				}
-			}
-		}
-
-		@Serializable
-		data class TrueDamage(val amount: Double) : EntityDamage {
-			override fun deal(target: LivingEntity, shooter: Damager, type: DamageType) {
-				fun damage(amount: Double, sourceEntity: Entity?) {
-					if (target.isDead || (target is Player && !target.gameMode.isInvulnerable))
-					target.damage(0.0, getCause(sourceEntity, type))
-					target.health -= minOf(target.health, amount)
-				}
-
-				when (shooter) {
-					is PlayerDamager -> damage(amount, shooter.player)
-					is EntityDamager -> damage(amount, shooter.entity)
-					else -> damage(amount, null)
 				}
 			}
 		}
