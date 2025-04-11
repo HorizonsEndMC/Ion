@@ -606,7 +606,7 @@ object ShipmentManager : IonServerComponent() {
 
 		val lore = mutableListOf(
 			ofChildren(text("Shipping From: ", DARK_AQUA), text("${shipment.from.displayName} (${Regions.get<RegionTerritory>(shipment.from.territoryId)}, in system $originSystemName)", AQUA)),
-			ofChildren(text("Shipping To: ", DARK_PURPLE), text("${shipment.to.displayName}&7 ($destination), in system $destinationSystemName", GRAY)),
+			ofChildren(text("Shipping To: ", DARK_PURPLE), text("${shipment.to.displayName} ($destination), in system $destinationSystemName", GRAY)),
 			ofChildren(text("Expires: ", RED), text("$expires", YELLOW)),
 			ofChildren(text("Shipment ID: ", DARK_GREEN), text("$shipmentId", GREEN)),
 		)
