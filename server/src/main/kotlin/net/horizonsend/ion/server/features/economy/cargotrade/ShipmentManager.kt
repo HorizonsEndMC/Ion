@@ -52,7 +52,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
@@ -200,8 +199,8 @@ object ShipmentManager : IonServerComponent() {
 			prompt = "Select amount of crates:".toComponent(),
 			description = "Between $min and $max".toComponent(),
 			inputValidator = InputValidator { result ->
-				val amount = result.toIntOrNull() ?: return@InputValidator ValidatorResult.FailureResult(Component.text("Amount must be an integer"))
-				if (amount !in min..max) return@InputValidator ValidatorResult.FailureResult(Component.text("Amount must be between $min and $max"))
+				val amount = result.toIntOrNull() ?: return@InputValidator ValidatorResult.FailureResult(text("Amount must be an integer"))
+				if (amount !in min..max) return@InputValidator ValidatorResult.FailureResult(text("Amount must be between $min and $max"))
 
 				ValidatorResult.SuccessResult
 			},
