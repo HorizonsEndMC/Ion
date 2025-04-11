@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
@@ -188,6 +189,7 @@ object ShipmentManager : IonServerComponent() {
 	private fun openAmountPrompt(player: Player, shipment: UnclaimedShipment) {
 		val maxCrateCount = StarshipType.entries
 			.filter { it.canUse(player) }
+			.filter { it.typeCategory == TypeCategory.TRADE_SHIP }
 			// Crate limit equation
 			.maxOf { (min(0.015 * it.maxSize, sqrt(it.maxSize.toDouble())) * it.crateLimitMultiplier).toInt() }
 
