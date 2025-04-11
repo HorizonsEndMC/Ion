@@ -26,7 +26,6 @@ import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
@@ -47,7 +46,6 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import java.util.EnumSet
-import java.util.UUID
 import kotlin.math.max
 
 abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material) : Multiblock(), EntityMultiblock<DrillMultiblock.DrillMultiblockEntity>, InteractableMultiblock, DisplayNameMultilblock {
@@ -144,6 +142,18 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 			.addPowerInput(if (multiblock.mirrored) -1 else 1, 0, 0)
 			.build()
 
+		override fun onLoad() {
+			world.ion.multiblockManager.register(this)
+		}
+
+		override fun handleRemoval() {
+			world.ion.multiblockManager.deregister(this)
+		}
+
+		override fun onUnload() {
+			world.ion.multiblockManager.deregister(this)
+		}
+
 		override fun tick() {
 			if (!userManager.currentlyUsed()) return
 			// Logout condition
@@ -159,8 +169,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 				return
 			}
 
-			drillCount[player.uniqueId] = drillCount.getOrDefault(player.uniqueId, 0) + 1
-			val drills = lastDrillCount.getOrDefault(player.uniqueId, 1)
+			val drills = world.ion.multiblockManager[DrillMultiblockEntity::class].count { it.userManager.getUserId() == userManager.getUserId() }
 
 			if (drills > 16) return player.userErrorAction("You cannot use more than 16 drills at once!")
 			if (!isEnabled()) return
@@ -260,17 +269,6 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 			Material.BEDROCK,
 			Material.VOID_AIR
 		)
-
-		private var lastDrillCount: Map<UUID, Int> = mutableMapOf()
-		private var drillCount: MutableMap<UUID, Int> = mutableMapOf()
-
-		init {
-			// TODO: do something less stupid for this
-			Tasks.syncRepeat(delay = 1, interval = 1) {
-				lastDrillCount = drillCount
-				drillCount = mutableMapOf()
-			}
-		}
 
 		fun isBlacklisted(block: Block): Boolean {
 			return blacklist.contains(block.type)

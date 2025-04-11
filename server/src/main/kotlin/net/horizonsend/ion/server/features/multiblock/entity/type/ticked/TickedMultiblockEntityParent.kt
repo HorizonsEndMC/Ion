@@ -24,7 +24,7 @@ interface TickedMultiblockEntityParent {
 
 			currentTick++
 
-			if (currentTick <= interval) {
+			if (currentTick < interval) {
 				return false
 			}
 

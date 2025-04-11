@@ -112,7 +112,7 @@ object MobDefender : Multiblock(), EntityMultiblock<MobDefender.MobDefenderEntit
 		}
 
 		override fun handleRemoval() {
-			world.ion.multiblockManager.register(this)
+			world.ion.multiblockManager.deregister(this)
 		}
 
 		override fun onUnload() {
