@@ -32,9 +32,27 @@ import org.litote.kmongo.eq
 import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
+import java.util.UUID
 
 class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) : GuiWrapper {
 	private fun isValid(): Boolean = entity.isAlive
+
+	private val updateButtons = mutableMapOf<UUID, FeedbackItem>()
+
+	private fun <T: FeedbackItem> registerButton(create: (UUID) -> T): T {
+		val id = UUID.randomUUID()
+		val button = create.invoke(id)
+		updateButtons[id] = button
+		return button
+	}
+
+	private fun updateButtons(calling: UUID) {
+		updateButtons.keys.minus(calling).forEach {
+			val button = updateButtons[it] ?: return@forEach
+			button.resetLore()
+			button.notifyWindows()
+		}
+	}
 
 	override fun open() = Tasks.async {
 		val gui = Gui.normal()
@@ -48,14 +66,14 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 			)
 			.addIngredient('s', searchMenuBotton)
 			.addIngredient('i', blueprintMenuBotton)
-			.addIngredient('x', ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Increase X offset")) }, false, { entity.settings.offsetX },+1, -100..100) { entity.settings.offsetX = it; entity.reCalculate() })
-			.addIngredient('y', ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Increase Y offset")) }, false, { entity.settings.offsetY },+1, -100..100) { entity.settings.offsetY = it; entity.reCalculate() })
-			.addIngredient('z', ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Increase Z offset")) }, false, { entity.settings.offsetZ },+1, -100..100) { entity.settings.offsetZ = it; entity.reCalculate() })
-			.addIngredient('X', ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease X offset")) }, false, { entity.settings.offsetX },-1, -100..100) { entity.settings.offsetX = it; entity.reCalculate() })
-			.addIngredient('Y', ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease Y offset")) }, false, { entity.settings.offsetY },-1, -100..100) { entity.settings.offsetY = it; entity.reCalculate() })
-			.addIngredient('Z', ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease Z offset")) }, false, { entity.settings.offsetZ },-1, -100..100) { entity.settings.offsetZ = it; entity.reCalculate() })
-			.addIngredient('c', ValueScrollButton({ GuiItem.CLOCKWISE.makeItem(Component.text("Rotate 90 degrees clockwise")) }, true, { entity.settings.rotation }, 90, -180..180) { entity.settings.rotation = it; entity.reCalculate() })
-			.addIngredient('C', ValueScrollButton({ GuiItem.COUNTERCLOCKWISE.makeItem(Component.text("Rotate 90 degrees counterclockwise")) }, true, { entity.settings.rotation }, -90, -180..180) { entity.settings.rotation = it; entity.reCalculate() })
+			.addIngredient('x', registerButton { id -> ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Increase X offset")) }, false, { entity.settings.offsetX },+1, -100..100) { entity.settings.offsetX = it; entity.reCalculate(); updateButtons(id) } })
+			.addIngredient('y', registerButton { id -> ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Increase Y offset")) }, false, { entity.settings.offsetY },+1, -100..100) { entity.settings.offsetY = it; entity.reCalculate(); updateButtons(id) } })
+			.addIngredient('z', registerButton { id -> ValueScrollButton({ GuiItem.UP.makeItem(Component.text("Increase Z offset")) }, false, { entity.settings.offsetZ },+1, -100..100) { entity.settings.offsetZ = it; entity.reCalculate(); updateButtons(id) } })
+			.addIngredient('X', registerButton { id -> ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease X offset")) }, false, { entity.settings.offsetX },-1, -100..100) { entity.settings.offsetX = it; entity.reCalculate(); updateButtons(id) } })
+			.addIngredient('Y', registerButton { id -> ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease Y offset")) }, false, { entity.settings.offsetY },-1, -100..100) { entity.settings.offsetY = it; entity.reCalculate(); updateButtons(id) } })
+			.addIngredient('Z', registerButton { id -> ValueScrollButton({ GuiItem.DOWN.makeItem(Component.text("Decrease Z offset")) }, false, { entity.settings.offsetZ },-1, -100..100) { entity.settings.offsetZ = it; entity.reCalculate(); updateButtons(id) } })
+			.addIngredient('c', registerButton { id -> ValueScrollButton({ GuiItem.CLOCKWISE.makeItem(Component.text("Rotate 90 degrees clockwise")) }, true, { entity.settings.rotation }, 90, -180..180) { entity.settings.rotation = it; entity.reCalculate(); updateButtons(id) } })
+			.addIngredient('C', registerButton { id -> ValueScrollButton({ GuiItem.COUNTERCLOCKWISE.makeItem(Component.text("Rotate 90 degrees counterclockwise")) }, true, { entity.settings.rotation }, -90, -180..180) { entity.settings.rotation = it; entity.reCalculate(); updateButtons(id) } })
 			.addIngredient('B', boundingBoxPreview)
 			.addIngredient('A', GuiItems.CustomControlItem(Component.text("Align [Coming Soon]"), GuiItem.ALIGN))
 			.addIngredient('M', materialsButton)
@@ -134,7 +152,7 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 
 			FeedbackItemResult.SuccessLore(listOf(Component.text("Enabled ship factory.", NamedTextColor.GREEN)))
 		}
-		.withFallbackLore(listOf(Component.text("Start the ship factory.")))
+		.withStaticFallbackLore(listOf(Component.text("Start the ship factory.")))
 		.withSuccessHandler { _, player ->
 			Tasks.async {
 				entity.enable(player)
@@ -153,7 +171,7 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 
 			FeedbackItemResult.SuccessLore(listOf(Component.text("Disabled ship factory.", NamedTextColor.GREEN)))
 		}
-		.withFallbackLore(listOf(Component.text("Stop the ship factory.")))
+		.withStaticFallbackLore(listOf(Component.text("Stop the ship factory.")))
 		.withSuccessHandler { _, _ ->
 			entity.disable()
 			notifyWindows()

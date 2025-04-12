@@ -8,15 +8,20 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
+import java.util.function.Supplier
 
 abstract class FeedbackItem(
 	val providedItem: ItemProvider,
-	fallbackLore: List<Component>
+	private val fallbackLoreProvider: Supplier<List<Component>>
 ) : AbstractItem() {
-	protected open var currentLore = fallbackLore
+	protected open var currentLore = fallbackLoreProvider
+
+	fun resetLore() {
+		currentLore = fallbackLoreProvider
+	}
 
 	private val itemProvider = ItemProvider {
-		providedItem.get().updateLore(currentLore)
+		providedItem.get().updateLore(currentLore.get())
 	}
 
 	override fun getItemProvider(): ItemProvider = itemProvider
@@ -35,8 +40,8 @@ abstract class FeedbackItem(
 
 	private fun updateWith(result: FeedbackItemResult) {
 		currentLore = when (result) {
-			is FeedbackItemResult.SuccessLore -> result.lore
-			is FeedbackItemResult.FailureLore -> result.lore
+			is FeedbackItemResult.SuccessLore -> Supplier { result.lore }
+			is FeedbackItemResult.FailureLore -> Supplier { result.lore }
 			else -> return
 		}
 
@@ -73,7 +78,7 @@ abstract class FeedbackItem(
 		private var onSuccess: (FeedbackItem.(InventoryClickEvent, Player) -> Unit)? = null
 		private var onFailure: (FeedbackItem.(InventoryClickEvent, Player) -> Unit)? = null
 
-		fun build(): FeedbackItem = object : FeedbackItem(providedItem, fallbackLore) {
+		fun build(): FeedbackItem = object : FeedbackItem(providedItem, { fallbackLore }) {
 			override fun getResult(event: InventoryClickEvent, player: Player): FeedbackItemResult {
 				return resultProvier.invoke(event, player)
 			}
@@ -93,7 +98,7 @@ abstract class FeedbackItem(
 			return this
 		}
 
-		fun withFallbackLore(lore: List<Component>): Builder {
+		fun withStaticFallbackLore(lore: List<Component>): Builder {
 			fallbackLore = lore
 			return this
 		}

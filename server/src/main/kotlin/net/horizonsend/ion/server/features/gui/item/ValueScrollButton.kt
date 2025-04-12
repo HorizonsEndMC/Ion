@@ -15,7 +15,7 @@ open class ValueScrollButton(
 	private val increment: Int,
 	private val valueRange: IntRange,
 	private val valueConsumer: Consumer<Int>
-) : FeedbackItem(providedItem, listOf(Component.text("Current value: ${value.get()}"))) {
+) : FeedbackItem(providedItem, { listOf(Component.text("Current value: ${value.get()}")) }) {
 		override fun getResult(event: InventoryClickEvent, player: Player): FeedbackItemResult {
 		val nextValueRaw = value.get() + increment
 		val range = valueRange.last - valueRange.first
