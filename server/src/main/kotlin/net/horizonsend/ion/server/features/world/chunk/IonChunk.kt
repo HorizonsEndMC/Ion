@@ -80,6 +80,7 @@ class IonChunk(val inner: Chunk) {
 	 * Logic upon world tick
 	 **/
 	fun tick() {
+		transportNetwork.markReady()
 		transportNetwork.tick()
 	}
 
@@ -199,5 +200,17 @@ class IonChunk(val inner: Chunk) {
 
 	override fun toString(): String {
 		return "IonChunk[$x, $z @ ${world.name}]"
+	}
+
+	fun getAdjacentChunks(): Map<Long, IonChunk> {
+		val returned = mutableMapOf<Long, IonChunk>()
+
+		for (face in CARDINAL_BLOCK_FACES) {
+			val adjacentKey = Chunk.getChunkKey(face.modX + x, face.modZ + z)
+			val chunk = world.ion.getChunk(adjacentKey) ?: continue
+			returned[adjacentKey] = chunk
+		}
+
+		return returned
 	}
 }

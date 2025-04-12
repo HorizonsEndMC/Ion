@@ -63,7 +63,7 @@ class MappedDestinationCache<K : Any>(parentCache: TransportCache) : Destination
 		parentCache.getNetworkDestinations(destinationTypeClass = parentCache.extractorNodeClass, originPos = pos, originNode = node) {
 			debugAudience.highlightBlock(toVec3i(position), 5L)
 			// Traverse network backwards
-			getAllNeighbors(cache.holder.globalGetter, null)
+			getAllNeighbors(cache.holder.globalNodeLookup, null)
 		}.forEach { inputPos ->
 			toRemove.add(inputPos.node.position)
 		}
@@ -78,5 +78,9 @@ class MappedDestinationCache<K : Any>(parentCache: TransportCache) : Destination
 
 	override fun invalidatePaths(pos: BlockKey, node: Node) {
 		for (nodeClass in rawCache.keys) invalidatePaths(nodeClass, pos, node)
+	}
+
+	override fun clear() {
+		rawCache.clear()
 	}
 }

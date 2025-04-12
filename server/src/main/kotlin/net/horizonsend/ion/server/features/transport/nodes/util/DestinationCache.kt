@@ -19,4 +19,6 @@ abstract class DestinationCache(protected val parentCache: TransportCache) {
 	abstract fun remove(nodeType: KClass<out Node>, origin: BlockKey)
 	abstract fun invalidatePaths(nodeType: KClass<out Node>, pos: BlockKey, node: Node)
 	abstract fun invalidatePaths(pos: BlockKey, node: Node)
+
+	abstract fun clear()
 }

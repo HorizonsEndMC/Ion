@@ -51,6 +51,7 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHo
 
 	fun setup() {
 		cacheHolders.forEach { it.handleLoad() }
+		markReady()
 		NewTransport.registerTransportManager(this)
 	}
 

@@ -297,7 +297,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 		for (face in ADJACENT_BLOCK_FACES) {
 			val inventoryLocation = getRelative(extractorLocation, face)
-			if (holder.globalGetter.invoke(this, holder.getWorld(), inventoryLocation)?.second !is ItemNode.InventoryNode) continue
+			if (holder.globalNodeCacher.invoke(this, holder.getWorld(), inventoryLocation)?.second !is ItemNode.InventoryNode) continue
 			val inv = getInventory(inventoryLocation) ?: continue
 			if (inv.isEmpty) continue
 			inventories.add(inv)

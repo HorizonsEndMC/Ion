@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
 import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
+import net.horizonsend.ion.server.features.transport.nodes.cache.DestinationCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
@@ -41,7 +42,10 @@ class ChunkCacheHolder<T: TransportCache> private constructor (override val tran
 		if (zDiff > 1 || zDiff < -1) return null
 
 		val chunk = IonChunk[getWorld(), chunkX, chunkZ] ?: return null
-		return cache.type.get(chunk).getOrCache(key)
+		val cache = cache.type.get(chunk)
+		if (!cache.ready) return null
+
+		return cache.getOrCache(key)
 	}
 
 	override fun getInternalNode(key: BlockKey): Node? {
@@ -60,7 +64,7 @@ class ChunkCacheHolder<T: TransportCache> private constructor (override val tran
 		return transportManager.filterCache
 	}
 
-	override val globalGetter: CacheProvider = nodeProvider@{ currentCache, world, pos ->
+	override val globalNodeCacher: CacheProvider = nodeProvider@{ currentCache, world, pos ->
 		val holder = currentCache.holder as ChunkCacheHolder<*> // A chunk cache holder should never have access to chunk nodes
 		if (getX(pos).shr(4) == holder.transportManager.chunk.x && getZ(pos).shr(4) == holder.transportManager.chunk.z) {
 			return@nodeProvider holder.cache to holder.cache.getOrCache(pos)
@@ -68,10 +72,11 @@ class ChunkCacheHolder<T: TransportCache> private constructor (override val tran
 
 		val chunk = IonChunk[world, getX(pos).shr(4), getZ(pos).shr(4)] ?: return@nodeProvider null
 		val cache = cache.type.get(chunk)
+		if (!cache.ready) return@nodeProvider cache to null
 		return@nodeProvider cache to cache.getOrCache(pos)
 	}
 
-	override val globalCacherGetter: CacheProvider = nodeProvider@{ currentCache: TransportCache, world: World, pos: BlockKey ->
+	override val globalNodeLookup: CacheProvider = nodeProvider@{ currentCache: TransportCache, world: World, pos: BlockKey ->
 		val holder = currentCache.holder as ChunkCacheHolder<*> // A chunk cache holder should never have access to chunk nodes
 		if (getX(pos).shr(4) == holder.transportManager.chunk.x && getZ(pos).shr(4) == holder.transportManager.chunk.z) {
 			return@nodeProvider holder.cache to holder.cache.getOrCache(pos)
@@ -90,5 +95,12 @@ class ChunkCacheHolder<T: TransportCache> private constructor (override val tran
 		val chunk = IonChunk[getWorld(), getX(key).shr(4), getZ(key).shr(4)] ?: return null
 		@Suppress("UNCHECKED_CAST")
 		return cache.type.get(chunk).holder as CacheHolder<T>
+	}
+
+	override fun markReady() {
+		transportManager.chunk.getAdjacentChunks().forEach { (_, chunk) ->
+			(cache.type.get(chunk) as? DestinationCacheHolder)?.destinationCache?.clear()
+		}
+		super.markReady()
 	}
 }

@@ -106,6 +106,7 @@ object TransportDebugCommand : SLCommand() {
 			.getRawCache()
 			.filter { entry -> entry.value !is CacheState.Empty }
 
+		sender.information("Is ready: ${network.get(ionChunk).ready}")
 		sender.information("${grid.size} covered position(s).")
 		sender.information("${grid.values.distinct().size} unique node(s).")
 

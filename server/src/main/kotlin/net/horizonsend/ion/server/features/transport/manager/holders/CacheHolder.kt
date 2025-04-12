@@ -14,6 +14,10 @@ interface CacheHolder<T: TransportCache> {
 	val transportManager: TransportManager<*>
 	val cache: T
 
+	fun markReady() {
+		cache.markReady()
+	}
+
 	fun getWorld(): World
 
 	/**
@@ -49,10 +53,10 @@ interface CacheHolder<T: TransportCache> {
 	fun getCacheHolderAt(key: BlockKey): CacheHolder<T>?
 
 	/** Gets the node at the specified location, caches if needed */
-	val globalGetter: CacheProvider
+	val globalNodeCacher: CacheProvider
 
 	/** Gets the node at the specified location, does not cache */
-	val globalCacherGetter: CacheProvider
+	val globalNodeLookup: CacheProvider
 }
 
 /**

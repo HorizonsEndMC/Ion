@@ -24,6 +24,12 @@ abstract class TransportManager<T: CacheHolder<*>> {
 	abstract val cacheHolders: Array<T>
 	abstract val tickedHolders: Array<T>
 
+	fun markReady() {
+		for (cacheHolder in cacheHolders) {
+			cacheHolder.markReady()
+		}
+	}
+
 	abstract fun getInputProvider(): InputManager
 
 	fun tick() {

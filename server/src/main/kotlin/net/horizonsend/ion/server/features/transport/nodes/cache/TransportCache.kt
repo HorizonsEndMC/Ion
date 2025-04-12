@@ -35,6 +35,10 @@ import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 abstract class TransportCache(open val holder: CacheHolder<*>) {
+	var ready: Boolean = false
+
+	fun markReady() { ready = true }
+
 	/**
 	 * Cache containing a cache state at their corresponding block position.
 	 * The state can either be empty, or present. Empty key / value pairs have not been cached.
@@ -61,10 +65,14 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		return cache(location, block)
 	}
 
-	fun cache(location: BlockKey, block: Block): Node? = nodeCache.computeIfAbsent(location) { _ ->
-		val type = nodeFactory.cache(block, this.holder)
-		return@computeIfAbsent if (type == null) CacheState.Empty else CacheState.Present(type)
-	}.get()
+	fun cache(location: BlockKey, block: Block): Node? {
+		if (!ready) return null
+
+		return nodeCache.computeIfAbsent(location) { _ ->
+			val type = nodeFactory.cache(block, this.holder)
+			return@computeIfAbsent if (type == null) CacheState.Empty else CacheState.Present(type)
+		}.get()
+	}
 
 	fun invalidate(x: Int, y: Int, z: Int) {
 		invalidate(toBlockKey(x, y, z))
@@ -148,7 +156,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 
 		noinline pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null,
 		noinline destinationCheck: ((NodePositionData) -> Boolean)? = null,
-		noinline nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalCacherGetter, pathfindingFilter) }
+		noinline nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalNodeCacher, pathfindingFilter) }
 	): Collection<PathfindingNodeWrapper> {
 		val cachedEntry = cacheGetter.get()
 		if (cachedEntry != null) return cachedEntry
@@ -164,7 +172,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		originNode: Node,
 		noinline pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null,
 		noinline destinationCheck: ((NodePositionData) -> Boolean)? = null,
-		noinline nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalCacherGetter, pathfindingFilter) }
+		noinline nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalNodeCacher, pathfindingFilter) }
 	): Set<PathfindingNodeWrapper> = getNetworkDestinations(T::class, originPos, originNode, destinationCheck, pathfindingFilter, null, nextNodeProvider)
 
 	/**
@@ -177,7 +185,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		destinationCheck: ((NodePositionData) -> Boolean)? = null,
 		pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null,
 		debug: Audience? = null,
-		nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalCacherGetter, pathfindingFilter) }
+		nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalNodeCacher, pathfindingFilter) }
 	): Set<PathfindingNodeWrapper> {
 		val visitQueue = Long2ObjectRBTreeMap<PathfindingNodeWrapper>()
 		val visited = Long2IntOpenHashMap()
