@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import net.horizonsend.ion.server.miscellaneous.utils.loadClipboard
 import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
@@ -90,7 +91,7 @@ abstract class ShipFactoryBlockProcessor(
 
 	protected fun getClipboardOffset(): Vec3i {
 		val structureDirection = entity.structureDirection
-		val rightDirection = entity.structureDirection
+		val rightDirection = structureDirection.rightFace
 
 		val negativeX = if (structureDirection.modX == 0) rightDirection.modX < 0 else structureDirection.modX < 0
 		val negativeZ = if (structureDirection.modZ == 0) rightDirection.modZ < 0 else structureDirection.modZ < 0
