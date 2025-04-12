@@ -79,7 +79,6 @@ interface ItemNode : Node {
 
 				for (node in nextNodes) {
 					if (node.type is InventoryNode) filtered.add(node)
-					if (node.type is FilterNode) filtered.add(node)
 
 					if (node.offset == forward && node.type is PaneAlwaysTransfersForward) filtered.add(node)
 				}
@@ -112,7 +111,7 @@ interface ItemNode : Node {
 
     }
 
-	sealed interface FilterNode : ItemNode {
+	sealed interface FilterNode : ItemNode, PaneAlwaysTransfersForward {
 		fun matches(itemStack: ItemStack) : Boolean
 	}
 
