@@ -214,7 +214,7 @@ abstract class AutoCrafterMultiblock(
 						statusManager.setStatus(result.displayName())
 					}
 				} else {
-					tickingManager.sleepForTicks(200)
+					sleepWithStatus(text("Sleeping"), 50)
 				}
 			}
 		}
