@@ -52,7 +52,7 @@ open class Blaster<T : Balancing>(
 ) {
 	val balancing get() = balancingSupplier.get()
 
-	val ammoComponent = AmmunitionStorage(balancingSupplier)
+	val ammoComponent = AmmunitionStorage(balancingSupplier, balancing.consumesAmmo)
 	val magazineComponent = MagazineType(balancingSupplier) { CustomItemRegistry.getByIdentifier(balancing.magazineIdentifier)!! }
 
 	override fun decorateItemStack(base: ItemStack) {
@@ -63,7 +63,7 @@ open class Blaster<T : Balancing>(
 
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.AMMUNITION_STORAGE, ammoComponent)
-		addComponent(CustomComponentTypes.MAGAZINE_TYPE, magazineComponent)
+		if (balancing.consumesAmmo) addComponent(CustomComponentTypes.MAGAZINE_TYPE, magazineComponent)
 
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@Blaster) { event, _, item -> fire(event.player, item) })
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_SWAP_HANDS, playerSwapHandsListener(this@Blaster) { event, _, item -> reload(event.player, item) })
