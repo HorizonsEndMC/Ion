@@ -153,14 +153,14 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	}
 
 	@Subcommand("settlement set balance")
-    fun onSettlementSetBalance(sender: CommandSender, settlement: String, balance: Int) = asyncCommand(sender) {
+    fun onSettlementSetBalance(sender: CommandSender, settlement: String, balance: Double) = asyncCommand(sender) {
 		val settlementId = resolveSettlement(settlement)
 		Settlement.updateById(settlementId, setValue(Settlement::balance, balance))
 		sender.success("Set balance of $settlement to ${balance.toCreditsString()}")
 	}
 
 	@Subcommand("nation set balance")
-    fun onNationSetBalance(sender: CommandSender, nation: String, balance: Int) = asyncCommand(sender) {
+    fun onNationSetBalance(sender: CommandSender, nation: String, balance: Double) = asyncCommand(sender) {
 		val nationId = resolveNation(nation)
 		Nation.updateById(nationId, setValue(Nation::balance, balance))
 		sender.success("Set balance of $nation to ${balance.toCreditsString()}")

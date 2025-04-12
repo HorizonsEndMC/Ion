@@ -26,15 +26,15 @@ internal object NationMoneyCommand : MoneyCommand<Nation>() {
 
 	override fun resolveParent(name: String): Oid<Nation> = resolveNation(name)
 
-	override fun getBalance(parent: Oid<Nation>): Int {
+	override fun getBalance(parent: Oid<Nation>): Double {
 		return Nation.findPropById(parent, Nation::balance) ?: fail { "Failed to retrieve nation balance" }
 	}
 
-	override fun deposit(parent: Oid<Nation>, amount: Int) {
+	override fun deposit(parent: Oid<Nation>, amount: Double) {
 		Nation.deposit(parent, amount)
 	}
 
-	override fun withdraw(parent: Oid<Nation>, amount: Int) {
+	override fun withdraw(parent: Oid<Nation>, amount: Double) {
 		Nation.withdraw(parent, amount)
 	}
 
@@ -46,9 +46,9 @@ internal object NationMoneyCommand : MoneyCommand<Nation>() {
 
 	@Subcommand("deposit")
 	@Description("Give money to your nation")
-	override fun onDeposit(sender: Player, amount: Int) = super.onDeposit(sender, amount)
+	override fun onDeposit(sender: Player, amount: Double) = super.onDeposit(sender, amount)
 
 	@Subcommand("withdraw")
 	@Description("Take money from your nation")
-	override fun onWithdraw(sender: Player, amount: Int) = super.onWithdraw(sender, amount)
+	override fun onWithdraw(sender: Player, amount: Double) = super.onWithdraw(sender, amount)
 }
