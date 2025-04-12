@@ -97,6 +97,10 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 		// Ensure that all get at least 1
 		val destinations = rawDestinations.take(availableForTransfer)
+		if (destinations.isEmpty()) {
+			powerStorage?.addPower(removeAmount - missing)
+			return
+		}
 
 		val individualAmount = availableForTransfer / destinations.size
 
