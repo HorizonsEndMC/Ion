@@ -59,6 +59,10 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 		fun all(vararg requirements: ItemRequirement) = AllRequirements(*requirements)
 
 		class AnyRequirement(vararg  val requirements: ItemRequirement) : ItemRequirement {
+			init {
+			    check(requirements.isNotEmpty())
+			}
+
 			override fun matches(item: ItemStack?): Boolean {
 				return requirements.any { requirement -> requirement.matches(item) }
 			}
@@ -69,6 +73,10 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 		}
 
 		class AllRequirements(vararg  val requirements: ItemRequirement) : ItemRequirement {
+			init {
+				check(requirements.isNotEmpty())
+			}
+
 			override fun matches(item: ItemStack?): Boolean {
 				return requirements.all { requirement -> requirement.matches(item) }
 			}
