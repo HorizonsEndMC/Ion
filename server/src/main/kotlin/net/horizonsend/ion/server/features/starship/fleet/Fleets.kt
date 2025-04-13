@@ -25,6 +25,12 @@ object Fleets : IonServerComponent() {
 
     fun create(player: Player) = fleetList.add(Fleet(player.toFleetMember()))
 
+	fun createAIFleet() : Fleet{
+		val fleet = Fleet(null)
+		fleetList.add(fleet)
+		return fleet
+	}
+
     fun delete(fleet: Fleet) {
         if (fleetList.contains(fleet)) {
             fleet.delete()

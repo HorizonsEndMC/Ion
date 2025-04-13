@@ -1,8 +1,7 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner
 
-import net.horizonsend.ion.server.features.ai.faction.AIConvoyTemplate
+import net.horizonsend.ion.server.features.ai.convoys.AIConvoyTemplate
 import net.horizonsend.ion.server.features.ai.spawning.applyPostSpawnBehavior
-import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.SpawnerScheduler
 
 class ConvoySpawner(

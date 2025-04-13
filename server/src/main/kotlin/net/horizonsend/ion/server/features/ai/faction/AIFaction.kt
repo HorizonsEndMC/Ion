@@ -396,7 +396,7 @@ class AIFaction private constructor(
 			.addAggroMessage("aggro" to "<red>Defense protocols active. You will be removed.")
 			.addFriendlyFireMessages(
 				"suspect" to "<gray>Watch where your aiming! We have expensive equipment.",
-				"warn" to "<#FFA500>Manager is gonna tear me a new one if you keep this up.",
+				"warn_friendly" to "<#FFA500>Manager is gonna tear me a new one if you keep this up.",
 				"betrayal" to "<red>That's it! For the trouble im selling your ship for scrap!"
 			)
 			.addDifficultySuffix(0,"✦")
@@ -499,7 +499,7 @@ class AIFaction private constructor(
 			.addAggroMessage("aggro" to "<red>You have violated restricted airspace. Weapons lock in progress.")
 			.addFriendlyFireMessages(
 				"suspect" to "<gray>Watch your fire, pilot.",
-				"warn" to "<#FFA500>That last hit wasn't an accident.",
+				"warn_friendly" to "<#FFA500>That last hit wasn't an accident.",
 				"betrayal" to "<red>You’ve turned on your squadron. Consider yourself expelled."
 			)
 			.addSmackMessages(

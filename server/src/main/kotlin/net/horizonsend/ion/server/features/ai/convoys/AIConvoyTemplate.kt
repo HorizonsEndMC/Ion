@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.ai.faction
+package net.horizonsend.ion.server.features.ai.convoys
 
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SpawnerMechanic
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -8,22 +8,22 @@ import java.util.function.Supplier
 class AIConvoyTemplate(
 	val identifier: String,
 	val spawnMechanicBuilder: () -> SpawnerMechanic,
-	val locationProvider: Supplier<Location?>,
+	val routeProvider: Supplier<ConvoyRoute>,
 	val difficultySupplier: (String) -> Supplier<Int>,
 	val postSpawnBehavior: (AIController) -> Unit = {}
 )
 
 class ConvoyBuilder(private val identifier: String) {
-	private lateinit var _locationProvider: Supplier<Location?>
+	private lateinit var _routeProvider: Supplier<ConvoyRoute>
 	private lateinit var _difficultySupplier: (String) -> Supplier<Int>
 	private var postSpawnBehavior: (AIController) -> Unit = {}
 	private lateinit var spawnMechanicBuilder: () -> SpawnerMechanic
 
-	val locationProvider: Supplier<Location?> get() = _locationProvider
+	val routeProvider: Supplier<ConvoyRoute> get() = _routeProvider
 	val difficultySupplier: (String) -> Supplier<Int> get() = _difficultySupplier
 
-	fun locationProvider(block: () -> Location?) {
-		_locationProvider = Supplier(block)
+	fun routeProvider(block: () -> ConvoyRoute) {
+		_routeProvider = Supplier(block)
 	}
 
 	fun difficultySupplier(block: (String) -> Int) {
@@ -41,7 +41,7 @@ class ConvoyBuilder(private val identifier: String) {
 	fun build(): AIConvoyTemplate {
 		return AIConvoyTemplate(
 			identifier = identifier,
-			locationProvider = locationProvider,
+			routeProvider = routeProvider,
 			difficultySupplier = difficultySupplier,
 			postSpawnBehavior = postSpawnBehavior,
 			spawnMechanicBuilder = spawnMechanicBuilder

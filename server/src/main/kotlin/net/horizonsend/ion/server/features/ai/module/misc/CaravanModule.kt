@@ -2,7 +2,8 @@ package net.horizonsend.ion.server.features.ai.module.misc
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
-import net.horizonsend.ion.server.features.ai.faction.AIConvoyTemplate
+import net.horizonsend.ion.server.features.ai.convoys.AIConvoyTemplate
+import net.horizonsend.ion.server.features.ai.convoys.ConvoyRoute
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
@@ -21,11 +22,11 @@ import org.bukkit.Location
 import java.lang.ref.WeakReference
 
 class CaravanModule(
-	controller: AIController,
-	val fleet : Fleet,
-	val template: AIConvoyTemplate,
-	val source: Location,
-	val destinations: List<Location>
+    controller: AIController,
+    val fleet : Fleet,
+    val template: AIConvoyTemplate,
+    val source: Location,
+    val route: ConvoyRoute
 ) : AIModule(controller){
 
 	var target : AITarget = GoalTarget(Vec3i(source),source.world,false)
@@ -40,7 +41,7 @@ class CaravanModule(
 
 	fun initialize() {
 		if (fleet.logic != null) return
-		val logic = CaravanFleetLogic(template,source,destinations.toMutableList(),fleet)
+		val logic = CaravanFleetLogic(template,source,route,fleet)
 		fleet.logic  = logic
 	}
 
@@ -113,7 +114,7 @@ class CaravanModule(
 class CaravanFleetLogic(
 	val template: AIConvoyTemplate,
 	val source: Location,
-	val destinations: MutableList<Location>,
+	val route: ConvoyRoute,
 	fleet: Fleet
 ) : FleetLogic(fleet) {
 	var isTraveling = true
@@ -121,18 +122,11 @@ class CaravanFleetLogic(
 	val waitTime = 600 // number of seconds to wait at a location
 
 	fun advanceDestination() : Location {
-		while (destinations.isNotEmpty()) {
-			val next = destinations.removeFirst()
+		val next = route.advanceDestination()
 
-			if (next == source && destinations.isNotEmpty()) {
-				// Source reached in middle of loop: push to end and skip
-				destinations.add(next)
-				continue
-			}
-
+		if (next != null) {
 			return next
 		}
-
 		// If we ran out of destinations, disband
 		disband()
 		return source
