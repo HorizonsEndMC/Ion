@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.factory
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -119,7 +120,10 @@ abstract class ShipFactoryBlockProcessor(
 	}
 
 	protected fun getRotatedBlockData(data: BlockData): BlockState {
+		val nms = data.nms
+		if (CustomBlocks.getByBlockState(nms) != null) return nms
+
 		val rotation = getNMSRotation()
-		return data.nms.rotate(rotation)
+		return nms.rotate(rotation)
 	}
 }
