@@ -49,10 +49,6 @@ abstract class TurretWeaponSubsystem(
 	}
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
-		if (target == null) {
-			return dir
-		}
-
 		return target.clone()
 			.subtract(pos.toVector())
 			.subtract(multiblock.getMeanFirePoint(face).toCenterVector())

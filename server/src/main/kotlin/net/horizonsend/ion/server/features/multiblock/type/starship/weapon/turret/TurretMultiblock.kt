@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.SubsystemMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -25,7 +24,6 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
-import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -107,21 +105,6 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 		return pilotOffsets.getValue(face).toLocation(world).add(x + 0.5, y + 0.0, z + 0.5)
 	}
 
-	fun getSignFromPilot(player: Player): Sign? {
-		for (face in CARDINAL_BLOCK_FACES) {
-			val (x, y, z) = pilotOffsets.getValue(face)
-			val loc = player.location.subtract(x.toDouble(), y.toDouble(), z.toDouble())
-			val sign = loc.block.getState(false) as? Sign
-				?: continue
-
-			if (MultiblockAccess.getMultiblock(sign) === this) {
-				return sign
-			}
-		}
-
-		return null
-	}
-
 	fun getFacing(sign: Sign): BlockFace {
 		val block = sign.block
 
@@ -134,6 +117,10 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 		}
 
 		error("Failed to find a face for sign at ${sign.location}")
+	}
+
+	fun getFacingSafe(sign: Sign): BlockFace? {
+		return kotlin.runCatching { getFacing(sign) }.getOrNull()
 	}
 
 	fun getFacing(signPos: Vec3i, starship: ActiveStarship): BlockFace {

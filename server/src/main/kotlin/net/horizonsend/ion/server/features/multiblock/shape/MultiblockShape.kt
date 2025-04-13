@@ -168,11 +168,9 @@ class MultiblockShape {
 	fun getLocations(face: BlockFace): Set<Vec3i> = requirements.getValue(face).keys
 
 	fun checkRequirements(origin: Block, inward: BlockFace, loadChunks: Boolean, particles: Boolean = false): Boolean {
-		val realOrigin = if (signCentered) origin.getRelative(inward.oppositeFace) else origin
-
 		// check all directions if ignoring direction
 		for (face in if (ignoreDirection) CARDINAL_BLOCK_FACES else listOf(inward)) {
-			if (checkRequirementsSpecific(realOrigin, face, loadChunks, particles)) {
+			if (checkRequirementsSpecific(origin, face, loadChunks, particles)) {
 				return true
 			}
 		}

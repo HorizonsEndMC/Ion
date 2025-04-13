@@ -11,13 +11,13 @@ import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.loadFromData
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.setMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.shape.BlockRequirement
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretMultiblock
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK
@@ -65,11 +65,13 @@ import org.bukkit.util.Vector
 object PrePackaged : SLEventListener() {
 	fun getOriginFromPlacement(clickedBlock: Block, direction: BlockFace, shape: MultiblockShape): Block {
 		val requirements = shape.getRequirementMap(direction)
+		// Place multiblocks that have blocks below the origin correctly
 		val minY = requirements.entries.minOfOrNull { it.key.y } ?: throw NullPointerException("Multiblock has no shape!")
 
 		return clickedBlock
 			.getRelative(BlockFace.UP, 1) // Get the block on top of the clicked block
-			.getRelative(BlockFace.DOWN, minY) // Go up (down negative blocks) until the origin is high enough to fit the blocks below it
+			// Min to cover turret condition, lowest block is significantly above sign
+			.getRelative(BlockFace.DOWN, minOf(minY, 0)) // Go up (down negative blocks) until the origin is high enough to fit the blocks below it
 	}
 
 	/**
@@ -120,11 +122,17 @@ object PrePackaged : SLEventListener() {
 
 			var usedItem: ItemStack? = null
 
-			itemSource?.firstOrNull { requirement.itemRequirement.itemCheck(it) }
+			itemSource
+				?.firstOrNull { requirement.itemRequirement.itemCheck(it) }
 				?.let {
 					usedItem = it.clone()
 					requirement.itemRequirement.consume(it)
 				}
+
+			if (itemSource != null && usedItem == null) {
+				player.userError("Packed multiblock was missing materials!")
+				continue
+			}
 
 			val event = BlockPlaceEvent(
 				existingBlock,
@@ -141,7 +149,7 @@ object PrePackaged : SLEventListener() {
 			val placement = if (usedItem == null) {
 				requirement.example.clone()
 			} else {
-				requirement.itemRequirement.toBlock.invoke(usedItem)
+				requirement.itemRequirement.toBlock.invoke(usedItem!!)
 			}
 
 			requirement.executePlacementModifications(placement, direction)
@@ -157,7 +165,7 @@ object PrePackaged : SLEventListener() {
 		}
 
 		if (multiblock is SignlessStarshipWeaponMultiblock<*>) return
-		val signItem: ItemStack? = itemSource?.firstOrNull { it.type.isSign == true }
+		val signItem: ItemStack? = itemSource?.firstOrNull { it.type.isSign }
 
 		// If there is an item source but no sign then there is not one available
 		if (itemSource != null && signItem == null) return
@@ -165,7 +173,7 @@ object PrePackaged : SLEventListener() {
 		val signType = signItem?.type?.let { getWallSignType(it) } ?: Material.OAK_WALL_SIGN
 
 		// Add sign
-		val signPosition = origin.getRelative(direction.oppositeFace, 1)
+		val signPosition = origin.getRelative(direction.oppositeFace, if (multiblock.shape.signCentered) 0 else 1)
 		val signData = signType.createBlockData { signData ->
 			signData as Directional
 			signData.facing = direction.oppositeFace
@@ -216,9 +224,7 @@ object PrePackaged : SLEventListener() {
 		sign.getSide(Side.FRONT).line(0, text("[${multiblock.name}]"))
 		sign.update()
 
-		MultiblockAccess.tryDetectMultiblock(player, sign, direction, false)
-
-		multiblock.setupSign(player, sign)
+		MultiblockAccess.tryDetectMultiblock(player, sign, false)
 	}
 
 	fun getTokenData(itemStack: ItemStack): Multiblock? {
@@ -284,13 +290,32 @@ object PrePackaged : SLEventListener() {
 	}
 
 	fun pickUpStructure(player: Player, sign: Sign) {
-		val multiblockType = MultiblockAccess.getFast(sign) ?: return
+		val multiblockType = MultiblockAccess.getFast(sign)
+		if (multiblockType == null) {
+			player.userError("That sign isn't from a multiblock!")
+			return
+		}
+
 		val entityData = (multiblockType as? EntityMultiblock<*>)?.getMultiblockEntity(sign)?.store()
 
-		val structureDirection = sign.getFacing().oppositeFace
-		val structureOrigin = MultiblockEntity.getOriginFromSign(sign)
+		var structureDirection = sign.getFacing().oppositeFace
+		val structureOrigin = multiblockType.getOriginBlock(sign)
 
-		if (!multiblockType.shape.checkRequirements(structureOrigin, structureDirection, false)) return
+		if (multiblockType is TurretMultiblock) {
+			val newFace = multiblockType.getFacingSafe(sign)
+			if (newFace == null) {
+				player.userError("Turret not intact!")
+				return
+			}
+
+			structureDirection = newFace
+		}
+
+		// Structure already checked to get the face if turret
+		if (multiblockType !is TurretMultiblock && !multiblockType.shape.checkRequirements(structureOrigin, structureDirection, false)) {
+			player.userError("Structure not intact!")
+			return
+		}
 
 		val requirements = multiblockType.shape.getRequirementMap(structureDirection)
 

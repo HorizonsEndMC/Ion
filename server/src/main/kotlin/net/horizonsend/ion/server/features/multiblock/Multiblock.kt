@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isValidYLevel
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
@@ -33,6 +34,34 @@ abstract class Multiblock {
 		return true
 	}
 
+	fun getOriginBlock(sign: Sign): Block {
+		var block = sign.block
+
+		if (!shape.signCentered) {
+			val structureDirection = sign.getFacing().oppositeFace
+
+			block = block.getRelative(structureDirection)
+		}
+
+		return block
+	}
+
+	fun getOriginLocation(sign: Sign): Vec3i {
+		var x = sign.x
+		var y = sign.y
+		var z = sign.z
+
+		if (!shape.signCentered) {
+			val structureDirection = sign.getFacing().oppositeFace
+
+			x += structureDirection.modX
+			y += structureDirection.modY
+			z += structureDirection.modZ
+		}
+
+		return Vec3i(x, y, z)
+	}
+
 	protected abstract fun MultiblockShape.buildStructure()
 
 	val shape by lazy { MultiblockShape().apply { buildStructure() } }
@@ -49,9 +78,15 @@ abstract class Multiblock {
 		loadChunks: Boolean = true,
 		particles: Boolean = false
 	): Boolean {
-		val x = signLocation.blockX + inward.modX
-		val y = signLocation.blockY + inward.modY
-		val z = signLocation.blockZ + inward.modZ
+		var x = signLocation.blockX
+		var y = signLocation.blockY
+		var z = signLocation.blockZ
+
+		if (!shape.signCentered) {
+			x += inward.modX
+			y += inward.modY
+			z += inward.modZ
+		}
 
 		if (!isValidYLevel(y)) return false
 

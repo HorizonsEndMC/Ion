@@ -5,7 +5,6 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AntiAirCannons.isOccupied
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.defense.active.projectile.AntiAirCannonProjectile
@@ -661,8 +660,6 @@ object AntiAirCannonTurretMultiblock: RotatingMultiblock() {
 
 			val originBlock = world.getBlockAt(x, y, z)
 			val sign = originBlock.state as? Sign ?: continue
-
-			if (MultiblockAccess.getMultiblock(sign, checkStructure = true, loadChunks = false) === AntiAirCannonBaseMultiblock) return sign
 		}
 
 		return null
