@@ -253,6 +253,21 @@ fun Location.spherePoints(radius: Double, points: Int): List<Location> {
 	return coordinates
 }
 
+fun Location.conePoints(originalVector: Vector, angularOffsetDegrees: Double, points: Int): List<Location> {
+	val coordinates = mutableListOf<Location>()
+	val angularOffsetRads = Math.toRadians(angularOffsetDegrees)
+
+	for (count in 0..points)  {
+		coordinates.add(this.clone().add(originalVector.clone()
+			.rotateAroundX(ThreadLocalRandom.current().nextDouble(-angularOffsetRads, angularOffsetRads))
+			.rotateAroundY(ThreadLocalRandom.current().nextDouble(-angularOffsetRads, angularOffsetRads))
+			.rotateAroundZ(ThreadLocalRandom.current().nextDouble(-angularOffsetRads, angularOffsetRads))
+		))
+	}
+
+	return coordinates
+}
+
 private val directionArray = arrayOf(
 	BlockFace.EAST,
 	BlockFace.WEST,
@@ -568,4 +583,93 @@ fun isAdjacent(first: Vec3i, other: Vec3i): Boolean {
 	val zDiff = abs(first.z - other.z)
 
 	return (xDiff + yDiff + zDiff) == 1
+}
+
+// https://gamedev.stackexchange.com/questions/71397/how-can-i-generate-a-lightning-bolt-effect
+fun lightning(startLocation: Location, endLocation: Location, maxGenerations: Int, maxOffset: Double, branchChance: Double): List<Location> {
+	var currentOffset = maxOffset
+
+	// Using location pairs to preserve the association between "bends" in the lightning bolt
+	val locationPairs = mutableListOf(Pair(startLocation, endLocation))
+
+	// more generations = more smooth
+	for (generation in 0 until maxGenerations) {
+		// Clone original list so the original is not modified during iteration
+		val originalLocationPairs = locationPairs.toList()
+
+		for (locationPair in originalLocationPairs) {
+			// Remove the previous pair
+			locationPairs.remove(locationPair)
+
+			// Find midpoint of the pair; this will form the "bend in the lightning bolt"
+			val midpoint = locationPair.first.toVector().midpoint(locationPair.second.toVector())
+
+			// Offset to create the bend
+			midpoint.add(midpoint.clone()
+				.crossProduct(Vector(0, 1, 0)) // get a vector that is perpendicular to midpoint
+				.normalize().multiply(ThreadLocalRandom.current().nextDouble(-currentOffset, currentOffset)) // normalize and multiply to a random offset length
+				.rotateAroundAxis(midpoint, 2 * Math.PI * ThreadLocalRandom.current().nextDouble()) // randomly rotate
+			)
+
+			val midLocation = midpoint.toLocation(locationPair.first.world)
+			val tailPair = Pair(locationPair.first, midLocation)
+			val headPair = Pair(midLocation, locationPair.second)
+
+			locationPairs.add(tailPair)
+			locationPairs.add(headPair)
+
+			// Randomly add additional branching
+			if (ThreadLocalRandom.current().nextDouble() < branchChance) {
+				val newPair = Pair(midLocation, locationPair.second.clone().add(Vector(
+					ThreadLocalRandom.current().nextDouble(-currentOffset * 2, currentOffset * 2),
+					ThreadLocalRandom.current().nextDouble(-currentOffset * 2, currentOffset * 2),
+					ThreadLocalRandom.current().nextDouble(-currentOffset * 2, currentOffset * 2)
+				)))
+				locationPairs.add(newPair)
+			}
+		}
+
+		currentOffset /= 2
+	}
+
+	val finalLocations = mutableListOf<Location>()
+	for (locationPair in locationPairs) {
+		finalLocations += locationPair.first.alongVector(locationPair.second.clone().subtract(locationPair.first.clone()).toVector(), 5)
+	}
+
+	return finalLocations
+
+	/*
+	val originalVector = endLocation.clone().subtract(startLocation).toVector()
+	val vectorList = mutableListOf(originalVector)
+
+	for (generation in 0 until maxGenerations) {
+		// clone originalVectorList so vectors are not removed during the iteration
+		val originalVectorList = vectorList.toList()
+
+		for (vector in originalVectorList) {
+			vectorList.remove(vector)
+
+			val midpoint = Vector().midpoint(vector)
+
+			// offset midpoint
+			val tailHalf = midpoint.clone().add(midpoint.clone() // new midpoint vector
+				.crossProduct(Vector(0, 1, 0)) // get a vector that is perpendicular to midpoint
+				.normalize().multiply(ThreadLocalRandom.current().nextDouble(-currentOffset, currentOffset)) // normalize and multiply to a random offset length
+				.rotateAroundAxis(midpoint, 2 * Math.PI * ThreadLocalRandom.current().nextDouble()) // randomly rotate
+			)
+			val headHalf = vector.clone().subtract(tailHalf)
+
+			vectorList.add(tailHalf)
+			vectorList.add(headHalf)
+		}
+
+		currentOffset /= 2
+	}
+
+	val finalLocations = mutableListOf<Location>()
+	for (vector in vectorList) {
+	}
+	return finalLocations
+	 */
 }
