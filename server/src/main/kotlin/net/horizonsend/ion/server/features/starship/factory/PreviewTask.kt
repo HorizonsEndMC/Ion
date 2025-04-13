@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
-import org.bukkit.block.data.BlockData
+import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.entity.Player
 
 class PreviewTask(
@@ -32,7 +32,7 @@ class PreviewTask(
 		for (entry in blockMap) {
 			val key = entry.key
 
-			sendFakeBlock(getX(key), getY(key), getZ(key), entry.value)
+			sendFakeBlock(getX(key), getY(key), getZ(key), getRotatedBlockData(entry.value))
 		}
 	}
 
@@ -40,13 +40,13 @@ class PreviewTask(
 		for (key in blockMap.keys) {
 			val worldBlockData = getBlockDataSafe(entity.world, getX(key), getY(key), getZ(key)) ?: continue
 
-			sendFakeBlock(getX(key), getY(key), getZ(key), worldBlockData)
+			sendFakeBlock(getX(key), getY(key), getZ(key), worldBlockData.nms)
 		}
 	}
 
-	private fun sendFakeBlock(x: Int, y: Int, z: Int, blockData: BlockData) {
+	private fun sendFakeBlock(x: Int, y: Int, z: Int, blockState: BlockState) {
 		val nmsBlockPos = BlockPos(x, y, z)
-		val packet = ClientboundBlockUpdatePacket(nmsBlockPos, blockData.nms.rotate(getNMSRotation()))
+		val packet = ClientboundBlockUpdatePacket(nmsBlockPos, blockState)
 
 		player.minecraft.connection.send(packet)
 	}
