@@ -214,20 +214,16 @@ class MiningLaserSubsystem(
 
 		// Create a laser to visualize the beam with a life of 5 ticks
 		val laserEnd = targetedBlock.toLocation(starship.world)
-		val laser = CrystalLaser(initialPos, laserEnd, 5, -1).durationInTicks()
-		laser.start(IonServer)
 
 		val blocks = getBlocksToDestroy(laserEnd.block)
 
 		if (blocks.any { starship.contains(it.x, it.y, it.z) }) {
 			starship.alert("Mining Laser at $pos became obstructed and was disabled!")
-			laser.stop()
 			return setFiring(false)
 		}
 
 		if (AreaShields.getNearbyAreaShields(laserEnd, multiblock.mineRadius.toDouble()).isNotEmpty()) {
 			starship.alert("Mining Laser at $pos targeted an area shield and was disabled!")
-			laser.stop()
 			return setFiring(false)
 		}
 
@@ -236,7 +232,7 @@ class MiningLaserSubsystem(
 			toDestroy = blocks,
 			output = entity.getOutput() ?: run { setFiring(false); return starship.alert("Mining Laser at $pos's output inventory could not be found!") },
 			{ controller.canDestroyBlock(it) && StarshipBreakBlockEvent(controller, it).callEvent() },
-			{ starship.userErrorSubtitle("Not enough space!"); laser.stop() }
+			{ starship.userErrorSubtitle("Not enough space!") }
 		)
 
 		if (blocksBroken > 0) {
@@ -245,6 +241,10 @@ class MiningLaserSubsystem(
 		} else {
 			starship.sendActionBar(text("Mining laser is trying to break air!", NamedTextColor.RED))
 		}
+
+		CrystalLaser(initialPos, laserEnd, 5, -1)
+			.durationInTicks()
+			.start(IonServer)
 
 		playBeamSound()
 
