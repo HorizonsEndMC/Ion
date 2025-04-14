@@ -89,6 +89,16 @@ class ShipFactoryTask(
 		val availableItems = getAvailableItems()
 
 		var availableCredits = player.getMoneyBalance()
+
+		if (!ConfigurationFiles.featureFlags().economy) {
+			availableCredits = Double.MAX_VALUE
+		}
+
+		if (availableCredits <= 0.0) {
+			player.userError("You don't have enough credits to print!")
+			disable()
+		}
+
 		var usedPower = 0
 
 		// Find the first blocks that can be placed with the available resources, up to the limit
@@ -146,7 +156,7 @@ class ShipFactoryTask(
 				}
 			}
 
-			val price = if (ConfigurationFiles.featureFlags().economy) ShipFactoryMaterialCosts.getPrice(blockData) else 0.0
+			val price = ShipFactoryMaterialCosts.getPrice(blockData)
 
 			var toBreak = false
 
@@ -160,7 +170,9 @@ class ShipFactoryTask(
 						val power = entity.powerStorage.getPower()
 						if (power < usedPower) {
 							entity.statusManager.setStatus(text("Insufficient Power!", RED))
+							player.userError("Ship factory has insufficient power")
 							toBreak = true
+							disable()
 							return@areResourcesAvailable
 						}
 					}
@@ -246,7 +258,7 @@ class ShipFactoryTask(
 			val signData = signMap.remove(entry)
 
 			val price = ShipFactoryMaterialCosts.getPrice(blockData)
-			if (!player.hasEnoughMoney(consumedMoney + price)) continue
+			if (!player.hasEnoughMoney(consumedMoney + price) && ConfigurationFiles.featureFlags().economy) continue
 			consumedMoney += price
 
 			val printItem = PrintItem[blockData] ?: continue
@@ -269,7 +281,7 @@ class ShipFactoryTask(
 			entity.powerStorage.removePower(placements * 10)
 		}
 
-		player.withdrawMoney(consumedMoney)
+		if (ConfigurationFiles.featureFlags().economy) player.withdrawMoney(consumedMoney)
 	}
 
 	private fun placeBlock(location: BlockKey, data: BlockData, signData: SignData?) {
