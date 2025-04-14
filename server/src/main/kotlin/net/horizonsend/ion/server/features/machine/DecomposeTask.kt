@@ -20,6 +20,7 @@ import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.inventory.Inventory
+import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 
 class DecomposeTask(
@@ -147,6 +148,12 @@ class DecomposeTask(
 		// get drops BEFORE breaking
 		var drops: List<ItemStack> = block.drops.toList()
 
+		val state = block.state
+		if (state is InventoryHolder) {
+			drops = drops.plus(state.inventory.contents.filterNotNull())
+			state.inventory.clear()
+		}
+
 		if (block.type == Material.END_PORTAL_FRAME) {
 			drops = listOf(ItemStack(Material.END_PORTAL_FRAME))
 		}
@@ -171,7 +178,7 @@ class DecomposeTask(
 			val remaining: HashMap<Int, ItemStack> = storage.addItem(*drops.toTypedArray())
 
 			if (remaining.any()) {
-				for (drop in drops) block.world.dropItemNaturally(taskEntity.getSignLocation(), drop)
+				for (drop in remaining) block.world.dropItemNaturally(taskEntity.getSignLocation(), drop.value)
 
 				taskEntity.setStatus(Component.text("Out of space.", NamedTextColor.RED))
 				player.userError("Decomposer out of space, dropping items and cancelling decomposition.")
