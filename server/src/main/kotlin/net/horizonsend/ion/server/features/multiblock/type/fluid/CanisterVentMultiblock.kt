@@ -72,6 +72,9 @@ object CanisterVentMultiblock : Multiblock(), EntityMultiblock<CanisterVentMulti
 		override fun tick() {
 			val furnaceInventory = getFurnaceInventory() ?: return
 
+			val result = furnaceInventory.result
+			if (result != null && !result.isEmpty) return
+
 			val fuel = furnaceInventory.fuel ?: return
 			val customItem = fuel.customItem ?: return
 			if (customItem !is GasCanister) return
