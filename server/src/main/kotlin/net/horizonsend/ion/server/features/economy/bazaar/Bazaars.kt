@@ -302,7 +302,7 @@ object Bazaars : IonServerComponent() {
 
 			BazaarItem.removeStock(item._id, amount)
 
-			val tax = (city.tax * revenue).roundToInt()
+			val tax = city.tax * revenue
 			BazaarItem.depositMoney(item._id, revenue - tax)
 			if (city.type == TradeCityType.SETTLEMENT) {
 				Settlement.deposit(city.settlementId, tax)

@@ -53,7 +53,7 @@ data class Nation(
     var name: String,
     var capital: Oid<Settlement>,
     var color: Int,
-    override var balance: Int = 0,
+    override var balance: Double = 0.0,
     val invites: MutableSet<Oid<Settlement>> = mutableSetOf()
 ) : DbObject, MoneyHolder {
 	companion object : OidDbObjectCompanion<Nation>(Nation::class, setup = {
@@ -145,11 +145,11 @@ data class Nation(
 			col.deleteOne(sess, idFilterQuery(id))
 		}
 
-		fun deposit(nationId: Oid<Nation>, amount: Int) {
+		fun deposit(nationId: Oid<Nation>, amount: Double) {
 			updateById(nationId, inc(Nation::balance, amount))
 		}
 
-		fun withdraw(nationId: Oid<Nation>, amount: Int) {
+		fun withdraw(nationId: Oid<Nation>, amount: Double) {
 			updateById(nationId, inc(Nation::balance, -amount))
 		}
 

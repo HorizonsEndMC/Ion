@@ -16,10 +16,10 @@ internal abstract class MoneyCommand<Parent : MoneyHolder> : net.horizonsend.ion
 
 	abstract fun resolveParent(name: String): Oid<Parent>
 
-	abstract fun getBalance(parent: Oid<Parent>): Int
+	abstract fun getBalance(parent: Oid<Parent>): Double
 
-	abstract fun deposit(parent: Oid<Parent>, amount: Int)
-	abstract fun withdraw(parent: Oid<Parent>, amount: Int)
+	abstract fun deposit(parent: Oid<Parent>, amount: Double)
+	abstract fun withdraw(parent: Oid<Parent>, amount: Double)
 
 	private fun requireParent(sender: Player, suppliedName: String?): Oid<Parent> =
 		if (suppliedName == null) {
@@ -37,7 +37,7 @@ internal abstract class MoneyCommand<Parent : MoneyHolder> : net.horizonsend.ion
 		sender.sendRichMessage("<gray>Balance${parentName?.let { " of $it" } ?: ""}: <gold>${getBalance(parent)}")
 	}
 
-	open fun onDeposit(sender: Player, amount: Int) = asyncCommand(sender) {
+	open fun onDeposit(sender: Player, amount: Double) = asyncCommand(sender) {
 		requireEconomyEnabled()
 
 		failIf(amount <= 0) { "Amount must be greater than 0" }
@@ -45,19 +45,19 @@ internal abstract class MoneyCommand<Parent : MoneyHolder> : net.horizonsend.ion
 		val parent: Oid<Parent> = requireDefaultParent(sender)
 		requireCanDeposit(sender, parent)
 
-		failIf(!VAULT_ECO.has(sender, amount.toDouble())) {
+		failIf(!VAULT_ECO.has(sender, amount)) {
 			"You don't have ${amount.toCreditsString()}! You only have ${
 			VAULT_ECO.getBalance(sender).toCreditsString()
 			}"
 		}
 
 		deposit(parent, amount)
-		VAULT_ECO.withdrawPlayer(sender, amount.toDouble())
+		VAULT_ECO.withdrawPlayer(sender, amount)
 
 		sender.success("Deposited ${amount.toCreditsString()}")
 	}
 
-	open fun onWithdraw(sender: Player, amount: Int) = asyncCommand(sender) {
+	open fun onWithdraw(sender: Player, amount: Double) = asyncCommand(sender) {
 		requireEconomyEnabled()
 
 		failIf(amount <= 0) { "Amount must be greater than 0" }
@@ -69,7 +69,7 @@ internal abstract class MoneyCommand<Parent : MoneyHolder> : net.horizonsend.ion
 		failIf(balance < amount) { "There's not enough money to withdraw ${amount.toCreditsString()}. Balance is ${balance.toCreditsString()}" }
 
 		withdraw(parent, amount)
-		VAULT_ECO.depositPlayer(sender, amount.toDouble())
+		VAULT_ECO.depositPlayer(sender, amount)
 
 		sender.success("Withdrew ${amount.toCreditsString()}")
 	}

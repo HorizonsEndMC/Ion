@@ -54,7 +54,7 @@ data class Settlement(
     /** The leader of the settlement */
 	var leader: SLPlayerId,
     /** The amount of money the settlement has */
-	override var balance: Int = 0,
+	override var balance: Double = 0.0,
     /** The nation the settlement is in */
 	var nation: Oid<Nation>? = null,
     /** The minimum foreign relation a player must have to build in the settlement */
@@ -213,11 +213,11 @@ data class Settlement(
 			col.updateOne(sess, idFilterQuery(settlementId), setValue(Settlement::nation, nationId))
 		}
 
-		fun deposit(settlementId: Oid<Settlement>, amount: Int) {
+		fun deposit(settlementId: Oid<Settlement>, amount: Double) {
 			updateById(settlementId, inc(Settlement::balance, amount))
 		}
 
-		fun withdraw(settlementId: Oid<Settlement>, amount: Int) {
+		fun withdraw(settlementId: Oid<Settlement>, amount: Double) {
 			updateById(settlementId, inc(Settlement::balance, -amount))
 		}
 

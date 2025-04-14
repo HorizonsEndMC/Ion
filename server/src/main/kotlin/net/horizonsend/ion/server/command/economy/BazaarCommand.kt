@@ -399,7 +399,7 @@ object BazaarCommand : SLCommand() {
 		failIf(npc.type != CityNPC.Type.MERCHANT) { "Nearest NPC is not a merchant" }
 		val price = (Merchants.getPrice(itemString) ?: fail { "Item not for sale!" }) * amount
 		val city = TradeCities.getIfCity(Regions[npc.territory]) ?: return
-		val tax = ceil(city.tax * price).toInt()
+		val tax = ceil(city.tax * price)
 		requireMoney(sender, price + tax)
 		VAULT_ECO.withdrawPlayer(sender, price + tax)
 		Bazaars.dropItems(item, amount, sender)

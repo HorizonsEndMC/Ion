@@ -425,7 +425,7 @@ object ShipmentManager : IonServerComponent() {
 
 				val taxPercent = city.tax
 
-				val tax = (totalRevenue * taxPercent).roundToInt()
+				val tax = totalRevenue * taxPercent
 				totalRevenue -= tax
 
 				if (xp > 0) {
@@ -454,7 +454,7 @@ object ShipmentManager : IonServerComponent() {
 		player.rewardAchievement(Achievement.COMPLETE_CARGO_RUN)
 	}
 
-	private fun giveSettlementProfit(playerName: String, city: TradeCityData, tax: Int) {
+	private fun giveSettlementProfit(playerName: String, city: TradeCityData, tax: Double) {
 		if (city.type != TradeCityType.SETTLEMENT) {
 			return
 		}
