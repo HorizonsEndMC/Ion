@@ -46,7 +46,6 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import java.util.EnumSet
-import kotlin.math.max
 
 abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material) : Multiblock(), EntityMultiblock<DrillMultiblock.DrillMultiblockEntity>, InteractableMultiblock, DisplayNameMultilblock {
 	override val description: Component = text("Drills blocks in a ${javaClass.simpleName.substringBefore("Mirrored").substringAfter("DrillMultiblockTier").toInt() + 2} block radius.")
@@ -186,9 +185,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 			val toDestroy = getBlocksToDestroy()
 
 			// set to 1 block broken per furnace tick in space
-			val maxBroken = if (!inSpace) {
-				max(1, if (drills > 5) (5 + drills) / drills + 15 / drills else 10 - drills)
-			} else 1
+			val maxBroken = if (!inSpace) 10 else 1
 
 			val broken = breakBlocks(
 				maxBroken,
