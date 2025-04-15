@@ -26,15 +26,14 @@ object LegacyItemUtils {
 		val maxStackSize = item.maxStackSize
 
 		if (inventory is FurnaceInventory) {
-			val furnaceInventory = inventory
-			val fuel = furnaceInventory.fuel
+			val fuel = inventory.fuel
 			if (fuel == null) {
 				space += maxStackSize
 			} else if (item.isSimilar(fuel)) {
 				space += maxStackSize - fuel.amount
 			}
 
-			val smelting = furnaceInventory.smelting
+			val smelting = inventory.smelting
 			if (smelting == null) {
 				space += maxStackSize
 			} else if (item.isSimilar(smelting)) {

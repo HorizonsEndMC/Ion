@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport
 
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
@@ -65,6 +66,8 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	}
 
 	fun runTask(task: () -> Unit) {
+		if (!IonServer.isEnabled) return
+
 		executor.execute {
 			try {
 				task.invoke()

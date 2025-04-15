@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.manager.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
@@ -147,7 +148,9 @@ object MultiblockEntities : IonServerComponent() {
 		if (event.timeRemaining < msptBuffer) return
 
 		MultiblockTicking.iterateManagers { manager ->
-			if (manager.getSignUnsavedTime() < 5000L) return@iterateManagers
+			if (manager !is ChunkMultiblockManager) return@iterateManagers
+
+			if (manager.getSignUnsavedTime() < 10000L) return@iterateManagers
 
 			for (keyEntity in manager.getAllMultiblockEntities()) {
 				if (event.timeRemaining < msptBuffer) return

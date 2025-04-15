@@ -5,55 +5,37 @@ import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeW
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.ItemStack
-import java.util.function.Supplier
 
 class BackedItemTransaction(
 	val source: ItemReference,
 	val item: ItemStack,
-	private val amountProvider: Supplier<Int>,
+	private val amount: Int,
 	val destinations: Object2ObjectRBTreeMap<PathfindingNodeWrapper, CraftInventory>,
 	val destinationSelector: (Object2ObjectRBTreeMap<PathfindingNodeWrapper, CraftInventory>) -> Pair<PathfindingNodeWrapper, CraftInventory>
 ) {
 	fun execute() {
-		val amount = amountProvider.get()
 		if (amount <= 0) return
 
-		val cloned = source.inventory.getItem(source.index)?.clone() ?: return
-		val stackSize = cloned.amount
-		val notRemoved = tryRemove()
+		val notAdded = addToDestination(amount)
+		if (notAdded == amount) return
 
-		val limit = amount - notRemoved
-
-		if (limit <= 0) return
-
-		val notAdded = addToDestination(limit)
-		val newStackSize = stackSize - limit + notAdded
-		if (newStackSize <= 0) return
-
-		source.inventory.setItem(source.index, cloned.asQuantity(newStackSize))
+		tryRemove(amount - notAdded)
 	}
 
 	// Returns amount that could not be removed
-	private fun tryRemove(): Int {
-		val amount = amountProvider.get()
-		if (amount <= 0) return 0
+	private fun tryRemove(toRemove: Int) {
+		val sourceStack = source.inventory.getItem(source.index) ?: return
+		val removeAmount = minOf(toRemove, sourceStack.amount)
 
-		val sourceStack = source.inventory.getItem(source.index) ?: return amount
-		val removeAmount = minOf(amount, sourceStack.amount)
+		if (sourceStack.amount == removeAmount) {
+			source.inventory.setItem(source.index, null)
+		} else {
+			sourceStack.amount -= removeAmount
+		}
 
 		val nmsContainer = source.inventory.inventory
 		if (nmsContainer is BlockEntity) {
 			nmsContainer.setChanged()
-		}
-
-		return if (amount == removeAmount) {
-			source.inventory.setItem(source.index, null)
-
-			0
-		} else {
-			sourceStack.amount -= removeAmount
-
-			amount - removeAmount
 		}
 	}
 
