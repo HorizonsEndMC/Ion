@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.shield
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.World
@@ -10,8 +11,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import kotlin.collections.set
 import kotlin.math.abs
-
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
+import kotlin.math.pow
 
 class BubbleShieldSubsystem(
 	starship: ActiveStarship,
@@ -60,7 +60,7 @@ class BubbleShieldSubsystem(
 		val ly = blockPos.y - pos.y  //impact location relative to center
 		val lz = blockPos.z - pos.z
 
-    return 1 >= (lx/semiAxisX).pow(2) + (ly/semiAxisY) + (lz/semiAxisZ).pow(2)
+    return 1 >= (lx/semiAxisX).pow(2) + (ly/semiAxisY).pow(2) + (lz/semiAxisZ).pow(2)
 	}
 
   private fun cacheShape(getRotatedFace: (BlockFace) -> BlockFace) {
