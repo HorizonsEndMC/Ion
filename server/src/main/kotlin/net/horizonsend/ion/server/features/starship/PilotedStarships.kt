@@ -426,7 +426,7 @@ object PilotedStarships : IonServerComponent() {
 
 			// Limit mining laser tiers and counts
 			val miningLasers = activePlayerStarship.subsystems.filterIsInstance<MiningLaserSubsystem>()
-			if (miningLasers.any { it.multiblock.tier != activePlayerStarship.type.miningLaserTier }) {
+			if (activePlayerStarship.type != StarshipType.PLATFORM && miningLasers.any { it.multiblock.tier != activePlayerStarship.type.miningLaserTier }) {
 				player.userErrorAction("Your starship can only support tier ${activePlayerStarship.type.miningLaserTier} mining lasers!")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
