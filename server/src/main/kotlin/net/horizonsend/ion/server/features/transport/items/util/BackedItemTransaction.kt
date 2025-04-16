@@ -15,13 +15,24 @@ class BackedItemTransaction(
 ) {
 	fun execute() {
 		if (amount <= 0) return
+		val cloned = source.get()?.clone() ?: return
 
 		val (addedInventories, notAdded) = addToDestination(amount)
 		if (notAdded == amount) return
 
 		val notRemoved = tryRemove(amount - notAdded)
 
+		if (notRemoved > 0) {
+			var removeAmount = notRemoved
 
+			for ((addedInventory, amount) in addedInventories) {
+				if (removeAmount <= 0) break
+				if (amount <= 0) continue
+
+				val missing = addedInventory.removeItem(cloned.asQuantity(amount)).entries.firstOrNull()?.key ?: 0
+				removeAmount -= (amount - missing)
+			}
+		}
 	}
 
 	// Returns amount that could not be removed
