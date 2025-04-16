@@ -5,6 +5,8 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.destruction.RemoveBlockSink.Companion.BlockWrapper.CustomBlockWrapper
 import net.horizonsend.ion.server.features.starship.destruction.RemoveBlockSink.Companion.BlockWrapper.MaterialWrapper
+import net.horizonsend.ion.server.features.starship.destruction.RemoveBlockSink.Companion.RemovalState.Always
+import net.horizonsend.ion.server.features.starship.destruction.RemoveBlockSink.Companion.RemovalState.IfPlayerSink
 import org.bukkit.Material
 import org.bukkit.scheduler.BukkitRunnable
 
@@ -59,27 +61,30 @@ abstract class SinkProvider(
 		AI_LARGE {
 			override fun getSinkProvider(starship: ActiveStarship): SinkProvider {
 				return RemoveBlockSink.withChance(starship, mapOf(
-					MaterialWrapper(Material.IRON_BLOCK) to 0.25,
-					MaterialWrapper(Material.GOLD_BLOCK) to 0.25,
-					MaterialWrapper(Material.DIAMOND_BLOCK) to 0.25,
-					MaterialWrapper(Material.EMERALD_BLOCK) to 0.25,
-					MaterialWrapper(Material.REDSTONE_BLOCK) to 0.25,
-					MaterialWrapper(Material.NETHERITE_BLOCK) to 0.25,
-					MaterialWrapper(Material.COPPER_BLOCK) to 0.25,
-					MaterialWrapper(Material.EXPOSED_COPPER) to 0.25,
-					MaterialWrapper(Material.WEATHERED_COPPER) to 0.25,
-					MaterialWrapper(Material.OXIDIZED_COPPER) to 0.25,
-					MaterialWrapper(Material.WAXED_COPPER_BLOCK) to 0.25,
-					MaterialWrapper(Material.WAXED_EXPOSED_COPPER) to 0.25,
-					MaterialWrapper(Material.WAXED_WEATHERED_COPPER) to 0.25,
-					MaterialWrapper(Material.WAXED_OXIDIZED_COPPER) to 0.25,
-					CustomBlockWrapper(CustomBlocks.TITANIUM_BLOCK) to 0.25,
-					CustomBlockWrapper(CustomBlocks.ALUMINUM_BLOCK) to 0.25,
-					CustomBlockWrapper(CustomBlocks.URANIUM_BLOCK) to 0.25,
-					CustomBlockWrapper(CustomBlocks.ENRICHED_URANIUM_BLOCK) to 0.25,
-					CustomBlockWrapper(CustomBlocks.BARGE_REACTOR_CORE) to 1.0,
-					CustomBlockWrapper(CustomBlocks.CRUISER_REACTOR_CORE) to 1.0,
-					CustomBlockWrapper(CustomBlocks.BATTLECRUISER_REACTOR_CORE) to 1.0,
+					MaterialWrapper(Material.IRON_BLOCK) to Pair(0.25, Always),
+					MaterialWrapper(Material.GOLD_BLOCK) to Pair(0.25, Always),
+					MaterialWrapper(Material.DIAMOND_BLOCK) to Pair(0.25, Always),
+					MaterialWrapper(Material.EMERALD_BLOCK) to Pair(0.25, Always),
+					MaterialWrapper(Material.REDSTONE_BLOCK) to Pair(0.25, Always),
+					MaterialWrapper(Material.NETHERITE_BLOCK) to Pair(0.25, Always),
+					MaterialWrapper(Material.COPPER_BLOCK) to Pair(0.25, Always),
+					MaterialWrapper(Material.EXPOSED_COPPER) to Pair(0.25, Always),
+					MaterialWrapper(Material.WEATHERED_COPPER) to Pair(0.25, Always),
+					MaterialWrapper(Material.OXIDIZED_COPPER) to Pair(0.25, Always),
+					MaterialWrapper(Material.WAXED_COPPER_BLOCK) to Pair(0.25, Always),
+					MaterialWrapper(Material.WAXED_EXPOSED_COPPER) to Pair(0.25, Always),
+					MaterialWrapper(Material.WAXED_WEATHERED_COPPER) to Pair(0.25, Always),
+					MaterialWrapper(Material.WAXED_OXIDIZED_COPPER) to Pair(0.25, Always),
+					CustomBlockWrapper(CustomBlocks.TITANIUM_BLOCK) to Pair(0.25, Always),
+					CustomBlockWrapper(CustomBlocks.ALUMINUM_BLOCK) to Pair(0.25, Always),
+					CustomBlockWrapper(CustomBlocks.URANIUM_BLOCK) to Pair(0.25, Always),
+					CustomBlockWrapper(CustomBlocks.ENRICHED_URANIUM_BLOCK) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlocks.NETHERITE_CASING) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlocks.CHETHERITE_BLOCK) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlocks.STEEL_BLOCK) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlocks.BARGE_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlocks.CRUISER_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlocks.BATTLECRUISER_REACTOR_CORE) to Pair(1.0, Always),
 				))
 			}
 		},
@@ -93,27 +98,30 @@ abstract class SinkProvider(
 		PLAYER {
 			override fun getSinkProvider(starship: ActiveStarship): SinkProvider {
 				return RemoveBlockSink.withChance(starship, mapOf(
-					MaterialWrapper(Material.IRON_BLOCK) to 1.0,
-					MaterialWrapper(Material.GOLD_BLOCK) to 1.0,
-					MaterialWrapper(Material.DIAMOND_BLOCK) to 1.0,
-					MaterialWrapper(Material.EMERALD_BLOCK) to 1.0,
-					MaterialWrapper(Material.REDSTONE_BLOCK) to 1.0,
-					MaterialWrapper(Material.NETHERITE_BLOCK) to 1.0,
-					MaterialWrapper(Material.COPPER_BLOCK) to 1.0,
-					MaterialWrapper(Material.EXPOSED_COPPER) to 1.0,
-					MaterialWrapper(Material.WEATHERED_COPPER) to 1.0,
-					MaterialWrapper(Material.OXIDIZED_COPPER) to 1.0,
-					MaterialWrapper(Material.WAXED_COPPER_BLOCK) to 1.0,
-					MaterialWrapper(Material.WAXED_EXPOSED_COPPER) to 1.0,
-					MaterialWrapper(Material.WAXED_WEATHERED_COPPER) to 1.0,
-					MaterialWrapper(Material.WAXED_OXIDIZED_COPPER) to 1.0,
-					CustomBlockWrapper(CustomBlocks.TITANIUM_BLOCK) to 1.0,
-					CustomBlockWrapper(CustomBlocks.ALUMINUM_BLOCK) to 1.0,
-					CustomBlockWrapper(CustomBlocks.URANIUM_BLOCK) to 1.0,
-					CustomBlockWrapper(CustomBlocks.ENRICHED_URANIUM_BLOCK) to 1.0,
-					CustomBlockWrapper(CustomBlocks.BARGE_REACTOR_CORE) to 1.0,
-					CustomBlockWrapper(CustomBlocks.CRUISER_REACTOR_CORE) to 1.0,
-					CustomBlockWrapper(CustomBlocks.BATTLECRUISER_REACTOR_CORE) to 1.0,
+					MaterialWrapper(Material.IRON_BLOCK) to Pair(1.0, IfPlayerSink),
+					MaterialWrapper(Material.GOLD_BLOCK) to Pair(1.0, IfPlayerSink),
+					MaterialWrapper(Material.DIAMOND_BLOCK) to Pair(1.0, IfPlayerSink),
+					MaterialWrapper(Material.EMERALD_BLOCK) to Pair(1.0, IfPlayerSink),
+					MaterialWrapper(Material.REDSTONE_BLOCK) to Pair(1.0, IfPlayerSink),
+					MaterialWrapper(Material.NETHERITE_BLOCK) to Pair(1.0, IfPlayerSink),
+					MaterialWrapper(Material.COPPER_BLOCK) to Pair(1.0, IfPlayerSink),
+					MaterialWrapper(Material.EXPOSED_COPPER) to Pair(1.0, IfPlayerSink),
+					MaterialWrapper(Material.WEATHERED_COPPER) to Pair(1.0, IfPlayerSink),
+					MaterialWrapper(Material.OXIDIZED_COPPER) to Pair(1.0, IfPlayerSink),
+					MaterialWrapper(Material.WAXED_COPPER_BLOCK) to Pair(1.0, IfPlayerSink),
+					MaterialWrapper(Material.WAXED_EXPOSED_COPPER) to Pair(1.0, IfPlayerSink),
+					MaterialWrapper(Material.WAXED_WEATHERED_COPPER) to Pair(1.0, IfPlayerSink),
+					MaterialWrapper(Material.WAXED_OXIDIZED_COPPER) to Pair(1.0, IfPlayerSink),
+					CustomBlockWrapper(CustomBlocks.TITANIUM_BLOCK) to Pair(1.0, IfPlayerSink),
+					CustomBlockWrapper(CustomBlocks.ALUMINUM_BLOCK) to Pair(1.0, IfPlayerSink),
+					CustomBlockWrapper(CustomBlocks.URANIUM_BLOCK) to Pair(1.0, IfPlayerSink),
+					CustomBlockWrapper(CustomBlocks.ENRICHED_URANIUM_BLOCK) to Pair(1.0, IfPlayerSink),
+					CustomBlockWrapper(CustomBlocks.NETHERITE_CASING) to Pair(1.0, IfPlayerSink),
+					CustomBlockWrapper(CustomBlocks.CHETHERITE_BLOCK) to Pair(1.0, IfPlayerSink),
+					CustomBlockWrapper(CustomBlocks.STEEL_BLOCK) to Pair(1.0, IfPlayerSink),
+					CustomBlockWrapper(CustomBlocks.BARGE_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlocks.CRUISER_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlocks.BATTLECRUISER_REACTOR_CORE) to Pair(1.0, Always),
 				))
 			}
 		};
