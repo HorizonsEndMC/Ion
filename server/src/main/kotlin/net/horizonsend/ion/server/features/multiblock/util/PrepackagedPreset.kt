@@ -24,7 +24,7 @@ object PrepackagedPreset {
 	}
 
 	fun pane(vararg face: RelativeFace): BlockRequirement.() -> Unit = {
-		example = Material.GLASS_PANE.createBlockData()
+		example = Material.BLACK_STAINED_GLASS_PANE.createBlockData()
 		addPlacementModification { multiblockDirection: BlockFace, pane: BlockData ->
 			pane as MultipleFacing
 			face.forEach { pane.setFace(it[multiblockDirection], true) }
