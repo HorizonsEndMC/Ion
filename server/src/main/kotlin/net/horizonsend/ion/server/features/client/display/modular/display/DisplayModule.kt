@@ -95,6 +95,7 @@ abstract class DisplayModule(
 			Vector3f(scale),
 			Quaternionf()
 		))
+		entity.setLevel(handler.holder.handlerGetWorld().minecraft)
 
 		playerManager.runUpdates()
 		playerManager.sendTeleport()
