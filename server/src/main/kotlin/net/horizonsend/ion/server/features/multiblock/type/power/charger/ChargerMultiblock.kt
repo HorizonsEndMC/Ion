@@ -161,7 +161,7 @@ abstract class ChargerMultiblock(val tierText: String) : Multiblock(), EntityMul
 			powerStorage.setPower(power - multiplier * item.amount)
 
 			tickingManager.sleepForTicks(20)
-			setBurningForTicks(20)
+			setBurningForTicks(40)
 		}
 
 		override fun loadFromSign(sign: Sign) {
