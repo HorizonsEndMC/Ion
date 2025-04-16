@@ -67,6 +67,7 @@ class IonWorld private constructor(
 	}
 
 	fun isChunkLoaded(key: Long) = chunks.containsKey(key)
+	fun isChunkLoaded(x: Int, z: Int) = chunks.containsKey(Chunk.getChunkKey(x, z))
 
 	/**
 	 * Adds the chunk

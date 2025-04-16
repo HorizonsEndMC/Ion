@@ -55,7 +55,7 @@ object CreativePowerSourceMultiblock : Multiblock(), EntityMultiblock<CreativePo
 		z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : MultiblockEntity(manager, CreativePowerSinkMultiblock, world, x, y, z, structureFace), PoweredMultiblockEntity, AsyncTickingMultiblockEntity {
+	) : MultiblockEntity(manager, CreativePowerSourceMultiblock, world, x, y, z, structureFace), PoweredMultiblockEntity, AsyncTickingMultiblockEntity {
 		override val powerStorage: PowerStorage = PowerStorage(this, Integer.MAX_VALUE, Integer.MAX_VALUE)
 		override val maxPower: Int = Integer.MAX_VALUE
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(1)

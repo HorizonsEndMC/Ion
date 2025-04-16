@@ -6,14 +6,16 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.FlowMeterDisplayModule
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.Companion.adjacentMinusBackwards
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.RollingAverage
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.axisOrNull
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.faces
 import net.kyori.adventure.text.Component
@@ -91,12 +93,28 @@ sealed interface PowerNode : Node {
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is EndRodNode && mergeNodeTransferCheck(other)
 	}
 
-    data class PowerFlowMeter(val cache: PowerTransportCache, var face: BlockFace, var world: World, var location: BlockKey) : PowerNode, ComplexNode, DisplayHandlerHolder {
-		var lastRefreshed = 0L
-		val rollingAverage = RollingAverage()
+    data class PowerFlowMeter(var face: BlockFace, var world: World, var location: BlockKey) : PowerNode, ComplexNode, DisplayHandlerHolder {
+		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
+		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true
+		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
+
+		override fun handlerGetWorld(): World = world
+
+		private var lastRefreshed = 0L
+		private val rollingAverage = RollingAverage()
 
 		override var isAlive: Boolean = true
-		val displayHandler = DisplayHandlers.newBlockOverlay(this, toVec3i(location), face, { FlowMeterDisplayModule(it, this, 0.0, 0.0, 0.0, 0.7f) })
+		val displayHandler = DisplayHandlers.newBlockOverlay(
+			this,
+			toVec3i(location),
+			face,
+			{ FlowMeterDisplayModule(it, this, 0.0, 0.0, 0.0, 0.7f) }
+		)
+			.addKeepAlive {
+				val chunk = world.ion.getChunk(getX(location).shr(4), getZ(location).shr(4)) ?: return@addKeepAlive false
+				chunk.transportNetwork.powerNodeManager.cache.getCached(location) === this
+			}
+			.register()
 
         fun onCompleteChain(transferred: Int) {
 			// Push onto queue
@@ -107,20 +125,10 @@ sealed interface PowerNode : Node {
 			}
         }
 
-		private companion object {
-			val firstLine = ofChildren(text("Δ", GREEN), text("E: ", YELLOW))
-			val format = DecimalFormat("##.##")
-		}
-
         fun formatFlow(): Component {
             val avg = runCatching { rollingAverage.getAverage().roundToHundredth() }.getOrDefault(0.0)
-
             return ofChildren(firstLine, text(format.format(avg), GREEN),)
         }
-
-		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
-        override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true
-        override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
 
         override fun onInvalidate() {
 			isAlive = false
@@ -130,10 +138,14 @@ sealed interface PowerNode : Node {
         override fun displace(movement: StarshipMovement) {
             this.face = movement.displaceFace(this.face)
 			location = movement.displaceKey(location)
+			movement.newWorld?.let { world = it }
 
             displayHandler.displace(movement)
         }
 
-		override fun handlerGetWorld(): World = world
+		private companion object {
+			val firstLine = ofChildren(text("Δ", GREEN), text("E: ", YELLOW))
+			val format = DecimalFormat("##.##")
+		}
 	}
 }

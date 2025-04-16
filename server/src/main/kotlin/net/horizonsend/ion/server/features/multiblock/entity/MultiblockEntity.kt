@@ -183,15 +183,18 @@ abstract class MultiblockEntity(
 	}
 
 	fun displace(movement: StarshipMovement) {
-		val world = movement.newWorld
-		if (world != null) {
-			this.world = world
+		val newWorld = movement.newWorld
+		if (newWorld != null) {
+			this.world = newWorld
 		}
 
 		this.structureDirection = movement.displaceFace(structureDirection)
 
 		displaceAdditional(movement)
-		if (this is DisplayMultiblockEntity) this.displayHandler.displace(movement)
+		if (this is DisplayMultiblockEntity) {
+			this.displayHandler.displace(movement)
+			this.displayHandler.update()
+		}
 	}
 
 	/**

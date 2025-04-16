@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.nodes.util.NodeCacheFactory
-import net.horizonsend.ion.server.features.transport.util.CacheType.entries
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
@@ -62,7 +61,7 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 			.addSimpleNode(REDSTONE_BLOCK, PowerNode.RedstoneMergeNode)
 			.addSimpleNode(IRON_BLOCK, PowerNode.IronMergeNode)
 			.addSimpleNode(LAPIS_BLOCK, PowerNode.InvertedMergeNode)
-			.addDataHandler<Observer>(OBSERVER) { data, loc, holder -> PowerFlowMeter(holder.cache as PowerTransportCache, data.facing, holder.getWorld(), loc) }
+			.addDataHandler<Observer>(OBSERVER) { data, loc, holder -> PowerFlowMeter(data.facing, holder.getWorld(), loc) }
 			.addSimpleNode(NOTE_BLOCK, PowerInputNode)
 			.build()
 

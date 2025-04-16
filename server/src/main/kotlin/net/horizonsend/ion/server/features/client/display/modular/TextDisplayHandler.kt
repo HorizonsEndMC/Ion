@@ -22,9 +22,15 @@ class TextDisplayHandler private constructor(
 	var facing: BlockFace,
 ) {
 	var displayModules = listOf<DisplayModule>()
+	private val keepAlives = mutableListOf<() -> Boolean>()
 
 	fun update() {
 		if (!holder.isAlive) {
+			remove()
+			return
+		}
+
+		if (keepAlives.isNotEmpty() && keepAlives.any { !it.invoke() }) {
 			remove()
 			return
 		}
@@ -83,6 +89,11 @@ class TextDisplayHandler private constructor(
 		anchorBlockZ = newZ
 
 		for (display in displayModules) display.resetPosition()
+	}
+
+	fun addKeepAlive(keepAlive: () -> Boolean): TextDisplayHandler {
+		keepAlives.add(keepAlive)
+		return this
 	}
 
 	class Builder(val holder: DisplayHandlerHolder, val anchorBlockX: Int, val anchorBlockY: Int, val anchorBlockZ: Int) {
