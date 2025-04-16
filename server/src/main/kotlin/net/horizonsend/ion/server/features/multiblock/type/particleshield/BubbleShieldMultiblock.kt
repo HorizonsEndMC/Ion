@@ -14,7 +14,7 @@ import kotlin.math.abs
 import kotlin.math.PI
 import kotlin.math.pow
 
-object BoxShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
+object BubbleShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 	private const val MIN_DIMENSION = 9
 	private const val MAX_DIMENSION = 27
 	private const val MIN_VOLUME = 256
