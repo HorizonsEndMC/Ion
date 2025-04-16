@@ -32,6 +32,7 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 	FurnaceBasedMultiblockEntity {
 
 	override var lastRecipe: MultiblockRecipe<FurnaceEnviornment>? = null
+	override var hasTicked: Boolean = false
 
 	override val progressManager: ProgressManager = ProgressManager(data)
 	override val tickingManager: TickingManager = TickingManager(20)

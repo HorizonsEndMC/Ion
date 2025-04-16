@@ -21,7 +21,7 @@ interface ProgressMultiblock {
 	}
 
 	class ProgressManager(data: PersistentMultiblockData) {
-		var lastProgressTick = System.currentTimeMillis()
+		private var lastProgressTick = System.currentTimeMillis()
 		private var currentProgress: Double = data.getAdditionalDataOrDefault(PROGRESS, DOUBLE, 0.0)
 
 		fun getCurrentProgress(): Double = currentProgress
@@ -69,8 +69,14 @@ interface ProgressMultiblock {
 	}
 
 	companion object {
+		private val format = DecimalFormat("##.##")
+
+		fun formatProgressString(progress: Double): String {
+			return format.format(progress.roundToTenThousanth() * 100.0)
+		}
+
 		fun formatProgress(color: TextColor, progress: Double): Component {
-			val percent = DecimalFormat("##.##").format(progress.roundToTenThousanth() * 100.0)
+			val percent = formatProgressString(progress)
 			return ofChildren(text(percent, color), text('%', HEColorScheme.HE_LIGHT_GRAY))
 		}
 	}

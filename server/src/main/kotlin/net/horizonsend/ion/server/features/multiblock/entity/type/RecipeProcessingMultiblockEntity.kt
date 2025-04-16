@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.crafting.recipe.Multiblock
 
 interface RecipeProcessingMultiblockEntity<E: RecipeEnviornment> {
 	var lastRecipe: MultiblockRecipe<E>?
+	var hasTicked: Boolean
 
 	fun buildRecipeEnviornment(): E
 
@@ -26,8 +27,9 @@ interface RecipeProcessingMultiblockEntity<E: RecipeEnviornment> {
 	fun tryProcessRecipe(): Boolean {
 		val recipe = getRecipesFor()
 
-		if (this is ProgressMultiblock && (recipe == null || lastRecipe != recipe)) progressManager.reset()
+		if (this is ProgressMultiblock && (recipe == null || (lastRecipe != recipe && hasTicked))) progressManager.reset()
 
+		hasTicked = true
 		lastRecipe = recipe
 
 		val enviornment = buildRecipeEnviornment()
