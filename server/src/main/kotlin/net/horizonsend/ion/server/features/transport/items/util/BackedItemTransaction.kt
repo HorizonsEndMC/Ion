@@ -16,15 +16,17 @@ class BackedItemTransaction(
 	fun execute() {
 		if (amount <= 0) return
 
-		val notAdded = addToDestination(amount)
+		val (addedInventories, notAdded) = addToDestination(amount)
 		if (notAdded == amount) return
 
-		tryRemove(amount - notAdded)
+		val notRemoved = tryRemove(amount - notAdded)
+
+
 	}
 
 	// Returns amount that could not be removed
-	private fun tryRemove(toRemove: Int) {
-		val sourceStack = source.inventory.getItem(source.index) ?: return
+	private fun tryRemove(toRemove: Int): Int {
+		val sourceStack = source.inventory.getItem(source.index) ?: return toRemove
 		val removeAmount = minOf(toRemove, sourceStack.amount)
 
 		if (sourceStack.amount == removeAmount) {
@@ -37,24 +39,32 @@ class BackedItemTransaction(
 		if (nmsContainer is BlockEntity) {
 			nmsContainer.setChanged()
 		}
+
+		return toRemove - removeAmount
 	}
 
 	// Returns amount that did not fit
-	private fun addToDestination(limit: Int): Int {
+	private fun addToDestination(limit: Int): Pair<Map<CraftInventory, Int>, Int> {
 		var remaining = limit
 
 		var destinationsRemaining = destinations.size
 
+		val added = mutableMapOf<CraftInventory, Int>()
+
 		while (remaining > 0 && destinationsRemaining >= 1) {
 			destinationsRemaining--
 			val destination = destinationSelector(destinations)
-			val remainder = addToInventory(destination.second, item.asQuantity(remaining))
+			val notAdded = addToInventory(destination.second, item.asQuantity(remaining))
+			added[destination.second] = remaining - notAdded
 
-			if (remainder == 0) return 0
-			remaining -= (remaining - remainder)
+			if (notAdded == 0) {
+				return added to 0
+			}
+
+			remaining -= (remaining - notAdded)
 			destinations.remove(destination.first)
 		}
 
-		return remaining
+		return added to remaining
 	}
 }

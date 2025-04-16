@@ -27,8 +27,6 @@ interface ItemNode : Node {
 	override val cacheType: CacheType get() = CacheType.ITEMS
 	override fun getMaxPathfinds(): Int = 1
 
-	sealed interface PaneAlwaysTransfersForward
-
 	data class InventoryNode(val position: BlockKey) : ItemNode {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = false
@@ -58,14 +56,14 @@ interface ItemNode : Node {
 		}
 	}
 
-	data class SolidGlassNode(override val channel: PipeChannel) : ItemNode, ChanneledItemNode, PaneAlwaysTransfersForward {
+	data class SolidGlassNode(override val channel: PipeChannel) : ItemNode, ChanneledItemNode {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = channelCheck(other)
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = channelCheck(other)
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
 
     }
 
-	data class PaneGlassNode(override val channel: PipeChannel) : ItemNode, ChanneledItemNode, PaneAlwaysTransfersForward {
+	data class PaneGlassNode(override val channel: PipeChannel) : ItemNode, ChanneledItemNode {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = channelCheck(other)
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = channelCheck(other)
 
@@ -74,31 +72,26 @@ interface ItemNode : Node {
 		override fun filterPositionData(nextNodes: List<NodePositionData>, backwards: BlockFace): List<NodePositionData> {
 			val forward = backwards.oppositeFace
 
-			if (nextNodes.any { it.offset == forward && it.type is PaneAlwaysTransfersForward }) {
-				val filtered = mutableListOf<NodePositionData>()
-
-				for (node in nextNodes) {
-					if (node.type is InventoryNode) filtered.add(node)
-
-					if (node.offset == forward && node.type is PaneAlwaysTransfersForward) filtered.add(node)
-				}
-
-				return filtered
+			val filtered = mutableListOf<NodePositionData>()
+			for (node in nextNodes) {
+				if (node.type is InventoryNode) filtered.add(node)
+				if (node.offset == forward) filtered.add(node)
 			}
+
+			if (filtered.isNotEmpty()) return filtered
 
 			return nextNodes
 		}
-
     }
 
-	data object WildcardSolidGlassNode : ItemNode, PaneAlwaysTransfersForward {
+	data object WildcardSolidGlassNode : ItemNode {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
 
     }
 
-	data class ItemMergeNode(val direction: BlockFace) : ItemNode, PaneAlwaysTransfersForward {
+	data class ItemMergeNode(val direction: BlockFace) : ItemNode {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
@@ -111,7 +104,7 @@ interface ItemNode : Node {
 
     }
 
-	sealed interface FilterNode : ItemNode, PaneAlwaysTransfersForward {
+	sealed interface FilterNode : ItemNode {
 		fun matches(itemStack: ItemStack) : Boolean
 	}
 

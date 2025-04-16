@@ -84,11 +84,8 @@ sealed interface PowerNode : Node {
         override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is SpongeNode && mergeNodeTransferCheck(other)
     }
 
-	data object RedstoneMergeNode : StandardMergeNode {
-	}
-
-	data object IronMergeNode : StandardMergeNode {
-	}
+	data object RedstoneMergeNode : StandardMergeNode
+	data object IronMergeNode : StandardMergeNode
 
     data object InvertedMergeNode : PowerNode, MergeNode {
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is EndRodNode && mergeNodeTransferCheck(other)
