@@ -151,7 +151,7 @@ object BoxShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 			for (y in (-dy)..(dy)) {
 				for (z in (-dz)..(dz)) {
           val ellipsoidExpression = (x/dx).pow(2) + (y/dy).pow(2) + (z/dz).pow(2)
-          if( abs(ellipsoidExpression - 1) <= 0.25) {
+          if( abs(ellipsoidExpression - 1) > 0.25) {
             continue
           }
 
