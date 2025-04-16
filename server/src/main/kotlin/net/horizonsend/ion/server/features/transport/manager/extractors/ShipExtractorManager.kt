@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 
 class ShipExtractorManager(val manager: ShipTransportManager) : ExtractorManager() {
-	var extractors = Long2ObjectOpenHashMap<ExtractorData>()
+	val extractors = Long2ObjectOpenHashMap<ExtractorData>()
 
 	override fun getExtractors(): Collection<ExtractorData> {
 		return extractors.values
@@ -36,8 +36,7 @@ class ShipExtractorManager(val manager: ShipTransportManager) : ExtractorManager
 		// Store extractors via local coordinates
 		val key = toBlockKey(manager.getLocalCoordinate(Vec3i(x, y, z)))
 
-		val data = getExtractorData(blockData, key, manager.getWorld())
-		if (data == null) return null
+		val data = getExtractorData(blockData, key, manager.getWorld()) ?: return null
 
 		extractors[key] = data
 
@@ -55,7 +54,7 @@ class ShipExtractorManager(val manager: ShipTransportManager) : ExtractorManager
 	fun loadExtractors() {
 		manager.starship.iterateBlocks { x, y, z ->
 			// If an extractor is added at the starship, remove the one in the world
-			if (registerExtractor( x, y, z) == null) {
+			if (registerExtractor( x, y, z) != null) {
 				NewTransport.removeExtractor(manager.starship.world, x, y, z)
 			}
 		}
@@ -72,6 +71,7 @@ class ShipExtractorManager(val manager: ShipTransportManager) : ExtractorManager
 			val ionChunk = IonChunk[manager.starship.world, chunkKey] ?: continue
 
 			for (entry in entries) {
+				if (!verifyExtractor(manager.starship.world, entry)) continue
 				val worldCoord = toBlockKey(manager.getGlobalCoordinate(toVec3i(entry)))
 				ionChunk.transportNetwork.extractorManager.registerExtractor(worldCoord)
 			}

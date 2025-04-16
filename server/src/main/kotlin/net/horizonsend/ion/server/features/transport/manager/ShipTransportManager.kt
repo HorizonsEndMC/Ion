@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
 import net.horizonsend.ion.server.features.transport.filters.manager.ShipFilterCache
 import net.horizonsend.ion.server.features.transport.manager.extractors.ShipExtractorManager
+import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
 import net.horizonsend.ion.server.features.transport.manager.holders.ShipCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
@@ -71,5 +72,19 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 	fun clearData() {
 		extractorManager.extractors.clear()
 		filterCache.filters.clear()
+	}
+
+	override fun tick() {
+		for (extractor in extractorManager.getExtractors()) {
+			if (!starship.isTeleporting && !extractorManager.verifyExtractor(getWorld(), extractor.pos)) {
+				continue
+			}
+
+			val delta = extractor.markTicked()
+
+			for (network in tickedHolders) {
+				network.cache.tickExtractor(extractor.pos, delta, (extractor as? AdvancedExtractorData<*>)?.metaData)
+			}
+		}
 	}
 }

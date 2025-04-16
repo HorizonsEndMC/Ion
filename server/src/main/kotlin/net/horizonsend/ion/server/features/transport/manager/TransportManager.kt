@@ -32,7 +32,7 @@ abstract class TransportManager<T: CacheHolder<*>> {
 
 	abstract fun getInputProvider(): InputManager
 
-	fun tick() {
+	open fun tick() {
 		val invalid = LongOpenHashSet()
 
 		for (extractor in extractorManager.getExtractors()) {
