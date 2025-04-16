@@ -12,6 +12,7 @@ import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import kotlin.math.abs
 import kotlin.math.PI
+import kotlin.math.pow
 
 object BoxShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 	private const val MIN_DIMENSION = 9
