@@ -49,7 +49,7 @@ object BubbleShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 		val height = integers[1]
 		val length = integers[2]
 
-		val volume = 4/3 * pi * width * height * length / 8
+		val volume = 4/3 * PI * width * height * length / 8
 		if (volume !in MIN_VOLUME..MAX_VOLUME) {
 			player msg "&cVolume is $volume but must be at least $MIN_VOLUME and at most $MAX_VOLUME"
 			return
@@ -78,9 +78,9 @@ object BubbleShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 			}
       
 			y(+0) {
-				x(-1).anyWallBlock()
+				x(-1).anyWall()
 				x(+0).anyGlass()
-				x(+1).anyWallBlock()
+				x(+1).anyWall()
 			}
 
       y(+1) {
@@ -114,9 +114,9 @@ object BubbleShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 			}
       
 			y(+0) {
-				x(-1).anyWallBlock()
+				x(-1).anyWall()
 				x(+0).anyGlass()
-				x(+1).anyWallBlock()
+				x(+1).anyWall()
 			}
 
       y(+1) {
