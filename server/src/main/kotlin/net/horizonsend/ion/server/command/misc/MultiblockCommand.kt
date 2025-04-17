@@ -175,6 +175,7 @@ object MultiblockCommand : SLCommand() {
 
 	@Subcommand("debug dump entities chunk")
 	@CommandCompletion("true|false")
+	@CommandPermission("ion.command.multiblock.debug")
 	fun onDumpEntitiesChunk(sender: Player, @Optional visual: Boolean?, @Optional page: Int?) {
 		val manager = sender.chunk.ion().multiblockManager
 		val entities = manager.getAllMultiblockEntities().toList()
@@ -202,6 +203,7 @@ object MultiblockCommand : SLCommand() {
 
 	@Subcommand("debug dump entities ship")
 	@CommandCompletion("true|false")
+	@CommandPermission("ion.command.multiblock.debug")
 	fun onDumpEntitiesShip(sender: Player, @Optional visual: Boolean?, @Optional page: Int?) {
 		val ship = getStarshipPiloting(sender)
 		val manager = ship.multiblockManager
@@ -230,6 +232,7 @@ object MultiblockCommand : SLCommand() {
 	}
 
 	@Subcommand("debug remove all entities")
+	@CommandPermission("ion.command.multiblock.debug")
 	fun onRemoveAll(sender: Player) {
 		val ionChunk = sender.chunk.ion()
 		val entities = ionChunk.multiblockManager.getAllMultiblockEntities()
@@ -242,6 +245,7 @@ object MultiblockCommand : SLCommand() {
 	}
 
 	@Subcommand("menu")
+	@CommandPermission("ion.command.multiblock.debug")
 	fun onTestAll(sender: Player) {
 		val allItems = MultiblockRegistration.getAllMultiblocks().map { multiblock ->
 			object : GuiItems.AbstractButtonItem(
