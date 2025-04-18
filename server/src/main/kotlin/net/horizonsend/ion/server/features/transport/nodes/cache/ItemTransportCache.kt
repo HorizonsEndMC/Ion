@@ -44,6 +44,8 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		location: BlockKey,
 		delta: Double,
 		metaData: ExtractorMetaData?,
+		index: Int,
+		count: Int,
 	) {
 		NewTransport.runTask {
 			handleExtractorTick(location, metaData as? ItemExtractorMetaData)

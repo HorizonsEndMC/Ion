@@ -75,7 +75,12 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 	}
 
 	override fun tick() {
-		for (extractor in extractorManager.getExtractors()) {
+		tickNumber++
+
+		val extractors = extractorManager.getExtractors()
+		val extractorCount = extractors.size
+
+		for ((index, extractor) in extractors.withIndex()) {
 			if (!starship.isTeleporting && !extractorManager.verifyExtractor(getWorld(), extractor.pos)) {
 				continue
 			}
@@ -83,7 +88,7 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 			val delta = extractor.markTicked()
 
 			for (network in tickedHolders) {
-				network.cache.tickExtractor(extractor.pos, delta, (extractor as? AdvancedExtractorData<*>)?.metaData)
+				network.cache.tickExtractor(extractor.pos, delta, (extractor as? AdvancedExtractorData<*>)?.metaData, index, extractorCount)
 			}
 		}
 	}

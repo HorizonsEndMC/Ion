@@ -21,12 +21,25 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	override val extractorNodeClass: KClass<out Node> = PowerNode.PowerExtractorNode::class
 	override val destinationCache = MonoDestinationCache(this)
 
-	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) {
+	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?, index: Int, count: Int) {
 		val solarCache = holder.transportManager.solarPanelManager.cache
+		val solarInterval = transportSettings().powerConfiguration.solarPanelTickInterval
 
-		if (solarCache.isSolarPanel(location)) {
-			NewTransport.runTask {
-				tickSolarPanel(location, delta, solarCache)
+		val chunkLength = count / solarInterval
+		val offset = holder.transportManager.tickNumber % solarInterval
+
+		val isLastChunk = offset == (solarInterval - 1)
+
+		val solarTickRange = IntRange(
+			offset * chunkLength,
+			if (!isLastChunk) (offset + 1) * chunkLength else count - 1
+		)
+
+		if (solarTickRange.contains(index)) {
+			if (solarCache.isSolarPanel(location)) {
+				NewTransport.runTask {
+					tickSolarPanel(location, delta, solarCache)
+				}
 			}
 		}
 
@@ -36,7 +49,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	}
 
 	private fun tickPowerExtractor(location: BlockKey, delta: Double) {
-		val sources = getExtractorSourceEntities<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() }
+		val sources = getExtractorSourceEntities<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() } // Filter not
 		val source = sources.randomOrNull() ?: return //TODO take from all
 
 		runPowerTransfer(

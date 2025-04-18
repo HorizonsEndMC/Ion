@@ -48,7 +48,13 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	abstract val type: CacheType
 	private val nodeFactory: NodeCacheFactory get() = type.nodeCacheFactory
 
-	abstract fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?)
+	abstract fun tickExtractor(
+		location: BlockKey,
+		delta: Double,
+		metaData: ExtractorMetaData?,
+		index: Int,
+		count: Int,
+	)
 
 	fun isCached(at: BlockKey): Boolean = nodeCache.containsKey(at)
 

@@ -32,10 +32,17 @@ abstract class TransportManager<T: CacheHolder<*>> {
 
 	abstract fun getInputProvider(): InputManager
 
+	var tickNumber = 0; protected set
+
 	open fun tick() {
+		tickNumber++
+
 		val invalid = LongOpenHashSet()
 
-		for (extractor in extractorManager.getExtractors()) {
+		val extractors = extractorManager.getExtractors()
+		val extractorCount = extractors.size
+
+		for ((index, extractor) in extractors.withIndex()) {
 			if (!extractorManager.verifyExtractor(getWorld(), extractor.pos)) {
 				invalid.add(extractor.pos)
 				continue
@@ -44,7 +51,7 @@ abstract class TransportManager<T: CacheHolder<*>> {
 			val delta = extractor.markTicked()
 
 			for (network in tickedHolders) {
-				network.cache.tickExtractor(extractor.pos, delta, (extractor as? AdvancedExtractorData<*>)?.metaData)
+				network.cache.tickExtractor(extractor.pos, delta, (extractor as? AdvancedExtractorData<*>)?.metaData, index, extractorCount)
 			}
 		}
 

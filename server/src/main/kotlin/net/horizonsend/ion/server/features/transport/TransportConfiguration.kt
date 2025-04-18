@@ -22,5 +22,6 @@ data class TransportConfiguration(
 	data class PowerTransportConfiguration(
 		val powerTransferRate: Int = 1000,
 		val solarPanelTickPower: Int = 5,
+		val solarPanelTickInterval: Int = 10,
 	)
 }

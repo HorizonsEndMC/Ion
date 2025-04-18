@@ -261,7 +261,7 @@ object TransportDebugCommand : SLCommand() {
 		val grid = type.get(chunk)
 //		if (grid.holder.getExtractorManager().isExtractorPresent(location)) fail { "Extractor not targeted" }
 
-		grid.tickExtractor(location, 1.0, null)
+		grid.tickExtractor(location, 1.0, null, 0, 1)
 	}
 
 	@Subcommand("test item extractor")

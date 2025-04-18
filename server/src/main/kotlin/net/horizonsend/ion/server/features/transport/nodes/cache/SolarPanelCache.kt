@@ -46,9 +46,10 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 		val data = getBlockDataSafe(world, detectorPosition.x, detectorPosition.y, detectorPosition.z) as? DaylightDetector ?: return 0
 		val powerRatio = data.power.toDouble() / data.maximumPower.toDouble()
 
-		val base = ConfigurationFiles.transportSettings().powerConfiguration.solarPanelTickPower * delta
+		val powerConfig = ConfigurationFiles.transportSettings().powerConfiguration
+		val base = powerConfig.solarPanelTickPower * delta * powerConfig.solarPanelTickInterval
 		return (base * powerRatio * powerMultiplier).roundToInt()
 	}
 
-	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?) {  }
+	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?, index: Int, count: Int) {  }
 }
