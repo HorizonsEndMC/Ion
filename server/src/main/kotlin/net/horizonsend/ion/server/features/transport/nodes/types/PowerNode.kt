@@ -68,12 +68,17 @@ sealed interface PowerNode : Node {
 			val forward = backwards.oppositeFace
 
 			val filtered = mutableListOf<NodePositionData>()
+			var forwardPresent = false
 			for (node in nextNodes) {
-				if (node.offset == forward) filtered.add(node)
+				if (node.offset == forward) {
+					forwardPresent = true
+					filtered.add(node)
+				}
+
 				if (node.type is PowerInputNode) filtered.add(node)
 			}
 
-			if (filtered.isNotEmpty()) return filtered
+			if (filtered.isNotEmpty() && forwardPresent) return filtered
 
 			return nextNodes
 		}
