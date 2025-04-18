@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.transport.manager.ShipTransportManage
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
+import net.horizonsend.ion.server.features.transport.nodes.types.FilterManagedNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -30,6 +31,8 @@ class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTran
 	override fun handleLoad() = Tasks.async {
 		cache.markReady()
 
+		val possibleFilters = mutableSetOf<Vec3i>()
+
 		transportManager.starship.iterateBlocks { x, y, z ->
 			IonChunk[transportManager.starship.world, x.shr(4), z.shr(4)]?.let {
 				cache.type.get(it).invalidate(x, y, z)
@@ -39,8 +42,13 @@ class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTran
 			val block = getBlockIfLoaded(transportManager.starship.world, x, y, z) ?: return@async
 
 			// Cache at local coordinate
-			cache.cache(toBlockKey(local), block)
+			val cached = cache.cache(toBlockKey(local), block)
+			if (cached is FilterManagedNode) {
+				possibleFilters.add(local)
+			}
 		}
+
+		transportManager.filterCache.loadFilters(possibleFilters)
 	}
 
 	override fun getInternalNode(key: BlockKey): Node? {

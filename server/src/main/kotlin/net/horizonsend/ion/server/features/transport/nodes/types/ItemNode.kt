@@ -104,24 +104,28 @@ interface ItemNode : Node {
 
     }
 
-	sealed interface FilterNode : ItemNode {
+	sealed interface FilterNode : ItemNode, FilterManagedNode {
 		fun matches(itemStack: ItemStack) : Boolean
 	}
 
-	data class AdvancedFilterNode(val position: BlockKey, val cache: ItemTransportCache, val face: BlockFace) : FilterNode {
+	data class AdvancedFilterNode(val localPosition: BlockKey, val cache: ItemTransportCache, val face: BlockFace) : FilterNode {
         override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(face)
 
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is ItemExtractorNode  && other !is HopperFilterNode
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = other !is ItemExtractorNode  && other !is HopperFilterNode
 
 		override fun matches(itemStack: ItemStack): Boolean {
-			val filterData = cache.holder.getFilterManager().getFilter(position, FilterType.ItemType) ?: return false
+			val filterData = cache.holder.getFilterManager().getFilter(localPosition, FilterType.ItemType) ?: return false
 			return filterData.matchesFilter(itemStack)
+		}
+
+		override fun toString(): String {
+			return toVec3i(localPosition).toString()
 		}
 	}
 
-	data class HopperFilterNode(val position: BlockKey, var face: BlockFace, val cache: ItemTransportCache) : FilterNode, ComplexNode {
-		private val globalPosition get() = cache.holder.transportManager.getGlobalCoordinate(toVec3i(position))
+	data class HopperFilterNode(val localPosition: BlockKey, var face: BlockFace, val cache: ItemTransportCache) : FilterNode, ComplexNode {
+		private val globalPosition get() = cache.holder.transportManager.getGlobalCoordinate(toVec3i(localPosition))
 
         override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = setOf(face)
 

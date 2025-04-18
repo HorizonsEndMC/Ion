@@ -19,6 +19,8 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.Material.BARREL
 import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.CHEST
@@ -131,8 +133,16 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 
 				ItemNode.ItemMergeNode(outFace)
 			}
-			.addDataHandler<Vault>(ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(key, holder.cache as ItemTransportCache, ITEM_FILTER.getFace(data)) }
-			.addDataHandler<Hopper>(HOPPER) { data, key, holder -> ItemNode.HopperFilterNode(key, data.facing, holder.cache as ItemTransportCache) }
+			.addDataHandler<Vault>(ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(
+				toBlockKey(holder.transportManager.getLocalCoordinate(toVec3i(key))),
+				holder.cache as ItemTransportCache,
+				ITEM_FILTER.getFace(data)
+			) }
+			.addDataHandler<Hopper>(HOPPER) { data, key, holder -> ItemNode.HopperFilterNode(
+				toBlockKey(holder.transportManager.getLocalCoordinate(toVec3i(key))),
+				data.facing,
+				holder.cache as ItemTransportCache
+			) }
 			.addSimpleNode(
 				CHEST,
 				TRAPPED_CHEST,

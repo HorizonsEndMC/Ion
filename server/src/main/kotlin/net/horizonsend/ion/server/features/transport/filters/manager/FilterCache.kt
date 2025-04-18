@@ -34,10 +34,11 @@ abstract class FilterCache(open val manager: TransportManager<*>) {
 		val saved = filters[key]
 		if (saved != null) return saved
 
-		val pdc = getPersistentDataContainer(key, manager.getWorld()) ?: return null
+		val globalVec3i = manager.getGlobalCoordinate(toVec3i(key))
+		val pdc = getPersistentDataContainer(globalVec3i, manager.getWorld()) ?: return null
 
 		val entityStored = pdc.get(NamespacedKeys.FILTER_DATA, FilterData)
-		if (entityStored != null) { filters[toBlockKey(manager.getLocalCoordinate(toVec3i(key)))] = entityStored }
+		if (entityStored != null) { filters[key] = entityStored }
 
 		return  entityStored
 	}
@@ -50,7 +51,7 @@ abstract class FilterCache(open val manager: TransportManager<*>) {
 		val pdc = getPersistentDataContainer(globalVec3i, manager.getWorld()) ?: return null
 
 		val entityStored = pdc.get(NamespacedKeys.FILTER_DATA, FilterData)?.let { data -> type.cast(data) }
-		if (entityStored != null) { filters[toBlockKey(manager.getLocalCoordinate(toVec3i(key)))] = entityStored }
+		if (entityStored != null) { filters[key] = entityStored }
 
 		if (entityStored == null) {
 			val block = manager.getWorld().getBlockData(globalVec3i.x, globalVec3i.y, globalVec3i.z)
