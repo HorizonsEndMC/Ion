@@ -25,9 +25,17 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopArsenalStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TorpedoStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockTop
+import net.minecraft.core.cauldron.CauldronInteraction
+import net.minecraft.core.component.DataComponents
+import net.minecraft.stats.Stats
+import net.minecraft.tags.ItemTags
+import net.minecraft.world.InteractionResult
+import net.minecraft.world.item.Items
+import net.minecraft.world.level.block.LayeredCauldronBlock
 import org.bukkit.damage.DamageEffect
 import org.bukkit.damage.DamageScaling
 import org.bukkit.damage.DeathMessageType
+import org.bukkit.event.block.CauldronLevelChangeEvent
 import org.bukkit.plugin.java.JavaPlugin
 
 @Suppress("Unused", "UnstableApiUsage")
@@ -70,6 +78,25 @@ class IonBootstrapper : PluginBootstrap {
 				}
 			}
 		})
+
+		CauldronInteraction.WATER.map[Items.WARPED_FUNGUS_ON_A_STICK] = CauldronInteraction { blockState, level, blockPos, player, interactionHand, itemStack, direction ->
+			if (!itemStack.`is`(ItemTags.DYEABLE)) {
+				return@CauldronInteraction InteractionResult.TRY_WITH_EMPTY_HAND
+			} else if (!itemStack.has(DataComponents.DYED_COLOR)) {
+				return@CauldronInteraction InteractionResult.TRY_WITH_EMPTY_HAND
+			} else {
+				if (!level.isClientSide) {
+					if (!LayeredCauldronBlock.lowerFillLevel(blockState, level, blockPos, player, CauldronLevelChangeEvent.ChangeReason.ARMOR_WASH)) {
+						return@CauldronInteraction InteractionResult.SUCCESS
+					}
+
+					itemStack.remove(DataComponents.DYED_COLOR)
+					player.awardStat(Stats.CLEAN_ARMOR)
+				}
+
+				return@CauldronInteraction InteractionResult.SUCCESS
+			}
+		}
 	}
 	override fun createPlugin(context: PluginProviderContext): JavaPlugin = IonServer
 }
