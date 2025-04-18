@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.transport.nodes.inputs
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.transport.util.CacheType
-import net.horizonsend.ion.server.miscellaneous.utils.clone
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import java.util.concurrent.ConcurrentHashMap
 
@@ -22,7 +22,7 @@ abstract class InputManager {
 		getTypeManager(type).remove(location, holder)
 	}
 
-	fun getHolders(type: CacheType, location: BlockKey): ConcurrentHashMap.KeySetView<MultiblockEntity, Boolean> {
+	fun getHolders(type: CacheType, location: BlockKey): ObjectOpenHashSet<MultiblockEntity> {
 		return getTypeManager(type).getAllHolders(location)
 	}
 
@@ -54,8 +54,8 @@ abstract class InputManager {
 			}
 		}
 
-		fun getAllHolders(location: BlockKey): ConcurrentHashMap.KeySetView<MultiblockEntity, Boolean> {
-			return inputLocations.get(location)?.getHolders() ?: ConcurrentHashMap.newKeySet()
+		fun getAllHolders(location: BlockKey): ObjectOpenHashSet<MultiblockEntity> {
+			return inputLocations.get(location)?.getHolders() ?: ObjectOpenHashSet()
 		}
 
 		fun removeAll(location: BlockKey) {
@@ -68,7 +68,7 @@ abstract class InputManager {
 
 		sealed interface InputData {
 			fun contains(holder: MultiblockEntity): Boolean
-			fun getHolders(): ConcurrentHashMap.KeySetView<MultiblockEntity, Boolean>
+			fun getHolders(): ObjectOpenHashSet<MultiblockEntity>
 		}
 
 		data class SingleMultiblockInput(val holder: MultiblockEntity) : InputData {
@@ -76,20 +76,20 @@ abstract class InputManager {
 				return this.holder == holder
 			}
 
-			override fun getHolders(): ConcurrentHashMap.KeySetView<MultiblockEntity, Boolean> {
-				return ConcurrentHashMap.newKeySet()
+			override fun getHolders(): ObjectOpenHashSet<MultiblockEntity> {
+				return ObjectOpenHashSet.of(holder)
 			}
 		}
 
 		class SharedMultiblockInput : InputData {
-			private val holders: ConcurrentHashMap.KeySetView<MultiblockEntity, Boolean> = ConcurrentHashMap.newKeySet()
+			private val holders: ObjectOpenHashSet<MultiblockEntity> = ObjectOpenHashSet()
 
 			override fun contains(holder: MultiblockEntity): Boolean {
 				return holders.contains(holder)
 			}
 
-			override fun getHolders(): ConcurrentHashMap.KeySetView<MultiblockEntity, Boolean> {
-				return holders.clone()
+			override fun getHolders(): ObjectOpenHashSet<MultiblockEntity> {
+				return ObjectOpenHashSet(holders)
 			}
 
 			fun add(multiblockEntity: MultiblockEntity) {

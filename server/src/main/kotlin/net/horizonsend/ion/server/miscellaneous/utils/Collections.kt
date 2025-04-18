@@ -6,7 +6,6 @@ import com.google.common.collect.Table
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import org.checkerframework.checker.units.qual.K
 import java.util.EnumSet
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.random.Random
 import kotlin.random.asKotlinRandom
@@ -144,9 +143,3 @@ inline fun <T: Any> Collection<T>.averageBy(transform: (T) -> Double): Double {
 }
 
 fun <T : Any?> MutableList<T>?.orEmpty(): MutableList<T> = this ?: mutableListOf()
-
-fun <T> ConcurrentHashMap.KeySetView<T, Boolean>.clone(): ConcurrentHashMap.KeySetView<T, Boolean> {
-	val new = ConcurrentHashMap.newKeySet<T>(size)
-	new.addAll(this)
-	return new
-}
