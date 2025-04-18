@@ -108,7 +108,7 @@ abstract class ShipFactoryBlockProcessor(
 		return Vec3i(clipboardOffsetX, clipboardOffsetY, clipboardOffsetZ)
 	}
 
-	protected fun getNMSRotation(): Rotation {
+	private fun getNMSRotation(): Rotation {
 		return when (settings.rotation) {
 			-180 -> Rotation.CLOCKWISE_180
 			-90 -> Rotation.COUNTERCLOCKWISE_90
@@ -121,7 +121,10 @@ abstract class ShipFactoryBlockProcessor(
 
 	protected fun getRotatedBlockData(data: BlockData): BlockState {
 		val nms = data.nms
-		if (CustomBlocks.getByBlockState(nms) != null) return nms
+		val customBlock = CustomBlocks.getByBlockState(nms)
+		if (customBlock != null) {
+			return CustomBlocks.getRotated(customBlock, nms, getNMSRotation())
+		}
 
 		val rotation = getNMSRotation()
 		return nms.rotate(rotation)

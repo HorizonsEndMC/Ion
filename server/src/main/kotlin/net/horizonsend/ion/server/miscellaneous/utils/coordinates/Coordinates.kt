@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.utils.coordinates
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.minecraft.core.BlockPos
+import net.minecraft.world.level.block.Rotation
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Location
@@ -251,6 +252,33 @@ fun Location.spherePoints(radius: Double, points: Int): List<Location> {
 	}
 
 	return coordinates
+}
+
+fun rotateBlockFace(blockFace: BlockFace, rotiation: Rotation): BlockFace {
+	return when (rotiation) {
+		Rotation.NONE -> blockFace
+		Rotation.CLOCKWISE_90 -> when (blockFace) {
+			BlockFace.NORTH -> BlockFace.EAST
+			BlockFace.EAST -> BlockFace.SOUTH
+			BlockFace.SOUTH -> BlockFace.WEST
+			BlockFace.WEST -> BlockFace.NORTH
+			else -> blockFace
+		}
+		Rotation.CLOCKWISE_180 -> when (blockFace) {
+			BlockFace.NORTH -> BlockFace.SOUTH
+			BlockFace.EAST -> BlockFace.WEST
+			BlockFace.SOUTH -> BlockFace.NORTH
+			BlockFace.WEST -> BlockFace.EAST
+			else -> blockFace
+		}
+		Rotation.COUNTERCLOCKWISE_90 -> when (blockFace) {
+			BlockFace.NORTH -> BlockFace.WEST
+			BlockFace.WEST -> BlockFace.SOUTH
+			BlockFace.SOUTH -> BlockFace.EAST
+			BlockFace.EAST -> BlockFace.NORTH
+			else -> blockFace
+		}
+	}
 }
 
 fun Location.conePoints(originalVector: Vector, angularOffsetDegrees: Double, points: Int): List<Location> {

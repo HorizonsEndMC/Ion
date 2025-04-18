@@ -31,12 +31,14 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 	private val cosTheta: Double = cos(Math.toRadians(theta))
 	private val sinTheta: Double = sin(Math.toRadians(theta))
 
-	override fun blockDataTransform(blockState: BlockState): BlockState =
-		if (CustomBlocks.getByBlockState(blockState) == null) {
+	override fun blockDataTransform(blockState: BlockState): BlockState {
+		val customBlock = CustomBlocks.getByBlockState(blockState)
+		return if (customBlock == null) {
 			blockState.rotate(nmsRotation)
 		} else {
-			blockState
+			CustomBlocks.getRotated(customBlock, blockState, nmsRotation)
 		}
+	}
 
 	override fun displaceX(oldX: Int, oldZ: Int): Int {
 		val offsetX = oldX - origin.x

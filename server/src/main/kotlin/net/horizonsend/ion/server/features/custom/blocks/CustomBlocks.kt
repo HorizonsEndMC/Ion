@@ -11,10 +11,12 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_DRILL_BASIC
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.getMatchingMaterials
 import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.set
+import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -231,7 +233,7 @@ object CustomBlocks {
     fun <T : DirectionalCustomBlock> registerDirectional(customBlock: T): T {
         customBlocks[customBlock.identifier] = customBlock
 
-		for ((data, face) in customBlock.faceLookup) {
+		for ((data, face) in customBlock.bukkitFaceLookup) {
 			directionalCustomBlocksData[data.nms, customBlock] = face
 			customBlocksData[data.nms] = customBlock
 		}
@@ -250,6 +252,17 @@ object CustomBlocks {
     fun getByBlockData(blockData: BlockData): CustomBlock? = customBlocksData[blockData.nms]
 
     fun getByBlockState(blockState: BlockState): CustomBlock? = customBlocksData[blockState]
+
+	fun getRotated(customBlock: CustomBlock, blockState: BlockState, rotation: Rotation): BlockState {
+		return when (customBlock) {
+			is DirectionalCustomBlock -> {
+				val face = customBlock.getFace(blockState)
+				val newFace = rotateBlockFace(face, rotation)
+				customBlock.faceData[newFace]!!.nms
+			}
+			else -> blockState
+		}
+	}
 }
 
 open class CustomBlock(
