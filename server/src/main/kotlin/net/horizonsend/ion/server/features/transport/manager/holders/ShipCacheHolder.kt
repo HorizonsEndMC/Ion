@@ -28,8 +28,12 @@ class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTran
 	override fun getWorld(): World = transportManager.starship.world
 
 	override fun handleLoad() = Tasks.async {
+		cache.markReady()
+
 		transportManager.starship.iterateBlocks { x, y, z ->
-			IonChunk[transportManager.starship.world, x.shr(4), z.shr(4)]?.let { cache.type.get(it).invalidate(x, y, z) }
+			IonChunk[transportManager.starship.world, x.shr(4), z.shr(4)]?.let {
+				cache.type.get(it).invalidate(x, y, z)
+			}
 
 			val local = transportManager.getLocalCoordinate(Vec3i(x, y, z))
 			val block = getBlockIfLoaded(transportManager.starship.world, x, y, z) ?: return@async
