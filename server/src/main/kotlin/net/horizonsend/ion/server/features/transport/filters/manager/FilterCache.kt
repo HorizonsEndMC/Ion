@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.filters.manager
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import github.scarsz.discordsrv.dependencies.alexh.Fluent.ConcurrentHashMap
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.blocks.filter.CustomFilterBlock
 import net.horizonsend.ion.server.features.transport.filters.FilterData
@@ -16,9 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.block.TileState
 
 abstract class FilterCache(open val manager: TransportManager<*>) {
-	val filters = Long2ObjectOpenHashMap<FilterData<*, *>>()
-
-	private val mutex = Any()
+	val filters = ConcurrentHashMap<BlockKey, FilterData<*, *>>()
 
 	fun getFilters(): Collection<FilterData<*, *>> {
 		return filters.values
@@ -68,9 +66,7 @@ abstract class FilterCache(open val manager: TransportManager<*>) {
 	fun addFilter(key: BlockKey, data: FilterData<*, *>) {
 		val local = manager.getLocalCoordinate(toVec3i(key))
 
-		synchronized(mutex) {
-			filters[toBlockKey(local)] = data
-		}
+		filters[toBlockKey(local)] = data
 	}
 
 	fun <T : Any, M : FilterMeta> registerFilter(key: BlockKey, block: CustomFilterBlock<T, M>): FilterData<T, M> {
@@ -89,14 +85,10 @@ abstract class FilterCache(open val manager: TransportManager<*>) {
 	fun removeFilter(key: BlockKey) {
 		val local = manager.getLocalCoordinate(toVec3i(key))
 
-		synchronized(mutex) {
-			filters.remove(toBlockKey(local))
-		}
+		filters.remove(toBlockKey(local))
 	}
 
-	fun isFilterPresent(key: BlockKey): Boolean = synchronized(mutex) {
-		return filters.containsKey(key)
-	}
+	fun isFilterPresent(key: BlockKey): Boolean = filters.containsKey(key)
 
 	companion object {
 		fun save(tileState: TileState, data: FilterData<*, *>) {
