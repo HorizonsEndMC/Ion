@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
+import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.horizonsend.ion.server.features.transport.nodes.types.ComplexNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
@@ -156,18 +157,19 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	inline fun <reified T: Node> getOrCacheNetworkDestinations(
 		originPos: BlockKey,
 		originNode: Node,
+		retainFullPath: Boolean,
 
-		cacheGetter: Supplier<Set<PathfindingNodeWrapper>?>,
-		cachingFunction: Consumer<Set<PathfindingNodeWrapper>>,
+		cacheGetter: Supplier<Array<PathfindResult>?>,
+		cachingFunction: Consumer<Array<PathfindResult>>,
 
 		noinline pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null,
 		noinline destinationCheck: ((NodePositionData) -> Boolean)? = null,
 		noinline nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalNodeCacher, pathfindingFilter) }
-	): Collection<PathfindingNodeWrapper> {
+	): Array<PathfindResult> {
 		val cachedEntry = cacheGetter.get()
 		if (cachedEntry != null) return cachedEntry
 
-		val destinations = getNetworkDestinations(T::class, originPos, originNode, destinationCheck, pathfindingFilter, null, nextNodeProvider)
+		val destinations = getNetworkDestinations(T::class, originPos, originNode, retainFullPath, destinationCheck, pathfindingFilter, null, nextNodeProvider)
 		cachingFunction.accept(destinations)
 
 		return destinations
@@ -176,10 +178,11 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	inline fun <reified T: Node> getNetworkDestinations(
 		originPos: BlockKey,
 		originNode: Node,
+		retainFullPath: Boolean,
 		noinline pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null,
 		noinline destinationCheck: ((NodePositionData) -> Boolean)? = null,
 		noinline nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalNodeCacher, pathfindingFilter) }
-	): Set<PathfindingNodeWrapper> = getNetworkDestinations(T::class, originPos, originNode, destinationCheck, pathfindingFilter, null, nextNodeProvider)
+	): Array<PathfindResult> = getNetworkDestinations(T::class, originPos, originNode, retainFullPath, destinationCheck, pathfindingFilter, null, nextNodeProvider)
 
 	/**
 	 * This is a weird combination of A* and a flood fill. It keeps track of paths, and returned destinations have those available.
@@ -188,11 +191,12 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		destinationTypeClass: KClass<out Node>,
 		originPos: BlockKey,
 		originNode: Node,
+		retainFullPath: Boolean,
 		destinationCheck: ((NodePositionData) -> Boolean)? = null,
 		pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null,
 		debug: Audience? = null,
 		nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalNodeCacher, pathfindingFilter) }
-	): Set<PathfindingNodeWrapper> {
+	): Array<PathfindResult> {
 		val visitQueue = Long2ObjectRBTreeMap<PathfindingNodeWrapper>()
 		val visited = Long2IntOpenHashMap()
 
@@ -213,7 +217,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		}
 
 		// Located destinations
-		val destinations = ObjectOpenHashSet<PathfindingNodeWrapper>()
+		val destinations = ObjectOpenHashSet<PathfindResult>()
 
 		// Populate array with original nodes
 		computeNextNodes(
@@ -254,14 +258,17 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 
 			// If matches destinations, mark as such
 			if (destinationTypeClass.isInstance(current.node.type) && (destinationCheck?.invoke(current.node) != false)) {
-				destinations.add(current)
+				destinations.add(PathfindResult(
+					current.node.position,
+					current.buildPath(retainFullPath)
+				))
 			}
 
 			// Populate the visit queue
 			computeNextNodes(current, nextNodeProvider, visitQueue, visited)
 		}
 
-		return destinations
+		return destinations.toTypedArray()
 	}
 
 	private fun computeNextNodes(

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.items.util
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap
-import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
+import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.ItemStack
@@ -10,8 +10,8 @@ class BackedItemTransaction(
 	val source: ItemReference,
 	val item: ItemStack,
 	private val amount: Int,
-	val destinations: Object2ObjectRBTreeMap<PathfindingNodeWrapper, CraftInventory>,
-	val destinationSelector: (Object2ObjectRBTreeMap<PathfindingNodeWrapper, CraftInventory>) -> Pair<PathfindingNodeWrapper, CraftInventory>
+	val destinations: Object2ObjectRBTreeMap<PathfindResult, CraftInventory>,
+	val destinationSelector: (Object2ObjectRBTreeMap<PathfindResult, CraftInventory>) -> Pair<PathfindResult, CraftInventory>
 ) {
 	fun execute() {
 		if (amount <= 0) return

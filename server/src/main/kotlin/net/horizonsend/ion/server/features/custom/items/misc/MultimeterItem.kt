@@ -92,19 +92,20 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 			destinationTypeClass = secondNode::class,
 			originPos = firstPoint,
 			originNode = firstNode,
+			retainFullPath = true,
 			debug = audience
 		)
 
-		val path = destinations.firstOrNull { it.node.position == secondPoint }?.buildPath()
+		val path = destinations.firstOrNull { it.destinationPosition == secondPoint }?.trackedPath
 
 		if (path == null) {
 			audience.userError("There is no path between these points")
 			return
 		}
 
-		path.forEach { audience.highlightBlock(toVec3i(it.position), 100L) }
-		audience.success("There are ${path.nodes.size} nodes on the path between point 1 and 2.")
-		val nodeData = path.nodes.groupBy { it.type::class }
+		path.forEach { audience.highlightBlock(toVec3i(it.first), 100L) }
+		audience.success("There are ${path.trackedNodes.size} nodes on the path between point 1 and 2.")
+		val nodeData = path.trackedNodes.groupBy { it.second::class }
 
 		audience.information(nodeData.entries.joinToString(separator = "\n") { (nodeType, nodes) -> "${nodeType.simpleName} : ${nodes.size}" })
 	}

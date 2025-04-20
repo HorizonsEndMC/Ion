@@ -222,13 +222,13 @@ object TransportDebugCommand : SLCommand() {
 
 		if (cache is MonoDestinationCache) {
 			val paths = cache.get(node::class, location) ?: fail { "Expired Cache" }
-			val vectors = paths.map { toVec3i(it.node.position) }
+			val vectors = paths.map { toVec3i(it.destinationPosition) }
 			sender.sendMessage(formatPaginatedMenu(vectors, "/get cached destinations chunk", pageNumber ?: 1) { vec, _ -> vec.toComponent() })
 		} else if (cache is MappedDestinationCache<*>) {
 			cache as MappedDestinationCache<ItemStack>
 
 			val paths = cache.get(node::class, sender.inventory.itemInMainHand, location) ?: fail { "Expired Cache" }
-			val vectors = paths.map { toVec3i(it.node.position) }
+			val vectors = paths.map { toVec3i(it.destinationPosition) }
 			sender.sendMessage(formatPaginatedMenu(vectors, "/get cached destinations chunk", pageNumber ?: 1) { vec, _ -> vec.toComponent() })
 		}
 	}
@@ -243,13 +243,13 @@ object TransportDebugCommand : SLCommand() {
 
 		if (cache is MonoDestinationCache) {
 			val paths = cache.get(node::class, location) ?: fail { "Expired Cache" }
-			val vectors = paths.map { toVec3i(it.node.position) }
+			val vectors = paths.map { toVec3i(it.destinationPosition) }
 			sender.sendMessage(formatPaginatedMenu(vectors, "/get cached destinations ship", pageNumber ?: 1) { vec, _ -> vec.toComponent().clickEvent(callback { audience -> audience.highlightBlock(vec, 10L) }) })
 		} else if (cache is MappedDestinationCache<*>) {
 			cache as MappedDestinationCache<ItemStack>
 
 			val paths = cache.get(node::class, sender.inventory.itemInMainHand, location) ?: fail { "Expired Cache" }
-			val vectors = paths.map { toVec3i(it.node.position) }
+			val vectors = paths.map { toVec3i(it.destinationPosition) }
 			sender.sendMessage(formatPaginatedMenu(vectors, "/get cached destinations ship", pageNumber ?: 1) { vec, _ -> vec.toComponent().clickEvent(callback { audience -> audience.highlightBlock(vec, 10L) }) })
 		}
 	}
@@ -280,8 +280,8 @@ object TransportDebugCommand : SLCommand() {
 		val (node, location) = requireLookingAt(sender) { type.get(it.chunk.ion()) }
 		val cache = type.get(sender.chunk.ion())
 
-		val destinations = cache.getNetworkDestinations<PowerInputNode>(location, node)
+		val destinations = cache.getNetworkDestinations<PowerInputNode>(location, node, retainFullPath = true)
 		sender.information("${destinations.size} destinations")
-		sender.highlightBlocks(destinations.map { toVec3i(it.node.position) }, 50L)
+		sender.highlightBlocks(destinations.map { toVec3i(it.destinationPosition) }, 50L)
 	}
 }

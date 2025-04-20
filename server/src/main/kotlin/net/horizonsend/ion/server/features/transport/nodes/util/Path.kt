@@ -1,14 +1,18 @@
 package net.horizonsend.ion.server.features.transport.nodes.util
 
-import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
+import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
+import net.horizonsend.ion.server.features.transport.nodes.types.Node
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 
-data class Path(val nodes: Array<NodePositionData>): Iterable<NodePositionData> {
-	fun isValid(): Boolean {
-		return all { it.cache.getCached(it.position) == it.type }
+data class Path(val length: Int, val trackedNodes: Array<Pair<BlockKey, Node>>): Iterable<Pair<BlockKey, Node>> {
+	fun isValid(cache: CacheHolder<*>): Boolean {
+		return all { (position, nodeType) ->
+			cache.globalNodeLookup.invoke(cache.cache, cache.getWorld(), position)?.second == nodeType
+		}
 	}
 
-	override fun iterator(): Iterator<NodePositionData> {
-		return nodes.iterator()
+	override fun iterator(): Iterator<Pair<BlockKey, Node>> {
+		return trackedNodes.iterator()
 	}
 
 	override fun equals(other: Any?): Boolean {
@@ -17,10 +21,15 @@ data class Path(val nodes: Array<NodePositionData>): Iterable<NodePositionData> 
 
 		other as Path
 
-		return nodes.contentEquals(other.nodes)
+		if (length != other.length) return false
+		if (!trackedNodes.contentEquals(other.trackedNodes)) return false
+
+		return true
 	}
 
 	override fun hashCode(): Int {
-		return nodes.contentHashCode()
+		var result = length
+		result = 31 * result + trackedNodes.contentHashCode()
+		return result
 	}
 }

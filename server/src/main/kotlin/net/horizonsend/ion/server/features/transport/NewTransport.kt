@@ -28,7 +28,10 @@ import org.bukkit.event.block.BlockPlaceEvent
 import java.util.Timer
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.RejectedExecutionException
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 import kotlin.concurrent.fixedRateTimer
 
 object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick to wait on the full server startup. */) {
@@ -38,7 +41,14 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	private lateinit var executor: ExecutorService
 
 	fun reload() {
-		executor = Executors.newFixedThreadPool(16, Tasks.namedThreadFactory("wire-transport"))
+		executor = ThreadPoolExecutor(
+			16,
+			16,
+			0L,
+			TimeUnit.MILLISECONDS,
+			LinkedBlockingQueue(10_000),
+			Tasks.namedThreadFactory("wire-transport")
+		)
 
 		val interval: Long = ConfigurationFiles.transportSettings().extractorConfiguration.extractorTickIntervalMS
 		monitorThread = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = interval, period = interval) {
@@ -68,14 +78,16 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	fun runTask(task: () -> Unit) {
 		if (!IonServer.isEnabled) return
 
-		executor.execute {
-			try {
-				task.invoke()
-			} catch (e: Throwable) {
-				log.error("Encountered exception when executing async transport task: ${e.message}")
-				e.printStackTrace()
+		try {
+			executor.execute {
+				try {
+					task.invoke()
+				} catch (e: Throwable) {
+					log.error("Encountered exception when executing async transport task: ${e.message}")
+					e.printStackTrace()
+				}
 			}
-		}
+		} catch (_: RejectedExecutionException) {}
 	}
 
 	fun registerTransportManager(manager: TransportManager<*>) {
@@ -111,7 +123,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		return getExtractorManager(world, x, z)?.isExtractorPresent(x, y, z) ?: false
 	}
 
-	fun ensureExtractor(world: World, x: Int, y: Int, z: Int) {
+	private fun ensureExtractor(world: World, x: Int, y: Int, z: Int) {
 		val type = getBlockDataSafe(world, x, y, z) ?: return
 
 		val isExtractorPresent = this@NewTransport.isExtractor(world, x, y, z)
@@ -121,15 +133,15 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		if (!isExtractor && isExtractorPresent) removeExtractor(world, x, y, z)
 	}
 
-	fun removeFilter(world: World, x: Int, y: Int, z: Int) {
+	private fun removeFilter(world: World, x: Int, y: Int, z: Int) {
 		getFilterCache(world, x, z)?.removeFilter(toBlockKey(x, y, z))
 	}
 
-	fun isFilter(world: World, x: Int, y: Int, z: Int): Boolean {
+	private fun isFilter(world: World, x: Int, y: Int, z: Int): Boolean {
 		return getFilterCache(world, x, z)?.isFilterPresent(toBlockKey(x, y, z)) ?: false
 	}
 
-	fun ensureFilter(world: World, x: Int, y: Int, z: Int) = Tasks.sync {
+	private fun ensureFilter(world: World, x: Int, y: Int, z: Int) = Tasks.sync {
 		val data = getBlockDataSafe(world, x, y, z) ?: return@sync
 		val customBlock = CustomBlocks.getByBlockData(data)
 

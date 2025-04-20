@@ -10,11 +10,11 @@ import net.horizonsend.ion.server.features.transport.items.util.getTransferSpace
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData.ItemExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
+import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.nodes.util.MappedDestinationCache
-import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.getBlockEntity
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -86,10 +86,11 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		singletonItem: ItemStack,
 		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
 		availableItemReferences: ArrayDeque<ItemReference>
-	): Collection<PathfindingNodeWrapper>? {
-		val destinations: Collection<PathfindingNodeWrapper> = getOrCacheNetworkDestinations<ItemNode.InventoryNode>(
+	): Array<PathfindResult>? {
+		val destinations: Array<PathfindResult> = getOrCacheNetworkDestinations<ItemNode.InventoryNode>(
 			originPos = extractorLocation,
 			originNode = extractorNode,
+			retainFullPath = false,
 			cachingFunction = { destinations ->
 				destinationCache.set(extractorNode::class, singletonItem, extractorLocation, destinations)
 			},
@@ -151,7 +152,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
 		availableItemReferences: ArrayDeque<ItemReference>,
 	) {
-		val destinations: MutableList<PathfindingNodeWrapper> = getTransferDestinations(
+		val destinations: MutableList<PathfindResult> = getTransferDestinations(
 			extractorLocation = originKey,
 			extractorNode = originNode,
 			singletonItem = singletonItem,
@@ -195,21 +196,21 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 	private fun getDestinations(
 		singletonItem: ItemStack,
 		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
-		validDestinations: MutableList<PathfindingNodeWrapper>,
+		validDestinations: MutableList<PathfindResult>,
 		meta: ItemExtractorMetaData?
-	): Object2ObjectRBTreeMap<PathfindingNodeWrapper, CraftInventory> {
+	): Object2ObjectRBTreeMap<PathfindResult, CraftInventory> {
 		// Ordered map to preserve order
-		val foundDestinationInventories = Object2ObjectRBTreeMap<PathfindingNodeWrapper, CraftInventory>()
+		val foundDestinationInventories = Object2ObjectRBTreeMap<PathfindResult, CraftInventory>()
 
 		for (n in validDestinations.indices) {
-			val destination: PathfindingNodeWrapper = getDestination(meta, validDestinations)
-			var destinationInventory = destinationInvCache[destination.node.position]
+			val destination: PathfindResult = getDestination(meta, validDestinations)
+			var destinationInventory = destinationInvCache[destination.destinationPosition]
 
 			if (destinationInventory == null) {
-				val found = getInventory(destination.node.position)
+				val found = getInventory(destination.destinationPosition)
 				if (found != null) {
 					destinationInventory = found
-					destinationInvCache.put(destination.node.position, found)
+					destinationInvCache[destination.destinationPosition] = found
 				}
 			}
 
@@ -235,12 +236,12 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		return foundDestinationInventories
 	}
 
-	fun getDestination(meta: ItemExtractorMetaData?, destinations: Collection<PathfindingNodeWrapper>): PathfindingNodeWrapper {
+	fun getDestination(meta: ItemExtractorMetaData?, destinations: Collection<PathfindResult>): PathfindResult {
 		if (meta != null) {
 			return meta.sortingOrder.getDestination(meta, destinations)
 		}
 
-		return destinations.minBy { wrapper -> wrapper.depth }
+		return destinations.minBy { wrapper -> wrapper.trackedPath.length }
 	}
 
 	/**

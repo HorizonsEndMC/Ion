@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.transport.nodes.util
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -19,7 +19,7 @@ class MonoDestinationCache(parentCache: TransportCache) : DestinationCache(paren
 		return getCache(nodeType).containsKey(origin)
 	}
 
-	fun getOrPut(nodeType: KClass<out Node>, origin: BlockKey, cachingFunction: () -> Set<PathfindingNodeWrapper>?): Set<PathfindingNodeWrapper>? {
+	fun getOrPut(nodeType: KClass<out Node>, origin: BlockKey, cachingFunction: () -> Array<PathfindResult>?): Array<PathfindResult>? {
 		val entries = get(nodeType, origin)
 		if (entries != null) return entries
 
@@ -28,12 +28,12 @@ class MonoDestinationCache(parentCache: TransportCache) : DestinationCache(paren
 		return new
 	}
 
-	fun get(nodeType: KClass<out Node>, origin: BlockKey): Set<PathfindingNodeWrapper>? {
+	fun get(nodeType: KClass<out Node>, origin: BlockKey): Array<PathfindResult>? {
 		return getCache(nodeType)[origin]?.takeIf { !it.isExpired() }?.destinations
 	}
 
-	fun set(nodeType: KClass<out Node>, origin: BlockKey, value: Set<PathfindingNodeWrapper>) {
-		getCache(nodeType)[origin] = CachedDestinations(System.currentTimeMillis(), ObjectOpenHashSet(value))
+	fun set(nodeType: KClass<out Node>, origin: BlockKey, value: Array<PathfindResult>) {
+		getCache(nodeType)[origin] = CachedDestinations(System.currentTimeMillis(), value)
 	}
 
 	override fun remove(nodeType: KClass<out Node>, origin: BlockKey) {
@@ -48,11 +48,11 @@ class MonoDestinationCache(parentCache: TransportCache) : DestinationCache(paren
 		}
 
 		// Perform a flood fill to find all network destinations, then remove all destination columns
-		parentCache.getNetworkDestinations(destinationTypeClass = parentCache.extractorNodeClass, originPos = pos, originNode = node) {
+		parentCache.getNetworkDestinations(destinationTypeClass = parentCache.extractorNodeClass, originPos = pos, originNode = node, retainFullPath = true) {
 			// Traverse network backwards
 			getAllNeighbors(cache.holder.globalNodeLookup, null)
 		}.forEach { inputPos ->
-			toRemove.add(inputPos.node.position)
+			toRemove.add(inputPos.destinationPosition)
 		}
 
 		// Remove all the paths after being found

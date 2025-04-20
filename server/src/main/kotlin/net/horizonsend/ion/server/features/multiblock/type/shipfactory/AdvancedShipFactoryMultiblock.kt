@@ -11,9 +11,9 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
+import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
-import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.BACKWARD
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.FORWARD
@@ -167,17 +167,15 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 
 			return extractors.flatMapTo(mutableSetOf()) { (_, destinations) ->
 
-				destinations.flatMap { extractorKey: PathfindingNodeWrapper ->
-					val path = extractorKey.buildPath()
-
-					itemCache.getSources(extractorKey.node.position).map {
-						InventoryReference.RemoteInventoryReference(it, path, this)
+				destinations.flatMap { pathResult: PathfindResult ->
+					itemCache.getSources(pathResult.destinationPosition).map {
+						InventoryReference.RemoteInventoryReference(it, itemCache.holder, pathResult.trackedPath, this)
 					}
 				}
 			}.plus(base)
 		}
 
-		private fun getNetworkedExtractors(): Map<BlockKey, Collection<PathfindingNodeWrapper>> {
+		private fun getNetworkedExtractors(): Map<BlockKey, Array<PathfindResult>> {
 			if (!settings.grabFromNetworkedPipes) return mapOf()
 			val transportManager = manager.getTransportManager()
 			val itemCacheHolder = transportManager.itemPipeManager
@@ -185,13 +183,14 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 			val localPipeInputKeys = pipeInputOffsets.map { i -> toBlockKey(getPosRelative(i.x, i.y, i.z)) }
 
 			val allDestinations = localPipeInputKeys.associateWith { inputLoc ->
-				val cacheResult = itemCacheHolder.globalNodeCacher.invoke(itemCacheHolder.cache, world, inputLoc) ?: return@associateWith listOf()
-				val node = cacheResult.second ?: return@associateWith listOf()
+				val cacheResult = itemCacheHolder.globalNodeCacher.invoke(itemCacheHolder.cache, world, inputLoc) ?: return@associateWith arrayOf()
+				val node = cacheResult.second ?: return@associateWith arrayOf()
 
 				itemCacheHolder.cache.getNetworkDestinations(
 					destinationTypeClass = ItemNode.ItemExtractorNode::class,
 					originPos = inputLoc,
 					originNode = node,
+					retainFullPath = true
 				) {
 					getPreviousNodes(itemCacheHolder.globalNodeCacher, null)
 				}

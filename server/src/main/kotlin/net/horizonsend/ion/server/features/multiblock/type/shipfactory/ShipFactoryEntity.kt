@@ -18,6 +18,8 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.factory.BoundingBoxTask
 import net.horizonsend.ion.server.features.starship.factory.PreviewTask
 import net.horizonsend.ion.server.features.starship.factory.ShipFactoryTask
+import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
+import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.util.Path
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -237,10 +239,11 @@ abstract class ShipFactoryEntity(
 
 		data class RemoteInventoryReference(
 			override val inventory: CraftInventory,
+			val originCache: CacheHolder<ItemTransportCache>,
 			val path: Path,
 			val entity: AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity
 		): InventoryReference {
-			override fun isAvailable(itemStack: ItemStack): Boolean = path.isValid()
+			override fun isAvailable(itemStack: ItemStack): Boolean = path.isValid(originCache)
 		}
 	}
 }

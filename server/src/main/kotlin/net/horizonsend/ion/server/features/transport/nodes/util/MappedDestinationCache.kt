@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.transport.nodes.util
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -30,7 +30,7 @@ class MappedDestinationCache<K : Any>(parentCache: TransportCache) : Destination
 		return getCache(nodeType).values.any { it.containsKey(origin) }
 	}
 
-	fun getOrPut(nodeType: KClass<out Node>, mapKey: K, origin: BlockKey, cachingFunction: () -> Set<PathfindingNodeWrapper>?): Set<PathfindingNodeWrapper>? {
+	fun getOrPut(nodeType: KClass<out Node>, mapKey: K, origin: BlockKey, cachingFunction: () -> Array<PathfindResult>?): Array<PathfindResult>? {
 		val entries = get(nodeType, mapKey, origin)
 		if (entries != null) return entries
 
@@ -39,12 +39,12 @@ class MappedDestinationCache<K : Any>(parentCache: TransportCache) : Destination
 		return new
 	}
 
-	fun get(nodeType: KClass<out Node>, mapKey: K, origin: BlockKey): Set<PathfindingNodeWrapper>? {
+	fun get(nodeType: KClass<out Node>, mapKey: K, origin: BlockKey): Array<PathfindResult>? {
 		return getCache(nodeType, mapKey)[origin]?.takeIf { !it.isExpired() }?.destinations
 	}
 
-	fun set(nodeType: KClass<out Node>, mapKey: K, origin: BlockKey, value: Set<PathfindingNodeWrapper>) {
-		getCache(nodeType, mapKey)[origin] = CachedDestinations(System.currentTimeMillis(), ObjectOpenHashSet(value))
+	fun set(nodeType: KClass<out Node>, mapKey: K, origin: BlockKey, value: Array<PathfindResult>) {
+		getCache(nodeType, mapKey)[origin] = CachedDestinations(System.currentTimeMillis(), value)
 	}
 
 	override fun remove(nodeType: KClass<out Node>, origin: BlockKey) {
@@ -60,12 +60,12 @@ class MappedDestinationCache<K : Any>(parentCache: TransportCache) : Destination
 		}
 
 		// Perform a flood fill to find all network destinations, then remove all destination columns
-		parentCache.getNetworkDestinations(destinationTypeClass = parentCache.extractorNodeClass, originPos = pos, originNode = node) {
+		parentCache.getNetworkDestinations(destinationTypeClass = parentCache.extractorNodeClass, originPos = pos, originNode = node, retainFullPath = true) {
 			debugAudience.highlightBlock(toVec3i(position), 5L)
 			// Traverse network backwards
 			getAllNeighbors(cache.holder.globalNodeLookup, null)
 		}.forEach { inputPos ->
-			toRemove.add(inputPos.node.position)
+			toRemove.add(inputPos.destinationPosition)
 		}
 
 		// Remove all the paths after being found

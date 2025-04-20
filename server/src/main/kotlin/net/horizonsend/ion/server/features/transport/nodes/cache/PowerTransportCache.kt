@@ -6,11 +6,11 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredM
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
+import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.nodes.util.MonoDestinationCache
-import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import kotlin.math.roundToInt
@@ -70,17 +70,18 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		)
 	}
 
-	private fun getTransferDestinations(extractorLocation: BlockKey): Collection<PathfindingNodeWrapper>? {
+	private fun getTransferDestinations(extractorLocation: BlockKey): Array<PathfindResult>? {
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
-		val destinations: Collection<PathfindingNodeWrapper> = getOrCacheNetworkDestinations<PowerInputNode>(
+		val destinations: Array<PathfindResult> = getOrCacheNetworkDestinations<PowerInputNode>(
 			originPos = extractorLocation,
+			originNode = holder.getOrCacheGlobalNode(extractorLocation) ?: return null,
+			retainFullPath = false,
 			cachingFunction = { destinations ->
 				destinationCache.set(PowerNode.PowerExtractorNode::class, extractorLocation, destinations)
 			},
 			cacheGetter = {
 				destinationCache.get(PowerNode.PowerExtractorNode::class, extractorLocation)
 			},
-			originNode = holder.getOrCacheGlobalNode(extractorLocation) ?: return null,
 			destinationCheck = { node ->
 				getInputEntitiesTyped<PoweredMultiblockEntity>(node.position).any { entity -> !entity.powerStorage.isFull() }
 			}
@@ -94,7 +95,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	/**
 	 * Runs the power transfer from the source to the destinations. pending rewrite
 	 **/
-	private fun runPowerTransfer(rawDestinations: Collection<PathfindingNodeWrapper>, transferLimit: Int, powerStorage: PowerStorage?) {
+	private fun runPowerTransfer(rawDestinations: Array<PathfindResult>, transferLimit: Int, powerStorage: PowerStorage?) {
 		val numDestinations = rawDestinations.size
 
 		val removeAmount = minOf(
@@ -121,7 +122,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		var remainingPower = removeAmount - missing
 
 		for (destination in destinations) {
-			val inputEntities = getInputEntitiesTyped<PoweredMultiblockEntity>(destination.node.position)
+			val inputEntities = getInputEntitiesTyped<PoweredMultiblockEntity>(destination.destinationPosition)
 
 			val remainingCapacity = inputEntities.sumOf { it.powerStorage.getRemainingCapacity() }
 			if (remainingCapacity == 0) continue
@@ -140,10 +141,11 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		powerStorage?.addPower(remainingPower)
 	}
 
-	private fun updateFlowMeters(destination: PathfindingNodeWrapper, amountTaken: Int) = runCatching {
-		destination.buildPath().forEach {
-			if (it.type !is PowerNode.PowerFlowMeter) return@forEach
-			it.type.onCompleteChain(amountTaken)
+	private fun updateFlowMeters(destination: PathfindResult, amountTaken: Int) = runCatching {
+		destination.trackedPath.forEach {
+			val node = it.second
+			if (node !is PowerNode.PowerFlowMeter) return@forEach
+			node.onCompleteChain(amountTaken)
 		}
 	}.onFailure { e ->
 		e.printStackTrace()
