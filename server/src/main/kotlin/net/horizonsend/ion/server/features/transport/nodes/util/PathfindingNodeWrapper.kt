@@ -33,7 +33,7 @@ class PathfindingNodeWrapper(val node: Node.NodePositionData, parent: Pathfindin
 		while (current?.parent != null) {
 			current = current.parent!!
 
-			if (retainfull || node.type is TrackedNode) {
+			if (retainfull || current.node.type is TrackedNode) {
 				list.add(current.node.position to current.node.type)
 			}
 		}
