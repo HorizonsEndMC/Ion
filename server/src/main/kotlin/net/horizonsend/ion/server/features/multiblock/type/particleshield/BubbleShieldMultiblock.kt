@@ -138,11 +138,11 @@ object BubbleShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 		val inward = sign.getFacing().oppositeFace
 		val right = inward.rightFace
 
-		val dw = width / 2
-		val dl = length / 2
+		val dw = width / 2.0
+		val dl = length / 2.0
 
 		val dx = abs(dw * right.modX + dl * inward.modX)
-		val dy = height / 2
+		val dy = height / 2.0
 		val dz = abs(dw * right.modZ + dl * inward.modZ)
 
 		val blocks = mutableListOf<Vec3i>()
@@ -150,11 +150,10 @@ object BubbleShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 		for (x in (-dx)..(dx)) {
 			for (y in (-dy)..(dy)) {
 				for (z in (-dz)..(dz)) {
-          val ellipsoidExpression = (x/dx).pow(2) + (y/dy).pow(2) + (z/dz).pow(2)
-          if( abs(ellipsoidExpression - 1) > 0.25) {
-            continue
-          }
-
+          				val ellipsoidExpression = (x/dx).pow(2) + (y/dy).pow(2) + (z/dz).pow(2)
+          				if( abs(ellipsoidExpression - 1) > 0.25) {
+            					continue
+          				}
 					blocks.add(Vec3i(x, y, z))
 				}
 			}
