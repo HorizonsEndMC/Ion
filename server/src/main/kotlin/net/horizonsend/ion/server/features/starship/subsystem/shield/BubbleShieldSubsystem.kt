@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.shield
 
-import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.particleshield.BubbleShieldMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
@@ -66,9 +66,9 @@ class BubbleShieldSubsystem(
 		val key = getRotatedFace(this.face)
 		val right = key.rightFace
 
-		val dx = (width / 2) * abs(right.modX) + (length / 2) * abs(key.modX)
-		val dy = height / 2
-		val dz = (width / 2) * abs(right.modZ) + (length / 2) * abs(key.modZ)
+		val dx = (width / 2.0) * abs(right.modX) + (length / 2.0) * abs(key.modX)
+		val dy = height / 2.0
+		val dz = (width / 2.0) * abs(right.modZ) + (length / 2.0) * abs(key.modZ)
 
 		cachedShapes[key] = Ellipsoid(Vec3i(dx, dy, dz))
 	}
