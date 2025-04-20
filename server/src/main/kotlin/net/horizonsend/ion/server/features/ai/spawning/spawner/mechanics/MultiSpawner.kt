@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.ships.spawn
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
+import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
@@ -38,7 +39,7 @@ abstract class MultiSpawner(
 			return
 		}
 
-		val aiFleet = AIFleetManageModule.AIFleet()
+		val aiFleet = Fleets.createAIFleet()
 		val fleetDifficulty = difficultySupplier(spawnOrigin.world.name).get()
 		val shipDifficultySupplier = WeightedIntegerAmount(
 			setOf(

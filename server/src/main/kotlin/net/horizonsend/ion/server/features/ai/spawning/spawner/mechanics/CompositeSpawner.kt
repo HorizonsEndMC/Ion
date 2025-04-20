@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.ships.spawn
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.Location
@@ -28,6 +29,7 @@ class CompositeSpawner(
 	private val groupMessage: Component?,
 	private val individualSpawnMessage: SpawnMessage?,
 	private val difficultySupplier: (String) -> Supplier<Int>,
+	private val onPostSpawn: (AIController) -> Unit
 ) : SpawnerMechanic() {
 
 	override suspend fun trigger(logger: Logger) {
@@ -70,9 +72,11 @@ class CompositeSpawner(
 
 			ship.spawn(logger, spawnPoint, difficulty) {
 				addUtilModule(AIFleetManageModule(this, aiFleet))
+				onPostSpawn(this)
 			}
 
 			individualSpawnMessage?.broadcast(spawnPoint, ship.template)
+
 		}
 
 		if (aiFleet.members.isNotEmpty() && groupMessage != null) {

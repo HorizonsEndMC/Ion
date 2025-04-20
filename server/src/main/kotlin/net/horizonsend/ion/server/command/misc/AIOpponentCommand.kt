@@ -5,6 +5,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
@@ -12,6 +13,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
@@ -69,29 +71,33 @@ object AIOpponentCommand : SLCommand() {
 			if (getExisting(summoner).isNotEmpty()) return@async summoner.userError("You may only have one AI opponent active at once.")
 
 			Tasks.sync {
-				createAIShipFromTemplate(
-					log,
-					template,
-					location,
-					{ starship ->
-						val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
-						val controller = factory.invoke(
-							starship,
-							template.starshipInfo.componentName(),
-							template.starshipInfo.autoWeaponSets,
-							template.starshipInfo.manualWeaponSets,
-							difficulty ?: template.difficulty.get(),
-							targetAI ?: false
-						)
 
-						processController(summoner, controller)
-						controller.validateWeaponSets()
-						controller
-					},
-					"✦".repeat((difficulty ?: template.difficulty.get())+1)
-				) {
-					summoner.success("Summoned ${template.starshipInfo.miniMessageName}")
+				AISpawningManager.context.launch {
+					createAIShipFromTemplate(
+						log,
+						template,
+						location,
+						{ starship ->
+							val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
+							val controller = factory.invoke(
+								starship,
+								template.starshipInfo.componentName(),
+								template.starshipInfo.autoWeaponSets,
+								template.starshipInfo.manualWeaponSets,
+								difficulty ?: template.difficulty.get(),
+								targetAI ?: false
+							)
+
+							processController(summoner, controller)
+							controller.validateWeaponSets()
+							controller
+						},
+						"✦".repeat((difficulty ?: template.difficulty.get())+1)
+					) {
+						summoner.success("Summoned ${template.starshipInfo.miniMessageName}")
+					}
 				}
+
 			}
 		}
 	}

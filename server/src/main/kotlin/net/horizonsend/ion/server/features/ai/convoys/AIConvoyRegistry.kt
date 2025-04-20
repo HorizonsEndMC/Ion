@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TENETA
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VETERAN
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.WAYFINDER
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
+import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import org.bukkit.Location
 import java.util.function.Supplier
@@ -45,12 +46,27 @@ object AIConvoyRegistry {
 		routeProvider { TraceCityCaravanRoute() }
 		difficultySupplier {2}
 
-		spawnMechanic {
-			CompositeSpawner(
+		spawnMechanicWithCity  { city ->
+			val candidates = city.allowedDestinations
+			val routeCities = if (candidates.isNullOrEmpty()) {
+				TradeCities.getAll()
+			} else {
+				candidates
+			}
+
+			val route = TraceCityCaravanRoute(
+				cites = routeCities.shuffled().toMutableList(),
+				source = city
+			)
+
+			val mechanic = CompositeSpawner(
 				locationProvider = {routeProvider.get().getSourceLocation()},
 				difficultySupplier = difficultySupplier,
 				groupMessage = "Small convoy fleet!".miniMessage(),
 				individualSpawnMessage = SpawnMessage.WorldMessage("Ship joined the convoy!".miniMessage()),
+				onPostSpawn = { controller ->
+					controller.metadata["convoy_route"] = route
+				},
 				components = listOf(
 					SingleSpawn(
 						RandomShipSupplier(
@@ -91,15 +107,18 @@ object AIConvoyRegistry {
 				),
 			),
 			)
+
+			mechanic
 		}
 
 		behavior { controller ->
+			val route = controller.metadata["convoy_route"] as? ConvoyRoute ?: return@behavior
 			controller.addUtilModule(CaravanModule(
 				controller,
 				controller.getUtilModule(AIFleetManageModule::class.java)!!.fleet,
 				get("SMALL_TC_CARAVAN")!!,
-				routeProvider.get().getSourceLocation(),
-				routeProvider.get()))
+				route.getSourceLocation(),
+				route))
 		}
 	}
 

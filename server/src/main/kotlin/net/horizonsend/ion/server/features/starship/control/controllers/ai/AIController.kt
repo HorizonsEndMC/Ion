@@ -77,6 +77,12 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 	/** Util modules provide less heavy-duty functions like the glow and don't need to be accessed often. */
 	private val utilModules: MutableSet<AIModule> = mutableSetOf()
 
+	/**
+	 * Transient key-value context storage for spawn-time or temporary state.
+	 * Not persisted or lifecycle-managed. Use this to share data between spawn/behavior phases.
+	 */
+	val metadata: MutableMap<String, Any> = mutableMapOf()
+
 	fun addUtilModule(module: AIModule) = utilModules.add(module)
 
 	fun <T: AIModule> getUtilModule(clazz: Class<T>) = utilModules.filterIsInstance(clazz).firstOrNull()
