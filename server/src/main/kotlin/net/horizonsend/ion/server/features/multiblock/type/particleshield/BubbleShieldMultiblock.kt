@@ -50,7 +50,7 @@ object BubbleShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 		val length = integers[2]
 
 		val volume = 4/3 * PI * width * height * length / 8
-		if (volume !in MIN_VOLUME..MAX_VOLUME) {
+		if (volume.toInt() !in MIN_VOLUME..MAX_VOLUME) {
 			player msg "&cVolume is $volume but must be at least $MIN_VOLUME and at most $MAX_VOLUME"
 			return
 		}
@@ -147,9 +147,9 @@ object BubbleShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 
 		val blocks = mutableListOf<Vec3i>()
 
-		for (x in (-dx)..(dx)) {
-			for (y in (-dy)..(dy)) {
-				for (z in (-dz)..(dz)) {
+		for (x in (-dx.toInt())..(dx.toInt())) {
+			for (y in (-dy.toInt())..(dy.toInt())) {
+				for (z in (-dz.toInt())..(dz.toInt())) {
           				val ellipsoidExpression = (x/dx).pow(2) + (y/dy).pow(2) + (z/dz).pow(2)
           				if( abs(ellipsoidExpression - 1) > 0.25) {
             					continue
