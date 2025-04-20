@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractMagazine
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.particleshield.BubbleShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.SphereShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
@@ -180,6 +181,10 @@ object SubsystemDetector {
 			}
 
 			is BoxShieldMultiblock -> {
+				starship.subsystems += BoxShieldSubsystem(starship, sign, multiblock)
+			}
+
+			is BubbleShieldMultiblock -> {
 				starship.subsystems += BoxShieldSubsystem(starship, sign, multiblock)
 			}
 
