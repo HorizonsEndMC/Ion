@@ -26,7 +26,7 @@ class BubbleShieldSubsystem(
 	private val height: Int
 	private val length: Int
 
-  private data class Ellipsoid(val max: Vec3i)
+  private data class Ellipsoid(val maxX: Double, val maxY: Double, val maxZ: Double)
 
   private val cachedShapes = mutableMapOf<BlockFace, Ellipsoid>()
 
@@ -51,9 +51,9 @@ class BubbleShieldSubsystem(
 		}
 
     val shape = getShape()
-    val semiAxisX = shape.max.x
-    val semiAxisY = shape.max.y  //semi-axis length 
-    val semiAxisZ = shape.max.z
+    val semiAxisX = shape.maxX
+    val semiAxisY = shape.maxY  //semi-axis lengths
+    val semiAxisZ = shape.maxZ
 		
 		val lx = blockPos.x - pos.x
 		val ly = blockPos.y - pos.y  //impact location relative to center
@@ -70,7 +70,7 @@ class BubbleShieldSubsystem(
 		val dy = height / 2.0
 		val dz = (width / 2.0) * abs(right.modZ) + (length / 2.0) * abs(key.modZ)
 
-		cachedShapes[key] = Ellipsoid(Vec3i(dx, dy, dz))
+		cachedShapes[key] = Ellipsoid(dx, dy, dz)
 	}
 
 	private fun getShape(): Ellipsoid {
