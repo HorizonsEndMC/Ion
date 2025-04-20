@@ -72,56 +72,44 @@ object BubbleShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
-      y(-1) {
-				x(-1).anyStairs()
-				x(+1).anyStairs()
+      			y(-1) {
+				x(-1).anyWall()
+				x(+0).ironBlock()
+				x(+1).anyWall()
 			}
       
 			y(+0) {
-				x(-1).anyWall()
+				x(-1).anyGlassPane()
 				x(+0).anyGlass()
-				x(+1).anyWall()
-			}
-
-      y(+1) {
-				x(-1).anyStairs()
-				x(+1).anyStairs()
+				x(+1).anyGlassPane()
 			}
 		}
 
 		z(+1) {
 			y(-1) {
 				x(-1).ironBlock()
+				x(+0).sponge()
 				x(+1).ironBlock()
 			}
       
 			y(+0) {
-				x(-1).sponge()
+				x(-1).anyGlass()
 				x(+0).steelBlock()
-				x(+1).sponge()
+				x(+1).anyGlass()
 			}
+    		}
 
-      y(+1) {
-				x(-1).ironBlock()
-				x(+1).ironBlock()
-			}
-    }
-
-    z(+2) {
-      y(-1) {
-				x(-1).anyStairs()
-				x(+1).anyStairs()
-			}
-      
-			y(+0) {
+    		z(+2) {
+      			y(-1) {
 				x(-1).anyWall()
-				x(+0).anyGlass()
+				x(+0).ironBlock()
 				x(+1).anyWall()
 			}
-
-      y(+1) {
-				x(-1).anyStairs()
-				x(+1).anyStairs()
+      
+			y(+0) {
+				x(-1).anyGlassPane()
+				x(+0).anyGlass()
+				x(+1).anyGlassPane()
 			}
 		}
 	}
