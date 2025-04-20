@@ -49,6 +49,7 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.MediumTractorBea
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.particleshield.BubbleShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass08Left
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass08Right
@@ -376,6 +377,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(ShieldMultiblockClass85)
 		registerMultiblock(ShieldMultiblockClass08i)
 		registerMultiblock(BoxShieldMultiblock)
+		registerMultiblock(BubbleShieldMultiblock)
 		registerMultiblock(EventShieldMultiblock)
 
 		// Starship misc
