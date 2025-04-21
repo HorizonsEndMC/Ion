@@ -12,7 +12,9 @@ class TransportMonitorThread : Thread() {
 			try {
 				for (task in executingPool) {
 					if (task.isFinished()) continue
-					if (task.isTimedOut()) task.interrupt()
+					if (task.isTimedOut()) {
+						task.interrupt()
+					}
 				}
 			} catch (e: Throwable) {
 				logger.warn("Encountered error when polling executing transport tasks!")

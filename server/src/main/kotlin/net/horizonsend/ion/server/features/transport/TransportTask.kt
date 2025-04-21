@@ -13,12 +13,13 @@ class TransportTask(
 	private var finished = false
 
 	fun interrupt() {
+		println("Interrupting task")
 		isInterrupted = true
 	}
 
 	fun isTimedOut(): Boolean {
 		val now = System.currentTimeMillis()
-		return now < (start + timeoutMillis)
+		return now > (start + timeoutMillis)
 	}
 
 	fun isFinished(): Boolean {
