@@ -28,30 +28,29 @@ import org.bukkit.event.block.BlockPlaceEvent
 import java.util.Timer
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
-import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.Executors
 import java.util.concurrent.RejectedExecutionException
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
 import kotlin.concurrent.fixedRateTimer
 
 object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick to wait on the full server startup. */) {
 	private val transportManagers = ConcurrentHashMap.newKeySet<TransportManager<*>>()
 
-	private lateinit var monitorThread: Timer
+	private lateinit var timer: Timer
 	private lateinit var executor: ExecutorService
 
-	fun reload() {
-		executor = ThreadPoolExecutor(
-			16,
-			16,
-			0L,
-			TimeUnit.MILLISECONDS,
-			LinkedBlockingQueue(10_000),
-			Tasks.namedThreadFactory("wire-transport")
-		)
+	private var taskTimeoutMillis = ConfigurationFiles.transportSettings().taskTimeout.toDuration().toMillis()
+	var executingPool: ConcurrentHashMap.KeySetView<TransportTask, Boolean> = ConcurrentHashMap.newKeySet(ConfigurationFiles.transportSettings().transportThreadCount); private set
 
-		val interval: Long = ConfigurationFiles.transportSettings().extractorConfiguration.extractorTickIntervalMS
-		monitorThread = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = interval, period = interval) {
+	fun reload() {
+		val configuration = ConfigurationFiles.transportSettings()
+
+		taskTimeoutMillis = configuration.taskTimeout.toDuration().toMillis()
+		executingPool = ConcurrentHashMap.newKeySet(configuration.transportThreadCount)
+
+		executor = Executors.newFixedThreadPool(configuration.transportThreadCount, Tasks.namedThreadFactory("wire-transport"))
+
+		val interval: Long = configuration.extractorConfiguration.extractorTickIntervalMS
+		timer = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = interval, period = interval) {
 			transportManagers.forEach {
 				try {
 					it.tick()
@@ -61,6 +60,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 			}
 		}
 	}
+
 
 	override fun onEnable() {
 		reload()
@@ -77,17 +77,17 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 	fun runTask(task: () -> Unit) {
 		if (!IonServer.isEnabled) return
+		val wrapped = TransportTask(task, taskTimeoutMillis, log)
 
 		try {
-			executor.execute {
-				try {
-					task.invoke()
-				} catch (e: Throwable) {
-					log.error("Encountered exception when executing async transport task: ${e.message}")
-					e.printStackTrace()
-				}
-			}
+			executor.execute(wrapped)
 		} catch (_: RejectedExecutionException) {}
+	}
+
+	private fun monitorTasks() {
+		for (task in executingPool) {
+			if (task.isTimedOut()) task.yield()
+		}
 	}
 
 	fun registerTransportManager(manager: TransportManager<*>) {

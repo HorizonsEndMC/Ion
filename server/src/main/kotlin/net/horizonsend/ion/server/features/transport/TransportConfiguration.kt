@@ -1,9 +1,13 @@
 package net.horizonsend.ion.server.features.transport
 
 import kotlinx.serialization.Serializable
+import net.horizonsend.ion.server.configuration.util.DurationConfig
+import java.util.concurrent.TimeUnit
 
 @Serializable
 data class TransportConfiguration(
+	val transportThreadCount: Int,
+	val taskTimeout: DurationConfig = DurationConfig(TimeUnit.SECONDS, 1),
 	val extractorConfiguration: ExtractorConfiguration = ExtractorConfiguration(),
 	val generalConfiguration: GeneralTransportConfiguration = GeneralTransportConfiguration(),
 	val powerConfiguration: PowerTransportConfiguration = PowerTransportConfiguration(),
