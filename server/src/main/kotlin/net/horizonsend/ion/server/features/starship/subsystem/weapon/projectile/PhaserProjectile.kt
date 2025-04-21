@@ -78,6 +78,7 @@ class PhaserProjectile(
 		}
 	}
 
+	/*
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		super.impact(newLoc, block, entity)
 
@@ -121,6 +122,7 @@ class PhaserProjectile(
 			true
 		)
 	}
+	 */
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		playCustomSound(impactLocation, "minecraft:entity.firework_rocket.twinkle", 12, 0.5f)
