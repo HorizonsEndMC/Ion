@@ -138,7 +138,7 @@ object BubbleShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 			for (y in (-dy.toInt())..(dy.toInt())) {
 				for (z in (-dz.toInt())..(dz.toInt())) {
           				val ellipsoidExpression = (x/dx).pow(2) + (y/dy).pow(2) + (z/dz).pow(2)
-          				if( abs(ellipsoidExpression - 0.875) > 0.125) {
+          				if( abs(ellipsoidExpression - 0.8125) > 0.1875) {
             					continue
           				}
 					blocks.add(Vec3i(x, y, z))
