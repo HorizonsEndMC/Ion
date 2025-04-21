@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit
 
 @Serializable
 data class TransportConfiguration(
-	val transportThreadCount: Int,
+	val transportThreadCount: Int = 16,
 	val taskTimeout: DurationConfig = DurationConfig(TimeUnit.SECONDS, 1),
 	val extractorConfiguration: ExtractorConfiguration = ExtractorConfiguration(),
 	val generalConfiguration: GeneralTransportConfiguration = GeneralTransportConfiguration(),
