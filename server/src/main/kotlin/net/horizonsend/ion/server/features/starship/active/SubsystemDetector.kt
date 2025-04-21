@@ -42,6 +42,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsys
 import net.horizonsend.ion.server.features.starship.subsystem.misc.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.BoxShieldSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.shield.BubbleShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.EventShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.SphereShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterSubsystem
