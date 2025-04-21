@@ -11,7 +11,6 @@ import net.kyori.adventure.text.Component.text
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import kotlin.math.abs
-import kotlin.math.PI
 import kotlin.math.pow
 
 object BubbleShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
