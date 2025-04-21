@@ -78,20 +78,19 @@ class PhaserProjectile(
 		}
 	}
 
-	/*
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		super.impact(newLoc, block, entity)
 
-		val rayEnds = newLoc.spherePoints(5.0, 10)
+		val rayEnds = newLoc.spherePoints(1.0, 2)
 		for (rayEnd in rayEnds) {
-			val lightningPoints = lightning(newLoc, rayEnd, 3, 2.0, 0.7)
+			val lightningPoints = lightning(newLoc, rayEnd, 3, 0.5, 0.7)
 			for (lightningPoint in lightningPoints) {
 				lightningPoint.world.spawnParticle(Particle.SOUL_FIRE_FLAME, lightningPoint.x, lightningPoint.y, lightningPoint.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 			}
 		}
 
-		for (point in newLoc.spherePoints(2.5, 12)) {
-			newLoc.iterateVector(Vector(point.x - newLoc.x, point.y - newLoc.y, point.z - newLoc.z), 10) { pointAlong, _ ->
+		for (point in newLoc.spherePoints(1.5, 5)) {
+			newLoc.iterateVector(Vector(point.x - newLoc.x, point.y - newLoc.y, point.z - newLoc.z), 5) { pointAlong, _ ->
 				pointAlong.world.spawnParticle(
 					Particle.DUST_COLOR_TRANSITION,
 					pointAlong.x,
@@ -114,15 +113,14 @@ class PhaserProjectile(
 			newLoc.y,
 			newLoc.z,
 			25,
-			1.0,
-			1.0,
-			1.0,
+			0.5,
+			0.5,
+			0.5,
 			0.0,
 			null,
 			true
 		)
 	}
-	 */
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		playCustomSound(impactLocation, "minecraft:entity.firework_rocket.twinkle", 12, 0.5f)
