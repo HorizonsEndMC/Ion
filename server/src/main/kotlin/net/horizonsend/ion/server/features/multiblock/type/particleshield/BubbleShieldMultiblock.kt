@@ -18,7 +18,7 @@ object BubbleShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 	private const val MIN_DIMENSION = 9
 	private const val MAX_DIMENSION = 27
 	private const val MIN_VOLUME = 256
-	private const val MAX_VOLUME = 8192
+	private const val MAX_VOLUME = 15645
 
 	override val displayName: Component get() = text("Bubble Shield")
 	override val description: Component get() = text("Protects a starship from explosion damage within a user-specified ellipsoid region, between $MIN_DIMENSION and $MAX_DIMENSION blocks long for each axis.")
@@ -49,7 +49,7 @@ object BubbleShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 		val height = integers[1]
 		val length = integers[2]
 
-		val volume = 4/3 * PI * width * height * length / 8
+		val volume = width * height * length
 		if (volume.toInt() !in MIN_VOLUME..MAX_VOLUME) {
 			player msg "&cVolume is $volume but must be at least $MIN_VOLUME and at most $MAX_VOLUME"
 			return
