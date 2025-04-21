@@ -33,10 +33,12 @@ import java.util.concurrent.RejectedExecutionException
 import kotlin.concurrent.fixedRateTimer
 
 object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick to wait on the full server startup. */) {
+	var enabled: Boolean = false; private set
 	private val transportManagers = ConcurrentHashMap.newKeySet<TransportManager<*>>()
 
 	private lateinit var timer: Timer
 	private lateinit var executor: ExecutorService
+	private lateinit var monitor: Thread
 
 	private var taskTimeoutMillis = ConfigurationFiles.transportSettings().taskTimeout.toDuration().toMillis()
 	var executingPool: ConcurrentHashMap.KeySetView<TransportTask, Boolean> = ConcurrentHashMap.newKeySet(ConfigurationFiles.transportSettings().transportThreadCount); private set
@@ -50,26 +52,23 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		executor = Executors.newFixedThreadPool(configuration.transportThreadCount, Tasks.namedThreadFactory("wire-transport"))
 
 		val interval: Long = configuration.extractorConfiguration.extractorTickIntervalMS
-		timer = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = interval, period = interval) {
-			transportManagers.forEach {
-				try {
-					it.tick()
-				} catch (exception: Exception) {
-					exception.printStackTrace()
-				}
-			}
-		}
+		timer = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = interval, period = interval) { tickExtractors() }
+
+		monitor = TransportMonitorThread()
+		monitor.start()
 	}
 
 
 	override fun onEnable() {
+		enabled = true
 		reload()
 
 		Tasks.asyncRepeat(120L, 120L, ::saveExtractors)
 	}
 
 	override fun onDisable() {
-		if (::monitorThread.isInitialized) monitorThread.cancel()
+		enabled = false
+		if (::timer.isInitialized) timer.cancel()
 		if (::executor.isInitialized) executor.shutdown()
 
 		saveExtractors()
@@ -85,8 +84,17 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	}
 
 	private fun monitorTasks() {
-		for (task in executingPool) {
-			if (task.isTimedOut()) task.yield()
+
+	}
+
+	private fun tickExtractors() {
+		if (!enabled) return
+		transportManagers.forEach {
+			try {
+				it.tick()
+			} catch (exception: Exception) {
+				exception.printStackTrace()
+			}
 		}
 	}
 

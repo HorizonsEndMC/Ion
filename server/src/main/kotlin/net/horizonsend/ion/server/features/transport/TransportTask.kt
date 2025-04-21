@@ -8,11 +8,12 @@ class TransportTask(
 	private val timeoutMillis: Long,
 	private val logger: Logger
 ) : Runnable {
+	private var isInterrupted: Boolean = false
 	private var start by Delegates.notNull<Long>()
 	private var finished = false
 
-	fun yield(): Boolean {
-		return Thread.interrupted()
+	fun interrupt() {
+		isInterrupted = true
 	}
 
 	fun isTimedOut(): Boolean {
