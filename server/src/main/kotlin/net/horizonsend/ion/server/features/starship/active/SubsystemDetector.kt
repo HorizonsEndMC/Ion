@@ -185,7 +185,7 @@ object SubsystemDetector {
 			}
 
 			is BubbleShieldMultiblock -> {
-				starship.subsystems += BoxShieldSubsystem(starship, sign, multiblock)
+				starship.subsystems += BubbleShieldSubsystem(starship, sign, multiblock)
 			}
 
 			is BattleCruiserReactorMultiblock -> {
