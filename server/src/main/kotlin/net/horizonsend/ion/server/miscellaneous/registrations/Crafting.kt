@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.AUTO_
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.AUTO_REPLANT
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.AUTO_SMELT
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BARGE_REACTOR_CORE
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.LIGHT_BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BATTERY_A
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BATTERY_G
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.BATTERY_M
@@ -623,6 +624,14 @@ object Crafting : IonServerComponent() {
 			setIngredient('y', FUEL_CONTROL.constructItemStack())
 			setIngredient('z', SUPERCONDUCTOR.constructItemStack())
 			setIngredient('v', REINFORCED_FRAME.constructItemStack())
+		}
+		shaped("lightbargereactorCore", LIGHT_BARGE_REACTOR_CORE.constructItemStack()) {
+			shape("wxw", "zzz", "wyw")
+
+			setIngredient('w', REINFORCED_FRAME.constructItemStack())
+			setIngredient('x', REACTOR_CONTROL.constructItemStack())
+			setIngredient('y', FUEL_CONTROL.constructItemStack())
+			setIngredient('z', SUPERCONDUCTOR.constructItemStack())
 		}
 		shaped("cruiserreactorCore", CRUISER_REACTOR_CORE.constructItemStack()) {
 			shape("wxw", "wyw", "wzw")

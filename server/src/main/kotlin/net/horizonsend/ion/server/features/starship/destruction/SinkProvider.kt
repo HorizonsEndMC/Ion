@@ -72,6 +72,12 @@ abstract class SinkProvider(
 			}
 		},
 
+		LIGHT_BARGE {
+			override fun getSinkProvider(starship: ActiveStarship): SinkProvider {
+				return RemoveBlockSink(starship) { it.customBlock == CustomBlocks.LIGHT_BARGE_REACTOR_CORE }
+			}
+		},
+
 		BATTLECRUISER {
 			override fun getSinkProvider(starship: ActiveStarship): SinkProvider {
 				return RemoveBlockSink(starship) { it.customBlock == CustomBlocks.BATTLECRUISER_REACTOR_CORE }

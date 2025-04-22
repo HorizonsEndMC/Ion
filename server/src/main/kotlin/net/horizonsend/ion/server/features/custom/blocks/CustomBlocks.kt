@@ -197,6 +197,15 @@ object CustomBlocks {
 		)
 	) { CustomItemRegistry.BARGE_REACTOR_CORE })
 
+	val LIGHT_BARGE_REACTOR_CORE : CustomBlock = register(CustomBlock(
+		identifier = "LIGHT_BARGE_REACTOR_CORE",
+		blockData = mushroomBlockData(setOf(NORTH, EAST, DOWN, WEST)),
+		drops = BlockLoot(
+			requiredTool = null,
+			drops = customItemDrop(CustomItemRegistry::LIGHT_BARGE_REACTOR_CORE)
+		)
+	) { CustomItemRegistry.LIGHT_BARGE_REACTOR_CORE })
+
 	val CRUISER_REACTOR_CORE : CustomBlock = register(CustomBlock(
         identifier = "CRUISER_REACTOR_CORE",
         blockData = mushroomBlockData(setOf(NORTH, DOWN, WEST)),
