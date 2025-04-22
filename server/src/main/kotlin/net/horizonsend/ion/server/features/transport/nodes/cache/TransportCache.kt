@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.transport.TransportTask
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
@@ -155,6 +156,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	}
 
 	inline fun <reified T: Node> getOrCacheNetworkDestinations(
+		task: TransportTask,
 		originPos: BlockKey,
 		originNode: Node,
 		retainFullPath: Boolean,
@@ -169,25 +171,27 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		val cachedEntry = cacheGetter.get()
 		if (cachedEntry != null) return cachedEntry
 
-		val destinations = getNetworkDestinations(T::class, originPos, originNode, retainFullPath, destinationCheck, pathfindingFilter, null, nextNodeProvider)
+		val destinations = getNetworkDestinations(task, T::class, originPos, originNode, retainFullPath, destinationCheck, pathfindingFilter, null, nextNodeProvider)
 		cachingFunction.accept(destinations)
 
 		return destinations
 	}
 
 	inline fun <reified T: Node> getNetworkDestinations(
+		task: TransportTask,
 		originPos: BlockKey,
 		originNode: Node,
 		retainFullPath: Boolean,
 		noinline pathfindingFilter: ((Node, BlockFace) -> Boolean)? = null,
 		noinline destinationCheck: ((NodePositionData) -> Boolean)? = null,
 		noinline nextNodeProvider: NodePositionData.() -> List<NodePositionData> = { getNextNodes(holder.globalNodeCacher, pathfindingFilter) }
-	): Array<PathfindResult> = getNetworkDestinations(T::class, originPos, originNode, retainFullPath, destinationCheck, pathfindingFilter, null, nextNodeProvider)
+	): Array<PathfindResult> = getNetworkDestinations(task, T::class, originPos, originNode, retainFullPath, destinationCheck, pathfindingFilter, null, nextNodeProvider)
 
 	/**
 	 * This is a weird combination of A* and a flood fill. It keeps track of paths, and returned destinations have those available.
 	 **/
 	fun getNetworkDestinations(
+		task: TransportTask,
 		destinationTypeClass: KClass<out Node>,
 		originPos: BlockKey,
 		originNode: Node,
@@ -242,6 +246,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 
 		// Flood fill algorithm
 		while (visitQueue.isNotEmpty() && iterations < upperBound) {
+			if (task.isInterrupted()) return arrayOf()
 			iterations++
 
 			// Pop the head of the queue

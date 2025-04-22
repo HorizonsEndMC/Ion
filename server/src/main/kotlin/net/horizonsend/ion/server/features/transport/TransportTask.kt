@@ -1,25 +1,34 @@
 package net.horizonsend.ion.server.features.transport
 
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import org.bukkit.World
 import org.slf4j.Logger
-import kotlin.properties.Delegates
 
 class TransportTask(
-	private val runnable: Runnable,
+	val location: BlockKey,
+	val world: World,
+	private val runnable: TransportTask.() -> Unit,
 	private val timeoutMillis: Long,
 	private val logger: Logger
 ) : Runnable {
-	private var isInterrupted: Boolean = false
-	private var start by Delegates.notNull<Long>()
+	private var interrupted: Boolean = false
+	private var start = -1L
 	private var finished = false
 
 	fun interrupt() {
-		println("Interrupting task")
-		isInterrupted = true
+		interrupted = true
+	}
+
+	fun isInterrupted(): Boolean = interrupted
+
+	fun getExecutionTime(): Long {
+		return System.currentTimeMillis() - start
 	}
 
 	fun isTimedOut(): Boolean {
-		val now = System.currentTimeMillis()
-		return now > (start + timeoutMillis)
+		if (start == -1L || finished) return false
+		return getExecutionTime() > timeoutMillis
 	}
 
 	fun isFinished(): Boolean {
@@ -31,10 +40,10 @@ class TransportTask(
 		NewTransport.executingPool.add(this)
 
 		try {
-		    runnable.run()
+		    runnable.invoke(this)
 		}
 		catch (e: Throwable) {
-			logger.error("Encountered exception when executing async transport task: ${e.message}")
+			logger.error("Encountered exception when executing async transport task at ${toVec3i(location)}, in ${world.name}: ${e.message}")
 			e.printStackTrace()
 		}
 		finally {

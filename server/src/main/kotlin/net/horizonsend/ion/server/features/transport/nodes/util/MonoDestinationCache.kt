@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.nodes.util
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
@@ -40,7 +41,7 @@ class MonoDestinationCache(parentCache: TransportCache) : DestinationCache(paren
 		getCache(nodeType).remove(origin)?.destinations
 	}
 
-	override fun invalidatePaths(nodeType: KClass<out Node>, pos: BlockKey, node: Node) {
+	override fun invalidatePaths(nodeType: KClass<out Node>, pos: BlockKey, node: Node) = NewTransport.runTask(pos, parentCache.holder.getWorld()) {
 		val toRemove = LongOpenHashSet()
 
 		if (contains(nodeType, pos)) {
@@ -48,7 +49,7 @@ class MonoDestinationCache(parentCache: TransportCache) : DestinationCache(paren
 		}
 
 		// Perform a flood fill to find all network destinations, then remove all destination columns
-		parentCache.getNetworkDestinations(destinationTypeClass = parentCache.extractorNodeClass, originPos = pos, originNode = node, retainFullPath = true) {
+		parentCache.getNetworkDestinations(task = this, destinationTypeClass = parentCache.extractorNodeClass, originPos = pos, originNode = node, retainFullPath = true) {
 			// Traverse network backwards
 			getAllNeighbors(cache.holder.globalNodeLookup, null)
 		}.forEach { inputPos ->

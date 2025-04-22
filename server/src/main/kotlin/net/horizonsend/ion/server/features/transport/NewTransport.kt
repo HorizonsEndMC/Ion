@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.transport.manager.extractors.Extracto
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.isExtractorData
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import org.bukkit.Material
@@ -38,7 +39,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 	private lateinit var timer: Timer
 	private lateinit var executor: ExecutorService
-	private lateinit var monitor: Thread
+	private lateinit var monitor: TransportMonitorThread
 
 	private var taskTimeoutMillis = ConfigurationFiles.transportSettings().taskTimeout.toDuration().toMillis()
 	var executingPool: ConcurrentHashMap.KeySetView<TransportTask, Boolean> = ConcurrentHashMap.newKeySet(ConfigurationFiles.transportSettings().transportThreadCount); private set
@@ -49,15 +50,20 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		taskTimeoutMillis = configuration.taskTimeout.toDuration().toMillis()
 		executingPool = ConcurrentHashMap.newKeySet(configuration.transportThreadCount)
 
+		if (::executor.isInitialized) {
+			executingPool.forEach { it.interrupt() }
+			executor.shutdown()
+		}
 		executor = Executors.newFixedThreadPool(configuration.transportThreadCount, Tasks.namedThreadFactory("wire-transport"))
 
+		if (::timer.isInitialized) timer.cancel()
 		val interval: Long = configuration.extractorConfiguration.extractorTickIntervalMS
 		timer = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = interval, period = interval) { tickExtractors() }
 
+		if (::monitor.isInitialized) monitor.interrupt()
 		monitor = TransportMonitorThread()
 		monitor.start()
 	}
-
 
 	override fun onEnable() {
 		enabled = true
@@ -70,21 +76,18 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		enabled = false
 		if (::timer.isInitialized) timer.cancel()
 		if (::executor.isInitialized) executor.shutdown()
+		if (::monitor.isInitialized) monitor.interrupt()
 
 		saveExtractors()
 	}
 
-	fun runTask(task: () -> Unit) {
+	fun runTask(location: BlockKey, world: World, task: TransportTask.() -> Unit) {
 		if (!IonServer.isEnabled) return
-		val wrapped = TransportTask(task, taskTimeoutMillis, log)
+		val wrapped = TransportTask(location, world, task, taskTimeoutMillis, log)
 
 		try {
 			executor.execute(wrapped)
 		} catch (_: RejectedExecutionException) {}
-	}
-
-	private fun monitorTasks() {
-
 	}
 
 	private fun tickExtractors() {

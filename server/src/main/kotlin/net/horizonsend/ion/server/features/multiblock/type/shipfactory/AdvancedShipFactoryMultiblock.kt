@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
@@ -11,6 +12,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
+import net.horizonsend.ion.server.features.transport.TransportTask
 import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
@@ -186,7 +188,10 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 				val cacheResult = itemCacheHolder.globalNodeCacher.invoke(itemCacheHolder.cache, world, inputLoc) ?: return@associateWith arrayOf()
 				val node = cacheResult.second ?: return@associateWith arrayOf()
 
+				val task = TransportTask(inputLoc, world, {}, 1000, IonServer.slF4JLogger)
+
 				itemCacheHolder.cache.getNetworkDestinations(
+					task = task,
 					destinationTypeClass = ItemNode.ItemExtractorNode::class,
 					originPos = inputLoc,
 					originNode = node,

@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomItemComp
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.rightClickListener
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
+import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.NODE_TYPE
@@ -88,26 +89,29 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 			return
 		}
 
-		val destinations = cacheType.get(firstChunk).getNetworkDestinations(
-			destinationTypeClass = secondNode::class,
-			originPos = firstPoint,
-			originNode = firstNode,
-			retainFullPath = true,
-			debug = audience
-		)
+		NewTransport.runTask(firstPoint, world) {
+			val destinations = cacheType.get(firstChunk).getNetworkDestinations(
+				this,
+				destinationTypeClass = secondNode::class,
+				originPos = firstPoint,
+				originNode = firstNode,
+				retainFullPath = true,
+				debug = audience
+			)
 
-		val path = destinations.firstOrNull { it.destinationPosition == secondPoint }?.trackedPath
+			val path = destinations.firstOrNull { it.destinationPosition == secondPoint }?.trackedPath
 
-		if (path == null) {
-			audience.userError("There is no path between these points")
-			return
+			if (path == null) {
+				audience.userError("There is no path between these points")
+				return@runTask
+			}
+
+			path.forEach { audience.highlightBlock(toVec3i(it.first), 100L) }
+			audience.success("There are ${path.trackedNodes.size} nodes on the path between point 1 and 2.")
+			val nodeData = path.trackedNodes.groupBy { it.second::class }
+
+			audience.information(nodeData.entries.joinToString(separator = "\n") { (nodeType, nodes) -> "${nodeType.simpleName} : ${nodes.size}" })
 		}
-
-		path.forEach { audience.highlightBlock(toVec3i(it.first), 100L) }
-		audience.success("There are ${path.trackedNodes.size} nodes on the path between point 1 and 2.")
-		val nodeData = path.trackedNodes.groupBy { it.second::class }
-
-		audience.information(nodeData.entries.joinToString(separator = "\n") { (nodeType, nodes) -> "${nodeType.simpleName} : ${nodes.size}" })
 	}
 
 	private fun cycleNetworks(audience: Audience, world: World, itemStack: ItemStack) {

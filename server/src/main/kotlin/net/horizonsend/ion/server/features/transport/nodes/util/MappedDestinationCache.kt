@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.nodes.util
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
@@ -53,26 +54,28 @@ class MappedDestinationCache<K : Any>(parentCache: TransportCache) : Destination
 	}
 
 	override fun invalidatePaths(nodeType: KClass<out Node>, pos: BlockKey, node: Node) {
-		val toRemove = LongOpenHashSet()
+		NewTransport.runTask(pos, parentCache.holder.getWorld()) {
+			val toRemove = LongOpenHashSet()
 
-		if (contains(nodeType, pos)) {
-			toRemove.add(pos)
-		}
+			if (contains(nodeType, pos)) {
+				toRemove.add(pos)
+			}
 
-		// Perform a flood fill to find all network destinations, then remove all destination columns
-		parentCache.getNetworkDestinations(destinationTypeClass = parentCache.extractorNodeClass, originPos = pos, originNode = node, retainFullPath = true) {
-			debugAudience.highlightBlock(toVec3i(position), 5L)
-			// Traverse network backwards
-			getAllNeighbors(cache.holder.globalNodeLookup, null)
-		}.forEach { inputPos ->
-			toRemove.add(inputPos.destinationPosition)
-		}
+			// Perform a flood fill to find all network destinations, then remove all destination columns
+			parentCache.getNetworkDestinations(task = this, destinationTypeClass = parentCache.extractorNodeClass, originPos = pos, originNode = node, retainFullPath = true) {
+				debugAudience.highlightBlock(toVec3i(position), 5L)
+				// Traverse network backwards
+				getAllNeighbors(cache.holder.globalNodeLookup, null)
+			}.forEach { inputPos ->
+				toRemove.add(inputPos.destinationPosition)
+			}
 
-		// Remove all the paths after being found
-		for (removePos in toRemove.iterator()) {
-			val rawNodeCache = getCache(nodeType)
-			debugAudience.highlightBlock(toVec3i(removePos), 120L)
-			rawNodeCache.keys.forEach { key -> rawNodeCache[key]?.remove(removePos) }
+			// Remove all the paths after being found
+			for (removePos in toRemove.iterator()) {
+				val rawNodeCache = getCache(nodeType)
+				debugAudience.highlightBlock(toVec3i(removePos), 120L)
+				rawNodeCache.keys.forEach { key -> rawNodeCache[key]?.remove(removePos) }
+			}
 		}
 	}
 

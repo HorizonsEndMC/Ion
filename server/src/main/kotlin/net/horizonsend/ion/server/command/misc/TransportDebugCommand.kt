@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
+import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
 import net.horizonsend.ion.server.features.transport.nodes.cache.DestinationCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
@@ -271,7 +272,9 @@ object TransportDebugCommand : SLCommand() {
 		val grid = CacheType.ITEMS.get(chunk) as ItemTransportCache
 		if (grid.holder.getExtractorManager().isExtractorPresent(location)) fail { "Extractor not targeted" }
 
-		grid.handleExtractorTick(location, (grid.holder.getExtractorManager().getExtractorData(location) as? ItemExtractorData)?.metaData)
+		NewTransport.runTask(location, sender.world) {
+			grid.handleExtractorTick(this, location, (grid.holder.getExtractorManager().getExtractorData(location) as? ItemExtractorData)?.metaData)
+		}
 	}
 
 	@Subcommand("test flood")
@@ -280,8 +283,10 @@ object TransportDebugCommand : SLCommand() {
 		val (node, location) = requireLookingAt(sender) { type.get(it.chunk.ion()) }
 		val cache = type.get(sender.chunk.ion())
 
-		val destinations = cache.getNetworkDestinations<PowerInputNode>(location, node, retainFullPath = true)
-		sender.information("${destinations.size} destinations")
-		sender.highlightBlocks(destinations.map { toVec3i(it.destinationPosition) }, 50L)
+		NewTransport.runTask(location, sender.world) {
+			val destinations = cache.getNetworkDestinations<PowerInputNode>(this, location, node, retainFullPath = true)
+			sender.information("${destinations.size} destinations")
+			sender.highlightBlocks(destinations.map { toVec3i(it.destinationPosition) }, 50L)
+		}
 	}
 }

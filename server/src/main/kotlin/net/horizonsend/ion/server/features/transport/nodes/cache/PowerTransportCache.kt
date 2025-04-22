@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSett
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.NewTransport
+import net.horizonsend.ion.server.features.transport.TransportTask
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
@@ -35,42 +36,45 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 
 		if (solarTickRange.contains(index)) {
 			if (solarCache.isSolarPanel(location)) {
-				NewTransport.runTask {
-					tickSolarPanel(location, delta, solarCache)
+				NewTransport.runTask(location, holder.getWorld()) {
+					tickSolarPanel(this, location, delta, solarCache)
 				}
 			}
 		}
 
-		NewTransport.runTask {
-			tickPowerExtractor(location, delta)
+		NewTransport.runTask(location, holder.getWorld()) {
+			tickPowerExtractor(this, location, delta)
 		}
 	}
 
-	private fun tickPowerExtractor(location: BlockKey, delta: Double) {
+	private fun tickPowerExtractor(task: TransportTask, location: BlockKey, delta: Double) {
 		val sources = getExtractorSourceEntities<PoweredMultiblockEntity>(location) { it.powerStorage.isEmpty() } // Filter not
 		val source = sources.randomOrNull() ?: return //TODO take from all
 
 		runPowerTransfer(
-			rawDestinations = getTransferDestinations(location) ?: return,
+			task = task,
+			rawDestinations = getTransferDestinations(task, location) ?: return,
 			transferLimit = (transportSettings().powerConfiguration.powerTransferRate * delta).roundToInt(),
 			powerStorage = source.powerStorage
 		)
 	}
 
-	private fun tickSolarPanel(location: BlockKey, delta: Double, solarCache: SolarPanelCache) {
+	private fun tickSolarPanel(task: TransportTask, location: BlockKey, delta: Double, solarCache: SolarPanelCache) {
 		val transportPower = solarCache.getPower(holder.getWorld(), location, delta)
 		if (transportPower == 0) return
 
 		runPowerTransfer(
-			rawDestinations = getTransferDestinations(location) ?: return,
+			task = task,
+			rawDestinations = getTransferDestinations(task, location) ?: return,
 			transferLimit = transportPower,
 			powerStorage = null
 		)
 	}
 
-	private fun getTransferDestinations(extractorLocation: BlockKey): Array<PathfindResult>? {
+	private fun getTransferDestinations(task: TransportTask, extractorLocation: BlockKey): Array<PathfindResult>? {
 		// Flood fill on the network to find power inputs, and check input data for multiblocks using that input that can store any power
 		val destinations: Array<PathfindResult> = getOrCacheNetworkDestinations<PowerInputNode>(
+			task = task,
 			originPos = extractorLocation,
 			originNode = holder.getOrCacheGlobalNode(extractorLocation) ?: return null,
 			retainFullPath = false,
@@ -93,7 +97,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	/**
 	 * Runs the power transfer from the source to the destinations. pending rewrite
 	 **/
-	private fun runPowerTransfer(rawDestinations: Array<PathfindResult>, transferLimit: Int, powerStorage: PowerStorage?) {
+	private fun runPowerTransfer(task: TransportTask, rawDestinations: Array<PathfindResult>, transferLimit: Int, powerStorage: PowerStorage?) {
 		val numDestinations = rawDestinations.size
 
 		val removeAmount = minOf(
@@ -120,6 +124,8 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		var remainingPower = removeAmount - missing
 
 		for (destination in destinations) {
+			if (task.isInterrupted()) break
+
 			val inputEntities = getInputEntitiesTyped<PoweredMultiblockEntity>(destination.destinationPosition)
 
 			val remainingCapacity = inputEntities.sumOf { it.powerStorage.getRemainingCapacity() }

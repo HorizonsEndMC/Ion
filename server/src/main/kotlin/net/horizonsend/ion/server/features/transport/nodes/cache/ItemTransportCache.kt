@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.nodes.cache
 import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.transport.NewTransport
+import net.horizonsend.ion.server.features.transport.TransportTask
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.features.transport.items.util.ItemTransaction
 import net.horizonsend.ion.server.features.transport.items.util.getRemovableItems
@@ -47,12 +48,12 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		index: Int,
 		count: Int,
 	) {
-		NewTransport.runTask {
-			handleExtractorTick(location, metaData as? ItemExtractorMetaData)
+		NewTransport.runTask(location, holder.getWorld()) {
+			handleExtractorTick(this, location, metaData as? ItemExtractorMetaData)
 		}
 	}
 
-	fun handleExtractorTick(location: BlockKey, meta: ItemExtractorMetaData?) {
+	fun handleExtractorTick(task: TransportTask, location: BlockKey, meta: ItemExtractorMetaData?) {
 		val sources = getSources(location)
 		if (sources.isEmpty()) {
 			return
@@ -61,7 +62,11 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		val references = mutableMapOf<ItemStack, ArrayDeque<ItemReference>>()
 
 		for (inventory in sources) {
+			if (task.isInterrupted()) return
+
 			for ((index, item: ItemStack) in getRemovableItems(inventory)) {
+				if (task.isInterrupted()) return
+
 				references.getOrPut(item.asOne()) { ArrayDeque() }.add(ItemReference(inventory, index))
 			}
 		}
@@ -70,17 +75,23 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 		val destinationInvCache = mutableMapOf<BlockKey, CraftInventory>()
 
-		for ((item, itemReferences) in references) transferItemType(
-			location,
-			originNode,
-			meta,
-			item,
-			destinationInvCache,
-			itemReferences
-		)
+		for ((item, itemReferences) in references) {
+			if (task.isInterrupted()) return
+
+			transferItemType(
+				task,
+				location,
+				originNode,
+				meta,
+				item,
+				destinationInvCache,
+				itemReferences
+			)
+		}
 	}
 
 	private fun getTransferDestinations(
+		task: TransportTask,
 		extractorLocation: BlockKey,
 		extractorNode: Node,
 		singletonItem: ItemStack,
@@ -88,6 +99,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		availableItemReferences: ArrayDeque<ItemReference>
 	): Array<PathfindResult>? {
 		val destinations: Array<PathfindResult> = getOrCacheNetworkDestinations<ItemNode.InventoryNode>(
+			task = task,
 			originPos = extractorLocation,
 			originNode = extractorNode,
 			retainFullPath = false,
@@ -145,6 +157,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 	}
 
 	private fun transferItemType(
+		task: TransportTask,
 		originKey: BlockKey,
 		originNode: Node,
 		meta: ItemExtractorMetaData?,
@@ -153,6 +166,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		availableItemReferences: ArrayDeque<ItemReference>,
 	) {
 		val destinations: MutableList<PathfindResult> = getTransferDestinations(
+			task = task,
 			extractorLocation = originKey,
 			extractorNode = originNode,
 			singletonItem = singletonItem,
@@ -163,6 +177,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		val transaction = ItemTransaction()
 
 		val destinationInventories = getDestinations(
+			task,
 			singletonItem,
 			destinationInvCache,
 			destinations,
@@ -170,6 +185,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		)
 
 		for (reference in availableItemReferences) {
+			if (task.isInterrupted()) return
 			val room = getTransferSpaceFor(destinationInventories.values, singletonItem)
 			val amount = minOf(reference.get()?.amount ?: 0, room)
 
@@ -188,12 +204,14 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 		if (!transaction.isEmpty() && IonServer.isEnabled) {
 			Tasks.sync {
+				if (task.isInterrupted())
 				transaction.commit()
 			}
 		}
 	}
 
 	private fun getDestinations(
+		task: TransportTask,
 		singletonItem: ItemStack,
 		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
 		validDestinations: MutableList<PathfindResult>,
@@ -203,6 +221,8 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		val foundDestinationInventories = Object2ObjectRBTreeMap<PathfindResult, CraftInventory>()
 
 		for (n in validDestinations.indices) {
+			if (task.isInterrupted()) return Object2ObjectRBTreeMap<PathfindResult, CraftInventory>()
+
 			val destination: PathfindResult = getDestination(meta, validDestinations)
 			var destinationInventory = destinationInvCache[destination.destinationPosition]
 
