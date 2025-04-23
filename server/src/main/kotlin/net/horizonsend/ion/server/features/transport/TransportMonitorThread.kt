@@ -8,6 +8,7 @@ class TransportMonitorThread : Thread() {
 
 	init {
 	    isDaemon = true
+		name = "Transport Monitor Thread"
 	}
 
 	override fun run() {
