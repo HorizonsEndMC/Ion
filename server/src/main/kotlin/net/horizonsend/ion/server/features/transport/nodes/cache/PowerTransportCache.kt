@@ -25,15 +25,13 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		val solarCache = holder.transportManager.solarPanelManager.cache
 		val solarInterval = transportSettings().powerConfiguration.solarPanelTickInterval
 
-		val chunkLength = count / solarInterval
+		val chunkLength = count.toDouble() / solarInterval.toDouble()
 		val offset = holder.transportManager.tickNumber % solarInterval
 
-		val isLastChunk = offset == (solarInterval - 1)
+		val isLastChunk = (holder.transportManager.tickNumber + 1) % solarInterval < offset
 
-		val solarTickRange = IntRange(
-			offset * chunkLength,
-			if (!isLastChunk) (offset + 1) * chunkLength else count - 1
-		)
+		// Capture the remainder if it is the last chunk
+		val solarTickRange = (offset * chunkLength).toInt() ..< if (isLastChunk) Int.MAX_VALUE else ((offset + 1) * chunkLength).toInt()
 
 		if (solarTickRange.contains(index)) {
 			if (solarCache.isSolarPanel(location)) {
