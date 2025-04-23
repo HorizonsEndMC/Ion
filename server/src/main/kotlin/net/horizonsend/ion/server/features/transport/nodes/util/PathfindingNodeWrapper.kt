@@ -1,15 +1,33 @@
 package net.horizonsend.ion.server.features.transport.nodes.util
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
+import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.nodes.types.TrackedNode
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 
 /**
  * @param node The cached node at this position
  * @param parent The parent node
  **/
-class PathfindingNodeWrapper(val node: Node.NodePositionData, parent: PathfindingNodeWrapper?) : Comparable<PathfindingNodeWrapper> {
+class PathfindingNodeWrapper private constructor(val node: NodePositionData, parent: PathfindingNodeWrapper?, val interestingNodeLookup: ObjectOpenHashSet<Pair<BlockKey, Node>>) : Comparable<PathfindingNodeWrapper> {
+	init {
+	    if (node.type is TrackedNode) {
+			interestingNodeLookup.add(node.position to node.type)
+		}
+	}
+
+	companion object {
+		fun newPath(node: NodePositionData): PathfindingNodeWrapper {
+			return PathfindingNodeWrapper(node, null, ObjectOpenHashSet())
+		}
+
+		fun fromParent(node: NodePositionData, parent: PathfindingNodeWrapper): PathfindingNodeWrapper {
+			return PathfindingNodeWrapper(node, parent, parent.interestingNodeLookup)
+		}
+	}
+
 	private var depth: Int = (parent?.depth ?: 0) + 1
-	var interestingPath: Boolean = node.type is TrackedNode || (parent != null && parent.interestingPath)
 
 	var parent: PathfindingNodeWrapper? = parent
 		set(value) {
@@ -22,8 +40,8 @@ class PathfindingNodeWrapper(val node: Node.NodePositionData, parent: Pathfindin
 	 **/
 	fun buildPath(retainfull: Boolean): Path {
 		// No tracked nodes on path, no need to compute the whole thing if the full path isn't requested
-		if (!interestingPath && !retainfull) {
-			return Path(depth, arrayOf())
+		if (!retainfull) {
+			return Path(depth, interestingNodeLookup.toTypedArray())
 		}
 
 		val list = arrayListOf(this.node.position to this.node.type)
@@ -33,7 +51,7 @@ class PathfindingNodeWrapper(val node: Node.NodePositionData, parent: Pathfindin
 		while (current?.parent != null) {
 			current = current.parent!!
 
-			if (retainfull || current.node.type is TrackedNode) {
+			if (current.node.type is TrackedNode) {
 				list.add(current.node.position to current.node.type)
 			}
 		}

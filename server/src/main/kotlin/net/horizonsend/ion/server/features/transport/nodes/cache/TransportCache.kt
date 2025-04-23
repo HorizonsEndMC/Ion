@@ -225,16 +225,13 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 
 		// Populate array with original nodes
 		computeNextNodes(
-			current = PathfindingNodeWrapper(
-				node = NodePositionData(
+			current = PathfindingNodeWrapper.newPath(NodePositionData(
 					originNode,
 					holder.getWorld(),
 					originPos,
 					BlockFace.SELF,
 					this
-				),
-				parent = null
-			),
+			)),
 			nextNodeProvider = nextNodeProvider,
 			visitQueue = visitQueue,
 			visited = visited
@@ -291,7 +288,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		for (next in nextNodes) {
 			if (!canVisit(next)) continue
 
-			val wrapped = PathfindingNodeWrapper(
+			val wrapped = PathfindingNodeWrapper.fromParent(
 				node = next,
 				parent = current
 			)
