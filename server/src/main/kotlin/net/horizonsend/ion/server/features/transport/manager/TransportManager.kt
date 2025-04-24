@@ -55,6 +55,8 @@ abstract class TransportManager<T: CacheHolder<*>> {
 			}
 		}
 
+		solarPanelManager.cache.tickSolarPanels()
+
 		invalid.forEach(extractorManager::removeExtractor)
 	}
 

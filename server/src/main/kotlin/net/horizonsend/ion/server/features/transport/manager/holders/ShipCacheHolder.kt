@@ -15,11 +15,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.World
 import kotlin.properties.Delegates
 
-class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTransportManager) : CacheHolder<T> {
+class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTransportManager) : CacheHolder<T>(transportManager) {
 	override var cache: T by Delegates.notNull(); private set
 
 	constructor(manager: ShipTransportManager, network: (ShipCacheHolder<T>) -> T) : this(manager) {
@@ -94,5 +95,9 @@ class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTran
 
 	override fun getCacheHolderAt(key: BlockKey): CacheHolder<T> {
 		return this
+	}
+
+	override fun isLocal(key: BlockKey): Boolean {
+		return transportManager.starship.blocks.contains(toVec3i(key).toBlockKey())
 	}
 }

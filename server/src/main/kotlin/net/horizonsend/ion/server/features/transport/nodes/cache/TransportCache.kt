@@ -204,6 +204,8 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		val visitQueue = Long2ObjectRBTreeMap<PathfindingNodeWrapper>()
 		val visited = Long2IntOpenHashMap()
 
+		debug?.highlightBlock(toVec3i(originPos), 10L)
+
 		// Helper function for marking visited. Since some nodes need to be able to be traversed more than once,
 		// it stores a map of nodes to number of times visited.
 		fun markVisited(node: NodePositionData) {

@@ -37,6 +37,7 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 	override val tickedHolders: Array<ShipCacheHolder<*>> = arrayOf(
 		powerNodeManager,
 		itemPipeManager,
+		solarPanelManager,
 //		fluidNodeManager
 	)
 
@@ -91,5 +92,7 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 				network.cache.tickExtractor(extractor.pos, delta, (extractor as? AdvancedExtractorData<*>)?.metaData, index, extractorCount)
 			}
 		}
+
+		solarPanelManager.cache.tickSolarPanels()
 	}
 }

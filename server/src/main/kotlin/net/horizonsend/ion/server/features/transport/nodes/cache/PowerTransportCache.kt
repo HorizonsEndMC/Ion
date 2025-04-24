@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
 import net.horizonsend.ion.server.features.transport.nodes.util.MonoDestinationCache
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.util.CombinedSolarPanel
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass
@@ -23,24 +24,24 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	override val destinationCache = MonoDestinationCache(this)
 
 	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?, index: Int, count: Int) {
-		val solarCache = holder.transportManager.solarPanelManager.cache
-		val solarInterval = transportSettings().powerConfiguration.solarPanelTickInterval
-
-		val chunkLength = count.toDouble() / solarInterval.toDouble()
-		val offset = holder.transportManager.tickNumber % solarInterval
-
-		val isLastChunk = (holder.transportManager.tickNumber + 1) % solarInterval < offset
-
-		// Capture the remainder if it is the last chunk
-		val solarTickRange = (offset * chunkLength).toInt() ..< if (isLastChunk) Int.MAX_VALUE else ((offset + 1) * chunkLength).toInt()
-
-		if (solarTickRange.contains(index)) {
-			if (solarCache.isSolarPanel(location)) {
-				NewTransport.runTask(location, holder.getWorld()) {
-					tickSolarPanel(this, location, delta, solarCache)
-				}
-			}
-		}
+//		val solarCache = holder.transportManager.solarPanelManager.cache
+//		val solarInterval = transportSettings().powerConfiguration.solarPanelTickInterval
+//
+//		val chunkLength = count.toDouble() / solarInterval.toDouble()
+//		val offset = holder.transportManager.tickNumber % solarInterval
+//
+//		val isLastChunk = (holder.transportManager.tickNumber + 1) % solarInterval < offset
+//
+//		// Capture the remainder if it is the last chunk
+//		val solarTickRange = (offset * chunkLength).toInt() ..< if (isLastChunk) Int.MAX_VALUE else ((offset + 1) * chunkLength).toInt()
+//
+//		if (solarTickRange.contains(index)) {
+//			if (solarCache.isSolarPanel(location)) {
+//				NewTransport.runTask(location, holder.getWorld()) {
+//					tickSolarPanel(this, location, delta, solarCache)
+//				}
+//			}
+//		}
 
 		NewTransport.runTask(location, holder.getWorld()) {
 			tickPowerExtractor(this, location, delta)
@@ -60,7 +61,9 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	}
 
 	private fun tickSolarPanel(task: TransportTask, location: BlockKey, delta: Double, solarCache: SolarPanelCache) {
-		val transportPower = solarCache.getPower(holder.getWorld(), location, delta)
+		val transportPower = solarCache.getPower(location, delta)
+		if (solarCache.combinedSolarPanelPositions.containsKey(location)) return
+
 		if (transportPower == 0) return
 
 		runPowerTransfer(
@@ -69,6 +72,22 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 			transferLimit = transportPower,
 			powerStorage = null
 		)
+	}
+
+	fun tickCombinedSolarPanel(panel: CombinedSolarPanel, delta: Double) {
+		val startPosition = panel.extractorPositions.random()
+
+		NewTransport.runTask(startPosition, holder.getWorld()) {
+			val transportPower = panel.getPower(delta)
+			if (transportPower == 0) return@runTask
+
+			runPowerTransfer(
+				task = this,
+				rawDestinations = getTransferDestinations(this, location) ?: return@runTask,
+				transferLimit = transportPower,
+				powerStorage = null
+			)
+		}
 	}
 
 	private fun getTransferDestinations(task: TransportTask, extractorLocation: BlockKey): Array<PathfindResult>? {

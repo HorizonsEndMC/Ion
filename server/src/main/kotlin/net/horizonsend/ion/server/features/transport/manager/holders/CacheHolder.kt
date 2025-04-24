@@ -10,53 +10,54 @@ import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.World
 
-interface CacheHolder<T: TransportCache> {
-	val transportManager: TransportManager<*>
-	val cache: T
+abstract class CacheHolder<T: TransportCache>(open val transportManager: TransportManager<*>) {
+	abstract val cache: T
 
-	fun markReady() {
+	open fun markReady() {
 		cache.markReady()
 	}
 
-	fun getWorld(): World
+	abstract fun getWorld(): World
 
 	/**
 	 * Builds the transportNetwork
 	 *
 	 * Existing data will be loaded from the chunk's persistent data container, relations between nodes will be built, and any finalization will be performed
 	 **/
-	fun handleLoad() {}
+	open fun handleLoad() {}
 
 	/**
 	 * Logic for when the holder unloaded
 	 **/
-	fun handleUnload() {}
+	open fun handleUnload() {}
 
 	/**
 	 * Get a node inside this network
 	 **/
-	fun getInternalNode(key: BlockKey): Node?
+	abstract fun getInternalNode(key: BlockKey): Node?
 
 	/**
 	 * Method used to access nodes inside, and outside the network
 	 **/
-	fun getOrCacheGlobalNode(key: BlockKey): Node?
+	abstract fun getOrCacheGlobalNode(key: BlockKey): Node?
 
-	fun getMultiblockManager(): MultiblockManager
+	abstract fun getMultiblockManager(): MultiblockManager
 
-	fun getExtractorManager(): ExtractorManager
+	abstract fun getExtractorManager(): ExtractorManager
 
-	fun getFilterManager(): FilterCache
+	abstract fun getFilterManager(): FilterCache
 
-	fun getInputManager(): InputManager
+	abstract fun getInputManager(): InputManager
 
-	fun getCacheHolderAt(key: BlockKey): CacheHolder<T>?
+	abstract fun getCacheHolderAt(key: BlockKey): CacheHolder<T>?
 
 	/** Gets the node at the specified location, caches if needed */
-	val globalNodeCacher: CacheProvider
+	abstract val globalNodeCacher: CacheProvider
 
 	/** Gets the node at the specified location, does not cache */
-	val globalNodeLookup: CacheProvider
+	abstract val globalNodeLookup: CacheProvider
+
+	abstract fun isLocal(key: BlockKey): Boolean
 }
 
 /**

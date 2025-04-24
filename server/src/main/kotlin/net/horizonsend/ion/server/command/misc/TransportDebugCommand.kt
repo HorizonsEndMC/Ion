@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
 import net.horizonsend.ion.server.features.transport.nodes.cache.DestinationCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
@@ -287,6 +288,61 @@ object TransportDebugCommand : SLCommand() {
 			val destinations = cache.getNetworkDestinations<PowerInputNode>(this, location, node, retainFullPath = true)
 			sender.information("${destinations.size} destinations")
 			sender.highlightBlocks(destinations.map { toVec3i(it.destinationPosition) }, 50L)
+		}
+	}
+
+	@Subcommand("dump solars chunk")
+	fun dumpSolarsChunk(sender: Player) {
+		val ionChunk = sender.chunk.ion()
+		val grid = CacheType.SOLAR_PANELS.get(ionChunk) as SolarPanelCache
+
+		sender.information("Is ready: ${CacheType.SOLAR_PANELS.get(ionChunk).ready}")
+		sender.information("${grid.combinedSolarPanelPositions.keys.size} covered position(s).")
+		sender.information("${grid.combinedSolarPanels.size} unique panel(s).")
+
+		grid.combinedSolarPanelPositions.forEach { (t, _) ->
+			val vec = toVec3i(t)
+			sender.highlightBlock(vec, 50L)
+		}
+	}
+
+	@Subcommand("dump solars ship")
+	fun dumpSolarsShip(sender: Player) {
+		val ship = getStarshipRiding(sender)
+		val grid = CacheType.SOLAR_PANELS.get(ship) as SolarPanelCache
+
+		sender.information("Is ready: ${CacheType.SOLAR_PANELS.get(ship).ready}")
+		sender.information("${grid.combinedSolarPanelPositions.keys.size} covered position(s).")
+		sender.information("${grid.combinedSolarPanels.size} unique panel(s).")
+
+		grid.combinedSolarPanelPositions.forEach { (localKey, _) ->
+			val vec = ship.transportManager.getGlobalCoordinate(toVec3i(localKey))
+			sender.highlightBlock(vec, 50L)
+		}
+	}
+
+	@Subcommand("get solar look chunk")
+	fun getSolarChunk(sender: Player) {
+		val (node, location) = requireLookingAt(sender) { CacheType.SOLAR_PANELS.get(it.chunk.ion()) }
+		sender.information("Targeted node: $node at ${toVec3i(location)}")
+		val cache = CacheType.SOLAR_PANELS.get(sender.chunk.ion()) as SolarPanelCache
+		sender.information("${cache.combinedSolarPanelPositions[location]}")
+		sender.information("${cache.combinedSolarPanelPositions[location]?.getPositions()?.size} covered position(s).")
+		cache.combinedSolarPanelPositions[location]?.getPositions()?.forEach {
+			sender.highlightBlock(toVec3i(it), 50L)
+		}
+	}
+
+	@Subcommand("get solar look ship")
+	fun getSolarShip(sender: Player) {
+		val ship = getStarshipRiding(sender)
+		val (node, location) = requireLookingAt(sender) { CacheType.SOLAR_PANELS.get(ship) }
+		sender.information("Targeted node: $node at ${toVec3i(location)}")
+		val cache = CacheType.SOLAR_PANELS.get(ship) as SolarPanelCache
+		sender.information("${cache.combinedSolarPanelPositions[location]}")
+		sender.information("${cache.combinedSolarPanelPositions[location]?.getPositions()?.size} covered position(s).")
+		cache.combinedSolarPanelPositions[location]?.getPositions()?.forEach {
+			sender.highlightBlock(toVec3i(it), 50L)
 		}
 	}
 }

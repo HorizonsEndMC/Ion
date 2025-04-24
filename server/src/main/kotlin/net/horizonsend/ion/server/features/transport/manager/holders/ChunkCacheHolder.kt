@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import org.bukkit.World
 import kotlin.properties.Delegates
 
-class ChunkCacheHolder<T: TransportCache> private constructor (override val transportManager: ChunkTransportManager) : CacheHolder<T> {
+class ChunkCacheHolder<T: TransportCache> private constructor (override val transportManager: ChunkTransportManager) : CacheHolder<T>(transportManager) {
 	override var cache: T by Delegates.notNull(); private set
 
 	constructor(manager: ChunkTransportManager, network: (ChunkCacheHolder<T>) -> T) : this(manager) {
@@ -102,5 +102,12 @@ class ChunkCacheHolder<T: TransportCache> private constructor (override val tran
 			(cache.type.get(chunk) as? DestinationCacheHolder)?.destinationCache?.clear()
 		}
 		super.markReady()
+	}
+
+	override fun isLocal(key: BlockKey): Boolean {
+		val keyChunkX = getX(key).shr(4)
+		if (keyChunkX != this.transportManager.chunk.x) return false
+		val keyChunkZ = getZ(key).shr(4)
+		return keyChunkZ == this.transportManager.chunk.z
 	}
 }

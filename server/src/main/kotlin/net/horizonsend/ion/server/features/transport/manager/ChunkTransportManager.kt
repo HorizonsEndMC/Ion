@@ -34,6 +34,7 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHo
 	override val tickedHolders: Array<ChunkCacheHolder<*>> = arrayOf(
 		powerNodeManager,
 		itemPipeManager,
+		solarPanelManager,
 //		fluidNodeManager
 	)
 

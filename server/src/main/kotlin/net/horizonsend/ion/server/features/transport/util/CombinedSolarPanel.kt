@@ -1,17 +1,36 @@
 package net.horizonsend.ion.server.features.transport.util
 
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
-import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import java.util.concurrent.ConcurrentHashMap
 
-class CombinedSolarPanel(val originCache: SolarPanelCache, origin: BlockKey) {
-	private var extractorPositions = ConcurrentHashMap.newKeySet<BlockKey>().apply { add(origin) }
+class CombinedSolarPanel(private val originCache: SolarPanelCache, origin: BlockKey) {
+	var origin: BlockKey = origin; private set
+	val extractorPositions: ConcurrentHashMap.KeySetView<BlockKey, Boolean> = ConcurrentHashMap.newKeySet()
 
-	fun tick() {
+	init {
+	    addPosition(origin)
+	}
 
+	private var lastTicked = System.currentTimeMillis()
+
+	private fun getDelta(time: Long): Double {
+		val diff = time - lastTicked
+		return (diff.toDouble() / ConfigurationFiles.transportSettings().extractorConfiguration.extractorTickIntervalMS.toDouble())
+	}
+
+	fun markTicked(): Double {
+		val now = System.currentTimeMillis()
+		val delta = getDelta(now)
+		lastTicked = now
+		return delta
+	}
+
+	fun tick(delta: Double) {
+		if (extractorPositions.isEmpty()) return
+
+		return originCache.powerCache.tickCombinedSolarPanel(this, delta)
 	}
 
 	/**
@@ -19,53 +38,54 @@ class CombinedSolarPanel(val originCache: SolarPanelCache, origin: BlockKey) {
 	 *
 	 * Returns false if there are no positions remaining
 	 **/
-	fun verifyIntegrity(): Boolean {
-		gatherExtractorPositions()
-		return !extractorPositions.isEmpty()
-	}
-
-	private fun gatherExtractorPositions() {
-		// Start with current positions
-		val visitQueue = ArrayDeque<BlockKey>(extractorPositions)
-		val visited = LongOpenHashSet()
-
-		val foundPositions = ConcurrentHashMap.newKeySet<BlockKey>()
-
-		var iterations = 0L
-		val upperBound = 20_000
-
-		while (visitQueue.isNotEmpty() && iterations < upperBound) {
-			iterations++
-			val current = visitQueue.removeFirst()
-			visited.add(current)
-
-			if (originCache.isSolarPanel(current)) {
-				foundPositions.add(current)
-			}
-
-			val toVisit = CARDINAL_BLOCK_FACES.mapNotNull {
-				val relativeKey = getRelative(current, it)
-				if (visitQueue.contains(relativeKey)) return@mapNotNull null
-
-				relativeKey
-			}
-
-			visitQueue.addAll(toVisit)
+	fun verifyIntegrity() {
+		if (extractorPositions.isEmpty()) {
+			originCache.combinedSolarPanels.remove(this)
+			return
 		}
 
-		extractorPositions = foundPositions
+		@Suppress("UNCHECKED_CAST")
+		(extractorPositions.toArray() as Array<BlockKey>).forEach(::verifyPosition)
+
+		return
 	}
 
-	private fun removePositions() {
+	fun verifyPosition(blockKey: BlockKey) {
+		if (!extractorPositions.contains(blockKey)) return
+		if (originCache.isSolarPanel(blockKey)) return
 
+		originCache.combinedSolarPanelPositions.remove(blockKey)
+		extractorPositions.remove(blockKey)
+
+		if (extractorPositions.isEmpty()) {
+			originCache.combinedSolarPanels.remove(this)
+			return
+		}
+
+		if (blockKey == origin) {
+			origin = extractorPositions.random()
+		}
+	}
+
+	fun addPosition(position: BlockKey) {
+		originCache.combinedSolarPanelPositions[origin] = this
+		originCache.combinedSolarPanels.add(this)
+		extractorPositions.add(position)
+	}
+
+	fun addPositions(positions: Collection<BlockKey>) {
+		extractorPositions.addAll(positions)
+
+		originCache.combinedSolarPanels.add(this)
+
+		for (position in positions) {
+			originCache.combinedSolarPanelPositions[position] = this
+		}
 	}
 
 	fun getPositions(): Set<BlockKey> = extractorPositions
-	
-	companion object {
-		fun new(cache: SolarPanelCache, extractorPosition: BlockKey) {
-			val new = CombinedSolarPanel(cache, extractorPosition)
-			new.verifyIntegrity()
-		}
+
+	fun getPower(delta: Double): Int {
+		return extractorPositions.sumOf { originCache.getPower(it, delta) }
 	}
 }

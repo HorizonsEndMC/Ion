@@ -1,24 +1,37 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.transport.TransportTask
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
+import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
+import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.util.CacheType
+import net.horizonsend.ion.server.features.transport.util.CombinedSolarPanel
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.DaylightDetector
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass
 
 class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(holder) {
+	val combinedSolarPanels = ConcurrentHashMap.newKeySet<CombinedSolarPanel>()
+	val combinedSolarPanelPositions = ConcurrentHashMap<BlockKey, CombinedSolarPanel>()
+
 	override val type: CacheType = CacheType.SOLAR_PANELS
     override val extractorNodeClass: KClass<out Node> = PowerNode.PowerExtractorNode::class
+
+	val powerCache = holder.transportManager.powerNodeManager.cache
 
 	sealed interface SolarPanelComponent: Node {
 		data object CraftingTable: SolarPanelComponent
@@ -40,10 +53,10 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 		return true
 	}
 
-	fun getPower(world: World, extractPos: BlockKey, delta: Double): Int {
+	fun getPower(extractPos: BlockKey, delta: Double): Int {
 		val detectorPosition = holder.transportManager.getGlobalCoordinate(toVec3i(getRelative(extractPos, BlockFace.UP, 2)))
-		val powerMultiplier = if (world.environment == World.Environment.NORMAL) 1.0 else 0.5
-		val data = getBlockDataSafe(world, detectorPosition.x, detectorPosition.y, detectorPosition.z) as? DaylightDetector ?: return 0
+		val powerMultiplier = if (holder.getWorld().environment == World.Environment.NORMAL) 1.0 else 0.5
+		val data = getBlockDataSafe(holder.getWorld(), detectorPosition.x, detectorPosition.y, detectorPosition.z) as? DaylightDetector ?: return 0
 		val powerRatio = data.power.toDouble() / data.maximumPower.toDouble()
 
 		val powerConfig = ConfigurationFiles.transportSettings().powerConfiguration
@@ -51,5 +64,58 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 		return (base * powerRatio * powerMultiplier).roundToInt()
 	}
 
-	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?, index: Int, count: Int) {  }
+	fun tickSolarPanels() {
+		for ((index, combinedPanel) in combinedSolarPanels.withIndex()) {
+			val delta = combinedPanel.markTicked()
+			combinedPanel.tick(delta)
+		}
+	}
+
+	override fun tickExtractor(location: BlockKey, delta: Double, metaData: ExtractorMetaData?, index: Int, count: Int) {
+		if (combinedSolarPanelPositions.containsKey(location)) {
+			return
+		}
+
+		val extractors = getSolarPanelExtractors(location).map { it.destinationPosition }
+		extractors.forEach { debugAudience.highlightBlock(toVec3i(it), 50L) }
+		val panel = CombinedSolarPanel(this, location)
+		panel.addPositions(extractors)
+	}
+
+	fun getSolarPanelExtractors(origin: BlockKey): Array<PathfindResult> {
+		return powerCache.getNetworkDestinations(
+			TransportTask(origin, holder.getWorld(), {}, 1000, IonServer.slF4JLogger),
+			PowerNode.PowerExtractorNode::class,
+			origin,
+			PowerNode.PowerExtractorNode,
+			false,
+			destinationCheck = { isSolarPanel(it.position) },
+			nextNodeProvider = { combinedSolarPanelProvider(this) }
+		)
+	}
+
+	private val simplePowerNodes = setOf(PowerNode.SpongeNode::class, PowerNode.EndRodNode::class, PowerNode.PowerExtractorNode::class)
+
+	private fun combinedSolarPanelProvider(node: NodePositionData): List<NodePositionData> {
+		val adjacent = node.type.getTransferableDirections(node.offset.oppositeFace)
+		val nodes = mutableListOf<NodePositionData>()
+
+		for (adjacentFace in adjacent) {
+			val relativePos = getRelative(node.position, adjacentFace)
+			if (!holder.isLocal(relativePos)) continue
+
+			val cached = powerCache.getOrCache(relativePos) ?: continue
+			if (!simplePowerNodes.contains(cached::class)) continue
+
+			nodes.add(NodePositionData(
+				type = cached,
+				world = holder.getWorld(),
+				position = relativePos,
+				offset = adjacentFace,
+				cache = this
+			))
+		}
+
+		return nodes
+	}
 }
