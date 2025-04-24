@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSettings
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.transport.TransportTask
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
@@ -71,9 +72,22 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 	}
 
 	fun tickSolarPanels() {
+		val count = combinedSolarPanels.size
+		val solarInterval = transportSettings().powerConfiguration.solarPanelTickInterval
+
+		val chunkLength = count.toDouble() / solarInterval.toDouble()
+		val offset = holder.transportManager.tickNumber % solarInterval
+
+		val isLastChunk = (holder.transportManager.tickNumber + 1) % solarInterval < offset
+
+		// Capture the remainder if it is the last chunk
+		val solarTickRange = (offset * chunkLength).toInt() ..< if (isLastChunk) Int.MAX_VALUE else ((offset + 1) * chunkLength).toInt()
+
 		for ((index, combinedPanel) in combinedSolarPanels.withIndex()) {
-			val delta = combinedPanel.markTicked()
-			combinedPanel.tick(delta)
+			if (solarTickRange.contains(index)) {
+				val delta = combinedPanel.markTicked()
+				combinedPanel.tick(delta)
+			}
 		}
 	}
 
