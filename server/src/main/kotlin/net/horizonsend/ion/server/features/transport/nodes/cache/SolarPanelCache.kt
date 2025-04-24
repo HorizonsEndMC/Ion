@@ -67,7 +67,7 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 		val powerRatio = data.power.toDouble() / data.maximumPower.toDouble()
 
 		val powerConfig = ConfigurationFiles.transportSettings().powerConfiguration
-		val base = powerConfig.solarPanelTickPower * delta * powerConfig.solarPanelTickInterval
+		val base = powerConfig.solarPanelTickPower * delta
 		return (base * powerRatio * powerMultiplier).roundToInt()
 	}
 
