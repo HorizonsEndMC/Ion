@@ -45,7 +45,7 @@ class CombinedSolarPanel(private val originCache: SolarPanelCache, origin: Block
 		}
 
 		@Suppress("UNCHECKED_CAST")
-		(extractorPositions.toArray() as Array<BlockKey>).forEach(::verifyPosition)
+		extractorPositions.toArray(arrayOfNulls<BlockKey>(0) as Array<BlockKey>).forEach(::verifyPosition)
 
 		return
 	}
@@ -68,7 +68,7 @@ class CombinedSolarPanel(private val originCache: SolarPanelCache, origin: Block
 	}
 
 	fun addPosition(position: BlockKey) {
-		originCache.combinedSolarPanelPositions[origin] = this
+		originCache.combinedSolarPanelPositions[position] = this
 		originCache.combinedSolarPanels.add(this)
 		extractorPositions.add(position)
 	}
@@ -81,6 +81,20 @@ class CombinedSolarPanel(private val originCache: SolarPanelCache, origin: Block
 		for (position in positions) {
 			originCache.combinedSolarPanelPositions[position] = this
 		}
+	}
+
+	fun removePosition(blockKey: BlockKey) {
+		originCache.combinedSolarPanelPositions.remove(blockKey)
+		extractorPositions.remove(blockKey)
+
+		verifyIntegrity()
+	}
+
+	fun removePositions(positions: Set<BlockKey>) {
+		extractorPositions.removeAll(positions.toSet())
+		positions.forEach(originCache.combinedSolarPanelPositions::remove)
+
+		verifyIntegrity()
 	}
 
 	fun getPositions(): Set<BlockKey> = extractorPositions

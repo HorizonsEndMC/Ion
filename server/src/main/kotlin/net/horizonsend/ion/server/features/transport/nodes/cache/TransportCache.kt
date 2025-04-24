@@ -88,7 +88,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 
 	abstract val extractorNodeClass: KClass<out Node>
 
-	fun invalidate(key: BlockKey) {
+	open fun invalidate(key: BlockKey) {
 		val removed = (nodeCache.remove(key) as? CacheState.Present)?.node
 		removed?.onInvalidate()
 

@@ -33,6 +33,12 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 
 	val powerCache = holder.transportManager.powerNodeManager.cache
 
+	override fun invalidate(key: BlockKey) {
+		combinedSolarPanelPositions[key]?.removePosition(key)
+
+		super.invalidate(key)
+	}
+
 	sealed interface SolarPanelComponent: Node {
 		data object CraftingTable: SolarPanelComponent
 		data object DiamondBlock: SolarPanelComponent
@@ -82,14 +88,14 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 		panel.addPositions(extractors)
 	}
 
-	fun getSolarPanelExtractors(origin: BlockKey): Array<PathfindResult> {
+	private fun getSolarPanelExtractors(origin: BlockKey): Array<PathfindResult> {
 		return powerCache.getNetworkDestinations(
 			TransportTask(origin, holder.getWorld(), {}, 1000, IonServer.slF4JLogger),
 			PowerNode.PowerExtractorNode::class,
 			origin,
 			PowerNode.PowerExtractorNode,
 			false,
-			destinationCheck = { isSolarPanel(it.position) },
+			destinationCheck = { !combinedSolarPanelPositions.containsKey(it.position) && isSolarPanel(it.position) },
 			nextNodeProvider = { combinedSolarPanelProvider(this) }
 		)
 	}
@@ -106,6 +112,7 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 
 			val cached = powerCache.getOrCache(relativePos) ?: continue
 			if (!simplePowerNodes.contains(cached::class)) continue
+			if (node.type is PowerNode.PowerExtractorNode && cached is PowerNode.PowerExtractorNode) continue
 
 			nodes.add(NodePositionData(
 				type = cached,

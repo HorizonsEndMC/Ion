@@ -11,12 +11,14 @@ class TransportMonitorThread : Thread() {
 		name = "Transport Monitor Thread"
 	}
 
+	val iterator = NewTransport.executingPool.iterator()
+
 	override fun run() {
 		while (NewTransport.enabled) {
 			if (isInterrupted) break
 
 			try {
-				for (task in NewTransport.executingPool) {
+				for (task in iterator) {
 					if (task.isFinished()) continue
 					if (task.isTimedOut()) {
 						logger.warn("Cancelled probably stuck transport task [${task.getExecutionTime()}ms] at ${toVec3i(task.location)}, in ${task.world.name}")
