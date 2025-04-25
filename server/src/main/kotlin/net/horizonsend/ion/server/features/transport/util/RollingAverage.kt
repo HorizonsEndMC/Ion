@@ -15,8 +15,11 @@ class RollingAverage {
 	// Use array deque as a stack
 	private val averages = ConcurrentLinkedDeque<TransferredPower>()
 
-	@Synchronized
 	fun addEntry(amount: Int) {
+		averages.addLast(TransferredPower(amount))
+	}
+
+	fun trimExpired() {
 		val now = System.nanoTime()
 
 		val iterator = averages.iterator()
@@ -26,11 +29,11 @@ class RollingAverage {
 			if (age < DURATION_STORED_AVERAGES) break
 			iterator.remove()
 		}
-
-		averages.addLast(TransferredPower(amount))
 	}
 
 	fun getAverage(): Double {
+		trimExpired()
+
 		if (averages.isEmpty()) {
 			return 0.0
 		}
