@@ -105,7 +105,6 @@ sealed interface PowerNode : Node {
 
 		override fun handlerGetWorld(): World = world
 
-		private var lastRefreshed = 0L
 		private val rollingAverage = RollingAverage()
 
 		override var isAlive: Boolean = true
@@ -122,12 +121,8 @@ sealed interface PowerNode : Node {
 			.register()
 
         fun onCompleteChain(transferred: Int) {
-			// Push onto queue
 			rollingAverage.addEntry(transferred)
-			if (System.currentTimeMillis() - lastRefreshed > 1000) {
-				lastRefreshed = System.currentTimeMillis()
-				displayHandler.update()
-			}
+			displayHandler.update()
         }
 
         fun formatFlow(): Component {
