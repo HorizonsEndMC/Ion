@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.util
 
-import java.util.concurrent.LinkedBlockingDeque
+import java.util.concurrent.ConcurrentLinkedDeque
 import java.util.concurrent.TimeUnit
 
 class RollingAverage {
@@ -13,7 +13,7 @@ class RollingAverage {
 	}
 
 	// Use array deque as a stack
-	private val averages = LinkedBlockingDeque<TransferredPower>()
+	private val averages = ConcurrentLinkedDeque<TransferredPower>()
 
 	@Synchronized
 	fun addEntry(amount: Int) {
