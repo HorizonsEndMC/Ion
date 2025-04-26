@@ -10,7 +10,6 @@ import org.bukkit.block.data.type.Observer
 class LandingGearSubsystem(starship: ActiveStarship, pos: Vec3i) : StarshipSubsystem(starship, pos) {
 	fun setExtended(extended: Boolean) {
 		val (x, y, z) = pos
-		println("Retracting $x $y $z")
 
 		val observer = starship.world.getBlockAt(x, y, z)
 		if (observer.type != Material.OBSERVER) return
