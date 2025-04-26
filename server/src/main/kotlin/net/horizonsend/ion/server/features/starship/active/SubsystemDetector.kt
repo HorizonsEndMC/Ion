@@ -272,7 +272,7 @@ object SubsystemDetector {
 		}
 	}
 
-	fun detectLandingGear(starship: ActiveControlledStarship, block: Block) {
+	private fun detectLandingGear(starship: ActiveControlledStarship, block: Block) {
 		val matches = LandingGearMultiblock.blockMatchesStructure(block, NORTH)
 
 		if (!matches) return
