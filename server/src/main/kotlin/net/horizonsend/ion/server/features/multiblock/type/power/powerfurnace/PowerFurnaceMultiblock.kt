@@ -140,7 +140,8 @@ abstract class PowerFurnaceMultiblock(tierText: String) : Multiblock(), EntityMu
 			powerStorage.removePower(30)
 			sleepWithStatus(text("Working...", GREEN), multiblock.burnTime)
 
-			setBurningForTicks(multiblock.burnTime)
+			// Extra 25 because scheduling is usually a bit behind, causes a bit of lost time otherwise
+			setBurningForTicks(multiblock.burnTime + 25)
 		}
 
 		override fun loadFromSign(sign: Sign) {
