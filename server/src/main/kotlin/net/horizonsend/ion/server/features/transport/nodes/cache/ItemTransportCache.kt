@@ -204,7 +204,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 		if (!transaction.isEmpty() && IonServer.isEnabled) {
 			Tasks.sync {
-				if (task.isInterrupted())
+				if (task.isInterrupted()) return@sync
 				transaction.commit()
 			}
 		}

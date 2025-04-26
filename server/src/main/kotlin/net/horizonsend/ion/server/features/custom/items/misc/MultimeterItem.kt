@@ -107,7 +107,7 @@ object MultimeterItem : CustomItem("MULTIMETER", Component.text("Multimeter", Na
 			}
 
 			path.forEach { audience.highlightBlock(toVec3i(it.first), 100L) }
-			audience.success("There are ${path.trackedNodes.size} nodes on the path between point 1 and 2.")
+			audience.success("There are ${path.length} nodes on the path between point 1 and 2.")
 			val nodeData = path.trackedNodes.groupBy { it.second::class }
 
 			audience.information(nodeData.entries.joinToString(separator = "\n") { (nodeType, nodes) -> "${nodeType.simpleName} : ${nodes.size}" })

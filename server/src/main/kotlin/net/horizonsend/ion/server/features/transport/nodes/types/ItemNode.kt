@@ -60,7 +60,6 @@ interface ItemNode : Node {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = channelCheck(other)
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = channelCheck(other)
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
-
     }
 
 	data class PaneGlassNode(override val channel: PipeChannel) : ItemNode, ChanneledItemNode {
