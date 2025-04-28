@@ -101,6 +101,11 @@ interface ItemNode : Node {
 			}
 		}
 
+		override fun filterPositionDataBackwards(previousNodes: List<NodePositionData>, backwards: BlockFace): List<NodePositionData> {
+			return previousNodes.filter { node ->
+				backwards == direction || node.type is InventoryNode
+			}
+		}
     }
 
 	sealed interface FilterNode : ItemNode, FilterManagedNode {

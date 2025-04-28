@@ -76,10 +76,17 @@ interface Node {
 			val (cache, cached) = cacheResult
 			if (cached == null) continue
 
-			if (!cached.canTransferTo(this, adjacentFace.oppositeFace) || !canTransferFrom(cached, adjacentFace.oppositeFace)) continue
-			if (filter != null && !filter.invoke(cached, adjacentFace.oppositeFace)) continue
+			if (!cached.canTransferTo(this, adjacentFace.oppositeFace) || !canTransferFrom(cached, adjacentFace.oppositeFace)) {
+				continue
+			}
 
-			if (cached.filterPositionData(nextNodes = listOf(positionData), backwards = adjacentFace.oppositeFace).isEmpty()) continue
+			if (filter != null && !filter.invoke(cached, adjacentFace.oppositeFace)) {
+				continue
+			}
+
+			if (cached.filterPositionDataBackwards(previousNodes = listOf(positionData), backwards = adjacentFace.oppositeFace).isEmpty()) {
+				continue
+			}
 
 			nodes.add(NodePositionData(
 				type = cached,
@@ -90,7 +97,7 @@ interface Node {
 			))
 		}
 
-		return filterPositionDataBackwards(nodes, backwards)
+		return nodes
 	}
 
 	/**
