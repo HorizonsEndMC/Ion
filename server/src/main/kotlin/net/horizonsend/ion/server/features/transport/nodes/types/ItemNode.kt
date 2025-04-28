@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.features.transport.nodes.types.Node.Companion.
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.kyori.adventure.text.Component
@@ -137,7 +136,7 @@ interface ItemNode : Node {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = other !is ItemExtractorNode  && other !is FilterNode
 
 		override fun matches(itemStack: ItemStack): Boolean {
-			val inventory = cache.getInventory(toBlockKey(globalPosition)) ?: return false
+			val inventory = cache.getInventory(localKey = localPosition) ?: return false
 			val filterData = getItemData(inventory)
 
 			val itemData = createFilterItemData(itemStack)
@@ -169,7 +168,7 @@ interface ItemNode : Node {
 		}
 
 		override fun toString(): String {
-			return getItemData(cache.getInventory(toBlockKey(globalPosition))!!).toString()
+			return getItemData(cache.getInventory(localKey = localPosition)!!).toString()
 		}
 	}
 
