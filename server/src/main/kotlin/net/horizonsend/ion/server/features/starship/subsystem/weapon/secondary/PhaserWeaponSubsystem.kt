@@ -60,9 +60,8 @@ class PhaserWeaponSubsystem(
 
 		Tasks.syncDelay(20 * WARM_UP_TIME_SECONDS.toLong()) {
             		val newFirePos = getFirePos()
-            		DoomsdayDeviceProjectile(starship, getName(), newFirePos.toLocation(loc.world), dir, shooter).fire()
 			fixDirections(loc)
-			PhaserProjectile(starship, getName(), loc, dir, shooter).fire()
+			PhaserProjectile(starship, getName(), newFirePos.toLocation(loc.world), dir, shooter).fire()
         	}
 	}
 
