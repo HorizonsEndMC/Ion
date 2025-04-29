@@ -27,6 +27,11 @@ class PhaserWeaponSubsystem(
 ) : CannonWeaponSubsystem(starship, pos, face),
 	HeavyWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem {
+
+	companion object {
+        	private const val WARM_UP_TIME_SECONDS = 0.5
+    	}
+		
 	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.phaser
 	override val length: Int = balancing.length
 	override val convergeDist: Double = balancing.convergeDistance
@@ -43,9 +48,22 @@ class PhaserWeaponSubsystem(
 				starship.userError("You can't fire phasers on a ship larger than 12000 blocks!")
 				return
 		}
+		var tick = 0
+		runnable {
 
-		fixDirections(loc)
-		PhaserProjectile(starship, getName(), loc, dir, shooter).fire()
+			if (tick > (WARM_UP_TIME_SECONDS * 20 / 5)) cancel()
+
+			val newFirePos = getFirePos()
+
+			tick += 1
+		}.runTaskTimer(IonServer, 0L, 5L)
+
+		Tasks.syncDelay(20 * WARM_UP_TIME_SECONDS.toLong()) {
+            		val newFirePos = getFirePos()
+            		DoomsdayDeviceProjectile(starship, getName(), newFirePos.toLocation(loc.world), dir, shooter).fire()
+			fixDirections(loc)
+			PhaserProjectile(starship, getName(), loc, dir, shooter).fire()
+        	}
 	}
 
 	private fun fixDirections(loc: Location) {
