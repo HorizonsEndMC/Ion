@@ -4,9 +4,9 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemContainerContents
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
-import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.loadFromData
@@ -60,6 +60,7 @@ import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.persistence.PersistentDataType.STRING
+import org.bukkit.util.Vector
 
 object PrePackaged : SLEventListener() {
 	fun getOriginFromPlacement(clickedBlock: Block, direction: BlockFace, shape: MultiblockShape): Block {
@@ -300,7 +301,7 @@ object PrePackaged : SLEventListener() {
 		var structureDirection = sign.getFacing().oppositeFace
 		val structureOrigin = multiblockType.getOriginBlock(sign)
 
-		if (multiblockType is TurretMultiblock) {
+		if (multiblockType is TurretMultiblock<*>) {
 			val newFace = multiblockType.getFacingSafe(sign)
 			if (newFace == null) {
 				player.userError("Turret not intact!")
@@ -311,7 +312,7 @@ object PrePackaged : SLEventListener() {
 		}
 
 		// Structure already checked to get the face if turret
-		if (multiblockType !is TurretMultiblock && !multiblockType.shape.checkRequirements(structureOrigin, structureDirection, false)) {
+		if (multiblockType !is TurretMultiblock<*> && !multiblockType.shape.checkRequirements(structureOrigin, structureDirection, false)) {
 			player.userError("Structure not intact!")
 			return
 		}
