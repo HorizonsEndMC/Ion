@@ -4,6 +4,7 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.common.database.StarshipTypeDB
+import net.horizonsend.ion.common.utils.NavigationObject
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ServerConfiguration.AsteroidConfig.Palette
 import net.horizonsend.ion.server.configuration.util.Pos
@@ -176,14 +177,14 @@ data class ServerConfiguration(
 
 	@Serializable
 	data class HyperspaceBeacon(
-		val name: String,
+		override val name: String,
 		val radius: Double,
 		val spaceLocation: Pos,
 		val destination: Pos,
 		val destinationName: String? = null,
 		val exits: ArrayList<Pos>? = null,
 		val prompt: String? = null
-	)
+	) : NavigationObject
 
 	/**
 	 * @param cooldown in ms

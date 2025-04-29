@@ -79,16 +79,17 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 
 		event.player.anvilInputText(
 			prompt = "What is your name?".toComponent(),
-			inputValidator = InputValidator { ValidatorResult.SuccessResult }
-		) { response ->
+			inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it, it) }
+		) { _, (response, _) ->
 			if (response != event.player.name) return@anvilInputText fail()
 		}
 
 		if (failed) return
 
-		event.player.anvilInputText(prompt = "What is your quest?".toComponent(), inputValidator = InputValidator { ValidatorResult.SuccessResult }) { _ ->
-			null
-		}
+		event.player.anvilInputText(
+			prompt = "What is your quest?".toComponent(),
+			inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it, it) }
+		) { _, _ -> }
 
 		var promptNation: NationCache.NationData? = null
 		val (id, prompt) = when (Random(System.currentTimeMillis()).nextInt(0, 2)) {
@@ -103,7 +104,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 			else -> 0 to "What is your favorite color?"
 		}
 
-		event.player.anvilInputText(prompt.toComponent(), inputValidator = InputValidator { ValidatorResult.SuccessResult }) { answer ->
+		event.player.anvilInputText(prompt.toComponent(), inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it, it) }) { _, (answer, _) ->
 			when (id) {
 				2 ->
 					if (answer.contains("august", true) || answer.contains("2021", true)) return@anvilInputText

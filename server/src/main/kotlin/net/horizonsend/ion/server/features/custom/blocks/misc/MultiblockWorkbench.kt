@@ -4,6 +4,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.MULTIBLOCK_WORKBENCH
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
@@ -13,17 +14,16 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.searchEntires
 import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.PrePackaged.checkRequirements
 import net.horizonsend.ion.server.features.multiblock.PrePackaged.createPackagedItem
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDescription
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getIcon
-import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
@@ -109,7 +109,7 @@ object MultiblockWorkbench : CustomBlock(
 			}
 
 			addGuiButton(SEARCH_BUTTON_SLOT, ItemStack(Material.NAME_TAG).updateDisplayName(text("Search"))) {
-				openSearchMenu(it.playerClicker)
+				openSearchMenu()
 			}
 
 			addGuiButton(CONFIRM_BUTTON_SLOT, ItemStack(Material.BARRIER)) {
@@ -235,51 +235,43 @@ object MultiblockWorkbench : CustomBlock(
 			addOrDropItems(location)
 		}
 
-		private fun openSearchMenu(player: Player) {
+		private fun openSearchMenu() {
 			isSearching = true
 
-			TextInputMenu(
-				player,
-				text("Search by Multiblock Name"),
-				text("Top result is selected"),
+			viewer.searchEntires(
+				entries = MultiblockRegistration.getAllMultiblocks(),
+				searchTermProvider = { getSearchTerms(it) },
+				prompt = text("Search by Multiblock Name"),
+				description = text("Top result is selected"),
 				backButtonHandler = {
 					this.open()
 					isSearching = false
 				},
-				inputValidator = { input ->
-					isSearching = true // Double check to make sure this is set whenever something is typed
-					val searchResults = getSearchResults(input)
-
-					if (searchResults.isNotEmpty()) ValidatorResult.ResultsResult(searchResults.map { text(it.javaClass.simpleName, GRAY).itemName })
-						else ValidatorResult.FailureResult(text("No multiblocks found!", RED))
-				},
-				successfulInputHandler = {
-					runCatching {
-						val multiblock = getSearchResults(it).firstOrNull() ?: return@TextInputMenu
-						multiblockIndex = multiblocks.indexOf(multiblock)
-						player.closeInventory()
-						open()
-						refreshButtons()
-
-						isSearching = false
-					}
-				}
-			).open()
+				itemTransformer = { it.getIcon() },
+				componentTransformer = { it.getDisplayName() },
+				handler = { _, multiblock -> setMultiblock(multiblock) }
+			)
 		}
 
-		private fun getSearchResults(input: String): List<Multiblock> {
-			val detectionNames = MultiblockRegistration.byDetectionName.keys()
-				.filter { detectionName -> input.split(' ').all { splitInput -> detectionName.contains(splitInput, ignoreCase = true) } }
-				.mapNotNull(MultiblockRegistration::getByStorageName)
+		private fun setMultiblock(multiblock: Multiblock) {
+			runCatching {
+				multiblockIndex = multiblocks.indexOf(multiblock)
+				viewer.closeInventory()
+				open()
+				refreshButtons()
 
-			val classNames = MultiblockRegistration.getAllMultiblocks().map { it.javaClass.simpleName }
-				.filter { className -> input.split(' ').all { splitInput -> className.contains(splitInput, ignoreCase = true) } }
-				.mapNotNull(MultiblockRegistration::getByStorageName)
+				isSearching = false
+			}
+		}
 
-			return detectionNames
-				.plus(classNames)
-				.distinct()
-				.filter { if (it.requiredPermission != null) viewer.hasPermission(it.requiredPermission!!) else true }
+		private fun getSearchTerms(multiblock: Multiblock): List<String> {
+			val terms = mutableListOf(multiblock.javaClass.simpleName, multiblock.name)
+
+			if (multiblock is DisplayNameMultilblock) {
+				terms.add(multiblock.displayName.plainText())
+			}
+
+			return terms
 		}
 	}
 }

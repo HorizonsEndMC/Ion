@@ -36,3 +36,26 @@ fun String.isAlphanumeric(includeSpaces: Boolean = false): Boolean {
 
 fun String.subStringBetween(start: Char, end: Char) = substringAfter(start).substringBefore(end)
 fun String.subStringBetween(start: String, end: String) = substringAfter(start).substringBefore(end)
+
+fun <T> searchEntriesSingleTerm(textInput: String, entries: Collection<T>, stringProvieder: (T) -> String): List<T> =
+	searchEntriesMultipleTerms(textInput, entries) { entry: T -> listOf(stringProvieder(entry)) }
+
+fun <T> searchEntriesMultipleTerms(textInput: String, entries: Collection<T>, searchTermProvider: (T) -> Collection<String>): List<T> {
+	val split = textInput.split(' ')
+
+	val searchMap = mutableMapOf<String, MutableList<T>>()
+
+	for (entry in entries) {
+		val searchTerms = searchTermProvider.invoke(entry)
+
+		for (term in searchTerms) {
+			searchMap.getOrPut(term) { mutableListOf() }.add(entry)
+		}
+	}
+
+	val matchingKeys = searchMap.keys.filter { searchKey ->
+		split.all { splitInput -> searchKey.contains(splitInput, ignoreCase = true) }
+	}
+
+	return matchingKeys.flatMap { searchMap.getOrDefault(it, mutableListOf()) }.distinct()
+}

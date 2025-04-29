@@ -124,8 +124,13 @@ object GuiItems {
     }
 
     class EmptyItem : SimpleItem(ItemStack(Material.AIR))
+    class EmptyControlItem <T: Gui> : ControlItem<T>() {
+		val provider = ItemProvider { ItemStack(Material.AIR) }
+		override fun getItemProvider(gui: T): ItemProvider =provider
+		override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {}
+	}
 
-    class BlankButton(val item: Item, val lore: List<Component> = listOf()) : ControlItem<Gui>() {
+	class BlankButton(val item: Item, val lore: List<Component> = listOf()) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
             return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).apply {
 				setData(DataComponentTypes.ITEM_MODEL, GuiItem.EMPTY.modelKey)
@@ -161,6 +166,21 @@ object GuiItems {
     fun closeMenuItem(player: Player) = CustomControlItem(text("Close Menu").decoration(TextDecoration.ITALIC, false), GuiItem.CANCEL) {
             _: ClickType, _: Player, _: InventoryClickEvent -> player.closeInventory()
     }
+
+	fun <T: Gui> ControlItem<T>.wrapClick(clickHandler: (ClickType, Player, InventoryClickEvent) -> Unit): ControlItem<T> {
+		val original = this
+
+		return object : ControlItem<T>() {
+			override fun handleClick(p0: ClickType, p1: Player, p2: InventoryClickEvent) {
+				clickHandler.invoke(p0, p1, p2)
+				return original.handleClick(p0, p1, p2)
+			}
+
+			override fun getItemProvider(gui: T): ItemProvider {
+				return original.getItemProvider(gui)
+			}
+		}
+	}
 }
 
 enum class GuiItem(val modelKey: Key) : ItemProvider {

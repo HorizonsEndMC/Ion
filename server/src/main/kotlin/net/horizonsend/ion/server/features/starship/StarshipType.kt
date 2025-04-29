@@ -756,6 +756,8 @@ enum class StarshipType(
 		balancingSupplier = ConfigurationFiles.starshipBalancing()::eventShipBalancing
 	);
 
+	val textColor = TextColor.fromHexString(color)!!
+
 	val displayNameMiniMessage: String get() = "<$color>$displayName</$color>"
 	val displayNameComponent: Component get() = text(displayName, TextColor.fromHexString(color))
 

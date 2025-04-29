@@ -202,12 +202,12 @@ object ShipmentManager : IonServerComponent() {
 				val amount = result.toIntOrNull() ?: return@InputValidator ValidatorResult.FailureResult(text("Amount must be an integer"))
 				if (amount !in min..max) return@InputValidator ValidatorResult.FailureResult(text("Amount must be between $min and $max"))
 
-				ValidatorResult.SuccessResult
+				ValidatorResult.ValidatorSuccessSingleEntry(result, amount)
 			},
-		) { answer ->
-			val amount = answer.toIntOrNull() ?: return@anvilInputText
+		) { _, (_, result) ->
+			if (result !is ValidatorResult.ValidatorSuccessSingleEntry) return@anvilInputText
 
-			giveShipment(player, shipment, amount)
+			giveShipment(player, shipment, result.result)
 			return@anvilInputText
 		}
 	}
