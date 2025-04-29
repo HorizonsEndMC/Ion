@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.movement
 
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.server.core.registration.IonRegistries
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.movement.TranslationAccessor.RotationTranslation
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
@@ -36,7 +37,7 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 		return if (customBlock == null) {
 			blockState.rotate(nmsRotation)
 		} else {
-			CustomBlocks.getRotated(customBlock, blockState, nmsRotation)
+			CustomBlockRegistry.getRotated(customBlock, blockState, nmsRotation)
 		}
 	}
 
