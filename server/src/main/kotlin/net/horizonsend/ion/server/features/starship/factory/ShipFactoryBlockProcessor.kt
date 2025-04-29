@@ -4,7 +4,8 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectSortedMaps
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.core.registration.IonRegistries
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -122,9 +123,9 @@ abstract class ShipFactoryBlockProcessor(
 
 	protected fun getRotatedBlockData(data: BlockData): BlockState {
 		val nms = data.nms
-		val customBlock = CustomBlocks.getByBlockState(nms)
+		val customBlock = IonRegistries.CUSTOM_BLOCKS[nms]
 		if (customBlock != null) {
-			return CustomBlocks.getRotated(customBlock, nms, getNMSRotation())
+			return CustomBlockRegistry.getRotated(customBlock, nms, getNMSRotation())
 		}
 
 		val rotation = getNMSRotation()

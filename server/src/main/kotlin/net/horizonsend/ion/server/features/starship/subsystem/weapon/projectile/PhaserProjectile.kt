@@ -8,6 +8,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.iterateVector
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lightning
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
@@ -35,7 +37,7 @@ class PhaserProjectile(
 	private val maxOffset = 0.5
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
-		val origin = Location(loc.world, x, y, z)
+		val origin = Location(location.world, x, y, z)
 
 		origin.spherePoints(0.25, 3).forEach {
 			it.world.spawnParticle(
@@ -103,7 +105,12 @@ class PhaserProjectile(
 	}
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		playCustomSound(impactLocation, "minecraft:entity.firework_rocket.twinkle", 12, 0.5f)
+		playCustomSound(impactLocation, Sound.sound(
+			Key.key("minecraft:entity.firework_rocket.twinkle"),
+			Sound.Source.PLAYER,
+			12f,
+			0.5f
+		))
 	}
 
 	override fun playCustomSound(loc: Location, soundName: String, chunkRange: Int, pitch: Float) { /* Do nothing */ }

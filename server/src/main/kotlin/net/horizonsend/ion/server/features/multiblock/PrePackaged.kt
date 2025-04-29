@@ -60,6 +60,7 @@ import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.persistence.PersistentDataType.STRING
+import org.bukkit.util.Vector
 
 object PrePackaged : SLEventListener() {
 	fun getOriginFromPlacement(clickedBlock: Block, direction: BlockFace, shape: MultiblockShape): Block {
@@ -300,7 +301,7 @@ object PrePackaged : SLEventListener() {
 		var structureDirection = sign.getFacing().oppositeFace
 		val structureOrigin = multiblockType.getOriginBlock(sign)
 
-		if (multiblockType is TurretMultiblock) {
+		if (multiblockType is TurretMultiblock<*>) {
 			val newFace = multiblockType.getFacingSafe(sign)
 			if (newFace == null) {
 				player.userError("Turret not intact!")
@@ -311,7 +312,7 @@ object PrePackaged : SLEventListener() {
 		}
 
 		// Structure already checked to get the face if turret
-		if (multiblockType !is TurretMultiblock && !multiblockType.shape.checkRequirements(structureOrigin, structureDirection, false)) {
+		if (multiblockType !is TurretMultiblock<*> && !multiblockType.shape.checkRequirements(structureOrigin, structureDirection, false)) {
 			player.userError("Structure not intact!")
 			return
 		}
