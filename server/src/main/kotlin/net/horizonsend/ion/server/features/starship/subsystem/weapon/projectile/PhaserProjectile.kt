@@ -34,9 +34,6 @@ class PhaserProjectile(
 	override val pitch: Float = balancing.pitch
 	override val soundName: String = balancing.soundName
 
-	private val speedUpTime = TimeUnit.MILLISECONDS.toNanos(500L)
-	private val speedUpSpeed = 1000.0
-
 	private val blueParticleData = Particle.DustTransition(
 		Color.fromARGB(255, 0, 255, 255),
 		Color.WHITE,
@@ -45,14 +42,6 @@ class PhaserProjectile(
 
 	private val generations = 3
 	private val maxOffset = 0.5
-
-	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
-		super.moveVisually(oldLocation, newLocation, travel)
-
-		if (System.nanoTime() - this.firedAtNanos > this.speedUpTime) {
-			this.speed = this.speedUpSpeed
-		}
-	}
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		val origin = Location(loc.world, x, y, z)
