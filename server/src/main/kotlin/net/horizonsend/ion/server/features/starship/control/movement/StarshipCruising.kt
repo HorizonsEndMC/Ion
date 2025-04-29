@@ -28,7 +28,6 @@ import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
-import net.horizonsend.ion.server.miscellaneous.utils.getValue
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
@@ -247,7 +246,7 @@ object StarshipCruising : IonServerComponent() {
 					if (tick >= length) cancel()
 					if (length != 0) {
 						val startCruiseSound =
-							starship.data.starshipType.actualType.balancingSupplier.get().sounds.startCruise.sound
+							starship.data.starshipType.actualType.balancing.standardSounds.startCruise.sound
 						playSoundInRadius(passenger.location, 1.0, startCruiseSound)
 						tick += 1
 					} else cancel()
@@ -295,7 +294,7 @@ object StarshipCruising : IonServerComponent() {
 					if (tick >= length) cancel()
 					if (length != 0) {
 						val stopCruiseSound =
-							starship.data.starshipType.actualType.balancingSupplier.get().sounds.stopCruise.sound
+							starship.data.starshipType.actualType.balancing.standardSounds.stopCruise.sound
 						playSoundInRadius(passenger.location, 1.0, stopCruiseSound)
 						tick += 1
 					} else cancel()

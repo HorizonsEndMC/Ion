@@ -136,7 +136,7 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 			.addDataHandler<Vault>(CustomBlockKeys.ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(
 				toBlockKey(holder.transportManager.getLocalCoordinate(toVec3i(key))),
 				holder.cache as ItemTransportCache,
-				ITEM_FILTER.getFace(data)
+				CustomBlockKeys.ITEM_FILTER.getValue().getFace(data)
 			) }
 			.addDataHandler<Hopper>(HOPPER) { data, key, holder -> ItemNode.HopperFilterNode(
 				toBlockKey(holder.transportManager.getLocalCoordinate(toVec3i(key))),

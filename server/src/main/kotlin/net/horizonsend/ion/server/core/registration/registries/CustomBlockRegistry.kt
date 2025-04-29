@@ -15,8 +15,10 @@ import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.MultiblockWorkbench
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
 import org.bukkit.block.Block
@@ -245,7 +247,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		customBlocksData[value.blockData.nms] = value
 
 		if (value is DirectionalCustomBlock) {
-			for ((data, face) in value.faceLookup) {
+			for ((data, face) in value.bukkitFaceLookup) {
 				directionalCustomBlocksData[data.nms, value] = face
 				customBlocksData[data.nms] = value
 			}
@@ -283,6 +285,17 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 itemStack.amount = amount
                 listOf(itemStack)
             }
+		}
+
+		fun getRotated(customBlock: CustomBlock, blockState: BlockState, rotation: Rotation): BlockState {
+			return when (customBlock) {
+				is DirectionalCustomBlock -> {
+					val face = customBlock.getFace(blockState)
+					val newFace = rotateBlockFace(face, rotation)
+					customBlock.faceData[newFace]!!.nms
+				}
+				else -> blockState
+			}
 		}
 	}
 }
