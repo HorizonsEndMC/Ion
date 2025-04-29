@@ -1120,7 +1120,7 @@ class StarshipWeapons(
 
 		val phaser: StarshipWeapon = StarshipWeapon(
 				range = 140.0,
-				speed = 1.0,
+				speed = 1000.0,
 				areaShieldDamageMultiplier = 5.0,
 				starshipShieldDamageMultiplier = 55.0,
 				particleThickness = 0.0,
