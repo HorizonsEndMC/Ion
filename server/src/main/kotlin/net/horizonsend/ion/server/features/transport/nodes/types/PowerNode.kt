@@ -6,6 +6,8 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.FlowMeterDisplayModule
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManager
+import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.Companion.adjacentMinusBackwards
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.util.CacheType
@@ -98,7 +100,7 @@ sealed interface PowerNode : Node {
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = other !is EndRodNode && mergeNodeTransferCheck(other)
 	}
 
-    data class PowerFlowMeter(var face: BlockFace, var world: World, var location: BlockKey) : PowerNode, ComplexNode, DisplayHandlerHolder, TrackedNode {
+    data class PowerFlowMeter(var face: BlockFace, var world: World, val manager: TransportManager<*>, var location: BlockKey) : PowerNode, ComplexNode, DisplayHandlerHolder, TrackedNode {
 		override fun canTransferFrom(other: Node, offset: BlockFace): Boolean = true
 		override fun canTransferTo(other: Node, offset: BlockFace): Boolean = true
 		override fun getTransferableDirections(backwards: BlockFace): Set<BlockFace> = adjacentMinusBackwards(backwards)
@@ -115,13 +117,16 @@ sealed interface PowerNode : Node {
 			{ FlowMeterDisplayModule(it, this, 0.0, 0.0, 0.0, 0.7f) }
 		)
 			.addKeepAlive {
-				val chunk = world.ion.getChunk(getX(location).shr(4), getZ(location).shr(4)) ?: return@addKeepAlive false
-				chunk.transportNetwork.powerNodeManager.cache.getCached(location) === this
+				if (manager is ChunkTransportManager) {
+					val chunk = world.ion.getChunk(getX(location).shr(4), getZ(location).shr(4)) ?: return@addKeepAlive false
+					chunk.transportNetwork.powerNodeManager.cache.getCached(location) === this
+				} else true
 			}
 			.register()
 
         fun onCompleteChain(transferred: Int) {
 			rollingAverage.addEntry(transferred)
+
 			displayHandler.update()
         }
 

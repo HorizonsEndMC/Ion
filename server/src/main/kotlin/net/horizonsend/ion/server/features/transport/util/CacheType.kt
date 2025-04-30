@@ -63,7 +63,7 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 			.addSimpleNode(REDSTONE_BLOCK, PowerNode.RedstoneMergeNode)
 			.addSimpleNode(IRON_BLOCK, PowerNode.IronMergeNode)
 			.addSimpleNode(LAPIS_BLOCK, PowerNode.InvertedMergeNode)
-			.addDataHandler<Observer>(OBSERVER) { data, loc, holder -> PowerFlowMeter(data.facing, holder.getWorld(), loc) }
+			.addDataHandler<Observer>(OBSERVER) { data, loc, holder -> PowerFlowMeter(data.facing, holder.getWorld(), holder.transportManager, loc) }
 			.addSimpleNode(NOTE_BLOCK, PowerInputNode)
 			.build()
 
