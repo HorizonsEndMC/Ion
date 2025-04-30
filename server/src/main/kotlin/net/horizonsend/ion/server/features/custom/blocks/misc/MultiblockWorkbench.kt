@@ -77,7 +77,7 @@ object MultiblockWorkbench : CustomBlock(
 	private fun openMenu(player: Player, location: Location) {
 		val inv = MultiblockWorkbenchMenu(player, location)
 		InteractableGUI.setInventory(player.uniqueId, inv)
-		inv.open()
+		inv.openGui()
 	}
 
 	class MultiblockWorkbenchMenu(viewer: Player, val location: Location): InteractableGUI(viewer) {
@@ -244,7 +244,7 @@ object MultiblockWorkbench : CustomBlock(
 				prompt = text("Search by Multiblock Name"),
 				description = text("Top result is selected"),
 				backButtonHandler = {
-					this.open()
+					this.openGui()
 					isSearching = false
 				},
 				itemTransformer = { it.getIcon() },
@@ -257,7 +257,7 @@ object MultiblockWorkbench : CustomBlock(
 			runCatching {
 				multiblockIndex = multiblocks.indexOf(multiblock)
 				viewer.closeInventory()
-				open()
+				openGui()
 				refreshButtons()
 
 				isSearching = false
