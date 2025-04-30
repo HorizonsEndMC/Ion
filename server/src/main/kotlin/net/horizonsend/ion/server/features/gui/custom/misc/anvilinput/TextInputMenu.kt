@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.gui.custom.misc.ItemMenu
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.CollectionSearchValidator
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
+import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
@@ -27,7 +28,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
-import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
@@ -78,7 +78,7 @@ class TextInputMenu<T : Any>(
 
 		val window = AnvilWindow.single()
 			.setViewer(player)
-			.setTitle(AdventureComponentWrapper(text))
+			.setTitle(text)
 			.setGui(gui)
 			.addRenameHandler { string ->
 				currentInput = string

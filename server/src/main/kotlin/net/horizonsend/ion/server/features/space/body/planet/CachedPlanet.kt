@@ -36,6 +36,8 @@ abstract class CachedPlanet(
 ) : CelestialBody(spaceWorldName, location), NamedCelestialBody, EnterableCelestialBody {
 	companion object {
 		const val CRUST_RADIUS_MAX = 180
+
+		val DEFAULT_ITEM_FACTORY = ItemFactory.unStackableCustomItem("planet/chandra_2")
 	}
 
 	val planetIconFactory = ItemFactory.unStackableCustomItem("planet/${name.lowercase().replace(' ', '_')}_2")
