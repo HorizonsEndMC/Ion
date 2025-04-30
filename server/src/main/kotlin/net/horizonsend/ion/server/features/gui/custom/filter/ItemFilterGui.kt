@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.transport.filters.FilterMethod
 import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
+import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.block.TileState
@@ -19,7 +20,6 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
-import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
@@ -65,7 +65,7 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack, 
 		val window = Window
 			.single()
 			.setGui(gui)
-			.setTitle(AdventureComponentWrapper(getSlotOverlay()))
+			.setTitle(getSlotOverlay())
 			.build(viewer)
 
 		currentWindow = window.apply { open() }
