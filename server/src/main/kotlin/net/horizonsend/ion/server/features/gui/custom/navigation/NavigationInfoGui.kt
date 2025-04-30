@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.gui.invui.InvUIWrapper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.entity.Player
@@ -16,12 +17,12 @@ import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
 
 class NavigationInfoGui(
-    val player: Player,
-    private val name: String,
-    private val icon: GuiItem,
-    private val oreComponent: Component? = null,
-    private val backButtonHandler: () -> Unit
-) {
+	override val viewer: Player,
+	private val name: String,
+	private val icon: GuiItem,
+	private val oreComponent: Component? = null,
+	private val backButtonHandler: () -> Unit
+) : InvUIWrapper {
 
     private var currentWindow: Window? = null
 
@@ -40,7 +41,7 @@ class NavigationInfoGui(
         gui.addIngredient('v', GuiItems.CustomControlItem(Component.text("Return To Galactic Menu").decoration(TextDecoration.ITALIC, false), GuiItem.DOWN) {
             _: ClickType, _: Player, _: InventoryClickEvent -> backButtonHandler.invoke()
         })
-            .addIngredient('x', GuiItems.closeMenuItem(player))
+            .addIngredient('x', GuiItems.closeMenuItem(viewer))
             .addIngredient('o', GuiItems.CustomControlItem(Component.text(name).decoration(TextDecoration.ITALIC, false), icon))
 
         return gui.build()
@@ -62,19 +63,17 @@ class NavigationInfoGui(
         return guiText.build()
     }
 
-    fun openMainWindow() {
-        val gui = createGui()
+	override fun buildWindow(): Window {
+		val gui = createGui()
 
-        val window = Window.single()
-            .setViewer(player)
-            .setGui(gui)
-            .setTitle(AdventureComponentWrapper(createText()))
-            .build()
+		return Window.single()
+			.setViewer(viewer)
+			.setGui(gui)
+			.setTitle(AdventureComponentWrapper(createText()))
+			.build()
+	}
 
-        currentWindow = window.apply { open() }
-    }
-
-    private val navigationInfoMap = mapOf(
+	private val navigationInfoMap = mapOf(
         "Asteri" to Component.text("Asteri is an M-type star with five planets.").decoration(TextDecoration.ITALIC, false),
         "Regulus" to Component.text("Regulus is an A-type star with four planets.").decoration(TextDecoration.ITALIC, false),
         "Ilios" to Component.text("Ilios is a G-type star with four planets.").decoration(TextDecoration.ITALIC, false),

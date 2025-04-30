@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.gui.interactable
 
 import io.papermc.paper.adventure.PaperAdventure
-import net.horizonsend.ion.server.features.gui.GuiWrapper
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
@@ -25,7 +25,7 @@ import org.bukkit.inventory.ItemStack
 import java.util.UUID
 import java.util.function.Consumer
 
-abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder, GuiWrapper {
+abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder, CommonGuiWrapper {
 	protected abstract val internalInventory: Inventory
 	abstract val inventorySize: Int
 
@@ -37,7 +37,7 @@ abstract class InteractableGUI(protected val viewer: Player) : InventoryHolder, 
 	protected val noDropSlots: MutableSet<Int> = mutableSetOf()
 	protected val lockedSlots: MutableSet<Int> = mutableSetOf()
 
-	override fun open() {
+	override fun openGui() {
 		// Will return CRAFTING if none is open
 		if (viewer.openInventory.type != InventoryType.CRAFTING && viewer.openInventory.type != InventoryType.CREATIVE) return
 

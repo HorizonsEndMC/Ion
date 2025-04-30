@@ -7,9 +7,9 @@ import net.horizonsend.ion.server.command.starship.BlueprintCommand.blueprintInf
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.GuiWrapper
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -30,10 +30,10 @@ import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.SimpleItem
 import xyz.xenondevs.invui.window.Window
 
-class BlueprintMenu(val player: Player, private val backButton: Item? = null, val consumer: (Blueprint, Player) -> Unit) : GuiWrapper {
+class BlueprintMenu(val player: Player, private val backButton: Item? = null, val consumer: (Blueprint, Player) -> Unit) : CommonGuiWrapper {
 	private val slPlayerId: SLPlayerId = player.slPlayerId
 
-	override fun open() {
+	override fun openGui() {
 		Tasks.async {
 			val blueprints: List<Blueprint> = Blueprint
 				.find(Blueprint::owner eq slPlayerId)
@@ -83,5 +83,4 @@ class BlueprintMenu(val player: Player, private val backButton: Item? = null, va
 			}
 		}
 	}
-
 }

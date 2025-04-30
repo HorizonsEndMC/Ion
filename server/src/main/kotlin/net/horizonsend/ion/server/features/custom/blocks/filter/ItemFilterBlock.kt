@@ -7,12 +7,12 @@ import net.horizonsend.ion.server.features.custom.blocks.filter.CustomFilterBloc
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
-import net.horizonsend.ion.server.features.gui.GuiWrapper
 import net.horizonsend.ion.server.features.gui.custom.filter.ItemFilterGui
 import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta.ItemFilterMeta
 import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -84,7 +84,7 @@ object ItemFilterBlock : DirectionalCustomBlock(
 		block: Block,
 		filterData: FilterData<ItemStack, ItemFilterMeta>,
 		tileState: Supplier<TileState>
-	): GuiWrapper {
+	): CommonGuiWrapper {
 		return ItemFilterGui(player, filterData, tileState)
 	}
 
@@ -128,7 +128,7 @@ object ItemFilterBlock : DirectionalCustomBlock(
 			Tasks.sync {
 				val gui = getGui(event.player, block, filterData) { block.state as TileState }
 
-				gui.open()
+				gui.openGui()
 			}
 		}
 	}
