@@ -15,7 +15,7 @@ import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
-class PersonalTransporterGui(val player: Player) : AbstractBackgroundPagedGui {
+class PersonalTransporterGui(override val viewer: Player) : AbstractBackgroundPagedGui {
 
     companion object {
         private const val SETTINGS_PER_PAGE = 5
@@ -47,7 +47,7 @@ class PersonalTransporterGui(val player: Player) : AbstractBackgroundPagedGui {
 
         for (otherPlayer in playerList) {
             val button = GuiItems.PlayerHeadItem(otherPlayer.uniqueId, otherPlayer.name) {
-                PersonalTransporterManager.addTpRequest(player, otherPlayer)
+                PersonalTransporterManager.addTpRequest(viewer, otherPlayer)
             }
             gui.addContent(button)
 
@@ -97,9 +97,5 @@ class PersonalTransporterGui(val player: Player) : AbstractBackgroundPagedGui {
         )
 
         return guiText.build()
-    }
-
-    fun openMainWindow() {
-        currentWindow = buildWindow(player).apply { open() }
     }
 }

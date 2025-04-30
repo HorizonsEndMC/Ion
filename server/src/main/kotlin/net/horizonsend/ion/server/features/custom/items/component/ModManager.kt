@@ -77,7 +77,7 @@ class ModManager(val maxMods: Int) : CustomItemComponent, LoreManager {
 	}
 
 	fun openMenu(player: Player, customItem: CustomItem, item: ItemStack) {
-		net.horizonsend.ion.server.features.custom.items.type.tool.mods.ToolModMenu.create(player, item, customItem, this).open()
+		net.horizonsend.ion.server.features.custom.items.type.tool.mods.ToolModMenu.create(player, item, customItem, this).openGui()
 	}
 
 	companion object ModList : PersistentDataType<ByteArray, Array<ItemModification>> {

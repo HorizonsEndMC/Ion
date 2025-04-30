@@ -25,9 +25,9 @@ object NavigationCommand : SLCommand() {
 			Space.getPlanet(currentWorld)?.spaceWorld
 		} else currentWorld
 		if (foundWorld != null) {
-			NavigationSystemMapGui(player, foundWorld).openMainWindow()
+			NavigationSystemMapGui(player, foundWorld).openGui()
 		} else {
-			NavigationGalacticMapGui(player).openMainWindow()
+			NavigationGalacticMapGui(player).openGui()
 		}
 	}
 }
