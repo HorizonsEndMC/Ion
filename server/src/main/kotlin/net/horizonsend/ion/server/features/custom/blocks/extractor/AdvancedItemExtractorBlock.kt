@@ -5,12 +5,12 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.GuiWrapper
 import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI.Companion.setTitle
 import net.horizonsend.ion.server.features.transport.items.SortingOrder
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
+import net.horizonsend.ion.server.gui.invui.InvUIWrapper
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDataContainer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -52,7 +52,7 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 	}
 
 	override fun openGUI(player: Player, block: Block, extractorData: ItemExtractorData) {
-		AdvancedItemExtractorGUI(player, block, extractorData).open()
+		AdvancedItemExtractorGUI(player, block, extractorData).openGui()
 	}
 
 	override fun placeCallback(placedItem: ItemStack, block: Block) {
@@ -65,8 +65,8 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 		state.update()
 	}
 
-	class AdvancedItemExtractorGUI(val viewer: Player, val block: Block, val extractorData: ItemExtractorData) : GuiWrapper {
-		override fun open() {
+	class AdvancedItemExtractorGUI(override val viewer: Player, val block: Block, private val extractorData: ItemExtractorData) : InvUIWrapper {
+		override fun buildWindow(): Window {
 			val gui = Gui.normal()
 				.setStructure(
 					"u u u u u u u u u",
@@ -76,12 +76,11 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 				.addIngredient('u', getTraverseButton(1))
 				.addIngredient('d', getTraverseButton(-1))
 
-			Window
+			return Window
 				.single()
 				.setGui(gui)
 				.setTitle(AdventureComponentWrapper(getSlotOverlay()))
 				.build(viewer)
-				.open()
 		}
 
 		fun getOffset(offset: Int): SortingOrder {

@@ -12,6 +12,6 @@ object SettingsCommand : SLCommand() {
     @Default
     @Suppress("unused")
     fun onSettings(sender: Player) {
-        SettingsMainMenuGui(sender).openMainWindow()
+        SettingsMainMenuGui(sender).openGui()
     }
 }
