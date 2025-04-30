@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
@@ -22,7 +21,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.B
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.FORWARD
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -172,7 +170,6 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 			return extractors.flatMapTo(mutableSetOf()) { (_, destinations) ->
 
 				destinations.flatMap { pathResult: PathfindResult ->
-					userManager.getUserPlayer()?.highlightBlock(toVec3i(pathResult.destinationPosition), 150L)
 					itemCache.getSources(pathResult.destinationPosition).map {
 						InventoryReference.RemoteInventoryReference(it, itemCache.holder, pathResult.trackedPath, this)
 					}

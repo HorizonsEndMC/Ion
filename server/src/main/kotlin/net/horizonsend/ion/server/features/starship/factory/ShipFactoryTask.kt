@@ -310,7 +310,7 @@ class ShipFactoryTask(
 		for (inventoryReference in inventories) {
 			for ((index, item: ItemStack?) in inventoryReference.inventory.contents.withIndex()) {
 				if (item == null || item.type.isEmpty) continue
-				val printItem = PrintItem(item)
+				val printItem = runCatching { PrintItem(item) }.getOrNull() ?: continue
 
 				if (!inventoryReference.isAvailable(item)) {
 					continue
