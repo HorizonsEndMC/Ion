@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.transport.manager.extractors.Extracto
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
 import net.horizonsend.ion.server.gui.invui.InvUIWrapper
+import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDataContainer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -23,7 +24,6 @@ import org.bukkit.block.TileState
 import org.bukkit.block.data.type.Vault
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
@@ -79,7 +79,7 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 			return Window
 				.single()
 				.setGui(gui)
-				.setTitle(AdventureComponentWrapper(getSlotOverlay()))
+				.setTitle(getSlotOverlay())
 				.build(viewer)
 		}
 
