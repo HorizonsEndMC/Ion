@@ -76,13 +76,13 @@ object MultiblockEntities : IonServerComponent() {
 	/**
 	 * Add a new multiblock entity to the chunk
 	 **/
-	fun setMultiblockEntity(world: World, x: Int, y: Int, z: Int, createEntity: (MultiblockManager) -> MultiblockEntity): MultiblockEntity? {
+	fun setMultiblockEntity(world: World, x: Int, y: Int, z: Int, save: Boolean = true, createEntity: (MultiblockManager) -> MultiblockEntity): MultiblockEntity? {
 		val ionChunk = IonChunk.getFromWorldCoordinates(world, x, z) ?: return null
 
 		val manager = ionChunk.multiblockManager
 
 		val entity = createEntity(manager)
-		manager.addMultiblockEntity(entity, save = true)
+		manager.addMultiblockEntity(entity, save = save)
 
 		return entity
 	}
@@ -110,7 +110,7 @@ object MultiblockEntities : IonServerComponent() {
 		return multiblock.createEntity(manager, stored, manager.world, stored.x, stored.y, stored.z, stored.signOffset)
 	}
 
-	fun loadFromSign(sign: SignState) {
+	fun loadFromSign(sign: SignState, save: Boolean = true) {
 		val multiblockType = MultiblockAccess.getFast(sign) as? EntityMultiblock<*> ?: return
 
 		val data = sign.persistentDataContainer.get(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData) ?: return migrateFromSign(sign, multiblockType)
@@ -123,7 +123,7 @@ object MultiblockEntities : IonServerComponent() {
 		data.z = origin.z
 		data.signOffset = sign.getFacing().oppositeFace
 
-		setMultiblockEntity(sign.world, origin.x, origin.y, origin.z) { manager ->
+		setMultiblockEntity(sign.world, origin.x, origin.y, origin.z, save = save) { manager ->
 			val new = loadFromData(multiblockType, manager, data)
 			if (new is LegacyMultiblockEntity) new.loadFromSign(sign)
 
@@ -141,7 +141,8 @@ object MultiblockEntities : IonServerComponent() {
 		new?.saveToSign()
 	}
 
-	val msptBuffer = TimeUnit.MILLISECONDS.toNanos(5)
+	private val msptBuffer = TimeUnit.MILLISECONDS.toNanos(5)
+	private val saveInterval = TimeUnit.SECONDS.toMillis(20)
 
 	@EventHandler
 	fun onTickEnd(event: ServerTickEndEvent) {
@@ -149,11 +150,13 @@ object MultiblockEntities : IonServerComponent() {
 
 		MultiblockTicking.iterateManagers { manager ->
 			if (manager !is ChunkMultiblockManager) return@iterateManagers
-
-			if (manager.getSignUnsavedTime() < 10000L) return@iterateManagers
+			if (manager.getSignUnsavedTime() < saveInterval) return@iterateManagers
 
 			for (keyEntity in manager.getAllMultiblockEntities()) {
-				if (event.timeRemaining < msptBuffer) return
+				if (event.timeRemaining < msptBuffer) {
+					break
+				}
+
 				keyEntity.value.saveToSign()
 			}
 

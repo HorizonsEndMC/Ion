@@ -48,7 +48,7 @@ class IonChangeSet(world: World) : AbstractChangeSet(world) {
 	private fun processMultiblock(x: Int, y: Int, z: Int) {
 		Tasks.sync {
 			val state = bukkitWorld.getBlockState(x, y, z) as? Sign ?: return@sync
-			MultiblockEntities.loadFromSign(state)
+			MultiblockEntities.loadFromSign(state, save = false)
 		}
 	}
 
