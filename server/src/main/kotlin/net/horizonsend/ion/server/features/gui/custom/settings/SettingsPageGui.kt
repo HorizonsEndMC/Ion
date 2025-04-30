@@ -5,8 +5,8 @@ import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.GuiWrapper
 import net.horizonsend.ion.server.features.gui.custom.settings.button.SettingsMenuButton
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -19,14 +19,14 @@ import kotlin.math.ceil
 import kotlin.math.min
 
 abstract class SettingsPageGui(
-	val player: Player,
+	override val viewer: Player,
 	val title: String,
-) : AbstractBackgroundPagedGui, SettingsGuiItem, GuiWrapper {
-	var parent: GuiWrapper? = null
+) : AbstractBackgroundPagedGui, SettingsGuiItem {
+	var parent: CommonGuiWrapper? = null
 	override var currentWindow: Window? = null
 	protected abstract val buttonsList: List<SettingsGuiItem>
 
-	protected open val backButton: Item = GuiItem.DOWN.makeButton(this, "Return to Previous Menu", "") { _, _, _ -> parent?.open() }
+	protected open val backButton: Item = GuiItem.DOWN.makeButton(this, "Return to Previous Menu", "") { _, _, _ -> parent?.openGui() }
 
 	override fun createGui(): PagedGui<Item> {
 		val gui = PagedGui.items()
@@ -58,8 +58,8 @@ abstract class SettingsPageGui(
 		return gui.build()
 	}
 
-	override fun open() {
-		currentWindow = buildWindow(player)
+	override fun openGui() {
+		currentWindow = buildWindow()
 		currentWindow?.open()
 	}
 
@@ -120,7 +120,7 @@ abstract class SettingsPageGui(
 
 				override fun makeButton(pageGui: SettingsPageGui): GuiItems.AbstractButtonItem {
 					return GuiItem.LIST.makeButton(this, title, "") { _, _, _ ->
-						open()
+						openGui()
 					}
 				}
 			}
