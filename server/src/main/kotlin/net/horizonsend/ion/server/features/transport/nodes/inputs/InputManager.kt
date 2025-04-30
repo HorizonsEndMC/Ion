@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.nodes.inputs
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.transport.util.CacheType
@@ -32,14 +31,14 @@ abstract class InputManager {
 	fun getLocations(type: CacheType) = getTypeManager(type).getAllLocations()
 
 	class TypeManager(val manager: InputManager, val type: CacheType) {
-		private val inputLocations = Long2ObjectOpenHashMap<InputData>()
+		private val inputLocations = ConcurrentHashMap<BlockKey, InputData>()
 
 		fun getAllLocations() = inputLocations.keys
 
 		fun getRaw(location: BlockKey): InputData? = inputLocations[location]
 
 		fun add(location: BlockKey, holder: MultiblockEntity) {
-			when (val present: InputData? = inputLocations.get(location)) {
+			when (val present: InputData? = inputLocations[location]) {
 				is SingleMultiblockInput -> inputLocations[location] = SharedMultiblockInput.of(present.holder, holder)
 				is SharedMultiblockInput -> present.add(holder)
 				null -> inputLocations[location] = SingleMultiblockInput(holder)

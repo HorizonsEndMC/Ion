@@ -24,7 +24,7 @@ object SetPowerCommand : SLCommand() {
 		val maxSelectionVolume = 200000
 		val selection = runCatching { sender.getSelection() }.getOrNull() ?: fail { "You must make a selection!" }
 
-		if (selection.volume > maxSelectionVolume) {
+		if (selection.volume > maxSelectionVolume && !sender.hasPermission("ion.command.setpower.bypass")) {
 			sender.userError("Selection too large! The maximum volume is $maxSelectionVolume.")
 			return
 		}
