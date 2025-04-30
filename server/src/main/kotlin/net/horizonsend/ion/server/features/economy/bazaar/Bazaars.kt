@@ -177,7 +177,7 @@ object Bazaars : IonServerComponent() {
 								openItemMenu(player, terrId, item, sort, descend, remote)
 							},
 							::tryBuy
-						).openMainWindow()
+						).openGui()
 					}.setName(priceString).setLore(listOf("Seller: $sellerName", "Stock: $stock"))
 				}
 				.toList()

@@ -21,16 +21,8 @@ import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.item.impl.SimpleItem
 
 class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") {
-	override fun getFirstLine(player: Player): Component {
-		return Component.empty()
-	}
-
-	override fun getSecondLine(player: Player): Component {
-		return Component.empty()
-	}
-
 	override fun makeButton(pageGui: SettingsPageGui): GuiItems.AbstractButtonItem {
-		return GuiItem.LIST.makeButton(this, title, "") { _, _, _ -> open() }
+		return GuiItem.LIST.makeButton(this, title, "") { _, _, _ -> openGui() }
 	}
 
 	override val backButton: Item = SimpleItem(GuiItems.blankItem)
@@ -108,9 +100,13 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			DBCachedBooleanToggle(text("Show /itemsearch Items"), "", GuiItem.COMPASS_NEEDLE, true, SLPlayer::showItemSearchItem, AbstractPlayerCache.PlayerData::showItemSearchItem),
 			PermissionBooleanToggle(sitStateNode, text("Hitmarker On Hull"), "", GuiItem.BOOKMARK, true)
 		)
-    ).apply { forEach { subMenu -> subMenu.parent = this@SettingsMainMenuGui } }
+    ).onEach { subMenu -> subMenu.parent = this@SettingsMainMenuGui }
 
-    fun openMainWindow() {
-        currentWindow = buildWindow(player).apply { open() }
-    }
+	override fun getFirstLine(player: Player): Component {
+		return Component.empty()
+	}
+
+	override fun getSecondLine(player: Player): Component {
+		return Component.empty()
+	}
 }
