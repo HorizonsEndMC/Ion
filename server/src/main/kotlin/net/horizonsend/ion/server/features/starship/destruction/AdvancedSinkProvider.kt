@@ -138,7 +138,10 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 			return
 		}
 
-		val (newPositions, minPoint, maxPoint) = calculateNewPositions()
+		val (newPositions, minPoint, maxPoint) = calculateNewPositions() ?: run {
+			cancel()
+			return
+		}
 
 		val oldChunkMap = getChunkMap(sinkPositions)
 		val newChunkMap = getChunkMap(newPositions)
@@ -148,32 +151,36 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		val capturedTiles = mutableMapOf<Int, Pair<BlockState, CompoundTag>>()
 
 		Tasks.syncBlocking {
-			// Check for obstructions in the new positions
-			populateObstructionList(newPositions, minPoint, maxPoint)
+			try {
+				// Check for obstructions in the new positions
+				populateObstructionList(newPositions, minPoint, maxPoint)
 
-			// Remove the old blocks
-			processOldBlocks(oldChunkMap, capturedStates, capturedTiles)
+				// Remove the old blocks
+				processOldBlocks(oldChunkMap, capturedStates, capturedTiles)
 
-			// A trimmed list of positions that were actually moved. Used to build the next set of blocks that will move.
-			val trimmedPositions = processNewBlocks(newChunkMap, capturedStates)
+				// A trimmed list of positions that were actually moved. Used to build the next set of blocks that will move.
+				val trimmedPositions = processNewBlocks(newChunkMap, capturedStates)
 
-			// Place tile entities in their new positions
-			processTileEntities(capturedTiles, newPositions)
+				// Place tile entities in their new positions
+				processTileEntities(capturedTiles, newPositions)
 
-			// Broadcast changes
-			OptimizedMovement.sendChunkUpdatesToPlayers(starship.world, starship.world, oldChunkMap, newChunkMap)
+				// Broadcast changes
+				OptimizedMovement.sendChunkUpdatesToPlayers(starship.world, starship.world, oldChunkMap, newChunkMap)
 
-			// Save the moved blocks for their next iteration
-			sinkPositions = trimmedPositions.toLongArray()
+				// Save the moved blocks for their next iteration
+				sinkPositions = trimmedPositions.toLongArray()
 
-			intermittentExplosions()
+				intermittentExplosions()
+			} catch (e: Throwable) {
+				e.printStackTrace()
+			}
 		}
 	}
 
 	/**
 	 * Moves the blocks, returns the list of new positions, the min, and max points.
 	 **/
-	private fun calculateNewPositions(): Triple<LongArray, Vec3i, Vec3i> {
+	private fun calculateNewPositions(): Triple<LongArray, Vec3i, Vec3i>? {
 		val baseline = toVec3i(sinkPositions.first())
 
 		var newMinX = baseline.x
@@ -193,6 +200,8 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 			val y = getY(newKey)
 			val z = getZ(newKey)
 
+			if (!starship.world.minecraft.isInWorldBounds(BlockPos(x, y, z))) return null
+
 			if (x > newMaxX) newMaxX = x
 			if (x < newMinX) newMinX = x
 			if (y > newMaxY) newMaxY = y
@@ -210,6 +219,12 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		for (position in newPositions) {
 			if (obstructedPositions.contains(position)) continue
 			if (sinkPositions.contains(position)) continue
+
+			if (!starship.world.minecraft.isInWorldBounds(BlockPos.of(position))) {
+				addObstructedPosition(position, minPoint, maxPoint)
+				continue
+			}
+
 			val type = getBlockTypeSafe(starship.world, getX(position), getY(position), getZ(position))
 			if (type == null || !type.isAir) addObstructedPosition(position, minPoint, maxPoint)
 		}
