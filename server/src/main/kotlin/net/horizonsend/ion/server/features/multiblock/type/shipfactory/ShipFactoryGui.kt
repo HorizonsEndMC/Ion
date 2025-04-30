@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.command.starship.BlueprintCommand.showMaterial
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.GuiWrapper
 import net.horizonsend.ion.server.features.gui.custom.blueprint.BlueprintMenu
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.searchEntires
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
@@ -17,6 +16,7 @@ import net.horizonsend.ion.server.features.gui.custom.settings.button.BooleanSup
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem.FeedbackItemResult
 import net.horizonsend.ion.server.features.gui.item.ValueScrollButton
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -36,7 +36,7 @@ import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
 import java.util.UUID
 
-class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) : GuiWrapper {
+class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) : CommonGuiWrapper {
 	private fun isValid(): Boolean = entity.isAlive
 
 	private val updateButtons = mutableMapOf<UUID, FeedbackItem>()
@@ -56,7 +56,7 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 		}
 	}
 
-	override fun open() = Tasks.async {
+	override fun openGui() = Tasks.async {
 		val gui = Gui.normal()
 			.setStructure(
 				"s s s s s i . . .",
@@ -186,7 +186,7 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 			entity.setBlueprint(blueprint)
 			entity.ensureBlueprintLoaded(player)
 			entity.openMenu(player)
-		}.open()
+		}.openGui()
 	}
 
 	private val searchMenuBotton = GuiItems.createButton(GuiItem.EMPTY.makeItem(text("Search for Blueprint"))) { _, player, _ ->
@@ -291,7 +291,7 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 		.build()
 
 	private val placementMenu = GuiItems.createButton(GuiItem.GEAR.makeItem(text("Placement Settings"))) { _, _, _ ->
-		placementSettings.open()
+		placementSettings.openGui()
 	}
 	private val placementSettings = createSettingsPage(
 		viewer,
@@ -323,7 +323,7 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 	).apply { parent = this@ShipFactoryGui }
 
 	private val itemMenu = GuiItems.createButton(GuiItem.GEAR.makeItem(text("Item Settings"))) { _, _, _ ->
-		itemSettings.open()
+		itemSettings.openGui()
 	}
 	private val itemSettings = createSettingsPage(
 		viewer,

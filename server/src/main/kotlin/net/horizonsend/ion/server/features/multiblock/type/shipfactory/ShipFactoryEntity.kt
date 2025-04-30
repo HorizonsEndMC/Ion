@@ -67,7 +67,7 @@ abstract class ShipFactoryEntity(
 	abstract val guiTitle: String
 
 	fun openMenu(player: Player) {
-		ShipFactoryGui(player, this).open()
+		ShipFactoryGui(player, this).openGui()
 	}
 
 	val isRunning get() = userManager.currentlyUsed()

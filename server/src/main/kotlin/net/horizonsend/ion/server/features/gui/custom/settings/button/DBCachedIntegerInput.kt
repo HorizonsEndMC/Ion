@@ -33,11 +33,11 @@ class DBCachedIntegerInput(
 		clicker.anvilInputText(
 			prompt = text("Enter new value"),
 			description = text("Value between $min & $max"),
-			backButtonHandler = { parent.open() },
+			backButtonHandler = { parent.openGui() },
 			inputValidator = RangeIntegerValidator(min..max),
 			handler = { _, (_, result) ->
 				newValueConsumer.accept(result.result)
-				parent.open()
+				parent.openGui()
 			}
 		)
 	}
