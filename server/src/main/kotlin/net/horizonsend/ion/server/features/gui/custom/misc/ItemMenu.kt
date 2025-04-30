@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.gui.custom.misc
 
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
+import net.horizonsend.ion.server.gui.invui.InvUIWrapper
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -16,12 +17,11 @@ import xyz.xenondevs.invui.window.Window
 import kotlin.math.min
 
 class ItemMenu(
-    val title: Component,
-    val player: Player,
-    private val guiItems: Collection<Item>,
-    private val backButtonHandler: (Player) -> Unit
-) {
-    private var currentWindow: Window? = null
+	val title: Component,
+	override val viewer: Player,
+	private val guiItems: Collection<Item>,
+	private val backButtonHandler: (Player) -> Unit
+) : InvUIWrapper {
     private lateinit var gui: Gui
 
     private fun createGui(): Gui {
@@ -37,18 +37,14 @@ class ItemMenu(
         return gui
     }
 
-    private fun open(player: Player): Window {
-        createGui()
-        return Window.single()
-            .setViewer(player)
-            .setGui(gui)
-            .setTitle(AdventureComponentWrapper(title))
-            .build()
-    }
-
-    fun openMainWindow() {
-        currentWindow = open(player).apply { open() }
-    }
+	override fun buildWindow(): Window {
+		createGui()
+		return Window.single()
+			.setViewer(viewer)
+			.setGui(gui)
+			.setTitle(AdventureComponentWrapper(title))
+			.build()
+	}
 
     private val backButton = GuiItems.CustomControlItem(
         Component.text("Back"), GuiItem.DOWN, callback = { _: ClickType, player: Player, _: InventoryClickEvent ->
@@ -78,7 +74,7 @@ class ItemMenu(
 				}
 			}
 
-			ItemMenu(title, player, mapped, backButtonHandler).openMainWindow()
+			ItemMenu(title, player, mapped, backButtonHandler).openGui()
 		}
 	}
 }

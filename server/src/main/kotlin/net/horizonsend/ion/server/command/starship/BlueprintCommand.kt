@@ -178,7 +178,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			BlueprintMenu(sender) { blueprint, player ->
 				player.closeInventory()
 				Tasks.async { showMaterials(player, blueprint) }
-			}.open()
+			}.openGui()
 		}
 	}
 

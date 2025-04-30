@@ -259,7 +259,7 @@ object NavigationGuiCommon {
 
 			ClickType.RIGHT -> waypointAction(player, beacon.name.replace(' ', '_'), gui)
 			ClickType.SHIFT_LEFT -> {
-				NavigationSystemMapGui(player, beacon.destination.bukkitWorld()).openMainWindow()
+				NavigationSystemMapGui(player, beacon.destination.bukkitWorld()).openGui()
 			}
 
 			ClickType.SHIFT_RIGHT -> dynmapLinkAction(
@@ -299,7 +299,7 @@ object NavigationGuiCommon {
 			ClickType.LEFT -> if (planet.spaceWorldName == player.world.name) jumpAction(player, planet.name)
 			ClickType.RIGHT -> waypointAction(player, planet.name, gui)
 			ClickType.SHIFT_LEFT -> {
-				NavigationInfoGui(player, planet.name, getPlanetItems(planet.name), oreComponent2(planet)) { backButtonHandler.invoke() }.openMainWindow()
+				NavigationInfoGui(player, planet.name, getPlanetItems(planet.name), oreComponent2(planet)) { backButtonHandler.invoke() }.openGui()
 			}
 
 			ClickType.SHIFT_RIGHT -> {
@@ -341,7 +341,7 @@ object NavigationGuiCommon {
 
 			ClickType.RIGHT -> waypointAction(player, star.spaceWorldName, star.location.x, star.location.z, gui)
 			ClickType.SHIFT_LEFT -> {
-				NavigationInfoGui(player, star.name, getPlanetItems(star.name)) { backButtonHandler.invoke() }.openMainWindow()
+				NavigationInfoGui(player, star.name, getPlanetItems(star.name)) { backButtonHandler.invoke() }.openGui()
 			}
 
 			ClickType.SHIFT_RIGHT -> {

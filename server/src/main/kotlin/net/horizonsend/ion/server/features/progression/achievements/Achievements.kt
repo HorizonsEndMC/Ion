@@ -40,7 +40,7 @@ import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
-class Achievements(val player: Player) : AbstractBackgroundPagedGui {
+class Achievements(override val viewer: Player) : AbstractBackgroundPagedGui {
 
 	companion object {
 		private const val ACHIEVEMENTS_PER_PAGE = 5
@@ -139,10 +139,6 @@ class Achievements(val player: Player) : AbstractBackgroundPagedGui {
 		)
 
 		return guiText.build()
-	}
-
-	fun openMainWindow() {
-		currentWindow = buildWindow(player).apply { open() }
 	}
 }
 
