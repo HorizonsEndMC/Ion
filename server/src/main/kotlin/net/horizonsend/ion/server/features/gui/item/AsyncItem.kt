@@ -20,12 +20,14 @@ class AsyncItem(
 	val handleClick: (InventoryClickEvent) -> Unit
 ) : AbstractItem() {
 	private var provider = loadingItem
+	private var loaded: Boolean = false
 
 	override fun getItemProvider(viewer: Player): ItemProvider {
 		return provider
 	}
 
 	override fun handleClick(p0: ClickType, p1: Player, event: InventoryClickEvent) {
+		if (!loaded) return
 		handleClick.invoke(event)
 	}
 
@@ -41,6 +43,7 @@ class AsyncItem(
 			val item = buildResultItem()
 			provider = ItemProvider { item }
 
+			loaded = true
 			Tasks.sync { notifyWindows() }
 		}
 	}
