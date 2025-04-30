@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.destruction
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.machine.AreaShields.getNearbyAreaShields
 import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
@@ -35,6 +36,7 @@ import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.util.Vector
@@ -219,6 +221,17 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		for (position in newPositions) {
 			if (obstructedPositions.contains(position)) continue
 			if (sinkPositions.contains(position)) continue
+
+			if (!starship.world.minecraft.isInWorldBounds(BlockPos.of(position))) {
+				addObstructedPosition(position, minPoint, maxPoint)
+				continue
+			}
+
+			val areaShields = getNearbyAreaShields(Location(starship.world, getX(position).toDouble(), getY(position).toDouble(), getZ(position).toDouble()), 1.0)
+			if (areaShields.any { it.powerStorage.getPower() > 0 }) {
+				addObstructedPosition(position, minPoint, maxPoint)
+				continue
+			}
 
 			if (!starship.world.minecraft.isInWorldBounds(BlockPos.of(position))) {
 				addObstructedPosition(position, minPoint, maxPoint)
