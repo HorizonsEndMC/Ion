@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.browse
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.server.features.gui.GuiItem
@@ -9,7 +9,7 @@ import net.kyori.adventure.text.Component.text
 import org.bson.conversions.Bson
 import org.litote.kmongo.gt
 
-class GlobalBrowseGUI(parent: BazaarPurchaseMenuParent, pageNumber: Int = 0) : BrowseGUIParent(parent, pageNumber) {
+class GlobalListingGUI(parent: BazaarPurchaseMenuParent, pageNumber: Int = 0) : ListingGUIParent(parent, pageNumber) {
 	override val searchBson: Bson = BazaarItem::stock gt 0
 
 	override val searchButton = GuiItem.MAGNIFYING_GLASS
