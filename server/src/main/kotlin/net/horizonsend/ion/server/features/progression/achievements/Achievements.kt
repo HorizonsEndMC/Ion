@@ -36,18 +36,15 @@ import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.item.builder.ItemBuilder
 import xyz.xenondevs.invui.item.impl.SimpleItem
-import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
-class Achievements(override val viewer: Player) : AbstractBackgroundPagedGui {
+class Achievements(viewer: Player) : AbstractBackgroundPagedGui(viewer) {
 
 	companion object {
 		private const val ACHIEVEMENTS_PER_PAGE = 5
 		private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
 	}
-
-	override var currentWindow: Window? = null
 
 	override fun createGui(): PagedGui<Item> {
 		val gui = PagedGui.items()

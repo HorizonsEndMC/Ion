@@ -14,16 +14,14 @@ import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
-import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
 abstract class SettingsPageGui(
-	override val viewer: Player,
+	viewer: Player,
 	val title: String,
-) : AbstractBackgroundPagedGui, SettingsGuiItem {
+) : AbstractBackgroundPagedGui(viewer), SettingsGuiItem {
 	var parent: CommonGuiWrapper? = null
-	override var currentWindow: Window? = null
 	protected abstract val buttonsList: List<SettingsGuiItem>
 
 	protected open val backButton: Item = GuiItem.DOWN.makeButton(this, "Return to Previous Menu", "") { _, _, _ -> parent?.openGui() }
