@@ -75,13 +75,13 @@ abstract class GroupedListingGUIParent(
 	abstract fun reOpen()
 
 	private val sortButton = EnumScrollButton(
-		{ GuiItem.GEAR.makeItem(text("Change Sorting Method")) },
+		{ GuiItem.FILTER.makeItem(text("Change Sorting Method")) },
 		increment = 1,
 		value = {
 			sortingMethod
 		},
 		BazaarMergedSort::class.java,
-		nameFormatter = { text(it.name) },
+		nameFormatter = { it.displayName },
 		valueConsumer = {
 			sortingMethod = it
 
