@@ -11,18 +11,16 @@ import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
-import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
-class PersonalTransporterGui(override val viewer: Player) : AbstractBackgroundPagedGui {
+class PersonalTransporterGui(viewer: Player) : AbstractBackgroundPagedGui(viewer) {
 
     companion object {
         private const val SETTINGS_PER_PAGE = 5
         private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
     }
 
-    override var currentWindow: Window? = null
     // cache current player list
     private val playerList = mutableListOf<Player>()
 
