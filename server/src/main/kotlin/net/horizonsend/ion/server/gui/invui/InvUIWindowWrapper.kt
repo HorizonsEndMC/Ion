@@ -13,4 +13,6 @@ abstract class InvUIWindowWrapper(val viewer: Player) : CommonGuiWrapper {
 		currentWindow = buildWindow()
 		currentWindow?.open()
 	}
+
+	fun getOpenWindow() = currentWindow
 }
