@@ -105,7 +105,7 @@ object NationsMasterTasks : IonServerComponent() {
 
 			// Give the nation its station income if it has stations
 			val stationCount = min(CapturableStation.count(CapturableStation::nation eq nationId).toInt(), 4)
-			val stationIncome = if (stationCount > 2) stationCount * 75 else stationCount * 50
+			val stationIncome = (if (stationCount > 2) stationCount * 75 else stationCount * 50).toDouble()
 
 			if (stationIncome > 0) {
 				Nation.deposit(nationId, stationIncome)
@@ -121,7 +121,7 @@ object NationsMasterTasks : IonServerComponent() {
 			val activeCount = SLPlayer.count(
 				and(SLPlayer::lastSeen gte ACTIVE_AFTER_TIME, SLPlayer::nation eq nationId)
 			).toInt()
-			val activityCredits = activeCount * NATIONS_BALANCE.nation.hourlyActivityCredits
+			val activityCredits = (activeCount * NATIONS_BALANCE.nation.hourlyActivityCredits).toDouble()
 
 			if (activityCredits > 0) {
 				Nation.deposit(nationId, activityCredits)
@@ -141,7 +141,7 @@ object NationsMasterTasks : IonServerComponent() {
 			val activeCount = SLPlayer.count(
 				and(SLPlayer::lastSeen gte ACTIVE_AFTER_TIME, SLPlayer::settlement eq settlementId)
 			).toInt()
-			val activityCredits = activeCount * NATIONS_BALANCE.settlement.hourlyActivityCredits
+			val activityCredits = (activeCount * NATIONS_BALANCE.settlement.hourlyActivityCredits).toDouble()
 
 			if (activityCredits > 0) {
 				Settlement.deposit(settlementId, activityCredits)
@@ -169,7 +169,7 @@ object NationsMasterTasks : IonServerComponent() {
 			val isActive = cityState == Settlement.CityState.ACTIVE
 
 			val money = settlementResults[Settlement::balance]
-			val tax = NATIONS_BALANCE.settlement.cityHourlyTax
+			val tax = NATIONS_BALANCE.settlement.cityHourlyTax.toDouble()
 			var willBeActive: Boolean = money >= tax
 
 			val name = settlementResults[Settlement::name]
@@ -214,16 +214,16 @@ object NationsMasterTasks : IonServerComponent() {
 	private fun doZoneRent() {
 		for (zone in Regions.getAllOf<RegionSettlementZone>()) {
 			val owner: SLPlayerId = zone.owner ?: continue
-			val rent: Int = zone.cachedRent ?: continue
+			val rent = (zone.cachedRent ?: continue).toDouble()
 
 			val offlinePlayer = Bukkit.getOfflinePlayer(owner.uuid)
 
-			if (!VAULT_ECO.has(offlinePlayer, rent.toDouble())) {
+			if (!VAULT_ECO.has(offlinePlayer, rent)) {
 				Notify.settlementCrossServer(zone.settlement, MiniMessage.miniMessage().deserialize("<red>${offlinePlayer.name} failed to pay rent for zone ${zone.name}"))
 				continue
 			}
 
-			VAULT_ECO.withdrawPlayer(offlinePlayer, rent.toDouble())
+			VAULT_ECO.withdrawPlayer(offlinePlayer, rent)
 			Settlement.deposit(zone.settlement, rent)
 
 			Notify.playerCrossServer(owner.uuid, MiniMessage.miniMessage().deserialize(

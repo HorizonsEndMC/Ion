@@ -26,15 +26,15 @@ internal object SettlementMoneyCommand : MoneyCommand<Settlement>() {
 
 	override fun resolveParent(name: String): Oid<Settlement> = resolveSettlement(name)
 
-	override fun getBalance(parent: Oid<Settlement>): Int {
+	override fun getBalance(parent: Oid<Settlement>): Double {
 		return Settlement.findPropById(parent, Settlement::balance) ?: fail { "Failed to retrieve settlement balance" }
 	}
 
-	override fun deposit(parent: Oid<Settlement>, amount: Int) {
+	override fun deposit(parent: Oid<Settlement>, amount: Double) {
 		Settlement.deposit(parent, amount)
 	}
 
-	override fun withdraw(parent: Oid<Settlement>, amount: Int) {
+	override fun withdraw(parent: Oid<Settlement>, amount: Double) {
 		Settlement.withdraw(parent, amount)
 	}
 
@@ -46,9 +46,9 @@ internal object SettlementMoneyCommand : MoneyCommand<Settlement>() {
 
 	@Subcommand("deposit")
 	@Description("Give money to your settlement")
-	override fun onDeposit(sender: Player, amount: Int) = super.onDeposit(sender, amount)
+	override fun onDeposit(sender: Player, amount: Double) = super.onDeposit(sender, amount)
 
 	@Subcommand("withdraw")
 	@Description("Take money from your settlement")
-	override fun onWithdraw(sender: Player, amount: Int) = super.onWithdraw(sender, amount)
+	override fun onWithdraw(sender: Player, amount: Double) = super.onWithdraw(sender, amount)
 }
