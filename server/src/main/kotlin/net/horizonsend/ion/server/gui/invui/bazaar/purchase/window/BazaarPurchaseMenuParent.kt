@@ -60,21 +60,19 @@ abstract class BazaarPurchaseMenuParent(
 		window.changeTitle(getMenuTitle())
 	}
 
-	private fun getMenuTitle(): Component {
-		val baseText = if (remote) "Remote Bazaar" else "Bazaar"
+	protected open val menuTitle = if (remote) "Remote Bazaar" else "Bazaar"
 
-		return GuiText(baseText)
-			.setSlotOverlay(
-				"# # # # # # # # #",
-				". . . . . . . . .",
-				". . . . . . . . .",
-				". . . . . . . . .",
-				". . . . . . . . .",
-				"# # # # # # # # #"
-			)
-			.populateGuiText()
-			.build()
-	}
+	private fun getMenuTitle(): Component = GuiText(menuTitle)
+		.setSlotOverlay(
+			"# # # # # # # # #",
+			". . . . . . . . .",
+			". . . . . . . . .",
+			". . . . . . . . .",
+			". . . . . . . . .",
+			"# # # # # # # # #"
+		)
+		.populateGuiText()
+		.build()
 
 	open fun GuiText.populateGuiText(): GuiText { return this }
 
@@ -132,6 +130,8 @@ abstract class BazaarPurchaseMenuParent(
 
 	abstract val backButton: AbstractItem
 
+	abstract val infoButton: AbstractItem
+
 	private val buyOrdersButton = GuiItem.CLOCKWISE
 		.makeItem(text("Switch to the Buy Order Menu"))
 		.makeGuiButton { clickType, player ->
@@ -143,13 +143,4 @@ abstract class BazaarPurchaseMenuParent(
 		.makeGuiButton { clickType, player ->
 			println("settings")
 		}
-
-	private val infoButton = GuiItem.INFO
-		.makeItem(text("Information"))
-		.updateLore(listOf(
-			text("Lore Line 1"),
-			text("Lore Line 2"),
-			text("Lore Line 3"),
-		))
-		.makeGuiButton { _, _ -> }
 }
