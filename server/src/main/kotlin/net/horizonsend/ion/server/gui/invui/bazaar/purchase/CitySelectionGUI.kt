@@ -3,10 +3,13 @@ package net.horizonsend.ion.server.gui.invui.bazaar.purchase
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getCityButtons
+import net.horizonsend.ion.server.gui.invui.utils.makeGuiButton
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
@@ -28,10 +31,16 @@ class CitySelectionGUI(val parent: BazaarPurchaseMenuParent) : InvUIGuiWrapper<G
 						text("Located at ", GRAY), text(territoryRegion.name, AQUA),
 						text(" on ", GRAY), text(territoryRegion.world, AQUA), text(".", GRAY)
 					),
-					text("$listingCount item listing${if (listingCount != 1L) "s" else ""}.")
+					template(text("{0} item listing${if (listingCount != 1L) "s" else ""}.", GRAY), listingCount)
 				)
 			},
 			clickHandler = { city, _, player ->
+				BazaarPurchaseMenuParent.withGUI(
+					player,
+					parent.remote,
+					GuiItem.LEFT.makeItem(text("Go Back to City Selection")).makeGuiButton { clickType, player -> parent.openGui() },
+					CityBrowseGUI(parent, city).getGui()
+				).openGui()
 				player.information(city.displayName)
 			}
 		)

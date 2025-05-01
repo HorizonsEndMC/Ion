@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.gui.invui.bazaar.purchase
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.item.EnumScrollButton
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
@@ -11,11 +12,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.text
 import org.bson.conversions.Bson
+import org.litote.kmongo.and
+import org.litote.kmongo.eq
 import org.litote.kmongo.gt
 import org.litote.kmongo.setValue
 
-class GlobalBrowseGUI(parent: BazaarMainPurchaseMenu) : BrowseGUI(parent) {
-	override val searchBson: Bson = BazaarItem::stock gt 0
+class CityBrowseGUI(parent: BazaarPurchaseMenuParent, val city: TradeCityData) : BrowseGUI(parent) {
+	override val searchBson: Bson = and(BazaarItem::stock gt 0, BazaarItem::cityTerritory eq city.territoryId)
 
 	override val searchButton = GuiItem.MAGNIFYING_GLASS
 		.makeItem(text("Search for Items"))
