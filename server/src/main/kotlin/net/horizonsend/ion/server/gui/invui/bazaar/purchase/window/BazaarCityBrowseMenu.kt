@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.browse.CityListingGUI
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.listings.grouped.CityGroupedListingGUI
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component.text
@@ -13,7 +13,7 @@ import xyz.xenondevs.invui.item.impl.AbstractItem
 
 class BazaarCityBrowseMenu(viewer: Player, remote: Boolean, cityData: TradeCityData, pageNumber: Int = 0) : BazaarPurchaseMenuParent(viewer, remote) {
 	override val menuTitle: String = "Browsing ${cityData.displayName}'s Listings"
-	override val contained = CityListingGUI(this, cityData, pageNumber)
+	override val contained = CityGroupedListingGUI(this, cityData, pageNumber)
 
 	override val citySelectionButton: AbstractItem = getCitySelectionButton(true)
 	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(false)
