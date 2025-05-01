@@ -11,7 +11,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.gui.invui.InvUIWrapper
+import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -23,7 +23,7 @@ import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
 
-class NavigationGalacticMapGui(override val viewer: Player) : InvUIWrapper {
+class NavigationGalacticMapGui(viewer: Player) : InvUIWindowWrapper(viewer) {
     private val gui = Gui.empty(9, 6)
 
     companion object {
