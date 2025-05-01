@@ -22,7 +22,7 @@ class BazaarGlowbalBrowseMenu(viewer: Player, remote: Boolean, pageNumber: Int =
 	override val infoButton: AbstractItem = GuiItem.INFO
 			.makeItem(text("Information"))
 			.updateLore(listOf(
-				text("Lore Line 11111"),
+				text("Thius menu shows items listed for sale from every tade city."),
 				text("Lore Line 2"),
 				text("Lore Line 3"),
 			))
