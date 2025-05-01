@@ -19,7 +19,7 @@ import xyz.xenondevs.invui.window.Window
 
 abstract class BazaarPurchaseMenuParent(
 	viewer: Player,
-	private val remote: Boolean
+	val remote: Boolean
 ) : InvUIWindowWrapper(viewer) {
 	protected fun <W : Gui, S: Gui.Builder<W, S>> S.applyPurchaseMenuStructure(): S {
 		setStructure(
@@ -98,7 +98,7 @@ abstract class BazaarPurchaseMenuParent(
 			println("settings")
 		}
 
-	private val infoButton = GuiItem.COUNTERCLOCKWISE
+	private val infoButton = GuiItem.INFO
 		.makeItem(text("Information"))
 		.updateLore(listOf(
 			text("Lore Line 1"),

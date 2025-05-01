@@ -20,7 +20,11 @@ open class ValueScrollButton(
 		val nextValueRaw = value.get() + increment
 		val range = valueRange.last - valueRange.first
 
-		val formatted = if (wrap) { Math.floorMod(nextValueRaw - valueRange.first, range) + valueRange.first } else nextValueRaw
+		val formatted = if (wrap) {
+			val floorModResult = Math.floorMod(nextValueRaw - valueRange.first, (range + 1))
+			floorModResult + valueRange.first
+		} else nextValueRaw
+
 		if (!valueRange.contains(formatted)) return FeedbackItemResult.FailureLore(listOf(Component.text("Value $formatted out of range! (${valueRange.first} - ${valueRange.last})", NamedTextColor.RED)))
 
 		valueConsumer.accept(formatted)
