@@ -2,18 +2,18 @@ package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window
 
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.CityBrowseGUI
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.browse.CityListingGUI
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
-import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.impl.AbstractItem
 
 class BazaarCityBrowseMenu(viewer: Player, remote: Boolean, cityData: TradeCityData, pageNumber: Int = 0) : BazaarPurchaseMenuParent(viewer, remote) {
 	override val menuTitle: String = "Browsing ${cityData.displayName}'s Listings"
-	override val contained: Gui = CityBrowseGUI(this, cityData, pageNumber).getGui()
+	override val contained = CityListingGUI(this, cityData, pageNumber)
 
 	override val citySelectionButton: AbstractItem = getCitySelectionButton(true)
 	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(false)
@@ -30,4 +30,9 @@ class BazaarCityBrowseMenu(viewer: Player, remote: Boolean, cityData: TradeCityD
 			text("an item will show those listings."),
 		))
 		.makeGuiButton { _, _ -> }
+
+	override fun GuiText.populateGuiText(): GuiText {
+		contained.modifyGuiText(this)
+		return this
+	}
 }

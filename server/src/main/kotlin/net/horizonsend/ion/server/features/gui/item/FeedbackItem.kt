@@ -11,7 +11,7 @@ import xyz.xenondevs.invui.item.impl.AbstractItem
 import java.util.function.Supplier
 
 abstract class FeedbackItem(
-	val providedItem: ItemProvider,
+	private val providedItem: ItemProvider,
 	private val fallbackLoreProvider: Supplier<List<Component>>
 ) : AbstractItem() {
 	protected open var currentLore = fallbackLoreProvider
