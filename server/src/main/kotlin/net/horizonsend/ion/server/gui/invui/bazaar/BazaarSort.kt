@@ -12,6 +12,13 @@ enum class BazaarSort {
 		override fun sort(collection: FindIterable<BazaarItem>, ascending: Boolean) {
 			if (ascending) collection.ascendingSort(property) else collection.descendingSort(property)
 		}
+	},
+	STOCK {
+		private val property = BazaarItem::stock
+
+		override fun sort(collection: FindIterable<BazaarItem>, ascending: Boolean) {
+			if (ascending) collection.ascendingSort(property) else collection.descendingSort(property)
+		}
 	}
 
 	;
