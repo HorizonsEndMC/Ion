@@ -2,8 +2,9 @@ package net.horizonsend.ion.server.gui.invui.bazaar.purchase
 
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
-import net.horizonsend.ion.server.gui.invui.utils.TabButton
+import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.gui.invui.utils.changeTitle
 import net.horizonsend.ion.server.gui.invui.utils.makeGuiButton
 import net.horizonsend.ion.server.gui.invui.utils.setTitle
@@ -12,16 +13,22 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
+import org.bukkit.event.inventory.InventoryClickEvent
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.gui.TabGui
 import xyz.xenondevs.invui.gui.structure.Markers
+import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
+import xyz.xenondevs.invui.item.impl.controlitem.ControlItem
 import xyz.xenondevs.invui.window.Window
 
 abstract class BazaarPurchaseMenuParent(
 	viewer: Player,
 	val remote: Boolean
 ) : InvUIWindowWrapper(viewer) {
+	abstract val tabs: List<InvUIGuiWrapper<out Gui>>
+
 	protected fun <W : Gui, S: Gui.Builder<W, S>> S.applyPurchaseMenuStructure(): S {
 		setStructure(
 			"b . . 1 2 c . d i",
@@ -34,47 +41,8 @@ abstract class BazaarPurchaseMenuParent(
 
 		addIngredient('b', backButton)
 
-		addIngredient('1', TabButton(
-			GuiItem.CITY.makeItem()
-				.updateLore(listOf(
-					text("View list of cities that are selling goods."),
-					text("You'll be able to view listings from this menu."),
-					Component.empty(),
-					text("You currently have this tab selected")
-				))
-				.updateDisplayName(text("View City Selection")),
-			GuiItem.CITY_GRAY.makeItem()
-				.updateLore(listOf(
-					text("View list of cities that are selling goods."),
-					text("You'll be able to view listings from this menu."),
-					Component.empty(),
-					text("Click to switch to this tab."),
-				))
-				.updateDisplayName(text("View City Selection")),
-			0
-		))
-
-		// Switch to global view button
-		addIngredient('2', TabButton(
-			GuiItem.WORLD.makeItem()
-				.updateLore(listOf(
-					text("View listings from every city, combined"),
-					text("into one menu."),
-					Component.empty(),
-					text("You currently have this tab selected")
-				))
-				.updateDisplayName(text("View Global Listings")),
-			GuiItem.WORLD_GRAY.makeItem()
-				.updateLore(listOf(
-					text("View listings from every city, combined"),
-					text("into one menu."),
-					Component.empty(),
-					text("Click to switch to this tab."),
-				))
-				.updateDisplayName(text("View Global Listings")),
-			1
-		))
-
+		addIngredient('1', citySelectionButton)
+		addIngredient('2', globalBrowseButton)
 		addIngredient('c', buyOrdersButton)
 
 		addIngredient('d', settingsButton)
@@ -86,6 +54,8 @@ abstract class BazaarPurchaseMenuParent(
 	}
 
 	abstract val backButton: AbstractItem
+	abstract val citySelectionButton: AbstractItem
+	abstract val globalBrowseButton: AbstractItem
 
 	private val buyOrdersButton = GuiItem.CLOCKWISE
 		.makeItem(text("Switch to the Buy Order Menu"))
@@ -108,7 +78,23 @@ abstract class BazaarPurchaseMenuParent(
 		))
 		.makeGuiButton { _, _ -> }
 
-	protected abstract fun getMenuGUI(): Gui
+	protected lateinit var guiInstance: TabGui; private set
+	var currentTab = 0; private set
+
+	private fun getMenuGUI(): Gui {
+		val new = TabGui.normal()
+			.applyPurchaseMenuStructure()
+			.setTabs(tabs.map(InvUIGuiWrapper<*>::getGui))
+			.addTabChangeHandler { _, tab ->
+				currentTab = tab
+				(tabs[currentTab] as? BazaarGui)?.refresh()
+				refreshGuiText()
+			}
+			.build()
+
+		guiInstance = new
+		return new
+	}
 
 	private fun getMenuTitle(): Component {
 		val baseText = if (remote) "Remote Bazaar" else "Bazaar"
@@ -145,15 +131,76 @@ abstract class BazaarPurchaseMenuParent(
 			player: Player,
 			remote: Boolean,
 			backButton: AbstractItem,
-			gui: Gui
+			gui: InvUIGuiWrapper<out Gui>
 		): BazaarPurchaseMenuParent = object : BazaarPurchaseMenuParent(player, remote) {
+			override val tabs: List<InvUIGuiWrapper<out Gui>> = listOf(gui)
+
 			override val backButton: AbstractItem = backButton
-			override fun getMenuGUI(): Gui {
-				return TabGui.normal()
-					.applyPurchaseMenuStructure()
-					.setTabs(listOf(gui))
-					.build()
-					.apply { setTab(currentTab) }
+
+			override val globalBrowseButton: AbstractItem = object : ControlItem<TabGui>() {
+				val tabNumber = 1
+				val selectedProvider = GuiItem.WORLD.makeItem()
+					.updateLore(listOf(
+						text("View listings from every city, combined"),
+						text("into one menu."),
+						Component.empty(),
+						text("You currently have this tab selected")
+					))
+					.updateDisplayName(text("View Global Listings"))
+					.asItemProvider()
+
+				val unselectedProvider = GuiItem.WORLD_GRAY.makeItem()
+					.updateLore(listOf(
+						text("View listings from every city, combined"),
+						text("into one menu."),
+						Component.empty(),
+						text("Click to switch to this tab."),
+					))
+					.updateDisplayName(text("View Global Listings"))
+					.asItemProvider()
+
+				override fun getItemProvider(gui: TabGui): ItemProvider {
+					return if (gui.currentTab == tabNumber) selectedProvider else unselectedProvider
+				}
+
+				override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+					val new = BazaarMainPurchaseMenu(viewer, remote)
+					new.openGui()
+					new.setTab(tabNumber)
+				}
+			}
+
+			override val citySelectionButton: AbstractItem = object : ControlItem<TabGui>() {
+				val tabNumber = 0
+				val selectedProvider = GuiItem.CITY.makeItem()
+					.updateLore(listOf(
+						text("View list of cities that are selling goods."),
+						text("You'll be able to view listings from this menu."),
+						Component.empty(),
+						text("You currently have this tab selected")
+					))
+					.updateDisplayName(text("View City Selection"))
+					.asItemProvider()
+
+				val unselectedProvider = GuiItem.CITY_GRAY.makeItem()
+					.updateLore(listOf(
+						text("View list of cities that are selling goods."),
+						text("You'll be able to view listings from this menu."),
+						Component.empty(),
+						text("Click to switch to this tab."),
+					))
+					.updateDisplayName(text("View City Selection"))
+					.asItemProvider()
+
+				override fun getItemProvider(gui: TabGui): ItemProvider {
+					return if (gui.currentTab == tabNumber) selectedProvider else unselectedProvider
+				}
+
+				override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+					val new = BazaarMainPurchaseMenu(viewer, remote)
+					new.openGui()
+					new.setTab(tabNumber)
+				}
 			}
 		}
 	}
