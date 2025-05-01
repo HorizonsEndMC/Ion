@@ -1,30 +1,40 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui
 
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.gui.item.EnumScrollButton
 import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGui
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.getItemButtons
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bson.conversions.Bson
+import org.litote.kmongo.setValue
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 import kotlin.math.ceil
 
-abstract class BrowseGUI(final override val parent: BazaarPurchaseMenuParent): InvUIGuiWrapper<PagedGui<Item>>, BazaarGui {
+abstract class BrowseGUIParent(
+	final override val parent: BazaarPurchaseMenuParent,
+	protected var pageNumber: Int = 0
+): InvUIGuiWrapper<PagedGui<Item>>, BazaarGui {
 	protected var sortingMethod: BazaarSort = BazaarSort.entries[PlayerCache[parent.viewer].defaultBazaarSort]
 	private var ascendingSort: Boolean = true
 
 	abstract val searchBson: Bson
 
-	protected var pageNumber = 0
 	private var totalItems = 0
 
 	private var gui: PagedGui<Item>? = null
@@ -55,12 +65,35 @@ abstract class BrowseGUI(final override val parent: BazaarPurchaseMenuParent): I
 			}
 			.build()
 
+		new.setPage(pageNumber)
+
 		gui = new
 		return new
 	}
 
 	abstract val searchButton: Item
-	abstract val sortButton: Item
+
+	abstract fun reOpen()
+
+	private val sortButton = EnumScrollButton(
+		{ GuiItem.GEAR.makeItem(text("Change Sorting Method")) },
+		increment = 1,
+		value = {
+			sortingMethod
+		},
+		BazaarSort::class.java,
+		nameFormatter = { text(it.name) },
+		valueConsumer = {
+			sortingMethod = it
+
+			PlayerCache[parent.viewer].defaultBazaarSort = sortingMethod.ordinal
+			Tasks.async {
+				SLPlayer.updateById(parent.viewer.slPlayerId, setValue(SLPlayer::defaultBazaarSort, sortingMethod.ordinal))
+			}
+
+			reOpen()
+		}
+	)
 
 	private fun getButtons() = getItemButtons(
 		searchBson,

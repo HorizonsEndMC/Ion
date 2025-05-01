@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.utils
+package net.horizonsend.ion.server.gui.invui.utils.buttons
 
 import net.horizonsend.ion.server.features.gui.GuiItems
 import org.bukkit.entity.Player
