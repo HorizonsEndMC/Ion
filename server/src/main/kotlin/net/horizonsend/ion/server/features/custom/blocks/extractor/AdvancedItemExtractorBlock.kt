@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.features.transport.items.SortingOrder
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
-import net.horizonsend.ion.server.gui.invui.InvUIWrapper
+import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDataContainer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -65,7 +65,7 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 		state.update()
 	}
 
-	class AdvancedItemExtractorGUI(override val viewer: Player, val block: Block, private val extractorData: ItemExtractorData) : InvUIWrapper {
+	class AdvancedItemExtractorGUI(viewer: Player, val block: Block, private val extractorData: ItemExtractorData) : InvUIWindowWrapper(viewer) {
 		override fun buildWindow(): Window {
 			val gui = Gui.normal()
 				.setStructure(
