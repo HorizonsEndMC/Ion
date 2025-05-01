@@ -265,6 +265,7 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
 	CITY_GRAY(NamespacedKeys.packKey("ui/city_gray")),
 	WORLD_GRAY(NamespacedKeys.packKey("ui/world_gray")),
 	INFO(NamespacedKeys.packKey("ui/info")),
+	FILTER(NamespacedKeys.packKey("ui/filter")),
 
 	;
 
