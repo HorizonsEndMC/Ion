@@ -49,18 +49,19 @@ fun getCityButtons(
 }
 
 fun getItemButtons(
-	filter: Bson,
+	bson: Bson,
 	sort: BazaarSort,
 	ascending: Boolean,
+	filter: (BazaarItem) -> Boolean = { true },
 	nameBuilder: ((String, FindIterable<BazaarItem>) -> Component)? = null,
 	loreBuilder: (String, FindIterable<BazaarItem>) -> List<Component> = { _, _ ->listOf() },
 	clickHandler: (String, ClickType, Player) -> Unit,
 ): List<AbstractItem> {
-	val items = BazaarItem.find(filter)
+	val items = BazaarItem.find(bson)
 	sort.sort(items, ascending)
 
 	return items
-		.filter { TradeCities.isCity(Regions[it.cityTerritory]) }
+		.filter { TradeCities.isCity(Regions[it.cityTerritory]) && filter(it) }
 		.map { it.itemString }
 		.distinct()
 		.mapTo(mutableListOf()) { itemString ->

@@ -13,6 +13,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.gui.TabGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
@@ -137,5 +138,23 @@ abstract class BazaarPurchaseMenuParent(
 	fun refreshGuiText() {
 		val window = currentWindow ?: return
 		window.changeTitle(getMenuTitle())
+	}
+
+	companion object {
+		fun withGUI(
+			player: Player,
+			remote: Boolean,
+			backButton: AbstractItem,
+			gui: Gui
+		): BazaarPurchaseMenuParent = object : BazaarPurchaseMenuParent(player, remote) {
+			override val backButton: AbstractItem = backButton
+			override fun getMenuGUI(): Gui {
+				return TabGui.normal()
+					.applyPurchaseMenuStructure()
+					.setTabs(listOf(gui))
+					.build()
+					.apply { setTab(currentTab) }
+			}
+		}
 	}
 }
