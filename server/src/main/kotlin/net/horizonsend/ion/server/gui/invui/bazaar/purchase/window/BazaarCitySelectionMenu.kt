@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.gui.GuiItems.closeMenuItem
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.CitySelectionGUI
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.Gui
@@ -22,9 +23,13 @@ class BazaarCitySelectionMenu(viewer: Player, remote: Boolean) : BazaarPurchaseM
 	override val infoButton: AbstractItem = GuiItem.INFO
 		.makeItem(text("Information"))
 		.updateLore(listOf(
-			text("Lore Line 1"),
-			text("Lore Line 2"),
-			text("Lore Line 3"),
+			text("All bazaar listings are made at trade cities, both NPC and player created."),
+			text("Players list items for sale at these cities, and you can browse what is being"),
+			text("sold at those citites from this menu. If you are not in the territory of"),
+			text("the city selling these items, there will be a 4x cost penalty for purchases."),
+			empty(),
+			text("To view listings from every city in one menu, click the view global listings"),
+			text("button (top center)."),
 		))
 		.makeGuiButton { _, _ -> }
 }

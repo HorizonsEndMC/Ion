@@ -15,8 +15,8 @@ class BazaarCityBrowseMenu(viewer: Player, remote: Boolean, cityData: TradeCityD
 	override val menuTitle: String = "Browsing ${cityData.displayName}'s Listings"
 	override val contained: Gui = CityBrowseGUI(this, cityData, pageNumber).getGui()
 
-	override val citySelectionButton: AbstractItem = getCitySelectionButton(false)
-	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(true)
+	override val citySelectionButton: AbstractItem = getCitySelectionButton(true)
+	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(false)
 
 	override val backButton: AbstractItem = GuiItem.CANCEL.makeItem(text("Go Back to City Selection")).makeGuiButton { _, player ->
 		BazaarGUIs.openCitySelection(player, true)
@@ -25,9 +25,9 @@ class BazaarCityBrowseMenu(viewer: Player, remote: Boolean, cityData: TradeCityD
 	override val infoButton: AbstractItem = GuiItem.INFO
 		.makeItem(text("Information"))
 		.updateLore(listOf(
-			text("Lore Line 1"),
-			text("Lore Line 2"),
-			text("Lore Line 3"),
+			text("This menu shows items that players have listed for sale at ${cityData.displayName}"),
+			text("Multiple players can be selling the same item at one city, and clicking on"),
+			text("an item will show those listings."),
 		))
 		.makeGuiButton { _, _ -> }
 }
