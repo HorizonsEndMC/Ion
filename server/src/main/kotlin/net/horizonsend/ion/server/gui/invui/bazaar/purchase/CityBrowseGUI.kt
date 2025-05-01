@@ -16,6 +16,8 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.gt
 import org.litote.kmongo.setValue
+import xyz.xenondevs.invui.gui.PagedGui
+import xyz.xenondevs.invui.item.Item
 
 class CityBrowseGUI(parent: BazaarPurchaseMenuParent, val city: TradeCityData) : BrowseGUI(parent) {
 	override val searchBson: Bson = and(BazaarItem::stock gt 0, BazaarItem::cityTerritory eq city.territoryId)
@@ -47,10 +49,22 @@ class CityBrowseGUI(parent: BazaarPurchaseMenuParent, val city: TradeCityData) :
 	)
 
 	private fun reOpen() {
-		val new = BazaarMainPurchaseMenu(parent.viewer, parent.remote)
+		val (new, cityBrowseGUI) = getCityBrowse(parent, city)
 		new.openGui()
 
-		if (parent is BazaarMainPurchaseMenu) new.setTab(parent.currentTab)
-		new.getTabGUI().setPage(pageNumber)
+		cityBrowseGUI.setPage(pageNumber)
+	}
+
+	companion object {
+		fun getCityBrowse(parent: BazaarPurchaseMenuParent, city: TradeCityData): Pair<BazaarPurchaseMenuParent, PagedGui<Item>> {
+			val cityBrowse = CityBrowseGUI(parent, city)
+
+			return BazaarPurchaseMenuParent.withGUI(
+				parent.viewer,
+				parent.remote,
+				GuiItem.LEFT.makeItem(text("Go Back to City Selection")).makeGuiButton { clickType, player -> parent.openGui() },
+				CityBrowseGUI(parent, city)
+			) to cityBrowse.getGui()
+		}
 	}
 }
