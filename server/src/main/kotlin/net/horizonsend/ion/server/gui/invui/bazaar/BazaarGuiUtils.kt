@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.gui.invui.bazaar
 
-import com.mongodb.client.FindIterable
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
@@ -50,25 +49,25 @@ fun getCityButtons(
 
 fun getItemButtons(
 	bson: Bson,
-	sort: BazaarSort,
-	ascending: Boolean,
+	sort: BazaarMergedSort,
 	filter: (BazaarItem) -> Boolean = { true },
-	nameBuilder: ((String, FindIterable<BazaarItem>) -> Component)? = null,
-	loreBuilder: (String, FindIterable<BazaarItem>) -> List<Component> = { _, _ ->listOf() },
+	nameBuilder: ((String, List<BazaarItem>) -> Component)? = null,
+	loreBuilder: (String, List<BazaarItem>) -> List<Component> = { _, _ ->listOf() },
 	clickHandler: (String, ClickType, Player) -> Unit,
 ): List<AbstractItem> {
 	val items = BazaarItem.find(bson)
-	sort.sort(items, ascending)
 
 	return items
 		.filter { TradeCities.isCity(Regions[it.cityTerritory]) && filter(it) }
-		.map { it.itemString }
-		.distinct()
-		.mapTo(mutableListOf()) { itemString ->
-			AsyncItem({
+		.groupBy { it.itemString }
+		.entries
+		.mapTo(mutableListOf()) { entry ->
+			val (itemString, grouped) = entry
+
+			entry to AsyncItem({
 				with(fromItemString(itemString)) {
-					nameBuilder?.let { updateDisplayName(it.invoke(itemString, items)) }
-					updateLore(loreBuilder.invoke(itemString, items))
+					nameBuilder?.let { updateDisplayName(it.invoke(itemString, grouped)) }
+					updateLore(loreBuilder.invoke(itemString, grouped))
 					// Clear attributes
 					updateData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
 				}
@@ -76,4 +75,6 @@ fun getItemButtons(
 				clickHandler.invoke(itemString, event.click, event.playerClicker)
 			}
 		}
+		.apply { sort.sort(this) }
+		.map { it.second }
 }
