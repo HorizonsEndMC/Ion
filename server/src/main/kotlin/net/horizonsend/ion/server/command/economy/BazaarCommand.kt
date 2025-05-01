@@ -39,7 +39,7 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.BazaarMainPurchaseMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -95,7 +95,7 @@ object BazaarCommand : SLCommand() {
 
 	@Subcommand("newgui")
 	fun testNewGui(sender: Player) {
-		BazaarMainPurchaseMenu(sender, true).openGui()
+		BazaarGUIs.openCitySelection(sender, true)
 	}
 
 	@Suppress("Unused")
