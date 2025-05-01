@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.browse
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.listings.grouped
 
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.information
@@ -26,7 +26,7 @@ import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 import kotlin.math.ceil
 
-abstract class ListingGUIParent(
+abstract class GroupedListingGUIParent(
 	final override val parent: BazaarPurchaseMenuParent,
 	protected var pageNumber: Int = 0
 ): InvUIGuiWrapper<PagedGui<Item>>, BazaarGui {
