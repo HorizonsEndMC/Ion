@@ -13,13 +13,12 @@ import net.horizonsend.ion.server.gui.invui.bazaar.getItemButtons
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bson.conversions.Bson
-import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 import kotlin.math.ceil
 
-abstract class BrowseGUI(final override val parent: BazaarPurchaseMenuParent): InvUIGuiWrapper<Gui>, BazaarGui {
+abstract class BrowseGUI(final override val parent: BazaarPurchaseMenuParent): InvUIGuiWrapper<PagedGui<Item>>, BazaarGui {
 	protected var sortingMethod: BazaarSort = BazaarSort.entries[PlayerCache[parent.viewer].defaultBazaarSort]
 	private var ascendingSort: Boolean = true
 
@@ -28,11 +27,15 @@ abstract class BrowseGUI(final override val parent: BazaarPurchaseMenuParent): I
 	protected var pageNumber = 0
 	private var totalItems = 0
 
-	override fun getGui(): Gui {
+	private var gui: PagedGui<Item>? = null
+
+	override fun getGui(): PagedGui<Item> {
+		if (gui != null) return gui!!
+
 		val buttons = getButtons()
 		totalItems = buttons.size
 
-		return PagedGui.items()
+		val new = PagedGui.items()
 			.setStructure(
 				"# # # # # # # # #",
 				"# # # # # # # # #",
@@ -51,6 +54,9 @@ abstract class BrowseGUI(final override val parent: BazaarPurchaseMenuParent): I
 				parent.refreshGuiText()
 			}
 			.build()
+
+		gui = new
+		return new
 	}
 
 	abstract val searchButton: Item
