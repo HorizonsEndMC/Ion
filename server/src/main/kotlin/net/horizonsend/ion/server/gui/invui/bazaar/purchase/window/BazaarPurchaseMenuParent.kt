@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window
 
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.utils.buttons.SimpleStateButton
@@ -25,7 +26,7 @@ abstract class BazaarPurchaseMenuParent(
 	viewer: Player,
 	val remote: Boolean,
 ) : InvUIWindowWrapper(viewer) {
-	abstract val contained: Gui
+	abstract val contained: InvUIGuiWrapper<out Gui>
 
 	private fun getMenuGUI(): Gui = TabGui.normal()
 		.setStructure(
@@ -46,7 +47,7 @@ abstract class BazaarPurchaseMenuParent(
 		.addIngredient('i', infoButton)
 		.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 
-		.setTabs(listOf(contained))
+		.setTabs(listOf(contained.getGui()))
 		.build()
 
 	override fun buildWindow(): Window = Window.single()

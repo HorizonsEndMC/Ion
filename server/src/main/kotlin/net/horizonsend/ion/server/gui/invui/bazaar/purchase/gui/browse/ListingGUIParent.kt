@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.browse
 
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.information
@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.EnumScrollButton
 import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGui
-import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarMergedSort
 import net.horizonsend.ion.server.gui.invui.bazaar.getItemButtons
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -26,12 +26,11 @@ import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 import kotlin.math.ceil
 
-abstract class BrowseGUIParent(
+abstract class ListingGUIParent(
 	final override val parent: BazaarPurchaseMenuParent,
 	protected var pageNumber: Int = 0
 ): InvUIGuiWrapper<PagedGui<Item>>, BazaarGui {
-	protected var sortingMethod: BazaarSort = BazaarSort.entries[PlayerCache[parent.viewer].defaultBazaarSort]
-	private var ascendingSort: Boolean = true
+	private var sortingMethod: BazaarMergedSort = BazaarMergedSort.entries[PlayerCache[parent.viewer].defaultBazaarSort]
 
 	abstract val searchBson: Bson
 
@@ -81,7 +80,7 @@ abstract class BrowseGUIParent(
 		value = {
 			sortingMethod
 		},
-		BazaarSort::class.java,
+		BazaarMergedSort::class.java,
 		nameFormatter = { text(it.name) },
 		valueConsumer = {
 			sortingMethod = it
@@ -98,9 +97,7 @@ abstract class BrowseGUIParent(
 	private fun getButtons() = getItemButtons(
 		searchBson,
 		sortingMethod,
-		ascendingSort,
-		loreBuilder = { item, filteredItems ->
-			val sellers = filteredItems.filter { it.itemString == item }
+		loreBuilder = { item, sellers ->
 			val sellerCount = sellers.size
 			val totalStock = sellers.sumOf { it.stock }
 			val minPrice = sellers.minOfOrNull { it.price } ?: 0
