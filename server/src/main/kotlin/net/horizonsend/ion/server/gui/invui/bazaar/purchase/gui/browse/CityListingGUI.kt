@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.browse
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
@@ -12,7 +12,7 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.gt
 
-class CityBrowseGUI(parent: BazaarPurchaseMenuParent, val city: TradeCityData, pageNumber: Int = 0) : BrowseGUIParent(parent, pageNumber) {
+class CityListingGUI(parent: BazaarPurchaseMenuParent, val city: TradeCityData, pageNumber: Int = 0) : ListingGUIParent(parent, pageNumber) {
 	override val searchBson: Bson = and(BazaarItem::stock gt 0, BazaarItem::cityTerritory eq city.territoryId)
 
 	override val searchButton = GuiItem.MAGNIFYING_GLASS
