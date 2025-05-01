@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems.closeMenuItem
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.browse.GlobalListingGUI
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.listings.grouped.GlobalGroupedListingGUI
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component.text
@@ -12,7 +12,7 @@ import xyz.xenondevs.invui.item.impl.AbstractItem
 
 class BazaarGlowbalBrowseMenu(viewer: Player, remote: Boolean, pageNumber: Int = 0) : BazaarPurchaseMenuParent(viewer, remote) {
 	override val menuTitle: String = "Browsing All Items"
-	override val contained: GlobalListingGUI = GlobalListingGUI(this, pageNumber)
+	override val contained: GlobalGroupedListingGUI = GlobalGroupedListingGUI(this, pageNumber)
 
 	override val citySelectionButton: AbstractItem = getCitySelectionButton(false)
 	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(true)
