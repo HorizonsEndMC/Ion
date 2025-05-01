@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.gui.custom.misc
 
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
-import net.horizonsend.ion.server.gui.invui.InvUIWrapper
+import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -18,10 +18,10 @@ import kotlin.math.min
 
 class ItemMenu(
 	val title: Component,
-	override val viewer: Player,
+	viewer: Player,
 	private val guiItems: Collection<Item>,
 	private val backButtonHandler: (Player) -> Unit
-) : InvUIWrapper {
+) : InvUIWindowWrapper(viewer) {
     private lateinit var gui: Gui
 
     private fun createGui(): Gui {
