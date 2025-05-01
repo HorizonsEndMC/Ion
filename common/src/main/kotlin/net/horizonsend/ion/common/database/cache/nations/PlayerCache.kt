@@ -98,6 +98,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 		var hideUserPrefixes: Boolean = false,
 		var hideGlobalPrefixes: Boolean = false,
 
+		var defaultBazaarSort: Int = 0,
+
 		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	)
 
@@ -726,7 +728,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 			hitmarkerOnHull = data.hitmarkerOnHull,
 			shortenChatChannels = data.shortenChatChannels,
 			hideUserPrefixes = data.hideUserPrefixes,
-			hideGlobalPrefixes = data.hideGlobalPrefixes
+			hideGlobalPrefixes = data.hideGlobalPrefixes,
+			defaultBazaarSort = data.defaultBazaarSort
 		)
 	}
 
