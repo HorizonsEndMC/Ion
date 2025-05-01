@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.gui.invui.InvUIWrapper
+import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.World
@@ -23,7 +23,7 @@ import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
 
-class NavigationSystemMapGui(override val viewer: Player, val world: World): InvUIWrapper {
+class NavigationSystemMapGui(viewer: Player, val world: World): InvUIWindowWrapper(viewer) {
 	private val gui = Gui.empty(9, 6)
 
 	// stores amount of shift per horizontal scroller
