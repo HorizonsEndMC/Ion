@@ -8,12 +8,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
-import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.impl.AbstractItem
 
 class BazaarCitySelectionMenu(viewer: Player, remote: Boolean) : BazaarPurchaseMenuParent(viewer, remote) {
 	override val menuTitle: String = "Browsing Active Trade Cities"
-	override val contained: Gui = CitySelectionGUI(this).getGui()
+	override val contained = CitySelectionGUI(this)
 
 	override val citySelectionButton: AbstractItem = getCitySelectionButton(true)
 	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(false)
