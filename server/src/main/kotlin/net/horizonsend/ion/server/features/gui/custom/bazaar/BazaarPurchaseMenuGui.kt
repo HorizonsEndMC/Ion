@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.priceMult
-import net.horizonsend.ion.server.gui.invui.InvUIWrapper
+import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
@@ -30,14 +30,13 @@ import xyz.xenondevs.invui.window.AnvilWindow
 import xyz.xenondevs.invui.window.Window
 
 class BazaarPurchaseMenuGui(
-	override val viewer: Player,
+	viewer: Player,
 	private val bazaarItem: BazaarItem,
 	private val sellerName: String,
 	val remote: Boolean,
 	val returnCallback: () -> Unit = {},
 	val confirmCallback: (Player, BazaarItem, Int, Boolean) -> Unit
-) : InvUIWrapper {
-    private var currentWindow: Window? = null
+) : InvUIWindowWrapper(viewer) {
     private var currentAmount = 0
 
     private val returnToItemMenuItem = ReturnToItemMenuButton()

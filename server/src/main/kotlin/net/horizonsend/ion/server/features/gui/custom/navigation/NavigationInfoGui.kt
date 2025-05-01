@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.gui.invui.InvUIWrapper
+import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.entity.Player
@@ -17,14 +17,12 @@ import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
 
 class NavigationInfoGui(
-	override val viewer: Player,
+	viewer: Player,
 	private val name: String,
 	private val icon: GuiItem,
 	private val oreComponent: Component? = null,
 	private val backButtonHandler: () -> Unit
-) : InvUIWrapper {
-
-    private var currentWindow: Window? = null
+) : InvUIWindowWrapper(viewer) {
 
     private fun createGui(): Gui {
         val gui = Gui.normal()
