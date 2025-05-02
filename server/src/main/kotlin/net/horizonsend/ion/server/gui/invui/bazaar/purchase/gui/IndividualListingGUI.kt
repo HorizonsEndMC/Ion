@@ -4,7 +4,6 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
@@ -46,6 +45,7 @@ class IndividualListingGUI(
 			template(text("Stock: {0}", GRAY), bazaarItem.stock)
 		)
 	},
+	private val purchaseBackButton: () -> Unit,
 	private var pageNumber: Int = 0
 ): InvUIGuiWrapper<PagedGui<Item>>, BazaarGui {
 	private var sortingMethod: BazaarSort = BazaarSort.entries[PlayerCache[parentWindow.viewer].defaultBazaarIndividualSort]
@@ -98,7 +98,12 @@ class IndividualListingGUI(
 						updateData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
 					}
 				}) { event ->
-					parentWindow.viewer.information(bazaarItem.itemString)
+					PurchaseItemMenu(
+						parentWindow.viewer,
+						parentWindow.remote,
+						bazaarItem,
+						{ purchaseBackButton.invoke() }
+					).openMenu()
 				}
 			}
 	}
