@@ -1,18 +1,29 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse
 
+import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems.closeMenuItem
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.listings.grouped.GlobalGroupedListingGUI
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.listings.GroupedListingGUI
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
+import org.litote.kmongo.gt
 import xyz.xenondevs.invui.item.impl.AbstractItem
 
 class BazaarGlowbalBrowseMenu(viewer: Player, remote: Boolean, pageNumber: Int = 0) : BazaarPurchaseMenuParent(viewer, remote) {
 	override val menuTitle: String = "Browsing All Items"
-	override val contained: GlobalGroupedListingGUI = GlobalGroupedListingGUI(this, pageNumber)
+	override val contained: GroupedListingGUI = GroupedListingGUI(
+		parentWindow = this,
+		searchBson = BazaarItem::stock gt 0,
+		searchFunction = { println("search") },
+		reOpenHandler = { BazaarGUIs.openGlobalBrowse(viewer, remote, pageNumber) },
+		itemMenuHandler = { itemString -> BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, 0) },
+		pageNumber = pageNumber
+	)
 
 	override val citySelectionButton: AbstractItem = getCitySelectionButton(false)
 	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(true)
@@ -22,7 +33,7 @@ class BazaarGlowbalBrowseMenu(viewer: Player, remote: Boolean, pageNumber: Int =
 	override val infoButton: AbstractItem = GuiItem.INFO
 			.makeItem(text("Information"))
 			.updateLore(listOf(
-				text("Thius menu shows items listed for sale from every tade city."),
+				text("This menu shows items listed for sale from every tade city."),
 				text("Lore Line 2"),
 				text("Lore Line 3"),
 			))
