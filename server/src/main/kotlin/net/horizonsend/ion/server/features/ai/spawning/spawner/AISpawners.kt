@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.RandomS
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.WeightedShipSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.AISpawnerTicker
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.CaravanScheduler
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.TickedScheduler
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
@@ -129,6 +130,7 @@ object AISpawners : IonServerComponent(true) {
 		registerSpawners()
 
 		spawners.mapNotNullTo(tickedAISpawners) { it.scheduler as? TickedScheduler }
+		tickedAISpawners.add(CaravanScheduler)
 	}
 
 	// Run after tick is true

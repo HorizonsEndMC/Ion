@@ -11,14 +11,13 @@ import net.horizonsend.ion.server.features.economy.city.TradeCities
 import org.slf4j.Logger
 
 object CaravanScheduler : SpawnerScheduler,TickedScheduler {
-    private val hasSpawnedToday = AtomicBoolean(false)
 
     override fun tick(logger: Logger) {
         val now = ZonedDateTime.now(ZoneOffset.UTC)
         val minute = now.minute
         val hour = now.hour
 
-        if (minute == 0 && !hasSpawnedToday.get()) {
+        if (minute == 0 ) {
             TradeCities.getAll().forEach { city ->
                 val scheduled = city.scheduledHour ?: return@forEach
                 val convoyTemplate = city.convoyTemplate ?: return@forEach
@@ -31,11 +30,6 @@ object CaravanScheduler : SpawnerScheduler,TickedScheduler {
 					mechanic.trigger(logger)
 				}
             }
-            hasSpawnedToday.set(true)
-        }
-
-        if (minute == 1 && hasSpawnedToday.get()) {
-            hasSpawnedToday.set(false)
         }
     }
 
