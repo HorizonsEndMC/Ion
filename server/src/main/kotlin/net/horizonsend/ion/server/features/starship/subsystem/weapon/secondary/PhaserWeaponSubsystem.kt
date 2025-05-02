@@ -61,7 +61,7 @@ class PhaserWeaponSubsystem(
 			tick += 1
 		}.runTaskTimer(IonServer, 0L, 5L)
 
-		Tasks.syncDelay(20 * WARM_UP_TIME_SECONDS.toLong()) {
+		Tasks.syncDelay((20 * WARM_UP_TIME_SECONDS).toLong()) {
             		val newFirePos = getFirePos()
 			fixDirections(loc)
 			PhaserProjectile(starship, getName(), newFirePos.toLocation(loc.world), dir, shooter).fire()
