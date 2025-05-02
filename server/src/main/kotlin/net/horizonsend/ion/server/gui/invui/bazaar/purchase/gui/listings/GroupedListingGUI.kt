@@ -1,7 +1,6 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.listings.grouped
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.listings
 
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
@@ -12,9 +11,10 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.EnumScrollButton
 import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGui
-import net.horizonsend.ion.server.gui.invui.bazaar.BazaarMergedSort
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.getItemButtons
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.text
@@ -26,21 +26,19 @@ import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 import kotlin.math.ceil
 
-abstract class GroupedListingGUIParent(
-	final override val parent: BazaarPurchaseMenuParent,
-	protected var pageNumber: Int = 0
+class GroupedListingGUI(
+	private val parentWindow: BazaarPurchaseMenuParent,
+	private val searchBson: Bson,
+	private val searchFunction: () -> Unit = { println("Search") },
+	private val reOpenHandler: () -> Unit,
+	private val itemMenuHandler: (String) -> Unit,
+	private var pageNumber: Int = 0
 ): InvUIGuiWrapper<PagedGui<Item>>, BazaarGui {
-	private var sortingMethod: BazaarMergedSort = BazaarMergedSort.entries[PlayerCache[parent.viewer].defaultBazaarSort]
-
-	abstract val searchBson: Bson
+	private var sortingMethod: BazaarSort = BazaarSort.entries[PlayerCache[parentWindow.viewer].defaultBazaarGroupedSort]
 
 	private var totalItems = 0
 
-	private var gui: PagedGui<Item>? = null
-
 	override fun getGui(): PagedGui<Item> {
-		if (gui != null) return gui!!
-
 		val buttons = getButtons()
 		totalItems = buttons.size
 
@@ -60,37 +58,36 @@ abstract class GroupedListingGUIParent(
 			.setContent(getButtons())
 			.addPageChangeHandler { _, new ->
 				pageNumber = new
-				parent.refreshGuiText()
+				parentWindow.refreshGuiText()
 			}
 			.build()
 
 		new.setPage(pageNumber)
 
-		gui = new
 		return new
 	}
 
-	abstract val searchButton: Item
-
-	abstract fun reOpen()
+	private val searchButton = GuiItem.MAGNIFYING_GLASS
+		.makeItem(text("Search for Items"))
+		.makeGuiButton { _, _ ->
+			searchFunction.invoke()
+		}
 
 	private val sortButton = EnumScrollButton(
-		{ GuiItem.FILTER.makeItem(text("Change Sorting Method")) },
+		providedItem = { GuiItem.FILTER.makeItem(text("Change Sorting Method")) },
 		increment = 1,
-		value = {
-			sortingMethod
-		},
-		BazaarMergedSort::class.java,
+		value = { sortingMethod },
+		enum = BazaarSort::class.java,
 		nameFormatter = { it.displayName },
 		valueConsumer = {
 			sortingMethod = it
 
-			PlayerCache[parent.viewer].defaultBazaarSort = sortingMethod.ordinal
+			PlayerCache[parentWindow.viewer].defaultBazaarGroupedSort = sortingMethod.ordinal
 			Tasks.async {
-				SLPlayer.updateById(parent.viewer.slPlayerId, setValue(SLPlayer::defaultBazaarSort, sortingMethod.ordinal))
+				SLPlayer.updateById(parentWindow.viewer.slPlayerId, setValue(SLPlayer::defaultBazaarGroupedSort, sortingMethod.ordinal))
 			}
 
-			reOpen()
+			reOpenHandler.invoke()
 		}
 	)
 
@@ -109,8 +106,8 @@ abstract class GroupedListingGUIParent(
 				ofChildren(text("Max price of listing${if (sellerCount != 1) "s" else ""}: ", GRAY), maxPrice.toCreditComponent()),
 			)
 		},
-		clickHandler = { itemString, _, player ->
-			player.information(itemString)
+		clickHandler = { itemString, _, _ ->
+			itemMenuHandler.invoke(itemString)
 		}
 	)
 
