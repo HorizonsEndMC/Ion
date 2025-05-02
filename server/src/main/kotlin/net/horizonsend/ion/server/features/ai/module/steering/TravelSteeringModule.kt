@@ -20,7 +20,7 @@ import net.horizonsend.ion.server.features.ai.module.steering.context.WanderCont
 import net.horizonsend.ion.server.features.ai.module.steering.context.WorldBlockDangerContext
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import java.util.function.Supplier
 import kotlin.math.pow
 

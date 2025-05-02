@@ -120,8 +120,8 @@ class Fleet(var leader: FleetMember?) : ForwardingAudience {
     }
 
 	fun useBeaconFleet() {
-        for (memberId in memberIds) {
-            val player = Bukkit.getPlayer(memberId) ?: continue
+        for (member in members.filterIsInstance<FleetMember.PlayerMember>()) {
+            val player = Bukkit.getPlayer(member.uuid) ?: continue
 
             MiscStarshipCommands.onUseBeacon(player)
         }

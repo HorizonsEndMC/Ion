@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.ai.module.steering.context
 
-import net.horizonsend.ion.server.miscellaneous.utils.isNan
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isNan
 import org.bukkit.util.Vector
 import java.util.Arrays
 import kotlin.math.PI

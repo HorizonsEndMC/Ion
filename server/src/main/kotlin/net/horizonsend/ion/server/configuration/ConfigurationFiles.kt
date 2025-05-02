@@ -4,7 +4,6 @@ import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.ai.configuration.AIEmities
 import net.horizonsend.ion.server.features.ai.configuration.AIPowerModes
-import net.horizonsend.ion.server.features.ai.configuration.AISpawningConfiguration
 import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextConfiguration
 import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
 import net.horizonsend.ion.server.features.transport.NewTransport
@@ -32,7 +31,6 @@ object ConfigurationFiles {
 
 	val tradeConfiguration = defineConfigurationFile<TradeConfiguration>(configurationFolder, "trade")
 
-	val aiSpawningConfiguration = defineConfigurationFile<AISpawningConfiguration>(configurationFolder, "aiSpawning")
 
 	val aiSteeringConfiguration = defineConfigurationFile<AISteeringConfiguration>(configurationFolder, "aiSteering")
 

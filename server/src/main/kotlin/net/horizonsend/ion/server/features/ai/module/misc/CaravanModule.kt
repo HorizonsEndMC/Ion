@@ -16,7 +16,7 @@ import net.horizonsend.ion.server.features.starship.fleet.Fleet
 import net.horizonsend.ion.server.features.starship.fleet.FleetLogic
 import net.horizonsend.ion.server.features.starship.fleet.FleetMember
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import java.lang.ref.WeakReference

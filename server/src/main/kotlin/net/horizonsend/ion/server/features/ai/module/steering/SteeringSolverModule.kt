@@ -13,8 +13,8 @@ import net.horizonsend.ion.server.features.starship.control.input.DirectControlI
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
-import net.horizonsend.ion.server.miscellaneous.utils.vectorToPitchYaw
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToPitchYaw
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import java.util.function.Supplier

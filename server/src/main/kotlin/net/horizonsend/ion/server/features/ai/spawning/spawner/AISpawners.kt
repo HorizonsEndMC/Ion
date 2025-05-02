@@ -187,7 +187,7 @@ object AISpawners : IonServerComponent(true) {
 				individualSpawnMessage = null,
 				asBagSpawned(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCED), 1),
 				asBagSpawned(WATCHERS.asSpawnedShip(TERALITH), 2),
-				{_ -> Supplier { watcherLocusScheduler.difficulty }}
+				difficultySupplier = {_ -> Supplier { watcherLocusScheduler.difficulty }}
 			)
 		))
 
