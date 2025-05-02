@@ -31,9 +31,11 @@ class GroupedListingGUI(
 	private val searchBson: Bson,
 	private val searchFunction: () -> Unit = { println("Search") },
 	private val reOpenHandler: () -> Unit,
-	private val itemMenuHandler: (String) -> Unit,
-	private var pageNumber: Int = 0
+	private val itemMenuHandler: GroupedListingGUI.(String) -> Unit,
+	pageNumber: Int = 0
 ): InvUIGuiWrapper<PagedGui<Item>>, BazaarGui {
+	var pageNumber = pageNumber; private set
+
 	private var sortingMethod: BazaarSort = BazaarSort.entries[PlayerCache[parentWindow.viewer].defaultBazaarGroupedSort]
 
 	private var totalItems = 0
@@ -107,7 +109,7 @@ class GroupedListingGUI(
 			)
 		},
 		clickHandler = { itemString, _, _ ->
-			itemMenuHandler.invoke(itemString)
+			itemMenuHandler.invoke(this, itemString)
 		}
 	)
 
