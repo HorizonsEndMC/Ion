@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.listings.GroupedListingGUI
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.GroupedListingGUI
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
