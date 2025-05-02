@@ -33,6 +33,9 @@ class CityItemListingsMenu(
 			BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, pageNumber)
 		},
 		searchBson = and(BazaarItem::cityTerritory eq cityData.territoryId, BazaarItem::itemString eq itemString, BazaarItem::stock gt 0),
+		purchaseBackButton = {
+			BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, pageNumber)
+		},
 		pageNumber = pageNumber
 	)
 
