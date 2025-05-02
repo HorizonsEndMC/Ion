@@ -33,6 +33,16 @@ enum class BazaarMergedSort(val displayName: Component) {
 		override fun sort(collection: MutableList<Pair<Map. Entry<String, List<BazaarItem>>, AsyncItem>>) {
 			collection.sortBy { it.first.value.maxOfOrNull(property) }
 		}
+	},
+	HIGHEST_LISTINGS(text("Highest Listings")) {
+		override fun sort(collection: MutableList<Pair<Map. Entry<String, List<BazaarItem>>, AsyncItem>>) {
+			collection.sortByDescending { it.first.value.size }
+		}
+	},
+	LOWEST_LISTINGS(text("Lowest Listings")) {
+		override fun sort(collection: MutableList<Pair<Map. Entry<String, List<BazaarItem>>, AsyncItem>>) {
+			collection.sortBy { it.first.value.size }
+		}
 	}
 
 	;
