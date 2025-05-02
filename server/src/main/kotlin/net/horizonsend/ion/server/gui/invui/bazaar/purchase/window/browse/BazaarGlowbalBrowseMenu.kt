@@ -5,10 +5,11 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems.closeMenuItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.listings.GroupedListingGUI
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.GroupedListingGUI
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import org.litote.kmongo.gt
@@ -36,6 +37,9 @@ class BazaarGlowbalBrowseMenu(viewer: Player, remote: Boolean, pageNumber: Int =
 				text("This menu shows items listed for sale from every tade city."),
 				text("Lore Line 2"),
 				text("Lore Line 3"),
+				empty(),
+				text("To view listings from individual cities, click the view city selection button"),
+				text("button (top center)."),
 			))
 			.makeGuiButton { _, _ -> }
 

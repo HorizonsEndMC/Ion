@@ -27,7 +27,7 @@ class BazaarCitySelectionMenu(viewer: Player, remote: Boolean) : BazaarPurchaseM
 			text("sold at those citites from this menu. If you are not in the territory of"),
 			text("the city selling these items, there will be a 4x cost penalty for purchases."),
 			empty(),
-			text("To view listings from every city in one menu, click the view global listings"),
+			text("To view listings from every city in one menu, click the view global listings button"),
 			text("button (top center)."),
 		))
 		.makeGuiButton { _, _ -> }
