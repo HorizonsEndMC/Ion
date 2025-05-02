@@ -4,7 +4,6 @@ import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
-import net.horizonsend.ion.server.features.gui.GuiItems.closeMenuItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.listings.IndividualListingGUI
@@ -24,6 +23,7 @@ class CityItemListingsMenu(
 	remote: Boolean,
 	cityData: TradeCityData,
 	itemString: String,
+	private val previousPageNumber: Int? = null,
 	pageNumber: Int = 0
 ) : BazaarPurchaseMenuParent(viewer, remote) {
 	override val menuTitle: String = "${fromItemString(itemString).displayNameString} @ ${cityData.displayName}"
@@ -39,8 +39,9 @@ class CityItemListingsMenu(
 	override val citySelectionButton: AbstractItem = getCitySelectionButton(true)
 	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(false)
 
-	override val backButton: AbstractItem = closeMenuItem(viewer) //TODO
-
+	override val backButton: AbstractItem = GuiItem.LEFT.makeItem(text("Go Back to Viewing City Listings")).makeGuiButton { _, player ->
+		BazaarGUIs.openCityBrowse(player, remote, cityData, previousPageNumber ?: 0)
+	}
 	override val infoButton: AbstractItem = GuiItem.INFO
 		.makeItem(text("Information"))
 		.updateLore(listOf(

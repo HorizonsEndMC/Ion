@@ -23,7 +23,7 @@ class BazaarCityBrowseMenu(viewer: Player, remote: Boolean, cityData: TradeCityD
 		searchBson = and(BazaarItem::stock gt 0, BazaarItem::cityTerritory eq cityData.territoryId),
 		searchFunction = { println("search") },
 		reOpenHandler = { BazaarGUIs.openCityBrowse(viewer, remote, cityData, pageNumber) },
-		itemMenuHandler = { itemString -> BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, 0) },
+		itemMenuHandler = { itemString -> BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, this.pageNumber, 0) },
 		pageNumber = pageNumber
 	)
 

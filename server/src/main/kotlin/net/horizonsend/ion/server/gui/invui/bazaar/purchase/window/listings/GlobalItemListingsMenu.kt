@@ -6,7 +6,6 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.gui.GuiItem
-import net.horizonsend.ion.server.features.gui.GuiItems.closeMenuItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -33,6 +32,7 @@ class GlobalItemListingsMenu(
 	viewer: Player,
 	remote: Boolean,
 	itemString: String,
+	private val previousPageNumber: Int? = null,
 	pageNumber: Int = 0
 ) : BazaarPurchaseMenuParent(viewer, remote) {
 	override val menuTitle: String = "${fromItemString(itemString).displayNameString} from Everywhere"
@@ -83,7 +83,9 @@ class GlobalItemListingsMenu(
 	override val citySelectionButton: AbstractItem = getCitySelectionButton(true)
 	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(false)
 
-	override val backButton: AbstractItem = closeMenuItem(viewer) //TODO
+	override val backButton: AbstractItem = GuiItem.LEFT.makeItem(text("Go Back to Viewing Global Listings")).makeGuiButton { _, player ->
+		BazaarGUIs.openGlobalBrowse(player, true, previousPageNumber ?: 0)
+	}
 
 	override val infoButton: AbstractItem = GuiItem.INFO
 		.makeItem(text("Information"))

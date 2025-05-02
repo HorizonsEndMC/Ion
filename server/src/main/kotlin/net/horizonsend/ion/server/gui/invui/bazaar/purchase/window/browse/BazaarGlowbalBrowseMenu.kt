@@ -21,7 +21,7 @@ class BazaarGlowbalBrowseMenu(viewer: Player, remote: Boolean, pageNumber: Int =
 		searchBson = BazaarItem::stock gt 0,
 		searchFunction = { println("search") },
 		reOpenHandler = { BazaarGUIs.openGlobalBrowse(viewer, remote, pageNumber) },
-		itemMenuHandler = { itemString -> BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, 0) },
+		itemMenuHandler = { itemString -> BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, this.pageNumber, 0) },
 		pageNumber = pageNumber
 	)
 
