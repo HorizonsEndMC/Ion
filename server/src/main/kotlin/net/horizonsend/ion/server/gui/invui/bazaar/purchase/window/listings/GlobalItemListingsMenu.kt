@@ -77,6 +77,9 @@ class GlobalItemListingsMenu(
 				template(text("Distance: {0}", GRAY), useQuotesAroundObjects = false, distance),
 			)
 		},
+		purchaseBackButton = {
+			BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, pageNumber)
+		},
 		pageNumber = pageNumber
 	)
 
