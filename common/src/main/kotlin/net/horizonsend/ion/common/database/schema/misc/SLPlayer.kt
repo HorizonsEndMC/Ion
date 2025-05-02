@@ -120,7 +120,8 @@ data class SLPlayer(
 	var hideUserPrefixes: Boolean = false,
 	var hideGlobalPrefixes: Boolean = false,
 
-	var defaultBazaarSort: Int = 0,
+	var defaultBazaarGroupedSort: Int = 0,
+	var defaultBazaarIndividualSort: Int = 0,
 
 	var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	var wasKilledOn: Set<String> = setOf(),
