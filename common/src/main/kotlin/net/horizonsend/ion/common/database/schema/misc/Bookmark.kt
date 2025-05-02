@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.trx
 import net.horizonsend.ion.common.utils.DBVec3i
+import net.horizonsend.ion.common.utils.NavigationObject
 import org.litote.kmongo.and
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
@@ -15,7 +16,7 @@ import org.litote.kmongo.findOne
 
 class Bookmark(
     override val _id: Oid<Bookmark>,
-    val name: String,
+    override val name: String,
 
     val x: Int,
     val y: Int,
@@ -24,7 +25,7 @@ class Bookmark(
     val serverName: String = "Survival",
     val worldName: String,
     val owner: SLPlayerId
-) : DbObject {
+) : DbObject, NavigationObject {
     companion object : OidDbObjectCompanion<Bookmark>(Bookmark::class, setup = {
         ensureIndex(Bookmark::owner)
         ensureIndex(Bookmark::name)

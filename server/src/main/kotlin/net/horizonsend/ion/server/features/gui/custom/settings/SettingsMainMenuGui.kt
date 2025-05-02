@@ -35,7 +35,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 
 	override val backButton: Item = SimpleItem(GuiItems.blankItem)
 
-    override val buttonsList = listOf<SettingsPageGui>(
+    override val buttonsList = listOf(
 		createSettingsPage(player, "Control Settings",
 			DBCachedBooleanToggle(text("DC Overrides Cruise"), "", GuiItem.GUNSHIP, false, SLPlayer::useAlternateDCCruise, AbstractPlayerCache.PlayerData::useAlternateDCCruise),
 			DBCachedIntCycle(5, 1, text("DC Speed Modifier"), "", GuiItem.GUNSHIP, 1, SLPlayer::dcSpeedModifier, AbstractPlayerCache.PlayerData::dcSpeedModifier)

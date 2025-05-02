@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.player
 
+import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.extensions.alert
@@ -17,6 +18,7 @@ import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -83,9 +85,10 @@ object CombatTimer : IonServerComponent() {
 			Bukkit.getOnlinePlayers().forEach { player ->
 				val pilotedStarship = PilotedStarships[player]
 
-				// Only actively controlled warships can cause proximity triggered combat tags
+				// Only actively controlled warships (that are not starfighter or interceptor) can cause proximity triggered combat tags
 				if (pilotedStarship != null && pilotedStarship.controller !is UnpilotedController &&
-					pilotedStarship.type.typeCategory == TypeCategory.WAR_SHIP) {
+					pilotedStarship.type.typeCategory == TypeCategory.WAR_SHIP &&
+					pilotedStarship.type != StarshipType.INTERCEPTOR && pilotedStarship.type != StarshipType.STARFIGHTER) {
 					val starshipCom  = pilotedStarship.centerOfMass.toLocation(player.world)
 
 					if (pilotedStarship.isInterdicting && pilotedStarship.world.hasFlag(WorldFlag.SPACE_WORLD)) {
@@ -137,6 +140,17 @@ object CombatTimer : IonServerComponent() {
 
 		// Remove all combat tags on death
 		listen<PlayerDeathEvent> { event ->
+			if (npcTimer[event.player.uniqueId] != null) {
+				event.player.success("You are no longer in combat (NPC)")
+				npcTimer.remove(event.player.uniqueId)
+			}
+			if (pvpTimer[event.player.uniqueId] != null) {
+				event.player.success("You are no longer in combat (PVP)")
+				pvpTimer.remove(event.player.uniqueId)
+			}
+		}
+
+		listen<PlayerPostRespawnEvent> { event ->
 			if (npcTimer[event.player.uniqueId] != null) {
 				event.player.success("You are no longer in combat (NPC)")
 				npcTimer.remove(event.player.uniqueId)

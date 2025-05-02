@@ -5,8 +5,10 @@ import io.papermc.paper.datacomponent.item.ItemEnchantments
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ADVANCED_ITEM_EXTRACTOR
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_INGOT
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_ORE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ARMOR_MODIFICATION_ENVIRONMENT
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ARMOR_MODIFICATION_NIGHT_VISION
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ARMOR_MODIFICATION_PRESSURE_FIELD
@@ -56,7 +58,9 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_C
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_CANISTER_HYDROGEN
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GUN_BARREL
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ITEM_FILTER
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.MOTHERBOARD
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.MULTIBLOCK_WORKBENCH
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.NETHERITE_CASING
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.PISTOL_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_ARMOR_BOOTS
@@ -112,18 +116,23 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.SUPER
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.SUPERCONDUCTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.TITANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.TITANIUM_INGOT
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.TITANIUM_ORE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.UNCHARGED_SHELL
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.UNLOADED_ARSENAL_MISSILE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.UNLOADED_SHELL
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM_CORE
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM_ORE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.URANIUM_ROD
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.VEIN_MINER_25
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.WRENCH
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorItem
 import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.ALL_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.WOOL_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
@@ -140,7 +149,10 @@ import org.bukkit.Material.COBWEB
 import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COPPER_BLOCK
 import org.bukkit.Material.COPPER_INGOT
+import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.DARK_PRISMARINE
+import org.bukkit.Material.DEEPSLATE_GOLD_ORE
+import org.bukkit.Material.DEEPSLATE_REDSTONE_ORE
 import org.bukkit.Material.DIAMOND
 import org.bukkit.Material.DIAMOND_BLOCK
 import org.bukkit.Material.DISPENSER
@@ -204,16 +216,22 @@ import org.bukkit.Material.TURTLE_EGG
 import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.inventory.BlastingRecipe
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice
 import org.bukkit.inventory.RecipeChoice.ExactChoice
+import org.bukkit.inventory.RecipeChoice.MaterialChoice
 import org.bukkit.inventory.ShapedRecipe
 import org.bukkit.inventory.ShapelessRecipe
 
 @Suppress("unused") // Lots of helper functions which may not be used now but will be in the future
 object Crafting : IonServerComponent() {
 	override fun onEnable() {
+		registerOreFurnaceRecipes()
+		registerTools()
+		registerMisc()
+
 		// Prismarine Bricks
 		Bukkit.addRecipe(FurnaceRecipe(
 			NamespacedKey(IonServer, "prismarine_bricks"),
@@ -241,9 +259,12 @@ object Crafting : IonServerComponent() {
 		}
 		shapedMaterial("nametag", NAME_TAG, "s", "t", "p", 's' to STRING, 't' to TRIPWIRE_HOOK, 'p' to PAPER)
 		shapedMaterial("gilded_blackstone", GILDED_BLACKSTONE, "gbg", "bgb", "gbg", 'g' to GOLD_NUGGET, 'b' to BLACKSTONE)
+		shapedMaterial("deepslate_restone_ore", DEEPSLATE_REDSTONE_ORE, "ggg", "gbg", "ggg", 'g' to REDSTONE, 'b' to Material.DEEPSLATE)
+		shapedMaterial("deepslate_gold_ore", DEEPSLATE_GOLD_ORE, "gbg", "bgb", "gbg", 'g' to RAW_GOLD, 'b' to Material.DEEPSLATE)
 		shapedMaterial("sniffer_egg", SNIFFER_EGG, "rdr", "ded", "rdr", 'r' to RED_TERRACOTTA, 'd' to DARK_PRISMARINE, 'e' to TURTLE_EGG)
 		shapedMaterial("ochre_froglight", OCHRE_FROGLIGHT, " x ", "xlx", " x ", 'x' to HONEYCOMB, 'l' to SHROOMLIGHT)
 		shapeless("pale_oak", ItemStack(Material.PALE_OAK_SAPLING), Material.OAK_SAPLING, Material.BONE)
+		shapeless("pale_moss", ItemStack(Material.PALE_MOSS_BLOCK), MOSS_BLOCK, Material.PALE_OAK_LEAVES)
 		shapedMaterial("verdant_froglight", VERDANT_FROGLIGHT, " x ", "xlx", " x ", 'x' to SLIME_BALL, 'l' to SHROOMLIGHT)
 		shapedMaterial("pearlescent_froglight", PEARLESCENT_FROGLIGHT, " x ", "xlx", " x ", 'x' to AMETHYST_SHARD, 'l' to SHROOMLIGHT)
 		shaped("spore_blossom", SPORE_BLOSSOM) {
@@ -259,6 +280,10 @@ object Crafting : IonServerComponent() {
 		shapeless("nether_warts", ItemStack(NETHER_WART, 9), NETHER_WART_BLOCK)
 		shapeless("honeycomb", ItemStack(HONEYCOMB, 9), HONEYCOMB_BLOCK)
 		shapedMaterial("cobweb", COBWEB, "s s", " s ", "s s", 's' to STRING)
+		shapedMaterial("small_dripleaf" , Material.SMALL_DRIPLEAF, shape1 = "xx ", shape2 = " y ", shape3 = "   ",'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
+		shapedMaterial("big_dripleaf" , Material.BIG_DRIPLEAF, shape1 = "xxx", shape2 = "  y", shape3 = "  y",'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
+
+		Bukkit.removeRecipe(Material.ENDER_CHEST.key)
 		shaped("Unloaded__Shell", UNLOADED_SHELL.constructItemStack()) {
 			shape(" y ", " z ")
 
@@ -607,6 +632,15 @@ object Crafting : IonServerComponent() {
 			setIngredient('y', SUPERCONDUCTOR_CORE.constructItemStack())
 			setIngredient('z', FUEL_CONTROL.constructItemStack())
 		}
+
+		shaped("multiblock_workbench", MULTIBLOCK_WORKBENCH.constructItemStack()) {
+			shape("i", "c")
+
+			setIngredient('i', IRON_BLOCK)
+			setIngredient('c', CRAFTING_TABLE)
+		}
+
+		// Tool Mods start
 		shaped("silk_touch_modifier", SILK_TOUCH_MOD.constructItemStack()) {
 			shape("gbg", "tst", "ctc")
 
@@ -616,6 +650,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('s', ItemStack(ENCHANTED_BOOK).updateData(DataComponentTypes.STORED_ENCHANTMENTS, ItemEnchantments.itemEnchantments(mapOf(Enchantment.SILK_TOUCH to 1), true)))
 			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
 		}
+
 		shaped("fortune_1_touch_modifier", FORTUNE_1.constructItemStack()) {
 			shape("dgd", "csc", "dgd")
 
@@ -779,6 +814,58 @@ object Crafting : IonServerComponent() {
 		registerSwordRecipes(ENERGY_SWORD_PINK, RecipeChoice.MaterialChoice(PINK_TULIP))
 	}
 
+	private fun registerOreFurnaceRecipes() {
+		fun registerFurnaceRecipe(smelted: CustomItem, result: CustomItem) {
+			Bukkit.addRecipe(FurnaceRecipe(
+				NamespacedKey(IonServer, "${smelted.identifier.lowercase()}_smelting"),
+				result.constructItemStack(),
+				ExactChoice(smelted.constructItemStack()),
+				0.5f,
+				200
+			))
+
+			Bukkit.addRecipe(BlastingRecipe(
+				NamespacedKey(IonServer, "${smelted.identifier.lowercase()}_blasting"),
+				result.constructItemStack(),
+				ExactChoice(smelted.constructItemStack()),
+				0.5f,
+				100
+			))
+		}
+
+		fun registerOreType(rawType: CustomItem, oreType: CustomBlockItem, smeltedType: CustomItem) {
+			registerFurnaceRecipe(rawType, smeltedType)
+			registerFurnaceRecipe(oreType, smeltedType)
+		}
+
+		registerOreType(rawType = RAW_ALUMINUM, oreType = ALUMINUM_ORE, smeltedType = ALUMINUM_INGOT)
+		registerOreType(rawType = RAW_TITANIUM, oreType = TITANIUM_ORE, smeltedType = TITANIUM_INGOT)
+		registerOreType(rawType = RAW_URANIUM, oreType = URANIUM_ORE, smeltedType = URANIUM)
+		registerFurnaceRecipe(smelted = CHETHERITE_BLOCK, result = CHETHERITE)
+	}
+
+	private fun registerTools() {
+		shaped("wrench", WRENCH) {
+			shape("a a", " a ", " a ")
+			setIngredient('a', IRON_INGOT)
+		}
+	}
+
+	private fun registerMisc() {
+		shaped("advanced_item_extractor", ADVANCED_ITEM_EXTRACTOR) {
+			shape(" g ", "rcr", " g ")
+			setIngredient('c', CRAFTING_TABLE)
+			setIngredient('g', MaterialChoice(*ALL_GLASS_TYPES.toTypedArray()))
+			setIngredient('r', REDSTONE)
+		}
+		shaped("item_filter", ITEM_FILTER) {
+			shape(" g ", "rhr", " g ")
+			setIngredient('h', HOPPER)
+			setIngredient('g', MaterialChoice(*ALL_GLASS_TYPES.toTypedArray()))
+			setIngredient('r', REDSTONE)
+		}
+	}
+
 	// Different names due to signature problems from type erasure
 	private fun shapedMaterial(name: String, result: Material, shape1: String, shape2: String, shape3: String, vararg ingredients: Pair<Char, Material>) {
 		val recipe = ShapedRecipe(NamespacedKeys.key(name), ItemStack(result))
@@ -857,7 +944,7 @@ object Crafting : IonServerComponent() {
 
 	private fun ShapedRecipe.setIngredient(key: Char, customItem: CustomItem) = setIngredient(key, customItem.constructItemStack())
 
-	fun materialBlockRecipes(blockItem: CustomBlockItem, ingotItem: CustomItem) {
+	private fun materialBlockRecipes(blockItem: CustomBlockItem, ingotItem: CustomItem) {
 		shapeless(blockItem.identifier.lowercase(), blockItem.constructItemStack()) {
 			addIngredient(ingotItem.constructItemStack(9))
 		}

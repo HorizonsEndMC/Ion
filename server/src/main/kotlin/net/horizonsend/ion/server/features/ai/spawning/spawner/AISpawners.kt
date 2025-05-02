@@ -167,23 +167,26 @@ object AISpawners : IonServerComponent(true) {
 		val watcherLocusScheduler = LocusScheduler(
 			"<$WATCHER_STANDARD>Unknown Signal Locus".miniMessage(),
 			WATCHER_STANDARD,
-			duration = { Duration.ofMinutes(30) },
-			separation = { getRandomDuration(Duration.ofHours(3), Duration.ofHours(5)) },
+			duration = { Duration.ofMinutes(20) },
+			separation = { getRandomDuration(Duration.ofHours(6), Duration.ofHours(9)) },
 			difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 			"<${HE_MEDIUM_GRAY}>An <$WATCHER_STANDARD>Unknown Signal<${HE_MEDIUM_GRAY}> has been detected in {0} at {1} {3}. <$WATCHER_ACCENT>Alien starships patrol the area.".miniMessage(),
 			"<${HE_MEDIUM_GRAY}>The <$WATCHER_STANDARD>Unknown Signal<${HE_MEDIUM_GRAY}> has disappeared".miniMessage(),
 			radius = 1500.0,
-			spawnSeparation = { getRandomDuration(Duration.ofSeconds(30), Duration.ofSeconds(90)) },
+			spawnSeparation = { getRandomDuration(Duration.ofSeconds(120), Duration.ofSeconds(180)) },
 			listOf("Trench", "AU-0821", "Horizon")
 		)
 
 		registerGlobalSpawner(GlobalWorldSpawner(
 			"WATCHER_LOCUS",
 			watcherLocusScheduler,
-			SingleSpawn(
-				RandomShipSupplier(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCED), WATCHERS.asSpawnedShip(TERALITH)),
+			BagSpawner(
 				watcherLocusScheduler.spawnLocationProvider,
-				SpawnMessage.WorldMessage("<$WATCHER_ACCENT>Watcher Vessels<$HE_MEDIUM_GRAY> answer the call of the signal.".miniMessage()),
+				VariableIntegerAmount(3, 5),
+				groupMessage = null,
+				individualSpawnMessage = null,
+				asBagSpawned(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCED), 1),
+				asBagSpawned(WATCHERS.asSpawnedShip(TERALITH), 2),
 				{_ -> Supplier { watcherLocusScheduler.difficulty }}
 			)
 		))
@@ -823,7 +826,7 @@ object AISpawners : IonServerComponent(true) {
 			"<$PRIVATEER_LIGHT_TEAL>Privateer<${HE_MEDIUM_GRAY}> Naval Drills".miniMessage(),
 			PRIVATEER_LIGHT_TEAL,
 			duration = { Duration.ofMinutes(30) },
-			separation = { getRandomDuration(Duration.ofHours(2), Duration.ofHours(4)) },
+			separation = { getRandomDuration(Duration.ofHours(1), Duration.ofHours(5)) },
 			difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 			"<$PRIVATEER_LIGHT_TEAL>Privateer Naval Drills<${HE_MEDIUM_GRAY}> will be conducted in {0} at {1} {3}. Please avoid the area.".miniMessage(),
 			"<$PRIVATEER_LIGHT_TEAL>Privateer Naval Drills<${HE_MEDIUM_GRAY}> have ended".miniMessage(),
@@ -899,7 +902,7 @@ object AISpawners : IonServerComponent(true) {
 			"<$TSAII_DARK_ORANGE>Tsaii Warband".miniMessage(),
 			PIRATE_SATURATED_RED,
 			duration = { Duration.ofMinutes(30) },
-			separation = { getRandomDuration(Duration.ofHours(2), Duration.ofHours(4)) },
+			separation = { getRandomDuration(Duration.ofHours(2), Duration.ofHours(5)) },
 			difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 			"<${HE_MEDIUM_GRAY}>A <$TSAII_DARK_ORANGE>Tsaii Warband<${HE_MEDIUM_GRAY}> has been spotted in {0} at {1} {3}. <$TSAII_MEDIUM_ORANGE>Please avoid the area.".miniMessage(),
 			"<${HE_MEDIUM_GRAY}>The <$TSAII_DARK_ORANGE>Tsaii Warband<${HE_MEDIUM_GRAY}> has departed".miniMessage(),

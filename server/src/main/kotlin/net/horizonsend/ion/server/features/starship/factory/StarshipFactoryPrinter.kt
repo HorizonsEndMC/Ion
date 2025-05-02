@@ -2,12 +2,12 @@ package net.horizonsend.ion.server.features.starship.factory
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.transport.Extractors
+import net.horizonsend.ion.server.features.transport.NewTransport
+import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.setNMSBlockData
@@ -16,11 +16,9 @@ import net.starlegacy.javautil.SignUtils
 import org.bukkit.World
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
+import org.bukkit.craftbukkit.block.data.CraftBlockData
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 import kotlin.math.min
 
 class StarshipFactoryPrinter(
@@ -183,7 +181,9 @@ class StarshipFactoryPrinter(
 			val blockZ = blockKeyZ(key)
 
 			world.setNMSBlockData(blockX, blockY, blockZ, data)
-			if (data.bukkitMaterial == Extractors.EXTRACTOR_BLOCK) Extractors.add(world, Vec3i(blockX, blockY, blockZ))
+			if (ExtractorManager.isExtractorData(CraftBlockData.fromData(data))) {
+				NewTransport.addExtractor(world, blockX, blockY, blockZ)
+			}
 		}
 	}
 

@@ -144,7 +144,7 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 				return false
 			}
 
-			if ((newName.contains("<rainbow>") || serialized.color() != null) && !player.hasPermission("ion.starship.color")) {
+			if ((newName.contains("<rainbow>") || checkRecursively(serialized) { it.color() != null }) && !player.hasPermission("ion.starship.color")) {
 				player.userError(
 					"<COLOR> tags can only be used by $5+ patrons or Discord boosters! Donate at\n" +
 					"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
@@ -159,7 +159,7 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 				return false
 			}
 
-			if (serialized.decorations().any { it.value == TextDecoration.State.TRUE } && !player.hasPermission("ion.starship.italic")) {
+			if (checkRecursively(serialized) { it.decorations().any { decoration -> decoration.value == TextDecoration.State.TRUE} } && !player.hasPermission("ion.starship.italic")) {
 				player.userError(
 					"\\<italic>, \\<bold>, \\<strikethrough> and \\<underlined> tags can only be used by $10+ patrons!\n" +
 					"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
@@ -168,7 +168,7 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 				return false
 			}
 
-			if (serialized.font() != null && !player.hasPermission("ion.starship.font")) {
+			if (checkRecursively(serialized) { it.font() != null } && !player.hasPermission("ion.starship.font")) {
 				player.userError(
 					"\\<font> tags can only be used by $15+ patrons! Donate at\n" +
 					"Donate at https://www.patreon.com/horizonsendmc/ to receive this perk."
@@ -178,6 +178,10 @@ class RenameButton(val main: StarshipComputerMenu) : AbstractItem() {
 			}
 
 			return true
+		}
+
+		private fun checkRecursively(component: Component, predicate: (Component) -> Boolean): Boolean {
+			return predicate(component) || component.children().any { checkRecursively(it, predicate) }
 		}
 	}
 }

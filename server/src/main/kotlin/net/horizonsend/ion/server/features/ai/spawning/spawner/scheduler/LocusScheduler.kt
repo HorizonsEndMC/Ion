@@ -9,9 +9,10 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.nations.NationsMap.dynmapLoaded
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
-import net.horizonsend.ion.server.miscellaneous.utils.getLocationNear
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getLocationNear
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
@@ -34,7 +35,7 @@ class LocusScheduler(
 	private val difficultySupplier: (String) -> Supplier<Int>,
 	private val announcementMessage: Component?,
 	private val endMessage: Component?,
-	private val radius: Double,
+	val radius: Double,
 	private val spawnSeparation: Supplier<Duration>,
 	private val worlds: List<String>
 ) : SpawnerScheduler, TickedScheduler {
@@ -84,7 +85,9 @@ class LocusScheduler(
 		difficulty = difficultySupplier(center.world.name).get()
 		active = true
 		markDynmapZone()
-		if (announcementMessage != null) IonServer.server.sendMessage(template(
+		addGravityWell()
+
+		if (announcementMessage != null) Notify.chatAndGlobal(template(
 			announcementMessage,
 			paramColor = HE_LIGHT_GRAY,
 			useQuotesAroundObjects = false,
@@ -98,6 +101,7 @@ class LocusScheduler(
 	fun end() {
 		active = false
 		removeDynmapZone()
+		removeGravityWell()
 		if (endMessage != null) IonServer.server.sendMessage(endMessage)
 	}
 
@@ -210,6 +214,14 @@ class LocusScheduler(
 			if (!dynmapLoaded) return
 			markerSet.findCircleMarker("${locus.getSpawner().identifier}_LOCUS")?.deleteMarker()
 		}
+	}
+
+	private fun addGravityWell() {
+
+	}
+
+	private fun removeGravityWell() {
+
 	}
 
 	override fun getTickInfo(): String {

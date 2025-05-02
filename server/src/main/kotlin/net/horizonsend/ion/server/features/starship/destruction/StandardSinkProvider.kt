@@ -4,20 +4,23 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongIterator
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.d
+import net.horizonsend.ion.common.utils.miscellaneous.squared
+import net.horizonsend.ion.server.features.machine.AreaShields.getNearbyAreaShields
 import net.horizonsend.ion.server.features.starship.Hangars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
-import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
@@ -71,6 +74,7 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 
 		if (iteration > maxIteration) {
 			cancel()
+
 			Tasks.sync {
 				explode(starship.world, blocks)
 			}
@@ -120,6 +124,12 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 	) = Tasks.getSyncBlocking {
 		val start = System.nanoTime()
 
+		val nearbyShipShields = ActiveStarships.getInWorld(world)
+			.flatMap { it.shields }
+			.associateBy { it.pos }
+
+		val shieldCheckY = 100.squared()
+
 		while (iterator.hasNext()) {
 			if (System.nanoTime() - start > limitPerTick) {
 				return@getSyncBlocking false
@@ -142,7 +152,22 @@ open class StandardSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 				continue
 			}
 
+			val newLocation = Location(world, newX.toDouble(), newY.toDouble(), newZ.toDouble())
+
 			if (!world.worldBorder.isInside(Location(world, x.toDouble(), y.toDouble(), z.toDouble()))) {
+				obstructedLocations.add(key)
+				continue
+			}
+
+			val areaShields = getNearbyAreaShields(newLocation, 1.0)
+			if (areaShields.any { it.powerStorage.getPower() > 0 }) {
+				obstructedLocations.add(key)
+				continue
+			}
+
+			val shipShields = nearbyShipShields.filterKeys { distanceSquared(it.x, it.y, it.z, newX, newY, newZ) < shieldCheckY }
+
+			if (shipShields.any { it.value.containsPosition(world, Vec3i(newX, newY, newZ)) }) {
 				obstructedLocations.add(key)
 				continue
 			}

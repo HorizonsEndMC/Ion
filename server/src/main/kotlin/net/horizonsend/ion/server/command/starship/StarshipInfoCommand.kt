@@ -1,11 +1,15 @@
 package net.horizonsend.ion.server.command.starship
 
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.AbstractCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.kyori.adventure.text.Component
@@ -17,12 +21,15 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
+import java.util.UUID
+import java.util.concurrent.TimeUnit
 import kotlin.math.round
 import kotlin.math.roundToInt
 
+@CommandAlias("starshipinfo|starship")
 object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Suppress("Unused")
-	@CommandAlias("starshipinfo|starship")
+	@Default
 	fun onExecute(sender: Player) {
 		val ship = getStarshipPiloting(sender)
 
@@ -136,4 +143,26 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 		createPercent(numerator.toDouble() / denominator.toDouble())
 
 	private fun createPercent(fraction: Double) = "${round(fraction * 1000) / 10}%"
+
+	@Subcommand("shields")
+	fun onDisplayShields(sender: Player) {
+		val ship = getStarshipPiloting(sender)
+
+		cooldown.tryExec(sender.uniqueId) {
+			for ((index, subsystem) in ship.shields.withIndex()) {
+				// exit if too many shields will be rendered
+				if (index >= 30) return@tryExec
+
+				val multiblock = subsystem.multiblock
+				val sign = (subsystem.pos.toLocation(ship.world).block.state as? Sign) ?: continue
+				multiblock.displayShieldCoverage(sign)
+			}
+		}
+	}
+
+	val cooldown = object : AbstractCooldown<UUID>(10L, TimeUnit.SECONDS) {
+		override fun cooldownRejected(player: UUID) {
+			Bukkit.getPlayer(player)?.userError("You're doing that too often!")
+		}
+	}
 }

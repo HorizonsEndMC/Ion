@@ -6,6 +6,8 @@ import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.LegacyChatColorValidator
+import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.RangeIntegerValidator
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -53,33 +55,24 @@ private fun InventoryClickEvent.createRoleMenu(commandName: String) {
 			when {
 				!input.isAlphanumeric() -> ValidatorResult.FailureResult(text("Must be alphanumeric!"))
 				input.length !in 3..20 -> ValidatorResult.FailureResult(text("Must be from 3 to 20 characters!"))
-				else -> ValidatorResult.SuccessResult
+				else -> ValidatorResult.ValidatorSuccessEmpty(input)
 			}
 		}
-	) { result ->
-		name = result
+	) { _, (entry, _) ->
+		name = entry
 
 		playerClicker.anvilInputText(
 			prompt = "Enter <rainbow>Color".miniMessage(),
-			inputValidator = InputValidator { input: String ->
-				runCatching { ChatColor.valueOf(input) }.onFailure {
-					return@InputValidator ValidatorResult.FailureResult(text("Must be one of ${ChatColor.values().joinToString { it.name }}"))
-				}
-
-				ValidatorResult.SuccessResult
-			}
-		) { result ->
-			color = ChatColor.valueOf(result)
+			inputValidator = LegacyChatColorValidator
+		) { _, (_, validatorResult) ->
+			color = validatorResult.result
 
 			playerClicker.anvilInputText(
 				prompt = text("Enter role weight"),
 				description = text("Must be from 0 to 1000"),
-				inputValidator = InputValidator { input: String ->
-					val int = input.toIntOrNull() ?: return@InputValidator ValidatorResult.FailureResult(text("Not a valid number!"))
-					if (int !in 0..1000) ValidatorResult.FailureResult(text("Must be from 0 to 1000")) else ValidatorResult.SuccessResult
-				}
-			) { result ->
-				playerClicker.performCommand("$commandName create $name ${color.name} $result")
+				inputValidator = RangeIntegerValidator(0..1000)
+			) { _, (_, success) ->
+				playerClicker.performCommand("$commandName create $name ${color.name} ${success.result}")
 				Tasks.syncDelay(20) { playerClicker.performCommand("$commandName edit $name") }
 			}
 		}
@@ -109,12 +102,12 @@ fun editRoleGUI(
 						when {
 							!input.isAlphanumeric() -> ValidatorResult.FailureResult(text("Must be alphanumeric!"))
 							input.length !in 3..20 -> ValidatorResult.FailureResult(text("Must be from 3 to 20 characters!"))
-							else -> ValidatorResult.SuccessResult
+							else -> ValidatorResult.ValidatorSuccessEmpty(input)
 						}
 					}
-				) { result ->
-					playerClicker.performCommand("$commandName edit name $roleName $result")
-					Tasks.sync { playerClicker.performCommand("$commandName edit $result") }
+				) { _, (raw, _) ->
+					playerClicker.performCommand("$commandName edit name $roleName $raw")
+					Tasks.sync { playerClicker.performCommand("$commandName edit $raw") }
 				}
 			}.name("Name: $roleName"))
 
@@ -122,15 +115,9 @@ fun editRoleGUI(
 			addItem(guiButton(Material.INK_SAC) {
 				playerClicker.anvilInputText(
 					prompt = "Enter <rainbow>Color".miniMessage(),
-					inputValidator = InputValidator { input: String ->
-						runCatching { ChatColor.valueOf(input) }.onFailure {
-							return@InputValidator ValidatorResult.FailureResult(text("Must be one of ${ChatColor.values().joinToString { it.name }}"))
-						}
-
-						ValidatorResult.SuccessResult
-					}
-				) { result ->
-					val color = ChatColor.valueOf(result)
+					inputValidator = LegacyChatColorValidator
+				) { _, (_, validatorResult) ->
+					val color = validatorResult.result
 
 					playerClicker.performCommand("$commandName edit color $roleName ${color.name}")
 					Tasks.sync { playerClicker.performCommand("$commandName edit $roleName") }
@@ -142,12 +129,9 @@ fun editRoleGUI(
 				playerClicker.anvilInputText(
 					prompt = text("Enter role weight"),
 					description = text("Must be from 0 to 1000"),
-					inputValidator = InputValidator { input: String ->
-						val int = input.toIntOrNull() ?: return@InputValidator ValidatorResult.FailureResult(text("Not a valid number!"))
-						if (int !in 0..1000) ValidatorResult.FailureResult(text("Must be from 0 to 1000")) else ValidatorResult.SuccessResult
-					}
-				) { result ->
-					playerClicker.performCommand("$commandName edit weight $roleName $result")
+					inputValidator = RangeIntegerValidator(0..1000)
+				) { _, (_, validatorResult) ->
+					playerClicker.performCommand("$commandName edit weight $roleName ${validatorResult.result}")
 
 					Tasks.sync { playerClicker.performCommand("$commandName edit $roleName") }
 				}

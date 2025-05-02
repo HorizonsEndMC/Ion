@@ -21,14 +21,10 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.action
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
-import net.horizonsend.ion.server.miscellaneous.utils.component1
-import net.horizonsend.ion.server.miscellaneous.utils.component2
-import net.horizonsend.ion.server.miscellaneous.utils.component3
-import net.horizonsend.ion.server.miscellaneous.utils.component4
-import net.horizonsend.ion.server.miscellaneous.utils.distance
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Location
@@ -148,8 +144,7 @@ object ProtectionListener : SLEventListener() {
 
 		if (isRegionDenied(player, location)) denied = true
 
-		val (world, x, y, z) = location
-		val shipContaining = DeactivatedPlayerStarships.getContaining(world, x.toInt(), y.toInt(), z.toInt())
+		val shipContaining = DeactivatedPlayerStarships.getContaining(location.world, location.blockX, location.blockY, location.blockZ)
 
 		// Need to also check for null
 		if (shipContaining !is PlayerStarshipData?) return true
@@ -207,14 +202,13 @@ object ProtectionListener : SLEventListener() {
 	}
 
 	fun isPlanetOrbitDenied(player: Player, location: Location, silent: Boolean): Boolean {
-		val (world, x, y, z) = location
 		val padding = 500
 		var inOwnStation = false
 
-		for (planet in Space.getOrbitingPlanets().filter { it.spaceWorld == world }) {
+		for (planet in Space.getOrbitingPlanets().filter { it.spaceWorld == location.world }) {
 			val minDistance = planet.orbitDistance - padding
 			val maxDistance = planet.orbitDistance + padding
-			val distance = distance(x.toInt(), y.toInt(), z.toInt(), planet.sun.location.x, y.toInt(), planet.sun.location.z).toInt()
+			val distance = distance(location.blockX, location.blockY, location.blockZ, planet.sun.location.x, location.blockY, planet.sun.location.z).toInt()
 
 			// Within planet orbit
 			if (distance in minDistance..maxDistance) {
@@ -332,11 +326,16 @@ object ProtectionListener : SLEventListener() {
 		}
 
 		// Prevent combat if defender is not combat tagged and is in a protected city, or attacker is not combat tagged and is in a protected city
-		if (((!CombatTimer.isPvpCombatTagged(defender) && isProtectedCity(defender.location)) ||
-					(!CombatTimer.isPvpCombatTagged(attacker) && isProtectedCity(attacker.location))
-			)) {
+		if ((!CombatTimer.isPvpCombatTagged(defender) && isProtectedCity(defender.location)) ||
+			(!CombatTimer.isPvpCombatTagged(attacker) && isProtectedCity(attacker.location))) {
+			// if this is in an szone with friendly fire, allow pvp
+			val zone = RegionSettlementZone.getRegionSettlementZone(defender.location)
+
+			if (zone != null && zone.allowFriendlyFire == true) return
+
+			// neither player is combat tagged; prevent pvp
 			event.isCancelled = true
-		} else  {
+		} else {
 			// If combat occurs on ground, apply combat tag
 			evaluatePvp(attacker, defender, REASON_PVP_GROUND_COMBAT)
 		}

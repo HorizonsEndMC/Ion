@@ -12,11 +12,13 @@ import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.Repla
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes.Companion.MOD_MANAGER
-import net.horizonsend.ion.server.features.transport.pipe.Pipes
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.LegacyPowerArmorModule
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.isPipedInventory
 import org.bukkit.Chunk
 import org.bukkit.Material
+import org.bukkit.attribute.Attribute
+import org.bukkit.attribute.AttributeModifier
 import org.bukkit.craftbukkit.inventory.CraftBlockInventoryHolder
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -819,6 +821,86 @@ object DataMigrators : IonServerComponent() {
 			))
 			.build()
 		)
+
+		registerDataVersion(DataVersion.builder(6)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.POWER_ARMOR_BOOTS)
+				.addConsumer {
+					it.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
+						.itemAttributes()
+						.addModifier(
+							Attribute.ARMOR,
+							AttributeModifier(
+								NamespacedKeys.key(CustomItemRegistry.POWER_ARMOR_BOOTS.identifier),
+								2.0,
+								AttributeModifier.Operation.ADD_NUMBER,
+								CustomItemRegistry.POWER_ARMOR_BOOTS.slot.group
+							)
+						)
+						.build()
+					)
+				}
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.POWER_ARMOR_LEGGINGS)
+				.addConsumer {
+					it.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
+						.itemAttributes()
+						.addModifier(
+							Attribute.ARMOR,
+							AttributeModifier(
+								NamespacedKeys.key(CustomItemRegistry.POWER_ARMOR_LEGGINGS.identifier),
+								2.0,
+								AttributeModifier.Operation.ADD_NUMBER,
+								CustomItemRegistry.POWER_ARMOR_LEGGINGS.slot.group
+							)
+						)
+						.build()
+					)
+				}
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.POWER_ARMOR_CHESTPLATE)
+				.addConsumer {
+					it.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
+						.itemAttributes()
+						.addModifier(
+							Attribute.ARMOR,
+							AttributeModifier(
+								NamespacedKeys.key(CustomItemRegistry.POWER_ARMOR_CHESTPLATE.identifier),
+								2.0,
+								AttributeModifier.Operation.ADD_NUMBER,
+								CustomItemRegistry.POWER_ARMOR_CHESTPLATE.slot.group
+							)
+						)
+						.build()
+					)
+				}
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemRegistry.POWER_ARMOR_HELMET)
+				.addConsumer {
+					it.setData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers
+						.itemAttributes()
+						.addModifier(
+							Attribute.ARMOR,
+							AttributeModifier(
+								NamespacedKeys.key(CustomItemRegistry.POWER_ARMOR_HELMET.identifier),
+								2.0,
+								AttributeModifier.Operation.ADD_NUMBER,
+								CustomItemRegistry.POWER_ARMOR_HELMET.slot.group
+							)
+						)
+						.build()
+					)
+				}
+				.build()
+			)
+			.build()
+		)
 	}
 
 	private fun registerDataVersion(dataVersion: DataVersion) {
@@ -835,7 +917,7 @@ object DataMigrators : IonServerComponent() {
 
 		for (x in 0..15) for (y in chunk.world.minHeight until chunk.world.maxHeight) for (z in 0..15) {
 			val type = snapshot.getBlockType(x, y, z)
-			if (Pipes.isPipedInventory(type)) {
+			if (type.isPipedInventory) {
 				val state = chunk.getBlock(x, y, z).state as InventoryHolder
 				migrateInventory(state.inventory, toApply)
 			}

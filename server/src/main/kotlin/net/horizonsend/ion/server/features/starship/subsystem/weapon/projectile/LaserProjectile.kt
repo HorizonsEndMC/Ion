@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
 abstract class LaserProjectile(
@@ -13,8 +14,9 @@ abstract class LaserProjectile(
 	name: Component,
 	loc: Location,
 	dir: Vector,
-	shooter: Damager
-) : ParticleProjectile(starship, name, loc, dir, shooter) {
+	shooter: Damager,
+	damageType: DamageType
+) : ParticleProjectile(starship, name, loc, dir, shooter, damageType) {
 	abstract val color: Color
 	abstract val particleThickness: Double
 

@@ -207,78 +207,49 @@ object StarshipCruising : IonServerComponent() {
 
 		val useAlternateMethod = (controller as? PlayerController)?.player?.let { PlayerCache[it].useAlternateDCCruise } ?: false
 
-		if (useAlternateMethod) {
-			if (!wasCruising) {
-				updateCruisingShip(starship)
-				starship.informationAction("Cruise started, dir<dark_gray>: $info")
+		if (!wasCruising) {
+			starship.informationAction("Cruise started, dir<dark_gray>: $info")
 
-				if (starship.isDirectControlEnabled) {
-					starship.setDirectControlEnabled(false)
-					starship.onlinePassengers.forEach { passenger ->
-						passenger.information(
-							"Stopping DC. Starting cruise..."
-						)
-					}
-				} else {
-					starship.onlinePassengers.forEach { passenger ->
-						passenger.information(
-							"Cruise started..."
-						)
-					}
+			// Enabling cruise while DC active and setting enabled stops DC and starts cruise
+			if (useAlternateMethod && starship.isDirectControlEnabled) {
+				starship.setDirectControlEnabled(false)
+				starship.onlinePassengers.forEach { passenger ->
+					passenger.information(
+						"Stopping DC. Starting cruise..."
+					)
 				}
-			} else {
-				starship.informationAction("Adjusted dir to $info <yellow>[Left click to stop]")
-				if (starship.controller !is AIController) starship.success("Adjusted dir to $info <yellow>[Left click to stop]")
-			}
-
-			starship.onlinePassengers.forEach { passenger ->
-				if (PlayerCache[passenger.uniqueId].enableAdditionalSounds) {
-					var tick = 0
-					val length = when (PlayerCache[passenger.uniqueId].soundCruiseIndicator) {
-						SoundSettingsCommand.CruiseIndicatorSounds.OFF.ordinal -> 0
-						SoundSettingsCommand.CruiseIndicatorSounds.SHORT.ordinal -> 1
-						SoundSettingsCommand.CruiseIndicatorSounds.LONG.ordinal -> 4
-						else -> 0
-					}
-
-					runnable {
-						if (tick >= length) cancel()
-						if (length != 0) {
-							val startCruiseSound =
-								starship.data.starshipType.actualType.balancingSupplier.get().sounds.startCruise.sound
-							playSoundInRadius(passenger.location, 1.0, startCruiseSound)
-							tick += 1
-						} else cancel()
-					}.runTaskTimer(IonServer, 0L, 5L)
+			} else if (useAlternateMethod) {
+				starship.onlinePassengers.forEach { passenger ->
+					passenger.information(
+						"Cruise started..."
+					)
 				}
 			}
 		} else {
-			if (!isCruisingAndAccelerating(starship)) {
-				starship.informationAction("Cruise started, dir<dark_gray>: $info")
-			} else {
-				starship.informationAction("Adjusted dir to $info <yellow>[Left click to stop]")
-				if (starship.controller !is AIController) starship.success("Adjusted dir to $info <yellow>[Left click to stop]")
-			}
-			starship.onlinePassengers.forEach { passenger ->
-				if (PlayerCache[passenger.uniqueId].enableAdditionalSounds) {
-					var tick = 0
-					val length = when (PlayerCache[passenger.uniqueId].soundCruiseIndicator) {
-						SoundSettingsCommand.CruiseIndicatorSounds.OFF.ordinal -> 0
-						SoundSettingsCommand.CruiseIndicatorSounds.SHORT.ordinal -> 1
-						SoundSettingsCommand.CruiseIndicatorSounds.LONG.ordinal -> 4
-						else -> 0
-					}
+			starship.informationAction("Adjusted dir to $info <yellow>[Left click to stop]")
+			if (starship.controller !is AIController) starship.success("Adjusted dir to $info <yellow>[Left click to stop]")
+		}
 
-					runnable {
-						if (tick >= length) cancel()
-						if (length != 0) {
-							val startCruiseSound =
-								starship.data.starshipType.actualType.balancingSupplier.get().sounds.startCruise.sound
-							playSoundInRadius(passenger.location, 1.0, startCruiseSound)
-							tick += 1
-						} else cancel()
-					}.runTaskTimer(IonServer, 0L, 5L)
+		// Sound alert for cruise
+		starship.onlinePassengers.forEach { passenger ->
+			if (PlayerCache[passenger.uniqueId].enableAdditionalSounds) {
+				var tick = 0
+				val length = when (PlayerCache[passenger.uniqueId].soundCruiseIndicator) {
+					SoundSettingsCommand.CruiseIndicatorSounds.OFF.ordinal -> 0
+					SoundSettingsCommand.CruiseIndicatorSounds.SHORT.ordinal -> 1
+					SoundSettingsCommand.CruiseIndicatorSounds.LONG.ordinal -> 4
+					else -> 0
 				}
+
+				runnable {
+					if (tick >= length) cancel()
+					if (length != 0) {
+						val startCruiseSound =
+							starship.data.starshipType.actualType.balancingSupplier.get().sounds.startCruise.sound
+						playSoundInRadius(passenger.location, 1.0, startCruiseSound)
+						tick += 1
+					} else cancel()
+				}.runTaskTimer(IonServer, 0L, 5L)
 			}
 		}
 	}

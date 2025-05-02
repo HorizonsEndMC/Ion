@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.miscellaneous.utils.action
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity
 import org.bukkit.ChatColor.GREEN
 import org.bukkit.ChatColor.RED
 import org.bukkit.ChatColor.RESET
@@ -18,6 +19,7 @@ import org.bukkit.block.BlockState
 import org.bukkit.block.ShulkerBox
 import org.bukkit.block.data.Directional
 import org.bukkit.block.data.type.Piston
+import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 import org.bukkit.event.EventHandler
@@ -191,17 +193,24 @@ object CrateRestrictions : IonServerComponent() {
 		event.isCancelled = true
 	}
 
+	// Using NMS should be fine since it is only checking the inventory type (NMS inventories are block entities implementing container)
+	// Checking via Bukkit creates a new block state once per tick for every hopper, which is slow. This should be a ~2% improvement when there
+	// Are a lot of hoppers ticking.
+
 	// Prevent taking items out of shulkers
 	@EventHandler
 	fun onShulkerExport(event: InventoryMoveItemEvent) {
-		if (event.source.holder !is ShulkerBox) return
+		if ((event.source as CraftInventory).inventory !is ShulkerBoxBlockEntity) {
+			return
+		}
+
 		event.isCancelled = true
 	}
 
 	// Prevent putting items into shulkers
 	@EventHandler
 	fun onShulkerImport(event: InventoryMoveItemEvent) {
-		if (event.destination.holder !is ShulkerBox) {
+		if ((event.destination as CraftInventory).inventory !is ShulkerBoxBlockEntity) {
 			return
 		}
 

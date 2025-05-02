@@ -22,7 +22,8 @@ import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.gui.custom.starship.RenameButton.Companion.starshipNameSerializer
-import net.horizonsend.ion.server.features.multiblock.type.gravitywell.GravityWellMultiblock
+import net.horizonsend.ion.server.features.multiblock.manager.ShipMultiblockManager
+import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
@@ -68,18 +69,19 @@ import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterS
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.CustomTurretSubsystem
+import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
@@ -109,14 +111,16 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.math.cbrt
+import kotlin.math.cos
 import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
+import kotlin.math.sin
 import kotlin.math.sqrt
 
-class Starship (
+class Starship(
 	val data: StarshipData,
 	var blocks: LongOpenHashSet,
 	val mass: Double,
@@ -164,6 +168,10 @@ class Starship (
 	fun destroy() {
 		IonWorld[world].starships.remove(this)
 		controller.destroy()
+
+		multiblockManager.onDestroy()
+		transportManager.onDestroy()
+		subsystems.forEach { it.onDestroy() }
 	}
 
 	//region Pilot & Controller
@@ -187,12 +195,19 @@ class Starship (
 	}
 	//endregion
 
+	// Start region transport
+	val transportManager = ShipTransportManager(this)
+	val multiblockManager = ShipMultiblockManager(this)
+	// Endregion
+
 	//region Ship Blocks & Hitbox
 	var hullIntegrity = 1.0
+
 	fun updateHullIntegrity() {
 		currentBlockCount = blocks.count {
 			getBlockTypeSafe(world, blockKeyX(it), blockKeyY(it), blockKeyZ(it))?.isAir != true
 		}
+
 		hullIntegrity = currentBlockCount.toDouble() / initialBlockCount.toDouble()
 	}
 
@@ -768,4 +783,39 @@ class Starship (
 	}
 
 	val initPrintCost = blocks.sumOf { ShipFactoryMaterialCosts.getPrice(world.getBlockAtKey(it).blockData) }
+
+	// Region coordinate utils
+	// This bit of code adds the ability to have relative coordinates within the starship, may be useful in the future
+	var rotation = 0.0
+
+	// Get a Vec3i relative to the ship's center of mass from a world coordinate
+	fun getGlobalCoordinate(localVec3i: Vec3i): Vec3i {
+		val globalReference = centerOfMass
+
+		// Shortcut
+		if (rotation == 0.0) return localVec3i + globalReference
+
+		return getAdjusted(localVec3i) + globalReference
+	}
+
+	// Get a world coordinate from a Vec3i relative to the ship's center of mass
+	fun getLocalCoordinate(globalVec3i: Vec3i): Vec3i {
+		val local = globalVec3i - centerOfMass
+
+		// Shortcut
+		if (rotation == 0.0) return local
+
+		return getAdjusted(local)
+	}
+
+	fun getAdjusted(vec3i: Vec3i): Vec3i {
+		val cosTheta: Double = cos(Math.toRadians(rotation))
+		val sinTheta: Double = sin(Math.toRadians(rotation))
+
+		return Vec3i(
+			(vec3i.x.toDouble() * cosTheta - vec3i.z.toDouble() * sinTheta).roundToInt(),
+			vec3i.y,
+			(vec3i.x.toDouble() * sinTheta + vec3i.z.toDouble() * cosTheta).roundToInt()
+		)
+	}
 }

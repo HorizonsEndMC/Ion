@@ -9,6 +9,9 @@ import kotlin.random.Random
 
 @Serializable
 sealed interface Factor {
+	/**
+	 * A gas collection factor. It returns a value in liters per second.
+	 **/
 	fun getAmount(location: Location): Int
 }
 

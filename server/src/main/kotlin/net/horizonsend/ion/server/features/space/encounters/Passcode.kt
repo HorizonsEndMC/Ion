@@ -3,13 +3,13 @@ package net.horizonsend.ion.server.features.space.encounters
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.space.encounters.Encounters.createLootChest
 import net.horizonsend.ion.server.features.space.encounters.Encounters.setChestFlag
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys.INACTIVE
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.INACTIVE
+import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.minecraft.nbt.CompoundTag
-import net.horizonsend.ion.server.features.nations.gui.skullItem
-import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_BASS
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_HARP
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_SNARE

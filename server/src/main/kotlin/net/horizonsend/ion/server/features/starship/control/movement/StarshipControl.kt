@@ -12,7 +12,10 @@ import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCooldown
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -43,7 +46,7 @@ object StarshipControl : IonServerComponent() {
 			?: return false
 
 		// Don't allow battlecruisers to enter planets
-		if (starship.type == BATTLECRUISER) return false
+		if (starship.type == BATTLECRUISER && !starship.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) ) return false
 
 		// Don't allow players that have recently entered planets to re-enter again
 		val controller = starship.controller

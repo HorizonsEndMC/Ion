@@ -143,7 +143,7 @@ object StarshipsSidebar {
         val targetVec = cruiseData.targetDir
         val rotateCompass = PlayerCache[player.uniqueId].rotateCompass
 
-        val compass = mutableListOf(
+        val compass = mutableListOf<MutableList<Component>>(
             mutableListOf(
                 Component.text("\\").color(compassColor(vec, targetVec, -1, -1)).asComponent(),
                 Component.text("N").color(compassColor(vec, targetVec, 0, -1)).asComponent(),

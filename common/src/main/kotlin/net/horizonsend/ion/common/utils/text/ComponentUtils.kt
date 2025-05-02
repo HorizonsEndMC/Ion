@@ -18,15 +18,17 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.Style
-import net.kyori.adventure.text.format.Style.style
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 
 // Serialization
 /** Skip building the serializer */
 val miniMessage = MiniMessage.miniMessage()
+
+val legacyAmpersand = LegacyComponentSerializer.legacyAmpersand()
 
 /** Serializes the component to minimessage format */
 fun miniMessage(component: Component): String = miniMessage.serialize(component)
@@ -86,9 +88,6 @@ fun formatLink(showText: String, link: String): Component {
 		.hoverEvent(text(link))
 }
 
-//Shortcut
-fun text(string: String, decoration: TextDecoration): Component = text(string, style(decoration))
-
 // Allow static imports
 val OBFUSCATED = TextDecoration.OBFUSCATED
 val BOLD = TextDecoration.BOLD
@@ -147,6 +146,8 @@ const val SPACE_RED_NEBULA_CHARACTER = '\uF8F8'
 const val SPACE_STARRY_BACKGROUND_CHARACTER = '\uF8F7'
 const val SPACE_MAIN_HYPERSPACE_ROUTES_CHARACTER = '\uF8F6'
 const val SPACE_MINOR_HYPERSPACE_ROUTES_CHARACTER = '\uF8F5'
+const val MULTIBLOCK_WORKBENCH = '\uF8F4'
+const val ADVANCED_SHIP_FACTORY_CHARACTER = '\uF8F3'
 
 // Custom characters end
 

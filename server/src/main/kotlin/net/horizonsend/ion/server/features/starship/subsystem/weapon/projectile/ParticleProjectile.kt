@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
 abstract class ParticleProjectile(
@@ -11,8 +12,9 @@ abstract class ParticleProjectile(
 	name: Component,
 	loc: Location,
 	dir: Vector,
-	shooter: Damager
-) : SimpleProjectile(starship, name, loc, dir, shooter) {
+	shooter: Damager,
+	damageType: DamageType
+) : SimpleProjectile(starship, name, loc, dir, shooter, damageType) {
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
 		for (i in 0 until travel.toInt()) {
 			val x = loc.x + dir.x * i

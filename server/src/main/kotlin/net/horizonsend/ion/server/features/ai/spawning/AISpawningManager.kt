@@ -26,11 +26,8 @@ object AISpawningManager : IonServerComponent(true) {
 	// The coroutine context in which the heavy spawning work will be handled
 	val context = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
-	// General AI configuration
-	val config get() = ConfigurationFiles.aiSpawningConfiguration()
-
 	override fun onEnable() {
-		Tasks.syncRepeat(0L, 0L, AISpawningManager::tickSpawners)
+		if (ConfigurationFiles.featureFlags().aiSpawns) { Tasks.syncRepeat(0L, 0L, AISpawningManager::tickSpawners) }
 		Tasks.syncRepeat(60L, 60L, AISpawningManager::despawnOldAIShips)
 	}
 

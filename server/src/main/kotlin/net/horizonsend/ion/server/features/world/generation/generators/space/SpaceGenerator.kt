@@ -9,11 +9,9 @@ import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.space.encounters.Encounters
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
 import net.horizonsend.ion.server.features.world.generation.generators.interfaces.WorldGenerator
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
-import net.horizonsend.ion.server.miscellaneous.utils.component1
-import net.horizonsend.ion.server.miscellaneous.utils.component2
-import net.horizonsend.ion.server.miscellaneous.utils.distance
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.minecraft.world.level.ChunkPos
@@ -130,8 +128,6 @@ class SpaceGenerator(
 		densityMultiplier: Double,
 		callback: (chunkSeed: Long, chunkRandom: Random, maxHeight: Int, minHeight: Int, x: Int, y: Int, z: Int) -> T?
 	): List<T> {
-		val (centreChunkX, centreChunkZ) = chunkPos
-
 		val radius = 10
 		val radiusSquared = radius * radius
 
@@ -143,13 +139,13 @@ class SpaceGenerator(
 
 		for (chunkXOffset in -radius..+radius) {
 			val chunkXOffsetSquared = chunkXOffset * chunkXOffset
-			val chunkX = chunkXOffset + centreChunkX
+			val chunkX = chunkXOffset + chunkPos.x
 			val startX = chunkX.shl(4)
 			val startXDouble = startX.toDouble()
 
 			for (chunkZOffset in -radius..+radius) {
 				val chunkZOffsetSquared = chunkZOffset * chunkZOffset
-				val chunkZ = chunkZOffset + centreChunkZ
+				val chunkZ = chunkZOffset + chunkPos.z
 				val startZ = chunkZ.shl(4)
 				val startZDouble = startZ.toDouble()
 

@@ -1,115 +1,63 @@
 package net.horizonsend.ion.server.features.multiblock.type.farming.harvester
 
-import net.horizonsend.ion.server.features.machine.PowerMachines
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
+import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
+import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent.TickingManager
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
-import net.horizonsend.ion.server.features.multiblock.type.farming.CropMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
-import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.Component.space
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.BLUE
+import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Material
-import org.bukkit.block.Furnace
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.Ageable
-import org.bukkit.event.inventory.FurnaceBurnEvent
-import org.bukkit.inventory.Inventory
-import org.bukkit.inventory.InventoryHolder
 
-abstract class HarvesterMultiblock(val tierMaterial: Material, tierNumber: Int) : CropMultiblock() {
+abstract class HarvesterMultiblock(val tierMaterial: Material, val tierNumber: Int, tierColor: TextColor) : Multiblock(), EntityMultiblock<HarvesterMultiblock.HarvesterEntity>, DisplayNameMultilblock {
 	override val name: String = "harvester"
+	val nameText = ofChildren(text("Auto ", GRAY), text("Harvester", GREEN))
+	val tierText = ofChildren(text("Tier ", DARK_AQUA), text(tierNumber, tierColor))
 	override val signText: Array<Component?> = arrayOf(
-		Component.text().append(Component.text("Auto ", NamedTextColor.GRAY), Component.text("Harvester", NamedTextColor.GREEN)).build(),
-		Component.text().append(Component.text("Tier ", NamedTextColor.DARK_AQUA), Component.text(tierNumber, NamedTextColor.AQUA)).build(),
+		nameText,
+		tierText,
 		null,
 		null
 	)
 
-	override val regionRadius: Int = 1
-	override val regionHeight: Int = 0
+	override val displayName: Component = ofChildren(tierText, space(), nameText)
+	override val description: Component get() = text("Harvests crops. Crops will be harvested opposite of the sign, up to $regionDepth blocks away.")
 
 	val powerPerCrop: Int = 10
+	abstract val regionDepth: Int
 
-	override fun getOriginOffset(): Vec3i = Vec3i(0, -1, -5)
-
-	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
-		if (furnace.inventory.smelting?.type != Material.PRISMARINE_CRYSTALS) return
-		if (furnace.inventory.fuel?.type != Material.PRISMARINE_CRYSTALS) return
-
-		val inventory = getInventory(sign) ?: return
-		event.isCancelled = false
-		event.isBurning = false
-		event.burnTime = 200
-
-		var broken = 0
-		val initialPower = PowerMachines.getPower(sign)
-
-		if (initialPower == 0) {
-			event.burnTime = 800
-			return
-		}
-
-		for (block in regionIterable(sign)) {
-			val data = block.blockData
-
-			if (data !is Ageable) continue
-			if (data.age != data.maximumAge) continue
-			val crop = Crop[block.type] ?: continue
-
-			val drops = crop.getDrops(block).toTypedArray()
-
-			for (item in drops) {
-				if (!LegacyItemUtils.canFit(inventory, item)) {
-					event.burnTime = 800
-					break
-				}
-			}
-
-			if ((broken + 1) * powerPerCrop > initialPower) {
-				event.burnTime = 800
-				break
-			}
-
-			crop.harvest(block)
-			broken++
-
-			val didNotFit = inventory.addItem(*drops)
-
-			if (didNotFit.isNotEmpty()) {
-				event.burnTime = 800
-				break
-			}
-		}
-
-		PowerMachines.removePower(sign, broken * powerPerCrop)
-	}
-
-	private fun getInventoryOffset(): Vec3i = Vec3i(0, 0, -3)
-	private fun getInventory(sign: Sign): Inventory? {
-		val (x, y, z) = getInventoryOffset()
-		val facing = sign.getFacing()
-		val right = facing.rightFace
-
-		val offset =  Vec3i(
-			x = (right.modX * x) + (facing.modX * z),
-			y = y,
-			z = (right.modZ * x) + (facing.modZ * z)
-		)
-
-		val (posX, posY, posZ) = offset + Vec3i(sign.location)
-
-		val block = getBlockIfLoaded(sign.world, posX, posY, posZ) ?: return null
-		return (block.state as? InventoryHolder)?.inventory
-	}
+	abstract val maxPower: Int
 
 	override fun MultiblockShape.buildStructure() {
 		z(0) {
 			y(-1) {
 				x(-1).ironBlock()
-				x(0).noteBlock()
+				x(0).powerInput()
 				x(+1).ironBlock()
 			}
 			y(0) {
@@ -150,9 +98,94 @@ abstract class HarvesterMultiblock(val tierMaterial: Material, tierNumber: Int) 
 			}
 			y(0) {
 				x(-1).anyStairs()
-				x(0).anyPipedInventory()
 				x(+1).anyStairs()
 			}
+		}
+	}
+
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): HarvesterEntity {
+		return HarvesterEntity(
+			data,
+			manager,
+			this,
+			x,
+			y,
+			z,
+			world,
+			structureDirection
+		)
+	}
+
+	class HarvesterEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		override val multiblock: HarvesterMultiblock,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace,
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, multiblock.maxPower), SyncTickingMultiblockEntity, LegacyMultiblockEntity, StatusTickedMultiblockEntity {
+		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
+		override val tickingManager: TickingManager = TickingManager(interval = 20)
+
+		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			{ PowerEntityDisplayModule(it, this) },
+			{ StatusDisplayModule(it, statusManager) }
+		).register()
+
+		override fun tick() {
+			val inventory = getInventory(right = 0, up = 0, forward = 2) ?: return tickingManager.sleepForTicks(1000)
+			var broken = 0
+
+			val initialPower = powerStorage.getPower()
+			if (initialPower == 0) return sleepWithStatus(text("No Power", RED), 500)
+
+			val region = getRegionWithDimensions(-1 ,-1 ,4, 3, 1, multiblock.regionDepth)
+
+			for (block in region) {
+				val data = block.blockData
+
+				if (data !is Ageable) continue
+				if (data.age != data.maximumAge) continue
+				val crop = Crop[block.type] ?: continue
+
+				val drops = crop.getDrops(block).toTypedArray()
+
+				for (item in drops) {
+					if (!LegacyItemUtils.canFit(inventory, item)) {
+						tickingManager.sleepForTicks(800)
+						break
+					}
+				}
+
+				if ((broken + 1) * multiblock.powerPerCrop > initialPower) {
+					tickingManager.sleepForTicks(500)
+					break
+				}
+
+				crop.harvest(block)
+				broken++
+
+				val didNotFit = inventory.addItem(*drops)
+
+				if (didNotFit.isNotEmpty()) {
+					sleepWithStatus(text("No Space", RED), 500)
+					break
+				}
+
+				if (broken >= multiblock.tierNumber) break
+			}
+
+			if (broken == 0) return sleepWithStatus(text("Sleeping", BLUE, ITALIC), 100)
+
+			powerStorage.removePower(broken * multiblock.powerPerCrop)
+			setStatus(text("Working", GREEN))
+		}
+
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
 		}
 	}
 }

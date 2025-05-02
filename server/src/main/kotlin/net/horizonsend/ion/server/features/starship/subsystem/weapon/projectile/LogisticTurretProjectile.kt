@@ -5,11 +5,12 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
-import net.horizonsend.ion.server.miscellaneous.utils.spherePoints
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
 class LogisticTurretProjectile(
@@ -25,9 +26,10 @@ class LogisticTurretProjectile(
 	override val starshipShieldDamageMultiplier: Double,
 	override val areaShieldDamageMultiplier: Double,
 	override val soundName: String,
-	override val balancing: StarshipWeapons.ProjectileBalancing?,
-	shooter: Damager
-) : LaserProjectile(ship, name, loc, dir, shooter) {
+	override val balancing: StarshipWeapons.ProjectileBalancing,
+	shooter: Damager,
+	damageType: DamageType
+) : LaserProjectile(ship, name, loc, dir, shooter, damageType) {
 
     override val volume: Int = (range / 16).toInt()
 

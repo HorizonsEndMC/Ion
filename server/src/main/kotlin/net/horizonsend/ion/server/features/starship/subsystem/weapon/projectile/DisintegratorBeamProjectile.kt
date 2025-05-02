@@ -12,6 +12,7 @@ import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.Block
+import org.bukkit.damage.DamageType
 import org.bukkit.entity.Entity
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
@@ -25,7 +26,7 @@ class DisintegratorBeamProjectile(
 	shooter: Damager,
 	private val subsystem: DisintegratorBeamWeaponSubsystem,
 	damage: Double
-) : LaserProjectile(starship, name, loc, dir, shooter) {
+) : LaserProjectile(starship, name, loc, dir, shooter, DamageType.GENERIC) {
 
     companion object {
         private const val RESET_STACK_TIME_MILLIS = 4000L

@@ -7,8 +7,8 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.miscellaneous.utils.AbstractCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -58,38 +58,42 @@ abstract class ShieldMultiblock : Multiblock(), InteractableMultiblock {
 		val key = blockKey(signX, signY, signZ)
 
 		cooldown.tryExec(player.uniqueId to key) {
-			val blocks: List<Vec3i> = getShieldBlocks(sign)
-
-			val world = sign.world
-			val (x0, y0, z0) = Vec3i(sign.location)
-
-			val start = System.nanoTime()
-
-			val barrier = Material.BARRIER.createBlockData()
-
-			Tasks.bukkitRunnable {
-				for ((dx, dy, dz) in blocks) {
-					val x = x0 + dx + 0.5
-					val y = y0 + dy + 0.5
-					val z = z0 + dz + 0.5
-					world.spawnParticle(
-						Particle.BLOCK_MARKER,
-						x,
-						y,
-						z,
-						1,
-						0.0,
-						0.0,
-						0.0,
-						0.0,
-						barrier
-					)
-				}
-
-				if (System.nanoTime() - start > TimeUnit.SECONDS.toNanos(10L)) {
-					cancel()
-				}
-			}.runTaskTimer(IonServer, 20, 20)
+			displayShieldCoverage(sign)
 		}
+	}
+
+	fun displayShieldCoverage(sign: Sign) {
+		val blocks: List<Vec3i> = getShieldBlocks(sign)
+
+		val world = sign.world
+		val (x0, y0, z0) = Vec3i(sign.location)
+
+		val start = System.nanoTime()
+
+		val barrier = Material.BARRIER.createBlockData()
+
+		Tasks.bukkitRunnable {
+			for ((dx, dy, dz) in blocks) {
+				val x = x0 + dx + 0.5
+				val y = y0 + dy + 0.5
+				val z = z0 + dz + 0.5
+				world.spawnParticle(
+					Particle.BLOCK_MARKER,
+					x,
+					y,
+					z,
+					1,
+					0.0,
+					0.0,
+					0.0,
+					0.0,
+					barrier
+				)
+			}
+
+			if (System.nanoTime() - start > TimeUnit.SECONDS.toNanos(10L)) {
+				cancel()
+			}
+		}.runTaskTimer(IonServer, 20, 20)
 	}
 }

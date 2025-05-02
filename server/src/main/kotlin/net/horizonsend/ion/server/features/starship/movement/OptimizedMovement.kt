@@ -4,13 +4,13 @@ import net.horizonsend.ion.server.features.starship.Hangars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
-import net.horizonsend.ion.server.miscellaneous.utils.chunkKey
-import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.chunkKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.core.BlockPos
@@ -162,7 +162,7 @@ object OptimizedMovement {
 		}
 	}
 
-	private val AIR = Blocks.AIR.defaultBlockState()
+	val AIR: BlockState = Blocks.AIR.defaultBlockState()
 
 	private fun processOldBlocks(
 		oldChunkMap: ChunkMap,
@@ -192,11 +192,11 @@ object OptimizedMovement {
 					val type = section.getBlockState(localX, localY, localZ)
 					capturedStates[index] = type
 
+					val blockPos = BlockPos(x, y, z)
 					if (type.block is BaseEntityBlock) {
-						processOldTile(blockKey, nmsChunk, capturedTiles, index, world1, world2)
+						processOldTile(blockPos, nmsChunk, capturedTiles, index)
 					}
 
-					val blockPos = BlockPos(x, y, z)
 					nmsChunk.`moonrise$getChunkAndHolder`().holder.blockChanged(blockPos)
 					nmsChunk.level.onBlockStateChange(blockPos, type, AIR)
 
@@ -270,24 +270,16 @@ object OptimizedMovement {
 		}
 	}
 
-	private fun updateHeightMaps(nmsLevelChunk: LevelChunk) {
+	fun updateHeightMaps(nmsLevelChunk: LevelChunk) {
 		Heightmap.primeHeightmaps(nmsLevelChunk, nmsLevelChunk.heightmaps.keys)
 	}
 
 	private fun processOldTile(
-		blockKey: Long,
+		blockPos: BlockPos,
 		chunk: LevelChunk,
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>,
 		index: Int,
-		world1: World,
-		world2: World
 	) {
-		val blockPos = BlockPos(
-			blockKeyX(blockKey),
-			blockKeyY(blockKey),
-			blockKeyZ(blockKey)
-		)
-
 		val blockEntity = chunk.getBlockEntity(blockPos) ?: return
 		capturedTiles[index] = Pair(blockEntity.blockState, blockEntity.saveWithFullMetadata(chunk.level.registryAccess()))
 
@@ -339,7 +331,7 @@ object OptimizedMovement {
 		return chunkMap
 	}
 
-	private fun sendChunkUpdatesToPlayers(world1: World, world2: World, oldChunkMap: ChunkMap, newChunkMap: ChunkMap) {
+	fun sendChunkUpdatesToPlayers(world1: World, world2: World, oldChunkMap: ChunkMap, newChunkMap: ChunkMap) {
 		for ((chunkMap, world) in listOf(oldChunkMap to world1.uid, newChunkMap to world2.uid)) {
 			for ((chunkKey, _) in chunkMap) {
 				val nmsChunk = Bukkit.getWorld(world)!!.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft

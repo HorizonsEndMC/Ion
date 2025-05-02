@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
 class CannonLaserProjectile(
@@ -14,8 +15,9 @@ class CannonLaserProjectile(
 	name: Component,
 	loc: Location,
 	dir: Vector,
-	shooter: Damager
-) : LaserProjectile(starship, name, loc, dir, shooter) {
+	shooter: Damager,
+	damageType: DamageType
+) : LaserProjectile(starship, name, loc, dir, shooter, damageType) {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.laserCannon ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.laserCannon
 	override val range: Double = balancing.range
 	override val speed: Double = balancing.speed

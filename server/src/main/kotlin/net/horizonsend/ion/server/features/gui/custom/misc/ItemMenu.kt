@@ -6,9 +6,12 @@ import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.Item
+import xyz.xenondevs.invui.item.ItemProvider
+import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
 import kotlin.math.min
 
@@ -53,4 +56,29 @@ class ItemMenu(
             backButtonHandler.invoke(player)
         }
     )
+
+	companion object {
+		fun <T> selector(
+			title: Component,
+			player: Player,
+			entries: Collection<T>,
+			resultConsumer: (ClickType, T) -> Unit,
+			itemTransformer: (T) -> ItemStack,
+			backButtonHandler: (Player) -> Unit
+		) {
+			val mapped = entries.map { entry ->
+				object : AbstractItem() {
+					val item = itemTransformer.invoke(entry)
+					override fun getItemProvider(): ItemProvider = ItemProvider { item }
+
+					override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+						resultConsumer.invoke(clickType, entry)
+						backButtonHandler.invoke(player)
+					}
+				}
+			}
+
+			ItemMenu(title, player, mapped, backButtonHandler).openMainWindow()
+		}
+	}
 }

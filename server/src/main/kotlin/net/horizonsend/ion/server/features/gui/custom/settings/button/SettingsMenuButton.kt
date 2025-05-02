@@ -11,7 +11,7 @@ import java.util.function.Consumer
 
 abstract class SettingsMenuButton<T: Any>(
 	val name: Component,
-	val butonDescription: String,
+	val buttonDescription: String,
 	val icon: GuiItem,
 	val defautValue: T,
 ) : SettingsGuiItem {
@@ -25,7 +25,7 @@ abstract class SettingsMenuButton<T: Any>(
 	abstract fun handleClick(clicker: Player, oldValue: T, gui: PagedGui<*>, parent: SettingsPageGui, newValueConsumer: Consumer<T>)
 
 	override fun makeButton(pageGui: SettingsPageGui): GuiItems.AbstractButtonItem {
-		return icon.makeButton(pageGui, name, butonDescription) { player, gui, page ->
+		return icon.makeButton(pageGui, name, buttonDescription) { player, gui, page ->
 			val value = getState(player)
 
 			val newValueHandler = Consumer<T> {

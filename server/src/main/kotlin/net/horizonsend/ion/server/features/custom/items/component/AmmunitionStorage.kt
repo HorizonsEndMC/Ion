@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.custom.items.util.serialization.token
 import net.horizonsend.ion.server.features.custom.items.util.updateDurability
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.Component.translatable
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
@@ -19,7 +20,7 @@ import org.bukkit.Material.matchMaterial
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
-class AmmunitionStorage(val balancingSupplier: Supplier<out AmmoStorageBalancing>) : CustomItemComponent, LoreManager {
+class AmmunitionStorage(val balancingSupplier: Supplier<out AmmoStorageBalancing>, private val consumesAmmo: Boolean = true) : CustomItemComponent, LoreManager {
 
 	override fun decorateBase(baseItem: ItemStack, customItem: CustomItem) {
 		AMMO.setAmount(baseItem, balancingSupplier.get().capacity)
@@ -45,7 +46,7 @@ class AmmunitionStorage(val balancingSupplier: Supplier<out AmmoStorageBalancing
 		val balancing = balancingSupplier.get()
 		val lines = listOf(
 			AMMO.formatLore(getAmmo(itemStack), balancingSupplier.get().capacity).itemLore,
-			ofChildren(text("Refill: ", GRAY), translatable(matchMaterial(balancing.refillType)!!.translationKey(), AQUA)).itemLore
+			if (consumesAmmo) ofChildren(text("Refill: ", GRAY), translatable(matchMaterial(balancing.refillType)!!.translationKey(), AQUA)).itemLore else empty()
 		)
 
 		return lines

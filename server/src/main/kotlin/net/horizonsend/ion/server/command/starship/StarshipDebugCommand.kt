@@ -25,8 +25,8 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportati
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VariableVisualProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.helixAroundVector
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.helixAroundVector
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -229,6 +229,15 @@ object StarshipDebugCommand : SLCommand() {
 		;
 
 		abstract fun apply(controller: ActivePlayerController)
+	}
+
+
+	@Subcommand("dump weaponsets")
+	fun dumpWeaponSets(sender: Player) {
+		val starship = getStarshipRiding(sender)
+		for ((name, subsystems) in starship.weaponSets.entries().groupBy { entry -> entry.key }) {
+			sender.information("[$name]={${subsystems.joinToString { it.value.javaClass.simpleName }}}")
+		}
 	}
 
 	@Suppress("Unused")

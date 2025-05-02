@@ -35,8 +35,8 @@ class DBCachedIntegerInput(
 			description = text("Value between $min & $max"),
 			backButtonHandler = { parent.open() },
 			inputValidator = RangeIntegerValidator(min..max),
-			handler = {
-				newValueConsumer.accept(it.toIntOrNull() ?: return@anvilInputText)
+			handler = { _, (_, result) ->
+				newValueConsumer.accept(result.result)
 				parent.open()
 			}
 		)

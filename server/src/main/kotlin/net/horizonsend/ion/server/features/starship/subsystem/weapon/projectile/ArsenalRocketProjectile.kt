@@ -8,9 +8,9 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockPos
 import net.horizonsend.ion.server.miscellaneous.utils.gayColors
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.horizonsend.ion.server.miscellaneous.utils.toBlockPos
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
@@ -26,6 +26,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.craftbukkit.inventory.CraftItemStack
+import org.bukkit.damage.DamageType
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.util.RayTraceResult
@@ -39,8 +40,9 @@ class ArsenalRocketProjectile(
 	loc: Location,
 	dir: Vector,
 	shooter: Damager,
-	var face: BlockFace //Up = true, down = false
-) : SimpleProjectile(starship, name, loc, dir, shooter), DisplayEntityProjectile {
+	var face: BlockFace, //Up = true, down = false
+	damageType: DamageType
+) : SimpleProjectile(starship, name, loc, dir, shooter, damageType), DisplayEntityProjectile {
 	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.arsenalMissile!!
 	override val range: Double = balancing.range
 	override val speed: Double = balancing.speed

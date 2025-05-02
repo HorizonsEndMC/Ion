@@ -3,47 +3,67 @@ package net.horizonsend.ion.server.features.multiblock.type.autocrafter
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
-import net.horizonsend.ion.server.data.migrator.DataMigrators
-import net.horizonsend.ion.server.data.migrator.DataMigrators.migrateInventory
-import net.horizonsend.ion.server.features.machine.PowerMachines
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.orEmpty
+import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
+import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
-import net.horizonsend.ion.server.features.multiblock.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.FurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.PowerStoringMultiblock
-import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import net.horizonsend.ion.server.miscellaneous.utils.getStateIfLoaded
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
+import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
+import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.minecraft.world.item.crafting.CraftingInput
 import net.minecraft.world.level.block.CrafterBlock
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.block.Furnace
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.craftbukkit.inventory.CraftItemStack as CBItemStack
-import org.bukkit.event.inventory.FurnaceBurnEvent
-import org.bukkit.inventory.InventoryHolder
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import java.util.Optional
+import java.util.concurrent.atomic.AtomicInteger
 
 private const val POWER_USAGE_PER_INGREDIENT = 15
 
 abstract class AutoCrafterMultiblock(
-	tierText: String,
+	tierText: Component,
 	private val tierMaterial: Material,
 	private val iterations: Int,
-) : Multiblock(), PowerStoringMultiblock, FurnaceMultiblock {
+) : Multiblock(), EntityMultiblock<AutoCrafterMultiblock.AutoCrafterEntity>, DisplayNameMultilblock {
 	override val name = "autocrafter"
 	override val requiredPermission: String? = "ion.multiblock.autocrafter"
 	open val mirrored: Boolean = false
+
+	abstract val maxPower: Int
+
+	override val displayName: Component = ofChildren(tierText, text(" Auto Crafter"))
+	override val description: Component get() = text("Executes the recipe outlined in the center dropper. Input items are consumed to craft the output.")
 
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-2).type(tierMaterial)
 				x(-1).anyGlassPane()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).anyGlassPane()
 				x(+2).type(tierMaterial)
 			}
@@ -61,7 +81,7 @@ abstract class AutoCrafterMultiblock(
 			y(-1) {
 				x(-2).anyGlass() // input pipe
 				x(-1).titaniumBlock()
-				x(+0).craftingTable()
+				x(+0).extractor()
 				x(+1).titaniumBlock()
 				x(+2).extractor()
 			}
@@ -69,7 +89,7 @@ abstract class AutoCrafterMultiblock(
 			y(+0) {
 				x(-2).anyPipedInventory()
 				x(-1).endRod()
-				x(+0).anyType(Material.DISPENSER, Material.DROPPER)
+				x(+0).anyType(Material.DISPENSER, Material.DROPPER, alias= "dispenser or dropper")
 				x(+1).endRod()
 				x(+2).anyPipedInventory()
 			}
@@ -94,160 +114,12 @@ abstract class AutoCrafterMultiblock(
 		}
 	}
 
-	override val signText: Array<Component?> = createSignText(
-		line1 = "&aAuto",
-		line2 = "&6Crafter",
-		line3 = null,
-		line4 = tierText
+	override val signText: Array<Component?> = arrayOf(
+		ofChildren(text("Auto ", GRAY), text("Crafter", AQUA)),
+		tierText,
+		null,
+		null
 	)
-
-	private fun getInput(sign: Sign): InventoryHolder? {
-		val forward = sign.getFacing().oppositeFace
-		val left = if (!mirrored) forward.rightFace.oppositeFace else forward.rightFace
-		val x = sign.x + forward.modX * 2 + left.modX * 2
-		val y = sign.y + forward.modY * 2 + left.modY * 2
-		val z = sign.z + forward.modZ * 2 + left.modZ * 2
-		return getStateIfLoaded(sign.world, x, y, z) as? InventoryHolder
-	}
-
-	private fun getRecipeHolder(sign: Sign): InventoryHolder? {
-		val forward = sign.getFacing().oppositeFace
-		val x = sign.x + forward.modX * 2
-		val y = sign.y + forward.modY * 2
-		val z = sign.z + forward.modZ * 2
-		return getStateIfLoaded(sign.world, x, y, z) as? InventoryHolder
-	}
-
-	private fun getOutput(sign: Sign): InventoryHolder? {
-		val forward = sign.getFacing().oppositeFace
-		val right = if (!mirrored) forward.rightFace else forward.rightFace.oppositeFace
-		val x = sign.x + forward.modX * 2 + right.modX * 2
-		val y = sign.y + forward.modY * 2 + right.modY * 2
-		val z = sign.z + forward.modZ * 2 + right.modZ * 2
-		return getStateIfLoaded(sign.world, x, y, z) as? InventoryHolder
-	}
-
-	override fun onFurnaceTick(event: FurnaceBurnEvent, furnace: Furnace, sign: Sign) {
-		event.isCancelled = false
-		event.isBurning = false
-
-		// Assume fail state
-		event.burnTime = 500
-
-		if (furnace.inventory.smelting?.type != Material.PRISMARINE_CRYSTALS) return
-		if (furnace.inventory.fuel?.type != Material.PRISMARINE_CRYSTALS) return
-
-		val input: InventoryHolder = getInput(sign) ?: return
-		migrateInventory(input.inventory, DataMigrators.getVersions(0))
-
-		val recipeHolder: InventoryHolder = getRecipeHolder(sign) ?: return
-		migrateInventory(recipeHolder.inventory, DataMigrators.getVersions(0))
-
-		val output: InventoryHolder = getOutput(sign) ?: return
-
-		// material data of each item in the recipe holder, used as the crafting grid
-		val grid: List<ItemStack?> = recipeHolder.inventory.map { it }
-
-		val basePower = PowerMachines.getPower(sign, fast = true)
-
-		if (basePower < POWER_USAGE_PER_INGREDIENT) return
-
-		var power = basePower
-
-		// result item of this recipe
-		val result: ItemStack = recipeCache[grid].orElse(null)?.clone() ?: return
-
-		val inputInventory = input.inventory
-
-		val powerUsage = grid.filterNotNull().distinct().count() * POWER_USAGE_PER_INGREDIENT
-
-		// Success state
-		event.burnTime = 20
-
-		try {
-			for (iteration in (1..iterations)) {
-				if (power < powerUsage) {
-					return
-				}
-
-				val removeSlots = mutableListOf<Int>() // can be multiple times per slot, so list, not set
-				var requiredIngredients = 0
-				var matchedIngredients = 0
-
-				// for each slot in the crafting grid,
-				// if it's not null,
-				// increment required ingredients to keep track of how many are needed,
-				// and loop through the input inventory,
-				// if an item's data matches the ingredient,
-				// flag that slot for removal,a
-				// increment matched ingredients,
-				// and move on to the next ingredient
-				ingredientLoop@
-				for (ingredient: ItemStack? in grid) {
-					if (ingredient != null) {
-						requiredIngredients++
-						for ((index: Int, item: ItemStack?) in inputInventory.withIndex()) {
-							// if it matches AND we haven't already taken too much from it, use it
-							if (item?.isSimilar(ingredient) == true && item.amount >= removeSlots.count { it == index } + 1) {
-								removeSlots += index
-								matchedIngredients++
-								continue@ingredientLoop
-							}
-						}
-					}
-				}
-
-				// stop iterating if not all of the ingredients were found
-				if (matchedIngredients != requiredIngredients) {
-					return
-				}
-
-				val remaining: HashMap<Int, ItemStack> = output.inventory.addItem(result)
-
-				if (remaining.isNotEmpty()) {
-					val added = result.amount - remaining.values.sumOf { it.amount }
-					check(added >= 0)
-					if (added > 0) {
-						output.inventory.removeItem(result.clone().apply { amount = added })
-					}
-					return
-				}
-
-				power -= powerUsage
-
-				// below code leaves incomplete stacks, but might be faster
-				/*// attempt to add the item to the output inventory (we already checked that we can remove it from the input)
-				var fit = false
-				for ((index: Int, item: ItemStack?) in output.inventory.contents.withIndex()) {
-					if (item == null) {
-						output.inventory.setItem(index, result)
-						fit = true
-						break
-					} else if(item.isSimilar(result) && item.amount + result.amount <= item.maxStackSize) {
-						item.amount += result.amount
-						fit = true
-						break
-					}
-				}
-
-				if (!fit) {
-					return
-				}*/
-
-				// remove the items
-				for (index in removeSlots) {
-					// since AFAIK recipes only call for one item per ingredient, just decrement the amount
-					// it will automatically remove the item if the amount hits 0
-					input.inventory.getItem(index)!!.amount--
-				}
-			}
-		} finally {
-			if (basePower != power) PowerMachines.setPower(sign, power) else {
-				// Nothing crafted, could be temporary resource shortage, pause for shorter time period
-				event.burnTime = 200
-			}
-		}
-	}
 
 	companion object {
 		private val recipeCache: LoadingCache<List<ItemStack?>, Optional<ItemStack>> = CacheBuilder.newBuilder().build(
@@ -261,20 +133,188 @@ abstract class AutoCrafterMultiblock(
 			}
 		)
 	}
+
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): AutoCrafterEntity {
+		return AutoCrafterEntity(data, manager, this, x, y, z, world, structureDirection)
+	}
+
+	class AutoCrafterEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		override val multiblock: AutoCrafterMultiblock,
+		x: Int,
+		y: Int,
+		z: Int,
+		world: World,
+		structureDirection: BlockFace,
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, multiblock.maxPower), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, LegacyMultiblockEntity {
+		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
+		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
+
+		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
+			this,
+			{ PowerEntityDisplayModule(it, this) },
+			{ StatusDisplayModule(it, statusManager) }
+		).register()
+
+		private fun getInput(): Inventory? = getInventory(-2, 0, 1)
+		private fun getRecipeHolder(): Inventory? = getInventory(0, 0, 1)
+		private fun getOutput(): Inventory? = getInventory(+2, 0, 1)
+
+		private var resultHash: Int? = null
+
+		override fun tick() {
+			val inputInventory: Inventory = getInput() ?: return sleepWithStatus(text("Not Intact", RED), 50)
+			val recipeHolder: Inventory = getRecipeHolder() ?: return sleepWithStatus(text("Not Intact", RED), 50)
+			val output: Inventory = getOutput() ?: return sleepWithStatus(text("Not Intact", RED), 50)
+
+			// material data of each item in the recipe holder, used as the crafting transportNetwork
+			val grid: List<ItemStack?> = recipeHolder.contents.toList()
+
+			val startPower = powerStorage.getPower()
+			if (startPower < POWER_USAGE_PER_INGREDIENT) return sleepWithStatus(text("Low Power", RED), 50)
+
+			// result item of this recipe
+			val result = recipeCache[grid].orElse(null)?.clone()
+
+			if (result == null) {
+				sleepWithStatus(text("Invalid Recipe", RED), 50)
+				return
+			}
+
+			val powerUsage = grid.filterNotNull().distinct().count() * POWER_USAGE_PER_INGREDIENT
+			var power = startPower
+
+			try {
+				for (iteration in (1..multiblock.iterations)) {
+					if (power < powerUsage) {
+						sleepWithStatus(text("Low Power", RED), 50)
+						break
+					}
+
+					val consumed = runCraftingIteration(powerUsage, grid, inputInventory, output, result)
+					if (consumed == -1) break // Inventory full
+
+					power -= consumed
+				}
+			}
+			catch (e: Throwable) {
+				IonServer.slF4JLogger.warn("Auto crafter execution threw exception!")
+				e.printStackTrace()
+			}
+			finally {
+				if (startPower != power) {
+					powerStorage.setPower(power)
+					val newHash = result.hashCode()
+
+					if (resultHash != newHash) {
+						// Skip re-computing the display name, small but adds up with big factories
+						resultHash = newHash
+						// Nothing crafted, could be temporary resource shortage, pause for shorter time period
+						statusManager.setStatus(result.displayName())
+					}
+				} else {
+					sleepWithStatus(text("Sleeping"), 50)
+				}
+			}
+		}
+
+		/**
+		 * Runs an iteration of crafting, the number of iterations depends on the tier of them multiblock
+		 * Returns power used
+		 **/
+		private fun runCraftingIteration(
+			powerUsage: Int,
+			grid: List<ItemStack?>,
+			inputInventory: Inventory,
+			outputInventory: Inventory,
+			result: ItemStack
+		): Int {
+			// Slots to amounts.
+			val removeSlots = mutableMapOf<Int, AtomicInteger>()
+
+			var insufficientIngredients = false
+
+			// for each slot in the crafting grid,
+			ingredientLoop@
+			for (ingredient: ItemStack? in grid) {
+				// if it's not null,
+				if (ingredient == null) continue
+
+				val indexedValue = inputInventory.contents.withIndex().firstOrNull { (index: Int, item: ItemStack?) ->
+					if (item == null) return@firstOrNull false
+					if (!item.isSimilar(ingredient)) return@firstOrNull false
+
+					val atomic = removeSlots.getOrPut(index) { AtomicInteger() }
+					if (item.amount < atomic.get() + 1) return@firstOrNull false
+
+					true
+				}
+
+				// No item matched
+				if (indexedValue == null) {
+					insufficientIngredients = true
+					break
+				}
+
+				val (index: Int, item: ItemStack?) = indexedValue
+				if (item == null) {
+					// Shouldn't happen but best to handle the case properly
+					insufficientIngredients = true
+					break
+				}
+
+				// flag that slot for removal
+				removeSlots.getOrPut(index) { AtomicInteger() }.incrementAndGet()
+			}
+
+			// stop iterating if not all the ingredients were found
+			if (insufficientIngredients) {
+				return 0
+			}
+
+			if (!LegacyItemUtils.canFit(outputInventory, result)) {
+				resultHash = null
+				sleepWithStatus(text("Output Full", RED), 100)
+				return -1
+			}
+
+			outputInventory.addItem(result.clone())
+
+			var totalRemove = 0
+
+			// remove the items
+			for ((index, count) in removeSlots) {
+				// it will automatically remove the item if the amount hits 0
+				inputInventory.getItem(index)!!.amount -= count.get()
+				totalRemove += count.get()
+//				println("Consuming ${count.get()}")
+			}
+
+			return powerUsage
+		}
+
+		override fun loadFromSign(sign: Sign) {
+			migrateLegacyPower(sign)
+			multiblock.signText.withIndex().forEach { sign.front().line(it.index, it.value.orEmpty()) }
+		}
+	}
 }
 
 abstract class AutoCrafterMultiblockMirrored(
-	tierText: String,
+	tierText: Component,
 	private val tierMaterial: Material,
 	iterations: Int,
 ) : AutoCrafterMultiblock(tierText, tierMaterial, iterations) {
 	override val mirrored = true
+	override val displayName: Component = ofChildren(tierText, text(" Auto Crafter (Mirrored)"))
+
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
 				x(-2).type(tierMaterial)
 				x(-1).anyGlassPane()
-				x(+0).wireInputComputer()
+				x(+0).powerInput()
 				x(+1).anyGlassPane()
 				x(+2).type(tierMaterial)
 			}
@@ -292,7 +332,7 @@ abstract class AutoCrafterMultiblockMirrored(
 			y(-1) {
 				x(-2).extractor()
 				x(-1).titaniumBlock()
-				x(+0).craftingTable()
+				x(+0).extractor()
 				x(+1).titaniumBlock()
 				x(+2).anyGlass() // input pipe
 			}
@@ -300,7 +340,7 @@ abstract class AutoCrafterMultiblockMirrored(
 			y(+0) {
 				x(-2).anyPipedInventory()
 				x(-1).endRod()
-				x(+0).anyType(Material.DISPENSER, Material.DROPPER)
+				x(+0).anyType(Material.DISPENSER, Material.DROPPER, alias = "Dispenser or Dropper")
 				x(+1).endRod()
 				x(+2).anyPipedInventory()
 			}

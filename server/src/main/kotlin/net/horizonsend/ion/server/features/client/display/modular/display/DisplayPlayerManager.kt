@@ -11,16 +11,25 @@ import net.minecraft.world.entity.Relative
 import org.bukkit.Bukkit.getPlayer
 import java.util.UUID
 
-class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display) {
+class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display, private val updateInvervalMS: Long = 1000L, private val playerFilter: (ServerPlayer) -> Boolean = { true }) {
+	private var lastUpdate = 0L
 	private var shownPlayers = mutableSetOf<UUID>()
 
 	fun sendTeleport() {
 		sendPacket(shownPlayers, ClientboundTeleportEntityPacket.teleport(entity.id, PositionMoveRotation.of(entity), setOf<Relative>(), entity.onGround))
 	}
 
-	fun sendRemove() {
-		sendPacket(shownPlayers, ClientboundRemoveEntitiesPacket(entity.id))
+	fun sendAllRemove() {
+		sendPacket(
+			getPossibleViewers(false) ?: return,
+			ClientboundRemoveEntitiesPacket(entity.id)
+		)
+
 		shownPlayers = mutableSetOf()
+	}
+
+	fun sendRemove(players: Collection<UUID>) {
+		sendPacket(players, ClientboundRemoveEntitiesPacket(entity.id))
 	}
 
 	fun sendPacket(players: Collection<UUID>, packet: Packet<*>) {
@@ -33,19 +42,29 @@ class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display) {
 	}
 
 	fun runUpdates() {
-		val chunk = entity.level().getChunkIfLoaded(entity.x.toInt().shr(4), entity.z.toInt().shr(4)) ?: return
-		val viewers = chunk.`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false).mapTo(mutableSetOf(), ServerPlayer::getUUID)
+		val viewerIDs = getPossibleViewers() ?: return
 
-		val new = viewers.minus(shownPlayers)
-		val retained = viewers.intersect(shownPlayers)
+		val new = viewerIDs.minus(shownPlayers)
+		val retained = viewerIDs.intersect(shownPlayers)
+		val lost = shownPlayers.minus(viewerIDs)
 
 		if (new.isNotEmpty()) sendAddEntity(new)
+		if (lost.isNotEmpty()) sendRemove(lost)
 
 		val all = retained.union(new)
-		if (all.isNotEmpty()) {
+		if (all.isNotEmpty() && System.currentTimeMillis() - lastUpdate > updateInvervalMS) {
+			lastUpdate = System.currentTimeMillis()
 			all.mapNotNull(::getPlayer).forEach { bukkitPlayer -> entity.refreshEntityData(bukkitPlayer.minecraft) }
 		}
 
-		shownPlayers = viewers
+		shownPlayers = viewerIDs
+	}
+
+	fun getPossibleViewers(useFilter: Boolean = true): MutableSet<UUID>? {
+		val chunk = entity.level().getChunkIfLoaded(entity.x.toInt().shr(4), entity.z.toInt().shr(4)) ?: return null
+		val viewerPlayers = chunk.`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false)
+
+		if (!useFilter) return viewerPlayers.mapTo(mutableSetOf(), ServerPlayer::getUUID)
+		return viewerPlayers.filter(playerFilter).mapTo(mutableSetOf(), ServerPlayer::getUUID)
 	}
 }

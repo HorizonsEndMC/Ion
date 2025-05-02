@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.CycleTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.CycleTurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
+import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
@@ -33,7 +34,7 @@ class CycleTurretProjectile(
 	shooter: Damager,
 	private val shotIndex: Int,
 	private val multiblock: CycleTurretMultiblock
-) : LaserProjectile(ship, name, loc, dir, shooter) {
+) : LaserProjectile(ship, name, loc, dir, shooter, DamageType.GENERIC) {
 
     override val volume: Int = (range / 16).toInt()
 

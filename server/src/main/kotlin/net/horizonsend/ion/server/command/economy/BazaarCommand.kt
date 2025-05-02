@@ -37,6 +37,7 @@ import net.horizonsend.ion.server.features.economy.city.TradeCityType
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -107,6 +108,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Create a new listing at this city")
 	@CommandCompletion("@anyItem")
 	fun onCreate(sender: Player, itemString: String, pricePerItem: Double) = asyncCommand(sender) {
+		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 		val territory: RegionTerritory = requireTerritoryIn(sender)
 		failIf(!TradeCities.isCity(territory)) { "Territory is not a trade city" }
 		failIf(!CityNPCs.BAZAAR_CITY_TERRITORIES.contains(territory.id)) { "City doesn't have a registered bazaar" }
@@ -156,6 +158,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Deposit all matching items in your inventory")
 	@CommandCompletion("@bazaarItemStrings")
 	fun onDeposit(sender: Player, itemString: String) = asyncCommand(sender) {
+		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 		val territory = requireTerritoryIn(sender)
 		val cityName = cityName(territory)
 		val itemReference: ItemStack = validateItemString(itemString)
@@ -188,6 +191,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Withdraw the specified amount of the item")
 	@CommandCompletion("@bazaarItemStrings 1|64")
 	fun onWithdraw(sender: Player, itemString: String, amount: Int) = asyncCommand(sender) {
+		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 		val territory = requireTerritoryIn(sender)
 		val cityName = cityName(territory)
 		val itemStack: ItemStack = validateItemString(itemString)
@@ -237,6 +241,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Update the price of the specific item")
 	@CommandCompletion("@bazaarItemStrings @nothing")
 	fun onSetPrice(sender: Player, itemString: String, newPrice: Double) = asyncCommand(sender) {
+		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 		val territory = requireTerritoryIn(sender)
 		val cityName = cityName(territory)
 		validateItemString(itemString)
@@ -326,6 +331,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("collect")
 	@Description("Collect the money from all of your items")
 	fun onCollect(sender: Player) = asyncCommand(sender) {
+		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 		requireEconomyEnabled()
 
 		val senderId = sender.slPlayerId
@@ -355,6 +361,7 @@ object BazaarCommand : SLCommand() {
 	@Default
 	@Description("Remotely browse city bazaar markets")
 	fun onBrowse(sender: Player) {
+		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 //		val sector = Sector.getSector(sender.world)
 
 		val cities: List<TradeCityData> = CityNPCs.BAZAAR_CITY_TERRITORIES
@@ -384,6 +391,7 @@ object BazaarCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("merchant buy")
 	fun onMerchantBuy(sender: Player, itemString: String, amount: Int) {
+		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 		requireEconomyEnabled()
 
 		val item = validateItemString(itemString)
@@ -432,6 +440,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("merchant prices")
 	@Description("View merchant prices")
 	fun onMerchantPrices(sender: Player) {
+		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 		MenuHelper.apply {
 			val items = Merchants.getPriceMap().entries
 				.asSequence()

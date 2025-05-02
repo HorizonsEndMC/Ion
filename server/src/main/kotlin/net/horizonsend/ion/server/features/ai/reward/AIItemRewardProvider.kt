@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory
 
 class AIItemRewardProvider(
 	override val starship: ActiveControlledStarship,
-	override val configuration: AITemplate.ItemRewardProviderConfiguration
+	val configuration: AITemplate.ItemRewardProviderConfiguration
 ) : AIRewardsProvider {
 	override val log: Logger = LoggerFactory.getLogger(javaClass)
 	val items = configuration.items.associate { (string, count, percent) ->

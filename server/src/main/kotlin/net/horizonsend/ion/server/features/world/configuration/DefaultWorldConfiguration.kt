@@ -195,30 +195,39 @@ object DefaultWorldConfiguration {
 		),
 	))))
 
-	val ISIK = register("Isik", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(Gasses.METHANE.identifier, ChildWeight(
-			parent = HeightRamp(
-				parent = StaticBase(amount = StaticIntegerAmount(85)),
-				minHeight = StaticIntegerAmount(0),
-				maxHeight = StaticIntegerAmount(384),
-				minWeight = StaticDoubleAmount(0.5),
-				maxWeight = StaticDoubleAmount(1.0)
+	val ISIK = register("Isik", WorldSettings(
+		gasConfiguration = WorldGasConfiguration(gasses = listOf(
+			CollectedGas(Gasses.METHANE.identifier, ChildWeight(
+				parent = HeightRamp(
+					parent = StaticBase(amount = StaticIntegerAmount(85)),
+					minHeight = StaticIntegerAmount(0),
+					maxHeight = StaticIntegerAmount(384),
+					minWeight = StaticDoubleAmount(0.5),
+					maxWeight = StaticDoubleAmount(1.0)
+				),
+				weight = StaticDoubleAmount(0.25)
+    	    )
 			),
-			weight = StaticDoubleAmount(0.25)
-        )
-		),
-		CollectedGas(Gasses.CHLORINE.identifier, ChildWeight(
-			parent = HeightRamp(
-				parent = StaticBase(amount = StaticIntegerAmount(85)),
-				minHeight = StaticIntegerAmount(0),
-				maxHeight = StaticIntegerAmount(384),
-				minWeight = StaticDoubleAmount(1.0),
-				maxWeight = StaticDoubleAmount(0.0)
+			CollectedGas(Gasses.CHLORINE.identifier, ChildWeight(
+				parent = HeightRamp(
+					parent = StaticBase(amount = StaticIntegerAmount(85)),
+					minHeight = StaticIntegerAmount(0),
+					maxHeight = StaticIntegerAmount(384),
+					minWeight = StaticDoubleAmount(1.0),
+					maxWeight = StaticDoubleAmount(0.0)
+				),
+				weight = StaticDoubleAmount(0.5)
+    	    )
 			),
-			weight = StaticDoubleAmount(0.5)
-        )
-		),
-	))))
+		)),
+		customMobSpawns = listOf(
+			WorldSettings.SpawnedMob(
+				function = WorldSettings.SpawnedMob.AlwaysReplace,
+				spawningWeight = 1.0,
+				type = EntityType.BLAZE.name
+			)
+		)
+	))
 
 	val CHIMGARA = register("Chimgara", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
 		CollectedGas(Gasses.NITROGEN.identifier,

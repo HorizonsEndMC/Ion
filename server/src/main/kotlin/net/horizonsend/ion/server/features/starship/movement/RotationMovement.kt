@@ -6,6 +6,11 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustData
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
@@ -14,6 +19,7 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.bukkit.util.Vector
+import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -25,12 +31,14 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 	private val cosTheta: Double = cos(Math.toRadians(theta))
 	private val sinTheta: Double = sin(Math.toRadians(theta))
 
-	override fun blockDataTransform(blockState: BlockState): BlockState =
-		if (CustomBlocks.getByBlockState(blockState) == null) {
+	override fun blockDataTransform(blockState: BlockState): BlockState {
+		val customBlock = CustomBlocks.getByBlockState(blockState)
+		return if (customBlock == null) {
 			blockState.rotate(nmsRotation)
 		} else {
-			blockState
+			CustomBlocks.getRotated(customBlock, blockState, nmsRotation)
 		}
+	}
 
 	override fun displaceX(oldX: Int, oldZ: Int): Int {
 		val offsetX = oldX - origin.x
@@ -97,6 +105,26 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 		}
 	}
 
+	override fun displaceFace(face: BlockFace): BlockFace {
+		return rotateBlockFace(face)
+	}
+
+	override fun displaceVector(vector: Vector): Vector {
+		return if (clockwise) vector.clone().rotateAroundY(0.5 * PI) else vector.clone().rotateAroundY(-0.5 * PI)
+	}
+
+	override fun displaceKey(key: BlockKey): BlockKey {
+		val oldX = getX(key)
+		val oldY = getY(key)
+		val oldZ = getZ(key)
+
+		return toBlockKey(
+			displaceX(oldX, oldZ),
+			displaceY(oldY),
+			displaceZ(oldZ, oldX)
+		)
+	}
+
 	override fun onComplete() {
 		starship.calculateHitbox()
 		for (subsystem in starship.subsystems) {
@@ -111,6 +139,7 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 		thrusterMap.putAll(thrusterMap.mapKeys { (face: BlockFace, _) -> rotateBlockFace(face) })
 
 		starship.forward = rotateBlockFace(starship.forward)
+		starship.rotation += theta
 
 		if (starship is ActiveControlledStarship) {
 			val dir = starship.cruiseData.targetDir

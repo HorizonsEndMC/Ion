@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.misc
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.Observer
@@ -22,7 +22,9 @@ class LandingGearSubsystem(starship: ActiveStarship, pos: Vec3i) : StarshipSubsy
 		if (belowPiston.type != Material.AIR && extended) return
 
 		// When retracting, if theyre is no block below, return
-		if (belowPiston.getRelative(BlockFace.DOWN).type == Material.AIR && !extended) return
+		if (belowPiston.getRelative(BlockFace.DOWN).type == Material.AIR && extended) {
+			return
+		}
 
 		val observerData = observer.blockData as? Observer ?: return
 		observerData.isPowered = extended

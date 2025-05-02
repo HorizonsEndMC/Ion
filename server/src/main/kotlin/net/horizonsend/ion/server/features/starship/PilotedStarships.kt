@@ -35,20 +35,21 @@ import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
+import net.horizonsend.ion.server.features.starship.modules.StandardRewardsProvider
 import net.horizonsend.ion.server.features.starship.subsystem.misc.LandingGearSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
-import net.horizonsend.ion.server.features.transport.Extractors
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.createData
 import net.horizonsend.ion.server.miscellaneous.utils.isPilot
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -57,7 +58,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.data.BlockData
 import org.bukkit.boss.BarColor
@@ -118,8 +118,6 @@ object PilotedStarships : IonServerComponent() {
 		setupShieldDisplayIndicators(starship)
 
 		StarshipShields.updateShieldBars(starship)
-
-		removeExtractors(starship)
 
 		callback(starship)
 	}
@@ -185,14 +183,6 @@ object PilotedStarships : IonServerComponent() {
 		}
 	}
 
-	private fun removeExtractors(starship: ActiveControlledStarship) {
-		starship.iterateBlocks { x, y, z ->
-			if (starship.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
-				Extractors.remove(starship.world, Vec3i(x, y, z))
-			}
-		}
-	}
-
 	fun isPiloted(starship: ActiveControlledStarship): Boolean {
 		if (starship.controller is UnpilotedController) return false
 		if (starship.controller is NoOpController) return false
@@ -225,12 +215,6 @@ object PilotedStarships : IonServerComponent() {
 
 		starship.shieldBars.values.forEach { it.removeAll() }
 		starship.shieldBars.clear()
-
-		starship.iterateBlocks { x, y, z ->
-			if (starship.world.getBlockAt(x, y, z).type == Material.CRAFTING_TABLE) {
-				Extractors.add(starship.world, Vec3i(x, y, z))
-			}
-		}
 
 		StarshipUnpilotedEvent(starship, controller, unpilotedController).callEvent()
 	}
@@ -429,17 +413,20 @@ object PilotedStarships : IonServerComponent() {
 			}
 
 			// Check required subsystems
-			for (requiredSubsystem in activePlayerStarship.balancing.requiredMultiblocks) {
-				if (!requiredSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
-					player.userError("Subsystem requirement not met! ${requiredSubsystem.failMessage}")
-					DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
-					return@activateAsync
+			// TODO: band-aid to override multiblock requirements in creative
+			if (!activePlayerStarship.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS)) {
+				for (requiredSubsystem in activePlayerStarship.balancing.requiredMultiblocks) {
+					if (!requiredSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
+						player.userError("Subsystem requirement not met! ${requiredSubsystem.failMessage}")
+						DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+						return@activateAsync
+					}
 				}
 			}
 
 			// Limit mining laser tiers and counts
 			val miningLasers = activePlayerStarship.subsystems.filterIsInstance<MiningLaserSubsystem>()
-			if (miningLasers.any { it.multiblock.tier != activePlayerStarship.type.miningLaserTier }) {
+			if (activePlayerStarship.type != StarshipType.PLATFORM && miningLasers.any { it.multiblock.tier != activePlayerStarship.type.miningLaserTier }) {
 				player.userErrorAction("Your starship can only support tier ${activePlayerStarship.type.miningLaserTier} mining lasers!")
 				DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 				return@activateAsync
@@ -469,6 +456,10 @@ object PilotedStarships : IonServerComponent() {
 			}
 
 			val pilotSound = data.starshipType.actualType.balancingSupplier.get().sounds.pilot.sound
+			if (activePlayerStarship.rewardsProviders.filterIsInstance<StandardRewardsProvider>().isEmpty()) {
+				activePlayerStarship.rewardsProviders.add(StandardRewardsProvider(activePlayerStarship))
+			}
+
 			playSoundInRadius(player.location, 10_000.0, pilotSound)
 
 			callback(activePlayerStarship)

@@ -3,13 +3,19 @@ package net.horizonsend.ion.server.features.starship.movement
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.add
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.add
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.world.entity.Relative
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerTeleportEvent
@@ -76,6 +82,22 @@ class TranslateMovement(starship: ActiveStarship,
 
 	override fun displaceZ(oldZ: Int, oldX: Int): Int = oldZ + dz
 
+	override fun displaceFace(face: BlockFace): BlockFace {
+		return face
+	}
+
+	override fun displaceVector(vector: Vector): Vector = vector
+		.clone()
+		.add(Vector(dx.toDouble(), dy.toDouble(), dz.toDouble()))
+
+	override fun displaceKey(key: BlockKey): BlockKey {
+		return toBlockKey(
+			getX(key) + dx,
+			getY(key) + dy,
+			getZ(key) + dz,
+		)
+	}
+
 	override fun displaceLocation(oldLocation: Location): Location {
 		val newLocation = oldLocation.clone().add(dx, dy, dz)
 		if (newWorld != null) {
@@ -95,6 +117,20 @@ class TranslateMovement(starship: ActiveStarship,
 			val yaw = if (newWorld != null) passenger.yaw else 0f
 			val pitch = if (newWorld != null) passenger.pitch else 0f
 
+			// If changing worlds don't need to worry about jitter
+			if (newWorld != null) {
+				passenger.teleport(
+					location,
+					PlayerTeleportEvent.TeleportCause.PLUGIN,
+					*TeleportFlag.Relative.entries.toTypedArray(),
+					TeleportFlag.EntityState.RETAIN_OPEN_INVENTORY,
+					TeleportFlag.EntityState.RETAIN_VEHICLE
+				)
+
+				return
+			}
+
+			// Jitter fix
 			passenger.minecraft.teleportTo(
 				location.world.minecraft,
 				location.x,

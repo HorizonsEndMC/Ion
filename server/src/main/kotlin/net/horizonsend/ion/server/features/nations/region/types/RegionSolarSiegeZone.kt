@@ -15,7 +15,7 @@ import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NationsMap
-import net.horizonsend.ion.server.miscellaneous.utils.distanceSquared
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import org.bukkit.entity.Player
 
 class RegionSolarSiegeZone(station: SolarSiegeZone) : Region<SolarSiegeZone>(station), RegionTopLevel {

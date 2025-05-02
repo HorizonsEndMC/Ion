@@ -1,15 +1,11 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
-import net.milkbowl.vault.chat.Chat
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 
 /** Registered vault economy service */
 val VAULT_ECO: Economy = Bukkit.getServer().servicesManager.getRegistration(Economy::class.java)!!.provider
-
-/** Registered vault permissions service */
-val vaultChat: Chat = Bukkit.getServer().servicesManager.getRegistration(Chat::class.java)!!.provider
 
 fun OfflinePlayer.getMoneyBalance(): Double = VAULT_ECO.getBalance(this)
 

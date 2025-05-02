@@ -24,7 +24,7 @@ import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruct
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import java.util.UUID
@@ -126,7 +126,7 @@ object AIOpponentCommand : SLCommand() {
 
 			Tasks.sync {
 				toRemove.forEach {
-					StarshipDestruction.vanish(it, true)
+					StarshipDestruction.vanish(starship = it, urgent = true)
 					sender.success("Removed ${it.identifier}")
 				}
 			}
@@ -135,7 +135,7 @@ object AIOpponentCommand : SLCommand() {
 
 	class OpponentTrackerModule(controller: AIController, val opponent: UUID) : AIModule(controller) {
 		override fun tick() {
-			if (Bukkit.getPlayer(opponent) == null) StarshipDestruction.vanish(starship, true)
+			if (Bukkit.getPlayer(opponent) == null) StarshipDestruction.vanish(starship = starship, urgent = true)
 		}
 	}
 }

@@ -75,8 +75,8 @@ object Bazaars : IonServerComponent() {
 						backButtonHandler = { player ->
 							Tasks.sync { openMainMenu(territoryId, player, remote) }
 						},
-						inputValidator = InputValidator { ValidatorResult.SuccessResult }
-					) { result ->
+						inputValidator = InputValidator { ValidatorResult.ValidatorSuccessEmpty(it) }
+					) { _, (result, _) ->
 						val searchBackButton = guiButton(Material.IRON_DOOR) {
 							Tasks.sync {
 								openMainMenu(territoryId, player, remote)

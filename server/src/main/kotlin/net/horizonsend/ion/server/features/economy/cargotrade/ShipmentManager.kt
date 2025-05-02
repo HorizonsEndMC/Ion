@@ -35,7 +35,7 @@ import net.horizonsend.ion.server.features.progression.achievements.rewardAchiev
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.TypeCategory
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
@@ -52,7 +52,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
@@ -187,26 +186,28 @@ object ShipmentManager : IonServerComponent() {
 	}
 
 	private fun openAmountPrompt(player: Player, shipment: UnclaimedShipment) {
-		val playerMaxShipSize = StarshipType.entries
-			.filter { it.typeCategory == TypeCategory.TRADE_SHIP && it.canUse(player) }
-			.maxOf { it.maxSize }
+		val maxCrateCount = StarshipType.entries
+			.filter { it.canUse(player) }
+			.filter { it.typeCategory == TypeCategory.TRADE_SHIP }
+			// Crate limit equation
+			.maxOf { (min(0.015 * it.maxSize, sqrt(it.maxSize.toDouble())) * it.crateLimitMultiplier).toInt() }
 
 		val min = balancing.generator.minShipmentSize
-		val max = min(balancing.generator.maxShipmentSize, (min(0.015 * playerMaxShipSize, sqrt(playerMaxShipSize.toDouble()))).toInt())
+		val max = min(balancing.generator.maxShipmentSize, maxCrateCount)
 
 		player.anvilInputText(
 			prompt = "Select amount of crates:".toComponent(),
 			description = "Between $min and $max".toComponent(),
 			inputValidator = InputValidator { result ->
-				val amount = result.toIntOrNull() ?: return@InputValidator ValidatorResult.FailureResult(Component.text("Amount must be an integer"))
-				if (amount !in min..max) return@InputValidator ValidatorResult.FailureResult(Component.text("Amount must be between $min and $max"))
+				val amount = result.toIntOrNull() ?: return@InputValidator ValidatorResult.FailureResult(text("Amount must be an integer"))
+				if (amount !in min..max) return@InputValidator ValidatorResult.FailureResult(text("Amount must be between $min and $max"))
 
-				ValidatorResult.SuccessResult
+				ValidatorResult.ValidatorSuccessSingleEntry(result, amount)
 			},
-		) { answer ->
-			val amount = answer.toIntOrNull() ?: return@anvilInputText
+		) { _, (_, result) ->
+			if (result !is ValidatorResult.ValidatorSuccessSingleEntry) return@anvilInputText
 
-			giveShipment(player, shipment, amount)
+			giveShipment(player, shipment, result.result)
 			return@anvilInputText
 		}
 	}
@@ -606,7 +607,7 @@ object ShipmentManager : IonServerComponent() {
 
 		val lore = mutableListOf(
 			ofChildren(text("Shipping From: ", DARK_AQUA), text("${shipment.from.displayName} (${Regions.get<RegionTerritory>(shipment.from.territoryId)}, in system $originSystemName)", AQUA)),
-			ofChildren(text("Shipping To: ", DARK_PURPLE), text("${shipment.to.displayName}&7 ($destination), in system $destinationSystemName", GRAY)),
+			ofChildren(text("Shipping To: ", DARK_PURPLE), text("${shipment.to.displayName} ($destination), in system $destinationSystemName", GRAY)),
 			ofChildren(text("Expires: ", RED), text("$expires", YELLOW)),
 			ofChildren(text("Shipment ID: ", DARK_GREEN), text("$shipmentId", GREEN)),
 		)

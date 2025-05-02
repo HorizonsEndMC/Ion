@@ -35,7 +35,7 @@ import net.horizonsend.ion.server.configuration.util.Pos
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.navigationcomputer.NavigationComputerMultiblockBasic
+import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
@@ -66,9 +66,9 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.distance
-import net.horizonsend.ion.server.miscellaneous.utils.normalize
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.normalize
 import net.horizonsend.ion.server.miscellaneous.utils.parseData
 import net.horizonsend.ion.server.miscellaneous.utils.uploadAsync
 import net.kyori.adventure.text.Component
@@ -80,7 +80,6 @@ import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
-import org.bukkit.block.Sign
 import org.bukkit.entity.Enemy
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
@@ -89,7 +88,6 @@ import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 import java.util.concurrent.TimeUnit
-import kotlin.collections.set
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -224,6 +222,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		string == "~" -> originCoord
 
 		string.startsWith("~") -> parseNumber(string.removePrefix("~"), 0) + originCoord
+		string.endsWith("k") -> parseNumber(string.removeSuffix("k"), 0) * 1000
+		string.endsWith("K") -> parseNumber(string.removeSuffix("K"), 0) * 1000
 
 		else -> string.toIntOrNull() ?: fail { "&cInvalid X or Z coordinate! Must be a number." }
 	}
@@ -311,8 +311,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		destinationWorld: World,
 		maxRange: Int,
 		sender: Player,
-		tier: Int?,
+		tier: Int?
 	) {
+		failIf(starship.type == StarshipType.INTERCEPTOR) { "Interceptors cannot jump to hyperspace" }
+
 		val hyperdrive: HyperdriveSubsystem = tier?.let { Hyperspace.findHyperdrive(starship, tier) }
 			?: Hyperspace.findHyperdrive(starship) ?: fail {
 				"Intact hyperdrive not found"
@@ -521,7 +523,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandAlias("nukeship")
 	@CommandPermission("starships.nukeship")
 	fun onNukeShip(sender: Player) {
-		val ship = getStarshipRiding(sender) as? ActiveControlledStarship ?: return
+		val ship = getStarshipRiding(sender)
 		StarshipDestruction.vanish(ship)
 	}
 
@@ -690,16 +692,13 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	fun onToggleDrills(sender: Player, enabled: Boolean) {
 		val starship = getStarshipPiloting(sender)
 
-		val signs = starship.drills.mapNotNull {
-			val (x, y, z) = it.pos
+		val entities = starship.multiblockManager.getAllMultiblockEntities().values.filterIsInstance<DrillMultiblock.DrillMultiblockEntity>()
 
-			starship.world.getBlockAt(x, y, z).state as? Sign
-		}
-
-		val user = if (enabled) sender.name else null
-
-		for (sign in signs) {
-			DrillMultiblock.setUser(sign, user)
+		for (entity in entities) {
+			if (enabled) {
+				val sign = entity.getSign() ?: continue
+				entity.enable(sender, sign)
+			} else entity.disable()
 		}
 	}
 

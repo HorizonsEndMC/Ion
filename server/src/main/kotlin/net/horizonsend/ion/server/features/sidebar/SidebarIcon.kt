@@ -58,5 +58,6 @@ enum class SidebarIcon(val text: String) {
     AI_TANKER_ICON("\uE066"),
     AI_ARK_ICON("\uE067"),
     FLEET_COMMANDER_ICON("\uE070"),
-    FLEET_ICON("\uE071")
+    FLEET_ICON("\uE071"),
+    INTERCEPTOR_ICON("\uE073")
 }

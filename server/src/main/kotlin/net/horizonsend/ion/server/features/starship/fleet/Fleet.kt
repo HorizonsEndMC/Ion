@@ -119,7 +119,15 @@ class Fleet(var leader: FleetMember?) : ForwardingAudience {
         }
     }
 
-	fun list(viewer: Player) {
+	fun useBeaconFleet() {
+        for (memberId in memberIds) {
+            val player = Bukkit.getPlayer(memberId) ?: continue
+
+            MiscStarshipCommands.onUseBeacon(player)
+        }
+    }
+
+    fun list(viewer: Player) {
 		viewer.sendMessage(lineBreakWithCenterText(ofChildren(
 			text(FLEET_ICON.text, HE_LIGHT_ORANGE).font(Sidebar.fontKey),
 			space(),

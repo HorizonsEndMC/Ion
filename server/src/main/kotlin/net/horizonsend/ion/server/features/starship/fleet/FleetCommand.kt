@@ -283,6 +283,21 @@ object FleetCommand : SLCommand() {
         sender.success("Jumping fleet")
     }
 
+    @Subcommand("usebeacon")
+    @Description("Jump fleet through a hyperspace beacon")
+    fun onFleetUseBeacon(sender: Player) {
+        val fleet = getFleet(sender) ?: return
+
+        if (!(isFleetCommand(sender) ?: return)) {
+            sender.userError("You are not the commander of this fleet")
+            return
+        }
+
+        fleet.information("Fleet Commander issuing fleet beacon jump command")
+        fleet.useBeaconFleet()
+        sender.success("Jumping fleet through hyperspace beacon")
+    }
+
     private fun getFleet(sender: Player): Fleet? {
         val fleet = Fleets.findByMember(sender)
 

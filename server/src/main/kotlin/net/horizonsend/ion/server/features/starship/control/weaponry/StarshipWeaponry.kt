@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugBanner
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
@@ -55,7 +56,7 @@ object StarshipWeaponry : IonServerComponent() {
 		} else fireTask()
 	}
 
-	fun getTarget(loc: Location, dir: Vector, starship: ActiveStarship): Vector {
+	fun getTarget(loc: Location, dir: Vector, starship: ActiveStarship, defaultDistance: Int = 500): Vector {
 		val world = loc.world
 		var target: Vector = loc.toVector()
 		val x = loc.blockX
@@ -74,13 +75,36 @@ object StarshipWeaponry : IonServerComponent() {
 			val type = world.getBlockAt(bx, by, bz).type
 			target = Vector(bx + 0.5, by + 0.5, bz + 0.5)
 			if (!type.isAir && !type.isWater && !type.isLava) {
-				break
+				return target
 			}
 			if (world.getNearbyLivingEntities(target.toLocation(world), 0.5).any { !starship.isWithinHitbox(it) }) {
-				break
+				return target
 			}
 		}
-		return target
+		// return a vector along the direction vector with the default distance
+		return Vector((x + dir.x * defaultDistance) + 0.5, (y + dir.y * defaultDistance) + 0.5, (z + dir.z * defaultDistance) + 0.5)
+	}
+
+	private const val MAX_POSSIBLE_RANGE = 500
+	private const val MAX_POSSIBLE_ANGLE = 0.523599 // 30 degrees in radians
+
+	fun findPossibleTarget(loc: Location, originalTarget: Vector, starship: ActiveStarship): Vector? {
+		// Get all starships CoM within range
+		val targetShips = ActiveStarships.getInWorld(loc.world).filter { otherStarship ->
+			otherStarship.centerOfMass.toCenterVector().distanceSquared(loc.toVector()) <= MAX_POSSIBLE_RANGE * MAX_POSSIBLE_RANGE &&
+					otherStarship != starship
+		}
+
+		return targetShips.map {
+			// First convert the starships to a list of vectors of CoM's position
+			otherStarship -> otherStarship.centerOfMass.toCenterVector().subtract(loc.toVector())
+		}.filter { comVector ->
+			// Filter vectors by maximum angle
+			comVector.angle(originalTarget) <= MAX_POSSIBLE_ANGLE
+		}.minByOrNull { comVector ->
+			// Get the vector with the smallest angle
+			comVector.angle(originalTarget)
+		}
 	}
 
 	fun queueShots(

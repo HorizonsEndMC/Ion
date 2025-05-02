@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
 import net.horizonsend.ion.server.features.nations.gui.skullItem
-import net.horizonsend.ion.server.miscellaneous.registrations.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
@@ -124,12 +124,18 @@ object GuiItems {
     }
 
     class EmptyItem : SimpleItem(ItemStack(Material.AIR))
+    class EmptyControlItem <T: Gui> : ControlItem<T>() {
+		val provider = ItemProvider { ItemStack(Material.AIR) }
+		override fun getItemProvider(gui: T): ItemProvider =provider
+		override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {}
+	}
 
-    class BlankButton(val item: Item) : ControlItem<Gui>() {
+	class BlankButton(val item: Item, val lore: List<Component> = listOf()) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
             return ItemBuilder(ItemStack(Material.WARPED_FUNGUS_ON_A_STICK).apply {
 				setData(DataComponentTypes.ITEM_MODEL, GuiItem.EMPTY.modelKey)
 				setData(DataComponentTypes.CUSTOM_NAME, item.itemProvider.get().displayName().itemName)
+				updateLore(this@BlankButton.lore)
 			})
         }
 
@@ -160,6 +166,21 @@ object GuiItems {
     fun closeMenuItem(player: Player) = CustomControlItem(text("Close Menu").decoration(TextDecoration.ITALIC, false), GuiItem.CANCEL) {
             _: ClickType, _: Player, _: InventoryClickEvent -> player.closeInventory()
     }
+
+	fun <T: Gui> ControlItem<T>.wrapClick(clickHandler: (ClickType, Player, InventoryClickEvent) -> Unit): ControlItem<T> {
+		val original = this
+
+		return object : ControlItem<T>() {
+			override fun handleClick(p0: ClickType, p1: Player, p2: InventoryClickEvent) {
+				clickHandler.invoke(p0, p1, p2)
+				return original.handleClick(p0, p1, p2)
+			}
+
+			override fun getItemProvider(gui: T): ItemProvider {
+				return original.getItemProvider(gui)
+			}
+		}
+	}
 }
 
 enum class GuiItem(val modelKey: Key) : ItemProvider {
@@ -168,6 +189,8 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     RIGHT(NamespacedKeys.packKey("ui/right")),
     DOWN(NamespacedKeys.packKey("ui/down")),
     LEFT(NamespacedKeys.packKey("ui/left")),
+    CLOCKWISE(NamespacedKeys.packKey("ui/clockwise")),
+	COUNTERCLOCKWISE(NamespacedKeys.packKey("ui/counterclockwise")),
     CHECKMARK(NamespacedKeys.packKey("ui/checkmark")),
     CANCEL(NamespacedKeys.packKey("ui/cancel")),
     ROUTE_CANCEL(NamespacedKeys.packKey("ui/route_cancel")),
@@ -228,6 +251,15 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     COMPASS_NEEDLE(NamespacedKeys.packKey("ui/compass_needle")),
     BOOKMARK(NamespacedKeys.packKey("ui/bookmark")),
     SOUND(NamespacedKeys.packKey("ui/sound")),
+    INTERCEPTOR(NamespacedKeys.packKey("ui/interceptor")),
+    OUTLINE(NamespacedKeys.packKey("ui/outline")),
+    ALIGN(NamespacedKeys.packKey("ui/align")),
+    MATERIALS(NamespacedKeys.packKey("ui/materials")),
+    ONE_QUARTER(NamespacedKeys.packKey("ui/one_quarter")),
+    TWO_QUARTER(NamespacedKeys.packKey("ui/two_quarter")),
+    THREE_QUARTER(NamespacedKeys.packKey("ui/three_quarter")),
+    GEAR(NamespacedKeys.packKey("ui/gear")),
+	SHIP_FACTORY_RUNNING(NamespacedKeys.packKey("ui/ship_factory_running")),
 
 	;
 

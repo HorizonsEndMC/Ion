@@ -1,12 +1,12 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon
 
-import net.horizonsend.ion.server.features.multiblock.type.starshipweapon.turret.TurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
-import net.horizonsend.ion.server.miscellaneous.utils.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.vectorToBlockFace
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.util.Vector
@@ -49,10 +49,6 @@ abstract class TurretWeaponSubsystem(
 	}
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
-		if (target == null) {
-			return dir
-		}
-
 		return target.clone()
 			.subtract(pos.toVector())
 			.subtract(multiblock.getMeanFirePoint(face).toCenterVector())
