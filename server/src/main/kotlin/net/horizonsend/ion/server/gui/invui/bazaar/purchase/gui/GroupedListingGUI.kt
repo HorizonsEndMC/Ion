@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.listings
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui
 
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.utils.text.ofChildren
