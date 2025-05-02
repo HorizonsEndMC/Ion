@@ -21,11 +21,11 @@ object BazaarGUIs {
 		BazaarGlowbalBrowseMenu(player, remote, pageNumber).openGui()
 	}
 
-	fun openCityItemListings(player: Player, remote: Boolean, city: TradeCityData, itemString: String, pageNumber: Int = 0) {
-		CityItemListingsMenu(player, remote, city, itemString, pageNumber).openGui()
+	fun openCityItemListings(player: Player, remote: Boolean, city: TradeCityData, itemString: String, previousPageNumber: Int? = null, pageNumber: Int = 0) {
+		CityItemListingsMenu(player, remote, city, itemString, previousPageNumber, pageNumber).openGui()
 	}
 
-	fun openGlobalItemListings(player: Player, remote: Boolean, itemString: String, pageNumber: Int = 0) {
-		GlobalItemListingsMenu(player, remote, itemString, pageNumber).openGui()
+	fun openGlobalItemListings(player: Player, remote: Boolean, itemString: String, previousPageNumber: Int? = null, pageNumber: Int = 0) {
+		GlobalItemListingsMenu(player, remote, itemString, previousPageNumber, pageNumber).openGui()
 	}
 }
