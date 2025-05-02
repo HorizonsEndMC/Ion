@@ -49,7 +49,7 @@ fun getCityButtons(
 
 fun getItemButtons(
 	bson: Bson,
-	sort: BazaarMergedSort,
+	sort: BazaarSort,
 	filter: (BazaarItem) -> Boolean = { true },
 	nameBuilder: ((String, List<BazaarItem>) -> Component)? = null,
 	loreBuilder: (String, List<BazaarItem>) -> List<Component> = { _, _ ->listOf() },
