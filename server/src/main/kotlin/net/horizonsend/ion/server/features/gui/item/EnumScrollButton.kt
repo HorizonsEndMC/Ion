@@ -16,8 +16,9 @@ class EnumScrollButton<T : Enum<T>>(
 	value: Supplier<T>,
 	private val enum: Class<T>,
 	val nameFormatter: (T) -> Component,
+	private val subEntry: Array<T> = enum.enumConstants,
 	valueConsumer: Consumer<T>
-) : ValueScrollButton(providedItem, true, value.map { it.ordinal }, increment, 0..enum.enumConstants.lastIndex, { valueConsumer.accept(enum.enumConstants[it]) }) {
+) : ValueScrollButton(providedItem, true, value.map { it.ordinal }, increment, 0..subEntry.lastIndex, { valueConsumer.accept(subEntry[it]) }) {
 	override var currentLore: Supplier<List<Component>> = Supplier { listOf(ofChildren(Component.text("Current value: "), nameFormatter.invoke(value.get()))) }
 
 	override fun getResult(event: InventoryClickEvent, player: Player): FeedbackItemResult {
@@ -25,7 +26,7 @@ class EnumScrollButton<T : Enum<T>>(
 
 		if (parentResult.success) {
 			val newEntry = value.get()
-			val enumEntry = enum.enumConstants[newEntry]
+			val enumEntry = subEntry[newEntry]
 			return FeedbackItemResult.SuccessLore(listOf(ofChildren(Component.text("Set value to ", NamedTextColor.GREEN), nameFormatter(enumEntry))))
 		}
 
