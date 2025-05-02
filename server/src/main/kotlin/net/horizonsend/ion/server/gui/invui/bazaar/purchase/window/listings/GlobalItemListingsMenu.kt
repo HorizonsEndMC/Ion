@@ -11,6 +11,8 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.listings.IndividualListingGUI
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
@@ -58,9 +60,14 @@ class GlobalItemListingsMenu(
 				val path = WaypointManager.findShortestPathBetweenLocations(
 					regionCenter,
 					viewer.location
-				)
+				)?.vertexList?.mapTo(mutableSetOf()) { it.loc.world } ?: return@let "INCALCULABLE"
 
-				path?.vertexList?.size?.let { template(text("{0} vertexes"), it) }
+				val startingInSpace = viewer.world.ion.hasFlag(WorldFlag.SPACE_WORLD)
+				val spaceWorlds = path.count { it.ion.hasFlag(WorldFlag.SPACE_WORLD) }
+
+				if (!startingInSpace && spaceWorlds > 1) return@let "1 Planet Away"
+
+				return@let "${spaceWorlds - 1} Systems Away"
 			} ?: "INCALCULABLE"
 
 			listOf(
