@@ -114,4 +114,6 @@ class PhaserProjectile(
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		playCustomSound(impactLocation, "minecraft:entity.firework_rocket.twinkle", 12, 0.5f)
 	}
+
+	override fun playCustomSound(loc: Location, soundName: String, chunkRange: Int, pitch: Float) { /* Do nothing */ }
 }

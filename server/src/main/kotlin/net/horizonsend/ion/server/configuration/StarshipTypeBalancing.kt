@@ -1125,7 +1125,7 @@ class StarshipWeapons(
 				starshipShieldDamageMultiplier = 55.0,
 				particleThickness = 0.0,
 				explosionPower = 2.0f,
-				volume = 10,
+				volume = 0,
 				pitch = 2.0f,
 				soundName = "horizonsend:starship.weapon.plasma_cannon.shoot",
 				powerUsage = 50000,

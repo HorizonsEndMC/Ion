@@ -12,9 +12,12 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
+import net.kyori.adventure.key.Key
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.SoundCategory
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.FaceAttachable
 import org.bukkit.block.data.type.Grindstone
@@ -32,8 +35,8 @@ class PhaserWeaponSubsystem(
 	AmmoConsumingWeaponSubsystem {
 
 	companion object {
-        	private const val WARM_UP_TIME_SECONDS = 0.5
-    	}
+		private const val WARM_UP_TIME_SECONDS = 0.5
+	}
 		
 	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.phaser
 	override val length: Int = balancing.length
@@ -47,25 +50,23 @@ class PhaserWeaponSubsystem(
 	override fun isAcceptableDirection(face: BlockFace) = true
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
-    		if (starship.initialBlockCount > 12000) {
-				starship.userError("You can't fire phasers on a ship larger than 12000 blocks!")
-				return
+		if (starship.initialBlockCount > 12000) {
+			starship.userError("You can't fire phasers on a ship larger than 12000 blocks!")
+			return
 		}
-		var tick = 0
-		runnable {
 
-			if (tick > (WARM_UP_TIME_SECONDS * 20 / 5)) cancel()
+		loc.world.players.forEach {
+			if (it.location.distance(loc) < balancing.range) {
+				shooter.playSound(Sound.sound(Key.key("horizonsend:starship.weapon.plasma_cannon.shoot"), Sound.Source.PLAYER, 1.0f, 2.0f))
+			}
+		}
 
-			val newFirePos = getFirePos()
+		fixDirections(loc)
 
-			tick += 1
-		}.runTaskTimer(IonServer, 0L, 5L)
-
-		Tasks.syncDelay((20 * WARM_UP_TIME_SECONDS).toLong()) {
-            		val newFirePos = getFirePos()
-			fixDirections(loc)
+		Tasks.syncDelay((20.0 * WARM_UP_TIME_SECONDS).toLong()) {
+			val newFirePos = getFirePos().toCenterVector()
 			PhaserProjectile(starship, getName(), newFirePos.toLocation(loc.world), dir, shooter).fire()
-        	}
+		}
 	}
 
 	private fun fixDirections(loc: Location) {
