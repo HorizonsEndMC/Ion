@@ -260,7 +260,7 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 				identifier = "${ingredient}_OXIDATION",
 				clazz = GasFurnaceMultiblock.GasFurnaceMultiblockEntity::class,
 				smeltingItem = ItemRequirement.MaterialRequirement(ingredient),
-				fuelItem = GasCanisterRequirement(Gasses.OXYGEN, 50),
+				fuelItem = GasCanisterRequirement(Gasses.OXYGEN, 5),
 				power = PowerRequirement(100),
 				result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
 					duration = Duration.ofSeconds(10),
