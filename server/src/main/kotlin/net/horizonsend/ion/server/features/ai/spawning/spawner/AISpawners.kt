@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner
 
 import com.google.common.collect.Multimap
+import kotlinx.coroutines.CoroutineScope
 import net.horizonsend.ion.common.utils.text.colors.EXPLORER_LIGHT_CYAN
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.colors.PIRATE_SATURATED_RED
@@ -72,6 +73,7 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.WorldInitEvent
+import org.slf4j.Logger
 import java.time.Duration
 import java.util.function.Supplier
 import kotlin.random.Random
@@ -1010,22 +1012,29 @@ object AISpawners : IonServerComponent(true) {
 //			)
 //		)}
 
-		/* LOCAL (same world) ---------------------------------------------------- */
+		/* helper suppliers --------------------------------------------------- */
+		val localCtx : (World) -> LocationContext = { w -> LocationContext(randomLocationIn(w)) }
+		val anyCtx   : () -> LocationContext      = { LocationContext(randomLocationAnywhere()) }
+
+		/* LOCAL (same world) ------------------------------------------------- */
 		registerPerWorldSpawner { world ->
-			val start = randomLocationIn(world)                     // helper of your choice
-			val mech  = DEBUG_CONVOY_LOCAL.spawnMechanicBuilder(
-				LocationContext(start)
+			LazyWorldSpawner(
+				id = "DEBUG_CONVOY_LOCAL_${world.name}",
+				worldFilter      = { it.uid == world.uid },
+				mechanicSupplier = {
+					DEBUG_CONVOY_LOCAL.spawnMechanicBuilder(localCtx(world))
+				}
 			)
-			makeDebugSpawner("DEBUG_CONVOY_LOCAL_${world.name}", mech, world)
 		}
 
-		/* GLOBAL (any world) ---------------------------------------------------- */
+		/* GLOBAL (any world) ------------------------------------------------- */
 		registerGlobalSpawner(
-			makeDebugSpawner(
-				"DEBUG_CONVOY_GLOBAL",
-				DEBUG_CONVOY_GLOBAL.spawnMechanicBuilder(
-					LocationContext(randomLocationAnywhere())
-				)
+			LazyWorldSpawner(
+				id = "DEBUG_CONVOY_GLOBAL",
+				worldFilter      = { true },
+				mechanicSupplier = {
+					DEBUG_CONVOY_GLOBAL.spawnMechanicBuilder(anyCtx())
+				}
 			)
 		)
 
@@ -1051,14 +1060,4 @@ object AISpawners : IonServerComponent(true) {
 	/** Same logic, but picks a random *loaded* world first. */
 	fun randomLocationAnywhere(): Location =
 		randomLocationIn(Bukkit.getWorlds().filter { it.hasFlag(SPACE_WORLD) }.random())
-
-	fun makeDebugSpawner(
-		id: String,
-		mechanic: SpawnerMechanic,
-		world: World? = null                     // null → global
-	) = GlobalWorldSpawner(
-		identifier = id,
-		scheduler  = AISpawnerTicker(pointChance = 0.0, pointThreshold = 1000),
-		mechanic   = mechanic
-	)
 }

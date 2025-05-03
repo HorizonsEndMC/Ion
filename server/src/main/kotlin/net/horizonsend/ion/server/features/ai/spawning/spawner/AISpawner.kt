@@ -21,7 +21,7 @@ abstract class AISpawner(
 	fun AIStarshipTemplate.getName(): Component = miniMessage().deserialize(miniMessageName)
 
 	/** Entry point for the spawning mechanics, spawns the ship and handles any exceptions */
-	fun trigger(logger: Logger, scope: CoroutineScope) = scope.launch {
+	open fun trigger(logger: Logger, scope: CoroutineScope) = scope.launch {
 		try { mechanic.trigger(logger) }
 		catch (e: SpawningException) { handleException(logger, e) }
 		catch (e: Throwable) {
