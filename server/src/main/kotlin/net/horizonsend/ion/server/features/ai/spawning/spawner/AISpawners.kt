@@ -59,8 +59,11 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VETERA
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.spawnChance
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag.ALLOW_AI_SPAWNS
+import net.horizonsend.ion.server.features.world.WorldFlag.HYPERSPACE_WORLD
+import net.horizonsend.ion.server.features.world.WorldFlag.SPACE_WORLD
 import net.horizonsend.ion.server.miscellaneous.utils.getRandomDuration
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.kyori.adventure.text.Component.text
@@ -1047,7 +1050,7 @@ object AISpawners : IonServerComponent(true) {
 
 	/** Same logic, but picks a random *loaded* world first. */
 	fun randomLocationAnywhere(): Location =
-		randomLocationIn(Bukkit.getWorlds().random())
+		randomLocationIn(Bukkit.getWorlds().filter { it.hasFlag(SPACE_WORLD) }.random())
 
 	fun makeDebugSpawner(
 		id: String,
