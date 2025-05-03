@@ -66,7 +66,7 @@ abstract class SimpleProjectile(
 		playCustomSound(loc, soundName, volume, pitch)
 	}
 
-	protected fun playCustomSound(loc: Location, soundName: String, chunkRange: Int, pitch: Float = 1f) {
+	protected open fun playCustomSound(loc: Location, soundName: String, chunkRange: Int, pitch: Float = 1f) {
 		loc.world.players.forEach {
 			if (it.location.distance(loc) < range) {
 				loc.world.playSound(it.location, soundName, SoundCategory.PLAYERS, 1.0f, pitch)

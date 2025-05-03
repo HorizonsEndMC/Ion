@@ -34,10 +34,8 @@ class PhaserProjectile(
 	override val pitch: Float = balancing.pitch
 	override val soundName: String = balancing.soundName
 
-	companion object {
-		val speedUpTime = TimeUnit.MILLISECONDS.toNanos(500L)
-		val speedUpSpeed = 1000.0
-	}
+	private val speedUpTime = TimeUnit.MILLISECONDS.toNanos(500L)
+	private val speedUpSpeed = 1000.0
 
 	private val blueParticleData = Particle.DustTransition(
 		Color.fromARGB(255, 0, 255, 255),
@@ -47,14 +45,6 @@ class PhaserProjectile(
 
 	private val generations = 3
 	private val maxOffset = 0.5
-
-	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
-		super.moveVisually(oldLocation, newLocation, travel)
-
-		if (System.nanoTime() - this.firedAtNanos > speedUpTime) {
-			this.speed = speedUpSpeed
-		}
-	}
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		val origin = Location(loc.world, x, y, z)
@@ -127,4 +117,6 @@ class PhaserProjectile(
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		playCustomSound(impactLocation, "minecraft:entity.firework_rocket.twinkle", 12, 0.5f)
 	}
+
+	override fun playCustomSound(loc: Location, soundName: String, chunkRange: Int, pitch: Float) { /* Do nothing */ }
 }
