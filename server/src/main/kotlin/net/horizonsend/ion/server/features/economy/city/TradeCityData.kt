@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyTemplate
+import net.horizonsend.ion.server.features.ai.convoys.CityContext
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 
 data class TradeCityData(
@@ -13,7 +14,7 @@ data class TradeCityData(
 	val territoryId: Oid<Territory>,
 	var displayName: String,
 	var scheduledHour: Int? = null,  // 0–23, UTC hour
-	var convoyTemplate: AIConvoyTemplate? = null,
+	var convoyTemplate: AIConvoyTemplate<CityContext>? = null,
 	var allowedDestinations: List<TradeCityData>? = null,
 	var configEffectiveAfter: Long? = null  // epoch millis when config becomes active
 ) {

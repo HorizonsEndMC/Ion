@@ -15,6 +15,9 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.util.VariableIntegerAmount
 import net.horizonsend.ion.server.features.ai.configuration.WorldSettings
+import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.DEBUG_CONVOY_GLOBAL
+import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.DEBUG_CONVOY_LOCAL
+import net.horizonsend.ion.server.features.ai.convoys.LocationContext
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.MINING_GUILD
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEUS_EXPLORERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
@@ -30,6 +33,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpaw
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.RandomShipSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SpawnerMechanic
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.WeightedShipSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.AISpawnerTicker
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.CaravanScheduler
@@ -60,11 +64,14 @@ import net.horizonsend.ion.server.features.world.WorldFlag.ALLOW_AI_SPAWNS
 import net.horizonsend.ion.server.miscellaneous.utils.getRandomDuration
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.kyori.adventure.text.Component.text
+import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.WorldInitEvent
 import java.time.Duration
 import java.util.function.Supplier
+import kotlin.random.Random
 
 object AISpawners : IonServerComponent(true) {
 	/**
@@ -999,5 +1006,56 @@ object AISpawners : IonServerComponent(true) {
 //				spawnMessage = SpawnMessage.ChatMessage("<$ABYSSAL_DESATURATED_RED>We arrive in your \"{4}\".".miniMessage())
 //			)
 //		)}
+
+		/* LOCAL (same world) ---------------------------------------------------- */
+		registerPerWorldSpawner { world ->
+			val start = randomLocationIn(world)                     // helper of your choice
+			val mech  = DEBUG_CONVOY_LOCAL.spawnMechanicBuilder(
+				LocationContext(start)
+			)
+			makeDebugSpawner("DEBUG_CONVOY_LOCAL_${world.name}", mech, world)
+		}
+
+		/* GLOBAL (any world) ---------------------------------------------------- */
+		registerGlobalSpawner(
+			makeDebugSpawner(
+				"DEBUG_CONVOY_GLOBAL",
+				DEBUG_CONVOY_GLOBAL.spawnMechanicBuilder(
+					LocationContext(randomLocationAnywhere())
+				)
+			)
+		)
+
+
 	}
+
+	/** Returns a uniformly random location inside this world's current WorldBorder. */
+	fun randomLocationIn(world: World): Location {
+		val border = world.worldBorder
+		val half   = border.size / 2.0
+		val cx     = border.center.x
+		val cz     = border.center.z
+
+		val x = Random.nextDouble(cx - half, cx + half)
+		val z = Random.nextDouble(cz - half, cz + half)
+
+		// Pick a safe Y: 192 is above almost every structure but inside the height cap.
+		// Replace with world.getHighestBlockYAt(x.toInt(), z.toInt()).plus(2) if you
+		// want surface height instead.
+		return Location(world, x, 192.0, z)
+	}
+
+	/** Same logic, but picks a random *loaded* world first. */
+	fun randomLocationAnywhere(): Location =
+		randomLocationIn(Bukkit.getWorlds().random())
+
+	fun makeDebugSpawner(
+		id: String,
+		mechanic: SpawnerMechanic,
+		world: World? = null                     // null → global
+	) = GlobalWorldSpawner(
+		identifier = id,
+		scheduler  = AISpawnerTicker(pointChance = 0.0, pointThreshold = 1000),
+		mechanic   = mechanic
+	)
 }

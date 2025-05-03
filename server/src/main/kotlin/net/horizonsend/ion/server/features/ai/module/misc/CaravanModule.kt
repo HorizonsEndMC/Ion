@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.ai.module.misc
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyTemplate
+import net.horizonsend.ion.server.features.ai.convoys.ConvoyContext
 import net.horizonsend.ion.server.features.ai.convoys.ConvoyRoute
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
@@ -22,11 +23,11 @@ import org.bukkit.Location
 import java.lang.ref.WeakReference
 
 class CaravanModule(
-    controller: AIController,
-    val fleet : Fleet,
-    val template: AIConvoyTemplate,
-    val source: Location,
-    val route: ConvoyRoute
+	controller: AIController,
+	val fleet : Fleet,
+	val template: AIConvoyTemplate<out ConvoyContext>,
+	val source: Location,
+	val route: ConvoyRoute
 ) : AIModule(controller){
 
 	var target : AITarget = GoalTarget(Vec3i(source),source.world,false)
@@ -112,7 +113,7 @@ class CaravanModule(
 }
 
 class CaravanFleetLogic(
-	val template: AIConvoyTemplate,
+	val template: AIConvoyTemplate<out ConvoyContext>,
 	val source: Location,
 	val route: ConvoyRoute,
 	fleet: Fleet

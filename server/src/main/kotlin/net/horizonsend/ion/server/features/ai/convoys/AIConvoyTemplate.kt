@@ -6,8 +6,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import org.bukkit.Location
 import java.util.function.Supplier
 
-class AIConvoyTemplate(
+class AIConvoyTemplate<C : ConvoyContext>(
 	val identifier: String,
-	val spawnMechanicBuilder: (source : TradeCityData) -> SpawnerMechanic,
+	val spawnMechanicBuilder: (context : C) -> SpawnerMechanic,
 	val difficultySupplier: (String) -> Supplier<Int>,
 )

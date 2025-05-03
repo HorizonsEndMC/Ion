@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyTemplate
+import net.horizonsend.ion.server.features.ai.convoys.CityContext
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import java.util.concurrent.ConcurrentHashMap
 
@@ -92,7 +93,7 @@ object TradeCities : IonServerComponent() {
 		return cities[territory.id]
 	}
 
-	fun applyConvoySchedule(city: TradeCityData, hour: Int, template: AIConvoyTemplate): Boolean {
+	fun applyConvoySchedule(city: TradeCityData, hour: Int, template: AIConvoyTemplate<CityContext>): Boolean {
 		if (hour !in 0..23) return false
 
 		val currentHolder = scheduledHours[hour]

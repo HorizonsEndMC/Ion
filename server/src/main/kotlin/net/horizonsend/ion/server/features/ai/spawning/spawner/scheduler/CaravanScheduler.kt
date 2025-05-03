@@ -2,6 +2,7 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler
 
 import kotlinx.coroutines.launch
+import net.horizonsend.ion.server.features.ai.convoys.toContext
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
@@ -24,7 +25,7 @@ object CaravanScheduler : SpawnerScheduler,TickedScheduler {
                 val effectiveAfter = city.configEffectiveAfter ?: return@forEach
                 if (scheduled != hour || System.currentTimeMillis() < effectiveAfter) return@forEach
 
-				val mechanic = convoyTemplate.spawnMechanicBuilder(city)
+				val mechanic = convoyTemplate.spawnMechanicBuilder(city.toContext())
 
 				AISpawningManager.context.launch {
 					mechanic.trigger(logger)
