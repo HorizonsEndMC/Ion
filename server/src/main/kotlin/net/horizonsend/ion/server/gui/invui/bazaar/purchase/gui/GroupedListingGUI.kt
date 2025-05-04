@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui
 
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
@@ -18,7 +19,6 @@ import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bson.conversions.Bson
 import org.litote.kmongo.setValue
 import xyz.xenondevs.invui.gui.PagedGui
@@ -103,9 +103,9 @@ class GroupedListingGUI(
 			val maxPrice = sellers.maxOfOrNull { it.price } ?: 0
 
 			listOf(
-				template(text("{0} listing${if (sellerCount != 1) "s" else ""} with a total stock of {1}", GRAY), sellerCount, totalStock),
-				ofChildren(text("Min price of listing${if (sellerCount != 1) "s" else ""}: ", GRAY), minPrice.toCreditComponent()),
-				ofChildren(text("Max price of listing${if (sellerCount != 1) "s" else ""}: ", GRAY), maxPrice.toCreditComponent()),
+				template(text("{0} listing${if (sellerCount != 1) "s" else ""} with a total stock of {1}", HE_MEDIUM_GRAY), sellerCount, totalStock),
+				ofChildren(text("Min price of listing${if (sellerCount != 1) "s" else ""}: ", HE_MEDIUM_GRAY), minPrice.toCreditComponent()),
+				ofChildren(text("Max price of listing${if (sellerCount != 1) "s" else ""}: ", HE_MEDIUM_GRAY), maxPrice.toCreditComponent()),
 			)
 		},
 		clickHandler = { itemString, _, _ ->
