@@ -17,9 +17,11 @@ import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.gui.item.EnumScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGui
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
@@ -82,7 +84,9 @@ class IndividualListingGUI(
 		return new
 	}
 
-	private val searchButton: AbstractItem = GuiItems.closeMenuItem(parentWindow.viewer)
+	private val searchButton: AbstractItem = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search")).makeGuiButton { _, _ ->
+		println("Search")
+	}
 
 	private fun getButtons(): List<AbstractItem> {
 		val items = BazaarItem.find(searchBson)
@@ -99,12 +103,12 @@ class IndividualListingGUI(
 						updateData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
 					}
 				}) { _ ->
-					PurchaseItemMenu(
-						viewer = parentWindow.viewer,
+					BazaarGUIs.openPurchaseMenu(
+						player = parentWindow.viewer,
 						remote = parentWindow.remote,
 						item = bazaarItem,
 						backButtonHandler = { purchaseBackButton.invoke() }
-					).openMenu()
+					)
 				}
 			}
 	}

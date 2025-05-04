@@ -59,7 +59,7 @@ fun getItemButtons(
 	filter: (BazaarItem) -> Boolean = { true },
 	nameBuilder: ((String, List<BazaarItem>) -> Component)? = null,
 	loreBuilder: (String, List<BazaarItem>) -> List<Component> = { _, _ ->listOf() },
-	clickHandler: (String, ClickType, Player) -> Unit,
+	clickHandler: (String, List<BazaarItem>, ClickType, Player) -> Unit,
 ): List<AbstractItem> {
 	val items = BazaarItem.find(bson)
 
@@ -78,7 +78,7 @@ fun getItemButtons(
 					updateData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
 				}
 			}) { event ->
-				clickHandler.invoke(itemString, event.click, event.playerClicker)
+				clickHandler.invoke(itemString, grouped, event.click, event.playerClicker)
 			}
 		}
 		.apply { sort.sort(this) }
