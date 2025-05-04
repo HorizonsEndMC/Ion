@@ -5,13 +5,14 @@ import net.horizonsend.ion.server.features.gui.GuiItems.closeMenuItem
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.CitySelectionGUI
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import xyz.xenondevs.invui.item.impl.AbstractItem
 
 class BazaarCitySelectionMenu(viewer: Player, remote: Boolean) : BazaarPurchaseMenuParent(viewer, remote) {
-	override val menuTitle: String = "Browsing Active Trade Cities"
+	override val menuTitle: Component = text("Browsing Active Trade Cities")
 	override val contained = CitySelectionGUI(this)
 
 	override val citySelectionButton: AbstractItem = getCitySelectionButton(true)
