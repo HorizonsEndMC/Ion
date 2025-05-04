@@ -52,18 +52,20 @@ abstract class BazaarPurchaseMenuParent(
 
 	override fun buildWindow(): Window = Window.single()
 		.setGui(getMenuGUI())
-		.setTitle(getMenuTitle())
+		.setTitle(buildMenuTitle())
 		.setViewer(viewer)
 		.build()
 
 	fun refreshGuiText() {
 		val window = currentWindow ?: return
-		window.changeTitle(getMenuTitle())
+		window.changeTitle(buildMenuTitle())
 	}
 
-	protected open val menuTitle = if (remote) "Remote Bazaar" else "Bazaar"
+	protected open val menuTitle: Component = text(if (remote) "Remote Bazaar" else "Bazaar")
 
-	private fun getMenuTitle(): Component = GuiText(menuTitle)
+	private fun buildMenuTitle(): Component = GuiText("")
+		.add(menuTitle, line = -1, verticalShift = -2)
+		.populateGuiText()
 		.setSlotOverlay(
 			"# # # # # # # # #",
 			". . . . . . . . .",
@@ -72,7 +74,6 @@ abstract class BazaarPurchaseMenuParent(
 			". . . . . . . . .",
 			"# # # # # # # # #"
 		)
-		.populateGuiText()
 		.build()
 
 	open fun GuiText.populateGuiText(): GuiText { return this }
