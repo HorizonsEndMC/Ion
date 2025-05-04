@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
+import net.horizonsend.ion.server.gui.invui.bazaar.REMOTE_WARINING
 import net.horizonsend.ion.server.gui.invui.bazaar.getCityButtons
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.kyori.adventure.text.Component.text
@@ -26,16 +27,19 @@ class CitySelectionGUI(val parent: BazaarPurchaseMenuParent) : InvUIGuiWrapper<G
 				val listingCount = BazaarItem.count(BazaarItem::cityTerritory eq city.territoryId)
 				val territoryRegion = Regions.get<RegionTerritory>(city.territoryId)
 
-				listOf(
+				val lore = listOf(
 					ofChildren(
 						text("Located at ", HE_MEDIUM_GRAY), text(territoryRegion.name, AQUA),
 						text(" on ", HE_MEDIUM_GRAY), text(territoryRegion.world, AQUA), text(".", GRAY)
 					),
 					template(text("{0} item listing${if (listingCount != 1L) "s" else ""}.", HE_MEDIUM_GRAY), listingCount)
 				)
+
+				if (!territoryRegion.contains(parent.viewer.location)) lore.plus(REMOTE_WARINING) else lore
 			},
 			clickHandler = { city, _, player ->
-				BazaarGUIs.openCityBrowse(player, parent.remote, city)
+				val remote = !Regions.get<RegionTerritory>(city.territoryId).contains(player.location)
+				BazaarGUIs.openCityBrowse(player, remote, city)
 			}
 		)
 
