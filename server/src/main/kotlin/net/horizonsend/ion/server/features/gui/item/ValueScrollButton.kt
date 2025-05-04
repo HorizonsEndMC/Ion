@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.gui.item
 
+import net.horizonsend.ion.common.utils.InputResult
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
@@ -16,7 +17,7 @@ open class ValueScrollButton(
 	private val valueRange: IntRange,
 	private val valueConsumer: Consumer<Int>
 ) : FeedbackItem(providedItem, { listOf(Component.text("Current value: ${value.get()}")) }) {
-		override fun getResult(event: InventoryClickEvent, player: Player): FeedbackItemResult {
+		override fun getResult(event: InventoryClickEvent, player: Player): InputResult {
 		val nextValueRaw = value.get() + increment
 		val range = valueRange.last - valueRange.first
 
@@ -25,10 +26,10 @@ open class ValueScrollButton(
 			floorModResult + valueRange.first
 		} else nextValueRaw
 
-		if (!valueRange.contains(formatted)) return FeedbackItemResult.FailureLore(listOf(Component.text("Value $formatted out of range! (${valueRange.first} - ${valueRange.last})", NamedTextColor.RED)))
+		if (!valueRange.contains(formatted)) return InputResult.FailureReason(listOf(Component.text("Value $formatted out of range! (${valueRange.first} - ${valueRange.last})", NamedTextColor.RED)))
 
 		valueConsumer.accept(formatted)
-		return FeedbackItemResult.SuccessLore(listOf(Component.text("Set value to $formatted", NamedTextColor.GREEN)))
+		return InputResult.SuccessReason(listOf(Component.text("Set value to $formatted", NamedTextColor.GREEN)))
 	}
 
 	override fun onSuccess(event: InventoryClickEvent, player: Player) {}
