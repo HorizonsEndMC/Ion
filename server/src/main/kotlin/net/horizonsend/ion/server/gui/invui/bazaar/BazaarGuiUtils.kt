@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.gui.invui.bazaar
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.colors.Colors
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
@@ -17,10 +19,14 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.TextColor
 import org.bson.conversions.Bson
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import xyz.xenondevs.invui.item.impl.AbstractItem
+
+val REMOTE_WARINING = bracketed(text("REMOTE", TextColor.color(Colors.ALERT)))
 
 fun getCityButtons(
 	cityFilter: (TradeCityData) -> Boolean = { true },
