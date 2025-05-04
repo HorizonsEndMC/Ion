@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.GroupedListingGU
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
@@ -16,7 +17,7 @@ import org.litote.kmongo.gt
 import xyz.xenondevs.invui.item.impl.AbstractItem
 
 class BazaarGlowbalBrowseMenu(viewer: Player, remote: Boolean, pageNumber: Int = 0) : BazaarPurchaseMenuParent(viewer, remote) {
-	override val menuTitle: String = "Browsing All Items"
+	override val menuTitle: Component = text("Browsing All Items")
 	override val contained: GroupedListingGUI = GroupedListingGUI(
 		parentWindow = this,
 		searchBson = BazaarItem::stock gt 0,
