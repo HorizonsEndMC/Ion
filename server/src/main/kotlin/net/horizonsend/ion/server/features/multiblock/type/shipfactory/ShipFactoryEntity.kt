@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.gui.item.FeedbackItem.FeedbackItemResult
+import net.horizonsend.ion.common.utils.InputResult
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.task.TaskHandlingMultiblockEntity
@@ -175,11 +175,11 @@ abstract class ShipFactoryEntity(
 		return true
 	}
 
-	fun checkEnableButton(user: Player): FeedbackItemResult? {
-		if (CombatTimer.isPvpCombatTagged(user)) return FeedbackItemResult.FailureLore(listOf(Component.text("Cannot activate Ship Factories while in combat!", NamedTextColor.RED)))
+	fun checkEnableButton(user: Player): InputResult? {
+		if (CombatTimer.isPvpCombatTagged(user)) return InputResult.FailureReason(listOf(Component.text("Cannot activate Ship Factories while in combat!", NamedTextColor.RED)))
 
-		val cached = cachedBlueprintData ?: return FeedbackItemResult.FailureLore(listOf(Component.text("Blueprint not found!", NamedTextColor.RED)))
-		if (!cached.canAccess(user)) return FeedbackItemResult.FailureLore(listOf(Component.text("You don't have access to that blueprint!", NamedTextColor.RED)))
+		val cached = cachedBlueprintData ?: return InputResult.FailureReason(listOf(Component.text("Blueprint not found!", NamedTextColor.RED)))
+		if (!cached.canAccess(user)) return InputResult.FailureReason(listOf(Component.text("You don't have access to that blueprint!", NamedTextColor.RED)))
 
 		return null
 	}
