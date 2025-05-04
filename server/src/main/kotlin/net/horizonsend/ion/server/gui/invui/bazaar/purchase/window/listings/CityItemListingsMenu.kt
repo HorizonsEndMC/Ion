@@ -2,6 +2,8 @@ package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.listings
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
+import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
@@ -12,7 +14,9 @@ import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchas
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
@@ -33,7 +37,7 @@ class CityItemListingsMenu(
 			verticalShift = -11
 		))
 		.add(fromItemString(itemString).displayName(), line = -2, verticalShift = -4)
-		.add(text("From ${cityData.displayName}"), line = -1, verticalShift = -2)
+		.add(ofChildren(text("From ${cityData.displayName} "), if (remote) bracketed(text("REMOTE", NamedTextColor.RED)) else empty()), line = -1, verticalShift = -2)
 		.build()
 
 	override val contained: IndividualListingGUI = IndividualListingGUI(
