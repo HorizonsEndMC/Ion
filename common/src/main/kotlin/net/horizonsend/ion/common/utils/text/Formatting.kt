@@ -67,7 +67,7 @@ fun bracketed(value: ComponentLike, leftBracket: ComponentLike, rightBracket: Co
  **/
 fun templateMiniMessage(
 	message: String,
-	paramColor: TextColor = NamedTextColor.WHITE,
+	paramColor: TextColor? = NamedTextColor.WHITE,
 	useQuotesAroundObjects: Boolean = true,
 	vararg parameters: Any?
 ): Component {
@@ -77,7 +77,7 @@ fun templateMiniMessage(
 fun template(
 	message: String,
 	color: TextColor,
-	paramColor: TextColor = NamedTextColor.WHITE,
+	paramColor: TextColor? = NamedTextColor.WHITE,
 	useQuotesAroundObjects: Boolean = true,
 	vararg parameters: Any?
 ): Component {
@@ -86,14 +86,14 @@ fun template(
 
 fun template(message: Component, vararg parameters: Any?) = template(message, paramColor = NamedTextColor.WHITE, useQuotesAroundObjects = true, *parameters)
 
-fun template(message: Component, paramColor: TextColor, vararg parameters: Any?) = template(message, paramColor = paramColor, useQuotesAroundObjects = true, *parameters)
+fun template(message: Component, paramColor: TextColor?, vararg parameters: Any?) = template(message, paramColor = paramColor, useQuotesAroundObjects = true, *parameters)
 
 fun template(message: Component, useQuotesAroundObjects: Boolean = true, vararg parameters: Any?) =
 	template(message, paramColor = NamedTextColor.WHITE, useQuotesAroundObjects = useQuotesAroundObjects, *parameters)
 
 fun template(
 	message: Component,
-	paramColor: TextColor,
+	paramColor: TextColor?,
 	useQuotesAroundObjects: Boolean,
 	vararg parameters: Any?
 ): Component {
