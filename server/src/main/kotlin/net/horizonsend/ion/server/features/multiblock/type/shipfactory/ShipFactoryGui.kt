@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.utils.InputResult
 import net.horizonsend.ion.common.utils.text.ADVANCED_SHIP_FACTORY_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.miniMessage
@@ -14,7 +15,6 @@ import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputM
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
 import net.horizonsend.ion.server.features.gui.custom.settings.button.BooleanSupplierConsumerButton
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem
-import net.horizonsend.ion.server.features.gui.item.FeedbackItem.FeedbackItemResult
 import net.horizonsend.ion.server.features.gui.item.ValueScrollButton
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -146,13 +146,13 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 
 	private val enableButton: FeedbackItem = FeedbackItem
 		.builder({ if (entity.isRunning) GuiItem.SHIP_FACTORY_RUNNING.makeItem(text("Start")) else GuiItem.EMPTY.makeItem(text("Start")) }) { _, player ->
-			if (entity.userManager.currentlyUsed()) return@builder FeedbackItemResult.FailureLore(listOf(text("This ship factory is already being used!", NamedTextColor.RED)))
-			if (!entity.ensureBlueprintLoaded(player)) return@builder FeedbackItemResult.FailureLore(listOf(text("Blueprint not found!", NamedTextColor.RED)))
+			if (entity.userManager.currentlyUsed()) return@builder InputResult.FailureReason(listOf(text("This ship factory is already being used!", NamedTextColor.RED)))
+			if (!entity.ensureBlueprintLoaded(player)) return@builder InputResult.FailureReason(listOf(text("Blueprint not found!", NamedTextColor.RED)))
 
 			val otherCheckResults = entity.checkEnableButton(player)
 			if (otherCheckResults != null) return@builder otherCheckResults
 
-			FeedbackItemResult.SuccessLore(listOf(text("Enabled ship factory.", NamedTextColor.GREEN)))
+			InputResult.SuccessReason(listOf(text("Enabled ship factory.", NamedTextColor.GREEN)))
 		}
 		.withStaticFallbackLore(listOf(text("Start the ship factory.")))
 		.withSuccessHandler { _, player ->
@@ -169,9 +169,9 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 
 	private val disableButton: FeedbackItem = FeedbackItem
 		.builder(GuiItem.EMPTY.makeItem(text("Stop"))) { _, _ ->
-			if (!entity.userManager.currentlyUsed()) return@builder FeedbackItemResult.FailureLore(listOf(text("This ship factory not currently being used!", NamedTextColor.RED)))
+			if (!entity.userManager.currentlyUsed()) return@builder InputResult.FailureReason(listOf(text("This ship factory not currently being used!", NamedTextColor.RED)))
 
-			FeedbackItemResult.SuccessLore(listOf(text("Disabled ship factory.", NamedTextColor.GREEN)))
+			InputResult.SuccessReason(listOf(text("Disabled ship factory.", NamedTextColor.GREEN)))
 		}
 		.withStaticFallbackLore(listOf(text("Stop the ship factory.")))
 		.withSuccessHandler { _, _ ->
@@ -243,27 +243,27 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 
 	private fun getPreviewButton(icon: GuiItem, seconds: Int) = FeedbackItem.builder(icon.makeItem(text("Preview ${seconds}s"))) { _, player ->
 			val ticks = seconds * 20L
-			val preview = entity.getPreview(player, ticks) ?: return@builder FeedbackItemResult.FailureLore(listOf(text("Blueprint not found!", NamedTextColor.RED)))
+			val preview = entity.getPreview(player, ticks) ?: return@builder InputResult.FailureReason(listOf(text("Blueprint not found!", NamedTextColor.RED)))
 
 			Tasks.async {
 				preview.preview()
 			}
 
-			FeedbackItemResult.Success
+			InputResult.InputSuccess
 		}
 		.build()
 
 	private val boundingBoxPreview = FeedbackItem.builder(GuiItem.OUTLINE.makeItem(text("Display Bounding Box"))) { _, player ->
-			if (!entity.toggleBoundingBox(player))  return@builder FeedbackItemResult.FailureLore(listOf(text("Blueprint not found!", NamedTextColor.RED)))
+			if (!entity.toggleBoundingBox(player))  return@builder InputResult.FailureReason(listOf(text("Blueprint not found!", NamedTextColor.RED)))
 			entity.tickBoundingBoxTasks() // Tick now
 
-			FeedbackItemResult.SuccessLore(listOf(text("Toggled bounding box", NamedTextColor.GREEN)))
+			InputResult.SuccessReason(listOf(text("Toggled bounding box", NamedTextColor.GREEN)))
 		}
 		.build()
 
 	private val resetButton = FeedbackItem.builder(GuiItem.CANCEL.makeItem(text("Reset Offset"))) { _, _ ->
-			if (!entity.canEditSettings()) FeedbackItemResult.FailureLore(listOf(text("Placement settings can't be altered while running", NamedTextColor.RED)))
-			FeedbackItemResult.Success
+			if (!entity.canEditSettings()) return@builder InputResult.FailureReason(listOf(text("Placement settings can't be altered while running", NamedTextColor.RED)))
+			InputResult.InputSuccess
 		}
 		.withSuccessHandler { _, _ ->
 			with(entity.settings) {
@@ -279,9 +279,9 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 
 	private val materialsButton = FeedbackItem.builder(GuiItem.MATERIALS.makeItem(text("Get Materials"))) { _, player ->
 			if (!entity.ensureBlueprintLoaded(player)) {
-				return@builder FeedbackItemResult.FailureLore(listOf(text("You must load a blueprint first!", NamedTextColor.RED)))
+				return@builder InputResult.FailureReason(listOf(text("You must load a blueprint first!", NamedTextColor.RED)))
 			}
-			FeedbackItemResult.Success
+			InputResult.InputSuccess
 		}
 		.withSuccessHandler { _, _ ->
 			Tasks.async {
