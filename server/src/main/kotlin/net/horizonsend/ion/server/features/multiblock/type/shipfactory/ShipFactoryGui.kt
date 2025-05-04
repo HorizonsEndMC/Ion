@@ -293,6 +293,7 @@ class ShipFactoryGui(private val viewer: Player, val entity: ShipFactoryEntity) 
 	private val placementMenu = GuiItems.createButton(GuiItem.GEAR.makeItem(text("Placement Settings"))) { _, _, _ ->
 		placementSettings.openGui()
 	}
+
 	private val placementSettings = createSettingsPage(
 		viewer,
 		"Placement Settings",
