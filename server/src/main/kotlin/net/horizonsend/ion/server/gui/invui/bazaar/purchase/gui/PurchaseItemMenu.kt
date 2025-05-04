@@ -42,7 +42,11 @@ class PurchaseItemMenu(
 			inputValidator = RangeIntegerValidator(1..item.stock),
 			componentTransformer = { Component.text(it) },
 			successfulInputHandler = { _, (_, result) ->
-				Bazaars.tryBuy(viewer, item, result.result, remote)
+				Bazaars.tryBuy(viewer, item, result.result, remote) { buyResult ->
+					val reason = buyResult.getReason() ?: return@tryBuy
+					updateLoreOverride(reason)
+					notifyWindows()
+				}
 			}
 		).open()
 	}
