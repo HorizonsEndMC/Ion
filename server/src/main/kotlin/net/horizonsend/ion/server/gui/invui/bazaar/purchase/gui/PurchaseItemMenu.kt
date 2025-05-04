@@ -30,7 +30,7 @@ class PurchaseItemMenu(
 			.addBackground(background)
 			.add(template(message = Component.text("Buying {0}'s"), paramColor = null, useQuotesAroundObjects = false, listerName), line = -3, verticalShift = -1)
 			.add(template(message = Component.text("{0}"), paramColor = null, useQuotesAroundObjects = false, itemStack.displayName()), line = -2, verticalShift = 0)
-			.add(template(Component.text("Valid values between {0} {1}"), paramColor = null, 1, item.stock), line = -1, verticalShift = 1)
+			.add(template(Component.text("Between {0} and {1}"), paramColor = null, 1, item.stock), line = -1, verticalShift = 1)
 			.build()
 
 		TextInputMenu(
