@@ -212,7 +212,7 @@ object BazaarCommand : SLCommand() {
 		BazaarItem.removeStock(item._id, amount)
 
 		Tasks.sync {
-			val (fullStacks, remainder) = Bazaars.dropItems(itemStack, amount, sender)
+			val (fullStacks, remainder) = Bazaars.giveOrDropItems(itemStack, amount, sender)
 
 			sender.success(
 				"Withdraw $amount of $itemString at $cityName" +
@@ -408,7 +408,7 @@ object BazaarCommand : SLCommand() {
 		val tax = ceil(city.tax * price).toInt()
 		requireMoney(sender, price + tax)
 		VAULT_ECO.withdrawPlayer(sender, price + tax)
-		Bazaars.dropItems(item, amount, sender)
+		Bazaars.giveOrDropItems(item, amount, sender)
 
 		sender.sendMessage(
 			text("Bought ").color(NamedTextColor.GREEN)

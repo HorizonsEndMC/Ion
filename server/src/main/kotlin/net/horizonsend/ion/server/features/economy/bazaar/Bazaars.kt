@@ -10,8 +10,10 @@ import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
+import net.horizonsend.ion.common.utils.InputResult
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServerComponent
@@ -27,12 +29,13 @@ import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
+import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
@@ -44,7 +47,7 @@ import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq
 import org.litote.kmongo.gt
 import org.litote.kmongo.ne
-import kotlin.math.absoluteValue
+import java.util.function.Consumer
 import kotlin.math.roundToInt
 import kotlin.reflect.KProperty
 
@@ -172,15 +175,15 @@ object Bazaars : IonServerComponent() {
 					return@map guiButton(itemStack) {
 						//openPurchaseMenu(playerClicker, bazaarItem, sellerName, 0, remote)
 						BazaarPurchaseMenuGui(
-							playerClicker,
-							bazaarItem,
-							sellerName,
-							remote,
-							{
+							viewer = playerClicker,
+							bazaarItem = bazaarItem,
+							sellerName = sellerName,
+							remote = remote,
+							returnCallback = {
 								playerClicker.closeInventory()
 								openItemMenu(player, terrId, item, sort, descend, remote)
 							},
-							::tryBuy
+							confirmCallback = ::tryBuy
 						).openGui()
 					}.setName(priceString).setLore(listOf("Seller: $sellerName", "Stock: $stock"))
 				}
@@ -196,109 +199,53 @@ object Bazaars : IonServerComponent() {
 
 	fun priceMult(remote: Boolean) = if (remote) 4 else 1
 
-	private fun openPurchaseMenu(
-		player: Player,
-		item: BazaarItem,
-		sellerName: String,
-		currentAmount: Int,
-		remote: Boolean
-	) {
-		MenuHelper.apply {
-			val pane = outlinePane(0, 0, 9, 1)
-
-			val priceMult = priceMult(remote)
-
-			fun addButton(amount: Int) {
-				val buttonType = if (amount < 0) Material.RED_STAINED_GLASS_PANE else Material.LIME_STAINED_GLASS_PANE
-				val buttonItem = ItemStack(buttonType)
-				buttonItem.amount = amount.absoluteValue
-				pane.addItem(
-					guiButton(buttonItem) {
-						val newAmount = currentAmount + amount
-						if (item.stock - newAmount >= 0 && newAmount >= 0) {
-							val cost: Double = newAmount * item.price * priceMult
-
-							if (!VAULT_ECO.has(playerClicker, cost)) {
-								playerClicker.userError(
-									"You don't have enough credits! Cost for $newAmount: ${cost.toCreditsString()}" +
-										if (priceMult > 1) " (Price multiplied x $priceMult due to browsing remotely)" else ""
-								)
-							} else {
-								openPurchaseMenu(playerClicker, item, sellerName, newAmount, remote)
-							}
-						}
-					}.setName((if (amount < 0) "Subtract" else "Add") + " ${amount.absoluteValue}")
-				)
-			}
-
-			addButton(-32)
-			addButton(-8)
-			addButton(-1)
-			addButton(1)
-			addButton(8)
-			addButton(32)
-			addButton(64)
-
-			pane.addItem(
-				guiButton(Material.IRON_DOOR) {
-					openItemMenu(playerClicker, item.cityTerritory, item.itemString, SortingBy.STOCK, true, remote)
-				}.setName("Go Back")
-			)
-
-			val name = fromItemString(item.itemString).displayNameString
-
-			if (currentAmount == 0) {
-				pane.addItem(guiButton(Material.BARRIER).setName("Buy at least one item"))
-			} else {
-				val lore = mutableListOf<String>()
-
-				lore += "&fBuy $currentAmount of $name for ${(item.price * currentAmount * priceMult).roundToHundredth()}"
-
-				if (!LegacyItemUtils.canFit(player.inventory, fromItemString(item.itemString), currentAmount)) {
-					lore += "&cWARNING: Amount is larger than may fit in your inventory."
-					lore += "&cAdding additional items may result in their stacks getting deleted."
-				}
-
-				if (priceMult > 1) {
-					lore += "(Price multiplied x $priceMult due to browsing remotely)"
-				}
-
-				pane.addItem(
-					guiButton(Material.HOPPER) {
-						playerClicker.closeInventory()
-						tryBuy(playerClicker, item, currentAmount, remote)
-					}.setName(text("Purchase").color(NamedTextColor.GREEN)).setLore(lore)
-				)
-			}
-
-			gui(1, "$currentAmount/${item.stock} $sellerName's $name").withPane(pane).show(player)
-		}
-	}
-
 	private fun search(territoryId: Oid<Territory>, search: String): List<BazaarItem> =
 		getCityItems(territoryId).filter { it.itemString.contains(search, true) }
 
-	fun tryBuy(player: Player, item: BazaarItem, amount: Int, remote: Boolean) {
+	fun tryBuy(player: Player, item: BazaarItem, amount: Int, remote: Boolean, resultConsumer: Consumer<InputResult> = Consumer {}) {
 		val price: Double = item.price
 		val revenue: Double = amount * price
 		val priceMult = priceMult(remote)
 		val cost: Double = revenue * priceMult
 
 		if (!VAULT_ECO.has(player, cost)) {
-			return player.userError(
+			player.userError(
 				"You can't afford that! Cost for $amount: ${cost.toCreditsString()}" +
 					if (priceMult > 1) " (Price multiplied x $priceMult due to browsing remotely)" else ""
 			)
+
+			resultConsumer.accept(InputResult.FailureReason(listOf(
+				text("You can't afford that!"),
+				text("Cost for $amount: ${cost.toCreditsString()} ${if (priceMult > 1) " (Price multiplied x $priceMult due to browsing remotely)" else ""}")
+			)))
+
+			return
 		}
 
-		val city: TradeCityData = TradeCities.getIfCity(Regions[item.cityTerritory]) ?: return
+		val city: TradeCityData? = TradeCities.getIfCity(Regions[item.cityTerritory])
+
+		if (city == null) {
+			resultConsumer.accept(InputResult.FailureReason(listOf(
+				text("${Regions.get<RegionTerritory>(item.cityTerritory).name} is no longer a trade city!", NamedTextColor.RED),
+			)))
+
+			return
+		}
 
 		Tasks.async {
 			if (!BazaarItem.hasStock(item._id, amount)) {
+				resultConsumer.accept(InputResult.FailureReason(listOf(
+					text("Item no longer has $amount in stock", NamedTextColor.RED),
+				)))
+
 				return@async player.information("Item no longer has $amount in stock")
 			}
 
 			if (BazaarItem.matches(item._id, BazaarItem::price ne price)) {
+				resultConsumer.accept(InputResult.FailureReason(listOf(
+					text("Price has changed", NamedTextColor.RED),
+				)))
+
 				return@async player.userError("Price has changed")
 			}
 
@@ -314,48 +261,29 @@ object Bazaars : IonServerComponent() {
 
 			Tasks.sync {
 				VAULT_ECO.withdrawPlayer(player, cost)
-				val (fullStacks, remainder) = dropItems(itemStack, amount, player)
+				val (fullStacks, remainder) = giveOrDropItems(itemStack, amount, player)
 
-				val buyMessage = text().color(NamedTextColor.GREEN)
-					.append(text("Bought "))
-					.append(text(fullStacks).color(NamedTextColor.WHITE))
+				val quantityMessage = if (itemStack.maxStackSize == 1) "{0}" else "{0} stack${if (fullStacks == 1) "" else "s"} and {1} item${if (remainder == 1) "" else "s"}"
 
-				if (itemStack.maxStackSize == 1) {
-					buyMessage
-						.append(text(" "))
-						.append(
-							itemStack.displayNameComponent.append(
-								if (fullStacks == 1) text("") else text("s")
-							)
-						)
-				} else {
-					buyMessage
-						.append(if (fullStacks == 1) text(" stack and ") else text(" stacks and "))
-						.append(text(remainder).color(NamedTextColor.WHITE))
-						.append(if (remainder == 1) text(" item") else text(" items"))
-						.append(text(" of "))
-						.append(itemStack.displayNameComponent)
-				}
-
-				buyMessage
-					.append(text(" for "))
-					.append(cost.toCreditComponent())
-
-				if (priceMult > 1) {
-					buyMessage
-						.append(text(" (Price multiplied by ").color(NamedTextColor.YELLOW))
-						.append(text(priceMult).color(NamedTextColor.WHITE))
-						.append(text(" due to browsing remotely)").color(NamedTextColor.YELLOW))
-				}
-
-				player.sendMessage(
-					buyMessage
+				val fullMessage = template(
+					text("Bought $quantityMessage of {2} for {3}{4}", NamedTextColor.GREEN),
+					fullStacks,
+					remainder,
+					itemStack.displayNameComponent,
+					cost.toCreditComponent(),
+					if (priceMult > 1) {
+						ofChildren(text(" (Price multiplied by ", NamedTextColor.YELLOW), text(priceMult, NamedTextColor.WHITE), text(" due to browsing remotely)", NamedTextColor.YELLOW))
+					} else empty()
 				)
+
+				player.sendMessage(fullMessage)
+
+				resultConsumer.accept(InputResult.SuccessReason(listOf(fullMessage)))
 			}
 		}
 	}
 
-	fun dropItems(itemStack: ItemStack, amount: Int, sender: Player): Pair<Int, Int> {
+	fun giveOrDropItems(itemStack: ItemStack, amount: Int, sender: Player): Pair<Int, Int> {
 		val maxStackSize = itemStack.maxStackSize
 		val fullStacks = amount / maxStackSize
 
