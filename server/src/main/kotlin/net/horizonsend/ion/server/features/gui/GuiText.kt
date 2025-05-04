@@ -79,8 +79,9 @@ class GuiText(
     /**
      * Adds a default GuiBackground to the GuiText
      */
-    fun addBackground() {
+    fun addBackground(): GuiText {
         addBackground(GuiBackground())
+		return this
     }
 
     /**
@@ -254,7 +255,8 @@ class GuiText(
         val backgroundChar: Char = DEFAULT_BACKGROUND_CHARACTER,
         val backgroundWidth: Int = DEFAULT_GUI_WIDTH,
         val horizontalShift: Int = 0,
-		val verticalShift: Int = 0
+		val verticalShift: Int = 0,
+		val subText: GuiText? = null
     )
 
     /**

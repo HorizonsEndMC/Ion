@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.listings
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
@@ -9,8 +10,8 @@ import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.IndividualListingGUI
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
-import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
@@ -26,7 +27,15 @@ class CityItemListingsMenu(
 	private val previousPageNumber: Int? = null,
 	pageNumber: Int = 0
 ) : BazaarPurchaseMenuParent(viewer, remote) {
-	override val menuTitle: String = "${fromItemString(itemString).displayNameString} @ ${cityData.displayName}"
+	override val menuTitle: Component = GuiText("")
+		.addBackground(GuiText.GuiBackground(
+			backgroundChar = BACKGROUND_EXTENDER,
+			verticalShift = -11
+		))
+		.add(fromItemString(itemString).displayName(), line = -2, verticalShift = -4)
+		.add(text("From ${cityData.displayName}"), line = -1, verticalShift = -2)
+		.build()
+
 	override val contained: IndividualListingGUI = IndividualListingGUI(
 		parentWindow = this,
 		reOpenHandler = {
