@@ -142,7 +142,7 @@ abstract class BazaarPurchaseMenuParent(
 
 	private val settingsButton = GuiItem.GEAR
 		.makeItem(text("Bazaar GUI Settings"))
-		.makeGuiButton { clickType, player ->
-			println("settings")
+		.makeGuiButton { _, player ->
+			BazaarGUIs.openBazaarSettings(player, this)
 		}
 }

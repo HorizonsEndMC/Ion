@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.EnumScrollButton
 import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGui
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.getItemButtons
@@ -96,7 +97,7 @@ class GroupedListingGUI(
 	private fun getButtons() = getItemButtons(
 		searchBson,
 		sortingMethod,
-		loreBuilder = { item, sellers ->
+		loreBuilder = { _, sellers ->
 			val sellerCount = sellers.size
 			val totalStock = sellers.sumOf { it.stock }
 			val minPrice = sellers.minOfOrNull { it.price } ?: 0
@@ -108,7 +109,20 @@ class GroupedListingGUI(
 				ofChildren(text("Max price of listing${if (sellerCount != 1) "s" else ""}: ", HE_MEDIUM_GRAY), maxPrice.toCreditComponent()),
 			)
 		},
-		clickHandler = { itemString, _, _ ->
+		clickHandler = { itemString, groupedItems, _, player ->
+			if (groupedItems.size == 1 && PlayerCache[player].skipBazaarSingleEntryMenus) {
+				val item = groupedItems.firstOrNull() ?: return@getItemButtons
+
+				BazaarGUIs.openPurchaseMenu(
+					player = parentWindow.viewer,
+					remote = parentWindow.remote,
+					item = item,
+					backButtonHandler = { reOpenHandler.invoke() }
+				)
+
+				return@getItemButtons
+			}
+
 			itemMenuHandler.invoke(this, itemString)
 		}
 	)
