@@ -4,6 +4,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
@@ -137,7 +138,8 @@ class IndividualListingGUI(
 			text(pageNumberString),
 			line = 10,
 			GuiText.TextAlignment.CENTER,
-			verticalShift = 4
+			verticalShift = 4,
+			horizontalShift = -DEFAULT_GUI_WIDTH
 		)
 	}
 }
