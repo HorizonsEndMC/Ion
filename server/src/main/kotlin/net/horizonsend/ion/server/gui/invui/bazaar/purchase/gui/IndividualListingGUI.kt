@@ -97,12 +97,12 @@ class IndividualListingGUI(
 						// Clear attributes
 						updateData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
 					}
-				}) { event ->
+				}) { _ ->
 					PurchaseItemMenu(
-						parentWindow.viewer,
-						parentWindow.remote,
-						bazaarItem,
-						{ purchaseBackButton.invoke() }
+						viewer = parentWindow.viewer,
+						remote = parentWindow.remote,
+						item = bazaarItem,
+						backButtonHandler = { purchaseBackButton.invoke() }
 					).openMenu()
 				}
 			}
