@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.gui.item
 
+import net.horizonsend.ion.common.utils.InputResult
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.kyori.adventure.text.Component
@@ -21,13 +22,13 @@ class EnumScrollButton<T : Enum<T>>(
 ) : ValueScrollButton(providedItem, true, value.map { it.ordinal }, increment, 0..subEntry.lastIndex, { valueConsumer.accept(subEntry[it]) }) {
 	override var currentLore: Supplier<List<Component>> = Supplier { listOf(ofChildren(Component.text("Current value: "), nameFormatter.invoke(value.get()))) }
 
-	override fun getResult(event: InventoryClickEvent, player: Player): FeedbackItemResult {
+	override fun getResult(event: InventoryClickEvent, player: Player): InputResult {
 		val parentResult = super.getResult(event, player)
 
-		if (parentResult.success) {
+		if (parentResult.isSuccess()) {
 			val newEntry = value.get()
 			val enumEntry = subEntry[newEntry]
-			return FeedbackItemResult.SuccessLore(listOf(ofChildren(Component.text("Set value to ", NamedTextColor.GREEN), nameFormatter(enumEntry))))
+			return InputResult.SuccessReason(listOf(ofChildren(Component.text("Set value to ", NamedTextColor.GREEN), nameFormatter(enumEntry))))
 		}
 
 		return parentResult

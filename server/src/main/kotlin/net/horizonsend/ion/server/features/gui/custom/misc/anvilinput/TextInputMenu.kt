@@ -40,7 +40,7 @@ class TextInputMenu<T : Any>(
 	val backButtonHandler: ((Player) -> Unit)?,
 	val inputValidator: InputValidator<T>,
 	val componentTransformer: (T) -> Component = { it.toComponent() },
-	val successfulInputHandler: (ClickType, Pair<String, ValidatorResult.ValidatorSuccess<T>>) -> Unit
+	val successfulInputHandler: ConfirmationButton<T>.(ClickType, Pair<String, ValidatorResult.ValidatorSuccess<T>>) -> Unit
 ) {
 	var currentInput = ""
 
@@ -96,12 +96,25 @@ class TextInputMenu<T : Any>(
 		backButtonHandler?.invoke(player)
 	}
 
-	private val confirmButton = object : AbstractItem() {
+	private val confirmButton = ConfirmationButton(this)
+
+	class ConfirmationButton<T : Any>(val parent: TextInputMenu<T>) : AbstractItem() {
+		private var loreOverride: List<Component>? = null
+
+		fun updateLoreOverride(lore: List<Component>) {
+			loreOverride = lore
+		}
+
 		private fun getSuccessState(result: ValidatorResult.ValidatorSuccess<T>): ItemStack {
 			val base = GuiItem.CHECKMARK.makeItem().updateDisplayName(text("Confirm", GREEN))
 
+			if (loreOverride != null) {
+				val clone = loreOverride!!.toList()
+				loreOverride = null
+				return base.updateLore(clone)
+			}
+
 			if (result is ValidatorResult.ValidatorSuccessMultiEntry<*>) {
-				@Suppress("UNCHECKED_CAST")
 				result as ValidatorResult.ValidatorSuccessMultiEntry<T>
 
 				val more = result.results.size > 5
@@ -109,36 +122,44 @@ class TextInputMenu<T : Any>(
 				return base.updateLore(
 					result.results
 						.take(5)
-						.map { componentTransformer.invoke(it) }
-						.plus(
-							if (more) template(text("{0} more results", WHITE), bracketed(text(result.results.size - 5, AQUA))) else empty()
-						)
+						.map { parent.componentTransformer.invoke(it) }
+						.plus(if (more) template(text("{0} more results", WHITE), bracketed(text(result.results.size - 5, AQUA))) else empty())
 				)
 			}
 
 			return base
 		}
 
-		private fun getFailureState(result: ValidatorResult.FailureResult<T>) = ItemStack(Material.BARRIER)
-			.updateDisplayName(text("Invalid Input!", RED))
-			.updateLore(listOf(result.message))
+		private fun getFailureState(result: ValidatorResult.FailureResult<T>): ItemStack {
+			val base = ItemStack(Material.BARRIER)
+				.updateDisplayName(text("Invalid Input!", RED))
+
+			if (loreOverride != null) {
+				val clone = loreOverride!!.toList()
+				loreOverride = null
+
+				base.updateLore(clone)
+				return base
+			}
+
+			return base.updateLore(listOf(result.message))
+		}
 
 		override fun getItemProvider(): ItemProvider {
-			val result = inputValidator.isValid(currentInput)
+			val result = parent.inputValidator.isValid(parent.currentInput)
 
 			return ItemProvider {
 				when (result) {
 					is ValidatorResult.ValidatorSuccess -> getSuccessState(result)
 					is ValidatorResult.FailureResult -> getFailureState(result)
-					else -> TODO("Not implemented")
 				}
 			}
 		}
 
 		override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-			val result = inputValidator.isValid(currentInput)
+			val result = parent.inputValidator.isValid(parent.currentInput)
 			if (result !is ValidatorResult.ValidatorSuccess<T>) return notifyWindows()
-			successfulInputHandler.invoke(clickType, currentInput to result)
+			parent.successfulInputHandler.invoke(this, clickType, parent.currentInput to result)
 		}
 	}
 
@@ -149,7 +170,7 @@ class TextInputMenu<T : Any>(
 			backButtonHandler: ((Player) -> Unit)? = null,
 			componentTransformer: (T) -> Component = { it.toComponent() },
 			inputValidator: InputValidator<T>,
-			handler: (ClickType, Pair<String, ValidatorResult.ValidatorSuccess<T>>) -> Unit
+			handler: ConfirmationButton<T>.(ClickType, Pair<String, ValidatorResult.ValidatorSuccess<T>>) -> Unit
 		) {
 			TextInputMenu(
 				player = this,
@@ -187,7 +208,7 @@ class TextInputMenu<T : Any>(
 
 						is ValidatorResult.ValidatorSuccessMultiEntry<T> -> ItemMenu.selector(
 							title = text("Ambiguous entry, select one."),
-							player = this,
+							player = this@searchEntires,
 							entries = success.results,
 							resultConsumer = handler,
 							itemTransformer = itemTransformer,
