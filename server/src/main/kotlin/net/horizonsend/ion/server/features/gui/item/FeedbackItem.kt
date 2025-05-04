@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.gui.item
 
+import net.horizonsend.ion.common.utils.InputResult
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
@@ -29,57 +30,37 @@ abstract class FeedbackItem(
 	override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
 		val result = getResult(event, player)
 
-		if (result.success) onSuccess(event, player) else onFailure(event, player)
+		if (result.isSuccess()) onSuccess(event, player) else onFailure(event, player)
 		updateWith(result)
 	}
 
-	abstract fun getResult(event: InventoryClickEvent, player: Player): FeedbackItemResult
+	abstract fun getResult(event: InventoryClickEvent, player: Player): InputResult
 
 	abstract fun onSuccess(event: InventoryClickEvent, player: Player)
 	abstract fun onFailure(event: InventoryClickEvent, player: Player)
 
-	private fun updateWith(result: FeedbackItemResult) {
+	private fun updateWith(result: InputResult) {
 		currentLore = when (result) {
-			is FeedbackItemResult.SuccessLore -> Supplier { result.lore }
-			is FeedbackItemResult.FailureLore -> Supplier { result.lore }
+			is InputResult.SuccessReason -> Supplier { result.reasonText }
+			is InputResult.FailureReason -> Supplier { result.reasonText }
 			else -> return
 		}
 
 		notifyWindows()
 	}
 
-	sealed interface FeedbackItemResult {
-		val success: Boolean
-
-		data class SuccessLore(val lore: List<Component>) : FeedbackItemResult {
-			override val success: Boolean = true
-		}
-
-		data object Success : FeedbackItemResult {
-			override val success: Boolean = true
-		}
-
-		data class FailureLore(val lore: List<Component>) : FeedbackItemResult {
-			override val success: Boolean = false
-		}
-
-		data object Failure : FeedbackItemResult {
-			override val success: Boolean = false
-		}
-	}
-
 	companion object {
-		fun builder(itemStack: ItemStack, resultProvier: (InventoryClickEvent, Player) -> FeedbackItemResult): Builder = Builder({ itemStack }, resultProvier)
-		fun builder(itemStack: ItemProvider, resultProvier: (InventoryClickEvent, Player) -> FeedbackItemResult): Builder = Builder(itemStack, resultProvier)
+		fun builder(itemStack: ItemStack, resultProvier: (InventoryClickEvent, Player) -> InputResult): Builder = Builder({ itemStack }, resultProvier)
+		fun builder(itemStack: ItemProvider, resultProvier: (InventoryClickEvent, Player) -> InputResult): Builder = Builder(itemStack, resultProvier)
 	}
 
-	class Builder(val providedItem: ItemProvider, val resultProvier: (InventoryClickEvent, Player) -> FeedbackItemResult) {
+	class Builder(val providedItem: ItemProvider, val resultProvier: (InventoryClickEvent, Player) -> InputResult) {
 		private var fallbackLore: List<Component> = listOf()
 		private var onSuccess: (FeedbackItem.(InventoryClickEvent, Player) -> Unit)? = null
 		private var onFailure: (FeedbackItem.(InventoryClickEvent, Player) -> Unit)? = null
 
 		fun build(): FeedbackItem = object : FeedbackItem(providedItem, { fallbackLore }) {
-			override fun getResult(event: InventoryClickEvent, player: Player): FeedbackItemResult {
+			override fun getResult(event: InventoryClickEvent, player: Player): InputResult {
 				return resultProvier.invoke(event, player)
 			}
 
