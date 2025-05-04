@@ -54,6 +54,10 @@ object Bazaars : IonServerComponent() {
 		addAll(CustomItemRegistry.identifiers)
 	}
 
+	fun purchaseItem(player: Player, item: BazaarItem, quantity: Int) {
+
+	}
+
     fun onClickBazaarNPC(player: Player, city: TradeCityData) {
 		val territoryId: Oid<Territory> = city.territoryId
 
@@ -274,7 +278,7 @@ object Bazaars : IonServerComponent() {
 	private fun search(territoryId: Oid<Territory>, search: String): List<BazaarItem> =
 		getCityItems(territoryId).filter { it.itemString.contains(search, true) }
 
-	private fun tryBuy(player: Player, item: BazaarItem, amount: Int, remote: Boolean) {
+	fun tryBuy(player: Player, item: BazaarItem, amount: Int, remote: Boolean) {
 		val price: Double = item.price
 		val revenue: Double = amount * price
 		val priceMult = priceMult(remote)

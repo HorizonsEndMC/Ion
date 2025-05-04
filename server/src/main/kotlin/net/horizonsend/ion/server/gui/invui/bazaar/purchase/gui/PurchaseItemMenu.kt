@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.RangeIntegerValidator
@@ -41,7 +42,7 @@ class PurchaseItemMenu(
 			inputValidator = RangeIntegerValidator(1..item.stock),
 			componentTransformer = { Component.text(it) },
 			successfulInputHandler = { _, (_, result) ->
-				println("click result: $result")
+				Bazaars.tryBuy(viewer, item, result.result, remote)
 			}
 		).open()
 	}
