@@ -100,6 +100,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 		var defaultBazaarGroupedSort: Int = 0,
 		var defaultBazaarIndividualSort: Int = 0,
+		var skipBazaarSingleEntryMenus: Boolean = false,
 
 		var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
 	)
@@ -731,7 +732,8 @@ abstract class AbstractPlayerCache : ManualCache() {
 			hideUserPrefixes = data.hideUserPrefixes,
 			hideGlobalPrefixes = data.hideGlobalPrefixes,
 			defaultBazaarGroupedSort = data.defaultBazaarGroupedSort,
-			defaultBazaarIndividualSort = data.defaultBazaarIndividualSort
+			defaultBazaarIndividualSort = data.defaultBazaarIndividualSort,
+			skipBazaarSingleEntryMenus = data.skipBazaarSingleEntryMenus,
 		)
 	}
 
