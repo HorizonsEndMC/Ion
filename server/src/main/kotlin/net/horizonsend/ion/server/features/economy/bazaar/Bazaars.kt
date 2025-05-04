@@ -36,8 +36,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.kyori.adventure.text.Component.empty
+import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -55,10 +59,6 @@ object Bazaars : IonServerComponent() {
 	val strings = mutableListOf<String>().apply {
 		addAll(Material.entries.filter { it.isItem && !it.isLegacy }.map { it.name })
 		addAll(CustomItemRegistry.identifiers)
-	}
-
-	fun purchaseItem(player: Player, item: BazaarItem, quantity: Int) {
-
 	}
 
     fun onClickBazaarNPC(player: Player, city: TradeCityData) {
@@ -97,8 +97,6 @@ object Bazaars : IonServerComponent() {
 								player.openPaginatedMenu("Search Query : $result", items, listOf(searchBackButton))
 							}
 						}
-
-						null
 					}
 
 				}
@@ -265,24 +263,36 @@ object Bazaars : IonServerComponent() {
 
 				val quantityMessage = if (itemStack.maxStackSize == 1) "{0}" else "{0} stack${if (fullStacks == 1) "" else "s"} and {1} item${if (remainder == 1) "" else "s"}"
 
+				// Don't include the price mult in the initial message so it can be done in a 2nd line for the input result
 				val fullMessage = template(
-					text("Bought $quantityMessage of {2} for {3}{4}", NamedTextColor.GREEN),
+					text("Bought $quantityMessage of {2} for {3}", GREEN),
 					fullStacks,
 					remainder,
 					itemStack.displayNameComponent,
 					cost.toCreditComponent(),
-					if (priceMult > 1) {
-						ofChildren(text(" (Price multiplied by ", NamedTextColor.YELLOW), text(priceMult, NamedTextColor.WHITE), text(" due to browsing remotely)", NamedTextColor.YELLOW))
-					} else empty()
 				)
 
-				player.sendMessage(fullMessage)
+				val priceMultiplicationMessage = ofChildren(text("(Price multiplied by ", YELLOW), text(priceMult, WHITE), text(" due to browsing remotely)", YELLOW))
 
-				resultConsumer.accept(InputResult.SuccessReason(listOf(fullMessage)))
+				player.sendMessage(ofChildren(
+					fullMessage,
+					if (priceMult > 1) ofChildren(space(), priceMultiplicationMessage) else empty()
+				))
+
+				resultConsumer.accept(InputResult.SuccessReason(listOf(
+					fullMessage,
+					if (priceMult > 1) priceMultiplicationMessage
+					else empty()
+				)))
 			}
 		}
 	}
 
+	/**
+	 * Gives the player items, or drops them at their location if their inventory is full.
+	 *
+	 * Returns a pair of full stacks of items to the remainder
+	 **/
 	fun giveOrDropItems(itemStack: ItemStack, amount: Int, sender: Player): Pair<Int, Int> {
 		val maxStackSize = itemStack.maxStackSize
 		val fullStacks = amount / maxStackSize
