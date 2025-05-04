@@ -122,7 +122,7 @@ const val SHIFT_LEFT_MIN = 1
 const val SHIFT_LEFT_MAX = 256
 const val SHIFT_RIGHT_MIN = 1
 const val SHIFT_RIGHT_MAX = 256
-const val SHIFT_DOWN_MIN = -17
+const val SHIFT_DOWN_MIN = -22
 const val SHIFT_DOWN_MAX = 110
 
 // Custom characters begin

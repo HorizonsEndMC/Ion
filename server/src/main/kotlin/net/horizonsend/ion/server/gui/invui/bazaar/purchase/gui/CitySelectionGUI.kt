@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -27,10 +28,10 @@ class CitySelectionGUI(val parent: BazaarPurchaseMenuParent) : InvUIGuiWrapper<G
 
 				listOf(
 					ofChildren(
-						text("Located at ", GRAY), text(territoryRegion.name, AQUA),
-						text(" on ", GRAY), text(territoryRegion.world, AQUA), text(".", GRAY)
+						text("Located at ", HE_MEDIUM_GRAY), text(territoryRegion.name, AQUA),
+						text(" on ", HE_MEDIUM_GRAY), text(territoryRegion.world, AQUA), text(".", GRAY)
 					),
-					template(text("{0} item listing${if (listingCount != 1L) "s" else ""}.", GRAY), listingCount)
+					template(text("{0} item listing${if (listingCount != 1L) "s" else ""}.", HE_MEDIUM_GRAY), listingCount)
 				)
 			},
 			clickHandler = { city, _, player ->
