@@ -40,6 +40,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.ListingMenu
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -52,7 +53,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
-import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.DyeColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -79,7 +79,7 @@ object BazaarCommand : SLCommand() {
 	private fun validateItemString(itemString: String): ItemStack {
 		try {
 			val itemStack = fromItemString(itemString)
-			failIf(!itemStack.type.isItem) { "$itemString is not an inventory item!" }
+			failIf(!itemStack.type.isItem || itemStack.isEmpty) { "$itemString is not an inventory item!" }
 			return itemStack
 		} catch (e: Exception) {
 			fail { "Invalid item string $itemString! To see an item's string, use /bazaar string" }
@@ -107,7 +107,7 @@ object BazaarCommand : SLCommand() {
 		)
 	}
 
-	private fun cityName(territory: RegionTerritory) = TradeCities.getIfCity(territory)?.displayName
+	fun cityName(territory: RegionTerritory) = TradeCities.getIfCity(territory)?.displayName
 		?: "<{Unknown}>" // this will be used if the city is disbanded but their items remain there
 
 	@Subcommand("create")
@@ -310,27 +310,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("list menu")
 	@Description("List the items you're selling at this city")
 	fun onListMenu(sender: Player) = asyncCommand(sender) {
-		val items = BazaarItem.find(BazaarItem::seller eq sender.slPlayerId).toList()
-
-		MenuHelper.apply {
-			val guiItems = items.map { item ->
-				val city = cityName(Regions[item.cityTerritory])
-				val stock = item.stock
-				val uncollected = item.balance.toCreditsString()
-				val price = item.price.toCreditsString()
-
-				guiButton(fromItemString(item.itemString)).apply {
-					setLoreComponent(listOf(
-						text().append(text("City: ", DARK_PURPLE), text(city, LIGHT_PURPLE)).decoration(TextDecoration.ITALIC, false).build(),
-						text().append(text("Stock: ", GRAY), text(stock, GRAY)).decoration(TextDecoration.ITALIC, false).build(),
-						text().append(text("Balance: ", GRAY), text(uncollected, NamedTextColor.GOLD)).decoration(TextDecoration.ITALIC, false).build(),
-						text().append(text("Price: ", GRAY), text(price, NamedTextColor.YELLOW)).decoration(TextDecoration.ITALIC, false).build(),
-					))
-				}
-			}
-
-			Tasks.sync { sender.openPaginatedMenu("Your Items (${items.size})", guiItems) }
-		}
+		ListingMenu(sender).openGui()
 	}
 
 	@Suppress("Unused")
