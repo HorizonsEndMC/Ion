@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.gui.custom.misc.ItemMenu
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.CollectionSearchValidator
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
+import net.horizonsend.ion.server.gui.invui.utils.changeTitle
 import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
@@ -32,11 +33,13 @@ import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.AnvilWindow
+import xyz.xenondevs.invui.window.Window
+import java.util.function.Supplier
 
 class TextInputMenu<T : Any>(
 	val player: Player,
-	val title: Component,
-	val description: Component,
+	val titleSupplier: Supplier<Component>,
+	val descriptionSupplier: Supplier<Component> = Supplier { empty() },
 	val backButtonHandler: ((Player) -> Unit)?,
 	val inputValidator: InputValidator<T>,
 	val componentTransformer: (T) -> Component = { it.toComponent() },
@@ -60,21 +63,12 @@ class TextInputMenu<T : Any>(
 		return gui.build()
 	}
 
+	private var window: Window? = null
+
 	fun open() {
 		val gui = createGui()
 
-		val text = GuiText("")
-			.addBackground(GuiText.GuiBackground(
-				backgroundChar = ANVIL_BACKGROUND,
-				horizontalShift = -52
-			))
-			.add(title, line = -2, verticalShift = -3)
-			.add(description, line = -1, verticalShift = -2)
-			.addBackground(GuiText.GuiBackground(
-				backgroundChar = BACKGROUND_EXTENDER,
-				verticalShift = -11
-			))
-			.build()
+		val text = buildGuiText()
 
 		val window = AnvilWindow.single()
 			.setViewer(player)
@@ -86,8 +80,27 @@ class TextInputMenu<T : Any>(
 			}
 			.build()
 
+		this.window = window
+
 		window.open()
 	}
+
+	fun refreshTitle() {
+		window?.changeTitle(buildGuiText())
+	}
+
+	private fun buildGuiText(): Component = GuiText("")
+		.addBackground(GuiText.GuiBackground(
+			backgroundChar = ANVIL_BACKGROUND,
+			horizontalShift = -52
+		))
+		.add(titleSupplier.get(), line = -2, verticalShift = -3)
+		.add(descriptionSupplier.get(), line = -1, verticalShift = -2)
+		.addBackground(GuiText.GuiBackground(
+			backgroundChar = BACKGROUND_EXTENDER,
+			verticalShift = -11
+		))
+		.build()
 
 	private val backButton = createButton(GuiItem.CANCEL.makeItem(text("Go Back"))) { _, player, _ ->
 		player.closeInventory()
@@ -158,6 +171,7 @@ class TextInputMenu<T : Any>(
 			val result = parent.inputValidator.isValid(parent.currentInput)
 			if (result !is ValidatorResult.ValidatorSuccess<T>) return notifyWindows()
 			parent.successfulInputHandler.invoke(this, clickType, parent.currentInput to result)
+			parent.refreshTitle()
 		}
 	}
 
@@ -169,11 +183,27 @@ class TextInputMenu<T : Any>(
 			componentTransformer: (T) -> Component = { it.toComponent() },
 			inputValidator: InputValidator<T>,
 			handler: ConfirmationButton<T>.(ClickType, Pair<String, ValidatorResult.ValidatorSuccess<T>>) -> Unit
+		) = anvilInputText(
+			prompt = { prompt },
+			description = { description },
+			backButtonHandler = backButtonHandler,
+			componentTransformer = componentTransformer,
+			inputValidator = inputValidator,
+			handler = handler
+		)
+
+		fun <T : Any> Player.anvilInputText(
+			prompt: Supplier<Component>,
+			description: Supplier<Component> = Supplier { empty() },
+			backButtonHandler: ((Player) -> Unit)? = null,
+			componentTransformer: (T) -> Component = { it.toComponent() },
+			inputValidator: InputValidator<T>,
+			handler: ConfirmationButton<T>.(ClickType, Pair<String, ValidatorResult.ValidatorSuccess<T>>) -> Unit,
 		) {
 			TextInputMenu(
 				player = this,
-				title = prompt,
-				description = description,
+				titleSupplier = prompt,
+				descriptionSupplier = description,
 				backButtonHandler = backButtonHandler,
 				inputValidator = inputValidator,
 				componentTransformer = componentTransformer,
@@ -189,14 +219,34 @@ class TextInputMenu<T : Any>(
 			backButtonHandler: ((Player) -> Unit)? = null,
 			componentTransformer: (T) -> Component = { it.toComponent() },
 			itemTransformer: (T) -> ItemStack = { GuiItem.RIGHT.makeItem(it.toComponent()) },
+			handler: (ClickType, T) -> Unit,
+		): Unit = searchEntires(
+			entries = entries,
+			searchTermProvider = searchTermProvider,
+			prompt = { prompt },
+			description = { description },
+			backButtonHandler = backButtonHandler,
+			componentTransformer = componentTransformer,
+			itemTransformer = itemTransformer,
+			handler = handler
+		)
+
+		fun <T : Any> Player.searchEntires(
+			entries: Collection<T>,
+			searchTermProvider: (T) -> Collection<String>,
+			prompt: Supplier<Component>,
+			description: Supplier<Component> = Supplier { empty() },
+			backButtonHandler: ((Player) -> Unit)? = null,
+			componentTransformer: (T) -> Component = { it.toComponent() },
+			itemTransformer: (T) -> ItemStack = { GuiItem.RIGHT.makeItem(it.toComponent()) },
 			handler: (ClickType, T) -> Unit
 		) {
 			lateinit var textInput: TextInputMenu<T>
 
 			textInput = TextInputMenu(
 				player = this,
-				title = prompt,
-				description = description,
+				titleSupplier = prompt,
+				descriptionSupplier = description,
 				backButtonHandler = backButtonHandler,
 				componentTransformer = componentTransformer,
 				inputValidator = CollectionSearchValidator(entries, searchTermProvider),
