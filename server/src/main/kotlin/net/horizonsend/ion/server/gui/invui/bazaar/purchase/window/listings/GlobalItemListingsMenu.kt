@@ -97,6 +97,8 @@ class GlobalItemListingsMenu(
 		purchaseBackButton = {
 			BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, pageNumber)
 		},
+		contextName = "Global",
+		searchResultConsumer = { itemString -> BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, previousPageNumber = -1) },
 		pageNumber = pageNumber
 	)
 

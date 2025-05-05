@@ -49,6 +49,8 @@ class CityItemListingsMenu(
 		purchaseBackButton = {
 			BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, pageNumber)
 		},
+		contextName = "${cityData.displayName}'s",
+		searchResultConsumer = { itemString -> BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, previousPageNumber = -1) },
 		pageNumber = pageNumber
 	)
 
