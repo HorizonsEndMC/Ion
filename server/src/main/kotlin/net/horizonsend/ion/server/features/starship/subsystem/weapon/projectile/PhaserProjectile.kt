@@ -34,6 +34,13 @@ class PhaserProjectile(
 	override val pitch: Float = balancing.pitch
 	override val soundName: String = balancing.soundName
 
+	companion object {
+		val speedUpTime = TimeUnit.MILLISECONDS.toNanos(500L)
+		val speedUpSpeed = 1000.0
+	}
+
+
+
 	private val blueParticleData = Particle.DustTransition(
 		Color.fromARGB(255, 0, 255, 255),
 		Color.WHITE,

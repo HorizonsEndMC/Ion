@@ -56,6 +56,7 @@ services:
     environment:
       TYPE: "PAPER"
       VERSION: "1.21.4"
+      MEMORY: 2G
       PAPER_CHANNEL: "experimental"
       EULA: "TRUE"
       USE_AIKAR_FLAGS: "TRUE"

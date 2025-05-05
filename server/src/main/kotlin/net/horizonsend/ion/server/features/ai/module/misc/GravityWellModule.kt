@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.ai.module.misc
 
 import net.horizonsend.ion.server.features.ai.util.AITarget
+import net.horizonsend.ion.server.features.ai.util.GoalTarget
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
@@ -26,6 +27,11 @@ class GravityWellModule(
             starship.setIsInterdicting(false)
             return
         }
+
+		if (target is GoalTarget) {
+			starship.setIsInterdicting(false)
+			return
+		}
 
         if (getDirection(Vec3i(getCenter()), target.getVec3i(false)).length() > activeRange) {
             starship.setIsInterdicting(false)

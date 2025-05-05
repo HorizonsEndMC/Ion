@@ -24,7 +24,9 @@ import java.util.concurrent.CompletableFuture
 import kotlin.math.max
 import kotlin.math.min
 
-class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val dz: Int, newWorld: World? = null) :
+class TranslateMovement(starship: ActiveStarship,
+						val dx: Int, val dy: Int, val dz: Int, newWorld: World? = null,
+						val type : MovementType = MovementType.OTHER) :
 	StarshipMovement(starship, newWorld) {
 	companion object {
 		fun loadChunksAndMove(
@@ -32,17 +34,16 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 			dx: Int,
 			dy: Int,
 			dz: Int,
-			newWorld: World? = null
+			newWorld: World? = null,
+			type: MovementType = MovementType.OTHER
 		): CompletableFuture<Boolean> {
-			starship.velocity = Vector(dx.toDouble(), dy.toDouble(), dz.toDouble())
-
 			val world = newWorld ?: starship.world
 
 			val toLoad = this.getChunkLoadTasks(starship, world, dx, dz)
 
 			return CompletableFuture.allOf(*toLoad.toTypedArray()).thenCompose {
 				Tasks.checkMainThread()
-				return@thenCompose starship.moveAsync(TranslateMovement(starship, dx, dy, dz, newWorld))
+				return@thenCompose starship.moveAsync(TranslateMovement(starship, dx, dy, dz, newWorld, type))
 			}
 		}
 
@@ -154,5 +155,21 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
         )
 	}
 
-	override fun onComplete() {}
+	override fun onComplete() {
+		when (type) {
+			MovementType.MANUAL -> {
+				starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(),this)
+			}
+			MovementType.DC -> {
+				starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(), this)
+			}
+			MovementType.CRUISE -> {
+				starship.cruiseKinematicEstimator.addData(starship.centerOfMass.toVector(), this)
+			}
+			else -> {}
+		}
+
+	}
+
+	enum class MovementType {MANUAL, DC, CRUISE,OTHER}
 }

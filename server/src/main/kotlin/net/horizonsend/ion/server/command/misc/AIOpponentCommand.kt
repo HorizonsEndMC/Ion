@@ -3,7 +3,9 @@ package net.horizonsend.ion.server.command.misc
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
@@ -11,6 +13,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
@@ -42,51 +45,65 @@ object AIOpponentCommand : SLCommand() {
 	}
 
 	@Subcommand("summon")
-	fun summon(sender: Player, template: AITemplate) {
+	fun summon(sender: Player, template: AITemplate, @Optional difficulty : Int?, @Optional targetAI : Boolean?) {
 		val world = sender.world
 		failIf(!world.ion.hasFlag(WorldFlag.AI_ARENA)) { "AI Opponents may only be spawned in arena worlds!" }
 
 		sender.hint("Spawning ${template.starshipInfo.miniMessageName}")
 
-		summonShip(sender, template, null)
+		summonShip(sender, template, null,difficulty,targetAI)
 	}
 
 	@Subcommand("summon")
-	fun summon(sender: Player, template: AITemplate, x: Int, y: Int, z: Int) {
+	fun summon(sender: Player, template: AITemplate, x: Int, y: Int, z: Int, @Optional difficulty : Int?, @Optional targetAI : Boolean?) {
 		val world = sender.world
 		failIf(!world.ion.hasFlag(WorldFlag.AI_ARENA)) { "AI Opponents may only be spawned in arena worlds!" }
 
 		sender.hint("Spawning ${template.starshipInfo.miniMessageName}")
 
-		summonShip(sender, template, Vec3i(x, y, z))
+		summonShip(sender, template, Vec3i(x, y, z),difficulty,targetAI)
 	}
 
-	private fun summonShip(summoner: Player, template: AITemplate, vec: Vec3i?) {
+	private fun summonShip(summoner: Player, template: AITemplate, vec: Vec3i?, difficulty: Int?, targetAI: Boolean?) {
 		val location = vec?.toLocation(summoner.world) ?: summoner.location.add(summoner.location.direction.multiply(500.0))
 
 		Tasks.async {
 			if (getExisting(summoner).isNotEmpty()) return@async summoner.userError("You may only have one AI opponent active at once.")
 
 			Tasks.sync {
-				createAIShipFromTemplate(
-					log,
-					template,
-					location,
-					{ starship ->
-						val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
-						val controller = factory.invoke(starship, template.starshipInfo.componentName())
-						processController(summoner, controller)
-						controller
+
+				AISpawningManager.context.launch {
+					createAIShipFromTemplate(
+						log,
+						template,
+						location,
+						{ starship ->
+							val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
+							val controller = factory.invoke(
+								starship,
+								template.starshipInfo.componentName(),
+								template.starshipInfo.autoWeaponSets,
+								template.starshipInfo.manualWeaponSets,
+								difficulty ?: template.difficulty.get(),
+								targetAI ?: false
+							)
+
+							processController(summoner, controller)
+							controller.validateWeaponSets()
+							controller
+						},
+						"✦".repeat((difficulty ?: template.difficulty.get())+1)
+					) {
+						summoner.success("Summoned ${template.starshipInfo.miniMessageName}")
 					}
-				) {
-					summoner.success("Summoned ${template.starshipInfo.miniMessageName}")
 				}
+
 			}
 		}
 	}
 
 	private fun processController(summoner: Player, controller: AIController) {
-		controller.modules["opponent"] = OpponentTrackerModule(controller, summoner.uniqueId)
+		controller.coreModules[OpponentTrackerModule::class] = OpponentTrackerModule(controller, summoner.uniqueId)
 	}
 
 	fun getExisting(player: Player): Collection<Starship> {
@@ -94,7 +111,7 @@ object AIOpponentCommand : SLCommand() {
 			val controller = it.controller
 			if (controller !is AIController) return@filter false
 
-			val trackers = controller.modules.values.filterIsInstance<OpponentTrackerModule>()
+			val trackers = controller.coreModules.values.filterIsInstance<OpponentTrackerModule>()
 			if (trackers.isEmpty()) return@filter false
 
 			trackers.any { tracker -> tracker.opponent == player.uniqueId }
