@@ -55,9 +55,18 @@ class CityItemListingsMenu(
 	override val citySelectionButton: AbstractItem = getCitySelectionButton(true)
 	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(false)
 
-	override val backButton: AbstractItem = GuiItem.CANCEL.makeItem(text("Go Back to Viewing City Listings")).makeGuiButton { _, player ->
+	override val backButton: AbstractItem = GuiItem.CANCEL.makeItem(
+		if (previousPageNumber != -1) text("Go Back to Viewing ${cityData.displayName}'s Listings")
+		else text("Go Back to Searching ${cityData.displayName}'s Listings")
+	).makeGuiButton { _, player ->
+		if (previousPageNumber == -1) {
+			BazaarGUIs.openCityBrowse(player, remote, cityData, 0).contained.openSearchMenu()
+			return@makeGuiButton
+		}
+
 		BazaarGUIs.openCityBrowse(player, remote, cityData, previousPageNumber ?: 0)
 	}
+
 	override val infoButton: AbstractItem = GuiItem.INFO
 		.makeItem(text("Information"))
 		.updateLore(listOf(

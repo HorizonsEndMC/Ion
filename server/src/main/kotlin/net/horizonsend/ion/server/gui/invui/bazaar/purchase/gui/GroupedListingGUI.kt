@@ -76,14 +76,18 @@ class GroupedListingGUI(
 	private val searchButton = GuiItem.MAGNIFYING_GLASS
 		.makeItem(text("Search for Items"))
 		.makeGuiButton { _, _ ->
-			SearchGui(
-				player = parentWindow.viewer,
-				contextName = contextName,
-				rawItemBson = searchBson,
-				backButtonHandler = reOpenHandler,
-				resultStringConsumer = searchResultConsumer
-			).openGui()
+			openSearchMenu()
 		}
+
+	fun openSearchMenu() {
+		SearchGui(
+			player = parentWindow.viewer,
+			contextName = contextName,
+			rawItemBson = searchBson,
+			backButtonHandler = reOpenHandler,
+			resultStringConsumer = searchResultConsumer
+		).openGui()
+	}
 
 	private val sortButton = EnumScrollButton(
 		providedItem = { GuiItem.FILTER.makeItem(text("Change Sorting Method")) },
