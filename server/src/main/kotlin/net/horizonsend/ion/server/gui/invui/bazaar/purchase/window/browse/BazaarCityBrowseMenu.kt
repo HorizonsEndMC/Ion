@@ -25,7 +25,7 @@ class BazaarCityBrowseMenu(viewer: Player, remote: Boolean, cityData: TradeCityD
 		contextName = "${cityData.displayName}'s",
 		reOpenHandler = { BazaarGUIs.openCityBrowse(viewer, remote, cityData, pageNumber) },
 		itemMenuHandler = { itemString -> BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, this.pageNumber, 0) },
-		searchResultConsumer = { itemString -> BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, previousPageNumber = pageNumber) },
+		searchResultConsumer = { itemString -> BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, previousPageNumber = -1) },
 		pageNumber = pageNumber
 	)
 

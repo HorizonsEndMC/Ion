@@ -83,7 +83,7 @@ class IndividualListingGUI(
 	}
 
 	private val searchButton: AbstractItem = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search")).makeGuiButton { _, _ ->
-		println("Search")
+		println("Search from listing")
 	}
 
 	private fun getButtons(): List<AbstractItem> {
