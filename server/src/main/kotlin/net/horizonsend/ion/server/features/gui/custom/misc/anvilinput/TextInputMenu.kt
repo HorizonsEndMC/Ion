@@ -89,9 +89,7 @@ class TextInputMenu<T : Any>(
 		window.open()
 	}
 
-	private val backButton = createButton(
-		ItemStack(Material.BARRIER).updateDisplayName(text("Go Back", WHITE))
-	) { _, player, _ ->
+	private val backButton = createButton(GuiItem.CANCEL.makeItem(text("Go Back"))) { _, player, _ ->
 		player.closeInventory()
 		backButtonHandler?.invoke(player)
 	}
