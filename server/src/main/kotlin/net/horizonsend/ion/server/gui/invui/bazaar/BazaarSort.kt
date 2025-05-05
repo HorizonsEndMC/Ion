@@ -53,6 +53,28 @@ enum class BazaarSort(val displayName: Component) {
 			collection.ascendingSort(property)
 		}
 	},
+	HIGHEST_BALANCE(text("Highest Balance")) {
+		private val property = BazaarItem::balance
+
+		override fun sort(collection: MutableList<Pair<Map. Entry<String, List<BazaarItem>>, AsyncItem>>) {
+			collection.sortByDescending { it.first.value.maxOfOrNull(property) }
+		}
+
+		override fun sort(collection: FindIterable<BazaarItem>) {
+			collection.descendingSort(property)
+		}
+	},
+	LOWEST_BALANCE(text("Lowest Balance")) {
+		private val property = BazaarItem::balance
+
+		override fun sort(collection: MutableList<Pair<Map. Entry<String, List<BazaarItem>>, AsyncItem>>) {
+			collection.sortBy { it.first.value.maxOfOrNull(property) }
+		}
+
+		override fun sort(collection: FindIterable<BazaarItem>) {
+			collection.ascendingSort(property)
+		}
+	},
 	HIGHEST_LISTINGS(text("Highest Listings")) {
 		override fun sort(collection: MutableList<Pair<Map. Entry<String, List<BazaarItem>>, AsyncItem>>) {
 			collection.sortByDescending { it.first.value.size }
