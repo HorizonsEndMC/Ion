@@ -22,9 +22,10 @@ class BazaarCityBrowseMenu(viewer: Player, remote: Boolean, cityData: TradeCityD
 	override val contained: GroupedListingGUI = GroupedListingGUI(
 		parentWindow = this,
 		searchBson = and(BazaarItem::stock gt 0, BazaarItem::cityTerritory eq cityData.territoryId),
-		searchFunction = { println("search") },
+		contextName = "${cityData.displayName}'s",
 		reOpenHandler = { BazaarGUIs.openCityBrowse(viewer, remote, cityData, pageNumber) },
 		itemMenuHandler = { itemString -> BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, this.pageNumber, 0) },
+		searchResultConsumer = { itemString -> BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, previousPageNumber = pageNumber) },
 		pageNumber = pageNumber
 	)
 
