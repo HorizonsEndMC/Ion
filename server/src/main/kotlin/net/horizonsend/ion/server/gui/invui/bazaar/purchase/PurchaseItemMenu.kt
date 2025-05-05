@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.RangeIntegerValidator
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
@@ -17,18 +18,16 @@ class PurchaseItemMenu(
 	private val remote: Boolean,
 	private val item: BazaarItem,
 	private val backButtonHandler: () -> Unit
-) {
-	fun openMenu() {
+) : CommonGuiWrapper {
+	override fun openGui() {
 		val itemStack = fromItemString(item.itemString)
 		val listerName = SLPlayer.getName(item.seller)
 
-		val background = GuiText.GuiBackground(
-			backgroundChar = BACKGROUND_EXTENDER,
-			verticalShift = -17
-		)
-
 		val extraLine = GuiText("")
-			.addBackground(background)
+			.addBackground(GuiText.GuiBackground(
+				backgroundChar = BACKGROUND_EXTENDER,
+				verticalShift = -17
+			))
 			.add(template(message = Component.text("Buying {0}'s"), paramColor = null, useQuotesAroundObjects = false, listerName), line = -3, verticalShift = -1)
 			.add(template(message = Component.text("{0}"), paramColor = null, useQuotesAroundObjects = false, itemStack.displayName()), line = -2, verticalShift = 0)
 			.add(template(Component.text("Between {0} and {1}"), paramColor = null, 1, item.stock), line = -1, verticalShift = 1)

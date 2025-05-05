@@ -24,9 +24,12 @@ import net.kyori.adventure.text.format.TextColor
 import org.bson.conversions.Bson
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
+import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.item.impl.AbstractItem
 
 val REMOTE_WARINING = bracketed(text("REMOTE", TextColor.color(Colors.ALERT)))
+
+fun ItemStack.stripAttributes() = updateData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
 
 fun getCityButtons(
 	cityFilter: (TradeCityData) -> Boolean = { true },
@@ -75,7 +78,7 @@ fun getItemButtons(
 					nameBuilder?.let { updateDisplayName(it.invoke(itemString, grouped)) }
 					updateLore(loreBuilder.invoke(itemString, grouped))
 					// Clear attributes
-					updateData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
+					stripAttributes()
 				}
 			}) { event ->
 				clickHandler.invoke(itemString, grouped, event.click, event.playerClicker)
