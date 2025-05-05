@@ -13,9 +13,11 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
+import net.horizonsend.ion.server.features.gui.item.EnumScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.gui.invui.utils.changeTitle
 import net.horizonsend.ion.server.gui.invui.utils.setTitle
@@ -46,11 +48,14 @@ class ListingMenu(viewer: Player, val backButtonHandler: () -> Unit = {}) : InvU
 	private var pageNumber: Int = 0
 	private lateinit var items: List<BazaarItem>
 
-	override fun buildWindow(): Window {
-		val items = BazaarItem.find(BazaarItem::seller eq viewer.slPlayerId).toList()
-		this.items = items
+	private var sortingMethod: BazaarSort = BazaarSort.HIGHEST_LISTINGS
 
-		val guiItems = items.map { item ->
+	override fun buildWindow(): Window {
+		val items = BazaarItem.find(BazaarItem::seller eq viewer.slPlayerId)
+		sortingMethod.sort(items)
+		this.items = items.toList()
+
+		val guiItems = this.items.map { item ->
 			val city = cityName(Regions[item.cityTerritory])
 			val stock = item.stock
 			val uncollected = item.balance.toCreditComponent()
@@ -74,7 +79,7 @@ class ListingMenu(viewer: Player, val backButtonHandler: () -> Unit = {}) : InvU
 
 		val gui = PagedGui.items()
 			.setStructure(
-				"x . . . . . . . i",
+				"x . . . s . . . i",
 				"# 0 0 0 0 0 0 0 0",
 				"# 1 1 1 1 1 1 1 1",
 				"# 2 2 2 2 2 2 2 2",
@@ -86,6 +91,7 @@ class ListingMenu(viewer: Player, val backButtonHandler: () -> Unit = {}) : InvU
 			.addIngredient('<', GuiItems.PageLeftItem())
 			.addIngredient('>', GuiItems.PageRightItem())
 			.addIngredient('i', infoButton)
+			.addIngredient('s', sortButton)
 			.addIngredient('0', backingButton(0))
 			.addIngredient('1', backingButton(1))
 			.addIngredient('2', backingButton(2))
@@ -189,4 +195,19 @@ class ListingMenu(viewer: Player, val backButtonHandler: () -> Unit = {}) : InvU
 
 	private fun cityName(territory: RegionTerritory) = TradeCities.getIfCity(territory)?.displayName
 		?: "<{Unknown}>" // this will be used if the city is disbanded but their items remain there
+
+	private val sortButton = EnumScrollButton(
+		providedItem = { GuiItem.FILTER.makeItem(text("Change Sorting Method")) },
+		increment = 1,
+		value = {
+			sortingMethod
+		},
+		enum = BazaarSort::class.java,
+		nameFormatter = { it.displayName },
+		subEntry = arrayOf(BazaarSort.MIN_PRICE, BazaarSort.MAX_PRICE, BazaarSort.HIGHEST_STOCK, BazaarSort.LOWEST_STOCK, BazaarSort.HIGHEST_BALANCE, BazaarSort.LOWEST_BALANCE),
+		valueConsumer = {
+			sortingMethod = it
+			openGui()
+		}
+	)
 }
