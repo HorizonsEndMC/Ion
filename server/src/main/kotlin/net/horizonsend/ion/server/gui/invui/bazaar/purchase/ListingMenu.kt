@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
+import net.horizonsend.ion.common.utils.text.withShadowColor
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.gui.GuiItem
@@ -121,10 +122,10 @@ class ListingMenu(viewer: Player, val backButtonHandler: () -> Unit = {}) : InvU
 
 		for ((index, bazaarItem) in showingEntries.withIndex()) {
 			val line = (index * 2) + startLine
-			guiText.add(fromItemString(bazaarItem.itemString).displayNameComponent, line = line, horizontalShift = 20)
-			guiText.add(ofChildren(text("P: ", BLACK), bazaarItem.price.toCreditComponent()), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.LEFT)
+			guiText.add(fromItemString(bazaarItem.itemString).displayNameComponent.withShadowColor("#444444FF"), line = line, horizontalShift = 20)
+			guiText.add(ofChildren(text("P: ", BLACK), bazaarItem.price.toCreditComponent().withShadowColor("#444444FF")), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.LEFT)
 			guiText.add(ofChildren(text("S: ", BLACK), text(bazaarItem.stock)), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.CENTER)
-			guiText.add(ofChildren(text("B: ", BLACK), bazaarItem.balance.toCreditComponent()), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.RIGHT)
+			guiText.add(ofChildren(text("B: ", BLACK), bazaarItem.balance.toCreditComponent().withShadowColor("#444444FF")), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.RIGHT)
 		}
 
 		val pageNumber = addPageNumber()
