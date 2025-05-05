@@ -18,11 +18,11 @@ object BuyXPCommand : net.horizonsend.ion.server.command.SLCommand() {
 		failIf(amount <= 0) { "Amount must be more than zero" }
 
 		val realCost = LEVEL_BALANCING.creditsPerXP * amount
-		requireMoney(sender, realCost, "purchase $amount SLXP")
+		requireMoney(sender, realCost, "purchase $amount HEXP")
 
 		if (realCost != cost) {
 			sender.userError(
-				"Purchase $amount SLXP for ${realCost.toCreditsString()}?\n" +
+				"Purchase $amount HEXP for ${realCost.toCreditsString()}?\n" +
 					"To confirm, do <u><click:run_command:/buyxp $amount $realCost>/buyxp $amount $realCost</click>"
 			)
 			return

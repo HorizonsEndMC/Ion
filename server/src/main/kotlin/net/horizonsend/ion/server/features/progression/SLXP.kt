@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.progression
 
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import org.bukkit.Bukkit
@@ -36,7 +37,7 @@ object SLXP : IonServerComponent() {
 		val player = Bukkit.getPlayer(uuid) ?: return@async
 
 		if (message) {
-			player msg "&5Received &b$amount&5 SL XP!"
+			player.success("Received $amount HEXP!")
 		}
 
 		Levels.markForCheck(uuid)
