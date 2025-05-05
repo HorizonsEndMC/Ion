@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGui
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.getItemButtons
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.SearchGui
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -25,13 +26,15 @@ import org.litote.kmongo.setValue
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
+import java.util.function.Consumer
 import kotlin.math.ceil
 
 class GroupedListingGUI(
 	private val parentWindow: BazaarPurchaseMenuParent,
 	private val searchBson: Bson,
-	private val searchFunction: () -> Unit = { println("Search") },
+	private val contextName: String,
 	private val reOpenHandler: () -> Unit,
+	private val searchResultConsumer: Consumer<String>,
 	private val itemMenuHandler: GroupedListingGUI.(String) -> Unit,
 	pageNumber: Int = 0
 ): InvUIGuiWrapper<PagedGui<Item>>, BazaarGui {
@@ -73,7 +76,13 @@ class GroupedListingGUI(
 	private val searchButton = GuiItem.MAGNIFYING_GLASS
 		.makeItem(text("Search for Items"))
 		.makeGuiButton { _, _ ->
-			searchFunction.invoke()
+			SearchGui(
+				player = parentWindow.viewer,
+				contextName = contextName,
+				rawItemBson = searchBson,
+				backButtonHandler = reOpenHandler,
+				resultStringConsumer = searchResultConsumer
+			).openGui()
 		}
 
 	private val sortButton = EnumScrollButton(

@@ -202,18 +202,30 @@ class TextInputMenu<T : Any>(
 				backButtonHandler = backButtonHandler,
 				componentTransformer = componentTransformer,
 				inputValidator = CollectionSearchValidator(entries, searchTermProvider),
-				successfulInputHandler = { type, (_, success) ->
+				successfulInputHandler = { type, (search, success) ->
 					when (success) {
 						is ValidatorResult.ValidatorSuccessSingleEntry<T> -> handler.invoke(type, success.result)
 
-						is ValidatorResult.ValidatorSuccessMultiEntry<T> -> ItemMenu.selector(
-							title = text("Ambiguous entry, select one."),
-							player = this@searchEntires,
-							entries = success.results,
-							resultConsumer = handler,
-							itemTransformer = itemTransformer,
-							backButtonHandler = { textInput.open() }
-						)
+						is ValidatorResult.ValidatorSuccessMultiEntry<T> -> {
+							val extraLine = GuiText("")
+								.addBackground()
+								.addBackground(GuiText.GuiBackground(
+									backgroundChar = BACKGROUND_EXTENDER,
+									verticalShift = -11
+								))
+								.add(text("Search Results For:"), line = -2, verticalShift = -4)
+								.add(text("\"$search\""), line = -1, verticalShift = -2)
+								.build()
+
+							ItemMenu.selector(
+								title = extraLine,
+								player = this@searchEntires,
+								entries = success.results,
+								resultConsumer = handler,
+								itemTransformer = itemTransformer,
+								backButtonHandler = { textInput.open() }
+							)
+						}
 
 						else -> throw NotImplementedError()
 					}
