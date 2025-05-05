@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
@@ -51,6 +52,8 @@ class CitySelectionGUI(val parent: BazaarPurchaseMenuParent) : InvUIGuiWrapper<G
 				"# # # # # # # # #",
 				"< . . . . . . . >"
 			)
+			.addIngredient('<', GuiItems.PageLeftItem())
+			.addIngredient('>', GuiItems.PageRightItem())
 			.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 			.setContent(cityButtons)
 			.build()
