@@ -32,7 +32,7 @@ class BazaarCityBrowseMenu(viewer: Player, remote: Boolean, cityData: TradeCityD
 	override val citySelectionButton: AbstractItem = getCitySelectionButton(true)
 	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(false)
 
-	override val backButton: AbstractItem = GuiItem.LEFT.makeItem(text("Go Back to City Selection")).makeGuiButton { _, player ->
+	override val backButton: AbstractItem = GuiItem.CANCEL.makeItem(text("Go Back to City Selection")).makeGuiButton { _, player ->
 		BazaarGUIs.openCitySelection(player, true)
 	}
 
