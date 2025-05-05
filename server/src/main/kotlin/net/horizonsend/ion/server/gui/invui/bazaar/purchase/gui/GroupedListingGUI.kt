@@ -32,8 +32,8 @@ import kotlin.math.ceil
 class GroupedListingGUI(
 	private val parentWindow: BazaarPurchaseMenuParent,
 	private val searchBson: Bson,
-	private val contextName: String,
 	private val reOpenHandler: () -> Unit,
+	private val contextName: String,
 	private val searchResultConsumer: Consumer<String>,
 	private val itemMenuHandler: GroupedListingGUI.(String) -> Unit,
 	pageNumber: Int = 0
