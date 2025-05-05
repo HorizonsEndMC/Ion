@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
+import java.util.function.Supplier
 
 class PurchaseItemMenu(
 	private val viewer: Player,
@@ -23,20 +24,25 @@ class PurchaseItemMenu(
 		val itemStack = fromItemString(item.itemString)
 		val listerName = SLPlayer.getName(item.seller)
 
-		val extraLine = GuiText("")
-			.addBackground(GuiText.GuiBackground(
-				backgroundChar = BACKGROUND_EXTENDER,
-				verticalShift = -17
-			))
-			.add(template(message = Component.text("Buying {0}'s"), paramColor = null, useQuotesAroundObjects = false, listerName), line = -3, verticalShift = -1)
-			.add(template(message = Component.text("{0}"), paramColor = null, useQuotesAroundObjects = false, itemStack.displayName()), line = -2, verticalShift = 0)
-			.add(template(Component.text("Between {0} and {1}"), paramColor = null, 1, item.stock), line = -1, verticalShift = 1)
-			.build()
+		val extraLine = Supplier {
+			GuiText("")
+				.addBackground(
+					GuiText.GuiBackground(
+						backgroundChar = BACKGROUND_EXTENDER,
+						verticalShift = -17
+					)
+				)
+				.add(template(message = Component.text("Buying {0}'s"), paramColor = null, useQuotesAroundObjects = false, listerName), line = -3, verticalShift = -1)
+				.add(template(message = Component.text("{0}"), paramColor = null, useQuotesAroundObjects = false, itemStack.displayName()), line = -2, verticalShift = 0)
+				.add(template(Component.text("Between {0} and {1}"), paramColor = null, 1, item.stock), line = -1, verticalShift = 1)
+				.build()
+		}
 
-		TextInputMenu(
+		lateinit var menu: TextInputMenu<Int>
+
+		menu = TextInputMenu(
 			player = viewer,
-			title = extraLine,
-			description = Component.empty(),
+			titleSupplier = extraLine,
 			backButtonHandler = { backButtonHandler.invoke() },
 			inputValidator = RangeIntegerValidator(1..item.stock),
 			componentTransformer = { Component.text(it) },
@@ -45,8 +51,11 @@ class PurchaseItemMenu(
 					val reason = buyResult.getReason() ?: return@tryBuy
 					updateLoreOverride(reason)
 					notifyWindows()
+					menu.refreshTitle()
 				}
 			}
-		).open()
+		)
+
+		menu.open()
 	}
 }
