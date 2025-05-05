@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
@@ -27,7 +28,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bson.conversions.Bson
 import org.litote.kmongo.setValue
 import xyz.xenondevs.invui.gui.PagedGui
@@ -42,8 +42,8 @@ class IndividualListingGUI(
 	private val searchBson: Bson,
 	private val itemLoreProvider: (BazaarItem) -> List<Component> = { bazaarItem ->
 		listOf(
-			template(text("Seller: {0}", GRAY), SLPlayer.getName(bazaarItem.seller)),
-			template(text("Stock: {0}", GRAY), bazaarItem.stock)
+			template(text("Seller: {0}", HE_MEDIUM_GRAY), SLPlayer.getName(bazaarItem.seller)),
+			template(text("Stock: {0}", HE_MEDIUM_GRAY), bazaarItem.stock)
 		)
 	},
 	private val purchaseBackButton: () -> Unit,
