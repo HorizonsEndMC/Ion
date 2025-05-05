@@ -96,10 +96,10 @@ object PackagedMultiblock : CustomItem(
 	}
 
 	override fun getBazaarString(itemStack: ItemStack): String {
-		throw NotImplementedError("Packaged multiblocks may not be listed on bazaar")
+		return MultiblockToken.getBazaarString(itemStack)
 	}
 
 	override fun fromBazaarString(string: String): ItemStack {
-		throw NotImplementedError("Packaged multiblocks may not be listed on bazaar")
+		return MultiblockToken.deserialize(string)
 	}
 }
