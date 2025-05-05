@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
+import io.papermc.paper.adventure.PaperAdventure
 import io.papermc.paper.datacomponent.DataComponentType
 import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.common.utils.text.BOLD
@@ -12,6 +13,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Material
+import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataContainer
@@ -52,5 +54,8 @@ fun ItemStack.setLoreAndGetString(lines: List<String>): ItemStack = apply { this
 
 fun ItemStack.updateLore(lines: List<Component>): ItemStack = apply { this.lore(lines.map { it.itemLore }) }
 
-val ItemStack.displayNameComponent: Component get() = if (hasItemMeta() && itemMeta.hasDisplayName()) { itemMeta.displayName() ?: displayName().hoverEvent(null) } else displayName().hoverEvent(null)
+val ItemStack.displayNameComponent: Component get() =
+	if (hasData(DataComponentTypes.CUSTOM_NAME)) getData(DataComponentTypes.CUSTOM_NAME)!!.asComponent()
+	else PaperAdventure.asAdventure(CraftItemStack.asNMSCopy(this).itemName).itemName
+
 val ItemStack.displayNameString get() = displayNameComponent.plainText()
