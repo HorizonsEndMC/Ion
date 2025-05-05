@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.ListingMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.SimpleStateButton
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.gui.invui.utils.changeTitle
@@ -30,7 +31,7 @@ abstract class BazaarPurchaseMenuParent(
 
 	private fun getMenuGUI(): Gui = TabGui.normal()
 		.setStructure(
-			"b . . 1 2 c . d i",
+			"b m . 1 2 c . d i",
 			"x x x x x x x x x",
 			"x x x x x x x x x",
 			"x x x x x x x x x",
@@ -38,6 +39,7 @@ abstract class BazaarPurchaseMenuParent(
 			"x x x x x x x x x"
 		)
 		.addIngredient('b', backButton)
+		.addIngredient('m', manageListingsButton)
 
 		.addIngredient('1', citySelectionButton)
 		.addIngredient('2', globalBrowseButton)
@@ -133,6 +135,12 @@ abstract class BazaarPurchaseMenuParent(
 	abstract val backButton: AbstractItem
 
 	abstract val infoButton: AbstractItem
+
+	private val manageListingsButton = GuiItem.MATERIALS
+		.makeItem(text("Manage Your Listings"))
+		.makeGuiButton { _, _ ->
+			ListingMenu(viewer = viewer, backButtonHandler = { this.openGui() }).openGui()
+		}
 
 	private val buyOrdersButton = GuiItem.CLOCKWISE
 		.makeItem(text("Switch to the Buy Order Menu"))
