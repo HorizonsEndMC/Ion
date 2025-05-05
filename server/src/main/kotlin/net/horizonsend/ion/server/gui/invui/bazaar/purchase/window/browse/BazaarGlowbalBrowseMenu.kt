@@ -21,9 +21,9 @@ class BazaarGlowbalBrowseMenu(viewer: Player, remote: Boolean, pageNumber: Int =
 	override val contained: GroupedListingGUI = GroupedListingGUI(
 		parentWindow = this,
 		searchBson = BazaarItem::stock gt 0,
-		contextName = "Global",
 		reOpenHandler = { BazaarGUIs.openGlobalBrowse(viewer, remote, pageNumber) },
 		itemMenuHandler = { itemString -> BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, this.pageNumber, 0) },
+		contextName = "Global",
 		searchResultConsumer = { itemString -> BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, previousPageNumber = -1) },
 		pageNumber = pageNumber
 	)
