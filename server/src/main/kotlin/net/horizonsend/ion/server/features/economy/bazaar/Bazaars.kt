@@ -250,6 +250,7 @@ object Bazaars : IonServerComponent() {
 			val itemStack = fromItemString(item.itemString)
 
 			BazaarItem.removeStock(item._id, amount)
+			item.stock -= amount
 
 			val tax = (city.tax * revenue).roundToInt()
 			BazaarItem.depositMoney(item._id, revenue - tax)
