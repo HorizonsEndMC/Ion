@@ -79,7 +79,7 @@ class ListingMenu(viewer: Player, val backButtonHandler: () -> Unit = {}) : InvU
 
 		val gui = PagedGui.items()
 			.setStructure(
-				"x . . . s . . . i",
+				"x . . . . S s . i",
 				"# 0 0 0 0 0 0 0 0",
 				"# 1 1 1 1 1 1 1 1",
 				"# 2 2 2 2 2 2 2 2",
@@ -92,6 +92,7 @@ class ListingMenu(viewer: Player, val backButtonHandler: () -> Unit = {}) : InvU
 			.addIngredient('>', GuiItems.PageRightItem())
 			.addIngredient('i', infoButton)
 			.addIngredient('s', sortButton)
+			.addIngredient('S', searchButton)
 			.addIngredient('0', backingButton(0))
 			.addIngredient('1', backingButton(1))
 			.addIngredient('2', backingButton(2))
@@ -210,4 +211,6 @@ class ListingMenu(viewer: Player, val backButtonHandler: () -> Unit = {}) : InvU
 			openGui()
 		}
 	)
+
+	private val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem().makeGuiButton { _, _ ->  }
 }
