@@ -128,10 +128,10 @@ class ListingMenu(viewer: Player, val backButtonHandler: () -> Unit = {}) : InvU
 
 		for ((index, bazaarItem) in showingEntries.withIndex()) {
 			val line = (index * 2) + startLine
-			guiText.add(fromItemString(bazaarItem.itemString).displayNameComponent.withShadowColor("#444444FF"), line = line, horizontalShift = 20)
-			guiText.add(ofChildren(text("P: ", BLACK), bazaarItem.price.toCreditComponent().withShadowColor("#444444FF")), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.LEFT)
+			guiText.add(fromItemString(bazaarItem.itemString).displayNameComponent.withShadowColor("#252525FF"), line = line, horizontalShift = 20)
+			guiText.add(ofChildren(text("P: ", BLACK), bazaarItem.price.toCreditComponent().withShadowColor("#252525FF")), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.LEFT)
 			guiText.add(ofChildren(text("S: ", BLACK), text(bazaarItem.stock)), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.CENTER)
-			guiText.add(ofChildren(text("B: ", BLACK), bazaarItem.balance.toCreditComponent().withShadowColor("#444444FF")), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.RIGHT)
+			guiText.add(ofChildren(text("B: ", BLACK), bazaarItem.balance.toCreditComponent().withShadowColor("#252525FF")), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.RIGHT)
 		}
 
 		val pageNumber = addPageNumber()
