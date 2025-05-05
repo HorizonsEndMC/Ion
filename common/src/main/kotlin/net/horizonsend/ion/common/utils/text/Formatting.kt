@@ -17,6 +17,7 @@ import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -320,3 +321,11 @@ fun formatException(throwable: Throwable): Component {
 }
 
 fun button(text: Component, onClick: (Audience) -> Unit): Component = bracketed(text).clickEvent(ClickEvent.callback(onClick))
+
+/** Returns a new component with the provided shadow color. This component is appended to the new component. */
+fun Component.withShadowColor(color: String): Component {
+	return text()
+		.shadowColor(ShadowColor.fromHexString(color)!!)
+		.append(this)
+		.build()
+}
