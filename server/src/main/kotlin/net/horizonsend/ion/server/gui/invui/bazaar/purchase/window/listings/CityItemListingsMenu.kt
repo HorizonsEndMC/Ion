@@ -55,7 +55,7 @@ class CityItemListingsMenu(
 	override val citySelectionButton: AbstractItem = getCitySelectionButton(true)
 	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(false)
 
-	override val backButton: AbstractItem = GuiItem.LEFT.makeItem(text("Go Back to Viewing City Listings")).makeGuiButton { _, player ->
+	override val backButton: AbstractItem = GuiItem.CANCEL.makeItem(text("Go Back to Viewing City Listings")).makeGuiButton { _, player ->
 		BazaarGUIs.openCityBrowse(player, remote, cityData, previousPageNumber ?: 0)
 	}
 	override val infoButton: AbstractItem = GuiItem.INFO
