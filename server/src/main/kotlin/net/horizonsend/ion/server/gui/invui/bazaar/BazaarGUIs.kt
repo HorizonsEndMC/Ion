@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
 import net.horizonsend.ion.server.features.gui.custom.settings.button.DBCachedBooleanToggle
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
+import net.horizonsend.ion.server.gui.invui.bazaar.orders.BuyOrderMainMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.PurchaseItemMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarCitySelectionMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse.BazaarCityBrowseMenu
@@ -52,6 +53,10 @@ object BazaarGUIs {
 		val menu = PurchaseItemMenu(player, remote, item, backButtonHandler)
 		menu.openGui()
 		return menu
+	}
+
+	fun openBuyOrderMainMenu(player: Player) {
+		BuyOrderMainMenu(player).openGui()
 	}
 
 	fun openBazaarSettings(player: Player, parent: CommonGuiWrapper?) {
