@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGui
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.SearchGui
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
@@ -34,6 +35,7 @@ import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.item.impl.AbstractItem
+import java.util.function.Consumer
 import kotlin.math.ceil
 
 class IndividualListingGUI(
@@ -46,6 +48,8 @@ class IndividualListingGUI(
 			template(text("Stock: {0}", HE_MEDIUM_GRAY), bazaarItem.stock)
 		)
 	},
+	private val contextName: String,
+	private val searchResultConsumer: Consumer<String>,
 	private val purchaseBackButton: () -> Unit,
 	private var pageNumber: Int = 0
 ): InvUIGuiWrapper<PagedGui<Item>>, BazaarGui {
@@ -82,8 +86,20 @@ class IndividualListingGUI(
 		return new
 	}
 
-	private val searchButton: AbstractItem = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search")).makeGuiButton { _, _ ->
-		println("Search from listing")
+	private val searchButton = GuiItem.MAGNIFYING_GLASS
+		.makeItem(text("Search for Items"))
+		.makeGuiButton { _, _ ->
+			openSearchMenu()
+		}
+
+	fun openSearchMenu() {
+		SearchGui(
+			player = parentWindow.viewer,
+			contextName = contextName,
+			rawItemBson = searchBson,
+			backButtonHandler = reOpenHandler,
+			resultStringConsumer = searchResultConsumer
+		).openGui()
 	}
 
 	private fun getButtons(): List<AbstractItem> {
