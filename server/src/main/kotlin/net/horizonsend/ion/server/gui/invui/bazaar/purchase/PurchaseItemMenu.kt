@@ -4,12 +4,14 @@ import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.common.utils.text.withShadowColor
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.RangeIntegerValidator
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
+import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import java.util.function.Supplier
@@ -33,7 +35,7 @@ class PurchaseItemMenu(
 					)
 				)
 				.add(template(message = Component.text("Buying {0}'s"), paramColor = null, useQuotesAroundObjects = false, listerName), line = -3, verticalShift = -1)
-				.add(template(message = Component.text("{0}"), paramColor = null, useQuotesAroundObjects = false, itemStack.displayName()), line = -2, verticalShift = 0)
+				.add(template(message = Component.text("{0}"), paramColor = null, useQuotesAroundObjects = false, itemStack.displayNameComponent.withShadowColor("#444444FF")), line = -2, verticalShift = 0)
 				.add(template(Component.text("Between {0} and {1}"), paramColor = null, 1, item.stock), line = -1, verticalShift = 1)
 				.build()
 		}
