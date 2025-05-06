@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
-import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.Gui
@@ -32,24 +31,20 @@ class BuyOrderMainMenu(viewer: Player) : InvUIWindowWrapper(viewer) {
 			.addIngredient('b', browseButton)
 			.build()
 
-		val title = ofChildren(
-			GuiText("Buy Orders Main Menu")
-				.addBackground(GuiText.GuiBackground(backgroundChar = BAZAAR_BUY_ORDER_MENU_CHARACTER))
-				.build(),
-			GuiText("", guiWidth = DEFAULT_GUI_WIDTH / 2, initialShiftDown = 85)
-				.add(Component.text("Manage"), alignment = GuiText.TextAlignment.CENTER)
-				.build(),
-			GuiText("", guiWidth = DEFAULT_GUI_WIDTH / 2, initialShiftDown = 85)
-				.add(Component.text("Browse"), alignment = GuiText.TextAlignment.CENTER, horizontalShift = DEFAULT_GUI_WIDTH / 2)
-				.build(),
-		)
-
-		return Window.single()
-			.setGui(gui)
-			.setViewer(viewer)
-			.setTitle(title)
-			.build()
+		return normalWindow(gui)
 	}
+
+	override fun buildTitle(): Component = ofChildren(
+		GuiText("Buy Orders Main Menu")
+			.addBackground(GuiText.GuiBackground(backgroundChar = BAZAAR_BUY_ORDER_MENU_CHARACTER))
+			.build(),
+		GuiText("", guiWidth = DEFAULT_GUI_WIDTH / 2, initialShiftDown = 85)
+			.add(Component.text("Manage"), alignment = GuiText.TextAlignment.CENTER)
+			.build(),
+		GuiText("", guiWidth = DEFAULT_GUI_WIDTH / 2, initialShiftDown = 85)
+			.add(Component.text("Browse"), alignment = GuiText.TextAlignment.CENTER, horizontalShift = DEFAULT_GUI_WIDTH / 2)
+			.build(),
+	)
 
 	private val backButton = GuiItems.closeMenuItem(viewer)
 	private val settingsButton = GuiItem.GEAR.makeItem(Component.text("Settings")).makeGuiButton { _, _ -> println("info") }

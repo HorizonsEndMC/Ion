@@ -100,7 +100,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			DBCachedBooleanToggle(text("Show /itemsearch Items"), "", GuiItem.COMPASS_NEEDLE, true, SLPlayer::showItemSearchItem, AbstractPlayerCache.PlayerData::showItemSearchItem),
 			PermissionBooleanToggle(sitStateNode, text("Hitmarker On Hull"), "", GuiItem.BOOKMARK, true)
 		)
-    ).onEach { subMenu -> subMenu.parent = this@SettingsMainMenuGui }
+    ).onEach { subMenu -> subMenu.setParent(this@SettingsMainMenuGui)  }
 
 	override fun getFirstLine(player: Player): Component {
 		return Component.empty()

@@ -4,7 +4,6 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
-import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
@@ -43,13 +42,11 @@ class ItemMenu(
         return gui
     }
 
-	override fun buildWindow(): Window {
-		return Window.single()
-			.setViewer(viewer)
-			.setGui(createGui())
-			.setTitle(title)
-			.build()
+	override fun buildTitle(): Component {
+		return title
 	}
+
+	override fun buildWindow(): Window = normalWindow(createGui())
 
     private val backButton = GuiItems.CustomControlItem(
         Component.text("Back").itemName, GuiItem.CANCEL, callback = { _: ClickType, player: Player, _: InventoryClickEvent ->

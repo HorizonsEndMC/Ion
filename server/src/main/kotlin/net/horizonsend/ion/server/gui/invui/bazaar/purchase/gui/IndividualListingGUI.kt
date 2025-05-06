@@ -77,7 +77,7 @@ class IndividualListingGUI(
 			.setContent(getButtons())
 			.addPageChangeHandler { _, new ->
 				pageNumber = new
-				parentWindow.refreshGuiText()
+				parentWindow.refreshTitle()
 			}
 			.build()
 
@@ -128,7 +128,7 @@ class IndividualListingGUI(
 	}
 
 	private val sortButton = EnumScrollButton(
-		providedItem = { GuiItem.FILTER.makeItem(text("Change Sorting Method")) },
+		providedItem = { GuiItem.SORT.makeItem(text("Change Sorting Method")) },
 		increment = 1,
 		value = {
 			sortingMethod
