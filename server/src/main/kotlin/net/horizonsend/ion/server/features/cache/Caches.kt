@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 object Caches : IonServerComponent() {
 	private val caches: List<Cache> = listOf(
 		PlayerCache,
+		PlayerSettingsCache,
 		SettlementCache,
 		NationCache,
 		RelationCache,
