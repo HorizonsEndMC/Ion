@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -8,6 +9,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
@@ -138,6 +140,8 @@ class IndividualListingGUI(
 		subEntry = arrayOf(BazaarSort.MIN_PRICE, BazaarSort.MAX_PRICE, BazaarSort.HIGHEST_STOCK, BazaarSort.LOWEST_STOCK),
 		valueConsumer = {
 			sortingMethod = it
+
+			PlayerSettingsCache.updateEnumSetting(parentWindow.viewer.slPlayerId, PlayerSettings::defaultBazaarIndividualSort, sortingMethod)
 
 			PlayerCache[parentWindow.viewer].defaultBazaarIndividualSort = sortingMethod.ordinal
 			Tasks.async {
