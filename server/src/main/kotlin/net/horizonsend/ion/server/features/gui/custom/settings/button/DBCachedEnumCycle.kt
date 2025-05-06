@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.gui.custom.settings.button
 
-import net.horizonsend.ion.common.database.cache.nations.AbstractPlayerCache
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.gui.GuiItem
@@ -20,9 +19,8 @@ class DBCachedEnumCycle<T : Enum<T>>(
 	butonDescription: String,
 	icon: GuiItem,
 	defaultValue: Int,
-	db: KMutableProperty1<SLPlayer, Int>,
-	cache: KMutableProperty1<AbstractPlayerCache.PlayerData, Int>,
-) : DBCachedSettingsButton<Int>(name, butonDescription, icon, defaultValue, Int::class, db, cache) {
+	db: KMutableProperty1<PlayerSettings, Int>,
+) : DBCachedSettingsButton<Int>(name, butonDescription, icon, defaultValue, Int::class, db) {
 	override fun getSecondLine(player: Player): Component {
 		val value = getState(player)
 		return text(enum.enumConstants[value].name, BLUE)
