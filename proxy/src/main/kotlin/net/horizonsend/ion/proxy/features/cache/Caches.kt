@@ -10,6 +10,7 @@ import net.horizonsend.ion.proxy.PLUGIN
 object Caches : IonComponent() {
 	private val caches: List<Cache> = listOf(
 		PlayerCache,
+		PlayerSettingsCache,
 		SettlementCache,
 		NationCache,
 		RelationCache
