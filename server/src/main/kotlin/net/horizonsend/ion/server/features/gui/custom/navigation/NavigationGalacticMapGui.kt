@@ -19,7 +19,6 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
-import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
 
@@ -106,7 +105,7 @@ class NavigationGalacticMapGui(viewer: Player) : InvUIWindowWrapper(viewer) {
         "Click"
     ).decoration(TextDecoration.ITALIC, false)
 
-    private fun createText(): Component {
+	override fun buildTitle(): Component {
         val header = "Galactic Map"
         val guiText = GuiText(header)
 
@@ -118,13 +117,5 @@ class NavigationGalacticMapGui(viewer: Player) : InvUIWindowWrapper(viewer) {
         return guiText.build()
     }
 
-	override fun buildWindow(): Window {
-		val gui = createGui()
-
-		return Window.single()
-			.setViewer(viewer)
-			.setGui(gui)
-			.setTitle(AdventureComponentWrapper(createText()))
-			.build()
-	}
+	override fun buildWindow(): Window = normalWindow(createGui())
 }

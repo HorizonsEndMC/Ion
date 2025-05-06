@@ -1,14 +1,99 @@
 package net.horizonsend.ion.server.gui.invui
 
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
+import net.horizonsend.ion.server.gui.invui.utils.changeTitle
+import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
+import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
+import java.util.UUID
 
 abstract class InvUIWindowWrapper(val viewer: Player, val async: Boolean = false) : CommonGuiWrapper {
+	/**
+	 * If this window was opened from another window, that can be tracked.
+	 **/
+	private var parentWindow: CommonGuiWrapper? = null
+
+	/**
+	 * Marks the provided gui wrapper as the parent of this window.
+	 **/
+	fun setParent(gui: CommonGuiWrapper) {
+		parentWindow = gui
+	}
+
+	protected fun getParent(): CommonGuiWrapper? = parentWindow
+
+	/**
+	 * Builds the window that this class wraps.
+	 **/
+	abstract fun buildWindow(): Window?
+
+	/**
+	 * Builds the window title Component.
+	 **/
+	abstract fun buildTitle(): Component
+
+	/**
+	 * Re-builds and applies the window title.
+	 **/
+	fun refreshTitle() {
+		currentWindow?.changeTitle(buildTitle())
+	}
+
+	private val trackedButtons = mutableMapOf<UUID, Item>()
+
+	/**
+	 * Tracks this button, making it able to be updated by this GUI
+	 **/
+	fun <T: Item> T.tracked(): T {
+		val id = UUID.randomUUID()
+		trackedButtons[id] = this
+		return this
+	}
+
+	/**
+	 * Tracks this button, making it able to be updated by this GUI
+	 **/
+	fun <T: Item> tracked(buttonBuilder: (UUID) -> T): T {
+		val id = UUID.randomUUID()
+		val button = buttonBuilder.invoke(UUID.randomUUID())
+		trackedButtons[id] = button
+		return button
+	}
+
+	/**
+	 * Refreshes all the tracked buttons.
+	 * This is useful if, for example, one button updates the states of many.
+	 **/
+	fun refreshButtons() {
+		trackedButtons.values.forEach(Item::notifyWindows)
+	}
+
+	/**
+	 * Refreshes all the tracked buttons.
+	 * This is useful if, for example, one button updates the states of many.
+	 **/
+	fun refreshButtons(calling: UUID) {
+		trackedButtons.keys.minus(calling).forEach {
+			val button = trackedButtons[it] ?: return@forEach
+			button.notifyWindows()
+		}
+	}
+
+	/**
+	 * Refreshes the title, and all buttons.
+	 **/
+	fun refreshAll() {
+		refreshTitle()
+		refreshButtons()
+	}
+
 	protected var currentWindow: Window? = null
 
-	abstract fun buildWindow(): Window
+	fun getOpenWindow() = currentWindow
 
 	override fun openGui() {
 		if (async) {
@@ -24,5 +109,12 @@ abstract class InvUIWindowWrapper(val viewer: Player, val async: Boolean = false
 		}
 	}
 
-	fun getOpenWindow() = currentWindow
+	/**
+	 * Builds a simple single window containing this GUI
+	 **/
+	fun normalWindow(gui: Gui): Window = Window.single()
+		.setViewer(viewer)
+		.setGui(gui)
+		.setTitle(buildTitle())
+		.build()
 }
