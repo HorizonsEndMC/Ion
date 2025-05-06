@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.miscellaneous.utils
 
 import com.google.common.collect.Multimap
 import com.google.common.collect.MultimapBuilder
-import com.google.common.collect.Table
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import org.checkerframework.checker.units.qual.K
 import java.util.EnumSet
@@ -18,8 +17,6 @@ fun <T> List<T>.randomEntry(): T = when {
 }
 
 fun <K, V> multimapOf(): Multimap<K, V> = MultimapBuilder.hashKeys().arrayListValues().build()
-
-operator fun <R, C, V> Table<R, C, V>.set(row: R, column: C, value: V): V? = put(row, column, value)
 
 fun <T> Set<T>.randomEntry(): T = when {
 	this.isEmpty() -> error("No entries in list to pick from!")
