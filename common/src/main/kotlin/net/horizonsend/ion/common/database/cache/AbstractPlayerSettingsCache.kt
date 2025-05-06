@@ -13,14 +13,15 @@ import org.litote.kmongo.upsert
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 import kotlin.reflect.KMutableProperty
+import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.memberProperties
 
 abstract class AbstractPlayerSettingsCache : Cache {
 	companion object {
-		private val settingProperties = PlayerSettings::class.memberProperties.filterIsInstance<KMutableProperty<Any>>()
+		private val settingProperties = PlayerSettings::class.memberProperties.filterIsInstance<KMutableProperty1<PlayerSettings, Any>>()
 	}
 
-	private val settingsTable = HashBasedTable.create<SLPlayerId, KMutableProperty<out Any>, Any>()
+	private val settingsTable = HashBasedTable.create<SLPlayerId, KMutableProperty1<PlayerSettings, out Any>, Any>()
 
 	abstract fun kickId(player: SLPlayerId, reason: Component)
 
@@ -30,27 +31,32 @@ abstract class AbstractPlayerSettingsCache : Cache {
 		settingsTable.rowMap().remove(player)
 	}
 
-	private fun <T : Any> updateStoredSetting(player: SLPlayerId, settingProperty: KMutableProperty<T>, newValue: T) {
+	private fun <T : Any> updateStoredSetting(player: SLPlayerId, settingProperty: KMutableProperty1<PlayerSettings, T>, newValue: T) {
 		settingsTable[player, settingProperty] = newValue
 	}
 
-	fun <T : Any> updateSetting(player: SLPlayerId, settingProperty: KMutableProperty<T>, newValue: T) {
+	fun <T : Any> updateSetting(player: SLPlayerId, settingProperty: KMutableProperty1<PlayerSettings, T>, newValue: T) {
 		updateStoredSetting(player, settingProperty, newValue)
 		runAsync {
 			PlayerSettings.col.updateOneById(player as StringId<PlayerSettings>, setValue(settingProperty, newValue), upsert())
 		}
 	}
 
-	fun <T : Enum<T>> updateEnumSetting(player: SLPlayerId, settingProperty: KMutableProperty<Int>, newValue: T) {
-		return updateSetting(player, settingProperty, newValue.ordinal)
+	fun <T : Enum<T>> updateEnumSetting(player: SLPlayerId, settingProperty: KMutableProperty1<PlayerSettings, Int>, newValue: T) {
+		updateSetting(player, settingProperty, newValue.ordinal)
 	}
 
-	fun <T : Any> getSetting(player: SLPlayerId, settingProperty: KMutableProperty<T>) : T {
+	fun <T : Any> getSetting(player: SLPlayerId, settingProperty: KMutableProperty<T>) : T? {
+		@Suppress("UNCHECKED_CAST")
+		return settingsTable[player, settingProperty] as T?
+	}
+
+	fun <T : Any> getSettingOrThrow(player: SLPlayerId, settingProperty: KMutableProperty<T>) : T {
 		@Suppress("UNCHECKED_CAST")
 		return settingsTable[player, settingProperty] as T
 	}
 
-	protected fun isCached(player: SLPlayerId): Boolean = settingsTable.rowKeySet().contains(player)
+	fun isCached(player: SLPlayerId): Boolean = settingsTable.rowKeySet().contains(player)
 
 	fun cache(player: SLPlayerId): Future<Boolean> {
 		val future = CompletableFuture<Boolean>()
