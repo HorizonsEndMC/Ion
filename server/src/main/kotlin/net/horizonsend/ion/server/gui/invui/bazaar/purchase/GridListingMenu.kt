@@ -2,10 +2,13 @@ package net.horizonsend.ion.server.gui.invui.bazaar.purchase
 
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
@@ -21,7 +24,7 @@ class GridListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 
         val gui = PagedGui.items()
             .setStructure(
-                "x . . . . S s . i",
+                "x . . . f S s l i",
                 "# # # # # # # # #",
                 "# # # # # # # # #",
                 "# # # # # # # # #",
@@ -29,8 +32,10 @@ class GridListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
                 "< . . . . . . . >",
             )
             .addIngredient('x', backButton)
-            .addIngredient('s', sortButton)
+            .addIngredient('f', filterButton)
             .addIngredient('S', searchButton)
+            .addIngredient('s', sortButton)
+            .addIngredient('l', listViewButton)
             .addIngredient('i', infoButton)
             .addIngredient('<', GuiItems.PageLeftItem())
             .addIngredient('>', GuiItems.PageRightItem())
@@ -57,4 +62,6 @@ class GridListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
         val pageNumber = addPageNumber(LISTINGS_PER_PAGE)
         return ofChildren(guiText.build(), pageNumber)
     }
+
+    private val listViewButton = GuiItem.LIST_VIEW.makeItem(text("List view")).makeGuiButton { _, _ -> ListListingMenu(viewer, { this.openGui() }).openGui() }
 }
