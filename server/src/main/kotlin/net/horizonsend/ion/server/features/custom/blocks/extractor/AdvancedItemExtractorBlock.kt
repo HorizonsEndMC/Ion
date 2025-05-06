@@ -5,13 +5,11 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI.Companion.setTitle
 import net.horizonsend.ion.server.features.transport.items.SortingOrder
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
-import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDataContainer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -75,12 +73,9 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 				)
 				.addIngredient('u', getTraverseButton(1))
 				.addIngredient('d', getTraverseButton(-1))
+				.build()
 
-			return Window
-				.single()
-				.setGui(gui)
-				.setTitle(getSlotOverlay())
-				.build(viewer)
+			return normalWindow(gui)
 		}
 
 		fun getOffset(offset: Int): SortingOrder {
@@ -89,7 +84,7 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 			return SortingOrder.entries[Math.floorMod(current.ordinal + offset, entries.size)]
 		}
 
-		fun getSlotOverlay(): Component = GuiText("Item Extractor Configuration")
+		override fun buildTitle(): Component = GuiText("Item Extractor Configuration")
 			.setSlotOverlay(
 				"# # # # # # # # #",
 				"# # # # # # # # #",
@@ -114,7 +109,7 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 			)
 			.build()
 
-		fun getTraverseButton(offset: Int): AbstractItem = GuiItems.createButton(GuiItems.blankItem) { _, player, event ->
+		private fun getTraverseButton(offset: Int): AbstractItem = GuiItems.createButton(GuiItems.blankItem) { _, player, event ->
 			val current = extractorData.metaData.sortingOrder
 			val entires = SortingOrder.entries
 
@@ -124,7 +119,7 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 
 			ExtractorManager.saveExtractor(block.world, block.x, block.y, block.z, extractorData)
 
-			event.view.setTitle(getSlotOverlay())
+			refreshTitle()
 		}
 	}
 }

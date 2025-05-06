@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.custom.settings.button.SettingsMenuButton
-import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -21,10 +20,11 @@ abstract class SettingsPageGui(
 	viewer: Player,
 	val title: String,
 ) : AbstractBackgroundPagedGui(viewer), SettingsGuiItem {
-	var parent: CommonGuiWrapper? = null
 	protected abstract val buttonsList: List<SettingsGuiItem>
 
-	protected open val backButton: Item = GuiItem.DOWN.makeButton(this, "Return to Previous Menu", "") { _, _, _ -> parent?.openGui() }
+	protected open val backButton: Item = GuiItem.DOWN.makeButton(this, "Return to Previous Menu", "") { _, _, _ -> getParent()?.openGui() }
+
+	protected var currentPage: Int = 0; private set
 
 	override fun createGui(): PagedGui<Item> {
 		val gui = PagedGui.items()
@@ -42,6 +42,10 @@ abstract class SettingsPageGui(
 			.addIngredient('<', GuiItems.PageLeftItem())
 			.addIngredient('>', GuiItems.PageRightItem())
 			.addIngredient('v', backButton)
+			.addPageChangeHandler { old, new ->
+				currentPage = new
+				refreshTitle()
+			}
 
 		for (button in buttonsList) {
 			val created = button.makeButton(this)
@@ -56,12 +60,7 @@ abstract class SettingsPageGui(
 		return gui.build()
 	}
 
-	override fun openGui() {
-		currentWindow = buildWindow()
-		currentWindow?.open()
-	}
-
-	override fun createText(player: Player, currentPage: Int): Component {
+	override fun buildTitle(): Component {
 		// create a new GuiText builder
 		val guiText = GuiText(title)
 		guiText.addBackground()
@@ -71,7 +70,7 @@ abstract class SettingsPageGui(
 
 		for (buttonIndex in startIndex until min(startIndex + SETTINGS_PER_PAGE, buttonsList.size)) {
 			val button = buttonsList[buttonIndex]
-			val title = button.getFirstLine(player)
+			val title = button.getFirstLine(viewer)
 			val line = (buttonIndex - startIndex) * 2
 
 			// setting title
@@ -83,7 +82,7 @@ abstract class SettingsPageGui(
 
 			// setting description
 			guiText.add(
-				component = button.getSecondLine(player),
+				component = button.getSecondLine(viewer),
 				line = line + 1,
 				horizontalShift = 21
 			)
@@ -111,7 +110,7 @@ abstract class SettingsPageGui(
 				private val thisReference = this
 
 				override val buttonsList: List<SettingsGuiItem> = buttons.toList().apply {
-					filterIsInstance<SettingsPageGui>().forEach { subMenu -> subMenu.parent = thisReference }
+					filterIsInstance<SettingsPageGui>().forEach { subMenu -> subMenu.setParent(thisReference) }
 				}
 				override fun getFirstLine(player: Player): Component = text(title)
 				override fun getSecondLine(player: Player): Component = Component.empty()

@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
-import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
@@ -61,21 +60,15 @@ class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 			.addIngredient('3', backingButton(3))
 			.addPageChangeHandler { _, new ->
 				pageNumber = new
-				refreshWindowText()
-				updateBackingButtons()
+				refreshAll()
 			}
 			.setContent(guiItems)
 			.build()
 
-		return Window
-			.single()
-			.setGui(gui)
-			.setViewer(viewer)
-			.setTitle(buildGuiText())
-			.build()
+		return normalWindow(gui)
 	}
 
-	override fun buildGuiText(): Component {
+	override fun buildTitle(): Component {
 		val guiText =  GuiText("Your Bazaar Sale Listings", guiWidth = DEFAULT_GUI_WIDTH - 20)
 			.addBackground()
 
@@ -95,11 +88,6 @@ class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 
 		val pageNumber = addPageNumber(LISTINGS_PER_PAGE)
 		return ofChildren(guiText.build(), pageNumber)
-	}
-
-	private val backingButtons = mutableListOf<AbstractItem>()
-	private fun updateBackingButtons() {
-		backingButtons.forEach { it.notifyWindows() }
 	}
 
 	private fun backingButton(index: Int): AbstractItem {
@@ -132,9 +120,7 @@ class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 			override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {}
 		}
 
-		backingButtons.add(item)
-
-		return item
+		return item.tracked()
 	}
 
 	private val gridViewButton = GuiItem.GRID_VIEW.makeItem(text("Grid view")).makeGuiButton { _, _ -> GridListingMenu(viewer, { this.openGui() }).openGui() }

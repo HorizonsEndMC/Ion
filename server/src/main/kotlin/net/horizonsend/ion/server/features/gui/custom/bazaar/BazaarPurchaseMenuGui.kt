@@ -6,12 +6,14 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.priceMult
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
+import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -20,7 +22,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
-import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.builder.ItemBuilder
@@ -59,7 +60,7 @@ class BazaarPurchaseMenuGui(
 
 		val window = AnvilWindow.single()
 			.setViewer(viewer)
-			.setTitle(AdventureComponentWrapper(text("Buying $sellerName's ${GlobalCompletions.fromItemString(bazaarItem.itemString).displayNameString}")))
+			.setTitle(buildTitle())
 			.setGui(gui)
 			.addRenameHandler { string ->
 				currentAmount = string?.toIntOrNull() ?: 0
@@ -69,6 +70,10 @@ class BazaarPurchaseMenuGui(
 			.build()
 
 		return window
+	}
+
+	override fun buildTitle(): Component {
+		return text("Buying $sellerName's ${GlobalCompletions.fromItemString(bazaarItem.itemString).displayNameString}")
 	}
 
     // Item being purchased
