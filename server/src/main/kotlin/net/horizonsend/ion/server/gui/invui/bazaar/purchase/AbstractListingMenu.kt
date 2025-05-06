@@ -84,7 +84,7 @@ abstract class AbstractListingMenu(viewer: Player, val backButtonHandler: () -> 
         ?: "<{Unknown}>" // this will be used if the city is disbanded but their items remain there
 
     protected val sortButton = EnumScrollButton(
-        providedItem = { GuiItem.FILTER.makeItem(text("Change Sorting Method")) },
+        providedItem = { GuiItem.SORT.makeItem(text("Change Sorting Method")) },
         increment = 1,
         value = {
             sortingMethod
@@ -99,4 +99,5 @@ abstract class AbstractListingMenu(viewer: Player, val backButtonHandler: () -> 
     )
 
     protected val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem().makeGuiButton { _, _ ->  }
+    protected val filterButton = GuiItem.FILTER.makeItem().makeGuiButton { _, _ ->  }
 }
