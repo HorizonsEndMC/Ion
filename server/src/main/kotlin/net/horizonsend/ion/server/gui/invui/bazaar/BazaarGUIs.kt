@@ -1,8 +1,7 @@
 package net.horizonsend.ion.server.gui.invui.bazaar
 
-import net.horizonsend.ion.common.database.cache.nations.AbstractPlayerCache
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
@@ -64,13 +63,12 @@ object BazaarGUIs {
 			player,
 			"Placement Settings",
 			DBCachedBooleanToggle(
-				Component.text("Skip Single Entry Menus"),
-				butonDescription = "Skip directly to purchase menu when there is only one listing of an item.",
-				icon = GuiItem.LIST,
-				defaultValue = false,
-				db = SLPlayer::skipBazaarSingleEntryMenus,
-				cache = AbstractPlayerCache.PlayerData::skipBazaarSingleEntryMenus
-			)
+                Component.text("Skip Single Entry Menus"),
+                butonDescription = "Skip directly to purchase menu when there is only one listing of an item.",
+                icon = GuiItem.LIST,
+                defaultValue = false,
+                db = PlayerSettings::skipBazaarSingleEntryMenus
+            )
 		)
 
 		if (parent != null) page.setParent(parent)
