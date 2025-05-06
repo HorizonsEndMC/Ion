@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.gui.custom.settings.button
 
-import net.horizonsend.ion.common.database.cache.nations.AbstractPlayerCache
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
 import net.kyori.adventure.text.Component
@@ -18,9 +17,8 @@ class DBCachedBooleanToggle(
 	butonDescription: String,
 	icon: GuiItem,
 	defaultValue: Boolean,
-	db: KMutableProperty1<SLPlayer, Boolean>,
-	cache: KMutableProperty1<AbstractPlayerCache.PlayerData, Boolean>,
-): DBCachedSettingsButton<Boolean>(name, butonDescription, icon, defaultValue, Boolean::class, db, cache) {
+	db: KMutableProperty1<PlayerSettings, Boolean>,
+): DBCachedSettingsButton<Boolean>(name, butonDescription, icon, defaultValue, Boolean::class, db) {
 	override fun handleClick(
 		clicker: Player,
 		oldValue: Boolean,

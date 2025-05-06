@@ -141,7 +141,7 @@ class IndividualListingGUI(
 		valueConsumer = {
 			sortingMethod = it
 
-			PlayerSettingsCache.updateEnumSetting(parentWindow.viewer.slPlayerId, PlayerSettings::defaultBazaarIndividualSort, sortingMethod)
+			PlayerSettingsCache.updateEnumSetting(parentWindow.viewer.slPlayerId, PlayerSettings::defaultBazaarIndividualSort, it)
 
 			PlayerCache[parentWindow.viewer].defaultBazaarIndividualSort = sortingMethod.ordinal
 			Tasks.async {
