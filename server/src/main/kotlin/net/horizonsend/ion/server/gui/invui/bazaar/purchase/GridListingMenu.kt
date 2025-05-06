@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
-import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
@@ -42,20 +41,14 @@ class GridListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
             .addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
             .addPageChangeHandler { _, new ->
                 pageNumber = new
-                refreshWindowText()
             }
             .setContent(guiItems)
             .build()
 
-        return Window
-            .single()
-            .setGui(gui)
-            .setViewer(viewer)
-            .setTitle(buildGuiText())
-            .build()
+        return normalWindow(gui)
     }
 
-    override fun buildGuiText(): Component {
+	override fun buildTitle(): Component {
         val guiText =  GuiText("Your Bazaar Sale Listings", guiWidth = DEFAULT_GUI_WIDTH - 20)
             .addBackground()
 

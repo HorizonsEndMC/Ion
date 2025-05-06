@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.features.gui
 
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
-import net.kyori.adventure.text.Component
+import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import org.bukkit.entity.Player
-import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
@@ -11,29 +10,15 @@ import xyz.xenondevs.invui.window.Window
 abstract class AbstractBackgroundPagedGui(viewer: Player) : InvUIWindowWrapper(viewer) {
     open fun createGui(): PagedGui<Item> = PagedGui.items().build()
 
-	open fun createText(player: Player, currentPage: Int): Component = Component.empty()
-
-	open override fun buildWindow(): Window {
+	override fun buildWindow(): Window {
         val gui = createGui()
 
         val window = Window.single()
             .setViewer(viewer)
-            .setTitle(AdventureComponentWrapper(createText(viewer, 0)))
+            .setTitle(buildTitle())
             .setGui(gui)
             .build()
 
-        fun updateTitle(): (Int, Int) -> Unit {
-            return { _, currentPage ->
-                window.changeTitle(AdventureComponentWrapper(createText(viewer, currentPage)))
-            }
-        }
-
-        gui.addPageChangeHandler(updateTitle())
-
         return window
     }
-
-	fun refreshPageText(player: Player, gui: PagedGui<*>) {
-		currentWindow?.changeTitle(AdventureComponentWrapper(createText(player, gui.currentPage)))
-	}
 }
