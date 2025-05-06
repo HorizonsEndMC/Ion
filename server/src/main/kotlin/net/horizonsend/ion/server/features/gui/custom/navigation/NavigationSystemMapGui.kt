@@ -18,7 +18,6 @@ import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
-import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
@@ -145,15 +144,7 @@ class NavigationSystemMapGui(viewer: Player, val world: World): InvUIWindowWrapp
 		return gui
 	}
 
-	override fun buildWindow(): Window {
-		val gui = createGui()
-
-		return Window.single()
-			.setViewer(viewer)
-			.setGui(gui)
-			.setTitle(AdventureComponentWrapper(createText()))
-			.build()
-	}
+	override fun buildWindow(): Window = normalWindow(createGui())
 
 	/**
 	 * Updates the GUI shifts every time something changes (such as the player clicking a button)
@@ -187,10 +178,7 @@ class NavigationSystemMapGui(viewer: Player, val world: World): InvUIWindowWrapp
 		}
 	}
 
-	/**
-	 * Creates the GUI text and background
-	 */
-	private fun createText(): Component {
+	override fun buildTitle(): Component {
 		val header = "${world.name} System Map"
 		val guiText = GuiText(header)
 
