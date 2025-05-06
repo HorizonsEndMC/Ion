@@ -46,6 +46,8 @@ class Achievements(viewer: Player) : AbstractBackgroundPagedGui(viewer) {
 		private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
 	}
 
+	private var currentPage: Int = 0
+
 	override fun createGui(): PagedGui<Item> {
 		val gui = PagedGui.items()
 		val achievementIcons = mutableListOf<Item>()
@@ -71,22 +73,27 @@ class Achievements(viewer: Player) : AbstractBackgroundPagedGui(viewer) {
 			"x . . . . . . . .",
 			"x . . . . . . . .",
 			"x . . . . . . . .",
-			"< . . . . . . . >")
+			"< . . . . . . . >"
+		)
 
-		gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_VERTICAL)
+		gui
+			.addIngredient('x', Markers.CONTENT_LIST_SLOT_VERTICAL)
 			.addIngredient('<', GuiItems.PageLeftItem())
 			.addIngredient('>', GuiItems.PageRightItem())
 			.setContent(achievementIcons)
+			.addPageChangeHandler { _, new ->
+				currentPage = new
+				refreshTitle()
+			}
 
 		return gui.build()
 	}
 
-	override fun createText(player: Player, currentPage: Int): Component {
-
-		val obtainedAchievements = SLPlayer[player].achievements.map { Achievement.valueOf(it) }.toList()
+	override fun buildTitle(): Component {
+		val obtainedAchievements = SLPlayer[viewer].achievements.map { Achievement.valueOf(it) }.toList()
 
 		// create a new GuiText builder
-		val header = "${player.name}'s Achievements"
+		val header = "${viewer.name}'s Achievements"
 		val guiText = GuiText(header)
 		guiText.addBackground()
 
