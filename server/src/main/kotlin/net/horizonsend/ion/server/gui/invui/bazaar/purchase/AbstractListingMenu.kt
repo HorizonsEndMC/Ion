@@ -16,7 +16,6 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
-import net.horizonsend.ion.server.gui.invui.utils.changeTitle
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
@@ -58,12 +57,6 @@ abstract class AbstractListingMenu(viewer: Player, val backButtonHandler: () -> 
             )
         }
     }
-
-    protected fun refreshWindowText() {
-        currentWindow?.changeTitle(buildGuiText())
-    }
-
-    protected abstract fun buildGuiText() : Component
 
     protected fun addPageNumber(listingsPerPage: Int): Component {
         val maxPageNumber = ceil(items.size.toDouble() / (listingsPerPage.toDouble())).toInt()

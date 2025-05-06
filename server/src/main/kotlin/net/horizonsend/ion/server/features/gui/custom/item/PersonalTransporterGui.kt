@@ -24,6 +24,8 @@ class PersonalTransporterGui(viewer: Player) : AbstractBackgroundPagedGui(viewer
     // cache current player list
     private val playerList = mutableListOf<Player>()
 
+	private var currentPage: Int = 0
+
     override fun createGui(): PagedGui<Item> {
         val gui = PagedGui.items()
 
@@ -39,6 +41,10 @@ class PersonalTransporterGui(viewer: Player) : AbstractBackgroundPagedGui(viewer
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
             .addIngredient('<', GuiItems.PageLeftItem())
             .addIngredient('>', GuiItems.PageRightItem())
+			.addPageChangeHandler { _, new ->
+				currentPage = new
+				refreshTitle()
+			}
 
         // populate player list cache
         playerList.addAll(Bukkit.getOnlinePlayers())
@@ -55,7 +61,7 @@ class PersonalTransporterGui(viewer: Player) : AbstractBackgroundPagedGui(viewer
         return gui.build()
     }
 
-    override fun createText(player: Player, currentPage: Int): Component {
+	override fun buildTitle(): Component {
         // create a new GuiText builder
         val header = "Personal Transporter"
         val guiText = GuiText(header)
