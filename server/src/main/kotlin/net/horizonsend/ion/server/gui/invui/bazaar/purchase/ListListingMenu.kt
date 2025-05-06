@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.purchase
 
-import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -8,21 +7,12 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.common.utils.text.withShadowColor
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
-import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.item.AsyncItem
-import net.horizonsend.ion.server.features.gui.item.EnumScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
-import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
-import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
-import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
-import net.horizonsend.ion.server.gui.invui.utils.changeTitle
 import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
@@ -32,50 +22,19 @@ import net.kyori.adventure.text.format.NamedTextColor.BLACK
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
-import org.litote.kmongo.eq
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
-import kotlin.math.ceil
 
-class ListingMenu(viewer: Player, val backButtonHandler: () -> Unit = {}) : InvUIWindowWrapper(viewer, async = true) {
+class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : AbstractListingMenu(viewer, backButtonHandler) {
 	companion object {
 		private const val LISTINGS_PER_PAGE = 4
 	}
 
-	private var pageNumber: Int = 0
-	private lateinit var items: List<BazaarItem>
-
-	private var sortingMethod: BazaarSort = BazaarSort.HIGHEST_LISTINGS
-
 	override fun buildWindow(): Window {
-		val items = BazaarItem.find(BazaarItem::seller eq viewer.slPlayerId)
-		sortingMethod.sort(items)
-		this.items = items.toList()
-
-		val guiItems = this.items.map { item ->
-			val city = cityName(Regions[item.cityTerritory])
-			val stock = item.stock
-			val uncollected = item.balance.toCreditComponent()
-			val price = item.price.toCreditComponent()
-
-			AsyncItem(
-				resultProvider = {
-					fromItemString(item.itemString)
-						.updateLore(listOf(
-							ofChildren(template(text("City: {0}", HE_MEDIUM_GRAY), useQuotesAroundObjects = false, city)),
-							ofChildren(template(text("Stock: {0}", HE_MEDIUM_GRAY), stock)),
-							ofChildren(template(text("Balance: {0}", HE_MEDIUM_GRAY), uncollected)),
-							ofChildren(template(text("Price: {0}", HE_MEDIUM_GRAY), price))
-						))
-				},
-				handleClick = {
-					println("Click: $it")
-				}
-			)
-		}
+		val guiItems = generateItemListings()
 
 		val gui = PagedGui.items()
 			.setStructure(
@@ -113,17 +72,13 @@ class ListingMenu(viewer: Player, val backButtonHandler: () -> Unit = {}) : InvU
 			.build()
 	}
 
-	private fun refreshWindowText() {
-		currentWindow?.changeTitle(buildGuiText())
-	}
-
-	private fun buildGuiText(): Component {
+	override fun buildGuiText(): Component {
 		val guiText =  GuiText("Your Bazaar Sale Listings", guiWidth = DEFAULT_GUI_WIDTH - 20)
 			.addBackground()
 
 		val entryStart = pageNumber * LISTINGS_PER_PAGE
 		val entryEnd = ((pageNumber + 1) * LISTINGS_PER_PAGE)
-		val showingEntries = items.subList(entryStart, minOf(entryEnd, items.lastIndex))
+		val showingEntries = items.subList(entryStart, minOf(entryEnd, items.size)) // subList last index is exclusive
 
 		val startLine = 2
 
@@ -135,24 +90,9 @@ class ListingMenu(viewer: Player, val backButtonHandler: () -> Unit = {}) : InvU
 			guiText.add(ofChildren(text("B: ", BLACK), bazaarItem.balance.toCreditComponent().withShadowColor("#252525FF")), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.RIGHT)
 		}
 
-		val pageNumber = addPageNumber()
+		val pageNumber = addPageNumber(LISTINGS_PER_PAGE)
 		return ofChildren(guiText.build(), pageNumber)
 	}
-
-	private fun addPageNumber(): Component {
-		val maxPageNumber = ceil(items.size.toDouble() / (LISTINGS_PER_PAGE.toDouble())).toInt()
-		val pageNumberString = "${pageNumber + 1} / $maxPageNumber"
-
-		return GuiText("").add(
-			text(pageNumberString),
-			line = 10,
-			GuiText.TextAlignment.CENTER,
-			verticalShift = 4
-		).build()
-	}
-
-	private val backButton = GuiItem.CANCEL.makeItem(text("Go back")).makeGuiButton { _, _ -> backButtonHandler.invoke() }
-	private val infoButton = GuiItem.INFO.makeItem(text("Information")).makeGuiButton { _, _ -> backButtonHandler.invoke() }
 
 	private val backingButtons = mutableListOf<AbstractItem>()
 	private fun updateBackingButtons() {
@@ -193,24 +133,4 @@ class ListingMenu(viewer: Player, val backButtonHandler: () -> Unit = {}) : InvU
 
 		return item
 	}
-
-	private fun cityName(territory: RegionTerritory) = TradeCities.getIfCity(territory)?.displayName
-		?: "<{Unknown}>" // this will be used if the city is disbanded but their items remain there
-
-	private val sortButton = EnumScrollButton(
-		providedItem = { GuiItem.FILTER.makeItem(text("Change Sorting Method")) },
-		increment = 1,
-		value = {
-			sortingMethod
-		},
-		enum = BazaarSort::class.java,
-		nameFormatter = { it.displayName },
-		subEntry = arrayOf(BazaarSort.MIN_PRICE, BazaarSort.MAX_PRICE, BazaarSort.HIGHEST_STOCK, BazaarSort.LOWEST_STOCK, BazaarSort.HIGHEST_BALANCE, BazaarSort.LOWEST_BALANCE),
-		valueConsumer = {
-			sortingMethod = it
-			openGui()
-		}
-	)
-
-	private val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem().makeGuiButton { _, _ ->  }
 }
