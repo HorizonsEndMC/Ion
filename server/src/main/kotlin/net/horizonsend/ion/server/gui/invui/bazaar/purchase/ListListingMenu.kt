@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
@@ -38,7 +39,7 @@ class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 
 		val gui = PagedGui.items()
 			.setStructure(
-				"x . . . . S s . i",
+				"x . . . f S s g i",
 				"# 0 0 0 0 0 0 0 0",
 				"# 1 1 1 1 1 1 1 1",
 				"# 2 2 2 2 2 2 2 2",
@@ -49,9 +50,11 @@ class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 			.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 			.addIngredient('<', GuiItems.PageLeftItem())
 			.addIngredient('>', GuiItems.PageRightItem())
-			.addIngredient('i', infoButton)
-			.addIngredient('s', sortButton)
+			.addIngredient('f', filterButton)
 			.addIngredient('S', searchButton)
+			.addIngredient('s', sortButton)
+			.addIngredient('g', gridViewButton)
+			.addIngredient('i', infoButton)
 			.addIngredient('0', backingButton(0))
 			.addIngredient('1', backingButton(1))
 			.addIngredient('2', backingButton(2))
@@ -133,4 +136,6 @@ class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 
 		return item
 	}
+
+	private val gridViewButton = GuiItem.GRID_VIEW.makeItem(text("Grid view")).makeGuiButton { _, _ -> GridListingMenu(viewer, { this.openGui() }).openGui() }
 }
