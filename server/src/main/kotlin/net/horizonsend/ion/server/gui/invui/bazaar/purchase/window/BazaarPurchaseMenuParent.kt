@@ -8,8 +8,6 @@ import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.ListListingMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.SimpleStateButton
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
-import net.horizonsend.ion.server.gui.invui.utils.changeTitle
-import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
@@ -52,20 +50,11 @@ abstract class BazaarPurchaseMenuParent(
 		.setTabs(listOf(contained.getGui()))
 		.build()
 
-	override fun buildWindow(): Window = Window.single()
-		.setGui(getMenuGUI())
-		.setTitle(buildMenuTitle())
-		.setViewer(viewer)
-		.build()
-
-	fun refreshGuiText() {
-		val window = currentWindow ?: return
-		window.changeTitle(buildMenuTitle())
-	}
+	override fun buildWindow(): Window = normalWindow(getMenuGUI())
 
 	protected open val menuTitle: Component = text(if (remote) "Remote Bazaar" else "Bazaar")
 
-	private fun buildMenuTitle(): Component = GuiText("")
+	override fun buildTitle(): Component = GuiText("")
 		.add(menuTitle, line = -1, verticalShift = -2)
 		.populateGuiText()
 		.setSlotOverlay(

@@ -73,7 +73,7 @@ object BazaarGUIs {
 			)
 		)
 
-		if (parent != null) page.parent = parent
+		if (parent != null) page.setParent(parent)
 
 		page.openGui()
 	}

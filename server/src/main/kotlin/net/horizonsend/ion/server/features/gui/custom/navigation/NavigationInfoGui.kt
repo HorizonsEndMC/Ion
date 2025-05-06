@@ -12,7 +12,6 @@ import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
-import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
 
@@ -45,7 +44,7 @@ class NavigationInfoGui(
         return gui.build()
     }
 
-    private fun createText(): Component {
+	override fun buildTitle(): Component {
         val header = "Information: $name"
         val guiText = GuiText(header)
 
@@ -61,15 +60,7 @@ class NavigationInfoGui(
         return guiText.build()
     }
 
-	override fun buildWindow(): Window {
-		val gui = createGui()
-
-		return Window.single()
-			.setViewer(viewer)
-			.setGui(gui)
-			.setTitle(AdventureComponentWrapper(createText()))
-			.build()
-	}
+	override fun buildWindow(): Window = normalWindow(createGui())
 
 	private val navigationInfoMap = mapOf(
         "Asteri" to Component.text("Asteri is an M-type star with five planets.").decoration(TextDecoration.ITALIC, false),
