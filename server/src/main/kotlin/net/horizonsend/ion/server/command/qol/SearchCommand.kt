@@ -6,19 +6,19 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayCurrentBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayItem
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.World
@@ -29,7 +29,6 @@ import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
-import org.litote.kmongo.setValue
 
 @CommandAlias("itemsearch")
 @CommandPermission("ion.search")
@@ -85,9 +84,9 @@ object SearchCommand : SLCommand() {
 
 	@Subcommand("_toggle")
 	fun itemSearchToggle(player: Player, @Optional toggle: Boolean?) {
-		val showItemDisplay = toggle ?: !PlayerCache[player].showItemSearchItem
-		SLPlayer.updateById(player.slPlayerId, setValue(SLPlayer::showItemSearchItem, showItemDisplay))
-		PlayerCache[player.uniqueId].showItemSearchItem = showItemDisplay
+		val showItemDisplay = toggle ?: !player.getSetting(PlayerSettings::showItemSearchItem)
+		player.setSetting(PlayerSettings::protectionMessagesEnabled, showItemDisplay)
+
 		player.success("Changed showing searched item to $showItemDisplay")
 	}
 
@@ -103,7 +102,7 @@ object SearchCommand : SLCommand() {
 			if ( (twoOrMoreMatches(inventories.elementAt(block.index), strList)) || // if container has 2+ of the searched items
 				(item.type.isBlock && item.type.isSolid) || // Billboarding blocks looks so messed up, so this mostly prevents that
 				item.type == Material.AIR || // display if item is air, otherwise it would show up as an invisible item
-				!PlayerCache[player].showItemSearchItem) // toggleable setting
+				!player.getSetting(PlayerSettings::showItemSearchItem)) // toggleable setting
 			{
 				sendEntityPacket(player, displayCurrentBlock(player.world.minecraft, loc), 10 * 20) // show block
 			} else {
