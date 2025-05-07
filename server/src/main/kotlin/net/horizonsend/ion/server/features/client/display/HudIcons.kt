@@ -2,10 +2,11 @@ package net.horizonsend.ion.server.features.client.display
 
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.database.cache.BookmarkCache
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gui.GuiItem
@@ -516,12 +517,12 @@ object HudIcons : IonServerComponent() {
         // Reset planet selector information
         lowestAngleMap[player.uniqueId] = Float.MAX_VALUE
 
-        val hudSelectorEnabled = PlayerCache[player].hudPlanetsSelector
-        val hudPlanetsEnabled = PlayerCache[player].hudPlanetsImage
-        val hudStarsEnabled = PlayerCache[player].hudIconStars
-        val hudBeaconsEnabled = PlayerCache[player].hudIconBeacons
-        val hudStationsEnabled = PlayerCache[player].hudIconStations
-        val hudBookmarksEnabled = PlayerCache[player].hudIconBookmarks
+        val hudSelectorEnabled = player.getSetting(PlayerSettings::hudPlanetsSelector)
+        val hudPlanetsEnabled = player.getSetting(PlayerSettings::hudPlanetsImage)
+        val hudStarsEnabled = player.getSetting(PlayerSettings::hudIconStars)
+        val hudBeaconsEnabled = player.getSetting(PlayerSettings::hudIconBeacons)
+        val hudStationsEnabled = player.getSetting(PlayerSettings::hudIconStations)
+        val hudBookmarksEnabled = player.getSetting(PlayerSettings::hudIconBookmarks)
 
         // Rendering planets
         for (planet in planetList) {
