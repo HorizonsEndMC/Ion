@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.sidebar.component
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.sidebar.tasks.StarshipsSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.StarshipsSidebar.blockCountComponent
 import net.horizonsend.ion.server.features.sidebar.tasks.StarshipsSidebar.hullIntegrityComponent
@@ -21,7 +22,7 @@ class StarshipsSidebarComponent1(starship: ActiveControlledStarship, player: Pla
     private val initialBlockCount = starship.initialBlockCount
     private val currentBlockCount = starship.currentBlockCount
     private val compassComponent = StarshipsSidebar.compassComponent(starship, player)
-    private val advancedStarshipInfo = PlayerCache[player.uniqueId].advancedStarshipInfo
+    private val advancedStarshipInfo = player.getSetting(PlayerSettings::advancedStarshipInfo)
 
     private fun displayHullIntegrity() : TextComponent {
         return if (advancedStarshipInfo) {
