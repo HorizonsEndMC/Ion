@@ -8,7 +8,6 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
-import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.gui.GuiItem
@@ -25,14 +24,11 @@ import net.horizonsend.ion.server.gui.invui.bazaar.purchase.SearchGui
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bson.conversions.Bson
-import org.litote.kmongo.setValue
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
@@ -55,7 +51,7 @@ class IndividualListingGUI(
 	private val purchaseBackButton: () -> Unit,
 	private var pageNumber: Int = 0
 ): InvUIGuiWrapper<PagedGui<Item>>, BazaarGui {
-	private var sortingMethod: BazaarSort = BazaarSort.entries[PlayerCache[parentWindow.viewer].defaultBazaarIndividualSort]
+	private var sortingMethod: BazaarSort = PlayerSettingsCache[parentWindow.viewer, PlayerSettings::defaultBazaarIndividualSort]
 
 	private var totalItems = 0
 
@@ -141,12 +137,7 @@ class IndividualListingGUI(
 		valueConsumer = {
 			sortingMethod = it
 
-			PlayerSettingsCache.updateEnumSetting(parentWindow.viewer.slPlayerId, PlayerSettings::defaultBazaarIndividualSort, it)
-
-			PlayerCache[parentWindow.viewer].defaultBazaarIndividualSort = sortingMethod.ordinal
-			Tasks.async {
-				SLPlayer.updateById(parentWindow.viewer.slPlayerId, setValue(SLPlayer::defaultBazaarIndividualSort, sortingMethod.ordinal))
-			}
+			PlayerSettingsCache[parentWindow.viewer, PlayerSettings::defaultBazaarIndividualSort] = it
 
 			reOpenHandler.invoke()
 		}

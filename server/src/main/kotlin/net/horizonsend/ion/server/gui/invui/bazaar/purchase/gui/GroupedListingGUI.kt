@@ -1,11 +1,11 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui
 
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -18,11 +18,9 @@ import net.horizonsend.ion.server.gui.invui.bazaar.getItemButtons
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.SearchGui
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.text
 import org.bson.conversions.Bson
-import org.litote.kmongo.setValue
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
@@ -40,7 +38,7 @@ class GroupedListingGUI(
 ): InvUIGuiWrapper<PagedGui<Item>>, BazaarGui {
 	var pageNumber = pageNumber; private set
 
-	private var sortingMethod: BazaarSort = BazaarSort.entries[PlayerCache[parentWindow.viewer].defaultBazaarGroupedSort]
+	private var sortingMethod: BazaarSort = PlayerSettingsCache.getEnumSettingOrThrow(parentWindow.viewer.slPlayerId, PlayerSettings::defaultBazaarGroupedSort)
 
 	private var totalItems = 0
 
@@ -97,11 +95,7 @@ class GroupedListingGUI(
 		nameFormatter = { it.displayName },
 		valueConsumer = {
 			sortingMethod = it
-
-			PlayerCache[parentWindow.viewer].defaultBazaarGroupedSort = sortingMethod.ordinal
-			Tasks.async {
-				SLPlayer.updateById(parentWindow.viewer.slPlayerId, setValue(SLPlayer::defaultBazaarGroupedSort, sortingMethod.ordinal))
-			}
+			PlayerSettingsCache[parentWindow.viewer, PlayerSettings::defaultBazaarGroupedSort] = sortingMethod
 
 			reOpenHandler.invoke()
 		}
@@ -123,7 +117,7 @@ class GroupedListingGUI(
 			)
 		},
 		clickHandler = { itemString, groupedItems, _, player ->
-			if (groupedItems.size == 1 && PlayerCache[player].skipBazaarSingleEntryMenus) {
+			if (groupedItems.size == 1 && PlayerSettingsCache[parentWindow.viewer, PlayerSettings::skipBazaarSingleEntryMenus]) {
 				val item = groupedItems.firstOrNull() ?: return@getItemButtons
 
 				BazaarGUIs.openPurchaseMenu(
