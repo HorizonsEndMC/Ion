@@ -2,6 +2,7 @@ package net.horizonsend.ion.common.database.cache
 
 import com.google.common.collect.HashBasedTable
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.utils.set
 import net.horizonsend.ion.common.utils.text.miniMessage
@@ -12,13 +13,16 @@ import org.litote.kmongo.updateOneById
 import org.litote.kmongo.upsert
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
-import kotlin.reflect.KMutableProperty
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.full.memberProperties
 
 abstract class AbstractPlayerSettingsCache : Cache {
 	companion object {
+		private val legacySettingProperties = SLPlayer::class.memberProperties.filterIsInstance<KMutableProperty1<SLPlayer, Any>>()
+
 		private val settingProperties = PlayerSettings::class.memberProperties.filterIsInstance<KMutableProperty1<PlayerSettings, Any>>()
+
+		val mapped = legacySettingProperties.associateWith { legacy -> settingProperties.firstOrNull { modern -> legacy.name == modern.name } }
 	}
 
 	private val settingsTable = HashBasedTable.create<SLPlayerId, KMutableProperty1<PlayerSettings, out Any>, Any>()
@@ -42,16 +46,32 @@ abstract class AbstractPlayerSettingsCache : Cache {
 		}
 	}
 
+	operator fun <T : Any> set(player: SLPlayerId, settingProperty: KMutableProperty1<PlayerSettings, T>, newValue: T) {
+		updateSetting(player, settingProperty, newValue)
+	}
+
 	fun <T : Enum<T>> updateEnumSetting(player: SLPlayerId, settingProperty: KMutableProperty1<PlayerSettings, Int>, newValue: T) {
 		updateSetting(player, settingProperty, newValue.ordinal)
 	}
 
-	fun <T : Any> getSetting(player: SLPlayerId, settingProperty: KMutableProperty<T>) : T? {
+	fun <T : Any> getIfOnline(player: SLPlayerId, settingProperty: KMutableProperty1<PlayerSettings, T>) : T? {
 		@Suppress("UNCHECKED_CAST")
 		return settingsTable[player, settingProperty] as T?
 	}
 
-	fun <T : Any> getSettingOrThrow(player: SLPlayerId, settingProperty: KMutableProperty<T>) : T {
+	inline fun <reified T : Enum<T>> getEnumSetting(player: SLPlayerId, settingProperty: KMutableProperty1<PlayerSettings, Int>) : T? {
+		val ordinal = getIfOnline(player, settingProperty) ?: return null
+		return T::class.java.enumConstants[ordinal]
+	}
+
+	inline fun <reified T : Enum<T>> getEnumSettingOrThrow(player: SLPlayerId, settingProperty: KMutableProperty1<PlayerSettings, Int>) : T {
+		val ordinal = getIfOnline(player, settingProperty) ?: return null!!
+		return T::class.java.enumConstants[ordinal]
+	}
+
+	operator fun <T : Any> get(player: SLPlayerId, settingProperty: KMutableProperty1<PlayerSettings, T>): T = getSettingOrThrow(player, settingProperty)
+
+	fun <T : Any> getSettingOrThrow(player: SLPlayerId, settingProperty: KMutableProperty1<PlayerSettings, T>) : T {
 		@Suppress("UNCHECKED_CAST")
 		return settingsTable[player, settingProperty] as T
 	}
