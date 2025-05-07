@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.debug
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
@@ -211,7 +212,7 @@ abstract class SimpleProjectile(
 			// plays hitmarker sound if the shot did hull damage (assumes the hit block was part of a starship)
 			if (explosionOccurred) {
 				val player = shooter.starship?.playerPilot?.player
-				if (player != null && PlayerCache[player].hitmarkerOnHull)
+				if (player != null && player.getSetting(PlayerSettings::hitmarkerOnHull))
 					player.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.PLAYER, 20f, 0.5f))
 			}
 			otherStarship.damagers.getOrPut(shooter) {

@@ -4,14 +4,13 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import org.bukkit.entity.Player
-import org.litote.kmongo.setValue
 
 @CommandAlias("sidebar")
 object SidebarWaypointsCommand : SLCommand() {
@@ -26,8 +25,7 @@ object SidebarWaypointsCommand : SLCommand() {
     fun onEnableWaypoints(
         sender: Player
     ) {
-        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::waypointsEnabled, true))
-        PlayerCache[sender].waypointsEnabled = true
+		sender.setSetting(PlayerSettings::waypointsEnabled, true)
         sender.success("Enabled route on sidebar")
     }
 
@@ -35,9 +33,9 @@ object SidebarWaypointsCommand : SLCommand() {
     fun onDisableWaypoints(
         sender: Player
     ) {
-        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::waypointsEnabled, false))
-        PlayerCache[sender].waypointsEnabled = false
-        sender.success("Disabled route on sidebar")
+		sender.setSetting(PlayerSettings::waypointsEnabled, false)
+
+		sender.success("Disabled route on sidebar")
     }
 
     @Subcommand("route compactWaypoints")
@@ -46,9 +44,9 @@ object SidebarWaypointsCommand : SLCommand() {
         sender: Player,
         @Optional toggle: Boolean?
     ) {
-        val waypointsCompactWaypoints = toggle ?: !PlayerCache[sender].compactWaypoints
-        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::compactWaypoints, waypointsCompactWaypoints))
-        PlayerCache[sender].compactWaypoints = waypointsCompactWaypoints
-        sender.success("Changed compact waypoints visibility to $waypointsCompactWaypoints")
+        val waypointsCompactWaypoints = toggle ?: !sender.getSetting(PlayerSettings::compactWaypoints)
+		sender.setSetting(PlayerSettings::compactWaypoints, waypointsCompactWaypoints)
+
+		sender.success("Changed compact waypoints visibility to $waypointsCompactWaypoints")
     }
 }
