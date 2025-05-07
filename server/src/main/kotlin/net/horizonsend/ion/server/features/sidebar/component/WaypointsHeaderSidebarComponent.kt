@@ -1,10 +1,11 @@
 package net.horizonsend.ion.server.features.sidebar.component
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.sidebar.Sidebar
-import net.horizonsend.ion.server.features.sidebar.SidebarIcon.X_CROSS_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.ROUTE_SEGMENT_ICON
+import net.horizonsend.ion.server.features.sidebar.SidebarIcon.X_CROSS_ICON
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -20,7 +21,7 @@ import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import org.bukkit.entity.Player
 
 class WaypointsHeaderSidebarComponent(player: Player) : SidebarComponent {
-    private val compactWaypoints = PlayerCache[player].compactWaypoints
+    private val compactWaypoints = player.getSetting(PlayerSettings::compactWaypoints)
     private val numJumps = WaypointManager.playerNumJumps[player.uniqueId] ?: -1
     private val numJumpsComponent = if (numJumps == -1) {
         text(X_CROSS_ICON.text, RED).font(Sidebar.fontKey)
