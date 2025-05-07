@@ -3,13 +3,14 @@ package net.horizonsend.ion.server.features.sidebar.command
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.lineBreak
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.COMPASS_NEEDLE_ICON
@@ -48,9 +49,9 @@ object SidebarCommand : SLCommand() {
     }
 
     private fun starshipComponents(player: Player) : Component {
-        val starshipsComponentsEnabled = PlayerCache[player.uniqueId].starshipsEnabled
-        val advancedStarshipInfo = PlayerCache[player.uniqueId].advancedStarshipInfo
-        val rotateCompass = PlayerCache[player.uniqueId].rotateCompass
+        val starshipsComponentsEnabled = player.getSetting(PlayerSettings::starshipsEnabled)
+        val advancedStarshipInfo = player.getSetting(PlayerSettings::advancedStarshipInfo)
+        val rotateCompass = player.getSetting(PlayerSettings::rotateCompass)
 
         return ofChildren(
             lineBreakWithCenterText(
@@ -96,14 +97,14 @@ object SidebarCommand : SLCommand() {
     }
 
     private fun contactsComponents(player: Player) : Component {
-        val contactsComponentsEnabled = PlayerCache[player.uniqueId].contactsEnabled
-        val starshipsEnabled = PlayerCache[player.uniqueId].contactsStarships
-        val lastStarshipEnabled = PlayerCache[player.uniqueId].lastStarshipEnabled
-        val planetsEnabled = PlayerCache[player.uniqueId].planetsEnabled
-        val starsEnabled = PlayerCache[player.uniqueId].starsEnabled
-        val beaconsEnabled = PlayerCache[player.uniqueId].beaconsEnabled
-        val stationsEnabled = PlayerCache[player.uniqueId].stationsEnabled
-        val bookmarksEnabled = PlayerCache[player.uniqueId].bookmarksEnabled
+        val contactsComponentsEnabled = player.getSetting(PlayerSettings::contactsEnabled)
+        val starshipsEnabled = player.getSetting(PlayerSettings::contactsStarships)
+        val lastStarshipEnabled = player.getSetting(PlayerSettings::lastStarshipEnabled)
+        val planetsEnabled = player.getSetting(PlayerSettings::planetsEnabled)
+        val starsEnabled = player.getSetting(PlayerSettings::starsEnabled)
+        val beaconsEnabled = player.getSetting(PlayerSettings::beaconsEnabled)
+        val stationsEnabled = player.getSetting(PlayerSettings::stationsEnabled)
+        val bookmarksEnabled = player.getSetting(PlayerSettings::bookmarksEnabled)
 
         return ofChildren(
         lineBreakWithCenterText(
@@ -139,8 +140,8 @@ object SidebarCommand : SLCommand() {
     }
 
     private fun routeComponents(player: Player) : Component {
-        val waypointsComponentsEnabled = PlayerCache[player.uniqueId].waypointsEnabled
-        val compactWaypoints = PlayerCache[player.uniqueId].compactWaypoints
+        val waypointsComponentsEnabled = player.getSetting(PlayerSettings::waypointsEnabled)
+        val compactWaypoints = player.getSetting(PlayerSettings::compactWaypoints)
 
         return ofChildren(
             lineBreakWithCenterText(text("Route - Current plotted route", HE_LIGHT_ORANGE), width = 9),
