@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.AISpawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.TickedScheduler
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.ARBOREALITH
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.BULWARK
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.CONTRACTOR
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAGGER
@@ -151,8 +152,10 @@ object AISpawners : IonServerComponent(true) {
 				),
 				SingleSpawn(
 					WeightedShipSupplier(
-						spawnChance(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCED), 0.75),
-						spawnChance(WATCHERS.asSpawnedShip(TERALITH), 0.25)
+						// for testing purposes
+						spawnChance(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCED), 0.70),
+						spawnChance(WATCHERS.asSpawnedShip(TERALITH), 0.20),
+						spawnChance(WATCHERS.asSpawnedShip(ARBOREALITH), 0.1)
 					),
 					formatLocationSupplier(it, 2500.0, 4500.0) { player -> !player.hasProtection() },
 					SpawnMessage.WorldMessage("<$WATCHER_ACCENT>An unknown starship signature is being broadcast in {4} spawned at {1}, {3}".miniMessage())
