@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.server.features.gui.GuiItem
-import net.horizonsend.ion.server.features.gui.GuiItems.closeMenuItem
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.GroupedListingGUI
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
@@ -16,22 +16,20 @@ import org.bukkit.entity.Player
 import org.litote.kmongo.gt
 import xyz.xenondevs.invui.item.impl.AbstractItem
 
-class BazaarGlowbalBrowseMenu(viewer: Player, remote: Boolean, pageNumber: Int = 0) : BazaarPurchaseMenuParent(viewer, remote) {
+class BazaarGlowbalBrowseMenu(viewer: Player, remote: Boolean, parentWindow: CommonGuiWrapper?, pageNumber: Int = 0) : BazaarPurchaseMenuParent(viewer, remote, parentWindow) {
 	override val menuTitle: Component = text("Browsing All Items")
 	override val contained: GroupedListingGUI = GroupedListingGUI(
 		parentWindow = this,
 		searchBson = BazaarItem::stock gt 0,
-		reOpenHandler = { BazaarGUIs.openGlobalBrowse(viewer, remote, pageNumber) },
-		itemMenuHandler = { itemString -> BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, this.pageNumber, 0) },
+		reOpenHandler = { BazaarGUIs.openGlobalBrowse(viewer, remote, this, pageNumber) },
+		itemMenuHandler = { itemString -> BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, this@BazaarGlowbalBrowseMenu, this.pageNumber, 0) },
 		contextName = "Global",
-		searchResultConsumer = { itemString -> BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, previousPageNumber = -1) },
+		searchResultConsumer = { itemString -> BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, this, previousPageNumber = -1) },
 		pageNumber = pageNumber
 	)
 
 	override val citySelectionButton: AbstractItem = getCitySelectionButton(false)
 	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(true)
-
-	override val backButton: AbstractItem = closeMenuItem(viewer)
 
 	override val infoButton: AbstractItem = GuiItem.INFO
 			.makeItem(text("Information"))

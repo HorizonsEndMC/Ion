@@ -40,7 +40,7 @@ class CitySelectionGUI(val parent: BazaarPurchaseMenuParent) : InvUIGuiWrapper<G
 			},
 			clickHandler = { city, _, player ->
 				val remote = !Regions.get<RegionTerritory>(city.territoryId).contains(player.location)
-				BazaarGUIs.openCityBrowse(player, remote, city)
+				BazaarGUIs.openCityBrowse(player, remote, city, parent)
 			}
 		)
 
