@@ -5,6 +5,7 @@ import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.Colors
+import net.horizonsend.ion.common.utils.text.withShadowColor
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
@@ -15,6 +16,7 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet.Companion.DEFAULT_ITEM_FACTORY
+import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
@@ -30,6 +32,11 @@ import xyz.xenondevs.invui.item.impl.AbstractItem
 val REMOTE_WARINING = bracketed(text("REMOTE", TextColor.color(Colors.ALERT)))
 
 fun ItemStack.stripAttributes() = updateData(DataComponentTypes.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.itemAttributes().build())
+
+const val BAZAAR_SHADOW_COLOR = "#252525FF"
+
+fun getMenuTitleName(itemStack: ItemStack) = itemStack.displayNameComponent.withShadowColor(BAZAAR_SHADOW_COLOR)
+fun getMenuTitleName(bazaarItem: BazaarItem) = getMenuTitleName(fromItemString(bazaarItem.itemString))
 
 fun getCityButtons(
 	cityFilter: (TradeCityData) -> Boolean = { true },

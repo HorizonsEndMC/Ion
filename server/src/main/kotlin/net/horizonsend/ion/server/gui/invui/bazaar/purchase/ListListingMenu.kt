@@ -11,6 +11,8 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.gui.invui.bazaar.BAZAAR_SHADOW_COLOR
+import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
@@ -80,10 +82,10 @@ class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 
 		for ((index, bazaarItem) in showingEntries.withIndex()) {
 			val line = (index * 2) + startLine
-			guiText.add(fromItemString(bazaarItem.itemString).displayNameComponent.withShadowColor("#252525FF"), line = line, horizontalShift = 20)
-			guiText.add(ofChildren(text("P: ", BLACK), bazaarItem.price.toCreditComponent().withShadowColor("#252525FF")), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.LEFT)
+			guiText.add(getMenuTitleName(bazaarItem), line = line, horizontalShift = 20)
+			guiText.add(ofChildren(text("P: ", BLACK), bazaarItem.price.toCreditComponent().withShadowColor(BAZAAR_SHADOW_COLOR)), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.LEFT)
 			guiText.add(ofChildren(text("S: ", BLACK), text(bazaarItem.stock)), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.CENTER)
-			guiText.add(ofChildren(text("B: ", BLACK), bazaarItem.balance.toCreditComponent().withShadowColor("#252525FF")), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.RIGHT)
+			guiText.add(ofChildren(text("B: ", BLACK), bazaarItem.balance.toCreditComponent().withShadowColor(BAZAAR_SHADOW_COLOR)), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.RIGHT)
 		}
 
 		val pageNumber = addPageNumber(LISTINGS_PER_PAGE)
@@ -123,5 +125,5 @@ class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 		return item.tracked()
 	}
 
-	private val gridViewButton = GuiItem.GRID_VIEW.makeItem(text("Grid view")).makeGuiButton { _, _ -> GridListingMenu(viewer, { this.openGui() }).openGui() }
+	private val gridViewButton = GuiItem.GRID_VIEW.makeItem(text("Grid view")).makeGuiButton { _, _ -> GridListingMenu(viewer, backButtonHandler).openGui() }
 }

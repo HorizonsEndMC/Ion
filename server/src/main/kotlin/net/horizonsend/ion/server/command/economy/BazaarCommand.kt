@@ -95,7 +95,7 @@ object BazaarCommand : SLCommand() {
 
 	@Subcommand("newgui")
 	fun testNewGui(sender: Player) {
-		BazaarGUIs.openCitySelection(sender, true)
+		BazaarGUIs.openCitySelection(sender, true, null)
 	}
 
 	@Suppress("Unused")
