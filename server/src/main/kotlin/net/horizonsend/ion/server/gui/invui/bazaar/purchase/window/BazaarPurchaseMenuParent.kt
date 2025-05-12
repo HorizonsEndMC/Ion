@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window
 
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
@@ -24,6 +26,7 @@ import xyz.xenondevs.invui.window.Window
 abstract class BazaarPurchaseMenuParent(
 	viewer: Player,
 	val remote: Boolean,
+	final override var parentWindow: CommonGuiWrapper?
 ) : InvUIWindowWrapper(viewer) {
 	abstract val contained: InvUIGuiWrapper<out Gui>
 
@@ -91,7 +94,7 @@ abstract class BazaarPurchaseMenuParent(
 			.updateDisplayName(text("View City Selection"))
 	) {
 		override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-			BazaarGUIs.openCitySelection(player, remote)
+			BazaarGUIs.openCitySelection(player, remote, this@BazaarPurchaseMenuParent)
 		}
 	}
 
@@ -117,11 +120,13 @@ abstract class BazaarPurchaseMenuParent(
 			.updateDisplayName(text("View Global Listings"))
 	) {
 		override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-			BazaarGUIs.openGlobalBrowse(player, remote)
+			BazaarGUIs.openGlobalBrowse(player, remote, this@BazaarPurchaseMenuParent)
 		}
 	}
 
-	abstract val backButton: AbstractItem
+	val backButton =
+		if (parentWindow == null) GuiItems.closeMenuItem(viewer)
+		else GuiItem.CANCEL.makeItem(text("Go Back to Previous Menu")).makeGuiButton { _, _ -> getParent()?.openGui() }
 
 	abstract val infoButton: AbstractItem
 

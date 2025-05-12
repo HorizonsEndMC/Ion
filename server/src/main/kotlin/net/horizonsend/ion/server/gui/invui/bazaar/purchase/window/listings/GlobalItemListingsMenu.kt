@@ -15,8 +15,10 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.REMOTE_WARINING
+import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.IndividualListingGUI
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
@@ -36,22 +38,23 @@ class GlobalItemListingsMenu(
 	viewer: Player,
 	remote: Boolean,
 	itemString: String,
+	parentWindow: CommonGuiWrapper?,
 	private val previousPageNumber: Int? = null,
 	pageNumber: Int = 0
-) : BazaarPurchaseMenuParent(viewer, remote) {
+) : BazaarPurchaseMenuParent(viewer, remote, parentWindow) {
 	override val menuTitle: Component = GuiText("")
 		.addBackground(GuiText.GuiBackground(
 			backgroundChar = BACKGROUND_EXTENDER,
 			verticalShift = -11
 		))
-		.add(fromItemString(itemString).displayName(), line = -2, verticalShift = -4)
+		.add(getMenuTitleName(fromItemString(itemString)), line = -2, verticalShift = -4)
 		.add(ofChildren(text("Global Browse")), line = -1, verticalShift = -2)
 		.build()
 
 	override val contained: IndividualListingGUI = IndividualListingGUI(
 		parentWindow = this,
 		reOpenHandler = {
-			BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, pageNumber)
+			BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, this, pageNumber)
 		},
 		searchBson = and(BazaarItem::itemString eq itemString, BazaarItem::stock gt 0),
 		itemLoreProvider = { bazaarItem ->
@@ -95,27 +98,15 @@ class GlobalItemListingsMenu(
 			)
 		},
 		purchaseBackButton = {
-			BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, pageNumber)
+			BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, this, pageNumber)
 		},
 		contextName = "Global",
-		searchResultConsumer = { itemString -> BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, previousPageNumber = -1) },
+		searchResultConsumer = { itemString -> BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, this, previousPageNumber = -1) },
 		pageNumber = pageNumber
 	)
 
 	override val citySelectionButton: AbstractItem = getCitySelectionButton(true)
 	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(false)
-
-	override val backButton: AbstractItem = GuiItem.CANCEL.makeItem(
-		if (previousPageNumber != -1) text("Go Back to Viewing Global Listings")
-		else text("Go Back to Searching Global Listings")
-	).makeGuiButton { _, player ->
-		if (previousPageNumber == -1) {
-			BazaarGUIs.openGlobalBrowse(player, true, 0).contained.openSearchMenu()
-			return@makeGuiButton
-		}
-
-		BazaarGUIs.openGlobalBrowse(player, true, previousPageNumber ?: 0)
-	}
 
 	override val infoButton: AbstractItem = GuiItem.INFO
 		.makeItem(text("Information"))
