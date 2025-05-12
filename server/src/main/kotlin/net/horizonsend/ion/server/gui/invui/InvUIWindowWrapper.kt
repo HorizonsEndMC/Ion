@@ -15,7 +15,7 @@ abstract class InvUIWindowWrapper(val viewer: Player, val async: Boolean = false
 	/**
 	 * If this window was opened from another window, that can be tracked.
 	 **/
-	private var parentWindow: CommonGuiWrapper? = null
+	protected open var parentWindow: CommonGuiWrapper? = null
 
 	/**
 	 * Marks the provided gui wrapper as the parent of this window.

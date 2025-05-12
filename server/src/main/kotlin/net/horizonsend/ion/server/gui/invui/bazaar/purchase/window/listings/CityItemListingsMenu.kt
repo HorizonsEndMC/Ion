@@ -8,7 +8,9 @@ import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
+import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.IndividualListingGUI
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
@@ -28,46 +30,35 @@ class CityItemListingsMenu(
 	remote: Boolean,
 	cityData: TradeCityData,
 	itemString: String,
+	parentWindow: CommonGuiWrapper?,
 	private val previousPageNumber: Int? = null,
 	pageNumber: Int = 0
-) : BazaarPurchaseMenuParent(viewer, remote) {
+) : BazaarPurchaseMenuParent(viewer, remote, parentWindow) {
 	override val menuTitle: Component = GuiText("")
 		.addBackground(GuiText.GuiBackground(
 			backgroundChar = BACKGROUND_EXTENDER,
 			verticalShift = -11
 		))
-		.add(fromItemString(itemString).displayName(), line = -2, verticalShift = -4)
+		.add(getMenuTitleName(fromItemString(itemString)), line = -2, verticalShift = -4)
 		.add(ofChildren(text("From ${cityData.displayName} "), if (remote) bracketed(text("REMOTE", NamedTextColor.RED)) else empty()), line = -1, verticalShift = -2)
 		.build()
 
 	override val contained: IndividualListingGUI = IndividualListingGUI(
 		parentWindow = this,
 		reOpenHandler = {
-			BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, pageNumber)
+			BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, this, pageNumber)
 		},
 		searchBson = and(BazaarItem::cityTerritory eq cityData.territoryId, BazaarItem::itemString eq itemString, BazaarItem::stock gt 0),
 		purchaseBackButton = {
-			BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, pageNumber)
+			BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, this, pageNumber)
 		},
 		contextName = "${cityData.displayName}'s",
-		searchResultConsumer = { itemString -> BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, previousPageNumber = -1) },
+		searchResultConsumer = { itemString -> BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, this, previousPageNumber = -1) },
 		pageNumber = pageNumber
 	)
 
 	override val citySelectionButton: AbstractItem = getCitySelectionButton(true)
 	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(false)
-
-	override val backButton: AbstractItem = GuiItem.CANCEL.makeItem(
-		if (previousPageNumber != -1) text("Go Back to Viewing ${cityData.displayName}'s Listings")
-		else text("Go Back to Searching ${cityData.displayName}'s Listings")
-	).makeGuiButton { _, player ->
-		if (previousPageNumber == -1) {
-			BazaarGUIs.openCityBrowse(player, remote, cityData, 0).contained.openSearchMenu()
-			return@makeGuiButton
-		}
-
-		BazaarGUIs.openCityBrowse(player, remote, cityData, previousPageNumber ?: 0)
-	}
 
 	override val infoButton: AbstractItem = GuiItem.INFO
 		.makeItem(text("Information"))
