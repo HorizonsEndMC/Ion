@@ -18,32 +18,32 @@ import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
 object BazaarGUIs {
-	fun openCitySelection(player: Player, remote: Boolean): BazaarCitySelectionMenu {
-		val menu = BazaarCitySelectionMenu(player, remote)
+	fun openCitySelection(player: Player, remote: Boolean, parentWindow: CommonGuiWrapper?): BazaarCitySelectionMenu {
+		val menu = BazaarCitySelectionMenu(player, remote, parentWindow)
 		menu.openGui()
 		return menu
 	}
 
-	fun openCityBrowse(player: Player, remote: Boolean, city: TradeCityData, pageNumber: Int = 0): BazaarCityBrowseMenu {
-		val menu = BazaarCityBrowseMenu(player, remote, city, pageNumber)
+	fun openCityBrowse(player: Player, remote: Boolean, city: TradeCityData, parentWindow: CommonGuiWrapper?, pageNumber: Int = 0): BazaarCityBrowseMenu {
+		val menu = BazaarCityBrowseMenu(player, remote, city, parentWindow, pageNumber)
 		menu.openGui()
 		return menu
 	}
 
-	fun openGlobalBrowse(player: Player, remote: Boolean, pageNumber: Int = 0): BazaarGlowbalBrowseMenu {
-		val menu = BazaarGlowbalBrowseMenu(player, remote, pageNumber)
+	fun openGlobalBrowse(player: Player, remote: Boolean, parentWindow: CommonGuiWrapper?, pageNumber: Int = 0): BazaarGlowbalBrowseMenu {
+		val menu = BazaarGlowbalBrowseMenu(player, remote, parentWindow, pageNumber)
 		menu.openGui()
 		return menu
 	}
 
-	fun openCityItemListings(player: Player, remote: Boolean, city: TradeCityData, itemString: String, previousPageNumber: Int? = null, pageNumber: Int = 0): CityItemListingsMenu {
-		val menu = CityItemListingsMenu(player, remote, city, itemString, previousPageNumber, pageNumber)
+	fun openCityItemListings(player: Player, remote: Boolean, city: TradeCityData, itemString: String, parentWindow: CommonGuiWrapper?, previousPageNumber: Int? = null, pageNumber: Int = 0): CityItemListingsMenu {
+		val menu = CityItemListingsMenu(player, remote, city, itemString, parentWindow, previousPageNumber, pageNumber)
 		menu.openGui()
 		return menu
 	}
 
-	fun openGlobalItemListings(player: Player, remote: Boolean, itemString: String, previousPageNumber: Int? = null, pageNumber: Int = 0): GlobalItemListingsMenu {
-		val menu = GlobalItemListingsMenu(player, remote, itemString, previousPageNumber, pageNumber)
+	fun openGlobalItemListings(player: Player, remote: Boolean, itemString: String, parentWindow: CommonGuiWrapper?, previousPageNumber: Int? = null, pageNumber: Int = 0): GlobalItemListingsMenu {
+		val menu = GlobalItemListingsMenu(player, remote, itemString, parentWindow, previousPageNumber, pageNumber)
 		menu.openGui()
 		return menu
 	}

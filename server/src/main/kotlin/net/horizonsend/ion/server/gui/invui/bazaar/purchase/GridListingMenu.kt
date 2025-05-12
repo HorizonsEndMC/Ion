@@ -56,5 +56,5 @@ class GridListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
         return ofChildren(guiText.build(), pageNumber)
     }
 
-    private val listViewButton = GuiItem.LIST_VIEW.makeItem(text("List view")).makeGuiButton { _, _ -> ListListingMenu(viewer, { this.openGui() }).openGui() }
+    private val listViewButton = GuiItem.LIST_VIEW.makeItem(text("List view")).makeGuiButton { _, _ -> ListListingMenu(viewer, backButtonHandler).openGui() }
 }
