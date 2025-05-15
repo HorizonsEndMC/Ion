@@ -10,6 +10,7 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.extensions.information
@@ -76,6 +77,17 @@ object BazaarCommand : SLCommand() {
 		}
 	}
 
+	private fun checkCombatTimer(sender: Player) {
+		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
+	}
+
+	private fun requireActiveTradeCity(sender: Player): RegionTerritory {
+		val territory: RegionTerritory = requireTerritoryIn(sender)
+		failIf(!TradeCities.isCity(territory)) { "Territory is not a trade city" }
+		failIf(!CityNPCs.BAZAAR_CITY_TERRITORIES.contains(territory.id)) { "City doesn't have a registered bazaar" }
+		return territory
+	}
+
 	private fun validateItemString(itemString: String): ItemStack {
 		try {
 			val itemStack = fromItemString(itemString)
@@ -91,7 +103,12 @@ object BazaarCommand : SLCommand() {
 		failIf(price != price.roundToHundredth()) { "Price cannot go further than 2 decimal places" }
 	}
 
-	private fun requireItemInHand(sender: Player) = sender.inventory.itemInMainHand
+	private fun requireItemInHand(sender: Player): ItemStack {
+		val item = sender.inventory.itemInMainHand
+		failIf(item.isEmpty) { "You aren't holding an item!" }
+
+		return item
+	}
 
 	@Subcommand("newgui")
 	fun testNewGui(sender: Player) {
@@ -114,7 +131,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Create a new listing at this city")
 	@CommandCompletion("@anyItem")
 	fun onCreate(sender: Player, itemString: String, pricePerItem: Double) = asyncCommand(sender) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
+		checkCombatTimer(sender)
 		val territory: RegionTerritory = requireTerritoryIn(sender)
 		failIf(!TradeCities.isCity(territory)) { "Territory is not a trade city" }
 		failIf(!CityNPCs.BAZAAR_CITY_TERRITORIES.contains(territory.id)) { "City doesn't have a registered bazaar" }
@@ -164,7 +181,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Deposit all matching items in your inventory")
 	@CommandCompletion("@bazaarItemStrings")
 	fun onDeposit(sender: Player, itemString: String) = asyncCommand(sender) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
+		checkCombatTimer(sender)
 		val territory = requireTerritoryIn(sender)
 		val cityName = cityName(territory)
 		val itemReference: ItemStack = validateItemString(itemString)
@@ -197,7 +214,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Withdraw the specified amount of the item")
 	@CommandCompletion("@bazaarItemStrings 1|64")
 	fun onWithdraw(sender: Player, itemString: String, amount: Int) = asyncCommand(sender) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
+		checkCombatTimer(sender)
 		val territory = requireTerritoryIn(sender)
 		val cityName = cityName(territory)
 		val itemStack: ItemStack = validateItemString(itemString)
@@ -247,7 +264,7 @@ object BazaarCommand : SLCommand() {
 	@Description("Update the price of the specific item")
 	@CommandCompletion("@bazaarItemStrings @nothing")
 	fun onSetPrice(sender: Player, itemString: String, newPrice: Double) = asyncCommand(sender) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
+		checkCombatTimer(sender)
 		val territory = requireTerritoryIn(sender)
 		val cityName = cityName(territory)
 		validateItemString(itemString)
@@ -317,7 +334,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("collect")
 	@Description("Collect the money from all of your items")
 	fun onCollect(sender: Player) = asyncCommand(sender) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
+		checkCombatTimer(sender)
 		requireEconomyEnabled()
 
 		val senderId = sender.slPlayerId
@@ -325,9 +342,7 @@ object BazaarCommand : SLCommand() {
 		val count = BazaarItem.count(BazaarItem::seller eq senderId)
 		Tasks.sync {
 			VAULT_ECO.depositPlayer(sender, total)
-			sender.success(
-				"Collected ${total.toCreditsString()} from $count listings"
-			)
+			sender.success("Collected ${total.toCreditsString()} from $count listings")
 		}
 	}
 
@@ -337,9 +352,7 @@ object BazaarCommand : SLCommand() {
 	fun onTax(sender: Player) = asyncCommand(sender) {
 		val territory = requireTerritoryIn(sender)
 		val city = TradeCities.getIfCity(territory) ?: fail { "You're not in a trade city" }
-		sender.information(
-			"Tax of ${city.displayName}: ${(city.tax * 100).toInt()}%"
-		)
+		sender.information("Tax of ${city.displayName}: ${(city.tax * 100).toInt()}%")
 	}
 
 	@Suppress("Unused")
@@ -347,7 +360,7 @@ object BazaarCommand : SLCommand() {
 	@Default
 	@Description("Remotely browse city bazaar markets")
 	fun onBrowse(sender: Player) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
+		checkCombatTimer(sender)
 //		val sector = Sector.getSector(sender.world)
 
 		val cities: List<TradeCityData> = CityNPCs.BAZAAR_CITY_TERRITORIES
@@ -377,7 +390,7 @@ object BazaarCommand : SLCommand() {
 	@Suppress("Unused")
 	@Subcommand("merchant buy")
 	fun onMerchantBuy(sender: Player, itemString: String, amount: Int) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
+		checkCombatTimer(sender)
 		requireEconomyEnabled()
 
 		val item = validateItemString(itemString)
@@ -426,7 +439,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("merchant prices")
 	@Description("View merchant prices")
 	fun onMerchantPrices(sender: Player) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
+		checkCombatTimer(sender)
 		MenuHelper.apply {
 			val items = Merchants.getPriceMap().entries
 				.asSequence()
@@ -451,5 +464,27 @@ object BazaarCommand : SLCommand() {
 
 			sender.openPaginatedMenu("Merchant Prices", items)
 		}
+	}
+
+	@Subcommand("order create")
+	@Description("Create a new buy order at this city")
+	@CommandCompletion("@anyItem")
+	fun onCreateOrder(sender: Player, itemString: String, quantity: Int, pricePerItem: Double, @Optional priceConfirmation: Double?) = asyncCommand(sender) {
+		checkCombatTimer(sender)
+		failIf(quantity <= 0) { "You must order more than 0 items!" }
+		validatePrice(pricePerItem)
+		validateItemString(itemString)
+
+		val territory: RegionTerritory = requireActiveTradeCity(sender)
+		val cityName = cityName(territory)
+		val realCost = quantity * pricePerItem
+
+		failIf(priceConfirmation != realCost) {
+			"You must acknowledge the cost of the listing to create it. The cost is ${realCost.toCreditsString()}. Run the command: /bazaar order create $itemString $quantity $pricePerItem $realCost"
+		}
+
+		BazaarOrder.create(sender.slPlayerId, territory.id, itemString, quantity, pricePerItem)
+
+		sender.information("Created an order for $itemString at $cityName.")
 	}
 }
