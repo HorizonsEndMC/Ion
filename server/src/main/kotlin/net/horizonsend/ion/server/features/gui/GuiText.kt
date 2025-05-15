@@ -7,6 +7,9 @@ import net.horizonsend.ion.common.utils.text.GUI_MARGIN
 import net.horizonsend.ion.common.utils.text.SHIFT_DOWN_MIN
 import net.horizonsend.ion.common.utils.text.SLOT_OVERLAY_WIDTH
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
+import net.horizonsend.ion.common.utils.text.TEXT_INPUT_CENTER_CHARACTER
+import net.horizonsend.ion.common.utils.text.TEXT_INPUT_LEFT_CHARACTER
+import net.horizonsend.ion.common.utils.text.TEXT_INPUT_RIGHT_CHARACTER
 import net.horizonsend.ion.common.utils.text.leftShift
 import net.horizonsend.ion.common.utils.text.minecraftLength
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -16,6 +19,7 @@ import net.horizonsend.ion.common.utils.text.shiftToStartOfComponent
 import net.horizonsend.ion.common.utils.text.slotOverlay
 import net.horizonsend.ion.common.utils.text.yFontKey
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 
 class GuiText(
@@ -38,6 +42,11 @@ class GuiText(
      * List of chars that indicate if a slot should have an overlay. Similar to setStructure in InvUI.
      */
     private val slotOverlayStructure = mutableListOf<String>()
+
+    /**
+     * List of chars that indicate if a slot should have an overlay. Similar to setStructure in InvUI.
+     */
+    private val textInputStructure = mutableListOf<List<TextInputSlotType>>()
 
     /**
      * Adds a GuiComponent to the GuiText
@@ -135,6 +144,58 @@ class GuiText(
     }
 
     /**
+     * Sets the slot overlays in the GUI
+     *
+     * '.' - empty
+     *
+     * 'l' - left text input box component
+     * 'c' - center text input box component
+     * 'r' - right text input box component
+	 *
+     * @param structureData list of strings indicating what each slot should be covered with
+     */
+    fun setTextInput(vararg structureData: String): GuiText {
+        textInputStructure.clear()
+        for (row in structureData) {
+            val sanitizedRow = row.replace(" ", "").replace("\n", "").mapNotNull(TextInputSlotType::get)
+			textInputStructure.add(sanitizedRow)
+
+        }
+
+		return this
+    }
+
+	enum class TextInputSlotType(val sourceChar: Char, val destinationString: String) {
+		EMPTY('.', "") {
+			override fun getComponent(line: Int): Component {
+				return shift(SLOT_OVERLAY_WIDTH)
+			}
+		},
+		LEFT('l', "$TEXT_INPUT_LEFT_CHARACTER") {
+			override fun getComponent(line: Int): Component {
+				return ofChildren(shift(-1), text(destinationString, WHITE).shiftToLine(line, GUI_HEADER_MARGIN))
+			}
+		},
+		CENTER('c', "$TEXT_INPUT_CENTER_CHARACTER") {
+			override fun getComponent(line: Int): Component {
+				return ofChildren(shift(-1), text(destinationString, WHITE).shiftToLine(line, GUI_HEADER_MARGIN))
+			}
+		},
+		RIGHT('r', "$TEXT_INPUT_RIGHT_CHARACTER") {
+			override fun getComponent(line: Int): Component {
+				return ofChildren(shift(-1), text(destinationString, WHITE).shiftToLine(line, GUI_HEADER_MARGIN))
+			}
+		};
+
+		abstract fun getComponent(line: Int): Component
+
+		companion object {
+			private val byChar = entries.associateBy { it.sourceChar }
+			fun get(char: Char) = byChar[char]
+		}
+	}
+
+    /**
      * Builds the GuiText, returning a Component that can be placed in an Inventory's title
      * @return an Adventure Component for use in an Inventory
      */
@@ -164,6 +225,18 @@ class GuiText(
             }
 
             renderedComponents.add(Component.textOfChildren(*slotOverlayComponents.toTypedArray()).shiftToStartOfComponent())
+        }
+
+        // parse slot overlay structure and add overlay components
+        for ((index, inputOverlayRow) in textInputStructure.withIndex()) {
+            val inputBoxComponents = mutableListOf<Component>()
+            val line = index * 2 // slots only on even line
+
+            for (inputType in inputOverlayRow) {
+				inputBoxComponents.add(inputType.getComponent(line))
+            }
+
+            renderedComponents.add(Component.textOfChildren(*inputBoxComponents.toTypedArray()).shiftToStartOfComponent())
         }
 
         // get sorted list of all lines in the builder
