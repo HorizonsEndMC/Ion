@@ -27,7 +27,7 @@ abstract class BazaarPurchaseMenuParent(
 	viewer: Player,
 	val remote: Boolean,
 	final override var parentWindow: CommonGuiWrapper?
-) : InvUIWindowWrapper(viewer) {
+) : InvUIWindowWrapper(viewer, async = true) {
 	abstract val contained: InvUIGuiWrapper<out Gui>
 
 	private fun getMenuGUI(): Gui = TabGui.normal()

@@ -149,6 +149,9 @@ const val SPACE_MINOR_HYPERSPACE_ROUTES_CHARACTER = '\uF8F5'
 const val MULTIBLOCK_WORKBENCH = '\uF8F4'
 const val ADVANCED_SHIP_FACTORY_CHARACTER = '\uF8F3'
 const val BAZAAR_BUY_ORDER_MENU_CHARACTER = '\uF8F2'
+const val TEXT_INPUT_LEFT_CHARACTER = '\uF8F1'
+const val TEXT_INPUT_CENTER_CHARACTER = '\uF8F0'
+const val TEXT_INPUT_RIGHT_CHARACTER = '\uF8EF'
 
 // Custom characters end
 
@@ -174,6 +177,9 @@ val String.minecraftLength: Int
 				'@', '~', '«', '»' -> 7
 				CHETHERITE_CHARACTER -> 10
 				SLOT_OVERLAY_CHARACTER -> 19
+				TEXT_INPUT_LEFT_CHARACTER -> 19
+				TEXT_INPUT_CENTER_CHARACTER -> 19
+				TEXT_INPUT_RIGHT_CHARACTER -> 19
 				else -> 6
 			} as Int
 		}
