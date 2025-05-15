@@ -8,9 +8,7 @@ import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.Pane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand
-import net.md_5.bungee.api.ChatColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.InventoryClickEvent
@@ -75,49 +73,8 @@ object MenuHelper {
 		item.itemMeta = item.itemMeta?.apply { lore(lines) }
 	}
 
-	fun GuiItem.setRichLore(lines: List<String>): GuiItem = apply {
-		item.itemMeta = item.itemMeta.apply {
-			val serialized = lines.map { MiniMessage.miniMessage().deserialize(it) }
-			lore(serialized)
-		}
-	}
-
 	fun StaticPane.withItem(item: GuiItem, x: Int, z: Int): StaticPane {
 		addItem(item, x, z); return this
-	}
-
-	fun OutlinePane.withItem(item: GuiItem): OutlinePane {
-		addItem(item); return this
-	}
-
-	fun OutlinePane.withItems(items: Iterable<GuiItem>): OutlinePane {
-		items.forEach { addItem(it) }; return this
-	}
-
-	fun Player.openConfirmMenu(
-		title: String,
-		onConfirm: InventoryClickEvent.() -> Unit,
-		onCancel: InventoryClickEvent.() -> Unit,
-		confirmLore: String? = null,
-		cancelLore: String? = null
-	) = Tasks.sync {
-		val confirmButton = guiButton(Material.LILY_PAD, onConfirm).setName("${ChatColor.GREEN}CONFIRM")
-
-		if (confirmLore != null) {
-			confirmButton.setLore(confirmLore)
-		}
-		val cancelButton = guiButton(Material.BARRIER) {
-			whoClicked.closeInventory(); onCancel()
-		}.setName("${ChatColor.RED}CANCEL")
-
-		if (cancelLore != null) {
-			cancelButton.setLore(cancelLore)
-		}
-
-		val pane = staticPane(0, 0, 9, 1)
-			.withItem(confirmButton, 3, 0)
-			.withItem(cancelButton, 5, 0)
-		gui(1, title).withPane(pane).show(this@openConfirmMenu)
 	}
 
 	fun Player.openPaginatedMenu(title: String, items: List<GuiItem>, titleItems: List<GuiItem> = listOf()) =

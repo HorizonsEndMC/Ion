@@ -61,6 +61,10 @@ object Bazaars : IonServerComponent() {
 		addAll(CustomItemRegistry.identifiers)
 	}
 
+	override fun onEnable() {
+		Tasks.asyncRepeat(20L, 20 * 60 * 60L, /* Every hour */ ::cleanExpiredBazaarEntries)
+	}
+
     fun onClickBazaarNPC(player: Player, city: TradeCityData) {
 		val territoryId: Oid<Territory> = city.territoryId
 
@@ -315,5 +319,9 @@ object Bazaars : IonServerComponent() {
 			add(remainder)
 		}
 		return Pair(fullStacks, remainder)
+	}
+
+	fun cleanExpiredBazaarEntries() {
+
 	}
 }
