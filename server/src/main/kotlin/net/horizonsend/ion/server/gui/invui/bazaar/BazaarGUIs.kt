@@ -7,11 +7,12 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
 import net.horizonsend.ion.server.features.gui.custom.settings.button.DBCachedBooleanToggle
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
-import net.horizonsend.ion.server.gui.invui.bazaar.orders.BuyOrderMainMenu
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.PurchaseItemMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.orders.window.BuyOrderMainMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.orders.window.CreateBuyOrderMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarCitySelectionMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse.BazaarCityBrowseMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse.BazaarGlowbalBrowseMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse.PurchaseItemMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.listings.CityItemListingsMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.listings.GlobalItemListingsMenu
 import net.kyori.adventure.text.Component
@@ -56,6 +57,10 @@ object BazaarGUIs {
 
 	fun openBuyOrderMainMenu(player: Player) {
 		BuyOrderMainMenu(player).openGui()
+	}
+
+	fun openBuyOrderCreationMenu(player: Player) {
+		CreateBuyOrderMenu(player).openGui()
 	}
 
 	fun openBazaarSettings(player: Player, parent: CommonGuiWrapper?) {

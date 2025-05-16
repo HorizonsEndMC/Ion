@@ -10,12 +10,15 @@ import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet.Companion.DEFAULT_ITEM_FACTORY
+import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
@@ -35,7 +38,8 @@ fun ItemStack.stripAttributes() = updateData(DataComponentTypes.ATTRIBUTE_MODIFI
 
 const val BAZAAR_SHADOW_COLOR = "#252525FF"
 
-fun getMenuTitleName(itemStack: ItemStack) = itemStack.displayNameComponent.withShadowColor(BAZAAR_SHADOW_COLOR)
+fun getMenuTitleName(component: Component) = component.withShadowColor(BAZAAR_SHADOW_COLOR)
+fun getMenuTitleName(itemStack: ItemStack) = getMenuTitleName(itemStack.displayNameComponent)
 fun getMenuTitleName(bazaarItem: BazaarItem) = getMenuTitleName(fromItemString(bazaarItem.itemString))
 
 fun getCityButtons(
@@ -94,3 +98,5 @@ fun getItemButtons(
 		.apply { sort.sort(this) }
 		.map { it.second }
 }
+
+fun InvUIWindowWrapper.getBazaarSettingsButton() = GuiItem.GEAR.makeItem(text("View settings")).makeGuiButton { _, player -> BazaarGUIs.openBazaarSettings(player, this) }
