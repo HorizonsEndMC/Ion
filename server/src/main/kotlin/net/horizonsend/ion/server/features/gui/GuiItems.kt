@@ -155,6 +155,14 @@ object GuiItems {
 		}
 	}
 
+	fun createButton(provider: ItemProvider, clickHandler: (ClickType, Player, InventoryClickEvent) -> Unit) = object : AbstractItem() {
+		override fun getItemProvider(): ItemProvider = provider
+
+		override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+			clickHandler.invoke(clickType, player, event)
+		}
+	}
+
     open class PlayerHeadItem(val uuid: UUID, val name: String, val callback: () -> Unit = {}) : ControlItem<Gui>() {
         override fun getItemProvider(gui: Gui): ItemProvider {
             return ItemBuilder(skullItem(uuid, name))
