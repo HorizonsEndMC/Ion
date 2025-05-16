@@ -27,6 +27,7 @@ import net.horizonsend.ion.server.features.gui.custom.bazaar.BazaarPurchaseMenuG
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
 import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
+import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -57,8 +58,9 @@ import kotlin.reflect.KProperty
 
 object Bazaars : IonServerComponent() {
 	val strings = mutableListOf<String>().apply {
-		addAll(Material.entries.filter { it.isItem && !it.isLegacy }.map { it.name })
+		addAll(Material.entries.filter { it.isItem && !it.isLegacy && !it.isAir }.map { it.name })
 		addAll(CustomItemRegistry.identifiers)
+		addAll(MultiblockRegistration.getAllMultiblocks().map { "MultiblockWorkbench[multiblock=${it.javaClass.simpleName}]" })
 	}
 
 	override fun onEnable() {
