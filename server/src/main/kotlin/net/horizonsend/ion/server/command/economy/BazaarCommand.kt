@@ -115,6 +115,11 @@ object BazaarCommand : SLCommand() {
 		BazaarGUIs.openCitySelection(sender, true, null)
 	}
 
+	@Subcommand("ordergui")
+	fun testOrderGui(sender: Player) {
+		BazaarGUIs.openBuyOrderCreationMenu(sender)
+	}
+
 	@Suppress("Unused")
 	@Subcommand("string")
 	fun onString(sender: Player) {

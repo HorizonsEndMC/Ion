@@ -67,6 +67,7 @@ class AsyncItem(
 			.updateDisplayName(Component.text("ERROR", NamedTextColor.RED))
 			.updateLore(listOf(
 				Component.text("Sorry, there was an error getting the result, please forward this to staff.", NamedTextColor.RED),
+				Component.text(exception.toString(), NamedTextColor.RED),
 				Component.text("Message: ${exception.message ?: "NULL"}", NamedTextColor.RED),
 				*exception.stackTrace.map { element -> Component.text(element.toString(), NamedTextColor.RED) }.toTypedArray()
 			))

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.orders
+package net.horizonsend.ion.server.gui.invui.bazaar.orders.window
 
 import net.horizonsend.ion.common.utils.text.BAZAAR_BUY_ORDER_MENU_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
