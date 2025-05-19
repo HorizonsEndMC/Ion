@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePo
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -24,6 +25,8 @@ abstract class MiningLaserMultiblock : Multiblock(), EntityMultiblock<MiningLase
 	abstract val sound: String
 	abstract val side: BlockFace
 	abstract val tier: Int
+
+	open val isBottom: Boolean = false
 
 	abstract val outputOffset: Vec3i
 	abstract val maxPower: Int
@@ -44,6 +47,11 @@ abstract class MiningLaserMultiblock : Multiblock(), EntityMultiblock<MiningLase
 		world: World,
 		structureDirection: BlockFace,
 	) : SimplePoweredEntity(data, multiblock, manager, x ,y ,z, world, structureDirection, multiblock.maxPower), LegacyMultiblockEntity {
+		override val inputsData: InputsData = InputsData.Builder(this)
+			.addPowerInput(0, if (multiblock.isBottom) 1 else -1, 0)
+			.registerSignInputs()
+			.build()
+
 		override val displayHandler = standardPowerDisplay(this)
 
 		fun getFirePos(): Vec3i {
