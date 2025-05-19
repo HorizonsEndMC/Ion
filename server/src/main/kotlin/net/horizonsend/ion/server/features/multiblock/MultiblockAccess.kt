@@ -95,7 +95,7 @@ object MultiblockAccess : IonServerComponent() {
 		val cached = getCachedMultiblock(sign)
 		if (cached != null) return cached
 
-		return getStored(sign)
+		return getStored(sign, false)
 	}
 
 	fun getStored(sign: Sign, checkStructure: Boolean = true): Multiblock? {
