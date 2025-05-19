@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.TransportTask
@@ -176,7 +175,7 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 		val transaction = ItemTransaction()
 
-		val destinationInventories = getDestinations(
+		val destinationInventories: MutableMap<PathfindResult, CraftInventory> = getDestinations(
 			task,
 			singletonItem,
 			destinationInvCache,
@@ -185,6 +184,8 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		)
 
 		for (reference in availableItemReferences) {
+			val remainingDestinations = destinationInventories.keys
+
 			if (task.isInterrupted()) return
 			val room = getTransferSpaceFor(destinationInventories.values, singletonItem)
 			val amount = minOf(reference.get()?.amount ?: 0, room)
@@ -193,12 +194,12 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 
 			transaction.addTransfer(
 				reference,
-				destinationInventories,
+				remainingDestinations,
 				singletonItem,
 				amount
-			) { invs ->
-				val destination = getDestination(meta, invs.keys)
-				destination to invs[destination]!!
+			) {
+				val destination = getDestination(meta, remainingDestinations)
+				destination to destinationInvCache[destination.destinationPosition]!!
 			}
 		}
 
@@ -216,12 +217,12 @@ class ItemTransportCache(override val holder: CacheHolder<ItemTransportCache>): 
 		destinationInvCache: MutableMap<BlockKey, CraftInventory>,
 		validDestinations: MutableList<PathfindResult>,
 		meta: ItemExtractorMetaData?
-	): Object2ObjectRBTreeMap<PathfindResult, CraftInventory> {
+	): MutableMap<PathfindResult, CraftInventory> {
 		// Ordered map to preserve order
-		val foundDestinationInventories = Object2ObjectRBTreeMap<PathfindResult, CraftInventory>()
+		val foundDestinationInventories = mutableMapOf<PathfindResult, CraftInventory>()
 
-		for (n in validDestinations.indices) {
-			if (task.isInterrupted()) return Object2ObjectRBTreeMap<PathfindResult, CraftInventory>()
+		while (validDestinations.isNotEmpty()) {
+			if (task.isInterrupted()) return mutableMapOf()
 
 			val destination: PathfindResult = getDestination(meta, validDestinations)
 			var destinationInventory = destinationInvCache[destination.destinationPosition]
