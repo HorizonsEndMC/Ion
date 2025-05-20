@@ -59,6 +59,12 @@ object BazaarGUIs {
 		BuyOrderMainMenu(player).openGui()
 	}
 
+	fun openBuyOrderMainMenu(player: Player, previous: CommonGuiWrapper) {
+		val menu = BuyOrderMainMenu(player)
+		menu.setParent(previous)
+		menu.openGui()
+	}
+
 	fun openBuyOrderCreationMenu(player: Player) {
 		CreateBuyOrderMenu(player).openGui()
 	}
