@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator
+package net.horizonsend.ion.server.gui.invui.input.validator
 
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.kyori.adventure.text.Component
