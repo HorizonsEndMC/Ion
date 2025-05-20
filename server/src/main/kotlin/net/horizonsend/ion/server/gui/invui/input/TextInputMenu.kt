@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.gui.custom.misc.anvilinput
+package net.horizonsend.ion.server.gui.invui.input
 
 import net.horizonsend.ion.common.utils.text.ANVIL_BACKGROUND
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
@@ -6,24 +6,18 @@ import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.features.gui.GuiItem
-import net.horizonsend.ion.server.features.gui.GuiItems.blankItem
-import net.horizonsend.ion.server.features.gui.GuiItems.createButton
+import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.custom.misc.ItemMenu
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.CollectionSearchValidator
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
+import net.horizonsend.ion.server.gui.invui.input.validator.CollectionSearchValidator
+import net.horizonsend.ion.server.gui.invui.input.validator.InputValidator
+import net.horizonsend.ion.server.gui.invui.input.validator.ValidatorResult
 import net.horizonsend.ion.server.gui.invui.utils.changeTitle
 import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.empty
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.AQUA
-import net.kyori.adventure.text.format.NamedTextColor.GREEN
-import net.kyori.adventure.text.format.NamedTextColor.RED
-import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -39,12 +33,12 @@ import java.util.function.Supplier
 class TextInputMenu<T : Any>(
 	val player: Player,
 	val titleSupplier: Supplier<Component>,
-	val descriptionSupplier: Supplier<Component> = Supplier { empty() },
+	val descriptionSupplier: Supplier<Component> = Supplier { Component.empty() },
 	val backButtonHandler: ((Player) -> Unit)?,
 	val inputValidator: InputValidator<T>,
 	val componentTransformer: (T) -> Component = { it.toComponent() },
 	val successfulInputHandler: ConfirmationButton<T>.(ClickType, Pair<String, ValidatorResult.ValidatorSuccess<T>>) -> Unit
-) {
+) : CommonGuiWrapper {
 	var currentInput = ""
 
 	fun createGui(): Gui {
@@ -52,7 +46,7 @@ class TextInputMenu<T : Any>(
 
 		gui.setStructure(". v x")
 
-		gui.addIngredient('.', blankItem)
+		gui.addIngredient('.', GuiItems.blankItem)
 			.addIngredient('v', backButton)
 			.addIngredient('x', confirmButton)
 
@@ -65,7 +59,7 @@ class TextInputMenu<T : Any>(
 
 	private var window: Window? = null
 
-	fun open() {
+	override fun openGui() {
 		val gui = createGui()
 
 		val text = buildGuiText()
@@ -90,22 +84,26 @@ class TextInputMenu<T : Any>(
 	}
 
 	private fun buildGuiText(): Component = GuiText("")
-		.addBackground(GuiText.GuiBackground(
-			backgroundChar = ANVIL_BACKGROUND,
-			horizontalShift = -52
-		))
+		.addBackground(
+            GuiText.GuiBackground(
+                backgroundChar = ANVIL_BACKGROUND,
+                horizontalShift = -52
+            )
+        )
 		.add(titleSupplier.get(), line = -2, verticalShift = -3)
 		.add(descriptionSupplier.get(), line = -1, verticalShift = -2)
-		.addBackground(GuiText.GuiBackground(
-			backgroundChar = BACKGROUND_EXTENDER,
-			verticalShift = -11
-		))
+		.addBackground(
+            GuiText.GuiBackground(
+                backgroundChar = BACKGROUND_EXTENDER,
+                verticalShift = -11
+            )
+        )
 		.build()
 
-	private val backButton = createButton(GuiItem.CANCEL.makeItem(text("Go Back"))) { _, player, _ ->
-		player.closeInventory()
-		backButtonHandler?.invoke(player)
-	}
+	private val backButton = GuiItems.createButton(GuiItem.CANCEL.makeItem(Component.text("Go Back"))) { _, player, _ ->
+        player.closeInventory()
+        backButtonHandler?.invoke(player)
+    }
 
 	private val confirmButton = ConfirmationButton(this)
 
@@ -117,12 +115,18 @@ class TextInputMenu<T : Any>(
 		}
 
 		private fun getSuccessState(result: ValidatorResult.ValidatorSuccess<T>): ItemStack {
-			val base = GuiItem.CHECKMARK.makeItem().updateDisplayName(text("Confirm", GREEN))
+			val base = GuiItem.CHECKMARK.makeItem().updateDisplayName(Component.text("Confirm", NamedTextColor.GREEN))
 
 			if (loreOverride != null) {
 				val clone = loreOverride!!.toList()
 				loreOverride = null
 				return base.updateLore(clone)
+			}
+
+			if (result is ValidatorResult.ValidatorSuccessSingleEntry<*>) {
+				result as ValidatorResult.ValidatorSuccessSingleEntry<T>
+
+				return base.updateLore(listOf(parent.componentTransformer.invoke(result.result)))
 			}
 
 			if (result is ValidatorResult.ValidatorSuccessMultiEntry<*>) {
@@ -134,7 +138,13 @@ class TextInputMenu<T : Any>(
 					result.results
 						.take(5)
 						.map { parent.componentTransformer.invoke(it) }
-						.plus(if (more) template(text("{0} more results", WHITE), bracketed(text(result.results.size - 5, AQUA))) else empty())
+						.plus(
+							if (more) template(
+                            	Component.text("{0} more results", NamedTextColor.WHITE),
+                            	bracketed(Component.text(result.results.size - 5, NamedTextColor.AQUA))
+                        	)
+							else Component.empty()
+                        )
 				)
 			}
 
@@ -143,7 +153,7 @@ class TextInputMenu<T : Any>(
 
 		private fun getFailureState(result: ValidatorResult.FailureResult<T>): ItemStack {
 			val base = ItemStack(Material.BARRIER)
-				.updateDisplayName(text("Invalid Input!", RED))
+				.updateDisplayName(Component.text("Invalid Input!", NamedTextColor.RED))
 
 			if (loreOverride != null) {
 				val clone = loreOverride!!.toList()
@@ -178,7 +188,7 @@ class TextInputMenu<T : Any>(
 	companion object {
 		fun <T : Any> Player.anvilInputText(
 			prompt: Component,
-			description: Component = empty(),
+			description: Component = Component.empty(),
 			backButtonHandler: ((Player) -> Unit)? = null,
 			componentTransformer: (T) -> Component = { it.toComponent() },
 			inputValidator: InputValidator<T>,
@@ -194,32 +204,32 @@ class TextInputMenu<T : Any>(
 
 		fun <T : Any> Player.anvilInputText(
 			prompt: Supplier<Component>,
-			description: Supplier<Component> = Supplier { empty() },
+			description: Supplier<Component> = Supplier { Component.empty() },
 			backButtonHandler: ((Player) -> Unit)? = null,
 			componentTransformer: (T) -> Component = { it.toComponent() },
 			inputValidator: InputValidator<T>,
 			handler: ConfirmationButton<T>.(ClickType, Pair<String, ValidatorResult.ValidatorSuccess<T>>) -> Unit,
 		) {
 			TextInputMenu(
-				player = this,
-				titleSupplier = prompt,
-				descriptionSupplier = description,
-				backButtonHandler = backButtonHandler,
-				inputValidator = inputValidator,
-				componentTransformer = componentTransformer,
-				successfulInputHandler = handler
-			).open()
+                player = this,
+                titleSupplier = prompt,
+                descriptionSupplier = description,
+                backButtonHandler = backButtonHandler,
+                inputValidator = inputValidator,
+                componentTransformer = componentTransformer,
+                successfulInputHandler = handler
+            ).openGui()
 		}
 
 		fun <T : Any> Player.searchEntires(
-			entries: Collection<T>,
-			searchTermProvider: (T) -> Collection<String>,
-			prompt: Component,
-			description: Component = empty(),
-			backButtonHandler: ((Player) -> Unit)? = null,
-			componentTransformer: (T) -> Component = { it.toComponent() },
-			itemTransformer: (T) -> ItemStack = { GuiItem.RIGHT.makeItem(it.toComponent()) },
-			handler: (ClickType, T) -> Unit,
+            entries: Collection<T>,
+            searchTermProvider: (T) -> Collection<String>,
+            prompt: Component,
+            description: Component = Component.empty(),
+            backButtonHandler: ((Player) -> Unit)? = null,
+            componentTransformer: (T) -> Component = { it.toComponent() },
+            itemTransformer: (T) -> ItemStack = { GuiItem.RIGHT.makeItem(it.toComponent()) },
+            handler: (ClickType, T) -> Unit,
 		): Unit = searchEntires(
 			entries = entries,
 			searchTermProvider = searchTermProvider,
@@ -232,55 +242,57 @@ class TextInputMenu<T : Any>(
 		)
 
 		fun <T : Any> Player.searchEntires(
-			entries: Collection<T>,
-			searchTermProvider: (T) -> Collection<String>,
-			prompt: Supplier<Component>,
-			description: Supplier<Component> = Supplier { empty() },
-			backButtonHandler: ((Player) -> Unit)? = null,
-			componentTransformer: (T) -> Component = { it.toComponent() },
-			itemTransformer: (T) -> ItemStack = { GuiItem.RIGHT.makeItem(it.toComponent()) },
-			handler: (ClickType, T) -> Unit
+            entries: Collection<T>,
+            searchTermProvider: (T) -> Collection<String>,
+            prompt: Supplier<Component>,
+            description: Supplier<Component> = Supplier { Component.empty() },
+            backButtonHandler: ((Player) -> Unit)? = null,
+            componentTransformer: (T) -> Component = { it.toComponent() },
+            itemTransformer: (T) -> ItemStack = { GuiItem.RIGHT.makeItem(it.toComponent()) },
+            handler: (ClickType, T) -> Unit
 		) {
 			lateinit var textInput: TextInputMenu<T>
 
 			textInput = TextInputMenu(
-				player = this,
-				titleSupplier = prompt,
-				descriptionSupplier = description,
-				backButtonHandler = backButtonHandler,
-				componentTransformer = componentTransformer,
-				inputValidator = CollectionSearchValidator(entries, searchTermProvider),
-				successfulInputHandler = { type, (search, success) ->
-					when (success) {
-						is ValidatorResult.ValidatorSuccessSingleEntry<T> -> handler.invoke(type, success.result)
+                player = this,
+                titleSupplier = prompt,
+                descriptionSupplier = description,
+                backButtonHandler = backButtonHandler,
+                componentTransformer = componentTransformer,
+                inputValidator = CollectionSearchValidator(entries, searchTermProvider),
+                successfulInputHandler = { type, (search, success) ->
+                    when (success) {
+                        is ValidatorResult.ValidatorSuccessSingleEntry<T> -> handler.invoke(type, success.result)
 
-						is ValidatorResult.ValidatorSuccessMultiEntry<T> -> {
-							val extraLine = GuiText("")
-								.addBackground()
-								.addBackground(GuiText.GuiBackground(
-									backgroundChar = BACKGROUND_EXTENDER,
-									verticalShift = -11
-								))
-								.add(text("Search Results For:"), line = -2, verticalShift = -4)
-								.add(text("\"$search\""), line = -1, verticalShift = -2)
-								.build()
+                        is ValidatorResult.ValidatorSuccessMultiEntry<T> -> {
+                            val extraLine = GuiText("")
+                                .addBackground()
+                                .addBackground(
+                                    GuiText.GuiBackground(
+                                        backgroundChar = BACKGROUND_EXTENDER,
+                                        verticalShift = -11
+                                    )
+                                )
+                                .add(Component.text("Search Results For:"), line = -2, verticalShift = -4)
+                                .add(Component.text("\"$search\""), line = -1, verticalShift = -2)
+                                .build()
 
-							ItemMenu.selector(
-								title = extraLine,
-								player = this@searchEntires,
-								entries = success.results,
-								resultConsumer = handler,
-								itemTransformer = itemTransformer,
-								backButtonHandler = { textInput.open() }
-							)
-						}
+                            ItemMenu.selector(
+                                title = extraLine,
+                                player = this@searchEntires,
+                                entries = success.results,
+                                resultConsumer = handler,
+                                itemTransformer = itemTransformer,
+                                backButtonHandler = { textInput.openGui() }
+                            )
+                        }
 
-						else -> throw NotImplementedError()
-					}
-				}
-			)
+                        else -> throw NotImplementedError()
+                    }
+                }
+            )
 
-			textInput.open()
+			textInput.openGui()
 		}
 	}
 }

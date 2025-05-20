@@ -7,10 +7,10 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.RangeIntegerValidator
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
+import net.horizonsend.ion.server.gui.invui.input.TextInputMenu
+import net.horizonsend.ion.server.gui.invui.input.validator.RangeIntegerValidator
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import java.util.function.Supplier
@@ -57,6 +57,6 @@ class PurchaseItemMenu(
 			}
 		)
 
-		menu.open()
+		menu.openGui()
 	}
 }
