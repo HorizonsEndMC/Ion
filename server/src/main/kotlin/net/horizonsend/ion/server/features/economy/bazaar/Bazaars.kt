@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.mongodb.client.FindIterable
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
@@ -12,6 +13,7 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.InputResult
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toComponent
@@ -24,23 +26,25 @@ import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
 import net.horizonsend.ion.server.features.gui.custom.bazaar.BazaarPurchaseMenuGui
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.input.validator.InputValidator
+import net.horizonsend.ion.server.gui.invui.input.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Material
@@ -57,13 +61,18 @@ import kotlin.math.roundToInt
 import kotlin.reflect.KProperty
 
 object Bazaars : IonServerComponent() {
-	val strings = mutableListOf<String>().apply {
-		addAll(Material.entries.filter { it.isItem && !it.isLegacy && !it.isAir }.map { it.name })
-		addAll(CustomItemRegistry.identifiers)
-		addAll(MultiblockRegistration.getAllMultiblocks().map { "MultiblockWorkbench[multiblock=${it.javaClass.simpleName}]" })
+	val strings = mutableListOf<String>()
+
+	fun buildStrings() {
+		strings.addAll(Material.entries.filter { it.isItem && !it.isLegacy && !it.isAir }.map { it.name })
+		strings.addAll(CustomItemRegistry.identifiers)
+		strings.addAll(MultiblockRegistration.getAllMultiblocks().map { "MULTIBLOCK_TOKEN[multiblock=${it.javaClass.simpleName}]" })
+		strings.remove("MULTIBLOCK_TOKEN")
+		strings.remove("PACKAGED_MULTIBLOCK")
 	}
 
 	override fun onEnable() {
+		buildStrings()
 		Tasks.asyncRepeat(20L, 20 * 60 * 60L, /* Every hour */ ::cleanExpiredBazaarEntries)
 	}
 
@@ -325,5 +334,27 @@ object Bazaars : IonServerComponent() {
 
 	fun cleanExpiredBazaarEntries() {
 
+	}
+
+	fun createListing(): InputResult {
+		return InputResult.InputFailure
+	}
+
+	fun createOrder(player: Player, territory: RegionTerritory, itemString: String, orderQuantity: Int, individualPrice: Double): InputResult {
+		val cityName = TradeCities.getIfCity(territory)?.displayName ?: return InputResult.FailureReason(listOf(text("${territory.name} is not a trade city!")))
+
+		try {
+			BazaarOrder.create(player.slPlayerId, territory.id, itemString, orderQuantity, individualPrice)
+			player.information("Created a bazaar order for $orderQuantity of $itemString for $individualPrice per item at $cityName.")
+
+			return InputResult.SuccessReason(listOf(
+				text("Created an order for $itemString at $cityName.", GREEN)
+			))
+		} catch (e: Throwable) {
+			return InputResult.FailureReason(listOf(
+				text("There was an error adding your order. Please forward this to staff.", RED),
+				formatException(e)
+			))
+		}
 	}
 }

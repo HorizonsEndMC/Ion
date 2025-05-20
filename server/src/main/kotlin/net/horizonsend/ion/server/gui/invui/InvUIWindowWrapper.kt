@@ -73,7 +73,7 @@ abstract class InvUIWindowWrapper(val viewer: Player, val async: Boolean = false
 	}
 
 	/**
-	 * Refreshes all the tracked buttons.
+	 * Refreshes all the tracked buttons, excluding the calling UUID.
 	 * This is useful if, for example, one button updates the states of many.
 	 **/
 	fun refreshButtons(calling: UUID) {
