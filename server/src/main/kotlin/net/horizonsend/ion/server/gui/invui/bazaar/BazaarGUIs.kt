@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.gui.custom.settings.button.DBCachedBo
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.window.BuyOrderMainMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.window.CreateBuyOrderMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.orders.window.ManageOrdersMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarCitySelectionMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse.BazaarCityBrowseMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse.BazaarGlowbalBrowseMenu
@@ -67,6 +68,16 @@ object BazaarGUIs {
 
 	fun openBuyOrderCreationMenu(player: Player) {
 		CreateBuyOrderMenu(player).openGui()
+	}
+
+	fun openBuyOrderManageMenu(player: Player) {
+		ManageOrdersMenu(player).openGui()
+	}
+
+	fun openBuyOrderManageMenu(player: Player, previous: CommonGuiWrapper) {
+		val menu = ManageOrdersMenu(player)
+		menu.setParent(previous)
+		menu.openGui()
 	}
 
 	fun openBazaarSettings(player: Player, parent: CommonGuiWrapper?) {
