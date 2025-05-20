@@ -10,7 +10,6 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
-import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.extensions.information
@@ -481,15 +480,13 @@ object BazaarCommand : SLCommand() {
 		validateItemString(itemString)
 
 		val territory: RegionTerritory = requireActiveTradeCity(sender)
-		val cityName = cityName(territory)
 		val realCost = quantity * pricePerItem
 
 		failIf(priceConfirmation != realCost) {
 			"You must acknowledge the cost of the listing to create it. The cost is ${realCost.toCreditsString()}. Run the command: /bazaar order create $itemString $quantity $pricePerItem $realCost"
 		}
 
-		BazaarOrder.create(sender.slPlayerId, territory.id, itemString, quantity, pricePerItem)
-
-		sender.information("Created an order for $itemString at $cityName.")
+		val result = Bazaars.createOrder(sender, territory, itemString, quantity, pricePerItem)
+		result.getReason()?.forEach(sender::sendMessage)
 	}
 }

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.gui.custom.misc
+package net.horizonsend.ion.server.gui.invui.input
 
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
