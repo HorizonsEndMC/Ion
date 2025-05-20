@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.features.gui.custom.settings.button
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.features.gui.GuiItem
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.RangeIntegerValidator
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
+import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.input.validator.RangeIntegerValidator
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
