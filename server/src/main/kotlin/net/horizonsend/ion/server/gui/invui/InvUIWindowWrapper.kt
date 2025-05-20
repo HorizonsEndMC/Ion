@@ -1,10 +1,14 @@
 package net.horizonsend.ion.server.gui.invui
 
+import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.gui.invui.utils.changeTitle
 import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.Item
@@ -117,4 +121,8 @@ abstract class InvUIWindowWrapper(val viewer: Player, val async: Boolean = false
 		.setGui(gui)
 		.setTitle(buildTitle())
 		.build()
+
+	fun parentOrBackButton() =
+		if (parentWindow == null) GuiItems.closeMenuItem(viewer)
+		else GuiItem.CANCEL.makeItem(text("Go Back to Previous Menu")).makeGuiButton { _, _ -> getParent()?.openGui() }
 }
