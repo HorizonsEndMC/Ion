@@ -1,20 +1,21 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.orders.window
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.utils.InputResult
+import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
+import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
+import net.horizonsend.ion.server.features.economy.city.CityNPCs.BAZAAR_CITY_TERRITORIES
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.searchEntires
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.RangeDoubleValidator
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.RangeIntegerValidator
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -23,13 +24,20 @@ import net.horizonsend.ion.server.gui.invui.bazaar.REMOTE_WARINING
 import net.horizonsend.ion.server.gui.invui.bazaar.getBazaarSettingsButton
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
+import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.searchEntires
+import net.horizonsend.ion.server.gui.invui.input.validator.RangeDoubleValidator
+import net.horizonsend.ion.server.gui.invui.input.validator.RangeIntegerValidator
+import net.horizonsend.ion.server.gui.invui.misc.ConfirmationMenu.Companion.promptConfirmation
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -146,7 +154,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 	private val emptyCityButton = tracked { uuid -> ItemProvider { GuiItem.EMPTY.makeItem(text("Click to change item string")).updateLore(getCityButtonLore()) }.makeGuiButton { _, _ -> inputNewCity(uuid) } }
 
 	private fun inputNewCity(uuid: UUID) {
-		val cities: List<TradeCityData> = TradeCities.getAll()
+		val cities: List<TradeCityData> = TradeCities.getAll().filter { BAZAAR_CITY_TERRITORIES.contains(it.territoryId) }
 
 		viewer.searchEntires(
 			entries = cities,
@@ -206,6 +214,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 			handler = { _, (_, validatorResult) ->
 				count = validatorResult.result
 				openGui()
+				refreshButtons()
 			}
 		)
 	}
@@ -225,6 +234,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 			handler = { _, (_, validatorResult) ->
 				unitPrice = validatorResult.result
 				openGui()
+				refreshButtons()
 			}
 		)
 	}
@@ -243,13 +253,70 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 			handler = { _, (_, validatorResult) ->
 				unitPrice = validatorResult.result / count
 				openGui()
+				refreshButtons()
 			}
 		)
 	}
 
-	private val confirmButton = GuiItem.CHECKMARK.makeGuiButton { clickType, player -> println("Confirm") }
+	private val confirmButton = tracked { buttonId ->
+		ItemProvider {
+			val result = validateOrder()
 
-	fun validateOrder() {
+			if (result.isSuccess()) {
+				GuiItem.CHECKMARK.makeItem(text("Create Order")).updateLore(result.getReason() ?: listOf())
+			}
+			else {
+				GuiItem.CANCEL.makeItem(text("Invalid Order!")).updateLore(result.getReason() ?: listOf())
+			}
+		}.makeGuiButton { _, player ->
+			val territory = Regions.get<RegionTerritory>(cityInfo?.territoryId ?: return@makeGuiButton)
 
+			if (validateOrder().isSuccess()) {
+				val itemname = getMenuTitleName(fromItemString(itemString))
+				val cityName = TradeCities.getIfCity(territory)!!.displayName
+
+				val title = GuiText("")
+					.addBackground(GuiText.GuiBackground(BACKGROUND_EXTENDER, verticalShift = -17))
+					.add(text("Confirm Buy Order"), line = -3, verticalShift = -2)
+					.add(template(text("{0} of {1}"), paramColor = null, count, itemname), line = -2, verticalShift = -2)
+					.add(template(text("from {0} for {1}"), paramColor = null, cityName, getMenuTitleName(orderPrice.toCreditComponent())), line = -1, verticalShift = -2)
+					.build()
+
+				promptConfirmation(this, title) {
+					Tasks.async {
+						Bazaars.createOrder(player, territory, itemString, count, unitPrice)
+
+						// Make a new, blank window
+						CreateBuyOrderMenu(player).openGui()
+					}
+				}
+			}
+		}
+	}
+
+	private fun validateOrder(): InputResult {
+		// Validate item string
+		try {
+			val itemStack = fromItemString(itemString)
+
+			if (!itemStack.type.isItem || itemStack.isEmpty) return InputResult.FailureReason(listOf(template(text("Invalid item string {0}! Empty items are not allowed.", RED), itemString)))
+		} catch (e: Exception) {
+			return InputResult.FailureReason(listOf(template(text("Invalid item string {0}! To see an item's string, use /bazaar string.", RED), itemString)))
+		}
+
+		// Validate Price
+		if (unitPrice <= 0) return InputResult.FailureReason(listOf(template(text("Invalid Unit Price {0}! Amount must be greater than 0.", RED), unitPrice)))
+		if (unitPrice != unitPrice.roundToHundredth()) return InputResult.FailureReason(listOf(template(text("Invalid Unit Price {0}! Unit price cannot go further than 2 decimal places.", RED), unitPrice)))
+
+		// Validate order quantity
+		if (count !in 1 ..< 1_000_000) return InputResult.FailureReason(listOf(template(text("Invalid Order Quantity {0}! Amount must be greater than 0, and less than 1,000,000.", RED), count)))
+
+		// Validate city
+		val cityInfo = cityInfo ?: return InputResult.FailureReason(listOf(text("You must enter a trade city!.", RED)))
+		val region = Regions.get<RegionTerritory>(cityInfo.territoryId)
+		if (!TradeCities.isCity(region)) return InputResult.FailureReason(listOf(text("Territory is not a trade city!", RED)))
+		if (!BAZAAR_CITY_TERRITORIES.contains(cityInfo.territoryId)) return InputResult.FailureReason(listOf(text("City doesn't have a registered bazaar!", RED)))
+
+		return InputResult.InputSuccess
 	}
 }
