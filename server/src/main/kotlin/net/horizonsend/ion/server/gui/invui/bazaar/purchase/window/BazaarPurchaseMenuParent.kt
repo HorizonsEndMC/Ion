@@ -139,7 +139,7 @@ abstract class BazaarPurchaseMenuParent(
 	private val buyOrdersButton = GuiItem.CLOCKWISE
 		.makeItem(text("Switch to the Buy Order Menu"))
 		.makeGuiButton { _, _ ->
-			BazaarGUIs.openBuyOrderMainMenu(viewer)
+			BazaarGUIs.openBuyOrderMainMenu(viewer, this)
 		}
 
 	private val settingsButton = GuiItem.GEAR
