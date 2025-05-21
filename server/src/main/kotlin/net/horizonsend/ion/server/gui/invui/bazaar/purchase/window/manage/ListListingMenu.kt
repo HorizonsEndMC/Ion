@@ -37,12 +37,12 @@ class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 	override fun buildWindow(): Window {
 		val gui = PagedGui.items()
 			.setStructure(
-				"x . . . S f s g i",
+				"x . . . S . . g i",
 				"# 0 0 0 0 0 0 0 0",
 				"# 1 1 1 1 1 1 1 1",
 				"# 2 2 2 2 2 2 2 2",
 				"# 3 3 3 3 3 3 3 3",
-				"< . . . . . . . >",
+				"< . . . . . f s >",
 			)
 			.addIngredient('x', backButton)
 			.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
