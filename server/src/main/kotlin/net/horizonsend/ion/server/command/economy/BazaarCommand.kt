@@ -306,7 +306,7 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("order create")
 	@Description("Create a new buy order at this city")
 	@CommandCompletion("@anyItem")
-	fun onCreateOrder(sender: Player, itemString: String, quantity: Int, pricePerItem: Double, @Optional priceConfirmation: Double?) = asyncCommand(sender) {
+	fun onOrderCreate(sender: Player, itemString: String, quantity: Int, pricePerItem: Double, @Optional priceConfirmation: Double?) = asyncCommand(sender) {
 		val territory: RegionTerritory = requireTerritoryIn(sender)
 		val realCost = quantity * pricePerItem
 
