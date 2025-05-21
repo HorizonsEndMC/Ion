@@ -65,6 +65,7 @@ data class PlayerSettings(
 
 	var defaultBazaarGroupedSort: Int = 0,
 	var defaultBazaarIndividualSort: Int = 0,
+	var defaultBazaarListingManagementSort: Int = 0,
 	var skipBazaarSingleEntryMenus: Boolean = false,
 	var listingManageDefaultListView: Boolean = false,
 	var orderManageDefaultListView: Boolean = false,
