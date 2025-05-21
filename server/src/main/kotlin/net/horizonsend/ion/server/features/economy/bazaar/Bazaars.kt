@@ -357,4 +357,7 @@ object Bazaars : IonServerComponent() {
 			))
 		}
 	}
+
+	fun cityName(territory: RegionTerritory) = TradeCities.getIfCity(territory)?.displayName ?: "<{Unknown}>"
+	// this will be used if the city is disbanded but their items remain there
 }

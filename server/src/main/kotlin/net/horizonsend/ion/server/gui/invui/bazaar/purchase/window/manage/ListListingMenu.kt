@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage
 
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.common.utils.text.withShadowColor
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -31,16 +32,12 @@ import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
 
 class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : AbstractListingMenu(viewer, backButtonHandler) {
-	companion object {
-		private const val LISTINGS_PER_PAGE = 4
-	}
+	override val listingsPerPage: Int = 4
 
 	override fun buildWindow(): Window {
-		val guiItems = generateItemListings()
-
 		val gui = PagedGui.items()
 			.setStructure(
-				"x . . . f S s g i",
+				"x . . . S f s g i",
 				"# 0 0 0 0 0 0 0 0",
 				"# 1 1 1 1 1 1 1 1",
 				"# 2 2 2 2 2 2 2 2",
@@ -64,7 +61,7 @@ class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 				pageNumber = new
 				refreshAll()
 			}
-			.setContent(guiItems)
+			.setContent(items)
 			.build()
 
 		return normalWindow(gui)
@@ -74,36 +71,29 @@ class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 		val guiText =  GuiText("Your Bazaar Sale Listings", guiWidth = DEFAULT_GUI_WIDTH - 20)
 			.addBackground()
 
-		val entryStart = pageNumber * LISTINGS_PER_PAGE
-		val entryEnd = ((pageNumber + 1) * LISTINGS_PER_PAGE)
-		val showingEntries = items.subList(entryStart, minOf(entryEnd, items.size)) // subList last index is exclusive
-
 		val startLine = 2
 
-		for ((index, bazaarItem) in showingEntries.withIndex()) {
+		for ((index, bazaarItem) in getDisplayedEntries().withIndex()) {
 			val line = (index * 2) + startLine
 			guiText.add(getMenuTitleName(bazaarItem), line = line, horizontalShift = 20)
 			guiText.add(ofChildren(text("P: ", BLACK), bazaarItem.price.toCreditComponent().withShadowColor(BAZAAR_SHADOW_COLOR)), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.LEFT)
 			guiText.add(ofChildren(text("S: ", BLACK), text(bazaarItem.stock)), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.CENTER)
 			guiText.add(ofChildren(text("B: ", BLACK), bazaarItem.balance.toCreditComponent().withShadowColor(BAZAAR_SHADOW_COLOR)), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.RIGHT)
 		}
-
-		val pageNumber = addPageNumber(LISTINGS_PER_PAGE)
-		return ofChildren(guiText.build(), pageNumber)
+		return withPageNumber(guiText)
 	}
 
 	private fun backingButton(index: Int): AbstractItem {
 		val item = object : AbstractItem() {
 			val provider = ItemProvider {
-				val itemIndex = (pageNumber * LISTINGS_PER_PAGE) + index
-				val item = items.getOrNull(itemIndex) ?: return@ItemProvider GuiItem.EMPTY.makeItem(empty())
+				val bazaarItem = getDisplayedEntries().getOrNull(index) ?: return@ItemProvider GuiItem.EMPTY.makeItem(empty())
 
-				val stack = fromItemString(item.itemString)
+				val stack = fromItemString(bazaarItem.itemString)
 
-				val city = cityName(Regions[item.cityTerritory])
-				val stock = item.stock
-				val uncollected = item.balance.toCreditComponent()
-				val price = item.price.toCreditComponent()
+				val city = cityName(Regions[bazaarItem.cityTerritory])
+				val stock = bazaarItem.stock
+				val uncollected = bazaarItem.balance.toCreditComponent()
+				val price = bazaarItem.price.toCreditComponent()
 
 				GuiItem.EMPTY.makeItem()
 					.updateDisplayName(stack.displayNameComponent)
@@ -115,11 +105,12 @@ class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 					))
 			}
 
-			override fun getItemProvider(): ItemProvider {
-				return provider
-			}
+			override fun getItemProvider(): ItemProvider = provider
 
-			override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {}
+			override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+				val bazaarItem = getDisplayedEntries().getOrNull(index) ?: return
+				handleEntryClick(bazaarItem)
+			}
 		}
 
 		return item.tracked()
