@@ -18,17 +18,17 @@ class GridListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
     override fun buildWindow(): Window {
         val gui = PagedGui.items()
             .setStructure(
-                "x . . . S f s l i",
+                "x . . . S . . l i",
                 "# # # # # # # # #",
                 "# # # # # # # # #",
                 "# # # # # # # # #",
                 "# # # # # # # # #",
-                "< . . . . . . . >",
+                "< . . . . . f s >",
             )
             .addIngredient('x', backButton)
             .addIngredient('f', filterButton)
+			.addIngredient('s', sortButton)
             .addIngredient('S', searchButton)
-            .addIngredient('s', sortButton)
             .addIngredient('l', listViewButton)
             .addIngredient('i', infoButton)
             .addIngredient('<', GuiItems.PageLeftItem())
