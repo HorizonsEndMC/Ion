@@ -10,6 +10,6 @@ object LegacyChatColorValidator : InputValidator<ChatColor> {
 			return ValidatorResult.FailureResult(text("Must be one of ${ChatColor.values().joinToString { it.name }}"))
 		}
 
-		return ValidatorResult.ValidatorSuccessSingleEntry(input.uppercase(), colorResult)
+		return ValidatorResult.ValidatorSuccessSingleEntry(colorResult)
 	}
 }

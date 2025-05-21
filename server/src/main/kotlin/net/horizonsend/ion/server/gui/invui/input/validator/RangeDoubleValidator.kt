@@ -9,6 +9,6 @@ class RangeDoubleValidator(val range: ClosedFloatingPointRange<Double>) : InputV
 		val doubleResult = input.toDoubleOrNull() ?: return ValidatorResult.FailureResult(Component.text("Not a valid number!", RED))
 		if (doubleResult !in range) return ValidatorResult.FailureResult(Component.text("Number must be between ${range.start.roundToHundredth()} and ${range.endInclusive.roundToHundredth()}", RED))
 
-		return ValidatorResult.ValidatorSuccessSingleEntry(input, doubleResult)
+		return ValidatorResult.ValidatorSuccessSingleEntry(doubleResult)
 	}
 }
