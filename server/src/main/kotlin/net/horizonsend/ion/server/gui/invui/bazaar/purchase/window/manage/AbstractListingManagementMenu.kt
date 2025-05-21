@@ -1,11 +1,14 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getEnumSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setEnumSetting
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.gui.GuiItem
@@ -25,7 +28,7 @@ import org.litote.kmongo.eq
 import xyz.xenondevs.invui.item.Item
 
 abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<BazaarItem>(viewer, async = true) {
-    private var sortingMethod: BazaarSort = BazaarSort.HIGHEST_LISTINGS
+    private var sortingMethod: BazaarSort = viewer.getEnumSetting(PlayerSettings::defaultBazaarListingManagementSort)
 
 	override fun generateEntries(): List<BazaarItem> {
 		val items = BazaarItem.find(BazaarItem::seller eq viewer.slPlayerId)
@@ -70,8 +73,11 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
         subEntry = arrayOf(BazaarSort.MIN_PRICE, BazaarSort.MAX_PRICE, BazaarSort.HIGHEST_STOCK, BazaarSort.LOWEST_STOCK, BazaarSort.HIGHEST_BALANCE, BazaarSort.LOWEST_BALANCE),
         valueConsumer = {
             sortingMethod = it
+			viewer.setEnumSetting(PlayerSettings::defaultBazaarListingManagementSort, it)
             openGui()
         }
     )
-	protected val collectButton = FeedbackItem.builder(GuiItem.ROUTE_CANCEL.makeItem(text("Collect Listing Profits")) /*TODO*/) { _, _ -> Bazaars.collectListingProfit(viewer) }.build()
+	protected val collectButton = FeedbackItem.builder(GuiItem.ROUTE_CANCEL.makeItem(text("Collect Listing Profits")) /*TODO*/) { _, _ -> Bazaars.collectListingProfit(viewer) }
+		.withSuccessHandler { _, _ -> openGui() }
+		.build()
 }
