@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.InputResult
+import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -21,7 +22,9 @@ import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.command.economy.BazaarCommand
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
@@ -30,6 +33,7 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.anvilInputText
 import net.horizonsend.ion.server.gui.invui.input.validator.InputValidator
 import net.horizonsend.ion.server.gui.invui.input.validator.ValidatorResult
@@ -65,7 +69,7 @@ import kotlin.reflect.KProperty
 object Bazaars : IonServerComponent() {
 	val strings = mutableListOf<String>()
 
-	fun buildStrings() {
+	private fun buildStrings() {
 		strings.addAll(Material.entries.filter { it.isItem && !it.isLegacy && !it.isAir }.map { it.name })
 		strings.addAll(CustomItemRegistry.identifiers)
 		strings.addAll(MultiblockRegistration.getAllMultiblocks().map { "MULTIBLOCK_TOKEN[multiblock=${it.javaClass.simpleName}]" })
@@ -99,7 +103,7 @@ object Bazaars : IonServerComponent() {
 						backButtonHandler = { player ->
 							Tasks.sync { openMainMenu(territoryId, player, remote) }
 						},
-						inputValidator = InputValidator { ValidatorResult.ValidatorSuccessEmpty(it) }
+						inputValidator = InputValidator { ValidatorResult.ValidatorSuccessEmpty }
 					) { _, (result, _) ->
 						val searchBackButton = guiButton(Material.IRON_DOOR) {
 							Tasks.sync {
@@ -306,6 +310,326 @@ object Bazaars : IonServerComponent() {
 		}
 	}
 
+	fun cleanExpiredBazaarEntries() {
+
+	}
+
+	/**
+	 * Checks if the given string is a valid item, and not air.
+	 * Returns a success, or failure result with a reason.
+	 **/
+	fun checkIsSelling(player: Player, territory: RegionTerritory, itemString: String): ValidatorResult<BazaarItem> {
+		val entry = BazaarItem.findOne(BazaarItem.matchQuery(territory.id, player.slPlayerId, itemString))
+		if (entry != null) {
+			return ValidatorResult.ValidatorSuccessSingleEntry(entry)
+		}
+
+		return ValidatorResult.FailureResult(template(text("You're not selling {0} at {1}!", RED), itemString, cityName(territory)))
+	}
+
+	/**
+	 * Checks if the given string is a valid item, and not air.
+	 * Returns a success, or failure result with a reason.
+	 **/
+	fun checkValidString(itemString: String): ValidatorResult<ItemStack> {
+		try {
+			val itemStack = fromItemString(itemString)
+
+			if (!itemStack.type.isItem || itemStack.isEmpty) return ValidatorResult.FailureResult(template(text("Invalid item string {0}! Empty items are not allowed.", RED), itemString))
+
+			return ValidatorResult.ValidatorSuccessSingleEntry(itemStack)
+		} catch (e: Exception) {
+			return ValidatorResult.FailureResult(template(text("Invalid item string {0}! To see an item's string, use /bazaar string.", RED), itemString))
+		}
+	}
+
+	/**
+	 * Checks if the player is in combat.
+	 * Returns a success, or failure result with a reason.
+	 **/
+	fun checkEconomyEnabled(): InputResult {
+		if (!ConfigurationFiles.featureFlags().economy) {
+			return InputResult.FailureReason(listOf(text("Economy is disabled on this server!", RED)))
+		}
+		return InputResult.InputSuccess
+	}
+
+	/**
+	 * Checks if the player is in combat.
+	 * Returns a success, or failure result with a reason.
+	 **/
+	fun checkCombatTag(player: Player): InputResult {
+		if (CombatTimer.isNpcCombatTagged(player) || CombatTimer.isPvpCombatTagged(player)) {
+			return InputResult.FailureReason(listOf(text("Bazaars cann't be used while in combat!", RED)))
+		}
+		return InputResult.InputSuccess
+	}
+
+	/**
+	 * Checks if the price is greater than zero, and doesn't go beyond 2 decimal places.
+	 * Returns a success, or failure result with a reason.
+	 **/
+	fun checkValidPrice(price: Double): InputResult {
+		if (price <= 0) return InputResult.FailureReason(listOf(template(text("Invalid Unit Price {0}! Amount must be greater than 0.", RED), price)))
+		if (price != price.roundToHundredth()) return InputResult.FailureReason(listOf(template(text("Invalid Unit Price {0}! Unit price cannot go further than 2 decimal places.", RED), price)))
+
+		return InputResult.InputSuccess
+	}
+
+	/**
+	 * Checks if the quantity is above zero.
+	 * Returns a success, or failure result with a reason.
+	 **/
+	fun checkValidQuantity(quantity: Int): InputResult {
+		if (quantity <= 0) return InputResult.FailureReason(listOf(text("Amount must be at least 1!", RED)))
+
+		return InputResult.InputSuccess
+	}
+
+	/**
+	 * Checks if a territory is valid for bazaar activity.
+	 * Returns a success, or failure result with a reason.
+	 **/
+	fun checkValidTerritory(territory: RegionTerritory): InputResult {
+		if (!TradeCities.isCity(territory)) {
+			return InputResult.FailureReason(listOf(text("Territory is not a trade city", RED)))
+		}
+		if (!CityNPCs.BAZAAR_CITY_TERRITORIES.contains(territory.id)) {
+			return InputResult.FailureReason(listOf(text("City doesn't have a registered bazaar", RED)))
+		}
+		return InputResult.InputSuccess
+	}
+
+	/**
+	 * Creates a bazaar sell listing
+	 * Returns a success, or failure result with a reason.
+	 **/
+	fun createListing(player: Player, territory: RegionTerritory, itemString: String, pricePerItem: Double): InputResult {
+		val combatResult = checkCombatTag(player)
+		if (!combatResult.isSuccess()) return combatResult
+
+		val territoryResult = checkValidTerritory(territory)
+		if (!territoryResult.isSuccess()) return territoryResult
+
+		val priceResult = checkValidPrice(pricePerItem)
+		if (!priceResult.isSuccess()) return priceResult
+
+		val stringResult = checkValidString(itemString)
+		if (!stringResult.isSuccess()) return stringResult
+
+		val cityName = cityName(territory)
+
+		if (!BazaarItem.none(BazaarItem.matchQuery(territory.id, player.slPlayerId, itemString))) {
+			return InputResult.FailureReason(listOf(text("You're already selling $itemString at $cityName!", RED)))
+		}
+
+		BazaarItem.create(territory.id, player.slPlayerId, itemString, pricePerItem)
+
+		return InputResult.SuccessReason(listOf(
+			template(text("Created a listing for {0} at {1}", GREEN), itemString, cityName),
+			text("It will not show in the listing until it has some stock. To add stock, use /bazaar deposit.", GREEN)
+		))
+	}
+
+	/**
+	 * Removes all matching items from the player's inventory and deposits them into the bazaar listing.
+	 * Returns a success, or failure result with a reason.
+	 **/
+	fun depositListingStock(player: Player, territory: RegionTerritory, itemString: String, limit: Int): InputResult {
+		val cityName = cityName(territory)
+
+		val combatResult = checkCombatTag(player)
+		if (!combatResult.isSuccess()) return combatResult
+
+		val itemValidationResult = checkValidString(itemString)
+		val itemReference: ItemStack = itemValidationResult.result ?: return itemValidationResult
+
+		val itemResult = checkIsSelling(player, territory, itemString)
+		val resultItem = itemResult.result ?: return itemResult
+
+		Tasks.sync {
+			val inventory = player.inventory
+
+			var remaining = limit
+			var count = 0
+
+			for ((index, itemStack) in inventory.withIndex()) {
+				if (itemStack?.isSimilar(itemReference) == true) {
+					val toTake = minOf(remaining, itemStack.amount)
+
+					count += toTake
+					remaining -= toTake
+
+					if (itemStack.amount == toTake) {
+						inventory.setItem(index, null)
+					} else {
+						itemStack.amount -= toTake
+					}
+				}
+			}
+
+			Tasks.async {
+				BazaarItem.addStock(resultItem._id, count)
+				player.information("Added $count of $itemString to listing in $cityName")
+			}
+		}
+
+		return InputResult.InputSuccess
+	}
+
+	fun withdrawListingBalance(player: Player, territory: RegionTerritory, itemString: String, amount: Int): InputResult {
+		val cityName = cityName(territory)
+
+		val combatResult = checkCombatTag(player)
+		if (!combatResult.isSuccess()) return combatResult
+
+		val itemValidationResult = checkValidString(itemString)
+		val itemReference: ItemStack = itemValidationResult.result ?: return itemValidationResult
+
+		val amountResult = checkValidQuantity(amount)
+		if (!amountResult.isSuccess()) return amountResult
+
+		val itemResult = checkIsSelling(player, territory, itemString)
+		val resultItem = itemResult.result ?: return itemResult
+
+		if (resultItem.stock < amount) {
+			return InputResult.FailureReason(listOf(
+				template(text("Your listing of {0} at {1} only has {2} item(s) in stock", RED), itemString, cityName, resultItem.stock)
+			))
+		}
+
+		BazaarItem.removeStock(resultItem._id, amount)
+
+		Tasks.sync {
+			val (fullStacks, remainder) = giveOrDropItems(itemReference, amount, player)
+
+			player.sendMessage(template(text("Withdrew {0} of {1} at {2} ({3} stack(s) and {4} item(s)", GREEN), amount, itemString, cityName, fullStacks, remainder))
+		}
+
+		return InputResult.InputSuccess
+	}
+
+	fun removeListing(player: Player, territory: RegionTerritory, itemString: String): InputResult {
+		val cityName = cityName(territory)
+
+		val combatResult = checkCombatTag(player)
+		if (!combatResult.isSuccess()) return combatResult
+
+		val itemValidationResult = checkValidString(itemString)
+		if (!itemValidationResult.isSuccess()) return itemValidationResult
+
+		val itemResult = checkIsSelling(player, territory, itemString)
+		val resultItem = itemResult.result ?: return itemResult
+
+		if (resultItem.stock > 0) {
+			return InputResult.FailureReason(listOf(
+				template(text("Withdraw all items before removing! (/bazaar withdraw {0} {1})", RED), itemString, resultItem.stock)
+			))
+		}
+
+		BazaarItem.delete(resultItem._id)
+
+		return InputResult.SuccessReason(listOf(
+			template(text("Removed listing for {0} at {1}", GREEN), itemString, cityName)
+		))
+	}
+
+	fun setListingPrice(player: Player, territory: RegionTerritory, itemString: String, newPrice: Double): InputResult {
+		val combatResult = checkCombatTag(player)
+		if (!combatResult.isSuccess()) return combatResult
+
+		val territoryResult = checkValidTerritory(territory)
+		if (!territoryResult.isSuccess()) return territoryResult
+
+		val priceResult = checkValidPrice(newPrice)
+		if (!priceResult.isSuccess()) return priceResult
+
+		val stringResult = checkValidString(itemString)
+		if (!stringResult.isSuccess()) return stringResult
+
+		val itemResult = checkIsSelling(player, territory, itemString)
+		val resultItem = itemResult.result ?: return itemResult
+
+		BazaarItem.setPrice(resultItem._id, newPrice)
+
+		return InputResult.SuccessReason(listOf(
+			template(text("Updated price of {0} at {1} to {2}", GREEN), itemString, cityName(territory), newPrice.toCreditsString())
+		))
+	}
+
+	fun collectListingProfit(player: Player): InputResult {
+		val economyCheck = checkEconomyEnabled()
+		if (!economyCheck.isSuccess()) return economyCheck
+
+		val senderId = player.slPlayerId
+		val total = BazaarItem.collectMoney(senderId)
+		val count = BazaarItem.count(BazaarItem::seller eq senderId)
+
+		Tasks.sync {
+			VAULT_ECO.depositPlayer(player, total)
+		}
+
+		return InputResult.SuccessReason(listOf(template(text("Collected {0} from {1} listings.", GREEN), total.toCreditComponent(), count)))
+	}
+
+	/**
+	 * Creates a bazaar order
+	 * Returns a success, or failure result with a reason.
+	 **/
+	fun createOrder(player: Player, territory: RegionTerritory, itemString: String, orderQuantity: Int, individualPrice: Double): InputResult {
+		val economyCheck = checkEconomyEnabled()
+		if (!economyCheck.isSuccess()) return economyCheck
+
+		val combatResult = checkCombatTag(player)
+		if (!combatResult.isSuccess()) return combatResult
+
+		val territoryResult = checkValidTerritory(territory)
+		if (!territoryResult.isSuccess()) return territoryResult
+
+		val priceResult = checkValidPrice(individualPrice)
+		if (!priceResult.isSuccess()) return priceResult
+
+		val stringResult = checkValidString(itemString)
+		if (!stringResult.isSuccess()) return stringResult
+
+		val cityName = cityName(territory)
+		val totalPrice = orderQuantity * individualPrice
+
+		if (!player.hasEnoughMoney(totalPrice)) {
+			return InputResult.FailureReason(listOf(text("You don't have enough money to create that order!", RED)))
+		}
+
+		try {
+			player.withdrawMoney(totalPrice)
+			BazaarOrder.create(player.slPlayerId, territory.id, itemString, orderQuantity, individualPrice)
+			player.information("Created a bazaar order for $orderQuantity of $itemString for $individualPrice per item at $cityName for $totalPrice.")
+
+			return InputResult.SuccessReason(listOf(
+				text("Created a bazaar order for $orderQuantity of $itemString for $individualPrice per item at $cityName for $totalPrice.", GREEN)
+			))
+		} catch (e: Throwable) {
+			return InputResult.FailureReason(listOf(
+				text("There was an error adding your order. Please forward this to staff.", RED),
+				formatException(e)
+			))
+		}
+	}
+
+	fun cancelOrder() {
+
+	}
+
+	fun editOrderQuantity() {
+
+	}
+
+	fun fulfillOrder() {
+
+	}
+
+	/** Formats the trade city name of the given territory */
+	fun cityName(territory: RegionTerritory) = TradeCities.getIfCity(territory)?.displayName ?: "<{Unknown}>" // this will be used if the city is disbanded but their items remain there
+
 	/**
 	 * Gives the player items, or drops them at their location if their inventory is full.
 	 *
@@ -333,39 +657,4 @@ object Bazaars : IonServerComponent() {
 		}
 		return Pair(fullStacks, remainder)
 	}
-
-	fun cleanExpiredBazaarEntries() {
-
-	}
-
-	fun createListing(): InputResult {
-		return InputResult.InputFailure
-	}
-
-	fun createOrder(player: Player, territory: RegionTerritory, itemString: String, orderQuantity: Int, individualPrice: Double): InputResult {
-		val cityName = TradeCities.getIfCity(territory)?.displayName ?: return InputResult.FailureReason(listOf(text("${territory.name} is not a trade city!")))
-		val totalPrice = orderQuantity * individualPrice
-
-		if (!player.hasEnoughMoney(totalPrice)) {
-			return InputResult.FailureReason(listOf(text("You don't have enough money to create that order!", RED)))
-		}
-
-		try {
-			player.withdrawMoney(totalPrice)
-			BazaarOrder.create(player.slPlayerId, territory.id, itemString, orderQuantity, individualPrice)
-			player.information("Created a bazaar order for $orderQuantity of $itemString for $individualPrice per item at $cityName for $totalPrice.")
-
-			return InputResult.SuccessReason(listOf(
-				text("Created a bazaar order for $orderQuantity of $itemString for $individualPrice per item at $cityName for $totalPrice.", GREEN)
-			))
-		} catch (e: Throwable) {
-			return InputResult.FailureReason(listOf(
-				text("There was an error adding your order. Please forward this to staff.", RED),
-				formatException(e)
-			))
-		}
-	}
-
-	fun cityName(territory: RegionTerritory) = TradeCities.getIfCity(territory)?.displayName ?: "<{Unknown}>"
-	// this will be used if the city is disbanded but their items remain there
 }

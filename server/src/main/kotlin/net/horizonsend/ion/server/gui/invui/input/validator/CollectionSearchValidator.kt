@@ -8,7 +8,7 @@ class CollectionSearchValidator<T : Any>(val collection: Collection<T>, private 
 	override fun isValid(input: String): ValidatorResult<T> {
 		val search = searchEntriesMultipleTerms(input, collection, searchTermProvider)
 		if (search.isEmpty()) return ValidatorResult.FailureResult(Component.text("No results found for input \"$input\".", RED))
-		if (search.size == 1) return ValidatorResult.ValidatorSuccessSingleEntry(input, search.first())
-		return ValidatorResult.ValidatorSuccessMultiEntry(input, search)
+		if (search.size == 1) return ValidatorResult.ValidatorSuccessSingleEntry(search.first())
+		return ValidatorResult.ValidatorSuccessMultiEntry(search)
 	}
 }
