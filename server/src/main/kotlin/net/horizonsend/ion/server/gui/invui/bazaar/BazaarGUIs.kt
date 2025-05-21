@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.gui.invui.bazaar
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
@@ -9,13 +10,16 @@ import net.horizonsend.ion.server.features.gui.custom.settings.button.DBCachedBo
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.window.BuyOrderMainMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.window.CreateBuyOrderMenu
-import net.horizonsend.ion.server.gui.invui.bazaar.orders.window.manage.ListManageMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.orders.window.manage.GridOrderManagementWindow
+import net.horizonsend.ion.server.gui.invui.bazaar.orders.window.manage.ListOrderManagementMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarCitySelectionMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse.BazaarCityBrowseMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse.BazaarGlowbalBrowseMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse.PurchaseItemMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.listings.CityItemListingsMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.listings.GlobalItemListingsMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.GridListingManagementMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.ListListingManagementMenu
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
@@ -56,6 +60,24 @@ object BazaarGUIs {
 		return menu
 	}
 
+	fun openListingManageMenu(player: Player, previous: CommonGuiWrapper?) {
+		val defaultList = player.getSetting(PlayerSettings::listingManageDefaultListView)
+		if (defaultList) openListingManageListMenu(player, previous)
+		else openListingManageGridMenu(player, previous)
+	}
+
+	fun openListingManageListMenu(player: Player, previous: CommonGuiWrapper?) {
+		val menu = ListListingManagementMenu(player)
+		previous?.let { menu.setParent(it) }
+		menu.openGui()
+	}
+
+	fun openListingManageGridMenu(player: Player, previous: CommonGuiWrapper?) {
+		val menu = GridListingManagementMenu(player)
+		previous?.let { menu.setParent(it) }
+		menu.openGui()
+	}
+
 	fun openBuyOrderMainMenu(player: Player) {
 		BuyOrderMainMenu(player).openGui()
 	}
@@ -72,13 +94,21 @@ object BazaarGUIs {
 		menu.openGui()
 	}
 
-	fun openBuyOrderManageMenu(player: Player) {
-		ListManageMenu(player).openGui()
+	fun openBuyOrderManageMenu(player: Player, previous: CommonGuiWrapper?) {
+		val defaultList = player.getSetting(PlayerSettings::orderManageDefaultListView)
+		if (defaultList) openBuyOrderManageListMenu(player, previous)
+		else openBuyOrderManageGridMenu(player, previous)
 	}
 
-	fun openBuyOrderManageMenu(player: Player, previous: CommonGuiWrapper) {
-		val menu = ListManageMenu(player)
-		menu.setParent(previous)
+	fun openBuyOrderManageListMenu(player: Player, previous: CommonGuiWrapper?) {
+		val menu = ListOrderManagementMenu(player)
+		previous?.let { menu.setParent(it) }
+		menu.openGui()
+	}
+
+	fun openBuyOrderManageGridMenu(player: Player, previous: CommonGuiWrapper?) {
+		val menu = GridOrderManagementWindow(player)
+		previous?.let { menu.setParent(it) }
 		menu.openGui()
 	}
 
