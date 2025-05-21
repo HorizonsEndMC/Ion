@@ -19,8 +19,10 @@ class GridManageWindow(viewer: Player) : ManageOrdersMenu(viewer) {
 				"# # # # # # # # #",
 				"# # # # # # # # #",
 				"# # # # # # # # #",
-				"l . . . . . . . r",
+				"l . . . . . f s r",
 			)
+			.addIngredient('f', filterButton)
+			.addIngredient('s', sortButton)
 			.addIngredient('b', parentOrBackButton())
 			.addIngredient('i', infoButton)
 
