@@ -14,12 +14,12 @@ import net.horizonsend.ion.server.features.economy.city.CityNPCs.BAZAAR_CITY_TER
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
-import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.REMOTE_WARINING
 import net.horizonsend.ion.server.gui.invui.bazaar.getBazaarSettingsButton
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
@@ -65,7 +65,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 				". . . . u u u u .",
 				". . . . p p p p C",
 			)
-			.addIngredient('x', GuiItems.closeMenuItem(viewer))
+			.addIngredient('x', parentOrBackButton())
 			.addIngredient('s', settingsButton)
 			.addIngredient('i', infoButton)
 
@@ -222,7 +222,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 	private val emptyUnitPriceButton = ItemProvider {
 		GuiItem.EMPTY.makeItem(text("Set Order Unit Price"))
 			.updateLore(listOf(
-				template(text("Current value: {0}", HE_MEDIUM_GRAY), unitPrice),
+				template(text("Current value: {0}", HE_MEDIUM_GRAY), unitPrice.toCreditComponent()),
 				text("The order price will also be updated", HE_MEDIUM_GRAY)
 			))
 	}.makeGuiButton { _, _ ->
@@ -230,7 +230,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 			prompt = text("Select Unit Price"),
 			description = text("Must be greater than 0"),
 			backButtonHandler = { openGui() },
-			inputValidator = RangeDoubleValidator(1.0..Double.MAX_VALUE),
+			inputValidator = RangeDoubleValidator(0.01..Double.MAX_VALUE),
 			handler = { _, (_, validatorResult) ->
 				unitPrice = validatorResult.result
 				openGui()
@@ -241,7 +241,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 	private val emptyOrderPriceButton = ItemProvider {
 		GuiItem.EMPTY.makeItem(text("Set Order Total Price"))
 			.updateLore(listOf(
-				template(text("Current value: {0}", HE_MEDIUM_GRAY), orderPrice),
+				template(text("Current value: {0}", HE_MEDIUM_GRAY), orderPrice.toCreditComponent()),
 				text("The unit price will also be updated", HE_MEDIUM_GRAY)
 			))
 	}.makeGuiButton { _, _ ->
@@ -258,7 +258,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 		)
 	}
 
-	private val confirmButton = tracked { buttonId ->
+	private val confirmButton = tracked { _ ->
 		ItemProvider {
 			val result = validateOrder()
 
@@ -287,7 +287,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 						Bazaars.createOrder(player, territory, itemString, count, unitPrice)
 
 						// Make a new, blank window
-						CreateBuyOrderMenu(player).openGui()
+						BazaarGUIs.openBuyOrderCreationMenu(player, parentWindow)
 					}
 				}
 			}
