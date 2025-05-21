@@ -22,7 +22,7 @@ import org.bukkit.entity.Player
 import org.litote.kmongo.eq
 import xyz.xenondevs.invui.item.Item
 
-abstract class AbstractListingMenu(viewer: Player, val backButtonHandler: () -> Unit = {}) : ListInvUIWindow<BazaarItem>(viewer, async = true) {
+abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<BazaarItem>(viewer, async = true) {
     private var sortingMethod: BazaarSort = BazaarSort.HIGHEST_LISTINGS
 
 	override fun generateEntries(): List<BazaarItem> {
@@ -57,7 +57,6 @@ abstract class AbstractListingMenu(viewer: Player, val backButtonHandler: () -> 
 		// TODO
 	}
 
-	protected val backButton = GuiItem.CANCEL.makeItem(text("Go back")).makeGuiButton { _, _ -> backButtonHandler.invoke() }
 	protected val infoButton = GuiItem.INFO.makeItem(text("Information")).makeGuiButton { _, _ -> println("INFO") /*TODO*/ }
 	protected val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search Listings")).makeGuiButton { _, _ -> println("search") }
 	protected val filterButton = GuiItem.FILTER.makeItem(text("Filter Listings")).makeGuiButton { _, _ -> println("filter") }
