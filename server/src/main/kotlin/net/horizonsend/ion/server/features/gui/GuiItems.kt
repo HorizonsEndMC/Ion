@@ -277,6 +277,7 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     SORT(NamespacedKeys.packKey("ui/sort")),
     LIST_VIEW(NamespacedKeys.packKey("ui/list_view")),
     GRID_VIEW(NamespacedKeys.packKey("ui/grid_view")),
+    PLUS(NamespacedKeys.packKey("ui/plus")),
 
 	;
 
