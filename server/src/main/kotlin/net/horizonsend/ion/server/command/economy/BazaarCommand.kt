@@ -29,6 +29,7 @@ import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
@@ -40,7 +41,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.ListListingMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.ListListingMenu
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -127,9 +128,6 @@ object BazaarCommand : SLCommand() {
 			"Item string of ${item.displayNameString}: ${toItemString(item)}"
 		)
 	}
-
-	fun cityName(territory: RegionTerritory) = TradeCities.getIfCity(territory)?.displayName
-		?: "<{Unknown}>" // this will be used if the city is disbanded but their items remain there
 
 	@Subcommand("create")
 	@Description("Create a new listing at this city")
