@@ -21,7 +21,7 @@ import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.eq
 import xyz.xenondevs.invui.item.Item
 
-abstract class ManageOrdersMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>(viewer, async = true) {
+abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>(viewer, async = true) {
 	override fun generateEntries(): List<BazaarOrder> {
 		// TODO filtering
 		return BazaarOrder.find(BazaarOrder::player eq viewer.slPlayerId).toList()
@@ -68,4 +68,6 @@ abstract class ManageOrdersMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>(v
 	protected val createBuyOrderMenu = GuiItem.PLUS.makeItem(text("Create Bazaar Order")).makeGuiButton { _, _ ->
 		BazaarGUIs.openBuyOrderCreationMenu(viewer, this)
 	}
+
+	abstract val switchLayoutButton: Item
 }
