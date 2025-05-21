@@ -55,7 +55,7 @@ private fun InventoryClickEvent.createRoleMenu(commandName: String) {
 			when {
 				!input.isAlphanumeric() -> ValidatorResult.FailureResult(text("Must be alphanumeric!"))
 				input.length !in 3..20 -> ValidatorResult.FailureResult(text("Must be from 3 to 20 characters!"))
-				else -> ValidatorResult.ValidatorSuccessEmpty(input)
+				else -> ValidatorResult.ValidatorSuccessEmpty
 			}
 		}
 	) { _, (entry, _) ->
@@ -102,7 +102,7 @@ fun editRoleGUI(
 						when {
 							!input.isAlphanumeric() -> ValidatorResult.FailureResult(text("Must be alphanumeric!"))
 							input.length !in 3..20 -> ValidatorResult.FailureResult(text("Must be from 3 to 20 characters!"))
-							else -> ValidatorResult.ValidatorSuccessEmpty(input)
+							else -> ValidatorResult.ValidatorSuccessEmpty
 						}
 					}
 				) { _, (raw, _) ->

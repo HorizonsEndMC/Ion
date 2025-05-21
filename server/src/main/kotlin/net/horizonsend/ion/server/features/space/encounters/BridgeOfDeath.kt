@@ -79,7 +79,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 
 		event.player.anvilInputText(
 			prompt = "What is your name?".toComponent(),
-			inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it, it) }
+			inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it) }
 		) { _, (response, _) ->
 			if (response != event.player.name) return@anvilInputText fail()
 		}
@@ -88,7 +88,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 
 		event.player.anvilInputText(
 			prompt = "What is your quest?".toComponent(),
-			inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it, it) }
+			inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it) }
 		) { _, _ -> }
 
 		var promptNation: NationCache.NationData? = null
@@ -104,7 +104,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 			else -> 0 to "What is your favorite color?"
 		}
 
-		event.player.anvilInputText(prompt.toComponent(), inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it, it) }) { _, (answer, _) ->
+		event.player.anvilInputText(prompt.toComponent(), inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it) }) { _, (answer, _) ->
 			when (id) {
 				2 ->
 					if (answer.contains("august", true) || answer.contains("2021", true)) return@anvilInputText
