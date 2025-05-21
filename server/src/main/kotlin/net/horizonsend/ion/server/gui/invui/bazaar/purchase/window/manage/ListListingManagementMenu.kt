@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -7,12 +8,14 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.common.utils.text.withShadowColor
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.bazaar.BAZAAR_SHADOW_COLOR
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
@@ -31,7 +34,7 @@ import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
 
-class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : AbstractListingMenu(viewer, backButtonHandler) {
+class ListListingManagementMenu(viewer: Player) : AbstractListingManagementMenu(viewer) {
 	override val listingsPerPage: Int = 4
 
 	override fun buildWindow(): Window {
@@ -44,7 +47,7 @@ class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 				"# 3 3 3 3 3 3 3 3",
 				"< . . . . . f s >",
 			)
-			.addIngredient('x', backButton)
+			.addIngredient('x', parentOrBackButton())
 			.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 			.addIngredient('<', GuiItems.PageLeftItem())
 			.addIngredient('>', GuiItems.PageRightItem())
@@ -80,6 +83,7 @@ class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 			guiText.add(ofChildren(text("S: ", BLACK), text(bazaarItem.stock)), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.CENTER)
 			guiText.add(ofChildren(text("B: ", BLACK), bazaarItem.balance.toCreditComponent().withShadowColor(BAZAAR_SHADOW_COLOR)), line = line + 1, horizontalShift = 20, alignment = GuiText.TextAlignment.RIGHT)
 		}
+
 		return withPageNumber(guiText)
 	}
 
@@ -116,5 +120,8 @@ class ListListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 		return item.tracked()
 	}
 
-	private val gridViewButton = GuiItem.GRID_VIEW.makeItem(text("Grid view")).makeGuiButton { _, _ -> GridListingMenu(viewer, backButtonHandler).openGui() }
+	private val gridViewButton = GuiItem.GRID_VIEW.makeItem(text("Switch to Grid view")).makeGuiButton { _, _ ->
+		viewer.setSetting(PlayerSettings::listingManageDefaultListView, false)
+		BazaarGUIs.openListingManageGridMenu(viewer, parentWindow)
+	}
 }
