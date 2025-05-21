@@ -38,7 +38,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
+import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
@@ -342,13 +344,19 @@ object Bazaars : IonServerComponent() {
 
 	fun createOrder(player: Player, territory: RegionTerritory, itemString: String, orderQuantity: Int, individualPrice: Double): InputResult {
 		val cityName = TradeCities.getIfCity(territory)?.displayName ?: return InputResult.FailureReason(listOf(text("${territory.name} is not a trade city!")))
+		val totalPrice = orderQuantity * individualPrice
+
+		if (!player.hasEnoughMoney(totalPrice)) {
+			return InputResult.FailureReason(listOf(text("You don't have enough money to create that order!", RED)))
+		}
 
 		try {
+			player.withdrawMoney(totalPrice)
 			BazaarOrder.create(player.slPlayerId, territory.id, itemString, orderQuantity, individualPrice)
-			player.information("Created a bazaar order for $orderQuantity of $itemString for $individualPrice per item at $cityName.")
+			player.information("Created a bazaar order for $orderQuantity of $itemString for $individualPrice per item at $cityName for $totalPrice.")
 
 			return InputResult.SuccessReason(listOf(
-				text("Created an order for $itemString at $cityName.", GREEN)
+				text("Created a bazaar order for $orderQuantity of $itemString for $individualPrice per item at $cityName for $totalPrice.", GREEN)
 			))
 		} catch (e: Throwable) {
 			return InputResult.FailureReason(listOf(
