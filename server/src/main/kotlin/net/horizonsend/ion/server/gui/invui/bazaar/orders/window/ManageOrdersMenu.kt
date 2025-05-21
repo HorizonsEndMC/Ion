@@ -44,7 +44,7 @@ class ManageOrdersMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 
 		val gui = PagedGui.items()
 			.setStructure(
-				". . . . . . . . .",
+				"b . . . . . . . .",
 				"# # # # # # # # #",
 				"# # # # # # # # #",
 				"# # # # # # # # #",
@@ -53,6 +53,7 @@ class ManageOrdersMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 			.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 			.addIngredient('l', GuiItems.PageLeftItem())
 			.addIngredient('r', GuiItems.PageRightItem())
+			.addIngredient('b', parentOrBackButton())
 			.setContent(items)
 			.build()
 
