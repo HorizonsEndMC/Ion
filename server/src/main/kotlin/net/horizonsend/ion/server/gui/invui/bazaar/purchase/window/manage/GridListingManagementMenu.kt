@@ -21,7 +21,7 @@ class GridListingManagementMenu(viewer: Player) : AbstractListingManagementMenu(
     override fun buildWindow(): Window {
         val gui = PagedGui.items()
             .setStructure(
-                "x . . . S . . l i",
+                "x . c . S . . l i",
                 "# # # # # # # # #",
                 "# # # # # # # # #",
                 "# # # # # # # # #",
@@ -34,6 +34,7 @@ class GridListingManagementMenu(viewer: Player) : AbstractListingManagementMenu(
             .addIngredient('S', searchButton)
             .addIngredient('l', listViewButton)
             .addIngredient('i', infoButton)
+            .addIngredient('c', collectButton)
             .addIngredient('<', GuiItems.PageLeftItem())
             .addIngredient('>', GuiItems.PageRightItem())
             .addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
