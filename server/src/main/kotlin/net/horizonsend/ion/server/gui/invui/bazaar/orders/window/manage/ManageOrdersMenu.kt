@@ -1,73 +1,70 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.orders.window.manage
 
-import com.mongodb.client.FindIterable
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
-import net.horizonsend.ion.server.features.economy.city.TradeCities
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.gui.GuiItem
-import net.horizonsend.ion.server.features.gui.GuiItems
-import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
+import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.eq
-import xyz.xenondevs.invui.gui.PagedGui
-import xyz.xenondevs.invui.gui.structure.Markers
-import xyz.xenondevs.invui.window.Window
+import xyz.xenondevs.invui.item.Item
 
-class ManageOrdersMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
-	private lateinit var orders: FindIterable<BazaarOrder>
-
-	override fun buildWindow(): Window {
-		orders = BazaarOrder.find(BazaarOrder::player eq viewer.slPlayerId)
-
-		val items = orders.toList().mapNotNull {
-			val cityName = TradeCities.getIfCity(Regions[it.cityTerritory])?.displayName ?: "Unknown"
-
-			fromItemString(it.itemString)
-				.stripAttributes()
-				.updateLore(listOf(
-					template(text("City: {0}", HE_MEDIUM_GRAY), cityName),
-					template(text("Order Quantity: {0}", HE_MEDIUM_GRAY), it.requestedQuantity),
-					template(text("Fulfilled Quantity: {0}", HE_MEDIUM_GRAY), it.fulfilledQuantity)
-				))
-				.asItemProvider()
-				.makeGuiButton { _, _ ->  }
-		}
-
-		val gui = PagedGui.items()
-			.setStructure(
-				"b . . . . . . . i",
-				"# # # # # # # # #",
-				"# # # # # # # # #",
-				"# # # # # # # # #",
-				"l . . . . . . . r",
-			)
-			.addIngredient('b', parentOrBackButton())
-			.addIngredient('i', infoButton)
-
-			.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
-			.addIngredient('l', GuiItems.PageLeftItem())
-			.addIngredient('r', GuiItems.PageRightItem())
-			.setContent(items)
-			.build()
-
-		return normalWindow(gui)
+abstract class ManageOrdersMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>(viewer, async = true) {
+	override fun generateEntries(): List<BazaarOrder> {
+		// TODO filtering
+		return BazaarOrder.find(BazaarOrder::player eq viewer.slPlayerId).toList()
 	}
 
-	override fun buildTitle(): Component {
-		return GuiText("")
-			.build()
+	override fun createItem(entry: BazaarOrder): Item {
+		return fromItemString(entry.itemString)
+			.stripAttributes()
+			.applyItemFormatting(entry)
+			.asItemProvider()
+			.makeGuiButton { _, _ -> openManageOrderMenu(entry) }
 	}
 
-	val infoButton = GuiItem.GEAR.makeItem(text("Info")) //TODO
+	protected fun ItemStack.applyItemFormatting(orderItem: BazaarOrder): ItemStack {
+		return updateLore(listOf(
+			template(text("City: {0}", HE_MEDIUM_GRAY), cityName(Regions[orderItem.cityTerritory])),
+			template(text("Order Quantity: {0}", HE_MEDIUM_GRAY), orderItem.requestedQuantity),
+			template(text("Price Per Item: {0}", HE_MEDIUM_GRAY), (orderItem.requestedQuantity * orderItem.pricePerItem).toCreditComponent()),
+			template(text("Order Price: {0}", HE_MEDIUM_GRAY), orderItem.pricePerItem.toCreditComponent()),
+			template(text("Fulfilled Quantity: {0}", HE_MEDIUM_GRAY), orderItem.fulfilledQuantity),
+			template(text("Unfulfilled Quantity: {0}", HE_MEDIUM_GRAY), orderItem.stock),
+		))
+	}
+
+	protected fun openManageOrderMenu(order: BazaarOrder) {
+		println("Managing order ${order.itemString}!")
+	}
+
+	protected val infoButton = GuiItem.INFO.makeItem(text("Information")).makeGuiButton { _, _ -> println("INFO") /*TODO*/ }
+	protected val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search Listings")).makeGuiButton { _, _ -> println("search") }
+	protected val filterButton = GuiItem.FILTER.makeItem(text("Filter Listings")).makeGuiButton { _, _ -> println("filter") }
+//	protected val sortButton = EnumScrollButton(
+//		providedItem = GuiItem.SORT.makeItem(text("Change Sorting Method")).asItemProvider(),
+//		value = { sortingMethod },
+//		enum = BazaarSort::class.java,
+//		nameFormatter = { it.displayName },
+//		subEntry = arrayOf(BazaarSort.MIN_PRICE, BazaarSort.MAX_PRICE, BazaarSort.HIGHEST_STOCK, BazaarSort.LOWEST_STOCK, BazaarSort.HIGHEST_BALANCE, BazaarSort.LOWEST_BALANCE),
+//		valueConsumer = {
+//			sortingMethod = it
+//			openGui()
+//		}
+//	)
+	protected val createBuyOrderMenu = GuiItem.PLUS.makeItem(text("Create Bazaar Order")).makeGuiButton { _, _ ->
+		BazaarGUIs.openBuyOrderCreationMenu(viewer, this)
+	}
 }
