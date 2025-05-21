@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.ListListingMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.SimpleStateButton
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
@@ -133,7 +132,7 @@ abstract class BazaarPurchaseMenuParent(
 	private val manageListingsButton = GuiItem.MATERIALS
 		.makeItem(text("Manage Your Listings"))
 		.makeGuiButton { _, _ ->
-			ListListingMenu(viewer = viewer, backButtonHandler = { this.openGui() }).openGui()
+			BazaarGUIs.openListingManageMenu(viewer, this)
 		}
 
 	private val buyOrdersButton = GuiItem.CLOCKWISE
