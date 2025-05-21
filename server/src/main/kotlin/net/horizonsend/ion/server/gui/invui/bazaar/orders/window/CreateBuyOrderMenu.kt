@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.gui.invui.bazaar.orders.window
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.InputResult
-import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -10,6 +9,9 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.checkValidPrice
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.checkValidString
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.checkValidTerritory
 import net.horizonsend.ion.server.features.economy.city.CityNPCs.BAZAAR_CITY_TERRITORIES
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
@@ -31,6 +33,7 @@ import net.horizonsend.ion.server.gui.invui.input.validator.RangeIntegerValidato
 import net.horizonsend.ion.server.gui.invui.misc.ConfirmationMenu.Companion.promptConfirmation
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
@@ -264,7 +267,14 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 			val result = validateOrder()
 
 			if (result.isSuccess()) {
-				GuiItem.CHECKMARK.makeItem(text("Create Order")).updateLore(result.getReason() ?: listOf())
+				val baseItem = fromItemString(itemString)
+
+				GuiItem.CHECKMARK.makeItem(text("Create Order")).updateLore(listOf(
+					text("Click to confirm creation of a bazaar order for:", HE_MEDIUM_GRAY),
+					template(text("{0} of {1}", HE_MEDIUM_GRAY), count, baseItem.displayNameComponent),
+					template(text("from {0}", HE_MEDIUM_GRAY), cityInfo!!.displayName),
+					template(text("for {0} at {1} each.", HE_MEDIUM_GRAY), orderPrice.toCreditComponent(), unitPrice.toCreditComponent()),
+				))
 			}
 			else {
 				GuiItem.CANCEL.makeItem(text("Invalid Order!")).updateLore(result.getReason() ?: listOf())
@@ -296,27 +306,20 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 	}
 
 	private fun validateOrder(): InputResult {
-		// Validate item string
-		try {
-			val itemStack = fromItemString(itemString)
-
-			if (!itemStack.type.isItem || itemStack.isEmpty) return InputResult.FailureReason(listOf(template(text("Invalid item string {0}! Empty items are not allowed.", RED), itemString)))
-		} catch (e: Exception) {
-			return InputResult.FailureReason(listOf(template(text("Invalid item string {0}! To see an item's string, use /bazaar string.", RED), itemString)))
-		}
-
-		// Validate Price
-		if (unitPrice <= 0) return InputResult.FailureReason(listOf(template(text("Invalid Unit Price {0}! Amount must be greater than 0.", RED), unitPrice)))
-		if (unitPrice != unitPrice.roundToHundredth()) return InputResult.FailureReason(listOf(template(text("Invalid Unit Price {0}! Unit price cannot go further than 2 decimal places.", RED), unitPrice)))
-
-		// Validate order quantity
-		if (count !in 1 ..< 1_000_000) return InputResult.FailureReason(listOf(template(text("Invalid Order Quantity {0}! Amount must be greater than 0, and less than 1,000,000.", RED), count)))
-
 		// Validate city
 		val cityInfo = cityInfo ?: return InputResult.FailureReason(listOf(text("You must enter a trade city!.", RED)))
-		val region = Regions.get<RegionTerritory>(cityInfo.territoryId)
-		if (!TradeCities.isCity(region)) return InputResult.FailureReason(listOf(text("Territory is not a trade city!", RED)))
-		if (!BAZAAR_CITY_TERRITORIES.contains(cityInfo.territoryId)) return InputResult.FailureReason(listOf(text("City doesn't have a registered bazaar!", RED)))
+		val territory = Regions.get<RegionTerritory>(cityInfo.territoryId)
+		val territoryResult = checkValidTerritory(territory)
+		if (!territoryResult.isSuccess()) return territoryResult
+
+		// Validate item string
+		val stringResult = checkValidString(itemString)
+		if (!stringResult.isSuccess()) return stringResult
+
+		// Validate order quantity & price
+		if (count !in 1 ..< 1_000_000) return InputResult.FailureReason(listOf(template(text("Invalid Order Quantity {0}! Amount must be greater than 0, and less than 1,000,000.", RED), count)))
+		val priceResult = checkValidPrice(unitPrice)
+		if (!priceResult.isSuccess()) return priceResult
 
 		if (!viewer.hasEnoughMoney(unitPrice * count)) {
 			return InputResult.FailureReason(listOf(text("You don't have enough money to create that order!", RED)))
