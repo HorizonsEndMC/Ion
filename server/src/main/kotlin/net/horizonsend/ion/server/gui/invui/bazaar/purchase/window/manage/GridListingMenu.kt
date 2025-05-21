@@ -1,7 +1,6 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage
 
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
-import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -14,16 +13,12 @@ import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.window.Window
 
 class GridListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : AbstractListingMenu(viewer, backButtonHandler) {
-    companion object {
-        private const val LISTINGS_PER_PAGE = 36
-    }
+	override val listingsPerPage: Int = 36
 
     override fun buildWindow(): Window {
-        val guiItems = generateItemListings()
-
         val gui = PagedGui.items()
             .setStructure(
-                "x . . . f S s l i",
+                "x . . . S f s l i",
                 "# # # # # # # # #",
                 "# # # # # # # # #",
                 "# # # # # # # # #",
@@ -42,7 +37,7 @@ class GridListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
             .addPageChangeHandler { _, new ->
                 pageNumber = new
             }
-            .setContent(guiItems)
+            .setContent(items)
             .build()
 
         return normalWindow(gui)
@@ -52,8 +47,7 @@ class GridListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
         val guiText =  GuiText("Your Bazaar Sale Listings", guiWidth = DEFAULT_GUI_WIDTH - 20)
             .addBackground()
 
-        val pageNumber = addPageNumber(LISTINGS_PER_PAGE)
-        return ofChildren(guiText.build(), pageNumber)
+        return withPageNumber(guiText)
     }
 
     private val listViewButton = GuiItem.LIST_VIEW.makeItem(text("List view")).makeGuiButton { _, _ -> ListListingMenu(viewer, backButtonHandler).openGui() }
