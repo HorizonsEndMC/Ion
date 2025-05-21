@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.gui.invui.input.validator.RangeIntegerValidato
 import net.horizonsend.ion.server.gui.invui.misc.ConfirmationMenu.Companion.promptConfirmation
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
@@ -316,6 +317,10 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 		val region = Regions.get<RegionTerritory>(cityInfo.territoryId)
 		if (!TradeCities.isCity(region)) return InputResult.FailureReason(listOf(text("Territory is not a trade city!", RED)))
 		if (!BAZAAR_CITY_TERRITORIES.contains(cityInfo.territoryId)) return InputResult.FailureReason(listOf(text("City doesn't have a registered bazaar!", RED)))
+
+		if (!viewer.hasEnoughMoney(unitPrice * count)) {
+			return InputResult.FailureReason(listOf(text("You don't have enough money to create that order!", RED)))
+		}
 
 		return InputResult.InputSuccess
 	}
