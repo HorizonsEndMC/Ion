@@ -13,7 +13,7 @@ import java.util.function.Supplier
 
 class EnumScrollButton<T : Enum<T>>(
 	providedItem: ItemProvider,
-	increment: Int,
+	increment: Int = 1,
 	value: Supplier<T>,
 	private val enum: Class<T>,
 	val nameFormatter: (T) -> Component,
