@@ -12,19 +12,19 @@ sealed interface ValidatorResult<T : Any> : InputResult {
 		override fun isSuccess(): Boolean = true
 	}
 
-	data class ValidatorSuccessEmpty(val rawResult: String) : ValidatorSuccess<Any> {
+	data object ValidatorSuccessEmpty : ValidatorSuccess<Any> {
 		override fun getReason(): List<Component>? = null
 
 		override val result: Any = Any()
 	}
 
-	data class ValidatorSuccessMultiEntry<T : Any>(val input: String, val results: Collection<T>) : ValidatorSuccess<T> {
+	data class ValidatorSuccessMultiEntry<T : Any>(val results: Collection<T>) : ValidatorSuccess<T> {
 		override fun getReason(): List<Component>? = null
 
 		override val result: T = results.first()
 	}
 
-	data class ValidatorSuccessSingleEntry<T : Any>(val rawResult: String, override val result: T ) : ValidatorSuccess<T> {
+	data class ValidatorSuccessSingleEntry<T : Any>(override val result: T) : ValidatorSuccess<T> {
 		override fun getReason(): List<Component>? = null
 	}
 
