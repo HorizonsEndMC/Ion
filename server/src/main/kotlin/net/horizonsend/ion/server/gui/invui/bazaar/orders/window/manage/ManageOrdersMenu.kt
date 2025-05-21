@@ -51,9 +51,10 @@ abstract class ManageOrdersMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>(v
 	}
 
 	protected val infoButton = GuiItem.INFO.makeItem(text("Information")).makeGuiButton { _, _ -> println("INFO") /*TODO*/ }
-	protected val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search Listings")).makeGuiButton { _, _ -> println("search") }
-	protected val filterButton = GuiItem.FILTER.makeItem(text("Filter Listings")).makeGuiButton { _, _ -> println("filter") }
-//	protected val sortButton = EnumScrollButton(
+	protected val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search Orders")).makeGuiButton { _, _ -> println("search") }
+	protected val filterButton = GuiItem.FILTER.makeItem(text("Filter Orders")).makeGuiButton { _, _ -> println("filter") }
+	protected val sortButton = GuiItem.SORT.makeItem(text("Sort Orders"))
+//		EnumScrollButton(
 //		providedItem = GuiItem.SORT.makeItem(text("Change Sorting Method")).asItemProvider(),
 //		value = { sortingMethod },
 //		enum = BazaarSort::class.java,
