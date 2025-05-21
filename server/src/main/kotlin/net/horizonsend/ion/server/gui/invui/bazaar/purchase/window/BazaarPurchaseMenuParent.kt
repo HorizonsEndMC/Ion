@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.ListListingMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.ListListingMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.SimpleStateButton
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
