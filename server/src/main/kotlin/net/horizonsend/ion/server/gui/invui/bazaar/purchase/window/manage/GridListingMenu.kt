@@ -45,7 +45,14 @@ class GridListingMenu(viewer: Player, backButtonHandler: () -> Unit = {}) : Abst
 
 	override fun buildTitle(): Component {
         val guiText =  GuiText("Your Bazaar Sale Listings", guiWidth = DEFAULT_GUI_WIDTH - 20)
-            .addBackground()
+			.setSlotOverlay(
+				"# # # # # # # # #",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				"# # # # # # # # #",
+			)
 
         return withPageNumber(guiText)
     }
