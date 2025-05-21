@@ -41,9 +41,8 @@ object DisplayShieldsCommand : SLCommand() {
                 if (multiblock == null || multiblock !is ShieldMultiblock) continue
 
                 multiblock.displayShieldCoverage(sign)
+                count++
             }
-
-            count++
         }
 
         sender.success("Displaying $count shields")
