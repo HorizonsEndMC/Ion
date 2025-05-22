@@ -68,6 +68,8 @@ class ListListingManagementMenu(viewer: Player) : AbstractListingManagementMenu(
 			.setContent(items)
 			.build()
 
+		gui.setPage(pageNumber)
+
 		return normalWindow(gui)
 	}
 

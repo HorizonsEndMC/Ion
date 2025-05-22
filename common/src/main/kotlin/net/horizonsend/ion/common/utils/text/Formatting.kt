@@ -106,6 +106,7 @@ fun template(
 			return@replacement when (val param = parameters[index]) {
 				is ComponentLike -> param
 				is Number -> text(param.toString(), paramColor)
+				is String -> text(param, paramColor)
 				else -> text(
 					if (useQuotesAroundObjects) {
 						"\"$param\""

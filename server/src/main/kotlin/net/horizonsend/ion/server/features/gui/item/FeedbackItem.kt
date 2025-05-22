@@ -1,32 +1,19 @@
 package net.horizonsend.ion.server.features.gui.item
 
 import net.horizonsend.ion.common.utils.InputResult
-import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.item.ItemProvider
-import xyz.xenondevs.invui.item.impl.AbstractItem
 import java.util.function.Supplier
 
 abstract class FeedbackItem(
-	private val providedItem: ItemProvider,
-	private val fallbackLoreProvider: Supplier<List<Component>>
-) : AbstractItem() {
-	protected open var currentLore = fallbackLoreProvider
-
-	fun resetLore() {
-		currentLore = fallbackLoreProvider
-	}
-
-	private val itemProvider = ItemProvider {
-		providedItem.get().updateLore(currentLore.get())
-	}
-
-	override fun getItemProvider(): ItemProvider = itemProvider
-
+	providedItem: ItemProvider,
+	fallbackLoreProvider: Supplier<List<Component>>
+) : FeedbackLike(providedItem, fallbackLoreProvider) {
 	override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
 		val result = getResult(event, player)
 
@@ -38,16 +25,6 @@ abstract class FeedbackItem(
 
 	abstract fun onSuccess(event: InventoryClickEvent, player: Player)
 	abstract fun onFailure(event: InventoryClickEvent, player: Player)
-
-	private fun updateWith(result: InputResult) {
-		currentLore = when (result) {
-			is InputResult.SuccessReason -> Supplier { result.reasonText }
-			is InputResult.FailureReason -> Supplier { result.reasonText }
-			else -> return
-		}
-
-		notifyWindows()
-	}
 
 	companion object {
 		fun builder(itemStack: ItemStack, resultProvier: (InventoryClickEvent, Player) -> InputResult): Builder = Builder({ itemStack }, resultProvier)
