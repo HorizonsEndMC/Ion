@@ -57,7 +57,7 @@ class BlockDisplayWrapper(
 		position.z
 	)
 
-	val playerManager = DisplayPlayerManager(entity)
+	val playerManager = DisplayPlayerManager(entity, updateInvervalMS = 1)
 
 	private fun createEntity(): CraftBlockDisplay = CraftBlockDisplay(
 		IonServer.server as CraftServer,
