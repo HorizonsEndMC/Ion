@@ -40,6 +40,7 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultib
 import net.horizonsend.ion.server.features.multiblock.type.misc.DisposalMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.DisposalMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.misc.ExpandableAirlock
+import net.horizonsend.ion.server.features.multiblock.type.misc.ExpandableBoardingRampMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ItemSplitterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.LargeTractorBeamMultiblock
@@ -395,6 +396,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(CryoPodMultiblock)
 		registerMultiblock(AirlockMultiblock)
 		registerMultiblock(ExpandableAirlock)
+		registerMultiblock(ExpandableBoardingRampMultiblock)
 		registerMultiblock(TractorBeamMultiblock)
 		registerMultiblock(MediumTractorBeamMultiblock)
 		registerMultiblock(LargeTractorBeamMultiblock)
