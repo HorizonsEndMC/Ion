@@ -658,7 +658,7 @@ class Starship(
 		// Shortcut
 		if (rotation == 0.0) return localVec3i + globalReference
 
-		return getAdjusted(localVec3i) + globalReference
+		return getAdjusted(localVec3i, false) + globalReference
 	}
 
 	// Get a world coordinate from a Vec3i relative to the ship's center of mass
@@ -668,12 +668,18 @@ class Starship(
 		// Shortcut
 		if (rotation == 0.0) return local
 
-		return getAdjusted(local)
+		return getAdjusted(local, true)
 	}
 
-	fun getAdjusted(vec3i: Vec3i): Vec3i {
-		val cosTheta: Double = cos(Math.toRadians(rotation))
-		val sinTheta: Double = sin(Math.toRadians(rotation))
+	fun getAdjusted(vec3i: Vec3i, opposite: Boolean): Vec3i {
+		var angle = rotation
+
+		if (opposite) {
+			angle = 360 - (angle % 360)
+		}
+
+		val cosTheta: Double = cos(Math.toRadians(angle))
+		val sinTheta: Double = sin(Math.toRadians(angle))
 
 		return Vec3i(
 			(vec3i.x.toDouble() * cosTheta - vec3i.z.toDouble() * sinTheta).roundToInt(),
