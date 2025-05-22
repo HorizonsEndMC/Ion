@@ -318,6 +318,16 @@ object Bazaars : IonServerComponent() {
 	 * Checks if the given string is a valid item, and not air.
 	 * Returns a success, or failure result with a reason.
 	 **/
+	fun checkTerritoryPresence(player: Player, territory: RegionTerritory): InputResult {
+		if (territory.contains(player.location)) return InputResult.InputSuccess
+
+		return InputResult.FailureReason(listOf(template(text("You must be inside {0} to do that!", RED), cityName(territory))))
+	}
+
+	/**
+	 * Checks if the given string is a valid item, and not air.
+	 * Returns a success, or failure result with a reason.
+	 **/
 	fun checkIsSelling(player: Player, territory: RegionTerritory, itemString: String): ValidatorResult<BazaarItem> {
 		val entry = BazaarItem.findOne(BazaarItem.matchQuery(territory.id, player.slPlayerId, itemString))
 		if (entry != null) {
@@ -474,7 +484,7 @@ object Bazaars : IonServerComponent() {
 			}
 		}
 
-		return InputResult.InputSuccess
+		return InputResult.SuccessReason(listOf(template(text("Added {0} to listing in {1}", GREEN), itemString, cityName)))
 	}
 
 	fun withdrawListingBalance(player: Player, territory: RegionTerritory, itemString: String, amount: Int): InputResult {
@@ -523,7 +533,7 @@ object Bazaars : IonServerComponent() {
 
 		if (resultItem.stock > 0) {
 			return InputResult.FailureReason(listOf(
-				template(text("Withdraw all items before removing! (/bazaar withdraw {0} {1})", RED), itemString, resultItem.stock)
+				template(text("Withdraw all items before removing! (/bazaar withdraw {0} {1})", RED), useQuotesAroundObjects = false, itemString, resultItem.stock)
 			))
 		}
 

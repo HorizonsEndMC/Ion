@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.listings.City
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.listings.GlobalItemListingsMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.GridListingManagementMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.ListListingManagementMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.ListingEditorMenu
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
@@ -74,6 +75,12 @@ object BazaarGUIs {
 
 	fun openListingManageGridMenu(player: Player, previous: CommonGuiWrapper?) {
 		val menu = GridListingManagementMenu(player)
+		previous?.let { menu.setParent(it) }
+		menu.openGui()
+	}
+
+	fun openListingEditor(player: Player, listing: BazaarItem, previous: CommonGuiWrapper?) {
+		val menu = ListingEditorMenu(player, listing)
 		previous?.let { menu.setParent(it) }
 		menu.openGui()
 	}
