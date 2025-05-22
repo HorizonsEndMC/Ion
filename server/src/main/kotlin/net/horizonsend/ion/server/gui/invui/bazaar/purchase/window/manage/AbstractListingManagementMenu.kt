@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.gui.item.EnumScrollButton
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
@@ -58,8 +59,7 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
 	}
 
 	fun handleEntryClick(item: BazaarItem) {
-		println("Got clicke!!!!!!!!!!! on ${item.itemString}")
-		// TODO
+		BazaarGUIs.openListingEditor(viewer, item, this)
 	}
 
 	protected val infoButton = GuiItem.INFO.makeItem(text("Information")).makeGuiButton { _, _ -> println("INFO") /*TODO*/ }

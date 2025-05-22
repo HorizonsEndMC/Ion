@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.InputResult
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.icons.GuiIcon
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
@@ -93,7 +94,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 	override fun buildTitle(): Component {
 		val background = GuiText("Create Bazaar Order")
 			.addBackground()
-			.setTextInput(
+			.setGuiIconOverlay(
 				". . . . . . . . .",
 				". l c c c c c c r",
 				". l c c c c c c r",
@@ -101,6 +102,9 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 				". . . . l c c r .",
 				". . . . l c c r .",
 			)
+			.addIcon('l', GuiIcon.textInputBoxLeft())
+			.addIcon('c', GuiIcon.textInputBoxCenter())
+			.addIcon('r', GuiIcon.textInputBoxRight())
 			.add(text("Count"), line = 6, verticalShift = 4)
 			.add(text("Unit Price"), line = 8, verticalShift = 4)
 			.add(text("Order Price"), line = 10, verticalShift = 4)
