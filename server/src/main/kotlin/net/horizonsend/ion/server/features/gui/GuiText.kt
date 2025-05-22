@@ -7,9 +7,7 @@ import net.horizonsend.ion.common.utils.text.GUI_MARGIN
 import net.horizonsend.ion.common.utils.text.SHIFT_DOWN_MIN
 import net.horizonsend.ion.common.utils.text.SLOT_OVERLAY_WIDTH
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
-import net.horizonsend.ion.common.utils.text.TEXT_INPUT_CENTER_CHARACTER
-import net.horizonsend.ion.common.utils.text.TEXT_INPUT_LEFT_CHARACTER
-import net.horizonsend.ion.common.utils.text.TEXT_INPUT_RIGHT_CHARACTER
+import net.horizonsend.ion.common.utils.text.icons.GuiIcon
 import net.horizonsend.ion.common.utils.text.leftShift
 import net.horizonsend.ion.common.utils.text.minecraftLength
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -19,7 +17,6 @@ import net.horizonsend.ion.common.utils.text.shiftToStartOfComponent
 import net.horizonsend.ion.common.utils.text.slotOverlay
 import net.horizonsend.ion.common.utils.text.yFontKey
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 
 class GuiText(
@@ -46,7 +43,8 @@ class GuiText(
     /**
      * List of chars that indicate if a slot should have an overlay. Similar to setStructure in InvUI.
      */
-    private val textInputStructure = mutableListOf<List<TextInputSlotType>>()
+    private val iconStructure = mutableListOf<List<Char>>()
+    private val iconMap = mutableMapOf<Char, GuiIcon>('.' to GuiIcon.EMPTY)
 
     /**
      * Adds a GuiComponent to the GuiText
@@ -144,55 +142,25 @@ class GuiText(
     }
 
     /**
-     * Sets the slot overlays in the GUI
-     *
-     * '.' - empty
-     *
-     * 'l' - left text input box component
-     * 'c' - center text input box component
-     * 'r' - right text input box component
-	 *
+     * Sets the slot overlays in the GUI. The provided characters will be referenced from ones added to the icon mapping
      * @param structureData list of strings indicating what each slot should be covered with
      */
-    fun setTextInput(vararg structureData: String): GuiText {
-        textInputStructure.clear()
+    fun setGuiIconOverlay(vararg structureData: String): GuiText {
+        iconStructure.clear()
         for (row in structureData) {
-            val sanitizedRow = row.replace(" ", "").replace("\n", "").mapNotNull(TextInputSlotType::get)
-			textInputStructure.add(sanitizedRow)
-
+            val sanitizedRow = row.replace(" ", "").replace("\n", "").toList()
+			iconStructure.add(sanitizedRow)
         }
 
 		return this
     }
 
-	enum class TextInputSlotType(val sourceChar: Char, val destinationString: String) {
-		EMPTY('.', "") {
-			override fun getComponent(line: Int): Component {
-				return shift(SLOT_OVERLAY_WIDTH)
-			}
-		},
-		LEFT('l', "$TEXT_INPUT_LEFT_CHARACTER") {
-			override fun getComponent(line: Int): Component {
-				return ofChildren(shift(-1), text(destinationString, WHITE).shiftToLine(line, GUI_HEADER_MARGIN))
-			}
-		},
-		CENTER('c', "$TEXT_INPUT_CENTER_CHARACTER") {
-			override fun getComponent(line: Int): Component {
-				return ofChildren(shift(-1), text(destinationString, WHITE).shiftToLine(line, GUI_HEADER_MARGIN))
-			}
-		},
-		RIGHT('r', "$TEXT_INPUT_RIGHT_CHARACTER") {
-			override fun getComponent(line: Int): Component {
-				return ofChildren(shift(-1), text(destinationString, WHITE).shiftToLine(line, GUI_HEADER_MARGIN))
-			}
-		};
-
-		abstract fun getComponent(line: Int): Component
-
-		companion object {
-			private val byChar = entries.associateBy { it.sourceChar }
-			fun get(char: Char) = byChar[char]
-		}
+	/**
+	 * Marks the character to be displayed as the provided icon
+	 */
+	fun addIcon(key: Char, icon: GuiIcon): GuiText {
+		iconMap[key] = icon
+		return this
 	}
 
     /**
@@ -228,12 +196,14 @@ class GuiText(
         }
 
         // parse slot overlay structure and add overlay components
-        for ((index, inputOverlayRow) in textInputStructure.withIndex()) {
+        for ((index, inputOverlayRow) in iconStructure.withIndex()) {
             val inputBoxComponents = mutableListOf<Component>()
             val line = index * 2 // slots only on even line
 
-            for (inputType in inputOverlayRow) {
-				inputBoxComponents.add(inputType.getComponent(line))
+            for (key in inputOverlayRow) {
+				val icon = iconMap[key] ?: GuiIcon.EMPTY
+
+				inputBoxComponents.add(icon.getComponent(line))
             }
 
             renderedComponents.add(Component.textOfChildren(*inputBoxComponents.toTypedArray()).shiftToStartOfComponent())
