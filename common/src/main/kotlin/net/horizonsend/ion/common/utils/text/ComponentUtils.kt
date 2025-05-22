@@ -3,6 +3,7 @@ package net.horizonsend.ion.common.utils.text
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toText
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.icons.GuiIconType
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.key.Key
@@ -10,7 +11,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
-import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.flattener.ComponentFlattener
 import net.kyori.adventure.text.flattener.FlattenerListener
@@ -153,6 +153,11 @@ const val TEXT_INPUT_LEFT_CHARACTER = '\uF8F1'
 const val TEXT_INPUT_CENTER_CHARACTER = '\uF8F0'
 const val TEXT_INPUT_RIGHT_CHARACTER = '\uF8EF'
 const val CONFIRMATION_BACKGROUND_CHARACTER = '\uF8EE'
+const val PENCIL_CHARACTER = '\uF8ED'
+const val TRASHCAN_CHARACTER = '\uF8EC'
+const val CHECKMARK_CHARACTER = '\uF8EB'
+const val ICON_BORDER_CHARACTER = '\uF8EA'
+const val EMPTY_ICON_CHARACTER = '\uF8E9'
 
 // Custom characters end
 
@@ -178,10 +183,7 @@ val String.minecraftLength: Int
 				'@', '~', '«', '»' -> 7
 				CHETHERITE_CHARACTER -> 10
 				SLOT_OVERLAY_CHARACTER -> 19
-				TEXT_INPUT_LEFT_CHARACTER -> 19
-				TEXT_INPUT_CENTER_CHARACTER -> 19
-				TEXT_INPUT_RIGHT_CHARACTER -> 19
-				else -> 6
+				else -> GuiIconType.getByDisplayChar(it)?.width?.plus(1) ?: 6
 			} as Int
 		}
 	}
@@ -262,7 +264,7 @@ fun Component.wrap(width: Int): List<Component> {
 	// list of components acting as lines on a GUI
 	val lines = mutableListOf<Component>()
 	// component for constructing portions of a line
-	var currentComponent: TextComponent
+	var currentComponent: Component
 	// stores the current style
 	var currentStyle: Style = style()
 	// list for storing components in each line
