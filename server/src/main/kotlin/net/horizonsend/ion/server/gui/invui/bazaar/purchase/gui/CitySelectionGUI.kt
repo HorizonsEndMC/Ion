@@ -13,8 +13,8 @@ import net.horizonsend.ion.server.gui.invui.bazaar.REMOTE_WARINING
 import net.horizonsend.ion.server.gui.invui.bazaar.getCityButtons
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.litote.kmongo.eq
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.gui.PagedGui
@@ -30,8 +30,8 @@ class CitySelectionGUI(val parent: BazaarPurchaseMenuParent) : InvUIGuiWrapper<G
 
 				val lore = listOf(
 					ofChildren(
-						text("Located at ", HE_MEDIUM_GRAY), text(territoryRegion.name, AQUA),
-						text(" on ", HE_MEDIUM_GRAY), text(territoryRegion.world, AQUA), text(".", GRAY)
+						text("Located at ", HE_MEDIUM_GRAY), text(territoryRegion.name, WHITE),
+						text(" on ", HE_MEDIUM_GRAY), text(territoryRegion.world, WHITE), text(".", GRAY)
 					),
 					template(text("{0} item listing${if (listingCount != 1L) "s" else ""}.", HE_MEDIUM_GRAY), listingCount)
 				)
