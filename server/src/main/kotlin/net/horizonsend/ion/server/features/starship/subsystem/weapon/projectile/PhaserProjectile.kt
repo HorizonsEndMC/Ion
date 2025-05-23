@@ -17,7 +17,6 @@ import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.util.Vector
-import java.util.concurrent.TimeUnit
 
 class PhaserProjectile(
 	source: ProjectileSource,
@@ -114,5 +113,5 @@ class PhaserProjectile(
 		))
 	}
 
-	override fun playCustomSound(loc: Location, soundName: String, chunkRange: Int, pitch: Float) { /* Do nothing */ }
+	override fun playCustomSound(loc: Location, sound: Sound) {}
 }
