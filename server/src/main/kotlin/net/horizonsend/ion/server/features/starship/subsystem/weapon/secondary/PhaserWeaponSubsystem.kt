@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PhaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
@@ -46,7 +45,7 @@ class PhaserWeaponSubsystem(
 		}
 
 		loc.world.players.forEach {
-			if (it.location.distance(loc) < balancing.range) {
+			if (it.location.distance(loc) < balancing.projectile.range) {
 				shooter.playSound(Sound.sound(Key.key("horizonsend:starship.weapon.plasma_cannon.shoot"), Sound.Source.PLAYER, 1.0f, 2.0f))
 			}
 		}
