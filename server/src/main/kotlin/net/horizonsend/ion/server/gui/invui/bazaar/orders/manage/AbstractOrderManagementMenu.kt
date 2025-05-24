@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.orders.window.manage
+package net.horizonsend.ion.server.gui.invui.bazaar.orders.manage
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
