@@ -28,6 +28,11 @@ abstract class InvUIWindowWrapper(val viewer: Player, val async: Boolean = false
 		parentWindow = gui
 	}
 
+	fun openGui(parent: CommonGuiWrapper) {
+		setParent(parent)
+		openGui()
+	}
+
 	protected fun getParent(): CommonGuiWrapper? = parentWindow
 
 	/**

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.orders.window.manage
+package net.horizonsend.ion.server.gui.invui.bazaar.orders.manage
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
