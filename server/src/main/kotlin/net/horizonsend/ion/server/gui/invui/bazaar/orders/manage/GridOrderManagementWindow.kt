@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.orders.window.manage
+package net.horizonsend.ion.server.gui.invui.bazaar.orders.manage
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
