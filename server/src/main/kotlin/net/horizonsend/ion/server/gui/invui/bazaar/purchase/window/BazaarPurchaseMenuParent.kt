@@ -31,7 +31,7 @@ abstract class BazaarPurchaseMenuParent(
 
 	private fun getMenuGUI(): Gui = TabGui.normal()
 		.setStructure(
-			"b m . 1 2 c . d i",
+			"b m . 1 2 o . d i",
 			"x x x x x x x x x",
 			"x x x x x x x x x",
 			"x x x x x x x x x",
@@ -43,7 +43,7 @@ abstract class BazaarPurchaseMenuParent(
 
 		.addIngredient('1', citySelectionButton)
 		.addIngredient('2', globalBrowseButton)
-		.addIngredient('c', buyOrdersButton)
+		.addIngredient('o', buyOrdersButton)
 
 		.addIngredient('d', settingsButton)
 		.addIngredient('i', infoButton)
@@ -135,7 +135,7 @@ abstract class BazaarPurchaseMenuParent(
 			BazaarGUIs.openListingManageMenu(viewer, this)
 		}
 
-	private val buyOrdersButton = GuiItem.CLOCKWISE
+	private val buyOrdersButton = GuiItem.UP
 		.makeItem(text("Switch to the Buy Order Menu"))
 		.makeGuiButton { _, _ ->
 			BazaarGUIs.openBuyOrderMainMenu(viewer, this)
