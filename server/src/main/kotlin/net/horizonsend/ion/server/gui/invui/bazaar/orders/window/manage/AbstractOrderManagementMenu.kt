@@ -42,7 +42,7 @@ abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<Baz
 			template(text("Price Per Item: {0}", HE_MEDIUM_GRAY), (orderItem.requestedQuantity * orderItem.pricePerItem).toCreditComponent()),
 			template(text("Order Price: {0}", HE_MEDIUM_GRAY), orderItem.pricePerItem.toCreditComponent()),
 			template(text("Fulfilled Quantity: {0}", HE_MEDIUM_GRAY), orderItem.fulfilledQuantity),
-			template(text("Unfulfilled Quantity: {0}", HE_MEDIUM_GRAY), orderItem.stock),
+			template(text("Unfulfilled Quantity: {0}", HE_MEDIUM_GRAY), orderItem.requestedQuantity - orderItem.fulfilledQuantity),
 		))
 	}
 

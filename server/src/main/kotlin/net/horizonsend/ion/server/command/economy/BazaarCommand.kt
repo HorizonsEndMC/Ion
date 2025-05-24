@@ -10,7 +10,9 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
@@ -28,7 +30,9 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
+import net.horizonsend.ion.server.features.economy.city.CityNPCs.BAZAAR_CITY_TERRITORIES
 import net.horizonsend.ion.server.features.economy.city.TradeCities
+import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -65,6 +69,36 @@ object BazaarCommand : SLCommand() {
 				and(BazaarItem::seller eq player.slPlayerId, BazaarItem::cityTerritory eq territory.id),
 				BazaarItem::itemString
 			).toList()
+		}
+
+		registerAsyncCompletion(manager, "bazaarCities") { _ ->
+			TradeCities.getAll().filter { BAZAAR_CITY_TERRITORIES.contains(it.territoryId) }.map { it.displayName }
+		}
+
+		manager.commandContexts.registerContext(TradeCityData::class.java) { c ->
+			val name = c.popFirstArg()
+			TradeCities.getAll().firstOrNull { it.displayName == name }
+		}
+
+		registerAsyncCompletion(manager, "playerOrders") { c ->
+			val city = c.getContextValue(TradeCityData::class.java) ?: throw InvalidCommandArgument("No trade city specified!")
+			BazaarOrder.find(and(BazaarOrder::player eq c.player.slPlayerId, BazaarOrder::cityTerritory eq city.territoryId))
+				.toList()
+				.map { it.itemString }
+		}
+
+		registerAsyncCompletion(manager, "cityOrderers") { c ->
+			val city = c.getContextValue(TradeCityData::class.java) ?: throw InvalidCommandArgument("No trade city specified!")
+			BazaarOrder.findProp(BazaarOrder::cityTerritory eq city.territoryId, BazaarOrder::player).mapNotNull(SLPlayer::getName)
+		}
+
+		registerAsyncCompletion(manager, "cityOrders") { c ->
+			val city = c.getContextValue(TradeCityData::class.java) ?: throw InvalidCommandArgument("No trade city specified!")
+			val owner = c.getContextValue(SLPlayer::class.java) ?: throw InvalidCommandArgument("No trade player specified!")
+
+			BazaarOrder.find(and(BazaarOrder::player eq owner._id, BazaarOrder::cityTerritory eq city.territoryId))
+				.toList()
+				.map { it.itemString }
 		}
 	}
 
@@ -314,7 +348,36 @@ object BazaarCommand : SLCommand() {
 			"You must acknowledge the cost of the listing to create it. The cost is ${realCost.toCreditsString()}. Run the command: /bazaar order create $itemString $quantity $pricePerItem $realCost"
 		}
 
-		val result = Bazaars.createOrder(sender, territory, itemString, quantity, pricePerItem)
-		result.getReason()?.forEach(sender::sendMessage)
+		Bazaars.createOrder(sender, territory, itemString, quantity, pricePerItem).sendReason(sender)
+	}
+
+	@Subcommand("order remove")
+	@Description("Create a new buy order at the provided city")
+	@CommandCompletion("@bazaarCities @playerOrders")
+	fun onOrderDelete(sender: Player, city: TradeCityData, orderString: String) = asyncCommand(sender) {
+		val orderCheck = Bazaars.checkHasOrder(sender.slPlayerId, Regions[city.territoryId], orderString)
+		val order = orderCheck.result ?: return@asyncCommand orderCheck.sendReason(sender)
+
+		Bazaars.cancelOrder(sender, order._id).sendReason(sender)
+	}
+
+	@Subcommand("order withdraw")
+	@Description("Withdraws fulfilled items from this order. You may optionally specify a limit.")
+	@CommandCompletion("@bazaarCities @playerOrders")
+	fun onOrderWithdraw(sender: Player, city: TradeCityData, orderString: String, @Optional limit: Int?) = asyncCommand(sender) {
+		val orderCheck = Bazaars.checkHasOrder(sender.slPlayerId, Regions[city.territoryId], orderString)
+		val order = orderCheck.result ?: return@asyncCommand orderCheck.sendReason(sender)
+
+		Bazaars.withdrawOrderStock(sender, order._id, limit ?: Int.MAX_VALUE).sendReason(sender)
+	}
+
+	@Subcommand("order fulfill")
+	@Description("Fulfills the order at the providec city.")
+	@CommandCompletion("@bazaarCities @cityOrderers @cityOrders")
+	fun onOrderFulfill(sender: Player, city: TradeCityData, owner: SLPlayer, orderString: String, @Optional limit: Int?) = asyncCommand(sender) {
+		val orderCheck = Bazaars.checkHasOrder(owner._id, Regions[city.territoryId], orderString)
+		val order = orderCheck.result ?: return@asyncCommand orderCheck.sendReason(sender)
+
+		Bazaars.fulfillOrder(sender, order._id, limit ?: Int.MAX_VALUE).sendReason(sender)
 	}
 }
