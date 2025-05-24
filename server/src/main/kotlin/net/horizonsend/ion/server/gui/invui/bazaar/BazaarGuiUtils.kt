@@ -15,8 +15,6 @@ import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
-import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet.Companion.DEFAULT_ITEM_FACTORY
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
@@ -44,27 +42,19 @@ fun getMenuTitleName(bazaarItem: BazaarItem) = getMenuTitleName(fromItemString(b
 
 fun getCityButtons(
 	cityFilter: (TradeCityData) -> Boolean = { true },
-	nameBuilder: (TradeCityData) -> Component = { city -> Component.text("${city.displayName} on ${Regions.get<RegionTerritory>(city.territoryId).world}") },
-	loreBuilder: (TradeCityData) -> List<Component> = { listOf() },
+	nameBuilder: (TradeCityData) -> Component,
+	loreBuilder: (TradeCityData) -> List<Component>,
 	clickHandler: (TradeCityData, ClickType, Player) -> Unit,
 ): List<AbstractItem> {
 	val cities: List<TradeCityData> = CityNPCs.BAZAAR_CITY_TERRITORIES
 		.map { Regions.get<RegionTerritory>(it) }
-//		.filter { Sector.getSector(it.world) == sector }
 		.mapNotNull(TradeCities::getIfCity)
 		.filter(cityFilter)
 
-	return cities.map { city ->
-		val territoryId = city.territoryId
-		val territory: RegionTerritory = Regions[territoryId]
-
-		// attempt to get the planet icon, just use a detonator if unavailable
-		AsyncItem({
-			(Space.getPlanet(territory.world)?.planetIconFactory?.construct() ?: DEFAULT_ITEM_FACTORY.construct())
-				.updateDisplayName(nameBuilder(city))
-				.updateLore(loreBuilder(city))
-		}) { event -> clickHandler.invoke(city, event.click, event.playerClicker) }
-	}
+	return cities.map { city -> AsyncItem(
+		resultProvider = { city.planetIcon.updateDisplayName(nameBuilder(city)).updateLore(loreBuilder(city)) },
+		handleClick = { event -> clickHandler.invoke(city, event.click, event.playerClicker) }
+	) }
 }
 
 fun getItemButtons(
@@ -84,16 +74,15 @@ fun getItemButtons(
 		.mapTo(mutableListOf()) { entry ->
 			val (itemString, grouped) = entry
 
-			entry to AsyncItem({
-				with(fromItemString(itemString)) {
+			entry to AsyncItem(
+				resultProvider = { with(fromItemString(itemString)) {
 					nameBuilder?.let { updateDisplayName(it.invoke(itemString, grouped)) }
 					updateLore(loreBuilder.invoke(itemString, grouped))
 					// Clear attributes
 					stripAttributes()
-				}
-			}) { event ->
-				clickHandler.invoke(itemString, grouped, event.click, event.playerClicker)
-			}
+				} },
+				handleClick = { event -> clickHandler.invoke(itemString, grouped, event.click, event.playerClicker) }
+			)
 		}
 		.apply { sort.sort(this) }
 		.map { it.second }

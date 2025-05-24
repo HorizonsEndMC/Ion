@@ -675,7 +675,7 @@ object Bazaars : IonServerComponent() {
 //		val ownershipCheck = checkOrderOwnership(player, order)
 //		if (!ownershipCheck.isSuccess()) return ownershipCheck
 //	}
-//
+
 	fun withdrawOrderStock(player: Player, order: Oid<BazaarOrder>, limit: Int): InputResult {
 		val ownershipCheck = checkOrderOwnership(player, order)
 		if (!ownershipCheck.isSuccess()) return ownershipCheck
