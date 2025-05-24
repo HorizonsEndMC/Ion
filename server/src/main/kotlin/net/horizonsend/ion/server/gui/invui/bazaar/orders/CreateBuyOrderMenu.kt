@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.orders.window
+package net.horizonsend.ion.server.gui.invui.bazaar.orders
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.InputResult
