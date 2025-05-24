@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.trx
 import org.bson.conversions.Bson
 import org.litote.kmongo.combine
+import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.gte
 import org.litote.kmongo.inc
@@ -63,6 +64,10 @@ class BazaarOrder(
 			col.insertOne(sess, item)
 
 			return@trx id
+		}
+
+		fun delete(orderId: Oid<BazaarOrder>) = trx { session ->
+			col.deleteOneById(session, orderId)
 		}
 
 		private fun alsoUpdateTime(update: Bson): Bson {

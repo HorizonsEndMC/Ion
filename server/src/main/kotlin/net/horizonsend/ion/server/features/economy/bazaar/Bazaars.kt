@@ -6,11 +6,13 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.FutureInputResult
 import net.horizonsend.ion.common.utils.InputResult
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
@@ -40,6 +42,7 @@ import net.horizonsend.ion.server.gui.invui.input.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
+import net.horizonsend.ion.server.miscellaneous.utils.depositMoney
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
@@ -61,6 +64,7 @@ import org.litote.kmongo.ascendingSort
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq
 import org.litote.kmongo.gt
+import org.litote.kmongo.inc
 import org.litote.kmongo.ne
 import java.util.function.Consumer
 import kotlin.math.roundToInt
@@ -328,6 +332,16 @@ object Bazaars : IonServerComponent() {
 	 * Checks if the given string is a valid item, and not air.
 	 * Returns a success, or failure result with a reason.
 	 **/
+	fun checkOrderOwnership(player: Player, order: Oid<BazaarOrder>): InputResult {
+		if (BazaarOrder.findOneProp(BazaarOrder::_id eq order, BazaarOrder::player) == player.slPlayerId) return InputResult.InputSuccess
+
+		return InputResult.FailureReason(listOf(text("You don't own that order!", RED)))
+	}
+
+	/**
+	 * Checks if the given string is a valid item, and not air.
+	 * Returns a success, or failure result with a reason.
+	 **/
 	fun checkIsSelling(player: Player, territory: RegionTerritory, itemString: String): ValidatorResult<BazaarItem> {
 		val entry = BazaarItem.findOne(BazaarItem.matchQuery(territory.id, player.slPlayerId, itemString))
 		if (entry != null) {
@@ -335,6 +349,21 @@ object Bazaars : IonServerComponent() {
 		}
 
 		return ValidatorResult.FailureResult(template(text("You're not selling {0} at {1}!", RED), itemString, cityName(territory)))
+	}
+
+	/**
+	 * Checks if the player has an order for the item string at the provided city
+	 * Returns a success, or failure result with a reason.
+	 **/
+	fun checkHasOrder(player: SLPlayerId, territory: RegionTerritory, itemString: String): ValidatorResult<BazaarOrder> {
+		val entry = BazaarOrder.findOne(and(BazaarOrder::player eq player, BazaarOrder::cityTerritory eq territory.id, BazaarOrder::itemString eq itemString))
+		if (entry != null) {
+			return ValidatorResult.ValidatorSuccessSingleEntry(entry)
+		}
+
+		val name = SLPlayer.getName(player)
+
+		return ValidatorResult.FailureResult(template(text("{0} doesn't have an order for {1} at {2}!", RED), name, itemString, cityName(territory)))
 	}
 
 	/**
@@ -458,25 +487,7 @@ object Bazaars : IonServerComponent() {
 		val resultItem = itemResult.result ?: return itemResult
 
 		Tasks.sync {
-			val inventory = player.inventory
-
-			var remaining = limit
-			var count = 0
-
-			for ((index, itemStack) in inventory.withIndex()) {
-				if (itemStack?.isSimilar(itemReference) == true) {
-					val toTake = minOf(remaining, itemStack.amount)
-
-					count += toTake
-					remaining -= toTake
-
-					if (itemStack.amount == toTake) {
-						inventory.setItem(index, null)
-					} else {
-						itemStack.amount -= toTake
-					}
-				}
-			}
+			val count = takePlayerItemsOfType(player, itemReference, limit)
 
 			Tasks.async {
 				BazaarItem.addStock(resultItem._id, count)
@@ -605,6 +616,10 @@ object Bazaars : IonServerComponent() {
 		val cityName = cityName(territory)
 		val totalPrice = orderQuantity * individualPrice
 
+		if (BazaarOrder.any(and(BazaarOrder::player eq player.slPlayerId, BazaarOrder::itemString eq itemString, BazaarOrder::cityTerritory eq territory.id))) {
+			return InputResult.FailureReason(listOf(template(text("You already have an order for {0} at {1}!", RED), itemString, cityName)))
+		}
+
 		if (!player.hasEnoughMoney(totalPrice)) {
 			return InputResult.FailureReason(listOf(text("You don't have enough money to create that order!", RED)))
 		}
@@ -625,17 +640,115 @@ object Bazaars : IonServerComponent() {
 		}
 	}
 
-	fun cancelOrder() {
+	fun cancelOrder(player: Player, order: Oid<BazaarOrder>): InputResult {
+		val ownershipCheck = checkOrderOwnership(player, order)
+		if (!ownershipCheck.isSuccess()) return ownershipCheck
 
+		if (BazaarOrder.matches(order, BazaarOrder::stock gt 0)) {
+			return InputResult.FailureReason(listOf(text("Your order still has unwithdrawn stock! Withdraw it all first!", RED)))
+		}
+
+		val remainingBalance = BazaarOrder.findPropById(order, BazaarOrder::balance)
+
+		BazaarOrder.delete(order)
+
+		if (remainingBalance != null) {
+			Tasks.sync {
+				player.depositMoney(remainingBalance)
+			}
+		}
+
+		return InputResult.SuccessReason(listOf(
+			text("Deleted bazaar order.", GREEN),
+			template(text("You have been refunded {0} credits, for products that had not been fulfilled", GREEN), remainingBalance?.toCreditComponent())
+		))
 	}
 
-	fun editOrderQuantity() {
+//	fun editOrderQuantity(player: Player, order: Oid<BazaarOrder>): InputResult {
+//		val ownershipCheck = checkOrderOwnership(player, order)
+//		if (!ownershipCheck.isSuccess()) return ownershipCheck
+//
+//		// Check quantity equals zero, prompt to delete instead
+//	}
+//
+//	fun editOrderPrice(player: Player, order: Oid<BazaarOrder>): InputResult {
+//		val ownershipCheck = checkOrderOwnership(player, order)
+//		if (!ownershipCheck.isSuccess()) return ownershipCheck
+//	}
+//
+	fun withdrawOrderStock(player: Player, order: Oid<BazaarOrder>, limit: Int): InputResult {
+		val ownershipCheck = checkOrderOwnership(player, order)
+		if (!ownershipCheck.isSuccess()) return ownershipCheck
 
+		val orderDocument = BazaarOrder.findById(order) ?: return InputResult.FailureReason(listOf(text("That order does not exist!", RED)))
+
+		val currentStock = orderDocument.stock
+
+		if (currentStock == 0) {
+			return InputResult.FailureReason(listOf(text("That order does have any stock to withdraw!", RED)))
+		}
+
+		val toRemove = minOf(limit, currentStock)
+
+		BazaarOrder.updateById(order, inc(BazaarOrder::stock, -toRemove))
+		orderDocument.stock -= toRemove
+
+		val item = fromItemString(orderDocument.itemString)
+
+		val future = FutureInputResult()
+
+		Tasks.sync {
+			val (fullStacks, remainder) = giveOrDropItems(item, toRemove, player)
+
+			future.complete(InputResult.SuccessReason(listOf(template(
+				text("Withdrew {0} of {1} at {2} ({3} stack(s) and {4} item(s) items from the balance. {5} remain.", GREEN),
+				toRemove,
+				orderDocument.itemString,
+				cityName(Regions[orderDocument.cityTerritory]),
+				fullStacks,
+				remainder,
+				orderDocument.stock
+			))))
+		}
+
+		return future
 	}
 
-	fun fulfillOrder() {
+	fun fulfillOrder(fulfiller: Player, order: Oid<BazaarOrder>, limit: Int): InputResult {
+		val combatResult = checkCombatTag(fulfiller)
+		if (!combatResult.isSuccess()) return combatResult
 
+		val orderDocument = BazaarOrder.findById(order) ?: return InputResult.FailureReason(listOf(text("That order does not exist!", RED)))
+
+		val territoryResult = checkValidTerritory(Regions[orderDocument.cityTerritory])
+		if (!territoryResult.isSuccess()) return territoryResult
+
+		val itemValidationResult = checkValidString(orderDocument.itemString)
+		val itemReference: ItemStack = itemValidationResult.result ?: return itemValidationResult
+
+		val result = FutureInputResult()
+
+		Tasks.sync {
+			val count = takePlayerItemsOfType(fulfiller, itemReference, limit)
+
+			Tasks.async {
+				val profit = BazaarOrder.fulfillStock(order, fulfiller.slPlayerId, count)
+				val ordererName = SLPlayer.getName(orderDocument.player)
+
+				fulfiller.depositMoney(profit)
+
+				result.complete(InputResult.SuccessReason(listOf(
+					template(text("Fulfilled {0} of {1}'s order of {2} for a profit of {3}", GREEN), count, ordererName, itemReference.displayNameComponent, profit.toCreditComponent())
+				)))
+
+				//TODO logic for removing the order
+			}
+		}
+
+		return result
 	}
+
+	// START UTILS
 
 	/** Formats the trade city name of the given territory */
 	fun cityName(territory: RegionTerritory) = TradeCities.getIfCity(territory)?.displayName ?: "<{Unknown}>" // this will be used if the city is disbanded but their items remain there
@@ -666,5 +779,34 @@ object Bazaars : IonServerComponent() {
 			add(remainder)
 		}
 		return Pair(fullStacks, remainder)
+	}
+
+	/**
+	 * Removes items matching the provided reference from the players inventory
+	 * Returns the count of items removed
+	 *
+	 * @param limit the limit to take
+	 **/
+	fun takePlayerItemsOfType(player: Player, itemReference: ItemStack, limit: Int): Int {
+		val inventory = player.inventory
+		var remaining = limit
+		var count = 0
+
+		for ((index, itemStack) in inventory.withIndex()) {
+			if (itemStack?.isSimilar(itemReference) == true) {
+				val toTake = minOf(remaining, itemStack.amount)
+
+				count += toTake
+				remaining -= toTake
+
+				if (itemStack.amount == toTake) {
+					inventory.setItem(index, null)
+				} else {
+					itemStack.amount -= toTake
+				}
+			}
+		}
+
+		return count
 	}
 }

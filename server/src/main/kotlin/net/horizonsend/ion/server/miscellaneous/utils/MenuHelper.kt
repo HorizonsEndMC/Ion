@@ -73,10 +73,6 @@ object MenuHelper {
 		item.itemMeta = item.itemMeta?.apply { lore(lines) }
 	}
 
-	fun StaticPane.withItem(item: GuiItem, x: Int, z: Int): StaticPane {
-		addItem(item, x, z); return this
-	}
-
 	fun Player.openPaginatedMenu(title: String, items: List<GuiItem>, titleItems: List<GuiItem> = listOf()) =
 		Tasks.sync {
 			require(titleItems.size <= 6)
