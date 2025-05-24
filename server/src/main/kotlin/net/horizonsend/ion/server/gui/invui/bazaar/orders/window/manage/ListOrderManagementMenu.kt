@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.orders.window.manage
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.common.utils.text.withShadowColor
@@ -65,7 +66,7 @@ class ListOrderManagementMenu(viewer: Player) : AbstractOrderManagementMenu(view
 	}
 
 	override fun buildTitle(): Component {
-		val text = GuiText("Managing Your Bazaar Orders")
+		val text = GuiText("Managing Your Bazaar Orders", guiWidth = DEFAULT_GUI_WIDTH - 20)
 			.addBackground()
 
 		val startLine = 2

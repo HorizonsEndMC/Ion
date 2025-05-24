@@ -316,7 +316,12 @@ fun formatSettlementName(id: Oid<Settlement>): Component {
 fun formatException(throwable: Throwable): Component {
 	val stackTrace = "$throwable\n" + throwable.stackTrace.joinToString(separator = "\n")
 
-	return ofChildren(text(throwable.message ?: "No message provided", RED), space(), bracketed(text("Hover for info", HE_LIGHT_GRAY)))
+	return ofChildren(
+		text(throwable.toString(), RED),
+		text(throwable.message ?: "No message provided", RED),
+		space(),
+		bracketed(text("Hover for info", HE_LIGHT_GRAY))
+	)
 		.hoverEvent(text(stackTrace))
 		.clickEvent(ClickEvent.copyToClipboard(stackTrace))
 }
