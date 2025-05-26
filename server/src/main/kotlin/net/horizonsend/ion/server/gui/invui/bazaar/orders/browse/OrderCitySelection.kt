@@ -1,7 +1,10 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.orders.browse
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
+import net.horizonsend.ion.common.utils.text.BAZAAR_ORDER_HEADER_ICON
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.gui.GuiBorder
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
@@ -80,7 +83,13 @@ class OrderCitySelection(viewer: Player) : ListInvUIWindow<TradeCityData>(viewer
 	}
 
 	override fun buildTitle(): Component {
-		return GuiText("Select City")
+		return GuiText("")
+			.addBorder(GuiBorder.regular(
+				color = HE_LIGHT_ORANGE,
+				headerIcon = GuiBorder.HeaderIcon(BAZAAR_ORDER_HEADER_ICON, 48, HE_LIGHT_ORANGE),
+				leftText = text("Select"),
+				rightText = text("City")
+			))
 			.setSlotOverlay(
 				"# # # # # # # # #",
 				". . . . . . . . .",

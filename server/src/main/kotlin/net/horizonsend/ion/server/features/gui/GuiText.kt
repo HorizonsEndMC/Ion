@@ -7,7 +7,8 @@ import net.horizonsend.ion.common.utils.text.GUI_MARGIN
 import net.horizonsend.ion.common.utils.text.SHIFT_DOWN_MIN
 import net.horizonsend.ion.common.utils.text.SLOT_OVERLAY_WIDTH
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
-import net.horizonsend.ion.common.utils.text.icons.GuiIcon
+import net.horizonsend.ion.common.utils.text.gui.GuiBorder
+import net.horizonsend.ion.common.utils.text.gui.icons.GuiIcon
 import net.horizonsend.ion.common.utils.text.leftShift
 import net.horizonsend.ion.common.utils.text.minecraftLength
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -45,6 +46,8 @@ class GuiText(
      */
     private val iconStructure = mutableListOf<List<Char>>()
     private val iconMap = mutableMapOf<Char, GuiIcon>('.' to GuiIcon.EMPTY)
+
+	private val guiBorders = mutableListOf<GuiBorder>()
 
     /**
      * Adds a GuiComponent to the GuiText
@@ -163,12 +166,21 @@ class GuiText(
 		return this
 	}
 
+	fun addBorder(border: GuiBorder): GuiText {
+		guiBorders.add(border)
+		return this
+	}
+
     /**
      * Builds the GuiText, returning a Component that can be placed in an Inventory's title
      * @return an Adventure Component for use in an Inventory
      */
     fun build(): Component {
         val renderedComponents = mutableListOf<Component>()
+
+		for (border in guiBorders) {
+			renderedComponents.add(border.build())
+		}
 
         // add GUI background. this operation must be performed first as subsequent text components will be placed on
         // top of previous components
@@ -266,7 +278,29 @@ class GuiText(
             renderedComponents.add(currentComponent)
         }
 
-        return Component.textOfChildren(*renderedComponents.toTypedArray())
+		var left = arrayOf<Component>()
+		var right = arrayOf<Component>()
+
+		guiBorders.forEach { background ->
+			background.headerIcon?.build()?.let(renderedComponents::add)
+
+			val headerWidth = background.headerIcon?.width ?: 0
+			val textSize = (DEFAULT_GUI_WIDTH - headerWidth) / 2
+
+			background.leftText?.let {
+				left += GuiText("", guiWidth = textSize, initialShiftDown = -8)
+					.add(it, alignment = TextAlignment.CENTER)
+					.build()
+			}
+
+			background.rightText?.let {
+				right += GuiText("", guiWidth = textSize, initialShiftDown = -8)
+					.add(it, alignment = TextAlignment.CENTER, horizontalShift = textSize + (headerWidth))
+					.build()
+			}
+		}
+
+        return Component.textOfChildren(*renderedComponents.toTypedArray(), *left, *right)
     }
 
     /**
