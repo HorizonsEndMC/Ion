@@ -105,8 +105,8 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 			.addBackground()
 			.setGuiIconOverlay(
 				". . . . . . . . .",
-				". l c c c c c c r",
-				". l c c c c c c r",
+				". l c c c c c r .",
+				". l c c c c c r .",
 				". . . . l c c r .",
 				". . . . l c c r .",
 				". . . . l c c r .",
@@ -114,9 +114,9 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 			.addIcon('l', GuiIcon.textInputBoxLeft())
 			.addIcon('c', GuiIcon.textInputBoxCenter())
 			.addIcon('r', GuiIcon.textInputBoxRight())
-			.add(text("Count"), line = 6, verticalShift = 4)
+			.add(text("Order Count"), line = 6, verticalShift = 4)
 			.add(text("Unit Price"), line = 8, verticalShift = 4)
-			.add(text("Order Price"), line = 10, verticalShift = 4)
+			.add(text("Total Price"), line = 10, verticalShift = 4)
 			.build()
 
 		val info = GuiText("")
