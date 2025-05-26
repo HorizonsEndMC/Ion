@@ -12,7 +12,9 @@ import org.bukkit.entity.Player
 import xyz.xenondevs.invui.item.impl.AbstractItem
 
 class BazaarCitySelectionMenu(viewer: Player, remote: Boolean, parentWindow: CommonGuiWrapper?) : BazaarPurchaseMenuParent(viewer, remote, parentWindow) {
-	override val menuTitle: Component = text("Browsing Active Trade Cities")
+	override val menuTitleLeft: Component = text("Select")
+	override val menuTitleRight: Component = text("City")
+
 	override val contained = CitySelectionGUI(this)
 
 	override val citySelectionButton: AbstractItem = getCitySelectionButton(true)

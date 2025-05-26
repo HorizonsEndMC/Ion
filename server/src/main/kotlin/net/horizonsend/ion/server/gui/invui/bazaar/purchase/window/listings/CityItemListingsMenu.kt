@@ -31,10 +31,28 @@ class CityItemListingsMenu(
 	cityData: TradeCityData,
 	itemString: String,
 	parentWindow: CommonGuiWrapper?,
-	private val previousPageNumber: Int? = null,
 	pageNumber: Int = 0
 ) : BazaarPurchaseMenuParent(viewer, remote, parentWindow) {
-	override val menuTitle: Component = GuiText("")
+
+	override val menuTitleLeft: Component = empty()
+	override val menuTitleRight: Component = empty()
+
+	override fun buildTitle(): Component {
+		return GuiText("")
+			.add(menuTitle, line = -1, verticalShift = -2)
+			.populateGuiText()
+			.setSlotOverlay(
+				"# # # # # # # # #",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				"# # # # # # # # #"
+			)
+			.build()
+	}
+
+	private val menuTitle: Component = GuiText("")
 		.addBackground(GuiText.GuiBackground(
 			backgroundChar = BACKGROUND_EXTENDER,
 			verticalShift = -11
@@ -45,15 +63,12 @@ class CityItemListingsMenu(
 
 	override val contained: IndividualListingGUI = IndividualListingGUI(
 		parentWindow = this,
-		reOpenHandler = {
-			BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, this, pageNumber)
-		},
 		searchBson = and(BazaarItem::cityTerritory eq cityData.territoryId, BazaarItem::itemString eq itemString, BazaarItem::stock gt 0),
+		contextName = "${cityData.displayName}'s",
+		searchResultConsumer = { itemString -> BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, this, previousPageNumber = -1) },
 		purchaseBackButton = {
 			BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, this, pageNumber)
 		},
-		contextName = "${cityData.displayName}'s",
-		searchResultConsumer = { itemString -> BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, this, previousPageNumber = -1) },
 		pageNumber = pageNumber
 	)
 
