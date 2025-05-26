@@ -4,33 +4,22 @@ import net.horizonsend.ion.common.utils.text.BAZAAR_LISTING_HEADER_ICON
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_BLUE
 import net.horizonsend.ion.common.utils.text.gui.GuiBorder
 import net.horizonsend.ion.server.features.gui.GuiItem
-import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.gui.CommonGuiWrapper
-import net.horizonsend.ion.server.gui.invui.InvUIGuiWrapper
-import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
+import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
-import net.horizonsend.ion.server.gui.invui.utils.buttons.SimpleStateButton
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
-import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
-import org.bukkit.event.inventory.ClickType
-import org.bukkit.event.inventory.InventoryClickEvent
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.gui.TabGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
 
-abstract class BazaarPurchaseMenuParent(
-	viewer: Player,
-	val remote: Boolean,
-	final override var parentWindow: CommonGuiWrapper?
-) : InvUIWindowWrapper(viewer, async = true) {
-	abstract val contained: InvUIGuiWrapper<out Gui>
+abstract class BazaarPurchaseMenuParent<T : Any>(viewer: Player) : ListInvUIWindow<T>(viewer, async = true) {
+	abstract fun getGui(): Gui
 
 	private fun getMenuGUI(): Gui = TabGui.normal()
 		.setStructure(
@@ -41,7 +30,7 @@ abstract class BazaarPurchaseMenuParent(
 			"x x x x x x x x x",
 			"x x x x x x x x x"
 		)
-		.addIngredient('b', backButton)
+		.addIngredient('b', parentOrBackButton())
 		.addIngredient('m', manageListingsButton)
 
 		.addIngredient('1', citySelectionButton)
@@ -52,7 +41,7 @@ abstract class BazaarPurchaseMenuParent(
 		.addIngredient('i', infoButton)
 		.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 
-		.setTabs(listOf(contained.getGui()))
+		.setTabs(listOf(getGui()))
 		.build()
 
 	override fun buildWindow(): Window = normalWindow(getMenuGUI())
@@ -61,7 +50,6 @@ abstract class BazaarPurchaseMenuParent(
 	protected abstract val menuTitleRight: Component
 
 	override fun buildTitle(): Component = GuiText("")
-		.populateGuiText()
 		.addBorder(GuiBorder.regular(
 			color = HE_DARK_BLUE,
 			headerIcon = GuiBorder.HeaderIcon(BAZAAR_LISTING_HEADER_ICON, 48, HE_DARK_BLUE),
@@ -78,63 +66,15 @@ abstract class BazaarPurchaseMenuParent(
 		)
 		.build()
 
-	open fun GuiText.populateGuiText(): GuiText { return this }
+	abstract val isGlobalBrowse: Boolean
 
-	abstract val citySelectionButton: AbstractItem
+	private val citySelectionButton get() =
+		(if (!isGlobalBrowse) GuiItem.CITY.makeItem(text("Go to city selection")).updateLore(listOf(text("You already have this menu selected.")))
+		else GuiItem.CITY_GRAY.makeItem(text("Go to city selection"))).makeGuiButton { _, player -> BazaarGUIs.openCitySelection(player, this) }
 
-	protected fun getCitySelectionButton(selected: Boolean) = object : SimpleStateButton(
-		state = selected,
-		onTrue = GuiItem.CITY.makeItem()
-			.updateLore(listOf(
-				text("View list of cities that are selling goods."),
-				text("You'll be able to view listings from this menu."),
-				Component.empty(),
-				text("You currently have this tab selected")
-			))
-			.updateDisplayName(text("View City Selection")),
-		onFalse = GuiItem.CITY_GRAY.makeItem()
-			.updateLore(listOf(
-				text("View list of cities that are selling goods."),
-				text("You'll be able to view listings from this menu."),
-				Component.empty(),
-				text("Click to switch to this tab."),
-			))
-			.updateDisplayName(text("View City Selection"))
-	) {
-		override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-			BazaarGUIs.openCitySelection(player, remote, this@BazaarPurchaseMenuParent)
-		}
-	}
-
-	abstract val globalBrowseButton: AbstractItem
-
-	protected fun getGlobalBrowseButton(selected: Boolean) = object : SimpleStateButton(
-		state = selected,
-		onTrue = GuiItem.WORLD.makeItem()
-			.updateLore(listOf(
-				text("View listings from every city, combined"),
-				text("into one menu."),
-				Component.empty(),
-				text("You currently have this tab selected")
-			))
-			.updateDisplayName(text("View Global Listings")),
-		onFalse = GuiItem.WORLD_GRAY.makeItem()
-			.updateLore(listOf(
-				text("View listings from every city, combined"),
-				text("into one menu."),
-				Component.empty(),
-				text("Click to switch to this tab."),
-			))
-			.updateDisplayName(text("View Global Listings"))
-	) {
-		override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-			BazaarGUIs.openGlobalBrowse(player, remote, this@BazaarPurchaseMenuParent)
-		}
-	}
-
-	val backButton =
-		if (parentWindow == null) GuiItems.closeMenuItem(viewer)
-		else GuiItem.CANCEL.makeItem(text("Go Back to Previous Menu")).makeGuiButton { _, _ -> getParent()?.openGui() }
+	private val globalBrowseButton get() =
+		(if (isGlobalBrowse) GuiItem.WORLD .makeItem(text("Go to global browse")).updateLore(listOf(text("You already have this menu selected.")))
+		else GuiItem.WORLD_GRAY.makeItem(text("Go to global browse"))).makeGuiButton { _, player -> BazaarGUIs.openGlobalBrowse(player, this) }
 
 	abstract val infoButton: AbstractItem
 
@@ -151,7 +91,7 @@ abstract class BazaarPurchaseMenuParent(
 		}
 
 	private val settingsButton = GuiItem.GEAR
-		.makeItem(text("Bazaar GUI Settings"))
+		.makeItem(text("Open Bazaar Settings"))
 		.makeGuiButton { _, player ->
 			BazaarGUIs.openBazaarSettings(player, this)
 		}

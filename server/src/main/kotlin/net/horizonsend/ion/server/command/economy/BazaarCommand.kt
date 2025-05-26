@@ -114,14 +114,14 @@ object BazaarCommand : SLCommand() {
 	@Default
 	@Description("Remotely browse city bazaar markets")
 	fun onBrowse(sender: Player) {
-		BazaarGUIs.openCitySelection(sender, true, null)
+		BazaarGUIs.openCitySelection(sender, null)
 	}
 
 	@Suppress("Unused")
 	@Subcommand("sell")
 	@Description("Remotely browse city bazaar markets")
 	fun onBrowseOrders(sender: Player) {
-		BazaarGUIs.openBuyOrderMainMenu(sender)
+		BazaarGUIs.openBuyOrderMainMenu(sender, null)
 	}
 
 	@Suppress("Unused")
