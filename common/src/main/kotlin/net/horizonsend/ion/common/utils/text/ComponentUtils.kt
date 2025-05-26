@@ -160,6 +160,7 @@ const val CROSS_CHARACTER = '\uF8E6'
 const val EMPTY_ICON_CHARACTER = '\uF8E9'
 const val SIMPLE_GUI_BORDER_CHARACTER = '\uF8E8'
 const val BAZAAR_ORDER_HEADER_ICON = '\uF8E7'
+const val BAZAAR_LISTING_HEADER_ICON = '\uF8EE'
 
 // Custom characters end
 

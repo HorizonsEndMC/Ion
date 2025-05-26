@@ -17,7 +17,9 @@ import org.litote.kmongo.gt
 import xyz.xenondevs.invui.item.impl.AbstractItem
 
 class BazaarGlowbalBrowseMenu(viewer: Player, remote: Boolean, parentWindow: CommonGuiWrapper?, pageNumber: Int = 0) : BazaarPurchaseMenuParent(viewer, remote, parentWindow) {
-	override val menuTitle: Component = text("Browsing All Items")
+	override val menuTitleLeft: Component = text("Browsing")
+	override val menuTitleRight: Component = text("Global")
+
 	override val contained: GroupedListingGUI = GroupedListingGUI(
 		parentWindow = this,
 		searchBson = BazaarItem::stock gt 0,

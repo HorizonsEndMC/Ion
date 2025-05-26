@@ -44,13 +44,13 @@ object BazaarGUIs {
 	}
 
 	fun openCityItemListings(player: Player, remote: Boolean, city: TradeCityData, itemString: String, parentWindow: CommonGuiWrapper?, previousPageNumber: Int? = null, pageNumber: Int = 0): CityItemListingsMenu {
-		val menu = CityItemListingsMenu(player, remote, city, itemString, parentWindow, previousPageNumber, pageNumber)
+		val menu = CityItemListingsMenu(player, remote, city, itemString, parentWindow, pageNumber)
 		menu.openGui()
 		return menu
 	}
 
 	fun openGlobalItemListings(player: Player, remote: Boolean, itemString: String, parentWindow: CommonGuiWrapper?, previousPageNumber: Int? = null, pageNumber: Int = 0): GlobalItemListingsMenu {
-		val menu = GlobalItemListingsMenu(player, remote, itemString, parentWindow, previousPageNumber, pageNumber)
+		val menu = GlobalItemListingsMenu(player, remote, itemString, parentWindow, pageNumber)
 		menu.openGui()
 		return menu
 	}
