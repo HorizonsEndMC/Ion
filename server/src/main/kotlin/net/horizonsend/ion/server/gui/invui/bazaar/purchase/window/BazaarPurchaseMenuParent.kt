@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window
 
+import net.horizonsend.ion.common.utils.text.BAZAAR_LISTING_HEADER_ICON
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_BLUE
+import net.horizonsend.ion.common.utils.text.gui.GuiBorder
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -54,11 +57,17 @@ abstract class BazaarPurchaseMenuParent(
 
 	override fun buildWindow(): Window = normalWindow(getMenuGUI())
 
-	protected open val menuTitle: Component = text(if (remote) "Remote Bazaar" else "Bazaar")
+	protected abstract val menuTitleLeft: Component
+	protected abstract val menuTitleRight: Component
 
 	override fun buildTitle(): Component = GuiText("")
-		.add(menuTitle, line = -1, verticalShift = -2)
 		.populateGuiText()
+		.addBorder(GuiBorder.regular(
+			color = HE_DARK_BLUE,
+			headerIcon = GuiBorder.HeaderIcon(BAZAAR_LISTING_HEADER_ICON, 48, HE_DARK_BLUE),
+			leftText = menuTitleLeft,
+			rightText = menuTitleRight
+		))
 		.setSlotOverlay(
 			"# # # # # # # # #",
 			". . . . . . . . .",
