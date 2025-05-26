@@ -84,7 +84,7 @@ object AITemplateRegistry {
 	val VERDOLITH_REINFORCEMENT = registerTemplate(builder(
 		identifier = "VERDOLITH_REINFORCEMENT",
 		template = StarshipTemplateRegistry.VERDOLITH,
-		controllerFactory = AIControllerFactories.advancedFrigate,
+		controllerFactory = AIControllerFactories.frigate,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(WATCHERS)
