@@ -3,8 +3,11 @@ package net.horizonsend.ion.server.gui.invui.bazaar.orders
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.InputResult
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
+import net.horizonsend.ion.common.utils.text.BAZAAR_ORDER_HEADER_ICON
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
-import net.horizonsend.ion.common.utils.text.icons.GuiIcon
+import net.horizonsend.ion.common.utils.text.gui.GuiBorder
+import net.horizonsend.ion.common.utils.text.gui.icons.GuiIcon
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
@@ -92,7 +95,13 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 	}
 
 	override fun buildTitle(): Component {
-		val background = GuiText("Create Bazaar Order")
+		val background = GuiText("")
+			.addBorder(GuiBorder.regular(
+				color = HE_LIGHT_ORANGE,
+				headerIcon = GuiBorder.HeaderIcon(BAZAAR_ORDER_HEADER_ICON, 48, HE_LIGHT_ORANGE),
+				leftText = text("Create"),
+				rightText = text("Order")
+			))
 			.addBackground()
 			.setGuiIconOverlay(
 				". . . . . . . . .",
@@ -295,7 +304,6 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 					.add(text("Confirm Buy Order"), line = -3, verticalShift = -2)
 					.add(template(text("{0} of {1}"), paramColor = null, count, itemname), line = -2, verticalShift = -2)
 					.add(template(text("from {0} for {1}"), paramColor = null, cityName, getMenuTitleName(orderPrice.toCreditComponent())), line = -1, verticalShift = -2)
-					.build()
 
 				promptConfirmation(this, title) {
 					Tasks.async {
