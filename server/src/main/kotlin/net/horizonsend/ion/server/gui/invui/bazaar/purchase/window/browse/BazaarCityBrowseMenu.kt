@@ -19,7 +19,9 @@ import org.litote.kmongo.gt
 import xyz.xenondevs.invui.item.impl.AbstractItem
 
 class BazaarCityBrowseMenu(viewer: Player, remote: Boolean, cityData: TradeCityData, parentWindow: CommonGuiWrapper?, pageNumber: Int = 0) : BazaarPurchaseMenuParent(viewer, remote, parentWindow) {
-	override val menuTitle: Component = text("Browsing ${cityData.displayName}'s Listings")
+	override val menuTitleLeft: Component = text("Browsing")
+	override val menuTitleRight: Component = text(cityData.displayName)
+
 	override val contained: GroupedListingGUI = GroupedListingGUI(
 		parentWindow = this,
 		searchBson = and(BazaarItem::stock gt 0, BazaarItem::cityTerritory eq cityData.territoryId),

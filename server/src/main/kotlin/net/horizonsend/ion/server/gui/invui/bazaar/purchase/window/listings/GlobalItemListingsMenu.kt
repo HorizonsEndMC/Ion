@@ -39,10 +39,27 @@ class GlobalItemListingsMenu(
 	remote: Boolean,
 	itemString: String,
 	parentWindow: CommonGuiWrapper?,
-	private val previousPageNumber: Int? = null,
 	pageNumber: Int = 0
 ) : BazaarPurchaseMenuParent(viewer, remote, parentWindow) {
-	override val menuTitle: Component = GuiText("")
+	override val menuTitleLeft: Component = empty()
+	override val menuTitleRight: Component = empty()
+
+	override fun buildTitle(): Component {
+		return GuiText("")
+			.add(menuTitle, line = -1, verticalShift = -2)
+			.populateGuiText()
+			.setSlotOverlay(
+				"# # # # # # # # #",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				"# # # # # # # # #"
+			)
+			.build()
+	}
+
+	private val menuTitle: Component = GuiText("")
 		.addBackground(GuiText.GuiBackground(
 			backgroundChar = BACKGROUND_EXTENDER,
 			verticalShift = -11
@@ -53,9 +70,6 @@ class GlobalItemListingsMenu(
 
 	override val contained: IndividualListingGUI = IndividualListingGUI(
 		parentWindow = this,
-		reOpenHandler = {
-			BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, this, pageNumber)
-		},
 		searchBson = and(BazaarItem::itemString eq itemString, BazaarItem::stock gt 0),
 		itemLoreProvider = { bazaarItem ->
 			val region = Regions.get<RegionTerritory>(bazaarItem.cityTerritory)
@@ -97,11 +111,11 @@ class GlobalItemListingsMenu(
 				template(ofChildren(text("Distance: {0} ", HE_MEDIUM_GRAY), if (remoteLoc) REMOTE_WARINING else empty()), useQuotesAroundObjects = false, distance),
 			)
 		},
+		contextName = "Global",
+		searchResultConsumer = { itemString -> BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, this, previousPageNumber = -1) },
 		purchaseBackButton = {
 			BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, this, pageNumber)
 		},
-		contextName = "Global",
-		searchResultConsumer = { itemString -> BazaarGUIs.openGlobalItemListings(viewer, remote, itemString, this, previousPageNumber = -1) },
 		pageNumber = pageNumber
 	)
 
