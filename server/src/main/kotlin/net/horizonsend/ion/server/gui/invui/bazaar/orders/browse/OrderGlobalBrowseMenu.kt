@@ -11,5 +11,7 @@ class OrderGlobalBrowseMenu(viewer: Player) : AbstractBrowseMenu(viewer) {
 	override val findBson: Bson = EMPTY_BSON
 	override val isGlobalBrowse: Boolean = true
 
+	override val browseName: Component = Component.text("Global")
+
 	override val infoButton: ItemStack = GuiItem.INFO.makeItem(Component.text("TODO"))
 }

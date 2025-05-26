@@ -110,6 +110,21 @@ object BazaarCommand : SLCommand() {
 	}
 
 	@Suppress("Unused")
+	@Subcommand("browse")
+	@Default
+	@Description("Remotely browse city bazaar markets")
+	fun onBrowse(sender: Player) {
+		BazaarGUIs.openCitySelection(sender, true, null)
+	}
+
+	@Suppress("Unused")
+	@Subcommand("sell")
+	@Description("Remotely browse city bazaar markets")
+	fun onBrowseOrders(sender: Player) {
+		BazaarGUIs.openBuyOrderMainMenu(sender)
+	}
+
+	@Suppress("Unused")
 	@Subcommand("string")
 	fun onString(sender: Player) {
 		val item = requireItemInHand(sender)
@@ -243,14 +258,6 @@ object BazaarCommand : SLCommand() {
 		val territory = requireTerritoryIn(sender)
 		val city = TradeCities.getIfCity(territory) ?: fail { "You're not in a trade city" }
 		sender.information("Tax of ${city.displayName}: ${(city.tax * 100).toInt()}%")
-	}
-
-	@Suppress("Unused")
-	@Subcommand("browse")
-	@Default
-	@Description("Remotely browse city bazaar markets")
-	fun onBrowse(sender: Player) {
-		BazaarGUIs.openCitySelection(sender, true, null)
 	}
 
 	@Suppress("Unused")
