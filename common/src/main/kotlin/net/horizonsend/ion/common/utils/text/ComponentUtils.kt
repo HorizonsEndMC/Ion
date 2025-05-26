@@ -3,7 +3,7 @@ package net.horizonsend.ion.common.utils.text
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toText
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
-import net.horizonsend.ion.common.utils.text.icons.GuiIconType
+import net.horizonsend.ion.common.utils.text.gui.icons.GuiIconType
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.key.Key
@@ -152,12 +152,14 @@ const val BAZAAR_BUY_ORDER_MENU_CHARACTER = '\uF8F2'
 const val TEXT_INPUT_LEFT_CHARACTER = '\uF8F1'
 const val TEXT_INPUT_CENTER_CHARACTER = '\uF8F0'
 const val TEXT_INPUT_RIGHT_CHARACTER = '\uF8EF'
-const val CONFIRMATION_BACKGROUND_CHARACTER = '\uF8EE'
 const val PENCIL_CHARACTER = '\uF8ED'
 const val TRASHCAN_CHARACTER = '\uF8EC'
 const val CHECKMARK_CHARACTER = '\uF8EB'
 const val ICON_BORDER_CHARACTER = '\uF8EA'
+const val CROSS_CHARACTER = '\uF8E6'
 const val EMPTY_ICON_CHARACTER = '\uF8E9'
+const val SIMPLE_GUI_BORDER_CHARACTER = '\uF8E8'
+const val BAZAAR_ORDER_HEADER_ICON = '\uF8E7'
 
 // Custom characters end
 
