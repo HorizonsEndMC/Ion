@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
-import net.horizonsend.ion.common.utils.text.icons.GuiIcon
+import net.horizonsend.ion.common.utils.text.gui.icons.GuiIcon
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
@@ -190,7 +190,6 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 			.addBackground(GuiText.GuiBackground(BACKGROUND_EXTENDER, verticalShift = -17))
 			.add(text("Confirm Listing Removal:"), line = -3, verticalShift = -2)
 			.add(template(text("{0} at {1}"), paramColor = null, listing.itemString, cityName(region)), line = -2, verticalShift = -1)
-			.build()
 
 		ConfirmationMenu.promptConfirmation(this, title) {
 			Tasks.async {
