@@ -19,7 +19,7 @@ interface OrderWindow : CommonGuiWrapper {
 		(if (isGlobalBrowse) GuiItem.WORLD .makeItem(text("Go to global browse")).updateLore(listOf(text("You already have this menu selected.")))
 		else GuiItem.WORLD_GRAY.makeItem(text("Go to global browse"))).makeGuiButton { _, player -> OrderGlobalBrowseMenu(player).openGui(this) }
 
-	val listingBrowseButton get() = GuiItem.DOWN.makeItem(text("View Bazaar Sale Listings")).makeGuiButton { _, player -> BazaarGUIs.openCitySelection(player, true, this) }
+	val listingBrowseButton get() = GuiItem.DOWN.makeItem(text("View Bazaar Sale Listings")).makeGuiButton { _, player -> BazaarGUIs.openCitySelection(player, this) }
 
 	val infoButton: ItemStack
 
