@@ -25,40 +25,38 @@ import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
 object BazaarGUIs {
-	fun openCitySelection(player: Player, remote: Boolean, parentWindow: CommonGuiWrapper?): BazaarCitySelectionMenu {
-		val menu = BazaarCitySelectionMenu(player, remote, parentWindow)
-		menu.openGui()
-		return menu
+	fun openBazaarListingHome(player: Player, parentWindow: CommonGuiWrapper?) {
+
 	}
 
-	fun openCityBrowse(player: Player, remote: Boolean, city: TradeCityData, parentWindow: CommonGuiWrapper?, pageNumber: Int = 0): BazaarCityBrowseMenu {
-		val menu = BazaarCityBrowseMenu(player, remote, city, parentWindow, pageNumber)
-		menu.openGui()
-		return menu
+	fun openCitySelection(player: Player, parentWindow: CommonGuiWrapper?) {
+		val menu = BazaarCitySelectionMenu(player)
+		menu.openGui(parentWindow)
 	}
 
-	fun openGlobalBrowse(player: Player, remote: Boolean, parentWindow: CommonGuiWrapper?, pageNumber: Int = 0): BazaarGlowbalBrowseMenu {
-		val menu = BazaarGlowbalBrowseMenu(player, remote, parentWindow, pageNumber)
-		menu.openGui()
-		return menu
+	fun openCityBrowse(player: Player, city: TradeCityData, parentWindow: CommonGuiWrapper?) {
+		val menu = BazaarCityBrowseMenu(player, city)
+		menu.openGui(parentWindow)
 	}
 
-	fun openCityItemListings(player: Player, remote: Boolean, city: TradeCityData, itemString: String, parentWindow: CommonGuiWrapper?, previousPageNumber: Int? = null, pageNumber: Int = 0): CityItemListingsMenu {
-		val menu = CityItemListingsMenu(player, remote, city, itemString, parentWindow, pageNumber)
-		menu.openGui()
-		return menu
+	fun openGlobalBrowse(player: Player, parentWindow: CommonGuiWrapper?) {
+		val menu = BazaarGlowbalBrowseMenu(player)
+		menu.openGui(parentWindow)
 	}
 
-	fun openGlobalItemListings(player: Player, remote: Boolean, itemString: String, parentWindow: CommonGuiWrapper?, previousPageNumber: Int? = null, pageNumber: Int = 0): GlobalItemListingsMenu {
-		val menu = GlobalItemListingsMenu(player, remote, itemString, parentWindow, pageNumber)
-		menu.openGui()
-		return menu
+	fun openCityItemListings(player: Player, city: TradeCityData, itemString: String, parentWindow: CommonGuiWrapper?) {
+		val menu = CityItemListingsMenu(player, itemString, city)
+		menu.openGui(parentWindow)
 	}
 
-	fun openPurchaseMenu(player: Player, remote: Boolean, item: BazaarItem, backButtonHandler: () -> Unit): PurchaseItemMenu {
-		val menu = PurchaseItemMenu(player, remote, item, backButtonHandler)
+	fun openGlobalItemListings(player: Player, itemString: String, parentWindow: CommonGuiWrapper?) {
+		val menu = GlobalItemListingsMenu(player, itemString)
+		menu.openGui(parentWindow)
+	}
+
+	fun openPurchaseMenu(player: Player, item: BazaarItem, backButtonHandler: () -> Unit) {
+		val menu = PurchaseItemMenu(player, item, backButtonHandler)
 		menu.openGui()
-		return menu
 	}
 
 	fun openListingManageMenu(player: Player, previous: CommonGuiWrapper?) {
@@ -85,14 +83,9 @@ object BazaarGUIs {
 		menu.openGui()
 	}
 
-	fun openBuyOrderMainMenu(player: Player) {
-		BuyOrderMainMenu(player).openGui()
-	}
-
-	fun openBuyOrderMainMenu(player: Player, previous: CommonGuiWrapper) {
+	fun openBuyOrderMainMenu(player: Player, previous: CommonGuiWrapper?) {
 		val menu = BuyOrderMainMenu(player)
-		menu.setParent(previous)
-		menu.openGui()
+		menu.openGui(previous)
 	}
 
 	fun openBuyOrderCreationMenu(player: Player, parent: CommonGuiWrapper? = null) {
@@ -109,14 +102,12 @@ object BazaarGUIs {
 
 	fun openBuyOrderManageListMenu(player: Player, previous: CommonGuiWrapper?) {
 		val menu = ListOrderManagementMenu(player)
-		previous?.let { menu.setParent(it) }
-		menu.openGui()
+		menu.openGui(previous)
 	}
 
 	fun openBuyOrderManageGridMenu(player: Player, previous: CommonGuiWrapper?) {
 		val menu = GridOrderManagementWindow(player)
-		previous?.let { menu.setParent(it) }
-		menu.openGui()
+		menu.openGui(previous)
 	}
 
 	fun openBazaarSettings(player: Player, parent: CommonGuiWrapper?) {
@@ -132,8 +123,6 @@ object BazaarGUIs {
             )
 		)
 
-		if (parent != null) page.setParent(parent)
-
-		page.openGui()
+		page.openGui(parent)
 	}
 }
