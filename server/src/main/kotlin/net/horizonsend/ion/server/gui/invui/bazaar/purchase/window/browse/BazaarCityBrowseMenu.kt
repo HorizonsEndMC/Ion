@@ -3,11 +3,7 @@ package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
-import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.gui.GroupedListingGUI
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
@@ -18,22 +14,12 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.gt
 import xyz.xenondevs.invui.item.impl.AbstractItem
 
-class BazaarCityBrowseMenu(viewer: Player, remote: Boolean, cityData: TradeCityData, parentWindow: CommonGuiWrapper?, pageNumber: Int = 0) : BazaarPurchaseMenuParent(viewer, remote, parentWindow) {
-	override val menuTitleLeft: Component = text("Browsing")
+class BazaarCityBrowseMenu(viewer: Player, private val cityData: TradeCityData) : BazaarBrowseMenu(viewer) {
 	override val menuTitleRight: Component = text(cityData.displayName)
+	override val contextName: String = "${cityData.displayName}'s"
+	override val isGlobalBrowse: Boolean = false
 
-	override val contained: GroupedListingGUI = GroupedListingGUI(
-		parentWindow = this,
-		searchBson = and(BazaarItem::stock gt 0, BazaarItem::cityTerritory eq cityData.territoryId),
-		reOpenHandler = { BazaarGUIs.openCityBrowse(viewer, remote, cityData, this@BazaarCityBrowseMenu, pageNumber) },
-		itemMenuHandler = { itemString -> BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, this@BazaarCityBrowseMenu, this.pageNumber, 0) },
-		contextName = "${cityData.displayName}'s",
-		searchResultConsumer = { itemString -> BazaarGUIs.openCityItemListings(viewer, remote, cityData, itemString, this@BazaarCityBrowseMenu, previousPageNumber = -1) },
-		pageNumber = pageNumber
-	)
-
-	override val citySelectionButton: AbstractItem = getCitySelectionButton(true)
-	override val globalBrowseButton: AbstractItem = getGlobalBrowseButton(false)
+	override val bson = and(BazaarItem::stock gt 0, BazaarItem::cityTerritory eq cityData.territoryId)
 
 	override val infoButton: AbstractItem = GuiItem.INFO
 		.makeItem(text("Information"))
@@ -44,8 +30,11 @@ class BazaarCityBrowseMenu(viewer: Player, remote: Boolean, cityData: TradeCityD
 		))
 		.makeGuiButton { _, _ -> }
 
-	override fun GuiText.populateGuiText(): GuiText {
-		contained.modifyGuiText(this)
-		return this
+	override fun buildTitle(): Component {
+		return withPageNumber(super.buildTitle())
+	}
+
+	override fun openListingsForItem(itemString: String) {
+		BazaarGUIs.openCityItemListings(viewer, cityData, itemString, this)
 	}
 }
