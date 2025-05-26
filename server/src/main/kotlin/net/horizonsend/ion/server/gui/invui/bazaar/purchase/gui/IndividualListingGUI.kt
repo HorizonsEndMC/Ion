@@ -38,7 +38,6 @@ import kotlin.math.ceil
 
 class IndividualListingGUI(
 	private val parentWindow: BazaarPurchaseMenuParent,
-	private val reOpenHandler: () -> Unit,
 	private val searchBson: Bson,
 	private val itemLoreProvider: (BazaarItem) -> List<Component> = { bazaarItem ->
 		listOf(
@@ -95,7 +94,7 @@ class IndividualListingGUI(
 			player = parentWindow.viewer,
 			contextName = contextName,
 			rawItemBson = searchBson,
-			backButtonHandler = reOpenHandler,
+			backButtonHandler = { parentWindow.openGui() },
 			resultStringConsumer = searchResultConsumer
 		).openGui()
 	}
@@ -139,7 +138,7 @@ class IndividualListingGUI(
 
 			PlayerSettingsCache[parentWindow.viewer, PlayerSettings::defaultBazaarIndividualSort] = it
 
-			reOpenHandler.invoke()
+			parentWindow.openGui()
 		}
 	)
 

@@ -2,6 +2,9 @@ package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
+import net.horizonsend.ion.common.utils.text.BAZAAR_LISTING_HEADER_ICON
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_BLUE
+import net.horizonsend.ion.common.utils.text.gui.GuiBorder
 import net.horizonsend.ion.common.utils.text.gui.icons.GuiIcon
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
@@ -26,6 +29,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
@@ -57,7 +61,13 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 	}
 
 	override fun buildTitle(): Component {
-		val text =  GuiText("Manage Item Listing")
+		val text =  GuiText("")
+			.addBorder(GuiBorder.regular(
+				color = HE_DARK_BLUE,
+				headerIcon = GuiBorder.HeaderIcon(BAZAAR_LISTING_HEADER_ICON, 48, HE_DARK_BLUE),
+				leftText = text("Manage"),
+				rightText = text("Listing")
+			))
 			.addBackground()
 			.setGuiIconOverlay(
 				". . . . . . . . .",
@@ -70,12 +80,12 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 			.addIcon('l', GuiIcon.textInputBoxLeft())
 			.addIcon('c', GuiIcon.textInputBoxCenter())
 			.addIcon('r', GuiIcon.textInputBoxRight())
-			.addIcon('d', GuiIcon.emptyIcon(NamedTextColor.BLUE, true))
-			.addIcon('w', GuiIcon.emptyIcon(NamedTextColor.GREEN, true))
+			.addIcon('d', GuiIcon.emptyIcon(TextColor.fromHexString("#1E83FF")!!, true))
+			.addIcon('w', GuiIcon.emptyIcon(TextColor.fromHexString("#00FF7B")!!, true))
 			.addIcon('D', GuiIcon.trashCanIcon(NamedTextColor.RED, true))
 
 		text.add(getMenuTitleName(listing), line = 2, horizontalShift = 18, verticalShift = -2)
-		text.add(template(text("@ {0}"), paramColor = null, useQuotesAroundObjects = false, Bazaars.cityName(Regions[listing.cityTerritory])), line = 3, horizontalShift = 18, verticalShift = -2)
+		text.add(template(text("@ {0}"), paramColor = null, useQuotesAroundObjects = false, cityName(Regions[listing.cityTerritory])), line = 3, horizontalShift = 18, verticalShift = -2)
 
 		text.add(text("Set Price"), line = 4, verticalShift = 4)
 
