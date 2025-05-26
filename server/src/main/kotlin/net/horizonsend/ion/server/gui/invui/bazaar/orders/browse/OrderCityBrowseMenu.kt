@@ -13,5 +13,7 @@ class OrderCityBrowseMenu(viewer: Player, city: TradeCityData) : AbstractBrowseM
 	override val findBson: Bson = BazaarOrder::cityTerritory eq city.territoryId
 	override val isGlobalBrowse: Boolean = false
 
+	override val browseName: Component = Component.text(city.displayName)
+
 	override val infoButton: ItemStack = GuiItem.INFO.makeItem(Component.text("TODO"))
 }
