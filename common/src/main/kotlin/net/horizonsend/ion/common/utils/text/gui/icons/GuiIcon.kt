@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common.utils.text.icons
+package net.horizonsend.ion.common.utils.text.gui.icons
 
 import net.horizonsend.ion.common.utils.text.GUI_HEADER_MARGIN
 import net.horizonsend.ion.common.utils.text.SLOT_OVERLAY_WIDTH
@@ -54,6 +54,7 @@ abstract class GuiIcon(val type: GuiIconType) {
 		fun pencilIcon(color: TextColor, bordered: Boolean) = Icon(color, bordered, GuiIconType.PENCIL_ICON)
 		fun trashCanIcon(color: TextColor, bordered: Boolean) = Icon(color, bordered, GuiIconType.TRASH_CAN_ICON)
 		fun checkmarkIcon(color: TextColor, bordered: Boolean) = Icon(color, bordered, GuiIconType.CHECKMARK_ICON)
+		fun crossIcon(color: TextColor, bordered: Boolean) = Icon(color, bordered, GuiIconType.CROSS_ICON)
 		fun emptyIcon(color: TextColor, bordered: Boolean) = Icon(color, bordered, GuiIconType.EMPTY_ICON)
 	}
 }

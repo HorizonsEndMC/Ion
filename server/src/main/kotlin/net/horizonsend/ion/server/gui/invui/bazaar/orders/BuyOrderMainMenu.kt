@@ -1,7 +1,10 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.orders
 
 import net.horizonsend.ion.common.utils.text.BAZAAR_BUY_ORDER_MENU_CHARACTER
+import net.horizonsend.ion.common.utils.text.BAZAAR_ORDER_HEADER_ICON
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
+import net.horizonsend.ion.common.utils.text.gui.GuiBorder
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -36,15 +39,16 @@ class BuyOrderMainMenu(viewer: Player) : InvUIWindowWrapper(viewer) {
 	}
 
 	override fun buildTitle(): Component = ofChildren(
-		GuiText("Buy Orders Main Menu")
+		GuiText("")
 			.addBackground(GuiText.GuiBackground(backgroundChar = BAZAAR_BUY_ORDER_MENU_CHARACTER))
+			.addBorder(GuiBorder.regular(HE_LIGHT_ORANGE, GuiBorder.HeaderIcon(BAZAAR_ORDER_HEADER_ICON, 48, HE_LIGHT_ORANGE), leftText = Component.text("Orders"), rightText = Component.text("Main Menu")))
 			.build(),
 		GuiText("", guiWidth = DEFAULT_GUI_WIDTH / 2, initialShiftDown = 85)
 			.add(Component.text("Manage"), alignment = GuiText.TextAlignment.CENTER)
 			.build(),
 		GuiText("", guiWidth = DEFAULT_GUI_WIDTH / 2, initialShiftDown = 85)
 			.add(Component.text("Browse"), alignment = GuiText.TextAlignment.CENTER, horizontalShift = DEFAULT_GUI_WIDTH / 2)
-			.build(),
+			.build()
 	)
 
 	private val settingsButton = GuiItem.GEAR.makeItem(Component.text("Settings")).makeGuiButton { _, _ -> println("info") }
