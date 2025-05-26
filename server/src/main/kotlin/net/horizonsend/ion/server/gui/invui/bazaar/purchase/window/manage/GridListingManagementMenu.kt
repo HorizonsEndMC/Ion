@@ -1,7 +1,10 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.common.utils.text.BAZAAR_LISTING_HEADER_ICON
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_BLUE
+import net.horizonsend.ion.common.utils.text.gui.GuiBorder
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
@@ -48,7 +51,13 @@ class GridListingManagementMenu(viewer: Player) : AbstractListingManagementMenu(
     }
 
 	override fun buildTitle(): Component {
-        val guiText =  GuiText("Your Bazaar Sale Listings", guiWidth = DEFAULT_GUI_WIDTH - 20)
+        val guiText =  GuiText("", guiWidth = DEFAULT_GUI_WIDTH - 20)
+			.addBorder(GuiBorder.regular(
+				color = HE_DARK_BLUE,
+				headerIcon = GuiBorder.HeaderIcon(BAZAAR_LISTING_HEADER_ICON, 48, HE_DARK_BLUE),
+				leftText = text("Manage"),
+				rightText = text("Listings")
+			))
 			.setSlotOverlay(
 				"# # # # # # # # #",
 				". . . . . . . . .",
