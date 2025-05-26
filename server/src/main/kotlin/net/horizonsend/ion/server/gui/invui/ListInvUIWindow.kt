@@ -57,6 +57,9 @@ abstract class ListInvUIWindow<T: Any?>(viewer: Player, protected var pageNumber
 	/** Builds the provided GUI text and returns a component containing it, and the page number text. */
 	protected fun withPageNumber(guiText: GuiText) = ofChildren(guiText.build(), getPageNumberText())
 
+	/** Builds the provided GUI text and returns a component containing it, and the page number text. */
+	protected fun withPageNumber(guiText: Component) = ofChildren(guiText, getPageNumberText())
+
 	/** Returns a list of entries that are currently displayed */
 	fun getDisplayedEntries(): List<T> {
 		return entries.subList(displayRange.first, displayRange.last)

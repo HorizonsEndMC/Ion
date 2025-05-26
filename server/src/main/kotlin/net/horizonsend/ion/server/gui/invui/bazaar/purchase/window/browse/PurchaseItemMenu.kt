@@ -7,6 +7,8 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.input.TextInputMenu
@@ -17,7 +19,6 @@ import java.util.function.Supplier
 
 class PurchaseItemMenu(
 	private val viewer: Player,
-	private val remote: Boolean,
 	private val item: BazaarItem,
 	private val backButtonHandler: () -> Unit
 ) : CommonGuiWrapper {
@@ -48,6 +49,8 @@ class PurchaseItemMenu(
 			inputValidator = RangeIntegerValidator(1..item.stock),
 			componentTransformer = { Component.text(it) },
 			successfulInputHandler = { _, (_, result) ->
+				val remote = Regions.get<RegionTerritory>(item.cityTerritory).contains(viewer.location)
+
 				Bazaars.tryBuy(viewer, item, result.result, remote) { buyResult ->
 					val reason = buyResult.getReason() ?: return@tryBuy
 					updateLoreOverride(reason)
