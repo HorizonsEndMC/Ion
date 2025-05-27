@@ -31,8 +31,8 @@ import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.item.impl.AbstractItem
 
 class BazaarCitySelectionMenu(viewer: Player) : BazaarPurchaseMenuParent<TradeCityData>(viewer) {
-	override val menuTitleLeft: Component = text("Select")
-	override val menuTitleRight: Component = text("City")
+	override val menuTitleLeft: Component = text("Selecting")
+	override val menuTitleRight: Component = text("Trade City")
 
 	override val isGlobalBrowse: Boolean = false
 

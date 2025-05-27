@@ -17,12 +17,14 @@ import net.kyori.adventure.text.flattener.FlattenerListener
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import java.util.function.Consumer
 
 // Serialization
 /** Skip building the serializer */
@@ -348,5 +350,20 @@ fun Component.wrap(width: Int): List<Component> {
 
 	return lines
 }
+
+fun Component.iterateChildren(consumer: Consumer<Component>) {
+	val iterationList = arrayListOf(this)
+
+	while (iterationList.isNotEmpty()) {
+		// Remove last so you get a DFS
+		val current = iterationList.removeLast()
+
+		consumer.accept(current)
+
+		iterationList.addAll(current.children())
+	}
+}
+
+fun TextColor.asShadowColor(alpha: Int) = ShadowColor.shadowColor(this, alpha)
 
 //</editor-fold>
