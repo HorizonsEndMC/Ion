@@ -379,7 +379,7 @@ object BazaarCommand : SLCommand() {
 	}
 
 	@Subcommand("order fulfill")
-	@Description("Fulfills the order at the providec city.")
+	@Description("Fulfills the order at the provided city.")
 	@CommandCompletion("@bazaarCities @cityOrderers @cityOrders")
 	fun onOrderFulfill(sender: Player, city: TradeCityData, owner: SLPlayer, orderString: String, @Optional limit: Int?) = asyncCommand(sender) {
 		val orderCheck = Bazaars.checkHasOrder(owner._id, Regions[city.territoryId], orderString)
