@@ -61,6 +61,10 @@ class ListOrderManagementMenu(viewer: Player) : AbstractOrderManagementMenu(view
 			.addIngredient('y', backingButton(1))
 			.addIngredient('x', backingButton(2))
 			.addIngredient('w', backingButton(3))
+			.addPageChangeHandler { _, new ->
+				pageNumber = new
+				refreshAll()
+			}
 
 			.setContent(items)
 			.build()
