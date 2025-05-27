@@ -241,6 +241,7 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     MEDIUM_FREIGHTER(NamespacedKeys.packKey("ui/medium_freighter")),
     HEAVY_FREIGHTER(NamespacedKeys.packKey("ui/heavy_freighter")),
     BARGE(NamespacedKeys.packKey("ui/barge")),
+	LIGHT_BARGE(NamespacedKeys.packKey("ui/light_barge")),
     PLANET(NamespacedKeys.packKey("ui/planet")),
     STAR(NamespacedKeys.packKey("ui/star")),
     BEACON(NamespacedKeys.packKey("ui/beacon")),

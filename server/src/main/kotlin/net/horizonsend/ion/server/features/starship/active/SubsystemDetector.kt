@@ -17,9 +17,10 @@ import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventS
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.SphereShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.SubsystemMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BargeReactorMultiBlock
+import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BargeReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BattleCruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.CruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.LightBargeReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblock
@@ -32,6 +33,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeRea
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.LightBargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
@@ -191,8 +193,12 @@ object SubsystemDetector {
 				starship.subsystems += CruiserReactorSubsystem(starship, sign, multiblock)
 			}
 
-			is BargeReactorMultiBlock -> {
+			is BargeReactorMultiblock -> {
 				starship.subsystems += BargeReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is LightBargeReactorMultiblock -> {
+				starship.subsystems += LightBargeReactorSubsystem(starship, sign, multiblock)
 			}
 
 			is FuelTankMultiblock -> {
