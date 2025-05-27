@@ -82,7 +82,7 @@ class ListListingManagementMenu(viewer: Player) : AbstractListingManagementMenu(
 				color = HE_DARK_BLUE,
 				headerIcon = GuiBorder.HeaderIcon(BAZAAR_LISTING_HEADER_ICON, 48, HE_DARK_BLUE),
 				leftText = text("Manage"),
-				rightText = text("Listings")
+				rightText = text("Sell Orders")
 			))
 			.addBackground()
 
