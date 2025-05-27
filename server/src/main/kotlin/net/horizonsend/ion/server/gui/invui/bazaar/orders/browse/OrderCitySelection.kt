@@ -58,7 +58,7 @@ class OrderCitySelection(viewer: Player) : ListInvUIWindow<TradeCityData>(viewer
 		val gui = PagedGui.items()
 			.setStructure(
 				"x . . c g b . o i",
-				"# # # # # # # # #",
+				". . . . . . . . .",
 				"# # # # # # # # #",
 				"# # # # # # # # #",
 				"# # # # # # # # #",
@@ -87,8 +87,8 @@ class OrderCitySelection(viewer: Player) : ListInvUIWindow<TradeCityData>(viewer
 			.addBorder(GuiBorder.regular(
 				color = HE_LIGHT_ORANGE,
 				headerIcon = GuiBorder.HeaderIcon(BAZAAR_ORDER_HEADER_ICON, 48, HE_LIGHT_ORANGE),
-				leftText = text("Select"),
-				rightText = text("City")
+				leftText = text("Selecting"),
+				rightText = text("Trade City")
 			))
 			.setSlotOverlay(
 				"# # # # # # # # #",
