@@ -290,6 +290,7 @@ object CustomItemRegistry : IonServerComponent() {
 	val BATTLECRUISER_REACTOR_CORE: CustomBlockItem = customBlockItem(identifier = "BATTLECRUISER_REACTOR_CORE", model = "starship/battlecruiser_reactor_core", displayName = text("Battlecruiser Reactor Core", NamedTextColor.WHITE, BOLD), customBlock = CustomBlocks::BATTLECRUISER_REACTOR_CORE)
 	val BARGE_REACTOR_CORE: CustomBlockItem = customBlockItem(identifier = "BARGE_REACTOR_CORE", model = "starship/barge_reactor_core", displayName = text("Barge Reactor Core", NamedTextColor.WHITE, BOLD), customBlock = CustomBlocks::BARGE_REACTOR_CORE)
 	val CRUISER_REACTOR_CORE: CustomBlockItem = customBlockItem(identifier = "CRUISER_REACTOR_CORE", model = "starship/cruiser_reactor_core", displayName = text("Cruiser Reactor Core", NamedTextColor.WHITE, BOLD), customBlock = CustomBlocks::CRUISER_REACTOR_CORE)
+	val LIGHT_BARGE_REACTOR_CORE: CustomBlockItem = customBlockItem(identifier = "LIGHT_BARGE_REACTOR_CORE", model = "starship/barge_reactor_core", displayName = text("Light Barge Reactor Core", NamedTextColor.WHITE, BOLD), customBlock = CustomBlocks::LIGHT_BARGE_REACTOR_CORE)
 	// Starship Components End
 
 	// Gas canisters start

@@ -128,7 +128,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	private fun handleSupercapitalMechanics() {
 		// Consume fuel
 		ActiveStarships.all()
-			.filter { it.type == StarshipType.BATTLECRUISER || it.type == StarshipType.CRUISER || it.type == StarshipType.BARGE }
+			.filter { it.type == StarshipType.BATTLECRUISER || it.type == StarshipType.CRUISER || it.type == StarshipType.BARGE || it.type == StarshipType.LIGHT_BARGE }
 			//TODO replace this system with something better
 			.filter { it.controller is ActivePlayerController }
 			.filter { !it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) } // consume fuel if world did not disable supercapital requirements
@@ -166,7 +166,16 @@ object ActiveStarshipMechanics : IonServerComponent() {
 			}
 		}
 
+		// Destroy Barges without intact reactors
 		ActiveStarships.all().filter { it.type == StarshipType.BARGE && !it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) }.forEach { ship ->
+			if (ship.subsystems.filterIsInstance<BargeReactorSubsystem>().none { it.isIntact() }) {
+				ship.alert("All reactors are down, ship explosion imminent!")
+				StarshipDestruction.destroy(ship)
+			}
+		}
+
+		// Destroy Light Barges without intact reactors
+		ActiveStarships.all().filter { it.type == StarshipType.LIGHT_BARGE && !it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<BargeReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)
