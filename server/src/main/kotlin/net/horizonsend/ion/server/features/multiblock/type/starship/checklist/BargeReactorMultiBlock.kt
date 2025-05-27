@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.BARGE_REAC
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 
-object BargeReactorMultiblock : AbstractReactorCore({ customBlock(BARGE_REACTOR_CORE) }) {
+object BargeReactorMultiBlock : AbstractReactorCore({ customBlock(BARGE_REACTOR_CORE) }) { // need to make a multiblock migrator so object names can be changed
 	override val displayName: Component get() = text("Barge Reactor")
 	override val description: Component get() = text("Reactor core critical to a Barge's functionality.")
 
