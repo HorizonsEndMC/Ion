@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.Companion.formatProgress
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock
@@ -301,6 +302,9 @@ class ShipFactoryTask(
 		val state = block.state as? Sign
 		if (state != null) {
 			signData?.applyTo(state)
+			Tasks.sync {
+				MultiblockEntities.loadFromSign(state)
+			}
 		}
 	}
 

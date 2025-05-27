@@ -111,7 +111,8 @@ object MultiblockEntities : IonServerComponent() {
 	}
 
 	fun loadFromSign(sign: SignState, save: Boolean = true) {
-		val multiblockType = MultiblockAccess.getFast(sign) as? EntityMultiblock<*> ?: return
+		val multiblockType = MultiblockAccess.getFast(sign)
+		if (multiblockType !is EntityMultiblock<*>) return
 
 		val data = sign.persistentDataContainer.get(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData) ?: return migrateFromSign(sign, multiblockType)
 
@@ -125,7 +126,9 @@ object MultiblockEntities : IonServerComponent() {
 
 		setMultiblockEntity(sign.world, origin.x, origin.y, origin.z, save = save) { manager ->
 			val new = loadFromData(multiblockType, manager, data)
-			if (new is LegacyMultiblockEntity) new.loadFromSign(sign)
+			if (new is LegacyMultiblockEntity) {
+				new.loadFromSign(sign)
+			}
 
 			new
 		}

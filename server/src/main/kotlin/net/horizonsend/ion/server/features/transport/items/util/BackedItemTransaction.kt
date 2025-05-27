@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.items.util
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap
 import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.minecraft.world.level.block.entity.BlockEntity
 import org.bukkit.craftbukkit.inventory.CraftInventory
@@ -10,8 +9,8 @@ class BackedItemTransaction(
 	val source: ItemReference,
 	val item: ItemStack,
 	private val amount: Int,
-	val destinations: Object2ObjectRBTreeMap<PathfindResult, CraftInventory>,
-	val destinationSelector: (Object2ObjectRBTreeMap<PathfindResult, CraftInventory>) -> Pair<PathfindResult, CraftInventory>
+	val destinations: MutableCollection<PathfindResult>,
+	val destinationSelector: () -> Pair<PathfindResult, CraftInventory>
 ) {
 	fun execute() {
 		if (amount <= 0) return
@@ -64,16 +63,16 @@ class BackedItemTransaction(
 
 		while (remaining > 0 && destinationsRemaining >= 1) {
 			destinationsRemaining--
-			val destination = destinationSelector(destinations)
-			val notAdded = addToInventory(destination.second, item.asQuantity(remaining))
-			added[destination.second] = remaining - notAdded
+			val (pathfindResult, destinationInv) = destinationSelector()
+			val notAdded = addToInventory(destinationInv, item.asQuantity(remaining))
+			added[destinationInv] = remaining - notAdded
 
 			if (notAdded == 0) {
 				return added to 0
 			}
 
 			remaining -= (remaining - notAdded)
-			destinations.remove(destination.first)
+			destinations.remove(pathfindResult)
 		}
 
 		return added to remaining

@@ -93,6 +93,8 @@ object AreaShields : IonServerComponent() {
 		blockList.forEach { explosionResistanceTotal += it.type.blastResistance }
 
 		for (shield in areaShields) {
+			if (!shield.isIntact(true)) continue
+
 			var power = shield.powerStorage.getPower()
 			if (power <= 0) continue
 
