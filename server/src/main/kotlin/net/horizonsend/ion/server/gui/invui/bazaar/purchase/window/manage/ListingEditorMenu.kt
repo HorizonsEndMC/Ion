@@ -64,8 +64,8 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 			.addBorder(GuiBorder.regular(
 				color = HE_DARK_BLUE,
 				headerIcon = GuiBorder.HeaderIcon(BAZAAR_LISTING_HEADER_ICON, 48, HE_DARK_BLUE),
-				leftText = text("Manage"),
-				rightText = text("Listing")
+				leftText = text("Modifying"),
+				rightText = text("Sell Order")
 			))
 			.addBackground()
 			.setGuiIconOverlay(
