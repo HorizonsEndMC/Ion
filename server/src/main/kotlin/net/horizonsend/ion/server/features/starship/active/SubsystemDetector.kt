@@ -17,7 +17,7 @@ import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventS
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.SphereShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.SubsystemMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BargeReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BargeReactorMultiBlock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BattleCruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.CruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.LightBargeReactorMultiblock
@@ -193,7 +193,7 @@ object SubsystemDetector {
 				starship.subsystems += CruiserReactorSubsystem(starship, sign, multiblock)
 			}
 
-			is BargeReactorMultiblock -> {
+			is BargeReactorMultiBlock -> {
 				starship.subsystems += BargeReactorSubsystem(starship, sign, multiblock)
 			}
 
