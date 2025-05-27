@@ -70,6 +70,7 @@ class ClosestLargeStarshipTargetingModule(
         StarshipType.DESTROYER to 2,
         StarshipType.FRIGATE to 3,
         StarshipType.BARGE to 0,
+		StarshipType.LIGHT_BARGE to 0,
         StarshipType.HEAVY_FREIGHTER to 2,
         StarshipType.MEDIUM_FREIGHTER to 3
     )
@@ -80,6 +81,7 @@ class ClosestLargeStarshipTargetingModule(
         StarshipType.AI_DESTROYER to 2,
         StarshipType.AI_FRIGATE to 3,
         StarshipType.AI_BARGE to 0,
+		StarshipType.AI_LIGHT_BARGE to 0,
         StarshipType.AI_HEAVY_FREIGHTER to 2
     )
 }
