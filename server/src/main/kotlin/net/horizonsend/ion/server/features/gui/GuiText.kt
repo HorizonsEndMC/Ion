@@ -278,8 +278,8 @@ class GuiText(
             renderedComponents.add(currentComponent)
         }
 
-		var left = arrayOf<Component>()
-		var right = arrayOf<Component>()
+		val left = mutableListOf<Component>()
+		val right = mutableListOf<Component>()
 
 		guiBorders.forEach { background ->
 			background.headerIcon?.build()?.let(renderedComponents::add)
@@ -294,13 +294,13 @@ class GuiText(
 			}
 
 			background.rightText?.let {
-				right += GuiText("", guiWidth = textSize, initialShiftDown = -8)
-					.add(it, alignment = TextAlignment.CENTER, horizontalShift = textSize + (headerWidth))
+				right += GuiText("", guiWidth = textSize - 1, initialShiftDown = -8)
+					.add(it, alignment = TextAlignment.CENTER, horizontalShift = textSize + (headerWidth) + 2)
 					.build()
 			}
 		}
 
-        return Component.textOfChildren(*renderedComponents.toTypedArray(), *left, *right)
+        return Component.textOfChildren(*renderedComponents.toTypedArray(), *left.toTypedArray(), *right.toTypedArray())
     }
 
     /**

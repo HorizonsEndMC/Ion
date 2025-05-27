@@ -55,8 +55,8 @@ class GridListingManagementMenu(viewer: Player) : AbstractListingManagementMenu(
 			.addBorder(GuiBorder.regular(
 				color = HE_DARK_BLUE,
 				headerIcon = GuiBorder.HeaderIcon(BAZAAR_LISTING_HEADER_ICON, 48, HE_DARK_BLUE),
-				leftText = text("Manage"),
-				rightText = text("Listings")
+				leftText = text("Managing"),
+				rightText = text("Sell Orders")
 			))
 			.setSlotOverlay(
 				"# # # # # # # # #",
