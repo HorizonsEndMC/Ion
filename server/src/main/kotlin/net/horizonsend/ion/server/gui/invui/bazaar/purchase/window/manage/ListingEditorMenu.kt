@@ -24,7 +24,6 @@ import net.horizonsend.ion.server.gui.invui.input.validator.RangeIntegerValidato
 import net.horizonsend.ion.server.gui.invui.misc.ConfirmationMenu
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
-import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -96,7 +95,11 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 		return ofChildren(text.build(), displayedInfo)
 	}
 
-	private val setPriceButton = GuiItem.EMPTY.makeItem(text("Set Listing Price")).makeGuiButton { _, _ -> setPrice() }
+	private val setPriceButton = tracked { FeedbackLike.withHandler(
+		GuiItem.EMPTY.makeItem(text("Set Listing Price")).asItemProvider(),
+		{ listOf() },
+		{ _, _ -> setPrice() }
+	) }
 
 	private val depositStockButton = FeedbackLike.withHandler(
 		GuiItem.EMPTY.makeItem(text("Deposit Stock")).asItemProvider(),
@@ -137,12 +140,14 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 				listing.price = validatorResult.second.result
 				openGui()
 				changePriceResult.sendReason(viewer)
+				setPriceButton.updateWith(changePriceResult)
 			}
 			else {
 				openGui()
 				withdrawStockButton.updateWith(changePriceResult)
 				withdrawStockButtonVisible.updateWith(changePriceResult)
 				changePriceResult.sendReason(viewer)
+				setPriceButton.updateWith(changePriceResult)
 			}
 		}
 	}
