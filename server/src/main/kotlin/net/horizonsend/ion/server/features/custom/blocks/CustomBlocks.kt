@@ -210,7 +210,7 @@ object CustomBlocks {
 
 	val LIGHT_BARGE_REACTOR_CORE : CustomBlock = register(CustomBlock(
 		identifier = "LIGHT_BARGE_REACTOR_CORE",
-		blockData = mushroomBlockData(setOf(NORTH, EAST, WEST)),
+		blockData = mushroomBlockData(setOf(NORTH, EAST, WEST, DOWN)),
 		drops = BlockLoot(
 			requiredTool = null,
 			drops = customItemDrop(CustomItemRegistry::LIGHT_BARGE_REACTOR_CORE)
