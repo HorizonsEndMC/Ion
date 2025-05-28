@@ -29,7 +29,7 @@ class GridOrderManagementWindow(viewer: Player) : AbstractOrderManagementMenu(vi
 				"# # # # # # # # #",
 				"# # # # # # # # #",
 				"# # # # # # # # #",
-				"l . . . . . f s r",
+				"l . S . . . f s r",
 			)
 			.addIngredient('f', filterButton)
 			.addIngredient('s', sortButton)
@@ -39,6 +39,7 @@ class GridOrderManagementWindow(viewer: Player) : AbstractOrderManagementMenu(vi
 
 			.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 			.addIngredient('l', GuiItems.PageLeftItem())
+			.addIngredient('S', searchButton)
 			.addIngredient('r', GuiItems.PageRightItem())
 			.addIngredient('p', createBuyOrderMenu)
 			.setContent(items)

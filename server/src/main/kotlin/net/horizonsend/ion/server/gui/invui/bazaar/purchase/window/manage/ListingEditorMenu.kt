@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
+import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.anvilInputText
 import net.horizonsend.ion.server.gui.invui.input.validator.RangeDoubleValidator
 import net.horizonsend.ion.server.gui.invui.input.validator.RangeIntegerValidator
@@ -47,7 +48,7 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 				"d D d w W w r r r",
 				"d d d w w w r r r"
 			)
-			.addIngredient('e', fromItemString(listing.itemString))
+			.addIngredient('e', fromItemString(listing.itemString).stripAttributes())
 			.addIngredient('c', parentOrBackButton())
 			.addIngredient('p', setPriceButton)
 			.addIngredient('d', depositStockButton)
@@ -81,8 +82,8 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 			.addIcon('l', GuiIcon.textInputBoxLeft())
 			.addIcon('c', GuiIcon.textInputBoxCenter())
 			.addIcon('r', GuiIcon.textInputBoxRight())
-			.addIcon('d', GuiIcon.emptyIcon(TextColor.fromHexString("#1E83FF")!!, true))
-			.addIcon('w', GuiIcon.emptyIcon(TextColor.fromHexString("#00FF7B")!!, true))
+			.addIcon('d', GuiIcon.depositIcon(TextColor.fromHexString("#1E83FF")!!, true))
+			.addIcon('w', GuiIcon.withdrawIcon(TextColor.fromHexString("#00FF7B")!!, true))
 			.addIcon('D', GuiIcon.trashCanIcon(NamedTextColor.RED, true))
 
 		text.add(getMenuTitleName(listing), line = 2, horizontalShift = 18, verticalShift = -2)

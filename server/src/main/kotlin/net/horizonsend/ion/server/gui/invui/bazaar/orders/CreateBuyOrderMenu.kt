@@ -149,7 +149,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 			itemTransformer = { itemString: String -> fromItemString(itemString) },
 			handler = { _: ClickType, newString: String ->
 				itemString = newString
-				openGui()
+				this@CreateBuyOrderMenu.openGui()
 				refreshButtons(uuid)
 				iconStringButton.update()
 			}
@@ -197,7 +197,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 			},
 			handler = { _: ClickType, newCity: TradeCityData ->
 				cityInfo = newCity
-				openGui()
+				this@CreateBuyOrderMenu.openGui()
 				refreshButtons(uuid)
 				iconCityButton.update()
 			}
