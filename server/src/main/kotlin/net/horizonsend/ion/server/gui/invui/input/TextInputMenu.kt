@@ -229,7 +229,7 @@ class TextInputMenu<T : Any>(
             backButtonHandler: ((Player) -> Unit)? = null,
             componentTransformer: (T) -> Component = { it.toComponent() },
             itemTransformer: (T) -> ItemStack = { GuiItem.RIGHT.makeItem(it.toComponent()) },
-            handler: (ClickType, T) -> Unit,
+            handler: CommonGuiWrapper.(ClickType, T) -> Unit,
 		): Unit = searchEntires(
 			entries = entries,
 			searchTermProvider = searchTermProvider,
@@ -249,7 +249,7 @@ class TextInputMenu<T : Any>(
             backButtonHandler: ((Player) -> Unit)? = null,
             componentTransformer: (T) -> Component = { it.toComponent() },
             itemTransformer: (T) -> ItemStack = { GuiItem.RIGHT.makeItem(it.toComponent()) },
-            handler: (ClickType, T) -> Unit
+            handler: CommonGuiWrapper.(ClickType, T) -> Unit
 		) {
 			lateinit var textInput: TextInputMenu<T>
 
@@ -262,7 +262,7 @@ class TextInputMenu<T : Any>(
                 inputValidator = CollectionSearchValidator(entries, searchTermProvider),
                 successfulInputHandler = { type, (search, success) ->
                     when (success) {
-                        is ValidatorResult.ValidatorSuccessSingleEntry<T> -> handler.invoke(type, success.result)
+                        is ValidatorResult.ValidatorSuccessSingleEntry<T> -> handler.invoke(this.parent, type, success.result)
 
                         is ValidatorResult.ValidatorSuccessMultiEntry<T> -> {
                             val extraLine = GuiText("")
