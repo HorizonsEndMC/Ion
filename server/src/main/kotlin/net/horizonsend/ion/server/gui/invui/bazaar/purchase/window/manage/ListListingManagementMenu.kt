@@ -125,7 +125,7 @@ class ListListingManagementMenu(viewer: Player) : AbstractListingManagementMenu(
 
 			override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
 				val bazaarItem = getDisplayedEntries().getOrNull(index) ?: return
-				handleEntryClick(bazaarItem)
+				handleEntryClick(bazaarItem, this@ListListingManagementMenu)
 			}
 		}
 
