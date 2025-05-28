@@ -55,7 +55,9 @@ abstract class ItemListingMenu(viewer: Player, protected val itemString: String)
 
 	override fun createItem(entry: BazaarItem): Item = AsyncItem(
 		resultProvider = { fromItemString(entry.itemString).updateDisplayName(entry.price.toCreditComponent()).updateLore(getItemLore(entry)).stripAttributes() },
-		handleClick = { _ -> BazaarGUIs.openPurchaseMenu(player = viewer, item = entry, backButtonHandler = { openGui() }) }
+		handleClick = { _ ->
+			BazaarGUIs.openPurchaseMenu(player = viewer, item = entry, backButtonHandler = { openGui() })
+		}
 	)
 
 	open fun getItemLore(entry: BazaarItem): List<Component> = listOf(

@@ -40,26 +40,23 @@ class PurchaseItemMenu(
 				.build()
 		}
 
-		lateinit var menu: TextInputMenu<Int>
-
-		menu = TextInputMenu(
+		TextInputMenu(
 			player = viewer,
 			titleSupplier = extraLine,
 			backButtonHandler = { backButtonHandler.invoke() },
 			inputValidator = RangeIntegerValidator(1..item.stock),
 			componentTransformer = { Component.text(it) },
-			successfulInputHandler = { _, (_, result) ->
+			successfulInputHandler = menu@{ _, (_, result) ->
 				val remote = Regions.get<RegionTerritory>(item.cityTerritory).contains(viewer.location)
 
-				Bazaars.tryBuy(viewer, item, result.result, remote) { buyResult ->
-					val reason = buyResult.getReason() ?: return@tryBuy
-					updateLoreOverride(reason)
+				val futureResult = Bazaars.tryBuyFromSellOrder(viewer, item, result.result, remote)
+
+				futureResult.withResult { buyResult ->
+					buyResult.getReason()?.let(::updateLoreOverride)
 					notifyWindows()
-					menu.refreshTitle()
+					this@menu.parent.openGui()
 				}
 			}
-		)
-
-		menu.openGui()
+		).openGui()
 	}
 }
