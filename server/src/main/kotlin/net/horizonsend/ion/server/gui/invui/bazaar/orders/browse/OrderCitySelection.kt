@@ -9,7 +9,6 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
-import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
@@ -17,13 +16,15 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.REMOTE_WARINING
+import net.horizonsend.ion.server.gui.invui.bazaar.getBazaarSettingsButton
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeInformationButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.eq
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
@@ -70,7 +71,7 @@ class OrderCitySelection(viewer: Player) : ListInvUIWindow<TradeCityData>(viewer
 			.addIngredient('g', globalBrowseButton)
 			.addIngredient('b', listingBrowseButton)
 
-			.addIngredient('o', settingsButton)
+			.addIngredient('o', getBazaarSettingsButton())
 			.addIngredient('i', infoButton)
 
 			.addIngredient('<', GuiItems.PageLeftItem())
@@ -102,5 +103,14 @@ class OrderCitySelection(viewer: Player) : ListInvUIWindow<TradeCityData>(viewer
 	}
 
 	override val isGlobalBrowse: Boolean = false
-	override val infoButton: ItemStack = GuiItem.INFO.makeItem(Component.text("TODO"))
+	override val infoButton = makeInformationButton(
+		title = text("Information"),
+
+		text("All bazaar orders are made at trade cities, both NPC and player created."),
+		text("Players order items at these cities, and you can browse what is being"),
+		text("ordered at those citites from this menu."),
+		empty(),
+		text("To view orders from every city in one menu, click the view global listings button"),
+		text("button (top center).")
+	)
 }

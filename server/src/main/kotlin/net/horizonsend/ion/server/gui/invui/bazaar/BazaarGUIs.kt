@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.gui.invui.bazaar
 
+import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
@@ -10,6 +12,7 @@ import net.horizonsend.ion.server.features.gui.custom.settings.button.DBCachedBo
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.BuyOrderMainMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.CreateBuyOrderMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.orders.browse.BuyOrderFulfillmentMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.manage.GridOrderManagementWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.manage.ListOrderManagementMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarCitySelectionMenu
@@ -108,6 +111,10 @@ object BazaarGUIs {
 	fun openBuyOrderManageGridMenu(player: Player, previous: CommonGuiWrapper?) {
 		val menu = GridOrderManagementWindow(player)
 		menu.openGui(previous)
+	}
+
+	fun openBuyOrderFulfillmentMenu(player: Player, orderId: Oid<BazaarOrder>, previous: CommonGuiWrapper?) {
+		BuyOrderFulfillmentMenu(player, orderId).openGui(previous)
 	}
 
 	fun openBazaarSettings(player: Player, parent: CommonGuiWrapper?) {

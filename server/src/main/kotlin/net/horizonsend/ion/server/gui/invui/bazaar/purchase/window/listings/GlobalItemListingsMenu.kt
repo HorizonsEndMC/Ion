@@ -6,7 +6,6 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.economy.city.TradeCities
-import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
@@ -14,8 +13,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.REMOTE_WARINING
-import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
-import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeInformationButton
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
@@ -25,7 +23,6 @@ import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.gt
-import xyz.xenondevs.invui.item.impl.AbstractItem
 import kotlin.math.roundToInt
 
 class GlobalItemListingsMenu(viewer: Player, itemString: String) : ItemListingMenu(viewer, itemString) {
@@ -39,14 +36,11 @@ class GlobalItemListingsMenu(viewer: Player, itemString: String) : ItemListingMe
 		BazaarGUIs.openGlobalItemListings(viewer, itemString, this)
 	}
 
-	override val infoButton: AbstractItem = GuiItem.INFO
-		.makeItem(text("Information"))
-		.updateLore(listOf(
-			text("This menu shows individual listings of $itemString at from every city."),
-			text("Different players have listed this item for sale, and you can view"),
-			text("How much stock their listings have, and the price they have set it at."),
-		))
-		.makeGuiButton { _, _ -> }
+	override val infoButton = makeInformationButton(title = text("Information"),
+		text("This menu shows individual listings of $itemString at from every city."),
+		text("Different players have listed this item for sale, and you can view"),
+		text("How much stock their listings have, and the price they have set it at."),
+	)
 
 	override fun getItemLore(entry: BazaarItem): List<Component> {
 		val region = Regions.get<RegionTerritory>(entry.cityTerritory)
