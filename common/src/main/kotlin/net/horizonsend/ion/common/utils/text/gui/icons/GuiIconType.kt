@@ -2,6 +2,7 @@ package net.horizonsend.ion.common.utils.text.gui.icons
 
 import net.horizonsend.ion.common.utils.text.CHECKMARK_CHARACTER
 import net.horizonsend.ion.common.utils.text.CROSS_CHARACTER
+import net.horizonsend.ion.common.utils.text.DEPOSIT_ICON
 import net.horizonsend.ion.common.utils.text.EMPTY_ICON_CHARACTER
 import net.horizonsend.ion.common.utils.text.ICON_BORDER_CHARACTER
 import net.horizonsend.ion.common.utils.text.PENCIL_CHARACTER
@@ -10,6 +11,7 @@ import net.horizonsend.ion.common.utils.text.TEXT_INPUT_CENTER_CHARACTER
 import net.horizonsend.ion.common.utils.text.TEXT_INPUT_LEFT_CHARACTER
 import net.horizonsend.ion.common.utils.text.TEXT_INPUT_RIGHT_CHARACTER
 import net.horizonsend.ion.common.utils.text.TRASHCAN_CHARACTER
+import net.horizonsend.ion.common.utils.text.WITHDRAW_ICON
 
 enum class GuiIconType(val displayChar: Char, val width: Int = SLOT_OVERLAY_WIDTH, val shift: Int = 0) {
 	EMPTY('\uFFFF'),
@@ -23,6 +25,8 @@ enum class GuiIconType(val displayChar: Char, val width: Int = SLOT_OVERLAY_WIDT
 	CHECKMARK_ICON(CHECKMARK_CHARACTER, width = 46, shift = -14),
 	CROSS_ICON(CROSS_CHARACTER, width = 46, shift = -14),
 	EMPTY_ICON(EMPTY_ICON_CHARACTER, width = 46, shift = -14),
+	DEPOSIT(DEPOSIT_ICON, width = 46, shift = -14),
+	WITHDRAW(WITHDRAW_ICON, width = 46, shift = -14),
 
 	ICON_BORDER(ICON_BORDER_CHARACTER, width = 48, shift = -16),
 

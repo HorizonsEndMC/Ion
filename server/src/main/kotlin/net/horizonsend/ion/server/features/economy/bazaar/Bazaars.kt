@@ -310,6 +310,16 @@ object Bazaars : IonServerComponent() {
 	}
 
 	fun removeListing(player: Player, territory: RegionTerritory, itemString: String): InputResult {
+		val itemResult = checkIsSelling(player, territory, itemString)
+		val resultItem = itemResult.result ?: return itemResult
+
+		return removeListing(player, resultItem)
+	}
+
+	fun removeListing(player: Player, order: BazaarItem): InputResult {
+		val territory = Regions.get<RegionTerritory>(order.cityTerritory)
+		val itemString = order.itemString
+
 		val cityName = cityName(territory)
 
 		val combatResult = checkCombatTag(player)
@@ -318,16 +328,13 @@ object Bazaars : IonServerComponent() {
 		val itemValidationResult = checkValidString(itemString)
 		if (!itemValidationResult.isSuccess()) return itemValidationResult
 
-		val itemResult = checkIsSelling(player, territory, itemString)
-		val resultItem = itemResult.result ?: return itemResult
-
-		if (resultItem.stock > 0) {
+		if (order.stock > 0) {
 			return InputResult.FailureReason(listOf(
-				template(text("Withdraw all items before removing! (/bazaar withdraw {0} {1})", RED), useQuotesAroundObjects = false, itemString, resultItem.stock)
+				template(text("Withdraw all items before removing! (/bazaar withdraw {0} {1})", RED), useQuotesAroundObjects = false, itemString, order.stock)
 			))
 		}
 
-		BazaarItem.delete(resultItem._id)
+		BazaarItem.delete(order._id)
 
 		return InputResult.SuccessReason(listOf(
 			template(text("Removed listing for {0} at {1}", GREEN), itemString, cityName)
@@ -481,7 +488,7 @@ object Bazaars : IonServerComponent() {
 		}
 	}
 
-	fun cancelOrder(player: Player, order: Oid<BazaarOrder>): InputResult {
+	fun deleteOrder(player: Player, order: Oid<BazaarOrder>): InputResult {
 		val ownershipCheck = checkOrderOwnership(player, order)
 		if (!ownershipCheck.isSuccess()) return ownershipCheck
 
@@ -509,7 +516,7 @@ object Bazaars : IonServerComponent() {
 //		val ownershipCheck = checkOrderOwnership(player, order)
 //		if (!ownershipCheck.isSuccess()) return ownershipCheck
 //
-//		// Check quantity equals zero, prompt to delete instead
+//
 //	}
 //
 //	fun editOrderPrice(player: Player, order: Oid<BazaarOrder>): InputResult {

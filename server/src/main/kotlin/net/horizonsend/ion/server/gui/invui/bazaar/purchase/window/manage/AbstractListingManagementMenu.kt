@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
+import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.searchEntires
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
@@ -102,7 +103,7 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
 
 				val itemStack = fromItemString(item.itemString)
 
-				itemStack.updateLore(listOf(
+				itemStack.stripAttributes().updateLore(listOf(
 					ofChildren(template(text("City: {0}", HE_MEDIUM_GRAY), useQuotesAroundObjects = false, city)),
 					ofChildren(template(text("Stock: {0}", HE_MEDIUM_GRAY), stock)),
 					ofChildren(template(text("Balance: {0}", HE_MEDIUM_GRAY), uncollected)),
@@ -131,6 +132,7 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
             openGui()
         }
     )
+
 	protected val collectButton = FeedbackItem.builder(GuiItem.ROUTE_CANCEL.makeItem(text("Collect Listing Profits")) /*TODO- Icon*/) { _, _ -> Bazaars.collectListingProfit(viewer) }
 		.withSuccessHandler { _, _ -> openGui() }
 		.build()
