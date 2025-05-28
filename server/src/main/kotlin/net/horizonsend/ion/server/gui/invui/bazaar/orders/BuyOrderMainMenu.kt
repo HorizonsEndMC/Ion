@@ -44,7 +44,7 @@ class BuyOrderMainMenu(viewer: Player) : InvUIWindowWrapper(viewer) {
 	override fun buildTitle(): Component = ofChildren(
 		GuiText("")
 			.addBackground(GuiText.GuiBackground(backgroundChar = BAZAAR_BUY_ORDER_MENU_CHARACTER))
-			.addBorder(GuiBorder.regular(HE_LIGHT_ORANGE, GuiBorder.HeaderIcon(BAZAAR_ORDER_HEADER_ICON, 48, HE_LIGHT_ORANGE), leftText = text("Orders"), rightText = text("Main Menu")))
+			.addBorder(GuiBorder.regular(HE_LIGHT_ORANGE, GuiBorder.HeaderIcon(BAZAAR_ORDER_HEADER_ICON, 48, HE_LIGHT_ORANGE), leftText = text("Buy Orders"), rightText = text("Main Menu")))
 			.build(),
 		GuiText("", guiWidth = DEFAULT_GUI_WIDTH / 2, initialShiftDown = 85)
 			.add(text("Manage"), alignment = GuiText.TextAlignment.CENTER)
