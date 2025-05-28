@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component.text
-import org.bukkit.inventory.ItemStack
+import xyz.xenondevs.invui.item.ItemProvider
 
 interface OrderWindow : CommonGuiWrapper {
 	val isGlobalBrowse: Boolean
@@ -21,7 +21,5 @@ interface OrderWindow : CommonGuiWrapper {
 
 	val listingBrowseButton get() = GuiItem.DOWN.makeItem(text("View Bazaar Sale Listings")).makeGuiButton { _, player -> BazaarGUIs.openCitySelection(player, this) }
 
-	val infoButton: ItemStack
-
-	val settingsButton get() = GuiItem.GEAR.makeItem(text("Open Bazaar Settings")).makeGuiButton { _, player -> BazaarGUIs.openBazaarSettings(player, this) }
+	val infoButton: ItemProvider
 }

@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeInformationButton
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component.text
@@ -66,9 +67,16 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
 		BazaarGUIs.openListingEditor(viewer, item, this)
 	}
 
-	protected val infoButton = GuiItem.INFO.makeItem(text("Information")).makeGuiButton { _, _ -> println("INFO") /*TODO*/ }
-	protected val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search Listings")).makeGuiButton { _, _ -> println("search") }
-	protected val filterButton = GuiItem.FILTER.makeItem(text("Filter Listings")).makeGuiButton { _, _ -> println("filter") }
+	protected val infoButton = makeInformationButton(title = text("Info"),
+		text("From this menu, you can see all the items you have listed for sale at trade cities."),
+		text("Clicking on one of these items will bring you to a menu where you can update them."),
+		text(""),
+		text("From the top bar, you may collect your profits, or switch to the alternate layout for this menu.")
+	)
+
+	protected val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search Listings")).makeGuiButton { _, _ -> println("search") } //TODO - search
+	protected val filterButton = GuiItem.FILTER.makeItem(text("Filter Listings")).makeGuiButton { _, _ -> println("filter") } //TODO - filter
+
     protected val sortButton = CollectionScrollButton(
 		entries = SORTING_METHODS,
         providedItem = GuiItem.SORT.makeItem(text("Change Sorting Method")).asItemProvider(),
@@ -80,7 +88,7 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
             openGui()
         }
     )
-	protected val collectButton = FeedbackItem.builder(GuiItem.ROUTE_CANCEL.makeItem(text("Collect Listing Profits")) /*TODO*/) { _, _ -> Bazaars.collectListingProfit(viewer) }
+	protected val collectButton = FeedbackItem.builder(GuiItem.ROUTE_CANCEL.makeItem(text("Collect Listing Profits")) /*TODO- Icon*/) { _, _ -> Bazaars.collectListingProfit(viewer) }
 		.withSuccessHandler { _, _ -> openGui() }
 		.build()
 }

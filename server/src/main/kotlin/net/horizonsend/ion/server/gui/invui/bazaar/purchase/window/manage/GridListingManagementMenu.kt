@@ -24,12 +24,12 @@ class GridListingManagementMenu(viewer: Player) : AbstractListingManagementMenu(
     override fun buildWindow(): Window {
         val gui = PagedGui.items()
             .setStructure(
-                "x . c . S . . l i",
+                "x . c . . . . l i",
                 "# # # # # # # # #",
                 "# # # # # # # # #",
                 "# # # # # # # # #",
                 "# # # # # # # # #",
-                "< . . . . . f s >",
+                "< . S . . . f s >",
             )
             .addIngredient('x', parentOrBackButton())
             .addIngredient('f', filterButton)

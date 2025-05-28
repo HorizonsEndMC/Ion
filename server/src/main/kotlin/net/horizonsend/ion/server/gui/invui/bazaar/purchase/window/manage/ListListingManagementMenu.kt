@@ -43,12 +43,12 @@ class ListListingManagementMenu(viewer: Player) : AbstractListingManagementMenu(
 	override fun buildWindow(): Window {
 		val gui = PagedGui.items()
 			.setStructure(
-				"x . c . S . . g i",
+				"x . c . . . . g i",
 				"# 0 0 0 0 0 0 0 0",
 				"# 1 1 1 1 1 1 1 1",
 				"# 2 2 2 2 2 2 2 2",
 				"# 3 3 3 3 3 3 3 3",
-				"< . . . . . f s >",
+				"< . S . . . f s >",
 			)
 			.addIngredient('x', parentOrBackButton())
 			.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
