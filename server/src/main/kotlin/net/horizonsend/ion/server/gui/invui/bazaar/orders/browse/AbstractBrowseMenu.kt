@@ -43,7 +43,7 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 
 	override fun createItem(entry: BazaarOrder): Item = AsyncItem(
 		resultProvider = { formatItem((entry)) },
-		handleClick = { _ -> BuyOrderFulfillmentMenu(viewer, entry._id).apply { setParent(this) }.openGui() /* TODO move to bazaarGUis */}
+		handleClick = { _ -> BuyOrderFulfillmentMenu(viewer, entry._id).openGui(this) /* TODO move to bazaarGUis */}
 	)
 
 	override fun buildWindow(): Window {
