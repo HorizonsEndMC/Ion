@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.utils.InputResult
+import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.task.TaskHandlingMultiblockEntity
