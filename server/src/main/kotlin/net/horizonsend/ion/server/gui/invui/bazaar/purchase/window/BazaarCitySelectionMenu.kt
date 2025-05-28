@@ -7,14 +7,13 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
-import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.REMOTE_WARINING
-import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeInformationButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
@@ -28,7 +27,6 @@ import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
-import xyz.xenondevs.invui.item.impl.AbstractItem
 
 class BazaarCitySelectionMenu(viewer: Player) : BazaarPurchaseMenuParent<TradeCityData>(viewer) {
 	override val menuTitleLeft: Component = text("Selecting")
@@ -79,20 +77,17 @@ class BazaarCitySelectionMenu(viewer: Player) : BazaarPurchaseMenuParent<TradeCi
 	}
 
 	private fun handleCityClick(entry: TradeCityData) {
-		val remote = !Regions.get<RegionTerritory>(entry.territoryId).contains(viewer.location)
 		BazaarGUIs.openCityBrowse(viewer, entry, this)
 	}
 
-	override val infoButton: AbstractItem = GuiItem.INFO
-		.makeItem(text("Information"))
-		.updateLore(listOf(
-			text("All bazaar listings are made at trade cities, both NPC and player created."),
-			text("Players list items for sale at these cities, and you can browse what is being"),
-			text("sold at those citites from this menu. If you are not in the territory of"),
-			text("the city selling these items, there will be a 4x cost penalty for purchases."),
-			empty(),
-			text("To view listings from every city in one menu, click the view global listings button"),
-			text("button (top center)."),
-		))
-		.makeGuiButton { _, _ -> }
+	override val infoButton = makeInformationButton(
+		title = text("Information"),
+		text("All bazaar listings are made at trade cities, both NPC and player created."),
+		text("Players list items for sale at these cities, and you can browse what is being"),
+		text("sold at those citites from this menu. If you are not in the territory of"),
+		text("the city selling these items, there will be a 4x cost penalty for purchases."),
+		empty(),
+		text("To view listings from every city in one menu, click the view global listings button"),
+		text("button (top center).")
+	)
 }
