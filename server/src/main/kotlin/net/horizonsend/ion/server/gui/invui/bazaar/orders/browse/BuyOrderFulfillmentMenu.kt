@@ -154,13 +154,16 @@ class BuyOrderFulfillmentMenu(viewer: Player, val item: Oid<BazaarOrder>) : InvU
 	private val confirmButton = FeedbackLike.withHandler(GuiItem.EMPTY.makeItem(text("Confirm"))) { _, _ -> confirmFulfillment() }
 
 	private fun confirmFulfillment() {
-		val result = Bazaars.fulfillOrder(viewer, item, fulfillmentAmount)
-		confirmButton.updateWith(result)
-		result.sendReason(viewer)
+		val asyncResult = Bazaars.fulfillOrder(viewer, item, fulfillmentAmount)
 
-		if (result.isSuccess()) {
-			remainingAmount -= fulfillmentAmount
-			refreshTitle()
+		asyncResult.withResult { result ->
+			confirmButton.updateWith(result)
+			result.sendReason(viewer)
+
+			if (result.isSuccess()) {
+				remainingAmount -= fulfillmentAmount
+				refreshTitle()
+			}
 		}
 	}
 
