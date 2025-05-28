@@ -7,13 +7,13 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getEnumSetting
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setEnumSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
-import net.horizonsend.ion.server.features.gui.item.EnumScrollButton
+import net.horizonsend.ion.server.features.gui.item.CollectionScrollButton
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
@@ -29,11 +29,15 @@ import org.litote.kmongo.eq
 import xyz.xenondevs.invui.item.Item
 
 abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<BazaarItem>(viewer, async = true) {
-    private var sortingMethod: BazaarSort = viewer.getEnumSetting(PlayerSettings::defaultBazaarListingManagementSort)
+	companion object {
+		val SORTING_METHODS = listOf(BazaarSort.MIN_PRICE, BazaarSort.MAX_PRICE, BazaarSort.HIGHEST_STOCK, BazaarSort.LOWEST_STOCK, BazaarSort.HIGHEST_BALANCE, BazaarSort.LOWEST_BALANCE)
+	}
+
+    private var sortingMethod: Int = viewer.getSetting(PlayerSettings::defaultBazaarListingManagementSort)
 
 	override fun generateEntries(): List<BazaarItem> {
 		val items = BazaarItem.find(BazaarItem::seller eq viewer.slPlayerId)
-		sortingMethod.sort(items)
+		SORTING_METHODS[sortingMethod].sort(items)
 		return items.toList()
 	}
 
@@ -65,15 +69,14 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
 	protected val infoButton = GuiItem.INFO.makeItem(text("Information")).makeGuiButton { _, _ -> println("INFO") /*TODO*/ }
 	protected val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search Listings")).makeGuiButton { _, _ -> println("search") }
 	protected val filterButton = GuiItem.FILTER.makeItem(text("Filter Listings")).makeGuiButton { _, _ -> println("filter") }
-    protected val sortButton = EnumScrollButton(
+    protected val sortButton = CollectionScrollButton(
+		entries = SORTING_METHODS,
         providedItem = GuiItem.SORT.makeItem(text("Change Sorting Method")).asItemProvider(),
         value = { sortingMethod },
-        enum = BazaarSort::class.java,
         nameFormatter = { it.displayName },
-        subEntry = arrayOf(BazaarSort.MIN_PRICE, BazaarSort.MAX_PRICE, BazaarSort.HIGHEST_STOCK, BazaarSort.LOWEST_STOCK, BazaarSort.HIGHEST_BALANCE, BazaarSort.LOWEST_BALANCE),
-        valueConsumer = {
-            sortingMethod = it
-			viewer.setEnumSetting(PlayerSettings::defaultBazaarListingManagementSort, it)
+        valueConsumer = { index, _ ->
+            sortingMethod = index
+			viewer.setSetting(PlayerSettings::defaultBazaarListingManagementSort, index)
             openGui()
         }
     )
