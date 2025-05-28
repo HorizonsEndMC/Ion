@@ -37,7 +37,7 @@ abstract class BazaarBrowseMenu(viewer: Player) : BazaarPurchaseMenuParent<Map.E
 	override val listingsPerPage: Int = 36
 
 	companion object {
-		val SORTING_METHODS = listOf(BazaarSort.MIN_PRICE, BazaarSort.MAX_PRICE, BazaarSort.HIGHEST_STOCK, BazaarSort.LOWEST_STOCK, BazaarSort.HIGHEST_LISTINGS, BazaarSort.LOWEST_LISTINGS)
+		val SORTING_METHODS = listOf(BazaarSort.ALPHABETICAL, BazaarSort.MIN_PRICE, BazaarSort.MAX_PRICE, BazaarSort.HIGHEST_STOCK, BazaarSort.LOWEST_STOCK, BazaarSort.HIGHEST_LISTINGS, BazaarSort.LOWEST_LISTINGS)
 	}
 
 	private var sortingMethod: Int = viewer.getSetting(PlayerSettings::defaultBazaarGroupedSort)
@@ -71,7 +71,7 @@ abstract class BazaarBrowseMenu(viewer: Player) : BazaarPurchaseMenuParent<Map.E
 			.groupBy(BazaarItem::itemString)
 			.entries
 			.toMutableList()
-			.apply { SORTING_METHODS[sortingMethod].sort(this) }
+			.apply { SORTING_METHODS[sortingMethod].sortSellOrders(this) }
 	}
 
 	override fun createItem(entry: Map.Entry<String, List<BazaarItem>>): Item = AsyncItem(
