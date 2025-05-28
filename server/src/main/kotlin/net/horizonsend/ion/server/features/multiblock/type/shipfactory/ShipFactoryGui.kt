@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
-import net.horizonsend.ion.common.utils.InputResult
+import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.ADVANCED_SHIP_FACTORY_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.miniMessage
