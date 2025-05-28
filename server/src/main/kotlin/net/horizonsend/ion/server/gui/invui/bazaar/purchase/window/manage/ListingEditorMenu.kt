@@ -24,8 +24,10 @@ import net.horizonsend.ion.server.gui.invui.input.validator.RangeIntegerValidato
 import net.horizonsend.ion.server.gui.invui.misc.ConfirmationMenu
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeInformationButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
@@ -53,7 +55,7 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 			.addIngredient('D', depositStockButtonVisible)
 			.addIngredient('W', withdrawStockButtonVisible)
 			.addIngredient('r', deleteListingButton)
-			.addIngredient('i', GuiItem.INFO.makeItem(text("Info")))
+			.addIngredient('i', informationButton)
 			.build()
 
 		return normalWindow(gui)
@@ -222,4 +224,12 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 			}
 		}
 	}
+
+	private val informationButton = makeInformationButton(title = text("Info"),
+		text("Here, you may update an item that you have listed for sale."),
+		text("In order for the item to be visible to other players, you must deposit"),
+		text("some stock into it; that can be done through this menu."),
+		empty(),
+		text("You may also edit the price of the item, withdraw some stock, or remove the listing."),
+	)
 }
