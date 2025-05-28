@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.common.utils.InputResult
+import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.BAZAAR_ORDER_HEADER_ICON
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -192,7 +192,8 @@ class BuyOrderFulfillmentMenu(viewer: Player, val item: Oid<BazaarOrder>) : InvU
 		inputValidator = RangeIntegerValidator(1..remainingAmount),
 		handler = { _, result ->
 			fulfillmentAmount = result.second.result
-			setQuantityButton.updateWith(InputResult.SuccessReason(
+			setQuantityButton.updateWith(
+				InputResult.SuccessReason(
 				listOf(template(text("Set fulfillment limit to {0}", GREEN), fulfillmentAmount))
 			))
 

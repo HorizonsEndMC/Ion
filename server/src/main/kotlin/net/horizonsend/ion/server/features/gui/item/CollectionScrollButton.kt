@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.gui.item
 
-import net.horizonsend.ion.common.utils.InputResult
+import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.kyori.adventure.text.Component

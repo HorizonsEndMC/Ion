@@ -1,15 +1,15 @@
-package net.horizonsend.ion.common.utils
+package net.horizonsend.ion.common.utils.input
 
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import java.util.function.Consumer
 
-interface InputResult {
+interface InputResult : PotentiallyFutureResult {
 	fun isSuccess(): Boolean
 
 	fun getReason(): List<Component>?
 
-	fun sendReason(audience: Audience) { getReason()?.forEach(audience::sendMessage) }
+	override fun sendReason(audience: Audience) { getReason()?.forEach(audience::sendMessage) }
 
 	fun sendReasonIfFailure(audience: Audience) {
 		if (!isSuccess()) sendReason(audience)
@@ -19,7 +19,7 @@ interface InputResult {
 		if (isSuccess()) sendReason(audience)
 	}
 
-	fun withResult(consumer: Consumer<InputResult>) = consumer.accept(this)
+	override fun withResult(consumer: Consumer<InputResult>) = consumer.accept(this)
 
 	interface Success : InputResult {
 		override fun isSuccess(): Boolean = true

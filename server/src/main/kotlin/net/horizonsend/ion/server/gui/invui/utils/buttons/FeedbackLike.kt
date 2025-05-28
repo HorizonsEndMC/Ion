@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.gui.invui.utils.buttons
 
-import net.horizonsend.ion.common.utils.FutureInputResult
-import net.horizonsend.ion.common.utils.InputResult
+import net.horizonsend.ion.common.utils.input.InputResult
+import net.horizonsend.ion.common.utils.input.PotentiallyFutureResult
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
@@ -12,7 +11,6 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
-import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 
 abstract class FeedbackLike(
@@ -33,22 +31,16 @@ abstract class FeedbackLike(
 		return itemProvider
 	}
 
-	fun updateWith(result: InputResult) {
-		if (result is FutureInputResult) {
-			Tasks.async {
-				updateWith(result.get(30, TimeUnit.SECONDS))
+	fun updateWith(future: PotentiallyFutureResult) {
+		future.withResult { result ->
+			currentLore = when (result) {
+				is InputResult.SuccessReason -> Supplier { result.reasonText }
+				is InputResult.FailureReason -> Supplier { result.reasonText }
+				else -> return@withResult
 			}
 
-			return
+			notifyWindows()
 		}
-
-		currentLore = when (result) {
-			is InputResult.SuccessReason -> Supplier { result.reasonText }
-			is InputResult.FailureReason -> Supplier { result.reasonText }
-			else -> return
-		}
-
-		notifyWindows()
 	}
 
 	companion object {
