@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.orders.manage
 
+import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
+import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
@@ -8,14 +10,17 @@ import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
+import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.searchEntires
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeInformationButton
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -33,7 +38,7 @@ abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<Baz
 			.stripAttributes()
 			.applyItemFormatting(entry)
 			.asItemProvider()
-			.makeGuiButton { _, _ -> openManageOrderMenu(entry) }
+			.makeGuiButton { _, _ -> openManageOrderMenu(entry, this) }
 	}
 
 	protected fun ItemStack.applyItemFormatting(orderItem: BazaarOrder): ItemStack {
@@ -47,8 +52,8 @@ abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<Baz
 		))
 	}
 
-	protected fun openManageOrderMenu(order: BazaarOrder) {
-		println("Managing order ${order.itemString}!")
+	protected fun openManageOrderMenu(order: BazaarOrder, parent: CommonGuiWrapper?) {
+		BazaarGUIs.openBuyOrderEditorMenu(viewer, order._id, parent)
 	}
 
 	protected val infoButton = makeInformationButton(
@@ -59,8 +64,32 @@ abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<Baz
 		text("From the top bar, you may create a new order, or switch to the alternate layout for this menu.")
 	)
 
-	protected val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search Orders")).makeGuiButton { _, _ -> println("search") }
-	protected val filterButton = GuiItem.FILTER.makeItem(text("Filter Orders")).makeGuiButton { _, _ -> println("filter") }
+	protected val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search Listings")).makeGuiButton { _, _ -> doSearch() }
+
+	private fun doSearch() {
+		val cityNames = mutableMapOf<Oid<Territory>, String>()
+
+		viewer.searchEntires(
+			entries = entries,
+			prompt = text("Search your sell orders."),
+			description = empty(),
+			searchTermProvider = { item: BazaarOrder ->
+				listOf(item.itemString, cityNames.getOrPut(item.cityTerritory) { cityName(Regions[item.cityTerritory]) })
+			},
+			componentTransformer = { item: BazaarOrder ->
+				template(text("{0} at {1}"), item.itemString, cityNames.getOrPut(item.cityTerritory) { cityName(Regions[item.cityTerritory]) })
+			},
+			itemTransformer = { item: BazaarOrder ->
+				fromItemString(item.itemString)
+					.stripAttributes()
+					.applyItemFormatting(item)
+			},
+			backButtonHandler = { this.openGui() },
+			handler = { _, item: BazaarOrder -> openManageOrderMenu(item, this@AbstractOrderManagementMenu) }
+		)
+	}
+
+	protected val filterButton = GuiItem.FILTER.makeItem(text("Filter Orders")).makeGuiButton { _, _ -> println("filter") } //TODO
 	protected val sortButton = GuiItem.SORT.makeItem(text("Sort Orders"))
 //		EnumScrollButton(
 //		providedItem = GuiItem.SORT.makeItem(text("Change Sorting Method")).asItemProvider(),
