@@ -16,6 +16,10 @@ import xyz.xenondevs.invui.window.Window
 import java.util.UUID
 
 abstract class InvUIWindowWrapper(val viewer: Player, val async: Boolean = false) : CommonGuiWrapper {
+	private var isInitalized = false
+
+	open fun firstTimeSetup() {}
+
 	/**
 	 * If this window was opened from another window, that can be tracked.
 	 **/
@@ -104,14 +108,25 @@ abstract class InvUIWindowWrapper(val viewer: Player, val async: Boolean = false
 
 	fun getOpenWindow() = currentWindow
 
+	fun performSetup() {
+		if (!isInitalized) {
+			isInitalized = true
+			firstTimeSetup()
+		}
+	}
+
 	override fun openGui() {
 		if (async) {
 			Tasks.async {
+				performSetup()
+
 				currentWindow = buildWindow()
 				Tasks.sync { currentWindow?.open() }
 			}
 		} else {
 			Tasks.sync {
+				performSetup()
+
 				currentWindow = buildWindow()
 				currentWindow?.open()
 			}
@@ -127,7 +142,7 @@ abstract class InvUIWindowWrapper(val viewer: Player, val async: Boolean = false
 		.setTitle(buildTitle())
 		.build()
 
-	fun parentOrBackButton() =
-		if (parentWindow == null) GuiItems.closeMenuItem(viewer)
-		else GuiItem.CANCEL.makeItem(text("Go Back to Previous Menu")).makeGuiButton { _, _ -> getParent()?.openGui() }
+	fun parentOrBackButton(icon: GuiItem = GuiItem.CANCEL) =
+		if (parentWindow == null) GuiItems.closeMenuItem(viewer, icon)
+		else icon.makeItem(text("Go Back to Previous Menu")).makeGuiButton { _, _ -> getParent()?.openGui() }
 }
