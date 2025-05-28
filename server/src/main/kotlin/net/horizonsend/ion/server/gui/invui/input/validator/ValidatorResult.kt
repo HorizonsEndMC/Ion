@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.gui.invui.input.validator
 
-import net.horizonsend.ion.common.utils.InputResult
+import net.horizonsend.ion.common.utils.input.InputResult
 import net.kyori.adventure.text.Component
 
 sealed interface ValidatorResult<T : Any> : InputResult {
