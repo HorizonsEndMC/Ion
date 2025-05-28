@@ -378,6 +378,7 @@ object Bazaars : IonServerComponent() {
 
 			return ValidatorResult.ValidatorSuccessSingleEntry(itemStack)
 		} catch (e: Exception) {
+			e.printStackTrace()
 			return ValidatorResult.FailureResult(template(text("Invalid item string {0}! To see an item's string, use /bazaar string.", RED), itemString))
 		}
 	}
@@ -715,6 +716,8 @@ object Bazaars : IonServerComponent() {
 	}
 
 	fun fulfillOrder(fulfiller: Player, order: Oid<BazaarOrder>, limit: Int): InputResult {
+		if (limit < 1) return InputResult.FailureReason(listOf(text("Limit must be greater than 0!", RED)))
+
 		val combatResult = checkCombatTag(fulfiller)
 		if (!combatResult.isSuccess()) return combatResult
 
