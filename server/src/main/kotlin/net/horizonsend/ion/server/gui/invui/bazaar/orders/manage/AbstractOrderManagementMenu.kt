@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeInformationButton
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component.text
@@ -50,7 +51,14 @@ abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<Baz
 		println("Managing order ${order.itemString}!")
 	}
 
-	protected val infoButton = GuiItem.INFO.makeItem(text("Information")).makeGuiButton { _, _ -> println("INFO") /*TODO*/ }
+	protected val infoButton = makeInformationButton(
+		title = text("Information"),
+		text("From this menu, you can see all the orders you have placed at trade cities."),
+		text("Clicking on one of these items will bring you to a menu where you can update them."),
+		text(""),
+		text("From the top bar, you may create a new order, or switch to the alternate layout for this menu.")
+	)
+
 	protected val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search Orders")).makeGuiButton { _, _ -> println("search") }
 	protected val filterButton = GuiItem.FILTER.makeItem(text("Filter Orders")).makeGuiButton { _, _ -> println("filter") }
 	protected val sortButton = GuiItem.SORT.makeItem(text("Sort Orders"))

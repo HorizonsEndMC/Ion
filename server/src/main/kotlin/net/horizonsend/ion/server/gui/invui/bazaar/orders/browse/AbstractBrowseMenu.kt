@@ -16,6 +16,8 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
+import net.horizonsend.ion.server.gui.invui.bazaar.getBazaarSettingsButton
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.searchEntires
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
@@ -43,7 +45,7 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 
 	override fun createItem(entry: BazaarOrder): Item = AsyncItem(
 		resultProvider = { formatItem((entry)) },
-		handleClick = { _ -> BuyOrderFulfillmentMenu(viewer, entry._id).openGui(this) /* TODO move to bazaarGUis */}
+		handleClick = { _ -> BazaarGUIs.openBuyOrderFulfillmentMenu(viewer, entry._id, this)}
 	)
 
 	override fun buildWindow(): Window {
@@ -62,7 +64,7 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 			.addIngredient('g', globalBrowseButton)
 			.addIngredient('b', listingBrowseButton)
 
-			.addIngredient('o', settingsButton)
+			.addIngredient('o', getBazaarSettingsButton())
 			.addIngredient('i', infoButton)
 
 			.addIngredient('<', GuiItems.PageLeftItem())
@@ -129,7 +131,7 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 				componentTransformer = { fromItemString(it.itemString).displayNameComponent },
 				itemTransformer = { formatItem(it) },
 			) { _, result: BazaarOrder ->
-				BuyOrderFulfillmentMenu(viewer, result._id).openGui(this)
+				BazaarGUIs.openBuyOrderFulfillmentMenu(viewer, result._id, this)
 			}
 		}
 	} }
