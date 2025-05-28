@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.orders.browse
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.utils.text.BAZAAR_ORDER_HEADER_ICON
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
@@ -9,17 +10,22 @@ import net.horizonsend.ion.common.utils.text.gui.GuiBorder
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
+import net.horizonsend.ion.server.features.gui.item.CollectionScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.getBazaarSettingsButton
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.searchEntires
+import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
@@ -40,7 +46,9 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 	abstract val findBson: Bson
 
 	override fun generateEntries(): List<BazaarOrder> {
-		return BazaarOrder.find(findBson).filterNot { BazaarOrder.isFulfilled(it._id) }
+		return BazaarOrder.find(findBson)
+			.apply { SORTING_METHODS[sortingMethod].sortBuyOrders(this) }
+			.filterNot { BazaarOrder.isFulfilled(it._id) }
 	}
 
 	override fun createItem(entry: BazaarOrder): Item = AsyncItem(
@@ -71,7 +79,7 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 			.addIngredient('>', GuiItems.PageRightItem())
 
 			.addIngredient('s', searchButton)
-			.addIngredient('S', GuiItem.SORT) //TODO
+			.addIngredient('S', sortButton) //TODO
 			.addIngredient('f', GuiItem.FILTER) //TODO
 
 			.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
@@ -135,4 +143,28 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 			}
 		}
 	} }
+
+	companion object {
+		private val SORTING_METHODS = listOf(
+			BazaarSort.ALPHABETICAL,
+			BazaarSort.MIN_PRICE,
+			BazaarSort.MAX_PRICE,
+			BazaarSort.HIGHEST_ORDER_SIZE,
+			BazaarSort.LOWEST_ORDER_SIZE
+		)
+	}
+
+	private var sortingMethod: Int = viewer.getSetting(PlayerSettings::orderBrowseSort)
+
+	private val sortButton = CollectionScrollButton(
+		entries = SORTING_METHODS,
+		providedItem = GuiItem.SORT.makeItem(text("Change Sorting Method")).asItemProvider(),
+		value = ::sortingMethod,
+		nameFormatter = { it.displayName },
+		valueConsumer = { index, _ ->
+			sortingMethod = index
+			viewer.setSetting(PlayerSettings::orderBrowseSort, index)
+			openGui()
+		}
+	)
 }

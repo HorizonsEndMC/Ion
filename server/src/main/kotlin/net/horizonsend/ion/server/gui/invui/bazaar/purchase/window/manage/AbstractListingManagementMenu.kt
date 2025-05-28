@@ -37,14 +37,14 @@ import xyz.xenondevs.invui.item.Item
 
 abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<BazaarItem>(viewer, async = true) {
 	companion object {
-		val SORTING_METHODS = listOf(BazaarSort.MIN_PRICE, BazaarSort.MAX_PRICE, BazaarSort.HIGHEST_STOCK, BazaarSort.LOWEST_STOCK, BazaarSort.HIGHEST_BALANCE, BazaarSort.LOWEST_BALANCE)
+		val SORTING_METHODS = listOf(BazaarSort.ALPHABETICAL, BazaarSort.MIN_PRICE, BazaarSort.MAX_PRICE, BazaarSort.HIGHEST_STOCK, BazaarSort.LOWEST_STOCK, BazaarSort.HIGHEST_BALANCE, BazaarSort.LOWEST_BALANCE)
 	}
 
     private var sortingMethod: Int = viewer.getSetting(PlayerSettings::defaultBazaarListingManagementSort)
 
 	override fun generateEntries(): List<BazaarItem> {
 		val items = BazaarItem.find(BazaarItem::seller eq viewer.slPlayerId)
-		SORTING_METHODS[sortingMethod].sort(items)
+		SORTING_METHODS[sortingMethod].sortSellOrders(items)
 		return items.toList()
 	}
 

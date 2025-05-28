@@ -79,7 +79,7 @@ class ListOrderManagementMenu(viewer: Player) : AbstractOrderManagementMenu(view
 				color = HE_LIGHT_ORANGE,
 				headerIcon = GuiBorder.HeaderIcon(BAZAAR_ORDER_HEADER_ICON, 48, HE_LIGHT_ORANGE),
 				leftText = text("Manage"),
-				rightText = text("Orders")
+				rightText = text("Buy Orders")
 			))
 			.addBackground()
 
