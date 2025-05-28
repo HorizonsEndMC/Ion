@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.gui.item
 
-import net.horizonsend.ion.common.utils.InputResult
+import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
