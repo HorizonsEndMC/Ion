@@ -56,5 +56,7 @@ abstract class GuiIcon(val type: GuiIconType) {
 		fun checkmarkIcon(color: TextColor, bordered: Boolean) = Icon(color, bordered, GuiIconType.CHECKMARK_ICON)
 		fun crossIcon(color: TextColor, bordered: Boolean) = Icon(color, bordered, GuiIconType.CROSS_ICON)
 		fun emptyIcon(color: TextColor, bordered: Boolean) = Icon(color, bordered, GuiIconType.EMPTY_ICON)
+		fun depositIcon(color: TextColor, bordered: Boolean) = Icon(color, bordered, GuiIconType.DEPOSIT)
+		fun withdrawIcon(color: TextColor, bordered: Boolean) = Icon(color, bordered, GuiIconType.WITHDRAW)
 	}
 }
