@@ -365,7 +365,7 @@ object BazaarCommand : SLCommand() {
 		val orderCheck = Bazaars.checkHasOrder(sender.slPlayerId, Regions[city.territoryId], orderString)
 		val order = orderCheck.result ?: return@asyncCommand orderCheck.sendReason(sender)
 
-		Bazaars.cancelOrder(sender, order._id).sendReason(sender)
+		Bazaars.deleteOrder(sender, order._id).sendReason(sender)
 	}
 
 	@Subcommand("order withdraw")

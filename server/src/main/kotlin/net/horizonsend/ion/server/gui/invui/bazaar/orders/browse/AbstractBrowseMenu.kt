@@ -125,7 +125,7 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 
 					return@searchEntires terms
 				},
-				prompt = text("Search for ordersf"),
+				prompt = text("Search for orders"),
 				description = Component.empty(),
 				backButtonHandler = { openGui() },
 				componentTransformer = { fromItemString(it.itemString).displayNameComponent },
