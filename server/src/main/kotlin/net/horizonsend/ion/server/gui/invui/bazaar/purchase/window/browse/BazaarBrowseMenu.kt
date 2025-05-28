@@ -7,14 +7,13 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setEnumSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
-import net.horizonsend.ion.server.features.gui.item.EnumScrollButton
+import net.horizonsend.ion.server.features.gui.item.CollectionScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
@@ -22,7 +21,6 @@ import net.horizonsend.ion.server.gui.invui.bazaar.purchase.SearchGui
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -38,7 +36,11 @@ abstract class BazaarBrowseMenu(viewer: Player) : BazaarPurchaseMenuParent<Map.E
 
 	override val listingsPerPage: Int = 36
 
-	private var sortingMethod: BazaarSort = PlayerSettingsCache.getEnumSettingOrThrow(viewer.slPlayerId, PlayerSettings::defaultBazaarGroupedSort)
+	companion object {
+		val SORTING_METHODS = listOf(BazaarSort.MIN_PRICE, BazaarSort.MAX_PRICE, BazaarSort.HIGHEST_STOCK, BazaarSort.LOWEST_STOCK, BazaarSort.HIGHEST_LISTINGS, BazaarSort.LOWEST_LISTINGS)
+	}
+
+	private var sortingMethod: Int = viewer.getSetting(PlayerSettings::defaultBazaarGroupedSort)
 
 	abstract val bson: Bson
 
@@ -69,7 +71,7 @@ abstract class BazaarBrowseMenu(viewer: Player) : BazaarPurchaseMenuParent<Map.E
 			.groupBy(BazaarItem::itemString)
 			.entries
 			.toMutableList()
-			.apply { sortingMethod.sort(this) }
+			.apply { SORTING_METHODS[sortingMethod].sort(this) }
 	}
 
 	override fun createItem(entry: Map.Entry<String, List<BazaarItem>>): Item = AsyncItem(
@@ -116,15 +118,14 @@ abstract class BazaarBrowseMenu(viewer: Player) : BazaarPurchaseMenuParent<Map.E
 		return withPageNumber(super.buildTitle())
 	}
 
-	private val sortButton = EnumScrollButton(
+	private val sortButton = CollectionScrollButton(
+		entries = SORTING_METHODS,
 		providedItem = { GuiItem.SORT.makeItem(text("Change Sorting Method")) },
-		increment = 1,
 		value = { sortingMethod },
-		enum = BazaarSort::class.java,
 		nameFormatter = { it.displayName },
-		valueConsumer = {
-			sortingMethod = it
-			viewer.setEnumSetting(PlayerSettings::defaultBazaarGroupedSort, sortingMethod)
+		valueConsumer = { index, _ ->
+			sortingMethod = index
+			viewer.setSetting(PlayerSettings::defaultBazaarGroupedSort, index)
 
 			openGui()
 		}
