@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.orders
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
-import net.horizonsend.ion.common.utils.InputResult
+import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
 import net.horizonsend.ion.common.utils.text.BAZAAR_ORDER_HEADER_ICON
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE

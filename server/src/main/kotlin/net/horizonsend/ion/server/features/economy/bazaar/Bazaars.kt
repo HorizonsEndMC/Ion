@@ -12,8 +12,9 @@ import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.utils.FutureInputResult
-import net.horizonsend.ion.common.utils.InputResult
+import net.horizonsend.ion.common.utils.input.FutureInputResult
+import net.horizonsend.ion.common.utils.input.InputResult
+import net.horizonsend.ion.common.utils.input.PotentiallyFutureResult
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.formatException
@@ -236,7 +237,8 @@ object Bazaars : IonServerComponent() {
 					if (priceMult > 1) " (Price multiplied x $priceMult due to browsing remotely)" else ""
 			)
 
-			resultConsumer.accept(InputResult.FailureReason(listOf(
+			resultConsumer.accept(
+				InputResult.FailureReason(listOf(
 				text("You can't afford that!"),
 				text("Cost for $amount: ${cost.toCreditsString()} ${if (priceMult > 1) " (Price multiplied x $priceMult due to browsing remotely)" else ""}")
 			)))
@@ -247,7 +249,8 @@ object Bazaars : IonServerComponent() {
 		val city: TradeCityData? = TradeCities.getIfCity(Regions[item.cityTerritory])
 
 		if (city == null) {
-			resultConsumer.accept(InputResult.FailureReason(listOf(
+			resultConsumer.accept(
+				InputResult.FailureReason(listOf(
 				text("${Regions.get<RegionTerritory>(item.cityTerritory).name} is no longer a trade city!", RED),
 			)))
 
@@ -256,7 +259,8 @@ object Bazaars : IonServerComponent() {
 
 		Tasks.async {
 			if (!BazaarItem.hasStock(item._id, amount)) {
-				resultConsumer.accept(InputResult.FailureReason(listOf(
+				resultConsumer.accept(
+					InputResult.FailureReason(listOf(
 					text("Item no longer has $amount in stock", RED),
 				)))
 
@@ -264,7 +268,8 @@ object Bazaars : IonServerComponent() {
 			}
 
 			if (BazaarItem.matches(item._id, BazaarItem::price ne price)) {
-				resultConsumer.accept(InputResult.FailureReason(listOf(
+				resultConsumer.accept(
+					InputResult.FailureReason(listOf(
 					text("Price has changed", RED),
 				)))
 
@@ -304,7 +309,8 @@ object Bazaars : IonServerComponent() {
 					if (priceMult > 1) ofChildren(space(), priceMultiplicationMessage) else empty()
 				))
 
-				resultConsumer.accept(InputResult.SuccessReason(listOf(
+				resultConsumer.accept(
+					InputResult.SuccessReason(listOf(
 					fullMessage,
 					if (priceMult > 1) priceMultiplicationMessage
 					else empty()
@@ -474,7 +480,7 @@ object Bazaars : IonServerComponent() {
 	 * Removes all matching items from the player's inventory and deposits them into the bazaar listing.
 	 * Returns a success, or failure result with a reason.
 	 **/
-	fun depositListingStock(player: Player, territory: RegionTerritory, itemString: String, limit: Int): InputResult {
+	fun depositListingStock(player: Player, territory: RegionTerritory, itemString: String, limit: Int): PotentiallyFutureResult {
 		val cityName = cityName(territory)
 
 		val combatResult = checkCombatTag(player)
@@ -486,16 +492,25 @@ object Bazaars : IonServerComponent() {
 		val itemResult = checkIsSelling(player, territory, itemString)
 		val resultItem = itemResult.result ?: return itemResult
 
+		val result = FutureInputResult()
+
 		Tasks.sync {
 			val count = takePlayerItemsOfType(player, itemReference, limit)
+
+			if (count == 0) {
+				result.complete(InputResult.FailureReason(listOf(template(text("You do not have any {0} to deposit!", RED), itemString))))
+				return@sync
+			}
 
 			Tasks.async {
 				BazaarItem.addStock(resultItem._id, count)
 				player.information("Added $count of $itemString to listing in $cityName")
+
+				result.complete(InputResult.SuccessReason(listOf(template(text("Added {0} of {1} to listing in {2}", GREEN), count, itemString, cityName))))
 			}
 		}
 
-		return InputResult.SuccessReason(listOf(template(text("Added {0} to listing in {1}", GREEN), itemString, cityName)))
+		return result
 	}
 
 	fun withdrawListingBalance(player: Player, territory: RegionTerritory, itemString: String, amount: Int): InputResult {
@@ -676,7 +691,7 @@ object Bazaars : IonServerComponent() {
 //		if (!ownershipCheck.isSuccess()) return ownershipCheck
 //	}
 
-	fun withdrawOrderStock(player: Player, order: Oid<BazaarOrder>, limit: Int): InputResult {
+	fun withdrawOrderStock(player: Player, order: Oid<BazaarOrder>, limit: Int): PotentiallyFutureResult {
 		val ownershipCheck = checkOrderOwnership(player, order)
 		if (!ownershipCheck.isSuccess()) return ownershipCheck
 
@@ -700,7 +715,8 @@ object Bazaars : IonServerComponent() {
 		Tasks.sync {
 			val (fullStacks, remainder) = giveOrDropItems(item, toRemove, player)
 
-			future.complete(InputResult.SuccessReason(listOf(template(
+			future.complete(
+				InputResult.SuccessReason(listOf(template(
 				text("Withdrew {0} of {1} at {2} ({3} stack(s) and {4} item(s) items from the balance. {5} remain.", GREEN),
 				toRemove,
 				orderDocument.itemString,
@@ -714,7 +730,7 @@ object Bazaars : IonServerComponent() {
 		return future
 	}
 
-	fun fulfillOrder(fulfiller: Player, order: Oid<BazaarOrder>, limit: Int): InputResult {
+	fun fulfillOrder(fulfiller: Player, order: Oid<BazaarOrder>, limit: Int): PotentiallyFutureResult {
 		if (limit < 1) return InputResult.FailureReason(listOf(text("Limit must be greater than 0!", RED)))
 
 		val combatResult = checkCombatTag(fulfiller)
@@ -734,7 +750,8 @@ object Bazaars : IonServerComponent() {
 			val count = takePlayerItemsOfType(fulfiller, itemReference, limit)
 
 			if (count == 0) {
-				result.complete(InputResult.FailureReason(listOf(
+				result.complete(
+					InputResult.FailureReason(listOf(
 					template(text("You do not have any {0} to fulfill the order with!", RED), itemReference.displayNameComponent)
 				)))
 
@@ -747,7 +764,8 @@ object Bazaars : IonServerComponent() {
 
 				fulfiller.depositMoney(profit)
 
-				result.complete(InputResult.SuccessReason(listOf(
+				result.complete(
+					InputResult.SuccessReason(listOf(
 					template(text("Fulfilled {0} of {1}'s order of {2} for a profit of {3}", GREEN), count, ordererName, itemReference.displayNameComponent, profit.toCreditComponent())
 				)))
 
