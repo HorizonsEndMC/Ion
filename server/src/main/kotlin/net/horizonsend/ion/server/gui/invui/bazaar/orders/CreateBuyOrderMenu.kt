@@ -36,6 +36,7 @@ import net.horizonsend.ion.server.gui.invui.input.validator.RangeDoubleValidator
 import net.horizonsend.ion.server.gui.invui.input.validator.RangeIntegerValidator
 import net.horizonsend.ion.server.gui.invui.misc.ConfirmationMenu.Companion.promptConfirmation
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeInformationButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
@@ -74,7 +75,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 				". . . . p p p p C",
 			)
 			.addIngredient('x', parentOrBackButton())
-			.addIngredient('s', settingsButton)
+			.addIngredient('s', getBazaarSettingsButton())
 			.addIngredient('i', infoButton)
 
 			.addIngredient('I', iconStringButton)
@@ -130,8 +131,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 		return ofChildren(background, info)
 	}
 
-	private val settingsButton = getBazaarSettingsButton()
-	private val infoButton = GuiItem.INFO.makeItem(text("Info"))
+	private val infoButton = makeInformationButton(text("Info")) //TODO
 
 	private val iconStringButton = tracked { uuid -> AsyncItem(
 		{ fromItemString(itemString).stripAttributes().updateLore(getStringButtonLore()).updateDisplayName(text("Click to change item string")) },
@@ -159,14 +159,14 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 	private fun getStringButtonLore() = listOf(template(text("Current value: {0}", HE_MEDIUM_GRAY), itemString))
 
 	private val iconCityButton = tracked { uuid -> AsyncItem(
-		{
+		resultProvider = {
 			val cityInfo = this.cityInfo ?: return@AsyncItem GuiItem.CITY.makeItem(text("No city selected"))
 
 			cityInfo.planetIcon
 				.updateDisplayName(getMenuTitleName(text(cityInfo.displayName)))
 				.updateLore(getCityButtonLore())
 		},
-		{ inputNewCity(uuid) }
+		handleClick = { inputNewCity(uuid) }
 	) }
 	private val emptyCityButton = tracked { uuid -> ItemProvider { GuiItem.EMPTY.makeItem(text("Click to change item string")).updateLore(getCityButtonLore()) }.makeGuiButton { _, _ -> inputNewCity(uuid) } }
 
@@ -208,20 +208,17 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 		val cityInfo = this.cityInfo ?: return listOf()
 		val territoryRegion = Regions.get<RegionTerritory>(cityInfo.territoryId)
 
-		return listOf(
-			ofChildren(
-				text("Located at ", HE_MEDIUM_GRAY), text(territoryRegion.name, AQUA),
-				text(" on ", HE_MEDIUM_GRAY), text(territoryRegion.world, AQUA), text(".", GRAY)
-			)
-		)
+		return listOf(ofChildren(
+			text("Located at ", HE_MEDIUM_GRAY), text(territoryRegion.name, AQUA),
+			text(" on ", HE_MEDIUM_GRAY), text(territoryRegion.world, AQUA), text(".", GRAY)
+		))
 	}
 
 	private val emptyCountButton = ItemProvider {
-		GuiItem.EMPTY.makeItem(text("Set Order Count"))
-			.updateLore(listOf(
-				template(text("Current value: {0}", HE_MEDIUM_GRAY), count),
-				text("The order price will also be updated", HE_MEDIUM_GRAY)
-			))
+		GuiItem.EMPTY.makeItem(text("Set Order Count")).updateLore(listOf(
+			template(text("Current value: {0}", HE_MEDIUM_GRAY), count),
+			text("The order price will also be updated", HE_MEDIUM_GRAY)
+		))
 	}.makeGuiButton { _, _ ->
 		viewer.anvilInputText(
 			prompt = text("Select Item Count"),
@@ -237,11 +234,10 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 	}
 
 	private val emptyUnitPriceButton = ItemProvider {
-		GuiItem.EMPTY.makeItem(text("Set Order Unit Price"))
-			.updateLore(listOf(
-				template(text("Current value: {0}", HE_MEDIUM_GRAY), unitPrice.toCreditComponent()),
-				text("The order price will also be updated", HE_MEDIUM_GRAY)
-			))
+		GuiItem.EMPTY.makeItem(text("Set Order Unit Price")).updateLore(listOf(
+			template(text("Current value: {0}", HE_MEDIUM_GRAY), unitPrice.toCreditComponent()),
+			text("The order price will also be updated", HE_MEDIUM_GRAY)
+		))
 	}.makeGuiButton { _, _ ->
 		viewer.anvilInputText(
 			prompt = text("Select Unit Price"),
@@ -256,11 +252,10 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 		)
 	}
 	private val emptyOrderPriceButton = ItemProvider {
-		GuiItem.EMPTY.makeItem(text("Set Order Total Price"))
-			.updateLore(listOf(
-				template(text("Current value: {0}", HE_MEDIUM_GRAY), orderPrice.toCreditComponent()),
-				text("The unit price will also be updated", HE_MEDIUM_GRAY)
-			))
+		GuiItem.EMPTY.makeItem(text("Set Order Total Price")).updateLore(listOf(
+			template(text("Current value: {0}", HE_MEDIUM_GRAY), orderPrice.toCreditComponent()),
+			text("The unit price will also be updated", HE_MEDIUM_GRAY)
+		))
 	}.makeGuiButton { _, _ ->
 		viewer.anvilInputText(
 			prompt = text("Select Total Order Price"),
