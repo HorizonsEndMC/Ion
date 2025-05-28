@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
+import net.horizonsend.ion.server.gui.invui.bazaar.getBazaarSettingsButton
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
@@ -15,7 +16,7 @@ import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.gui.TabGui
 import xyz.xenondevs.invui.gui.structure.Markers
-import xyz.xenondevs.invui.item.impl.AbstractItem
+import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.window.Window
 
 abstract class BazaarPurchaseMenuParent<T : Any>(viewer: Player) : ListInvUIWindow<T>(viewer, async = true) {
@@ -37,7 +38,7 @@ abstract class BazaarPurchaseMenuParent<T : Any>(viewer: Player) : ListInvUIWind
 		.addIngredient('2', globalBrowseButton)
 		.addIngredient('o', buyOrdersButton)
 
-		.addIngredient('d', settingsButton)
+		.addIngredient('d', getBazaarSettingsButton())
 		.addIngredient('i', infoButton)
 		.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 
@@ -76,7 +77,7 @@ abstract class BazaarPurchaseMenuParent<T : Any>(viewer: Player) : ListInvUIWind
 		(if (isGlobalBrowse) GuiItem.WORLD .makeItem(text("Go to global browse")).updateLore(listOf(text("You already have this menu selected.")))
 		else GuiItem.WORLD_GRAY.makeItem(text("Go to global browse"))).makeGuiButton { _, player -> BazaarGUIs.openGlobalBrowse(player, this) }
 
-	abstract val infoButton: AbstractItem
+	abstract val infoButton: ItemProvider
 
 	private val manageListingsButton = GuiItem.MATERIALS
 		.makeItem(text("Manage Your Listings"))
@@ -88,11 +89,5 @@ abstract class BazaarPurchaseMenuParent<T : Any>(viewer: Player) : ListInvUIWind
 		.makeItem(text("Switch to the Buy Order Menu"))
 		.makeGuiButton { _, _ ->
 			BazaarGUIs.openBuyOrderMainMenu(viewer, this)
-		}
-
-	private val settingsButton = GuiItem.GEAR
-		.makeItem(text("Open Bazaar Settings"))
-		.makeGuiButton { _, player ->
-			BazaarGUIs.openBazaarSettings(player, this)
 		}
 }
