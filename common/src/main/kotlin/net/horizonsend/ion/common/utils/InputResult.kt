@@ -2,6 +2,7 @@ package net.horizonsend.ion.common.utils
 
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
+import java.util.function.Consumer
 
 interface InputResult {
 	fun isSuccess(): Boolean
@@ -17,6 +18,8 @@ interface InputResult {
 	fun sendReasonIfSuccess(audience: Audience) {
 		if (isSuccess()) sendReason(audience)
 	}
+
+	fun withResult(consumer: Consumer<InputResult>) = consumer.accept(this)
 
 	interface Success : InputResult {
 		override fun isSuccess(): Boolean = true

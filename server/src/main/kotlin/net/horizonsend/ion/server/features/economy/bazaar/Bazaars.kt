@@ -51,7 +51,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
@@ -249,7 +248,7 @@ object Bazaars : IonServerComponent() {
 
 		if (city == null) {
 			resultConsumer.accept(InputResult.FailureReason(listOf(
-				text("${Regions.get<RegionTerritory>(item.cityTerritory).name} is no longer a trade city!", NamedTextColor.RED),
+				text("${Regions.get<RegionTerritory>(item.cityTerritory).name} is no longer a trade city!", RED),
 			)))
 
 			return
@@ -258,7 +257,7 @@ object Bazaars : IonServerComponent() {
 		Tasks.async {
 			if (!BazaarItem.hasStock(item._id, amount)) {
 				resultConsumer.accept(InputResult.FailureReason(listOf(
-					text("Item no longer has $amount in stock", NamedTextColor.RED),
+					text("Item no longer has $amount in stock", RED),
 				)))
 
 				return@async player.information("Item no longer has $amount in stock")
@@ -266,7 +265,7 @@ object Bazaars : IonServerComponent() {
 
 			if (BazaarItem.matches(item._id, BazaarItem::price ne price)) {
 				resultConsumer.accept(InputResult.FailureReason(listOf(
-					text("Price has changed", NamedTextColor.RED),
+					text("Price has changed", RED),
 				)))
 
 				return@async player.userError("Price has changed")
@@ -733,6 +732,14 @@ object Bazaars : IonServerComponent() {
 
 		Tasks.sync {
 			val count = takePlayerItemsOfType(fulfiller, itemReference, limit)
+
+			if (count == 0) {
+				result.complete(InputResult.FailureReason(listOf(
+					template(text("You do not have any {0} to fulfill the order with!", RED), itemReference.displayNameComponent)
+				)))
+
+				return@sync
+			}
 
 			Tasks.async {
 				val profit = BazaarOrder.fulfillStock(order, fulfiller.slPlayerId, count)
