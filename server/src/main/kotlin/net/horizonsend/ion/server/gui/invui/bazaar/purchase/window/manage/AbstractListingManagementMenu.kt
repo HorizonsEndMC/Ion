@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage
 
+import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
@@ -16,14 +18,17 @@ import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.gui.item.CollectionScrollButton
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
+import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.searchEntires
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeInformationButton
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
@@ -59,12 +64,12 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
 					ofChildren(template(text("Price: {0}", HE_MEDIUM_GRAY), price))
 				))
 			},
-			handleClick = { handleEntryClick(entry) }
+			handleClick = { handleEntryClick(entry, this) }
 		)
 	}
 
-	fun handleEntryClick(item: BazaarItem) {
-		BazaarGUIs.openListingEditor(viewer, item, this)
+	fun handleEntryClick(item: BazaarItem, previous: CommonGuiWrapper) {
+		BazaarGUIs.openListingEditor(viewer, item, previous)
 	}
 
 	protected val infoButton = makeInformationButton(title = text("Info"),
@@ -74,8 +79,46 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
 		text("From the top bar, you may collect your profits, or switch to the alternate layout for this menu.")
 	)
 
-	protected val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search Listings")).makeGuiButton { _, _ -> println("search") } //TODO - search
-	protected val filterButton = GuiItem.FILTER.makeItem(text("Filter Listings")).makeGuiButton { _, _ -> println("filter") } //TODO - filter
+	protected val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search Listings")).makeGuiButton { _, _ -> doSearch() }
+
+	private fun doSearch() {
+		val cityNames = mutableMapOf<Oid<Territory>, String>()
+
+		viewer.searchEntires(
+			entries = entries,
+			prompt = text("Search your sell orders."),
+			description = empty(),
+			searchTermProvider = { item: BazaarItem ->
+				listOf(item.itemString, cityNames.getOrPut(item.cityTerritory) { cityName(Regions[item.cityTerritory]) })
+			},
+			componentTransformer = { item: BazaarItem ->
+				template(text("{0} at {1}"), item.itemString, cityNames.getOrPut(item.cityTerritory) { cityName(Regions[item.cityTerritory]) })
+			},
+			itemTransformer = { item: BazaarItem ->
+				val city = cityName(Regions[item.cityTerritory])
+				val stock = item.stock
+				val uncollected = item.balance.toCreditComponent()
+				val price = item.price.toCreditComponent()
+
+				val itemStack = fromItemString(item.itemString)
+
+				itemStack.updateLore(listOf(
+					ofChildren(template(text("City: {0}", HE_MEDIUM_GRAY), useQuotesAroundObjects = false, city)),
+					ofChildren(template(text("Stock: {0}", HE_MEDIUM_GRAY), stock)),
+					ofChildren(template(text("Balance: {0}", HE_MEDIUM_GRAY), uncollected)),
+					ofChildren(template(text("Price: {0}", HE_MEDIUM_GRAY), price))
+				))
+			},
+			backButtonHandler = { this.openGui() },
+			handler = { _, item: BazaarItem -> handleEntryClick(item, this) }
+		)
+	}
+
+	protected val filterButton = GuiItem.FILTER.makeItem(text("Filter Listings")).makeGuiButton { _, _ -> doFilterMenu() }
+
+	private fun doFilterMenu() {
+		//TODO
+	}
 
     protected val sortButton = CollectionScrollButton(
 		entries = SORTING_METHODS,
