@@ -50,7 +50,7 @@ abstract class ItemListingMenu(viewer: Player, protected val itemString: String)
 	private var sortingMethod: BazaarSort = PlayerSettingsCache.getEnumSettingOrThrow(viewer.slPlayerId, PlayerSettings::defaultBazaarIndividualSort)
 
 	override fun generateEntries(): List<BazaarItem> = BazaarItem.find(searchBson)
-		.apply { sortingMethod.sort(this) }
+		.apply { sortingMethod.sortSellOrders(this) }
 		.filter { TradeCities.isCity(Regions[it.cityTerritory]) }
 
 	override fun createItem(entry: BazaarItem): Item = AsyncItem(

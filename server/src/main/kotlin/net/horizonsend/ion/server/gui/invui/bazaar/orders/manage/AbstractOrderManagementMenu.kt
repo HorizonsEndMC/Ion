@@ -2,17 +2,22 @@ package net.horizonsend.ion.server.gui.invui.bazaar.orders.manage
 
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.item.CollectionScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.searchEntires
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
@@ -30,7 +35,7 @@ import xyz.xenondevs.invui.item.Item
 abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>(viewer, async = true) {
 	override fun generateEntries(): List<BazaarOrder> {
 		// TODO filtering
-		return BazaarOrder.find(BazaarOrder::player eq viewer.slPlayerId).toList()
+		return BazaarOrder.find(BazaarOrder::player eq viewer.slPlayerId).apply { SORTING_METHODS[sortingMethod].sortBuyOrders(this) }.toList()
 	}
 
 	override fun createItem(entry: BazaarOrder): Item {
@@ -90,21 +95,36 @@ abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<Baz
 	}
 
 	protected val filterButton = GuiItem.FILTER.makeItem(text("Filter Orders")).makeGuiButton { _, _ -> println("filter") } //TODO
-	protected val sortButton = GuiItem.SORT.makeItem(text("Sort Orders"))
-//		EnumScrollButton(
-//		providedItem = GuiItem.SORT.makeItem(text("Change Sorting Method")).asItemProvider(),
-//		value = { sortingMethod },
-//		enum = BazaarSort::class.java,
-//		nameFormatter = { it.displayName },
-//		subEntry = arrayOf(BazaarSort.MIN_PRICE, BazaarSort.MAX_PRICE, BazaarSort.HIGHEST_STOCK, BazaarSort.LOWEST_STOCK, BazaarSort.HIGHEST_BALANCE, BazaarSort.LOWEST_BALANCE),
-//		valueConsumer = {
-//			sortingMethod = it
-//			openGui()
-//		}
-//	)
+
 	protected val createBuyOrderMenu = GuiItem.PLUS.makeItem(text("Create Bazaar Order")).makeGuiButton { _, _ ->
 		BazaarGUIs.openBuyOrderCreationMenu(viewer, this)
 	}
 
 	abstract val switchLayoutButton: Item
+
+	companion object {
+		private val SORTING_METHODS = listOf(
+			BazaarSort.ALPHABETICAL,
+			BazaarSort.MIN_PRICE,
+			BazaarSort.MAX_PRICE,
+			BazaarSort.HIGHEST_STOCK,
+			BazaarSort.LOWEST_STOCK,
+			BazaarSort.HIGHEST_ORDER_SIZE,
+			BazaarSort.LOWEST_ORDER_SIZE
+		)
+	}
+
+	private var sortingMethod: Int = viewer.getSetting(PlayerSettings::orderManageSort)
+
+	protected val sortButton = CollectionScrollButton(
+		entries = SORTING_METHODS,
+		providedItem = GuiItem.SORT.makeItem(text("Change Sorting Method")).asItemProvider(),
+		value = ::sortingMethod,
+		nameFormatter = { it.displayName },
+		valueConsumer = { index, _ ->
+			sortingMethod = index
+			viewer.setSetting(PlayerSettings::orderManageSort, index)
+			openGui()
+		}
+	)
 }
