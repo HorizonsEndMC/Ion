@@ -171,7 +171,7 @@ object GuiItems {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) { callback() }
     }
 
-    fun closeMenuItem(player: Player) = CustomControlItem(text("Close Menu").decoration(TextDecoration.ITALIC, false), GuiItem.CANCEL) {
+    fun closeMenuItem(player: Player, icon: GuiItem = GuiItem.CANCEL) = CustomControlItem(text("Close Menu").decoration(TextDecoration.ITALIC, false), icon) {
             _: ClickType, _: Player, _: InventoryClickEvent -> player.closeInventory()
     }
 
