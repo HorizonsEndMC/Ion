@@ -32,8 +32,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.gui.Gui
@@ -123,8 +123,8 @@ class BuyOrderFulfillmentMenu(viewer: Player, val item: Oid<BazaarOrder>) : InvU
 				". . . . . . . . .",
 				". . x . . . s . .",
 			)
-			.addIcon('x', GuiIcon.crossIcon(NamedTextColor.RED, true))
-			.addIcon('s', GuiIcon.checkmarkIcon(NamedTextColor.GREEN, true))
+			.addIcon('x', GuiIcon.crossIcon(RED, true))
+			.addIcon('s', GuiIcon.checkmarkIcon(GREEN, true))
 			.addIcon('l', GuiIcon.textInputBoxLeft())
 			.addIcon('c', GuiIcon.textInputBoxCenter())
 			.addIcon('r', GuiIcon.textInputBoxRight())
@@ -139,17 +139,19 @@ class BuyOrderFulfillmentMenu(viewer: Player, val item: Oid<BazaarOrder>) : InvU
 		val orderItemString = props[BazaarOrder::itemString]
 		val item = fromItemString(orderItemString)
 
+		val potentialProfit = getMenuTitleName((orderProfit * fulfillmentAmount).toCreditComponent())
+
 		val information = GuiText("")
 			.add(template(text("Order from {0}"), paramColor = null, SLPlayer.getName(owner)), line = 0, horizontalShift = 18)
 			.add(template(text("For {0} {1}"), paramColor = null, remainingAmount, getMenuTitleName(item.displayNameComponent)), line = 1, horizontalShift = 18)
-			.add(template(text("Potential Profit: {0}"), getMenuTitleName((orderProfit * fulfillmentAmount).toCreditComponent())), line = 2, verticalShift = 5, horizontalShift = 18)
+			.add(template(text("Potential Profit: {0}"), potentialProfit), line = 2, verticalShift = 5, horizontalShift = 18)
 			.add(getMenuTitleName(text(fulfillmentAmount).itemName), line = 4, verticalShift = 4, horizontalShift = 77)
 			.build()
 
 		return ofChildren(background, information)
 	}
 
-	private val confirmButton = FeedbackLike.withHandler(GuiItem.EMPTY.makeItem(text("Confirm")).asItemProvider(), { listOf() }) { _, _ -> confirmFulfillment() }
+	private val confirmButton = FeedbackLike.withHandler(GuiItem.EMPTY.makeItem(text("Confirm"))) { _, _ -> confirmFulfillment() }
 
 	private fun confirmFulfillment() {
 		val result = Bazaars.fulfillOrder(viewer, item, fulfillmentAmount)
@@ -180,18 +182,20 @@ class BuyOrderFulfillmentMenu(viewer: Player, val item: Oid<BazaarOrder>) : InvU
 		clickHandler = { _, _ -> setQuantity() }
 	)
 
-	fun setQuantity() {
-		viewer.anvilInputText(
-			prompt = text("Select Fulfillment Limit"),
-			description = text("1 through $remainingAmount"),
-			backButtonHandler = { openGui() },
-			inputValidator = RangeIntegerValidator(1..remainingAmount),
-			handler = { _, result ->
-				fulfillmentAmount = result.second.result
-				setQuantityButton.updateWith(InputResult.SuccessReason(listOf(template(text("Set fulfillment limit to {0}", GREEN), fulfillmentAmount))))
-				refreshAll()
-				this@BuyOrderFulfillmentMenu.openGui()
-			}
-		)
-	}
+	private fun setQuantity(): Unit = viewer.anvilInputText(
+		prompt = text("Select Fulfillment Limit"),
+		description = text("1 through $remainingAmount"),
+		backButtonHandler = { openGui() },
+		inputValidator = RangeIntegerValidator(1..remainingAmount),
+		handler = { _, result ->
+			fulfillmentAmount = result.second.result
+			setQuantityButton.updateWith(InputResult.SuccessReason(
+				listOf(template(text("Set fulfillment limit to {0}", GREEN), fulfillmentAmount))
+			))
+
+			refreshAll()
+
+			this@BuyOrderFulfillmentMenu.openGui()
+		}
+	)
 }

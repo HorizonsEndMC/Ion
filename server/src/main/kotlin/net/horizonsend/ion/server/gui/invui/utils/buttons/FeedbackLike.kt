@@ -2,12 +2,14 @@ package net.horizonsend.ion.server.gui.invui.utils.buttons
 
 import net.horizonsend.ion.common.utils.FutureInputResult
 import net.horizonsend.ion.common.utils.InputResult
+import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
+import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import java.util.concurrent.TimeUnit
@@ -51,8 +53,14 @@ abstract class FeedbackLike(
 
 	companion object {
 		fun withHandler(
+			item: ItemStack,
+			fallbackLoreProvider: Supplier<List<Component>> = Supplier { listOf() },
+			clickHandler: (ClickType, Player) -> Unit,
+		) = withHandler(item.asItemProvider(), fallbackLoreProvider, clickHandler)
+
+		fun withHandler(
 			providedItem: ItemProvider,
-			fallbackLoreProvider: Supplier<List<Component>>,
+			fallbackLoreProvider: Supplier<List<Component>> = Supplier { listOf() },
 			clickHandler: (ClickType, Player) -> Unit,
 		) = object : FeedbackLike(providedItem, fallbackLoreProvider) {
 			override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
