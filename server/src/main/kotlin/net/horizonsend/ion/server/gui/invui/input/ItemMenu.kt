@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.gui.invui.input
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
@@ -60,18 +61,21 @@ class ItemMenu(
 			title: Component,
 			player: Player,
 			entries: Collection<T>,
-			resultConsumer: (ClickType, T) -> Unit,
+			resultConsumer: CommonGuiWrapper.(ClickType, T) -> Unit,
 			itemTransformer: (T) -> ItemStack,
 			backButtonHandler: (Player) -> Unit
 		) {
+			lateinit var menu: ItemMenu
+
 			val mapped = entries.map { entry ->
 				AsyncItem(
 					resultProvider = { itemTransformer.invoke(entry) },
-					handleClick = { event -> resultConsumer.invoke(event.click, entry) }
+					handleClick = { event -> resultConsumer.invoke(menu, event.click, entry) }
 				)
 			}
 
-			ItemMenu(title, player, mapped, backButtonHandler).openGui()
+			menu = ItemMenu(title, player, mapped, backButtonHandler)
+			menu.openGui()
 		}
 	}
 }
