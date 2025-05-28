@@ -44,7 +44,7 @@ class ListOrderManagementMenu(viewer: Player) : AbstractOrderManagementMenu(view
 				"# y y y y y y y y",
 				"# x x x x x x x x",
 				"# w w w w w w w w",
-				"l . . . . . f s r",
+				"l . S . . . f s r",
 			)
 			.addIngredient('f', filterButton)
 			.addIngredient('s', sortButton)
@@ -54,6 +54,7 @@ class ListOrderManagementMenu(viewer: Player) : AbstractOrderManagementMenu(view
 
 			.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 			.addIngredient('l', GuiItems.PageLeftItem())
+			.addIngredient('S', searchButton)
 			.addIngredient('r', GuiItems.PageRightItem())
 			.addIngredient('p', createBuyOrderMenu)
 
@@ -115,7 +116,7 @@ class ListOrderManagementMenu(viewer: Player) : AbstractOrderManagementMenu(view
 
 			override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
 				val bazaarItem = getDisplayedEntries().getOrNull(index) ?: return
-				openManageOrderMenu(bazaarItem)
+				openManageOrderMenu(bazaarItem, this@ListOrderManagementMenu)
 			}
 		}
 
