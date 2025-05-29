@@ -380,7 +380,7 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 		if (entity !is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) return@ItemProvider empty
 		if (entity.multiblock !is AdvancedShipFactoryParent.AdvancedShipFactoryMergeable) return@ItemProvider empty
 
-		val mergePartner = entity.mergeEnd.get()
+		val mergePartner = entity.mergeEnd?.get()
 
 		GuiItem.CHECKMARK.makeItem(template(text("Merged with {0}", GREEN), mergePartner))
 	}

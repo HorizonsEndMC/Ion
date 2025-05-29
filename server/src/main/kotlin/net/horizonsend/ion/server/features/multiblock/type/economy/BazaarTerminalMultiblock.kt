@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.economy
 
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -9,10 +10,11 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock.InventoryReference
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent.AdvancedShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
-import net.horizonsend.ion.server.gui.invui.bazaar.terminal.BazaarTerminalMainMenu
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.World
@@ -41,7 +43,11 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		getMultiblockEntity(sign, false)?.handleInteract(player)
 	}
 
+	abstract val inventoryOffsets: Array<Vec3i>
+
 	data object BazaarTerminalStandardMultiblock : BazaarTerminalMultiblock() {
+		override val inventoryOffsets: Array<Vec3i> = arrayOf(Vec3i(-2, 0, 2), Vec3i(-2, -1, 2), Vec3i(2, 0, 2), Vec3i(2, -1, 2))
+
 		override fun MultiblockShape.buildStructure() {
 			z(3) {
 				y(-1) {
@@ -107,6 +113,8 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 	}
 
 	data object BazaarTerminalMergeableMultiblock : BazaarTerminalMultiblock() {
+		override val inventoryOffsets: Array<Vec3i> = arrayOf(Vec3i(2, 0, 2), Vec3i(2, -1, 2))
+
 		override fun MultiblockShape.buildStructure() {
 			z(3) {
 				y(-1) {
@@ -180,8 +188,14 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace
-	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, 100_000) {
+	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, 100_000), RemotePipeMultiblock {
 		override val displayHandler: TextDisplayHandler = standardPowerDisplay(this)
+
+		companion object {
+			private val PIPE_SEARCH_POINTS = arrayOf(Vec3i(-1, 0, 0), Vec3i(0, 0, 0), Vec3i(1, 0, 0))
+		}
+
+		override val pipeSearchPoints: Array<Vec3i> = PIPE_SEARCH_POINTS
 
 		private val mergeEnd = createLinkage(
 			offsetRight = -2,
@@ -193,8 +207,15 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		)
 
 		fun handleInteract(player: Player) {
-			BazaarTerminalMainMenu(player, this).openGui()
+//			BazaarTerminalMainMenu(player, this).openGui()
 			player.information("other end: ${mergeEnd?.get()}")
+
+			getInventories().forEach { player.highlightBlock(Vec3i(it.inventory.location ?: return@forEach), 50L) }
+		}
+
+		private fun getInventories(): Set<InventoryReference> {
+			val base = multiblock.inventoryOffsets.mapNotNullTo(mutableSetOf(), ::getStandardReference)
+			return getRemoteReferences(getNetworkedExtractors(), manager.getTransportManager().itemPipeManager.cache).plus(base)
 		}
 	}
 }
