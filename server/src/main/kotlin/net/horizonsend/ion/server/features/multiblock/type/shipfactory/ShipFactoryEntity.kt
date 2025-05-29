@@ -14,13 +14,11 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTi
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock.InventoryReference
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.factory.BoundingBoxTask
 import net.horizonsend.ion.server.features.starship.factory.PreviewTask
 import net.horizonsend.ion.server.features.starship.factory.ShipFactoryTask
-import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
-import net.horizonsend.ion.server.features.transport.nodes.util.Path
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.canAccess
@@ -29,9 +27,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
 import org.litote.kmongo.and
@@ -228,22 +224,4 @@ abstract class ShipFactoryEntity(
 	fun canEditSettings() = task == null
 
 	abstract fun getInventories(): Set<InventoryReference>
-
-	sealed interface InventoryReference {
-		val inventory: CraftInventory
-		fun isAvailable(itemStack: ItemStack): Boolean
-
-		data class StandardInventoryReference(override val inventory: CraftInventory): InventoryReference {
-			override fun isAvailable(itemStack: ItemStack): Boolean = true
-		}
-
-		data class RemoteInventoryReference(
-			override val inventory: CraftInventory,
-			val originCache: CacheHolder<ItemTransportCache>,
-			val path: Path,
-			val entity: AdvancedShipFactoryParent.AdvancedShipFactoryEntity
-		): InventoryReference {
-			override fun isAvailable(itemStack: ItemStack): Boolean = path.isValid(originCache)
-		}
-	}
 }
