@@ -17,6 +17,8 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
+import net.horizonsend.ion.server.gui.invui.bazaar.DEPOSIT_COLOR
+import net.horizonsend.ion.server.gui.invui.bazaar.WITHDRAW_COLOR
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.anvilInputText
@@ -31,7 +33,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
@@ -82,8 +83,8 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 			.addIcon('l', GuiIcon.textInputBoxLeft())
 			.addIcon('c', GuiIcon.textInputBoxCenter())
 			.addIcon('r', GuiIcon.textInputBoxRight())
-			.addIcon('d', GuiIcon.depositIcon(TextColor.fromHexString("#1E83FF")!!, true))
-			.addIcon('w', GuiIcon.withdrawIcon(TextColor.fromHexString("#00FF7B")!!, true))
+			.addIcon('d', GuiIcon.depositIcon(DEPOSIT_COLOR, true))
+			.addIcon('w', GuiIcon.withdrawIcon(WITHDRAW_COLOR, true))
 			.addIcon('D', GuiIcon.trashCanIcon(NamedTextColor.RED, true))
 
 		text.add(getMenuTitleName(listing), line = 2, horizontalShift = 18, verticalShift = -2)
