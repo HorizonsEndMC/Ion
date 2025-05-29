@@ -4,7 +4,6 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkage
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import java.util.function.Supplier
 import kotlin.reflect.KClass
@@ -14,29 +13,19 @@ class MultiblockLinkageHolder(
 	val offsetRight: Int,
 	val offsetUp: Int,
 	val offsetForward: Int,
-	val allowedEntities: Array<KClass<out MultiblockEntity>>,
+	val allowedEntities: Array<out KClass<out MultiblockEntity>>,
 	val linkageDirection: RelativeFace
 ) : Supplier<MultiblockEntity?> {
-	var location: BlockKey = toBlockKey(entity.getPosRelative(offsetRight, offsetUp, offsetForward))
+	val location: BlockKey get() = toBlockKey(entity.getPosRelative(offsetRight, offsetUp, offsetForward))
 
 	fun register() {
-		val newPos = getRelative(
-			origin = entity.localVec3i,
-			forwardFace = entity.structureDirection,
-			right = offsetRight,
-			up = offsetUp,
-			forward = offsetForward
-		)
-
-		location = toBlockKey(newPos)
-
 		val manager = entity.manager
 
 		val new = MultiblockLinkage(
 			entity,
 			allowedEntities,
 			location,
-			linkageDirection[entity.structureDirection]
+			linkageDirection
 		)
 
 		manager.getLinkageManager().registerLinkage(location, new)
@@ -53,7 +42,7 @@ class MultiblockLinkageHolder(
 		val linkage = manager
 			.getLinkageManager()
 			.getLinkages(location)
-			.firstOrNull { it.owner == this }
+			.firstOrNull { it.owner == this.entity }
 
 		return linkage?.getOtherEnd(manager.getLinkageManager())
 	}
@@ -64,7 +53,7 @@ class MultiblockLinkageHolder(
 			offsetUp: Int,
 			offsetForward: Int,
 			linkageDirection: RelativeFace,
-			allowedEntities: Array<KClass<out MultiblockEntity>>
+			vararg allowedEntities: KClass<out MultiblockEntity>
 		): MultiblockLinkageHolder {
 			val holder = MultiblockLinkageHolder(
 				this,
