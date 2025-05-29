@@ -122,8 +122,6 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 			val entity = entry.value
 			entity.displace(movement)
 		}
-
-		multiblockLinkageManager.displace(movement)
 	}
 
 	/** Mostly to be used with blueprint load or loadship, loads entities from their sign data */
