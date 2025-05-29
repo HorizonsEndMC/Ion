@@ -50,9 +50,9 @@ object StructureCreator : SLCommand() {
 
 		val requirements = mutableMapOf<Vec3i, String>()
 
-		for (x in selectionMin.x..selectionMax.x) {
-			for (y in selectionMin.y..selectionMax.y) {
-				for (z in selectionMin.z..selectionMax.z) {
+		for (x in selectionMin.x()..selectionMax.x()) {
+			for (y in selectionMin.y()..selectionMax.y()) {
+				for (z in selectionMin.z()..selectionMax.z()) {
 					val relativeX = x - origin.x
 					val relativeY = y - origin.y
 					val relativeZ = z - origin.z
@@ -116,7 +116,7 @@ object StructureCreator : SLCommand() {
 			data.material.isGlassPane -> {
 				data as GlassPane
 				val faces = data.faces.map { RelativeFace[forwards, it] }
-				".anyGlassPane(PrepackagedPreset.pane(${faces.joinToString { it.name }}))"
+				".anyGlassPane(PrepackagedPreset.pane(${faces.joinToString { "RelativeFace." + it.name }}))"
 			}
 			data.material.isWall -> ".anyWall()"
 
@@ -128,7 +128,7 @@ object StructureCreator : SLCommand() {
 				val half = data.half
 				val shape = data.shape
 
-				".anyStairs(PrepackagedPreset.stairs($facing, Bisected.Half.$half, shape = $shape))"
+				".anyStairs(PrepackagedPreset.stairs(RelativeFace.$facing, Bisected.Half.$half, shape = Stairs.Shape.$shape))"
 			}
 
 			data.material.isSlab -> {
