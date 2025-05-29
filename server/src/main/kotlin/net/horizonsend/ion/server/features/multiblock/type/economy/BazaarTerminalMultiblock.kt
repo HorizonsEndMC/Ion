@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHan
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
-import net.horizonsend.ion.server.features.multiblock.linkage.MultiblockLinkageHolder.Companion.createLinkage
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
@@ -184,11 +183,18 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, 100_000) {
 		override val displayHandler: TextDisplayHandler = standardPowerDisplay(this)
 
-		val mergeEnd = createLinkage(-2, -1, 2, RelativeFace.LEFT, AdvancedShipFactoryEntity::class)
+		private val mergeEnd = createLinkage(
+			offsetRight = -2,
+			offsetUp = -1,
+			offsetForward = 2,
+			linkageDirection = RelativeFace.LEFT,
+			predicate = { multiblock is BazaarTerminalMergeableMultiblock },
+			AdvancedShipFactoryEntity::class
+		)
 
 		fun handleInteract(player: Player) {
 			BazaarTerminalMainMenu(player, this).openGui()
-			player.information("other end: ${mergeEnd.get()}")
+			player.information("other end: ${mergeEnd?.get()}")
 		}
 	}
 }
