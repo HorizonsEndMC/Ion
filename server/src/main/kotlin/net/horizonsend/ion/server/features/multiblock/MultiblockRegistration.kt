@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultibloc
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier2Mirrored
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier3Mirrored
+import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier3
@@ -87,7 +88,8 @@ import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterM
 import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblockMirrored
-import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent
+import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent.AdvancedShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.OdometerMultiblock
@@ -385,6 +387,7 @@ object MultiblockRegistration : IonServerComponent() {
 		// Machine
 		registerMultiblock(ShipFactoryMultiblock)
 		registerMultiblock(AdvancedShipFactoryMultiblock)
+		registerMultiblock(AdvancedShipFactoryParent.AdvancedShipFactoryMergeable)
 
 		registerMultiblock(DecomposerMultiblock)
 
@@ -398,6 +401,9 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(TractorBeamMultiblock)
 		registerMultiblock(MediumTractorBeamMultiblock)
 		registerMultiblock(LargeTractorBeamMultiblock)
+
+		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalStandardMultiblock)
+		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMergeableMultiblock)
 
 		registerMultiblock(AntiAirCannonBaseMultiblock)
 	}

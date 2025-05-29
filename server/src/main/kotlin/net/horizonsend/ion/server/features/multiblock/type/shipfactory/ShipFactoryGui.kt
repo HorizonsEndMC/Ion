@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.ADVANCED_SHIP_FACTORY_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.miniMessage
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.starship.BlueprintCommand.blueprintInfo
 import net.horizonsend.ion.server.command.starship.BlueprintCommand.showMaterials
 import net.horizonsend.ion.server.features.gui.GuiItem
@@ -26,12 +27,14 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.ShadowColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.eq
 import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.window.Window
 
 class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindowWrapper(viewer, async = true) {
@@ -45,7 +48,7 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 				". . . . C c . . .",
 				"X Y Z . . . . . .",
 				"B A M R . P . e .",
-				". 1 3 6 . I . . ."
+				"m 1 3 6 . I . . ."
 			)
 			.addIngredient('s', searchMenuBotton)
 			.addIngredient('i', blueprintMenuBotton)
@@ -116,6 +119,7 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 			.addIngredient('I', itemMenu)
 			.addIngredient('d', disableButton)
 			.addIngredient('e', enableButton)
+			.addIngredient('m', mergeIndicator)
 			.build()
 
 		if (!isValid()) return null
@@ -369,4 +373,15 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 			false
 		),
 	).apply { setParent(this@ShipFactoryGui) }
+
+	val mergeIndicator = ItemProvider {
+		val empty = GuiItem.EMPTY.makeItem(Component.empty())
+
+		if (entity !is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) return@ItemProvider empty
+		if (entity.multiblock !is AdvancedShipFactoryParent.AdvancedShipFactoryMergeable) return@ItemProvider empty
+
+		val mergePartner = entity.mergeEnd.get()
+
+		GuiItem.CHECKMARK.makeItem(template(text("Merged with {0}", GREEN), mergePartner))
+	}
 }
