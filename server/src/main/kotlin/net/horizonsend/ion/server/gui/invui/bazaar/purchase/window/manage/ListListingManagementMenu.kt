@@ -43,7 +43,7 @@ class ListListingManagementMenu(viewer: Player) : AbstractListingManagementMenu(
 	override fun buildWindow(): Window {
 		val gui = PagedGui.items()
 			.setStructure(
-				"x . c . . . . g i",
+				"x . c . n . . g i",
 				"# 0 0 0 0 0 0 0 0",
 				"# 1 1 1 1 1 1 1 1",
 				"# 2 2 2 2 2 2 2 2",
@@ -60,6 +60,7 @@ class ListListingManagementMenu(viewer: Player) : AbstractListingManagementMenu(
 			.addIngredient('g', gridViewButton)
 			.addIngredient('i', infoButton)
 			.addIngredient('c', collectButton)
+			.addIngredient('n', createSellOrderButton)
 			.addIngredient('0', backingButton(0))
 			.addIngredient('1', backingButton(1))
 			.addIngredient('2', backingButton(2))
