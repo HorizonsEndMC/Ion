@@ -36,7 +36,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
-import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
@@ -431,10 +430,10 @@ object Bazaars : IonServerComponent() {
 
 				val priceMultiplicationMessage = template(text("(Price multiplied by {0} due to browsing remotely)", YELLOW), priceMult)
 
-				futureResult.complete(InputResult.SuccessReason(listOf(
-					fullMessage,
-					if (priceMult > 1) priceMultiplicationMessage else empty()
-				)))
+				val lore = mutableListOf(fullMessage)
+				if (priceMult > 1) lore.add(priceMultiplicationMessage)
+
+				futureResult.complete(InputResult.SuccessReason(lore))
 			}
 		}
 
