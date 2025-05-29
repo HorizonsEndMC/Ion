@@ -182,6 +182,30 @@ object TransportDebugCommand : SLCommand() {
 		}
 	}
 
+	@Subcommand("dump merges chunk")
+	fun dumpMergePointsChunk(sender: Player, network: CacheType) {
+		val ionChunk = sender.chunk.ion()
+		val mergePoints = network.get(ionChunk).holder.getMultiblockManager().getLinkageManager().getAll()
+
+		sender.information("${mergePoints.size} linkages(s).")
+
+		mergePoints.forEach {
+			sender.highlightBlock(toVec3i(it.key), 50L)
+		}
+	}
+
+	@Subcommand("dump merges ship")
+	fun dumpMergePointsShip(sender: Player, network: CacheType) {
+		val ship = getStarshipRiding(sender)
+		val mergePoints = network.get(ship).holder.getMultiblockManager().getLinkageManager().getAll()
+
+		sender.information("${mergePoints.size} linkages(s).")
+
+		mergePoints.forEach {
+			sender.highlightBlock(toVec3i(it.key), 50L)
+		}
+	}
+
 	private fun requireLookingAt(sender: Player, network: (Block) -> TransportCache): Pair<Node, BlockKey> {
 		val targeted = sender.getTargetBlockExact(10) ?: fail { "No block in range" }
 		val grid = network(targeted)

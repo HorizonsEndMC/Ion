@@ -18,7 +18,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.Companion.formatProgress
-import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories.missingMaterialsCache
@@ -167,7 +167,7 @@ class ShipFactoryTask(
 					toPrint.add(key)
 					usedPower += 10
 
-					if (entity is AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity) {
+					if (entity is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) {
 						val power = entity.powerStorage.getPower()
 						if (power < usedPower) {
 							entity.statusManager.setStatus(text("Insufficient Power!", RED))
@@ -278,7 +278,7 @@ class ShipFactoryTask(
 			placeBlock(entry, blockData, signData)
 		}
 
-		if (entity is AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity) {
+		if (entity is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) {
 			entity.powerStorage.removePower(placements * 10)
 		}
 

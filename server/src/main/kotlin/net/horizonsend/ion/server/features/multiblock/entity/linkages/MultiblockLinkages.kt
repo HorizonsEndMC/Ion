@@ -21,4 +21,6 @@ abstract class MultiblockLinkageManager {
 	fun getLinkages(location: BlockKey): Set<MultiblockLinkage> {
 		return linkages[location]?.getLinkages() ?: setOf()
 	}
+
+	fun getAll() = linkages
 }

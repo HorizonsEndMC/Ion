@@ -241,7 +241,7 @@ abstract class ShipFactoryEntity(
 			override val inventory: CraftInventory,
 			val originCache: CacheHolder<ItemTransportCache>,
 			val path: Path,
-			val entity: AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity
+			val entity: AdvancedShipFactoryParent.AdvancedShipFactoryEntity
 		): InventoryReference {
 			override fun isAvailable(itemStack: ItemStack): Boolean = path.isValid(originCache)
 		}
