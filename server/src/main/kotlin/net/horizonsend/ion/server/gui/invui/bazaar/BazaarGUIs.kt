@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.listings.Glob
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.GridListingManagementMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.ListListingManagementMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.ListingEditorMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.SellOrderCreationMenu
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
@@ -81,10 +82,12 @@ object BazaarGUIs {
 		menu.openGui()
 	}
 
-	fun openListingEditor(player: Player, listing: BazaarItem, previous: CommonGuiWrapper?) {
-		val menu = ListingEditorMenu(player, listing)
-		previous?.let { menu.setParent(it) }
-		menu.openGui()
+	fun openSellOrderEditor(player: Player, listing: BazaarItem, previous: CommonGuiWrapper?) {
+		ListingEditorMenu(player, listing).openGui(previous)
+	}
+
+	fun openSellOrderCreationMenu(viewer: Player, previous: CommonGuiWrapper?) {
+		SellOrderCreationMenu(viewer).openGui(previous)
 	}
 
 	fun openBuyOrderMainMenu(player: Player, previous: CommonGuiWrapper?) {
