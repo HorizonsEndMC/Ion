@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.features.multiblock.type.economy
 
-import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
+import net.horizonsend.ion.server.features.economy.city.CityNPCs.BAZAAR_CITY_TERRITORIES
+import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
@@ -13,8 +15,12 @@ import net.horizonsend.ion.server.features.multiblock.type.InteractableMultibloc
 import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock.InventoryReference
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent.AdvancedShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
+import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.gui.invui.bazaar.terminal.BazaarTerminalMainMenu
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.World
@@ -24,6 +30,7 @@ import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.util.Vector
 
 sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity>, InteractableMultiblock {
 	override val name: String = "bazaarterminal"
@@ -43,44 +50,18 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		getMultiblockEntity(sign, false)?.handleInteract(player)
 	}
 
-	abstract val inventoryOffsets: Array<Vec3i>
+	abstract val depositInventoryOffsets: Array<Vec3i>
+	abstract val depositPipeOrigin: Array<Vec3i>
+	abstract val withdrawInventoryOffsets: Array<Vec3i>
+	abstract val withdrawPipeOrigin: Array<Vec3i>
 
 	data object BazaarTerminalStandardMultiblock : BazaarTerminalMultiblock() {
-		override val inventoryOffsets: Array<Vec3i> = arrayOf(Vec3i(-2, 0, 2), Vec3i(-2, -1, 2), Vec3i(2, 0, 2), Vec3i(2, -1, 2))
+		override val depositInventoryOffsets: Array<Vec3i> = arrayOf(Vec3i(2, 0, 2))
+		override val depositPipeOrigin: Array<Vec3i> = arrayOf(Vec3i(2, -1, 2))
+		override val withdrawInventoryOffsets: Array<Vec3i> = arrayOf(Vec3i(-2, 0, 2))
+		override val withdrawPipeOrigin: Array<Vec3i> = arrayOf(Vec3i(-2, -1, 2))
 
 		override fun MultiblockShape.buildStructure() {
-			z(3) {
-				y(-1) {
-					x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-					x(1).steelBlock()
-					x(0).ironBlock()
-					x(-1).steelBlock()
-					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-				}
-				y(0) {
-					x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-					x(1).steelBlock()
-					x(0).ironBlock()
-					x(-1).steelBlock()
-					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				}
-			}
-			z(2) {
-				y(-1) {
-					x(2).anyPipedInventory()
-					x(1).sponge()
-					x(0).netheriteCasing()
-					x(-1).sponge()
-					x(-2).anyPipedInventory()
-				}
-				y(0) {
-					x(2).anyPipedInventory()
-					x(1).sponge()
-					x(0).ironBlock()
-					x(-1).sponge()
-					x(-2).anyPipedInventory()
-				}
-			}
 			z(1) {
 				y(-1) {
 					x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
@@ -95,6 +76,38 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 					x(0).ironBlock()
 					x(-1).steelBlock()
 					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				}
+			}
+			z(2) {
+				y(-1) {
+					x(2).anyGlass()
+					x(1).sponge()
+					x(0).netheriteCasing()
+					x(-1).sponge()
+					x(-2).extractor()
+				}
+				y(0) {
+					x(2).anyPipedInventory()
+					x(1).sponge()
+					x(0).ironBlock()
+					x(-1).sponge()
+					x(-2).anyPipedInventory()
+				}
+			}
+			z(3) {
+				y(-1) {
+					x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+					x(1).steelBlock()
+					x(0).ironBlock()
+					x(-1).steelBlock()
+					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(0) {
+					x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+					x(1).steelBlock()
+					x(0).ironBlock()
+					x(-1).steelBlock()
+					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				}
 			}
 			z(0) {
@@ -113,19 +126,22 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 	}
 
 	data object BazaarTerminalMergeableMultiblock : BazaarTerminalMultiblock() {
-		override val inventoryOffsets: Array<Vec3i> = arrayOf(Vec3i(2, 0, 2), Vec3i(2, -1, 2))
+		override val depositInventoryOffsets: Array<Vec3i> = arrayOf(Vec3i(2, 0, 2))
+		override val depositPipeOrigin: Array<Vec3i> = arrayOf(Vec3i(2, -1, 2))
+		override val withdrawInventoryOffsets: Array<Vec3i> = arrayOf()
+		override val withdrawPipeOrigin: Array<Vec3i> = arrayOf()
 
 		override fun MultiblockShape.buildStructure() {
-			z(3) {
+			z(1) {
 				y(-1) {
-					x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+					x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 					x(1).steelBlock()
 					x(0).ironBlock()
 					x(-1).steelBlock()
 					x(-2).netheriteCasing()
 				}
 				y(0) {
-					x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+					x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 					x(1).steelBlock()
 					x(0).ironBlock()
 					x(-1).steelBlock()
@@ -134,7 +150,7 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 			}
 			z(2) {
 				y(-1) {
-					x(2).anyPipedInventory()
+					x(2).anyGlass()
 					x(1).sponge()
 					x(0).netheriteCasing()
 					x(-1).sponge()
@@ -148,16 +164,16 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 					x(-2).type(Material.LODESTONE)
 				}
 			}
-			z(1) {
+			z(3) {
 				y(-1) {
-					x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+					x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 					x(1).steelBlock()
 					x(0).ironBlock()
 					x(-1).steelBlock()
 					x(-2).netheriteCasing()
 				}
 				y(0) {
-					x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+					x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 					x(1).steelBlock()
 					x(0).ironBlock()
 					x(-1).steelBlock()
@@ -191,11 +207,24 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, 100_000), RemotePipeMultiblock {
 		override val displayHandler: TextDisplayHandler = standardPowerDisplay(this)
 
-		companion object {
-			private val PIPE_SEARCH_POINTS = arrayOf(Vec3i(-1, 0, 0), Vec3i(0, 0, 0), Vec3i(1, 0, 0))
+		fun isWithdrawAvailable(): Boolean {
+			return multiblock == BazaarTerminalStandardMultiblock
 		}
 
-		override val pipeSearchPoints: Array<Vec3i> = PIPE_SEARCH_POINTS
+		fun isDepositAvailable(): Boolean {
+			var depositAvailable = true
+
+			val region = Regions.findFirstOf<RegionTerritory>(location)
+			if (region == null) depositAvailable = false
+
+			if (region != null) {
+				if (!TradeCities.isCity(region)) depositAvailable = false
+
+				if (!BAZAAR_CITY_TERRITORIES.contains(region.id)) depositAvailable = false
+			}
+
+			return depositAvailable
+		}
 
 		private val mergeEnd = createLinkage(
 			offsetRight = -2,
@@ -207,15 +236,33 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		)
 
 		fun handleInteract(player: Player) {
-//			BazaarTerminalMainMenu(player, this).openGui()
-			player.information("other end: ${mergeEnd?.get()}")
+			for (reference in getBazaarWithdrawInventories()) {
+				val location = reference.inventory.location ?: continue
 
-			getInventories().forEach { player.highlightBlock(Vec3i(it.inventory.location ?: return@forEach), 50L) }
+				val block = Material.GREEN_CONCRETE.createBlockData()
+				sendEntityPacket(player, displayBlock(world.minecraft, block, Vector(location.x, location.y, location.z), 1.5f, true), 10 * 20L)
+			}
+
+			for (reference in getBazaarDepositInventories()) {
+				val location = reference.inventory.location ?: continue
+
+				val block = Material.RED_CONCRETE.createBlockData()
+				sendEntityPacket(player, displayBlock(world.minecraft, block, Vector(location.x, location.y, location.z), 1.5f, true), 10 * 20L)
+			}
+
+			BazaarTerminalMainMenu(player, this).openGui()
 		}
 
-		private fun getInventories(): Set<InventoryReference> {
-			val base = multiblock.inventoryOffsets.mapNotNullTo(mutableSetOf(), ::getStandardReference)
-			return getRemoteReferences(getNetworkedExtractors(), manager.getTransportManager().itemPipeManager.cache).plus(base)
+		fun getBazaarDepositInventories(): Set<InventoryReference> {
+			val base = multiblock.depositInventoryOffsets.mapNotNullTo(mutableSetOf(), ::getStandardReference)
+			return getRemoteReferences(getNetworkedExtractors(multiblock.depositPipeOrigin), manager.getTransportManager().itemPipeManager.cache).plus(base)
+		}
+
+		fun getBazaarWithdrawInventories(): Set<InventoryReference> {
+			val withdrawInventoryReferences: MutableSet<InventoryReference> = multiblock.withdrawInventoryOffsets.mapNotNullTo(mutableSetOf()) { getStandardReference(it) }
+			withdrawInventoryReferences.addAll(getNetworkedInventories(multiblock.withdrawPipeOrigin).values.firstOrNull() ?: setOf())
+
+			return withdrawInventoryReferences
 		}
 	}
 }
