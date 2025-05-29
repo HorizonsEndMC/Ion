@@ -356,8 +356,11 @@ abstract class MultiblockEntity(
 		offsetUp: Int,
 		offsetForward: Int,
 		linkageDirection: RelativeFace,
+		predicate: () -> Boolean = { true },
 		vararg allowedEntities: KClass<out MultiblockEntity>
-	): MultiblockLinkageHolder {
+	): MultiblockLinkageHolder? {
+		if (!predicate.invoke()) return null
+
 		val holder = MultiblockLinkageHolder(
 			this,
 			offsetRight,
