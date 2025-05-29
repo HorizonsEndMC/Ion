@@ -52,9 +52,13 @@ class PurchaseItemMenu(
 				val futureResult = Bazaars.tryBuyFromSellOrder(viewer, item, result.result, remote)
 
 				futureResult.withResult { buyResult ->
-					buyResult.getReason()?.let(::updateLoreOverride)
-					notifyWindows()
-					this@menu.parent.openGui()
+					if (!buyResult.isSuccess()) {
+						buyResult.getReason()?.let(::updateLoreOverride)
+						notifyWindows()
+					} else {
+						buyResult.sendReason(viewer)
+						backButtonHandler.invoke()
+					}
 				}
 			}
 		).openGui()
