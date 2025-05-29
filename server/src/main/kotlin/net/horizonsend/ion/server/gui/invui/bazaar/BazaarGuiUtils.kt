@@ -23,6 +23,9 @@ fun ItemStack.stripAttributes() = updateData(DataComponentTypes.ATTRIBUTE_MODIFI
 
 const val BAZAAR_SHADOW_COLOR = "#252525FF"
 
+val DEPOSIT_COLOR = TextColor.fromHexString("#1E83FF")!!
+val WITHDRAW_COLOR = TextColor.fromHexString("#00FF7B")!!
+
 fun getMenuTitleName(component: Component) = component.withShadowColor(BAZAAR_SHADOW_COLOR)
 fun getMenuTitleName(itemStack: ItemStack) = getMenuTitleName(itemStack.displayNameComponent)
 fun getMenuTitleName(bazaarItem: BazaarItem) = getMenuTitleName(fromItemString(bazaarItem.itemString))
