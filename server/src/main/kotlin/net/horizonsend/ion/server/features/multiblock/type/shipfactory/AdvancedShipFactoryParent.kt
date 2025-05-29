@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.client.display.modular.display.Status
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.linkage.MultiblockLinkageHolder.Companion.createLinkage
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
@@ -186,7 +185,14 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 		override val maxPower: Int = 300_000
 		override val powerStorage: PowerStorage = loadStoredPower(data)
 
-		val mergeEnd = createLinkage(2, -1, 1, RelativeFace.RIGHT, BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity::class)
+		val mergeEnd = createLinkage(
+			offsetRight = 2,
+			offsetUp = -1,
+			offsetForward = 1,
+			linkageDirection = RelativeFace.RIGHT,
+			predicate = { multiblock is AdvancedShipFactoryMergeable },
+			BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity::class
+		)
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
