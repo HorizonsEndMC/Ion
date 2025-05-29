@@ -208,7 +208,7 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 			savePowerData(store)
 		}
 
-		override val pipeSearchPoints: Array<Vec3i> = arrayOf(
+		private val pipeSearchPoints: Array<Vec3i> = arrayOf(
 			Vec3i(0, 0, 0),
 			Vec3i(0, 0, 1),
 			Vec3i(0, 0, 2),
@@ -224,7 +224,7 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 			val base = inventoryOffsets.mapNotNullTo(mutableSetOf(), ::getStandardReference)
 
 			return if (settings.grabFromNetworkedPipes)
-				getRemoteReferences(getNetworkedExtractors(), manager.getTransportManager().itemPipeManager.cache).plus(base)
+				getRemoteReferences(getNetworkedExtractors(pipeSearchPoints), manager.getTransportManager().itemPipeManager.cache).plus(base)
 				else base
 		}
 	}

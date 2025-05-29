@@ -15,9 +15,7 @@ import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.ItemStack
 
 interface RemotePipeMultiblock {
-	val pipeSearchPoints: Array<Vec3i>
-
-	fun getNetworkedExtractors(): Map<BlockKey, Array<PathfindResult>> {
+	fun getNetworkedExtractors(pipeSearchPoints: Array<Vec3i>): Map<BlockKey, Array<PathfindResult>> {
 		this as MultiblockEntity
 
 		val transportManager = manager.getTransportManager()
@@ -39,6 +37,39 @@ interface RemotePipeMultiblock {
 				retainFullPath = true,
 				nextNodeProvider = { getPreviousNodes(itemCacheHolder.globalNodeCacher, null) }
 			)
+		}
+
+		return allDestinations
+	}
+
+	fun getNetworkedInventories(extractors: Array<Vec3i>): Map<BlockKey, MutableSet<InventoryReference>> {
+		this as MultiblockEntity
+
+		val transportManager = manager.getTransportManager()
+		val itemCacheHolder = transportManager.itemPipeManager
+
+		val localPipeInputKeys = extractors.map { i -> toBlockKey(getPosRelative(i.x, i.y, i.z)) }
+
+		val allDestinations: Map<BlockKey, MutableSet<InventoryReference>> = localPipeInputKeys.associateWith { inputLoc ->
+			val cacheResult = itemCacheHolder.globalNodeCacher.invoke(itemCacheHolder.cache, world, inputLoc) ?: return@associateWith mutableSetOf()
+			val node = cacheResult.second ?: return@associateWith mutableSetOf()
+
+			val task = TransportTask(inputLoc, world, {}, 1000, IonServer.slF4JLogger)
+
+			val destinations = itemCacheHolder.cache.getNetworkDestinations(
+				task = task,
+				destinationTypeClass = ItemNode.InventoryNode::class,
+				originPos = inputLoc,
+				originNode = node,
+				retainFullPath = true,
+				nextNodeProvider = { getNextNodes(cachedNodeProvider = itemCacheHolder.globalNodeCacher, filter = { _, _ -> true }) }
+			)
+
+			destinations.mapNotNullTo(mutableSetOf()) { pathResult ->
+				val inventory = itemCacheHolder.cache.getInventory(pathResult.destinationPosition) ?: return@mapNotNullTo null
+
+				InventoryReference.RemoteInventoryReference(inventory, itemCacheHolder, pathResult.trackedPath)
+			}
 		}
 
 		return allDestinations
