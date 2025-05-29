@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
@@ -11,18 +10,15 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredM
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock.InventoryReference
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent.AdvancedShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
-import net.horizonsend.ion.server.features.transport.TransportTask
-import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
-import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.BACKWARD
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.FORWARD
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -181,7 +177,7 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 		z: Int,
 		world: World,
 		structureDirection: BlockFace
-	) : ShipFactoryEntity(data, multiblock, manager, world, x, y, z, structureDirection), PoweredMultiblockEntity {
+	) : ShipFactoryEntity(data, multiblock, manager, world, x, y, z, structureDirection), PoweredMultiblockEntity, RemotePipeMultiblock {
 		override val maxPower: Int = 300_000
 		override val powerStorage: PowerStorage = loadStoredPower(data)
 
@@ -212,7 +208,7 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 			savePowerData(store)
 		}
 
-		private val pipeInputOffsets = arrayOf(
+		override val pipeSearchPoints: Array<Vec3i> = arrayOf(
 			Vec3i(0, 0, 0),
 			Vec3i(0, 0, 1),
 			Vec3i(0, 0, 2),
@@ -225,51 +221,11 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 		)
 
 		override fun getInventories(): Set<InventoryReference> {
-			val extractors =  getNetworkedExtractors()
+			val base = inventoryOffsets.mapNotNullTo(mutableSetOf(), ::getStandardReference)
 
-			val transportManager = manager.getTransportManager()
-			val itemCache = transportManager.itemPipeManager.cache
-
-			val base = inventoryOffsets.mapNotNullTo(mutableSetOf()) {
-				val inv = itemCache.getInventory(toBlockKey(getPosRelative(right = it.x, up = it.y, forward = it.z))) ?: return@mapNotNullTo null
-				InventoryReference.StandardInventoryReference(inv)
-			}
-
-			return extractors.flatMapTo(mutableSetOf()) { (_, destinations) ->
-
-				destinations.flatMap { pathResult: PathfindResult ->
-					itemCache.getSources(pathResult.destinationPosition).map {
-						InventoryReference.RemoteInventoryReference(it, itemCache.holder, pathResult.trackedPath, this)
-					}
-				}
-			}.plus(base)
-		}
-
-		private fun getNetworkedExtractors(): Map<BlockKey, Array<PathfindResult>> {
-			if (!settings.grabFromNetworkedPipes) return mapOf()
-
-			val transportManager = manager.getTransportManager()
-			val itemCacheHolder = transportManager.itemPipeManager
-
-			val localPipeInputKeys = pipeInputOffsets.map { i -> toBlockKey(getPosRelative(i.x, i.y, i.z)) }
-
-			val allDestinations = localPipeInputKeys.associateWith { inputLoc ->
-				val cacheResult = itemCacheHolder.globalNodeCacher.invoke(itemCacheHolder.cache, world, inputLoc) ?: return@associateWith arrayOf()
-				val node = cacheResult.second ?: return@associateWith arrayOf()
-
-				val task = TransportTask(inputLoc, world, {}, 1000, IonServer.slF4JLogger)
-
-				itemCacheHolder.cache.getNetworkDestinations(
-					task = task,
-					destinationTypeClass = ItemNode.ItemExtractorNode::class,
-					originPos = inputLoc,
-					originNode = node,
-					retainFullPath = true,
-					nextNodeProvider = { getPreviousNodes(itemCacheHolder.globalNodeCacher, null) }
-				)
-			}
-
-			return allDestinations
+			return if (settings.grabFromNetworkedPipes)
+				getRemoteReferences(getNetworkedExtractors(), manager.getTransportManager().itemPipeManager.cache).plus(base)
+				else base
 		}
 	}
 }
