@@ -11,11 +11,11 @@ import kotlin.reflect.KClass
 
 class MultiblockLinkageHolder(
 	val entity: MultiblockEntity,
-	val offsetRight: Int,
-	val offsetUp: Int,
-	val offsetForward: Int,
-	val allowedEntities: Array<out KClass<out MultiblockEntity>>,
-	val linkageDirection: RelativeFace
+	private val offsetRight: Int,
+	private val offsetUp: Int,
+	private val offsetForward: Int,
+	private val allowedEntities: Array<out KClass<out MultiblockEntity>>,
+	private val linkageDirection: RelativeFace
 ) : Supplier<MultiblockEntity?> {
 	val location: BlockKey get() = toBlockKey(entity.manager.getLocalCoordinate(getRelative(entity.globalVec3i, entity.structureDirection, offsetRight, offsetUp, offsetForward)))
 
@@ -46,29 +46,5 @@ class MultiblockLinkageHolder(
 			.firstOrNull { it.owner == this.entity }
 
 		return linkage?.getOtherEnd(manager.getLinkageManager())
-	}
-
-	companion object {
-		fun MultiblockEntity.createLinkage(
-			offsetRight: Int,
-			offsetUp: Int,
-			offsetForward: Int,
-			linkageDirection: RelativeFace,
-			vararg allowedEntities: KClass<out MultiblockEntity>
-		): MultiblockLinkageHolder {
-			val holder = MultiblockLinkageHolder(
-				this,
-				offsetRight,
-				offsetUp,
-				offsetForward,
-				allowedEntities,
-				linkageDirection
-			)
-
-			linkages.add(holder)
-
-			holder.register()
-			return holder
-		}
 	}
 }

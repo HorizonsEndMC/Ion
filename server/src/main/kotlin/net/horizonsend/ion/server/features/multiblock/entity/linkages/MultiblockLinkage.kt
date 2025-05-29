@@ -10,7 +10,7 @@ import kotlin.reflect.KClass
 
 open class MultiblockLinkage(
 	val owner: MultiblockEntity,
-	val allowedLinkages: Array<out KClass<out MultiblockEntity>>,
+	private val allowedLinkages: Array<out KClass<out MultiblockEntity>>,
 	val location: BlockKey,
 	val linkDirection: RelativeFace
 ) {
