@@ -47,8 +47,7 @@ class PurchaseItemMenu(
 			inputValidator = RangeIntegerValidator(1..item.stock),
 			componentTransformer = { Component.text(it) },
 			successfulInputHandler = menu@{ _, (_, result) ->
-				val remote = Regions.get<RegionTerritory>(item.cityTerritory).contains(viewer.location)
-
+				val remote = !Regions.get<RegionTerritory>(item.cityTerritory).contains(viewer.location)
 				val futureResult = Bazaars.tryBuyFromSellOrder(viewer, item, result.result, remote)
 
 				futureResult.withResult { buyResult ->
