@@ -70,7 +70,7 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
 	}
 
 	fun handleEntryClick(item: BazaarItem, previous: CommonGuiWrapper) {
-		BazaarGUIs.openListingEditor(viewer, item, previous)
+		BazaarGUIs.openSellOrderEditor(viewer, item, previous)
 	}
 
 	protected val infoButton = makeInformationButton(title = text("Info"),
@@ -136,4 +136,6 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
 	protected val collectButton = FeedbackItem.builder(GuiItem.ROUTE_CANCEL.makeItem(text("Collect Listing Profits")) /*TODO- Icon*/) { _, _ -> Bazaars.collectListingProfit(viewer) }
 		.withSuccessHandler { _, _ -> openGui() }
 		.build()
+
+	val createSellOrderButton = GuiItem.PLUS.makeItem(text("Create New Item Listing")).makeGuiButton { _, _ -> BazaarGUIs.openSellOrderCreationMenu(viewer, this) }
 }
