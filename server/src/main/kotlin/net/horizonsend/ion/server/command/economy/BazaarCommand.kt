@@ -162,7 +162,7 @@ object BazaarCommand : SLCommand() {
 	@CommandCompletion("@bazaarItemStrings")
 	fun onDeposit(sender: Player, itemString: String, @Optional limit: Int?) = asyncCommand(sender) {
 		val territory = requireTerritoryIn(sender)
-		Bazaars.depositListingStock(sender, territory, itemString, limit ?: Int.MAX_VALUE).sendReason(sender)
+		Bazaars.depositListingStock(sender, sender.inventory, territory, itemString, limit ?: Int.MAX_VALUE).sendReason(sender)
 	}
 
 	@Suppress("Unused")

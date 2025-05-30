@@ -21,6 +21,8 @@ interface InputResult : PotentiallyFutureResult {
 
 	override fun withResult(consumer: Consumer<InputResult>) = consumer.accept(this)
 
+	override fun get(): InputResult = this
+
 	interface Success : InputResult {
 		override fun isSuccess(): Boolean = true
 	}
