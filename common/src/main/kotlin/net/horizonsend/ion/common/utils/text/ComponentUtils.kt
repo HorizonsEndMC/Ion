@@ -3,6 +3,7 @@ package net.horizonsend.ion.common.utils.text
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toText
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.gui.icons.GuiIconType
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.key.Key
@@ -10,19 +11,20 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
-import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.flattener.ComponentFlattener
 import net.kyori.adventure.text.flattener.FlattenerListener
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import java.util.function.Consumer
 
 // Serialization
 /** Skip building the serializer */
@@ -122,7 +124,7 @@ const val SHIFT_LEFT_MIN = 1
 const val SHIFT_LEFT_MAX = 256
 const val SHIFT_RIGHT_MIN = 1
 const val SHIFT_RIGHT_MAX = 256
-const val SHIFT_DOWN_MIN = -17
+const val SHIFT_DOWN_MIN = -22
 const val SHIFT_DOWN_MAX = 110
 
 // Custom characters begin
@@ -148,6 +150,22 @@ const val SPACE_MAIN_HYPERSPACE_ROUTES_CHARACTER = '\uF8F6'
 const val SPACE_MINOR_HYPERSPACE_ROUTES_CHARACTER = '\uF8F5'
 const val MULTIBLOCK_WORKBENCH = '\uF8F4'
 const val ADVANCED_SHIP_FACTORY_CHARACTER = '\uF8F3'
+const val BAZAAR_BUY_ORDER_MENU_CHARACTER = '\uF8F2'
+const val TEXT_INPUT_LEFT_CHARACTER = '\uF8F1'
+const val TEXT_INPUT_CENTER_CHARACTER = '\uF8F0'
+const val TEXT_INPUT_RIGHT_CHARACTER = '\uF8EF'
+const val PENCIL_CHARACTER = '\uF8ED'
+const val TRASHCAN_CHARACTER = '\uF8EC'
+const val CHECKMARK_CHARACTER = '\uF8EB'
+const val ICON_BORDER_CHARACTER = '\uF8EA'
+const val CROSS_CHARACTER = '\uF8E6'
+const val EMPTY_ICON_CHARACTER = '\uF8E9'
+const val SIMPLE_GUI_BORDER_CHARACTER = '\uF8E8'
+const val BAZAAR_ORDER_HEADER_ICON = '\uF8E7'
+const val BAZAAR_LISTING_HEADER_ICON = '\uF8EE'
+const val DEPOSIT_ICON = '\uF8E5'
+const val WITHDRAW_ICON = '\uF8E4'
+const val RED_SLOT_ICON = '\uF8E3'
 
 // Custom characters end
 
@@ -173,7 +191,7 @@ val String.minecraftLength: Int
 				'@', '~', '«', '»' -> 7
 				CHETHERITE_CHARACTER -> 10
 				SLOT_OVERLAY_CHARACTER -> 19
-				else -> 6
+				else -> GuiIconType.getByDisplayChar(it)?.width?.plus(1) ?: 6
 			} as Int
 		}
 	}
@@ -254,7 +272,7 @@ fun Component.wrap(width: Int): List<Component> {
 	// list of components acting as lines on a GUI
 	val lines = mutableListOf<Component>()
 	// component for constructing portions of a line
-	var currentComponent: TextComponent
+	var currentComponent: Component
 	// stores the current style
 	var currentStyle: Style = style()
 	// list for storing components in each line
@@ -335,5 +353,20 @@ fun Component.wrap(width: Int): List<Component> {
 
 	return lines
 }
+
+fun Component.iterateChildren(consumer: Consumer<Component>) {
+	val iterationList = arrayListOf(this)
+
+	while (iterationList.isNotEmpty()) {
+		// Remove last so you get a DFS
+		val current = iterationList.removeLast()
+
+		consumer.accept(current)
+
+		iterationList.addAll(current.children())
+	}
+}
+
+fun TextColor.asShadowColor(alpha: Int) = ShadowColor.shadowColor(this, alpha)
 
 //</editor-fold>
