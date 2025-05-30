@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.text.DEPOSIT_ICON
 import net.horizonsend.ion.common.utils.text.EMPTY_ICON_CHARACTER
 import net.horizonsend.ion.common.utils.text.ICON_BORDER_CHARACTER
 import net.horizonsend.ion.common.utils.text.PENCIL_CHARACTER
+import net.horizonsend.ion.common.utils.text.RED_SLOT_ICON
 import net.horizonsend.ion.common.utils.text.SLOT_OVERLAY_WIDTH
 import net.horizonsend.ion.common.utils.text.TEXT_INPUT_CENTER_CHARACTER
 import net.horizonsend.ion.common.utils.text.TEXT_INPUT_LEFT_CHARACTER
@@ -15,6 +16,8 @@ import net.horizonsend.ion.common.utils.text.WITHDRAW_ICON
 
 enum class GuiIconType(val displayChar: Char, val width: Int = SLOT_OVERLAY_WIDTH, val shift: Int = 0) {
 	EMPTY('\uFFFF'),
+
+	SLOT(RED_SLOT_ICON, width = 16, shift = 1),
 
 	LEFT_TEXT_BOX(TEXT_INPUT_LEFT_CHARACTER),
 	CENTER_TEXT_BOX(TEXT_INPUT_CENTER_CHARACTER),

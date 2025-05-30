@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.gui
 
+import com.google.common.collect.HashBasedTable
+import net.horizonsend.ion.common.utils.set
 import net.horizonsend.ion.common.utils.text.DEFAULT_BACKGROUND_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.GUI_HEADER_MARGIN
@@ -46,6 +48,7 @@ class GuiText(
      */
     private val iconStructure = mutableListOf<List<Char>>()
     private val iconMap = mutableMapOf<Char, GuiIcon>('.' to GuiIcon.EMPTY)
+    private val iconindexes = HashBasedTable.create<Int, Int, GuiIcon>()
 
 	private val guiBorders = mutableListOf<GuiBorder>()
 
@@ -166,6 +169,14 @@ class GuiText(
 		return this
 	}
 
+	/**
+	 * Marks the character to be displayed as the provided icon
+	 */
+	fun setIcon(rowIndex: Int, columnIndex: Int, icon: GuiIcon): GuiText {
+		iconindexes[rowIndex, columnIndex] = icon
+		return this
+	}
+
 	fun addBorder(border: GuiBorder): GuiText {
 		guiBorders.add(border)
 		return this
@@ -220,6 +231,18 @@ class GuiText(
 
             renderedComponents.add(Component.textOfChildren(*inputBoxComponents.toTypedArray()).shiftToStartOfComponent())
         }
+
+		for (row in iconindexes.rowKeySet()) {
+			val line = row * 2 // slots only on even line
+			val inputBoxComponents = mutableListOf<Component>()
+
+			for (columnIndex in 0..9) {
+				val icon = iconindexes[row, columnIndex] ?: GuiIcon.EMPTY
+
+				inputBoxComponents.add(icon.getComponent(line))
+			}
+			renderedComponents.add(Component.textOfChildren(*inputBoxComponents.toTypedArray()).shiftToStartOfComponent())
+		}
 
         // get sorted list of all lines in the builder
         for (line in guiComponents.map { it.line }.toSet().sorted()) {
