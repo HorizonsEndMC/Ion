@@ -160,6 +160,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 
 			if (CombatTimer.isPvpCombatTagged(player)) {
 				player.userError("Cannot enable drills while in combat")
+				disable()
 				return
 			}
 
