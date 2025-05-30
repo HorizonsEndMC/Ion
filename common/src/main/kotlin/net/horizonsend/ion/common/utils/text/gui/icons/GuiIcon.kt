@@ -26,6 +26,10 @@ abstract class GuiIcon(val type: GuiIconType) {
 		override fun buildcomponent(): Component = text(type.displayChar, WHITE)
 	}
 
+	open class SimpleColored(private val color: TextColor, type: GuiIconType) : GuiIcon(type) {
+		override fun buildcomponent(): Component = text(type.displayChar, color)
+	}
+
 	open class Icon(private val color: TextColor, private val bordered: Boolean, type: GuiIconType) : GuiIcon(type) {
 		override fun buildcomponent(): Component = text(type.displayChar, color)
 
@@ -44,6 +48,8 @@ abstract class GuiIcon(val type: GuiIconType) {
 
 	companion object {
 		val EMPTY = Empty
+
+		fun coloredSlot(color: TextColor) = SimpleColored(color, GuiIconType.SLOT)
 
 		fun textInputBoxLeft() = Simple(GuiIconType.LEFT_TEXT_BOX)
 		fun textInputBoxCenter() = Simple(GuiIconType.CENTER_TEXT_BOX)
