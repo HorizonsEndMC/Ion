@@ -1,13 +1,17 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.terminal
 
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.gui.icons.GuiIcon
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.DEPOSIT_COLOR
 import net.horizonsend.ion.server.gui.invui.bazaar.WITHDRAW_COLOR
+import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
@@ -36,22 +40,25 @@ class BazaarTerminalMainMenu(
 		return normalWindow(gui)
 	}
 
-	private val depositButton = ItemProvider {
+	private val depositButton = FeedbackLike.withHandler({
 		if (terminalMultiblockEntity.isDepositAvailable())
 			GuiItem.EMPTY.makeItem(Component.text("Deposit Items"))
-			else GuiItem.EMPTY.makeItem(Component.text("Item deposit not available outside of trade cities"))
+		else GuiItem.EMPTY.makeItem(Component.text("Item deposit not available"))
+			.updateLore(listOf(Component.text("Item deposit not available outside of trade cities", HE_MEDIUM_GRAY)))
 
-	}.makeGuiButton { _, _ -> handleDeposit() }
+	}) { _, _ -> handleDeposit() }
 
 	private fun handleDeposit() {
+		val cityCheck = Bazaars.checkInValidCity(viewer)
+		if (!cityCheck.isSuccess()) return depositButton.updateWith(cityCheck)
 		BazaarBulkDepositMenu(viewer, terminalMultiblockEntity).openGui(this)
-		println("Deposit")
 	}
 
 	private val withdrawButton = ItemProvider {
 		if (terminalMultiblockEntity.isWithdrawAvailable())
 			GuiItem.EMPTY.makeItem(Component.text("Withdraw Items"))
 			else GuiItem.EMPTY.makeItem(Component.text("Item withdraw not available"))
+				.updateLore(listOf(Component.text("The left merge port is occupying the withdraw capabilities.", HE_MEDIUM_GRAY)))
 
 	}.makeGuiButton { _, _ -> handleWithdraw() }
 

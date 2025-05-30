@@ -1,18 +1,24 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.terminal
 
+import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.gui.icons.GuiIcon
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.features.transport.items.util.getRemovableItems
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
+import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
+import net.horizonsend.ion.server.miscellaneous.utils.toMap
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
@@ -50,13 +56,14 @@ class BazaarBulkDepositMenu(viewer: Player, val multiblock: BazaarTerminalMultib
 	override fun createItem(entry: Map.Entry<ItemStack, ArrayDeque<ItemReference>>): Item {
 		val (asOne, references) = entry
 
+		val referenceSum = references.sumOf { it.get()?.amount ?: 0 }
+
 		val updated = asOne.clone()
 			.updateLore(listOf(
-				template(text("{0} available for deposit", HE_MEDIUM_GRAY), references.sumOf { it.get()?.amount ?: 0 }),
+				template(text("{0} available for deposit", HE_MEDIUM_GRAY), referenceSum),
 				empty(),
 				text("Right click to toggle exclusion")
 			))
-
 
 		if (excludeItems.contains(asOne)) updated.updateDisplayName(ofChildren(updated.displayNameComponent, space(), bracketed(text("Excluded", RED))))
 
@@ -77,7 +84,7 @@ class BazaarBulkDepositMenu(viewer: Player, val multiblock: BazaarTerminalMultib
 	override fun buildWindow(): Window {
 		val gui = PagedGui.items()
 			.setStructure(
-				"x . . . . . . . .",
+				"x . . . . a n . c",
 				"# # # # # # # # #",
 				"# # # # # # # # #",
 				"# # # # # # # # #",
@@ -85,8 +92,13 @@ class BazaarBulkDepositMenu(viewer: Player, val multiblock: BazaarTerminalMultib
 				"l . . . . . . . r",
 			)
 			.addIngredient('x', parentOrBackButton())
+			.addIngredient('c', confirmDeposit)
+
 			.addIngredient('l', GuiItems.PageLeftItem())
 			.addIngredient('r', GuiItems.PageRightItem())
+
+			.addIngredient('a', excludeAllItem)
+			.addIngredient('n', excludeNoneItem)
 
 			.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 			.setContent(items)
@@ -128,5 +140,38 @@ class BazaarBulkDepositMenu(viewer: Player, val multiblock: BazaarTerminalMultib
 		val regularTitle = itemMenuTitle.build()
 
 		return withPageNumber(regularTitle)
+	}
+
+	private val confirmDeposit = FeedbackLike.withHandler(GuiItem.CHECKMARK.makeItem(text("Confirm Deposit"))) { _, _ -> runDeposit() }
+
+	private fun runDeposit() {
+		val formatted = entries
+			.toMap()
+			.filterKeys { !excludeItems.contains(it) }
+			.mapKeys { toItemString(it.key) }
+
+		if (formatted.isEmpty()) {
+			confirmDeposit.updateWith(InputResult.FailureReason(listOf(text("You don't have any items to deposit!", RED))))
+			return
+		}
+
+		val result = Bazaars.bulkDepositToSellOrders(viewer, formatted)
+
+		confirmDeposit.updateWith(result)
+	}
+
+	private val excludeAllItem = GuiItem.UP.makeItem(text("Exclude All")).makeGuiButton { _, _ -> blacklistAll() }
+	private val excludeNoneItem = GuiItem.DOWN.makeItem(text("Exclude None")).makeGuiButton { _, _ -> blacklistNone() }
+
+	private fun blacklistAll() {
+		excludeItems.addAll(entries.map { it.key })
+		reGenerateItems()
+		openGui()
+	}
+
+	private fun blacklistNone() {
+		excludeItems.clear()
+		reGenerateItems()
+		openGui()
 	}
 }
