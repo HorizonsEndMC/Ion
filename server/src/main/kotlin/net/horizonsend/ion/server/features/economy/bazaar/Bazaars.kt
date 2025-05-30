@@ -669,4 +669,8 @@ object Bazaars : IonServerComponent() {
 
 		return count
 	}
+
+	fun getListingsForType() {
+
+	}
 }
