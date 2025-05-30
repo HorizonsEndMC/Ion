@@ -157,6 +157,13 @@ class BazaarBulkDepositMenu(viewer: Player, val multiblock: BazaarTerminalMultib
 
 		val result = Bazaars.bulkDepositToSellOrders(viewer, formatted)
 
+		result.withResult {
+			if (it.isSuccess()) {
+				reGenerateItems()
+				openGui()
+			}
+		}
+
 		confirmDeposit.updateWith(result)
 	}
 
