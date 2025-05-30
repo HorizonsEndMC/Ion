@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.gui.invui.utils.buttons
 
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.input.PotentiallyFutureResult
+import net.horizonsend.ion.server.gui.invui.input.validator.ValidatorResult
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
@@ -36,6 +37,7 @@ abstract class FeedbackLike(
 			currentLore = when (result) {
 				is InputResult.SuccessReason -> Supplier { result.reasonText }
 				is InputResult.FailureReason -> Supplier { result.reasonText }
+				is ValidatorResult.FailureResult<*> -> Supplier { listOf(result.message) }
 				else -> return@withResult
 			}
 
