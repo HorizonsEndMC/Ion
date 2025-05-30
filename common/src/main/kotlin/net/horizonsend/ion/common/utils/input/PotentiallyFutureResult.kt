@@ -6,5 +6,7 @@ import java.util.function.Consumer
 interface PotentiallyFutureResult {
 	fun sendReason(audience: Audience)
 
+	fun get(): InputResult
+
 	fun withResult(consumer: Consumer<InputResult>)
 }
