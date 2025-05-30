@@ -17,7 +17,6 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
-import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
@@ -701,7 +700,7 @@ object Bazaars : IonServerComponent() {
 				.map(BazaarItem::itemString)
 
 			val bareResults = mutableListOf<Component>()
-			val futureResults = mutableListOf<PotentiallyFutureResult>()
+			val futureResults = mutableListOf<InputResult>()
 
 			for ((itemString, references) in items) {
 				if (!soldItems.contains(itemString)) {
@@ -709,17 +708,17 @@ object Bazaars : IonServerComponent() {
 					continue
 				}
 
-				for (reference in references) {
-					val itemStack = reference.get() ?: continue
-
-					futureResults.add(depositListingStock(player, reference.inventory, Regions[territory.territoryId], toItemString(itemStack), itemStack.amount))
+				for ((inventory, _) in references.groupBy { it.inventory }) {
+					// Need to run get to halt the thread until the transaction is completed. Otherwise, there will be write conflicts since the
+					// db write in this function is async
+					futureResults.add(depositListingStock(player, inventory, Regions[territory.territoryId], itemString, Integer.MAX_VALUE).get())
 				}
 			}
 
-			val fullLore = bareResults +
-				futureResults.map(PotentiallyFutureResult::get).mapNotNull { it.getReason() }.flatten()
+			val fullLore = bareResults + futureResults.mapNotNull { it.getReason() }.flatten()
 
-			futureResult.complete(InputResult.SuccessReason(fullLore))
+			if (futureResults.any { it.isSuccess() }) futureResult.complete(InputResult.SuccessReason(fullLore))
+			else futureResult.complete(InputResult.FailureReason(fullLore))
 		}
 
 		return futureResult
