@@ -7,6 +7,7 @@ import org.bukkit.entity.Player
 import xyz.xenondevs.invui.window.Window
 
 class SellOrderCreationMenu(viewer: Player) : InvUIWindowWrapper(viewer, async = true) {
+	// TODO
 	override fun buildWindow(): Window? {
 		return null
 	}
