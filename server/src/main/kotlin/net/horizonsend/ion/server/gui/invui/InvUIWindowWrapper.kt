@@ -53,7 +53,12 @@ abstract class InvUIWindowWrapper(val viewer: Player, val async: Boolean = false
 	 * Re-builds and applies the window title.
 	 **/
 	fun refreshTitle() {
-		currentWindow?.changeTitle(buildTitle())
+		if (async) Tasks.async {
+			val newTitle = buildTitle()
+			Tasks.sync { currentWindow?.changeTitle(newTitle) }
+		}
+
+		else currentWindow?.changeTitle(buildTitle())
 	}
 
 	private val trackedButtons = mutableMapOf<UUID, Item>()
