@@ -165,7 +165,7 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 			return
 		}
 
-		val depositResult = Bazaars.depositListingStock(viewer, region, listing.itemString, Int.MAX_VALUE)
+		val depositResult = Bazaars.depositListingStock(viewer, viewer.inventory, region, listing.itemString, Int.MAX_VALUE)
 		depositStockButton.updateWith(depositResult)
 		depositStockButtonVisible.updateWith(depositResult)
 	}

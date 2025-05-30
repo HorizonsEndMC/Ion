@@ -17,6 +17,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
+import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
@@ -27,6 +28,7 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
+import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.input.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -36,12 +38,14 @@ import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
@@ -209,6 +213,22 @@ object Bazaars : IonServerComponent() {
 	}
 
 	/**
+	 * Checks if a territory is valid for bazaar activity.
+	 * Returns a success, or failure result with a reason.
+	 **/
+	fun checkInValidCity(player: Player): ValidatorResult<TradeCityData> {
+		val territory = Regions.findFirstOf<RegionTerritory>(player.location) ?: return ValidatorResult.FailureResult(text("You're not in a territory!", RED))
+
+		val cityData = TradeCities.getIfCity(territory) ?: return ValidatorResult.FailureResult(text("Territory is not a trade city", RED))
+
+		if (!CityNPCs.BAZAAR_CITY_TERRITORIES.contains(territory.id)) {
+			return ValidatorResult.FailureResult(text("City doesn't have a registered bazaar", RED))
+		}
+
+		return ValidatorResult.ValidatorSuccessSingleEntry(cityData)
+	}
+
+	/**
 	 * Creates a bazaar sell listing
 	 * Returns a success, or failure result with a reason.
 	 **/
@@ -243,7 +263,7 @@ object Bazaars : IonServerComponent() {
 	 * Removes all matching items from the player's inventory and deposits them into the bazaar listing.
 	 * Returns a success, or failure result with a reason.
 	 **/
-	fun depositListingStock(player: Player, territory: RegionTerritory, itemString: String, limit: Int): PotentiallyFutureResult {
+	fun depositListingStock(player: Player, inventory: Inventory, territory: RegionTerritory, itemString: String, limit: Int): PotentiallyFutureResult {
 		val cityName = cityName(territory)
 
 		val combatResult = checkCombatTag(player)
@@ -258,7 +278,7 @@ object Bazaars : IonServerComponent() {
 		val result = FutureInputResult()
 
 		Tasks.sync {
-			val count = takePlayerItemsOfType(player, itemReference, limit)
+			val count = takePlayerItemsOfType(inventory, itemReference, limit)
 
 			if (count == 0) {
 				result.complete(InputResult.FailureReason(listOf(template(text("You do not have any {0} to deposit!", RED), itemString))))
@@ -579,7 +599,7 @@ object Bazaars : IonServerComponent() {
 		val result = FutureInputResult()
 
 		Tasks.sync {
-			val count = takePlayerItemsOfType(fulfiller, itemReference, limit)
+			val count = takePlayerItemsOfType(fulfiller.inventory, itemReference, limit)
 
 			if (count == 0) {
 				result.complete(
@@ -647,8 +667,7 @@ object Bazaars : IonServerComponent() {
 	 *
 	 * @param limit the limit to take
 	 **/
-	fun takePlayerItemsOfType(player: Player, itemReference: ItemStack, limit: Int): Int {
-		val inventory = player.inventory
+	fun takePlayerItemsOfType(inventory: Inventory, itemReference: ItemStack, limit: Int): Int {
 		var remaining = limit
 		var count = 0
 
@@ -670,7 +689,39 @@ object Bazaars : IonServerComponent() {
 		return count
 	}
 
-	fun getListingsForType() {
+	fun bulkDepositToSellOrders(player: Player, items: Map<String, ArrayDeque<ItemReference>>): PotentiallyFutureResult {
+		val territoryResult = checkInValidCity(player)
+		val territory = territoryResult.result ?: return territoryResult
 
+		val futureResult = FutureInputResult()
+
+		Tasks.async {
+			val soldItems = BazaarItem
+				.find(and(BazaarItem::seller eq player.slPlayerId, BazaarItem::cityTerritory eq territory.territoryId))
+				.map(BazaarItem::itemString)
+
+			val bareResults = mutableListOf<Component>()
+			val futureResults = mutableListOf<PotentiallyFutureResult>()
+
+			for ((itemString, references) in items) {
+				if (!soldItems.contains(itemString)) {
+					bareResults.add(template(text("You're not selling {0} at {1}", RED), itemString, territory.displayName))
+					continue
+				}
+
+				for (reference in references) {
+					val itemStack = reference.get() ?: continue
+
+					futureResults.add(depositListingStock(player, reference.inventory, Regions[territory.territoryId], toItemString(itemStack), itemStack.amount))
+				}
+			}
+
+			val fullLore = bareResults +
+				futureResults.map(PotentiallyFutureResult::get).mapNotNull { it.getReason() }.flatten()
+
+			futureResult.complete(InputResult.SuccessReason(fullLore))
+		}
+
+		return futureResult
 	}
 }
