@@ -1,5 +1,7 @@
 package net.horizonsend.ion.common.utils.text.gui.icons
 
+import net.horizonsend.ion.common.utils.text.BAZAAR_LISTING_HEADER_ICON
+import net.horizonsend.ion.common.utils.text.BAZAAR_ORDER_HEADER_ICON
 import net.horizonsend.ion.common.utils.text.CHECKMARK_CHARACTER
 import net.horizonsend.ion.common.utils.text.CROSS_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEPOSIT_ICON
@@ -22,6 +24,9 @@ enum class GuiIconType(val displayChar: Char, val width: Int = SLOT_OVERLAY_WIDT
 	LEFT_TEXT_BOX(TEXT_INPUT_LEFT_CHARACTER),
 	CENTER_TEXT_BOX(TEXT_INPUT_CENTER_CHARACTER),
 	RIGHT_TEXT_BOX(TEXT_INPUT_RIGHT_CHARACTER),
+
+	SELL_ORDER(BAZAAR_LISTING_HEADER_ICON, width = 48, shift = -16),
+	BUY_ORDER(BAZAAR_ORDER_HEADER_ICON, width = 48, shift = -16),
 
 	PENCIL_ICON(PENCIL_CHARACTER, width = 46, shift = -14),
 	TRASH_CAN_ICON(TRASHCAN_CHARACTER, width = 46, shift = -14),
