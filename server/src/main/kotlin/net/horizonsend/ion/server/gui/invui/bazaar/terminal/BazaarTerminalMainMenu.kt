@@ -2,18 +2,21 @@ package net.horizonsend.ion.server.gui.invui.bazaar.terminal
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.gui.icons.GuiIcon
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
-import net.horizonsend.ion.server.gui.invui.bazaar.DEPOSIT_COLOR
-import net.horizonsend.ion.server.gui.invui.bazaar.WITHDRAW_COLOR
+import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.ItemProvider
@@ -26,17 +29,18 @@ class BazaarTerminalMainMenu(
 	override fun buildWindow(): Window {
 		val gui = Gui.normal()
 			.setStructure(
-				". . . w w w p p p ",
-				". . . w w w p p p ",
-				". . . w w w p p p ",
-				". . . f f f d d d ",
-				". . . f f f d d d ",
-				". . . f f f d d d "
+				". . . . . . . . . ",
+				". . . b b b d d d ",
+				". . . b b b d d d ",
+				". . . . . . . . . ",
+				". . . r r r f f f ",
+				". . . r r r f f f "
 			)
-			.addIngredient('f', fulfillButton)
-			.addIngredient('p', purchaseButton)
-			.addIngredient('w', withdrawOrderButton)
+			.addIngredient('b', buyButton)
 			.addIngredient('d', depositButton)
+
+			.addIngredient('r', recieveButton)
+			.addIngredient('f', fulfillButton)
 			.build()
 
 		return normalWindow(gui)
@@ -47,53 +51,64 @@ class BazaarTerminalMainMenu(
 			.addBackground()
 			.setGuiIconOverlay(
 				". . . . . . . . . ",
-				"l c r . f . . p . ",
+				". . . . p . . d . ",
 				". . . . . . . . . ",
 				". . . . . . . . . ",
-				". . . . w . . d . ",
+				". . . . r . . f . ",
 				". . . . . . . . . "
 			)
-			.addIcon('l', GuiIcon.textInputBoxLeft())
-			.addIcon('c', GuiIcon.textInputBoxCenter())
-			.addIcon('r', GuiIcon.textInputBoxRight())
-			.add(Component.text("Owner"), line = 1, horizontalShift = 1)
 
 		if (terminalMultiblockEntity.isWithdrawAvailable())
-			text.addIcon('f', GuiIcon.withdrawIcon(NamedTextColor.YELLOW, true))
-		else text.addIcon('f', GuiIcon.withdrawIcon(NamedTextColor.GRAY, true))
+			text.addIcon('p', GuiIcon.bazaarSellOrder(TextColor.fromHexString("#67C2D4")!!))
+		else text.addIcon('p', GuiIcon.bazaarSellOrder(NamedTextColor.GRAY))
+
+		if (terminalMultiblockEntity.isDepositAvailable())
+			text.addIcon('d', GuiIcon.bazaarSellOrder(TextColor.fromHexString("#B4E28C")!!))
+		else text.addIcon('d', GuiIcon.bazaarSellOrder(NamedTextColor.GRAY))
 
 		if (terminalMultiblockEntity.isWithdrawAvailable())
-			text.addIcon('p', GuiIcon.withdrawIcon(WITHDRAW_COLOR, true))
-		else text.addIcon('p', GuiIcon.withdrawIcon(NamedTextColor.GRAY, true))
+			text.addIcon('r', GuiIcon.bazaarBuyOrder(TextColor.fromHexString("#EFC275")!!))
+		else text.addIcon('r', GuiIcon.bazaarBuyOrder(NamedTextColor.GRAY))
 
 		if (terminalMultiblockEntity.isDepositAvailable())
-			text.addIcon('w', GuiIcon.depositIcon(NamedTextColor.RED, true))
-		else text.addIcon('w', GuiIcon.depositIcon(NamedTextColor.GRAY, true))
+			text.addIcon('f', GuiIcon.bazaarBuyOrder(TextColor.fromHexString("#CB625F")!!))
+		else text.addIcon('f', GuiIcon.bazaarBuyOrder(NamedTextColor.GRAY))
 
-		if (terminalMultiblockEntity.isDepositAvailable())
-			text.addIcon('d', GuiIcon.depositIcon(DEPOSIT_COLOR, true))
-		else text.addIcon('d', GuiIcon.depositIcon(NamedTextColor.GRAY, true))
+		val buttonLabels1 = GuiText("", guiWidth = 48)
+			.add(getMenuTitleName(text("Purchase", WHITE)), alignment = GuiText.TextAlignment.CENTER, line = 0, horizontalShift = 48 + 12)
+			.add(getMenuTitleName(text("Items", WHITE)), alignment = GuiText.TextAlignment.CENTER, line = 1, horizontalShift = 48 + 12)
+			.add(getMenuTitleName(text("Receive", WHITE)), alignment = GuiText.TextAlignment.CENTER, line = 6, horizontalShift = 48 + 12)
+			.add(getMenuTitleName(text("Orders", WHITE)), alignment = GuiText.TextAlignment.CENTER, line = 7, horizontalShift = 48 + 12)
+			.build()
 
-		return text.build()
+		val buttonLabels2 = GuiText("", guiWidth = 48)
+			.add(getMenuTitleName(text("Restock", WHITE)), alignment = GuiText.TextAlignment.CENTER, line = 0, horizontalShift = 96 + 12 + 5)
+			.add(getMenuTitleName(text("Listings", WHITE)), alignment = GuiText.TextAlignment.CENTER, line = 1, horizontalShift = 96 + 12 + 5)
+			.add(getMenuTitleName(text("Fulfill", WHITE)), alignment = GuiText.TextAlignment.CENTER, line = 6, horizontalShift = 96 + 12 + 5)
+			.add(getMenuTitleName(text("Orders", WHITE)), alignment = GuiText.TextAlignment.CENTER, line = 7, horizontalShift = 96 + 12 + 5)
+			.build()
+
+		return ofChildren(text.build(), buttonLabels1, buttonLabels2)
 	}
 
 	private val fulfillButton = FeedbackLike.withHandler({
 		if (terminalMultiblockEntity.isDepositAvailable())
-			GuiItem.EMPTY.makeItem(Component.text("Fulfill Buy Orders"))
-		else GuiItem.EMPTY.makeItem(Component.text("Buy Order Fulfillment Not Available"))
-			.updateLore(listOf(Component.text("Buy order fulfillment is not available outside of trade cities", HE_MEDIUM_GRAY)))
+			GuiItem.EMPTY.makeItem(text("Fulfill Buy Orders"))
+		else GuiItem.EMPTY.makeItem(text("Buy Order Fulfillment Not Available"))
 
 	}) { _, _ -> handleFulfill() }
 
 	private fun handleFulfill() {
+		val cityCheck = Bazaars.checkInValidCity(viewer)
+		if (!cityCheck.isSuccess()) return fulfillButton.updateWith(cityCheck)
+
 		println("Fulfill")
 	}
 
 	private val depositButton = FeedbackLike.withHandler({
 		if (terminalMultiblockEntity.isDepositAvailable())
-			GuiItem.EMPTY.makeItem(Component.text("Deposit Items To Your Sell Orders"))
-		else GuiItem.EMPTY.makeItem(Component.text("Item deposit Not Available"))
-			.updateLore(listOf(Component.text("Item deposit is not available outside of trade cities", HE_MEDIUM_GRAY)))
+			GuiItem.EMPTY.makeItem(text("Deposit Items To Your Sell Orders"))
+		else GuiItem.EMPTY.makeItem(text("Item deposit Not Available"))
 
 	}) { _, _ -> handleDeposit() }
 
@@ -103,11 +118,11 @@ class BazaarTerminalMainMenu(
 		BazaarBulkDepositMenu(viewer, terminalMultiblockEntity).openGui(this)
 	}
 
-	private val purchaseButton = ItemProvider {
+	private val buyButton = ItemProvider {
 		if (terminalMultiblockEntity.isWithdrawAvailable())
-			GuiItem.EMPTY.makeItem(Component.text("Purchase Items"))
-		else GuiItem.EMPTY.makeItem(Component.text("Item Purchase not available"))
-			.updateLore(listOf(Component.text("The left merge port is occupying the withdraw capabilities.", HE_MEDIUM_GRAY)))
+			GuiItem.EMPTY.makeItem(text("Purchase Items"))
+		else GuiItem.EMPTY.makeItem(text("Item Purchase not available"))
+			.updateLore(listOf(text("The left merge port is occupying the withdraw capabilities.", HE_MEDIUM_GRAY)))
 
 	}.makeGuiButton { _, _ -> handlePurchase() }
 
@@ -115,11 +130,11 @@ class BazaarTerminalMainMenu(
 		println("Purchase")
 	}
 
-	private val withdrawOrderButton = ItemProvider {
+	private val recieveButton = ItemProvider {
 		if (terminalMultiblockEntity.isWithdrawAvailable())
-			GuiItem.EMPTY.makeItem(Component.text("Withdraw Items From Fulfilled Orders"))
-			else GuiItem.EMPTY.makeItem(Component.text("Item withdraw not available"))
-				.updateLore(listOf(Component.text("The left merge port is occupying the withdraw capabilities.", HE_MEDIUM_GRAY)))
+			GuiItem.EMPTY.makeItem(text("Receive Items From Fulfilled Orders"))
+			else GuiItem.EMPTY.makeItem(text("Item withdraw not available"))
+				.updateLore(listOf(text("The left merge port is occupying the withdraw capabilities.", HE_MEDIUM_GRAY)))
 
 	}.makeGuiButton { _, _ -> handleWithdrawOrder() }
 
