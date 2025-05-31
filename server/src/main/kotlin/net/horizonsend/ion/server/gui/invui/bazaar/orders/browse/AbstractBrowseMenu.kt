@@ -95,7 +95,7 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 			.addBorder(GuiBorder.regular(
 				color = HE_LIGHT_ORANGE,
 				headerIcon = GuiBorder.HeaderIcon(BAZAAR_ORDER_HEADER_ICON, 48, HE_LIGHT_ORANGE),
-				leftText = text("Browising"),
+				leftText = text("Browsing"),
 				rightText = browseName
 			))
 			.setSlotOverlay(
