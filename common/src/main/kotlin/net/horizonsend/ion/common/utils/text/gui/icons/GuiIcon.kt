@@ -57,6 +57,9 @@ abstract class GuiIcon(val type: GuiIconType) {
 
 		private fun iconBorder() = Simple(GuiIconType.ICON_BORDER)
 
+		fun bazaarBuyOrder(color: TextColor) = SimpleColored(color, GuiIconType.BUY_ORDER)
+		fun bazaarSellOrder(color: TextColor) = SimpleColored(color, GuiIconType.SELL_ORDER)
+
 		fun pencilIcon(color: TextColor, bordered: Boolean) = Icon(color, bordered, GuiIconType.PENCIL_ICON)
 		fun trashCanIcon(color: TextColor, bordered: Boolean) = Icon(color, bordered, GuiIconType.TRASH_CAN_ICON)
 		fun checkmarkIcon(color: TextColor, bordered: Boolean) = Icon(color, bordered, GuiIconType.CHECKMARK_ICON)
