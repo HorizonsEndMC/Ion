@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.terminal
 
+import net.horizonsend.ion.common.utils.text.clip
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.gui.icons.GuiIcon
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -17,7 +18,9 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.TextColor
+import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.window.Window
@@ -88,7 +91,13 @@ class BazaarTerminalMainMenu(
 			.add(getMenuTitleName(text("Orders", WHITE)), alignment = GuiText.TextAlignment.CENTER, line = 7, horizontalShift = 96 + 12 + 5)
 			.build()
 
-		return ofChildren(text.build(), buttonLabels1, buttonLabels2)
+		val title = ItemStack(Material.WAXED_WEATHERED_COPPER).displayName()
+
+		val textBody = GuiText("", guiWidth = 48)
+			.add(getMenuTitleName(title.clip(48, true)))
+			.build()
+
+		return ofChildren(text.build(), buttonLabels1, buttonLabels2, textBody)
 	}
 
 	private val fulfillButton = FeedbackLike.withHandler({
