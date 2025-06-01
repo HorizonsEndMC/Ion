@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.utils.getUpdateMessage
+import net.horizonsend.ion.common.utils.text.bootstrapCustomTranslations
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
@@ -68,6 +69,8 @@ object IonServer : JavaPlugin() {
 				else -> ""
 			}
 		}
+
+		bootstrapCustomTranslations()
 
 		// Basically exists as a catch all for any weird state which could result in worlds already being loaded at this
 		// such as reloading or other plugins doing things they probably shouldn't.
