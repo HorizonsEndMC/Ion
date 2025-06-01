@@ -13,6 +13,7 @@ import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
+import net.horizonsend.ion.common.utils.text.bootstrapCustomTranslations
 import net.horizonsend.ion.proxy.configuration.ProxyConfiguration
 import net.horizonsend.ion.proxy.registration.commands
 import net.horizonsend.ion.proxy.registration.components
@@ -52,6 +53,8 @@ class IonProxy @Inject constructor(val server: ProxyServer, val logger: Logger, 
 				else -> "to [Unknown]: "
 			}
 		}
+
+		bootstrapCustomTranslations()
 	}
 
 	@Subscribe
