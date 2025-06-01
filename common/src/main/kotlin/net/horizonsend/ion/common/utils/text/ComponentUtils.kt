@@ -11,6 +11,11 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
+import net.kyori.adventure.text.KeybindComponent
+import net.kyori.adventure.text.ScoreComponent
+import net.kyori.adventure.text.SelectorComponent
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.TranslatableComponent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.flattener.ComponentFlattener
 import net.kyori.adventure.text.flattener.FlattenerListener
@@ -24,6 +29,10 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+import net.kyori.adventure.translation.GlobalTranslator
+import net.kyori.adventure.translation.TranslationStore
+import java.text.MessageFormat
+import java.util.Locale
 import java.util.function.Consumer
 
 // Serialization
@@ -278,7 +287,7 @@ fun Component.wrap(width: Int): List<Component> {
 	// for parsing component plaintext and adding to new components
 	val stringBuilder = StringBuilder()
 
-	val flattener = ComponentFlattener.basic()
+	val flattener = ADVANCED_FLATTENER
 
 	// The FlattenerListener iterates over a Component and processes over its children. When the listener encounters
 	// a new component or style, its functions can be overridden to process the incoming data.
@@ -374,7 +383,7 @@ fun Component.clip(width: Int, useEllipses: Boolean = true): Component {
 
 	if (minecraftLength <= width) return this
 
-	val flattener = ComponentFlattener.basic()
+	val flattener = ADVANCED_FLATTENER
 
 	val new = text()
 
@@ -419,6 +428,62 @@ fun Component.clip(width: Int, useEllipses: Boolean = true): Component {
 	})
 
 	return new.build()
+}
+
+// Modified basic flattener that handles translatable components
+val ADVANCED_FLATTENER = ComponentFlattener.builder()
+	.mapper(KeybindComponent::class.java) { component -> component.keybind() }
+	.mapper(ScoreComponent::class.java) { _ -> "" }
+	.mapper(SelectorComponent::class.java, SelectorComponent::pattern)
+	.mapper(TextComponent::class.java, TextComponent::content)
+	.mapper(TranslatableComponent::class.java) { component -> GlobalTranslator.render(component, Locale.ENGLISH).plainText() }
+	.build()
+
+fun bootstrapCustomTranslations() {
+	val store = TranslationStore.messageFormat(Key.key("horizonsend", "translator"))
+
+	store.register("death.attack.interceptor_cannon.player", Locale.US, MessageFormat("{0} was killed by {1} using interceptor cannon", Locale.US))
+	store.register("death.attack.laser_cannon.player", Locale.US, MessageFormat("{0} was killed by {1} using laser cannon", Locale.US))
+	store.register("death.attack.plasma_cannon.player", Locale.US, MessageFormat("{0} was killed by {1} using plasma cannon", Locale.US))
+	store.register("death.attack.pulse_cannon.player", Locale.US, MessageFormat("{0} was killed by {1} using pulse cannon", Locale.US))
+	store.register("death.attack.capital_beam.player", Locale.US, MessageFormat("{0} was killed by {1} using capital beam", Locale.US))
+	store.register("death.attack.cthulhu_beam.player", Locale.US, MessageFormat("{0} was killed by {1} using cthulhu beam", Locale.US))
+	store.register("death.attack.fire_wave.player", Locale.US, MessageFormat("{0} was killed by {1} using fire wave", Locale.US))
+	store.register("death.attack.flamethrower.player", Locale.US, MessageFormat("{0} was killed by {1} using flamethrower", Locale.US))
+	store.register("death.attack.gaze.player", Locale.US, MessageFormat("%s{0}as killed by %s{1}sing the gaze", Locale.US))
+	store.register("death.attack.mini_phaser.player", Locale.US, MessageFormat("{0} was killed by {1} using mini phaser", Locale.US))
+	store.register("death.attack.pumpkin_cannon.player", Locale.US, MessageFormat("{0} was killed by {1} using pumpkin cannon", Locale.US))
+	store.register("death.attack.skull_thrower.player", Locale.US, MessageFormat("{0} was killed by {1} using skull thrower", Locale.US))
+	store.register("death.attack.sonic_missile.player", Locale.US, MessageFormat("{0} was killed by {1} using sonic missile", Locale.US))
+	store.register("death.attack.arsenal_rocket.player", Locale.US, MessageFormat("{0} was killed by {1} using arsenal rocket", Locale.US))
+	store.register("death.attack.doomsday_device.player", Locale.US, MessageFormat("{0} was killed by {1} using doomsday device", Locale.US))
+	store.register("death.attack.heavylaser.player", Locale.US, MessageFormat("{0} was killed by {1} using heavy laser", Locale.US))
+	store.register("death.attack.phaser.player", Locale.US, MessageFormat("{0} was killed by {1} using phaser", Locale.US))
+	store.register("death.attack.oriomium_rocket.player", Locale.US, MessageFormat("{0} was killed by {1} using oriomium rocket", Locale.US))
+	store.register("death.attack.torpedo.player", Locale.US, MessageFormat("{0} was killed by {1} using torpedo", Locale.US))
+	store.register("death.attack.point_defense.player", Locale.US, MessageFormat("{0} was killed by {1} using point defense", Locale.US))
+	store.register("death.attack.interceptor_cannon", Locale.US, MessageFormat("{0} was killed by interceptor cannon", Locale.US))
+	store.register("death.attack.laser_cannon", Locale.US, MessageFormat("{0} was killed by laser cannon", Locale.US))
+	store.register("death.attack.plasma_cannon", Locale.US, MessageFormat("{0} was killed by plasma cannon", Locale.US))
+	store.register("death.attack.pulse_cannon", Locale.US, MessageFormat("{0} was killed by pulse cannon", Locale.US))
+	store.register("death.attack.capital_beam", Locale.US, MessageFormat("{0} was killed by capital beam", Locale.US))
+	store.register("death.attack.cthulhu_beam", Locale.US, MessageFormat("{0} was killed by cthulhu beam", Locale.US))
+	store.register("death.attack.fire_wave", Locale.US, MessageFormat("{0} was killed by fire wave", Locale.US))
+	store.register("death.attack.flamethrower", Locale.US, MessageFormat("{0} was killed by flamethrower", Locale.US))
+	store.register("death.attack.gaze", Locale.US, MessageFormat("{0} was killed by the gaze", Locale.US))
+	store.register("death.attack.mini_phaser", Locale.US, MessageFormat("{0} was killed by mini phaser", Locale.US))
+	store.register("death.attack.pumpkin_cannon", Locale.US, MessageFormat("{0} was killed by pumpkin cannon", Locale.US))
+	store.register("death.attack.skull_thrower", Locale.US, MessageFormat("{0} was killed by skull thrower", Locale.US))
+	store.register("death.attack.sonic_missile", Locale.US, MessageFormat("{0} was killed by sonic missile", Locale.US))
+	store.register("death.attack.arsenal_rocket", Locale.US, MessageFormat("{0} was killed by arsenal rocket", Locale.US))
+	store.register("death.attack.doomsday_device", Locale.US, MessageFormat("{0} was killed by doomsday device", Locale.US))
+	store.register("death.attack.heavylaser", Locale.US, MessageFormat("{0} was killed by heavy laser", Locale.US))
+	store.register("death.attack.phaser", Locale.US, MessageFormat("{0} was killed by phaser", Locale.US))
+	store.register("death.attack.oriomium_rocket", Locale.US, MessageFormat("{0} was killed by oriomium rocket", Locale.US))
+	store.register("death.attack.torpedo", Locale.US, MessageFormat("{0} was killed by torpedo", Locale.US))
+	store.register("death.attack.point_defense", Locale.US, MessageFormat("{0} was killed by point defense", Locale.US))
+
+	GlobalTranslator.translator().addSource(store)
 }
 
 //</editor-fold>
