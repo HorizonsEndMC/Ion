@@ -90,7 +90,7 @@ fun formatLink(showText: String, link: String): Component {
 		.hoverEvent(text(link))
 }
 
-// Allow static imports
+// Allow easier static imports
 val OBFUSCATED = TextDecoration.OBFUSCATED
 val BOLD = TextDecoration.BOLD
 val STRIKETHROUGH = TextDecoration.STRIKETHROUGH
@@ -175,26 +175,24 @@ val Component.minecraftLength: Int
 /**
  * Gets the width (in pixels) of a string rendered in the default Minecraft font.
  */
-val String.minecraftLength: Int
-	get() = this.sumOf {
-		@Suppress("Useless_Cast")
-		when (it.code) {
-			// for some reason, SHIFT_LEFT_BEGIN and the MIN_1 value does not work here
-			in SHIFT_LEFT_BEGIN..SHIFT_LEFT_END -> 0xDFFF - it.code
-			in SHIFT_RIGHT_BEGIN..SHIFT_RIGHT_END -> -0xE0FF + it.code
-			else -> when (it) {
-				'\n' -> 0
-				'i', '!', ',', '.', '\'', ':', ';', '|' -> 2
-				'l', '`' -> 3
-				'I', 't', ' ', '\"', '(', ')', '*', '[', ']', '{', '}' -> 4
-				'k', 'f', '<', '>' -> 5
-				'@', '~', '«', '»' -> 7
-				CHETHERITE_CHARACTER -> 10
-				SLOT_OVERLAY_CHARACTER -> 19
-				else -> GuiIconType.getByDisplayChar(it)?.width?.plus(1) ?: 6
-			} as Int
-		}
+val String.minecraftLength: Int get() = this.sumOf { it.minecraftLength }
+
+val Char.minecraftLength get() = when (code) {
+	// for some reason, SHIFT_LEFT_BEGIN and the MIN_1 value does not work here
+	in SHIFT_LEFT_BEGIN..SHIFT_LEFT_END -> 0xDFFF - code
+	in SHIFT_RIGHT_BEGIN..SHIFT_RIGHT_END -> -0xE0FF + code
+	else -> when (this) {
+		'\n' -> 0
+		'i', '!', ',', '.', '\'', ':', ';', '|' -> 2
+		'l', '`' -> 3
+		'I', 't', ' ', '\"', '(', ')', '*', '[', ']', '{', '}' -> 4
+		'k', 'f', '<', '>' -> 5
+		'@', '~', '«', '»' -> 7
+		CHETHERITE_CHARACTER -> 10
+		SLOT_OVERLAY_CHARACTER -> 19
+		else -> GuiIconType.getByDisplayChar(this)?.width?.plus(1) ?: 6
 	}
+}
 
 /**
  * Create a new Component, shifting text left or right
@@ -368,5 +366,59 @@ fun Component.iterateChildren(consumer: Consumer<Component>) {
 }
 
 fun TextColor.asShadowColor(alpha: Int) = ShadowColor.shadowColor(this, alpha)
+
+private const val ELLIPSES = "..."
+
+fun Component.clip(width: Int, useEllipses: Boolean = true): Component {
+	val minecraftLength = this.minecraftLength
+
+	if (minecraftLength <= width) return this
+
+	val flattener = ComponentFlattener.basic()
+
+	val new = text()
+
+	flattener.flatten(this, object : FlattenerListener {
+		var currentStyle: Style = Style.empty()
+		var runningLength = 0
+
+		override fun component(text: String) {
+			val remaining = minecraftLength - runningLength
+
+			// Cannot append any of the string
+			if (remaining <= 0) return
+
+			// Can append the whole string
+			if ((remaining - text.minecraftLength) > 0) {
+				runningLength += text.minecraftLength
+				new.append(text(text, currentStyle))
+				return
+			}
+
+			val stringBuilder = StringBuilder()
+
+			for (char in text) {
+				val charLength = char.minecraftLength
+				if (runningLength + charLength > width - (if (useEllipses) ELLIPSES.minecraftLength else 0)) break
+
+				stringBuilder.append(char)
+				runningLength += char.minecraftLength
+			}
+
+			new.append(text(stringBuilder.toString(), currentStyle))
+			if (useEllipses) new.append(text("...", currentStyle))
+		}
+
+		override fun shouldContinue(): Boolean {
+			return runningLength < width
+		}
+
+		override fun pushStyle(style: Style) {
+			currentStyle = style
+		}
+	})
+
+	return new.build()
+}
 
 //</editor-fold>
