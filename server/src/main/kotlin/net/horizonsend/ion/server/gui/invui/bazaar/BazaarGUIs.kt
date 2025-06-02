@@ -5,10 +5,12 @@ import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.giveOrDropItems
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
 import net.horizonsend.ion.server.features.gui.custom.settings.button.DBCachedBooleanToggle
+import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.BuyOrderMainMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.CreateBuyOrderMenu
@@ -16,16 +18,15 @@ import net.horizonsend.ion.server.gui.invui.bazaar.orders.browse.BuyOrderFulfill
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.manage.GridOrderManagementWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.manage.ListOrderManagementMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.manage.OrderEditorMenu
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarCitySelectionMenu
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse.BazaarCityBrowseMenu
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse.BazaarGlowbalBrowseMenu
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse.PurchaseItemMenu
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.listings.CityItemListingsMenu
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.listings.GlobalItemListingsMenu
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.GridListingManagementMenu
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.ListListingManagementMenu
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.ListingEditorMenu
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage.SellOrderCreationMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.BazaarCitySelectionMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.browse.BazaarCityBrowseMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.browse.BazaarGlowbalBrowseMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.listings.CityItemListingsMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.listings.GlobalItemListingsMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.GridListingManagementMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.ListListingManagementMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.ListingEditorMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.SellOrderCreationMenu
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 
@@ -59,8 +60,18 @@ object BazaarGUIs {
 		menu.openGui(parentWindow)
 	}
 
-	fun openPurchaseMenu(player: Player, item: BazaarItem, backButtonHandler: () -> Unit) {
-		val menu = PurchaseItemMenu(player, item, backButtonHandler)
+	fun openBrowsePurchaseMenu(player: Player, item: BazaarItem, backButtonHandler: () -> Unit) {
+		val menu = PurchaseItemMenu(
+			player,
+			item,
+			{ itemStack, amount -> { giveOrDropItems(itemStack, amount, player) } },
+			backButtonHandler
+		)
+		menu.openGui()
+	}
+
+	fun openTerminalPurchaseMenu(player: Player, item: BazaarItem, terminal: BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity, backButtonHandler: () -> Unit) {
+		val menu = PurchaseItemMenu(player, item, terminal::intakeItems, backButtonHandler)
 		menu.openGui()
 	}
 
