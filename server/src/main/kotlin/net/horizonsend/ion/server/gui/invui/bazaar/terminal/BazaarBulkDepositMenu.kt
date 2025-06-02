@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.terminal
 
+import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.gui.icons.GuiIcon
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -11,6 +13,7 @@ import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.features.transport.items.util.getRemovableItems
@@ -18,6 +21,7 @@ import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.toMap
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
@@ -58,27 +62,48 @@ class BazaarBulkDepositMenu(viewer: Player, val multiblock: BazaarTerminalMultib
 
 		val referenceSum = references.sumOf { it.get()?.amount ?: 0 }
 
-		val updated = asOne.clone()
-			.updateLore(listOf(
-				template(text("{0} available for deposit", HE_MEDIUM_GRAY), referenceSum),
-				empty(),
-				text("Right click to toggle exclusion")
-			))
+		return AsyncItem(
+			resultProvider = {
+				val itemString = toItemString(asOne)
+				val selling = multiblock.territory?.let { BazaarItem.any(BazaarItem.matchQuery(it.id, viewer.slPlayerId, itemString)) } ?: false
 
-		if (excludeItems.contains(asOne)) updated.updateDisplayName(ofChildren(updated.displayNameComponent, space(), bracketed(text("Excluded", RED))))
+				if (!selling && !excludeItems.contains(asOne)) {
+					excludeItems.add(asOne)
+					refreshTitle()
+				}
 
-		return updated.makeGuiButton { clickType: ClickType, _ -> handleItemInteract(clickType, asOne) }
+				val updated = asOne.clone()
+					.updateLore(listOf(
+						template(text("{0} available for deposit.", HE_MEDIUM_GRAY), referenceSum),
+						template(text("Item string: {0}.", HE_MEDIUM_GRAY), itemString),
+						empty(),
+						text("Right click to toggle exclusion.", HE_LIGHT_GRAY)
+					))
+
+				if (!selling) {
+					updated.updateLore(listOf<Component>(text("You are not selling this item in this territory.", RED)).plus(updated.lore() ?: listOf()))
+				}
+
+				if (excludeItems.contains(asOne)) updated.updateDisplayName(ofChildren(updated.displayNameComponent, space(), bracketed(text("Excluded", RED))))
+				updated
+			},
+			{ event -> handleItemInteract(event.click, asOne) }
+		)
 	}
 
 	private fun handleItemInteract(clickType: ClickType, itemType: ItemStack) {
 		if (clickType == ClickType.RIGHT) {
-			if (excludeItems.contains(itemType))
-				excludeItems.remove(itemType)
-				else excludeItems.add(itemType)
-
-			reGenerateItems()
-			openGui()
+			excludeItem(itemType)
 		}
+	}
+
+	private fun excludeItem(singleton: ItemStack) {
+		if (excludeItems.contains(singleton))
+			excludeItems.remove(singleton)
+		else excludeItems.add(singleton)
+
+		reGenerateItems()
+		openGui()
 	}
 
 	override fun buildWindow(): Window {
