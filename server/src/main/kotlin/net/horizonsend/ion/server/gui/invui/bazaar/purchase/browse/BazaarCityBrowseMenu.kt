@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase.browse
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.server.features.economy.city.TradeCityData

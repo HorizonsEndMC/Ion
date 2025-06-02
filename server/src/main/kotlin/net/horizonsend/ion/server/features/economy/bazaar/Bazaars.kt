@@ -397,7 +397,10 @@ object Bazaars : IonServerComponent() {
 		return InputResult.SuccessReason(listOf(template(text("Collected {0} from {1} listings.", GREEN), total.toCreditComponent(), count)))
 	}
 
-	fun tryBuyFromSellOrder(player: Player, item: BazaarItem, amount: Int, remote: Boolean): PotentiallyFutureResult {
+	/**
+	 * @param itemConsumer is a function that returns a function. It is run async, then the returned function is run sync. This allows async setup then a sync execution.
+	 **/
+	fun tryBuyFromSellOrder(player: Player, item: BazaarItem, amount: Int, remote: Boolean, itemConsumer: (ItemStack, Int) -> (() -> Pair<Int, Int>)): PotentiallyFutureResult {
 		val price: Double = item.price
 		val revenue: Double = amount * price
 		val priceMult = priceMult(remote)
@@ -433,9 +436,12 @@ object Bazaars : IonServerComponent() {
 				Settlement.deposit(cityData.settlementId, tax)
 			}
 
+			// Runs setup that creates a function to be invoked sync
+			val syncBlock = itemConsumer.invoke(itemStack, amount)
+
 			Tasks.sync {
 				VAULT_ECO.withdrawPlayer(player, cost)
-				val (fullStacks, remainder) = giveOrDropItems(itemStack, amount, player)
+				val (fullStacks, remainder) = syncBlock.invoke()
 
 				val quantityMessage = if (itemStack.maxStackSize == 1) "{0}" else "{0} stack${if (fullStacks == 1) "" else "s"} and {1} item${if (remainder == 1) "" else "s"}"
 
