@@ -28,6 +28,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player
@@ -56,10 +57,10 @@ class BazaarTerminalMainMenu(
 	override fun buildWindow(): Window {
 		val gui = Gui.normal()
 			.setStructure(
-				"c c c . . . . . . ",
+				"c c c b b b d d d ",
 				"o o o b b b d d d ",
 				"l l l b b b d d d ",
-				"S S S . . . . . . ",
+				"S S S r r r f f f ",
 				"O O O r r r f f f ",
 				"s . . r r r f f f "
 			)
@@ -187,12 +188,16 @@ class BazaarTerminalMainMenu(
 			template(text("Status: {0}", HE_MEDIUM_GRAY), if (cityData?.type == TradeCityType.SETTLEMENT) Settlement.findOnePropById(cityData.settlementId, Settlement::cityState)?.name ?: "Unregistered" else if (cityData != null) "Active" else "Unregistered")
 		))
 
+	private val fulfillDescription = listOf(
+		text("Fulfill description", HE_MEDIUM_GRAY) //TODO
+	)
+
 	private val fulfillButton = FeedbackLike.withHandler({
 		if (terminalMultiblockEntity.isDepositAvailable())
 			GuiItem.EMPTY.makeItem(text("Fulfill Buy Orders"))
 		else GuiItem.EMPTY.makeItem(text("Buy Order Fulfillment Not Available"))
 
-	}) { _, _ -> handleFulfill() }
+	}, fallbackLoreProvider = ::fulfillDescription) { _, _ -> handleFulfill() }
 
 	private fun handleFulfill() {
 		val cityCheck = Bazaars.checkInValidCity(viewer)
@@ -201,12 +206,15 @@ class BazaarTerminalMainMenu(
 		println("Fulfill") //TODO
 	}
 
-	private val depositButton = FeedbackLike.withHandler({
-		if (terminalMultiblockEntity.isDepositAvailable())
-			GuiItem.EMPTY.makeItem(text("Deposit Items To Your Sell Orders"))
-		else GuiItem.EMPTY.makeItem(text("Item deposit Not Available"))
+	private val depositDescription = listOf(
+		text("", HE_MEDIUM_GRAY) //TODO
+	)
 
-	}) { _, _ -> handleDeposit() }
+	private val depositButton = FeedbackLike.withHandler({
+		if (terminalMultiblockEntity.isDepositAvailable()) GuiItem.EMPTY.makeItem(text("Deposit Items To Your Sell Orders"))
+		else GuiItem.EMPTY.makeItem(text("Item deposit Not Available")).updateLore(listOf(text("Items may only be deposited in trade cities!", RED)))
+
+	}, fallbackLoreProvider = ::depositDescription) { _, _ -> handleDeposit() }
 
 	private fun handleDeposit() {
 		val cityCheck = Bazaars.checkInValidCity(viewer)
@@ -214,11 +222,13 @@ class BazaarTerminalMainMenu(
 		BazaarBulkDepositMenu(viewer, terminalMultiblockEntity).openGui(this)
 	}
 
+	private val buyDescription = listOf(
+		text("", HE_MEDIUM_GRAY) //TODO
+	)
+
 	private val buyButton = ItemProvider {
-		if (terminalMultiblockEntity.isWithdrawAvailable())
-			GuiItem.EMPTY.makeItem(text("Purchase Items"))
-		else GuiItem.EMPTY.makeItem(text("Item Purchase not available"))
-			.updateLore(listOf(text("The left merge port is occupying the withdraw capabilities.", HE_MEDIUM_GRAY)))
+		if (terminalMultiblockEntity.isWithdrawAvailable()) GuiItem.EMPTY.makeItem(text("Purchase Items")).updateLore(buyDescription)
+		else GuiItem.EMPTY.makeItem(text("Item Purchase not available")).updateLore(listOf(text("The left merge port is occupying the withdraw capabilities.", HE_MEDIUM_GRAY)))
 
 	}.makeGuiButton { _, _ -> handlePurchase() }
 
@@ -226,12 +236,13 @@ class BazaarTerminalMainMenu(
 		println("Purchase") //TODO
 	}
 
-	private val recieveButton = ItemProvider {
-		if (terminalMultiblockEntity.isWithdrawAvailable())
-			GuiItem.EMPTY.makeItem(text("Receive Items From Fulfilled Orders"))
-			else GuiItem.EMPTY.makeItem(text("Item withdraw not available"))
-				.updateLore(listOf(text("The left merge port is occupying the withdraw capabilities.", HE_MEDIUM_GRAY)))
+	private val recieveOrdersDescription = listOf(
+		text("", HE_MEDIUM_GRAY) //TODO
+	)
 
+	private val recieveButton = ItemProvider {
+		if (terminalMultiblockEntity.isWithdrawAvailable()) GuiItem.EMPTY.makeItem(text("Receive Items From Fulfilled Orders")).updateLore(recieveOrdersDescription)
+		else GuiItem.EMPTY.makeItem(text("Item withdraw not available")).updateLore(listOf(text("The left merge port is occupying the withdraw capabilities.", HE_MEDIUM_GRAY)))
 	}.makeGuiButton { _, _ -> handleWithdrawOrder() }
 
 	private fun handleWithdrawOrder() {
