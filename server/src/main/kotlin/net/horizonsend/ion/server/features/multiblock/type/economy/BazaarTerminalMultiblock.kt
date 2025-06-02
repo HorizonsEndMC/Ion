@@ -19,6 +19,8 @@ import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedS
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.transport.items.util.addToInventory
+import net.horizonsend.ion.server.features.transport.items.util.getTransferSpaceFor
 import net.horizonsend.ion.server.gui.invui.bazaar.terminal.BazaarTerminalMainMenu
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
@@ -35,6 +37,7 @@ import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.util.Vector
 import java.util.UUID
@@ -273,14 +276,14 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 				player.information("You claimed ownership of this multiblock!")
 			}
 
-			for (reference in getBazaarWithdrawInventories()) {
+			for (reference in getOutputInventories()) {
 				val location = reference.inventory.location ?: continue
 
 				val block = Material.GREEN_CONCRETE.createBlockData()
 				sendEntityPacket(player, displayBlock(world.minecraft, block, Vector(location.x, location.y, location.z), 1.5f, true), 10 * 20L)
 			}
 
-			for (reference in getBazaarDepositInventories()) {
+			for (reference in getInputInventories()) {
 				val location = reference.inventory.location ?: continue
 
 				val block = Material.RED_CONCRETE.createBlockData()
@@ -290,16 +293,60 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 			BazaarTerminalMainMenu(player, this).openGui()
 		}
 
-		fun getBazaarDepositInventories(): Set<InventoryReference> {
+		fun getInputInventories(): Set<InventoryReference> {
 			val base = multiblock.depositInventoryOffsets.mapNotNullTo(mutableSetOf(), ::getStandardReference)
 			return getRemoteReferences(getNetworkedExtractors(multiblock.depositPipeOrigin), manager.getTransportManager().itemPipeManager.cache).plus(base)
 		}
 
-		fun getBazaarWithdrawInventories(): Set<InventoryReference> {
+		fun getOutputInventories(): Set<InventoryReference> {
 			val withdrawInventoryReferences: MutableSet<InventoryReference> = multiblock.withdrawInventoryOffsets.mapNotNullTo(mutableSetOf()) { getStandardReference(it) }
 			withdrawInventoryReferences.addAll(getNetworkedInventories(multiblock.withdrawPipeOrigin).values.firstOrNull() ?: setOf())
 
 			return withdrawInventoryReferences
+		}
+
+		fun intakeItems(itemStack: ItemStack, amount: Int): () -> Pair<Int, Int> {
+			// This part is run async
+			val destinations = getOutputInventories()
+				.filter { getTransferSpaceFor(it.inventory, itemStack) > 0 }
+				.sortedBy { (it as? InventoryReference.RemoteInventoryReference)?.path?.length ?: 0 }
+				.toMutableList()
+
+			return syncBlock@{
+				val maxStackSize = itemStack.maxStackSize
+
+				val fullStacks = amount / maxStackSize
+				val remainder = amount % maxStackSize
+
+				var remaining = amount
+				var destinationsRemaining = destinations.size
+
+				while (remaining > 0 && destinationsRemaining >= 1) {
+					destinationsRemaining--
+					val destination = destinations.first()
+					val notAdded = addToInventory(destination.inventory, itemStack.asQuantity(remaining))
+
+					if (notAdded == 0) {
+						break
+					}
+
+					remaining -= (remaining - notAdded)
+					destinations.remove(destination)
+				}
+
+				if (remaining > 0) {
+					val remainingStacks = remaining / maxStackSize
+					val remainingStacksremainder = remaining % maxStackSize
+
+					repeat(remainingStacks) {
+						world.dropItem(location, itemStack.asQuantity(maxStackSize))
+					}
+
+					world.dropItem(location, itemStack.asQuantity(remainingStacksremainder))
+				}
+
+				return@syncBlock Pair(fullStacks, remainder)
+			}
 		}
 	}
 }
