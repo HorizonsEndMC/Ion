@@ -189,7 +189,8 @@ class BazaarTerminalMainMenu(
 		))
 
 	private val fulfillDescription = listOf(
-		text("Fulfill description", HE_MEDIUM_GRAY) //TODO
+		text("Orders people have placed in this territory may be fulfilled in this menu.", HE_MEDIUM_GRAY),
+		text("You may make a profit by selling them items.", HE_MEDIUM_GRAY),
 	)
 
 	private val fulfillButton = FeedbackLike.withHandler({
