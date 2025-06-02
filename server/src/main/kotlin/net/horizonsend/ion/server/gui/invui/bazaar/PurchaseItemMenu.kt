@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse
+package net.horizonsend.ion.server.gui.invui.bazaar
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -10,16 +10,17 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
-import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.input.TextInputMenu
 import net.horizonsend.ion.server.gui.invui.input.validator.RangeIntegerValidator
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
 class PurchaseItemMenu(
 	private val viewer: Player,
 	private val item: BazaarItem,
+	private val itemConsumer: (ItemStack, Int) -> (() -> Pair<Int, Int>),
 	private val backButtonHandler: () -> Unit
 ) : CommonGuiWrapper {
 	override fun openGui() {
@@ -48,7 +49,7 @@ class PurchaseItemMenu(
 			componentTransformer = { Component.text(it) },
 			successfulInputHandler = menu@{ _, (_, result) ->
 				val remote = !Regions.get<RegionTerritory>(item.cityTerritory).contains(viewer.location)
-				val futureResult = Bazaars.tryBuyFromSellOrder(viewer, item, result.result, remote)
+				val futureResult = Bazaars.tryBuyFromSellOrder(viewer, item, result.result, remote, itemConsumer)
 
 				futureResult.withResult { buyResult ->
 					if (!buyResult.isSuccess()) {
