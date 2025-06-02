@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase
 
 import net.horizonsend.ion.common.utils.text.BAZAAR_LISTING_HEADER_ICON
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_BLUE

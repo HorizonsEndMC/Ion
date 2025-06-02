@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.browse
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase.browse
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
@@ -17,8 +17,8 @@ import net.horizonsend.ion.server.features.gui.item.CollectionScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.SearchGui
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
@@ -100,7 +100,7 @@ abstract class BazaarBrowseMenu(viewer: Player) : BazaarPurchaseMenuParent<Map.E
 		if (groupedItems.size == 1 && viewer.getSetting(PlayerSettings::skipBazaarSingleEntryMenus)) {
 			val item = groupedItems.firstOrNull() ?: return
 
-			BazaarGUIs.openPurchaseMenu(
+			BazaarGUIs.openBrowsePurchaseMenu(
 				player = viewer,
 				item = item,
 				backButtonHandler = { openGui() }

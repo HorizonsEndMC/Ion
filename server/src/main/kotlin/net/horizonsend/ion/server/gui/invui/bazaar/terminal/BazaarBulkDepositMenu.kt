@@ -46,7 +46,7 @@ class BazaarBulkDepositMenu(viewer: Player, val multiblock: BazaarTerminalMultib
 	override fun generateEntries(): List<Map.Entry<ItemStack, ArrayDeque<ItemReference>>> {
 		val availableForDeposit = mutableMapOf<ItemStack, ArrayDeque<ItemReference>>()
 
-		val inventoryReferences = multiblock.getBazaarDepositInventories()
+		val inventoryReferences = multiblock.getInputInventories()
 
 		for (reference in inventoryReferences) {
 			for ((index, item: ItemStack) in getRemovableItems(reference.inventory)) {
