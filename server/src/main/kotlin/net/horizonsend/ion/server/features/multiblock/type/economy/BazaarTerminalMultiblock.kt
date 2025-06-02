@@ -224,6 +224,8 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		z: Int,
 		structureDirection: BlockFace
 	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, 100_000), RemotePipeMultiblock {
+		val territory: RegionTerritory? get() = Regions.findFirstOf(location)
+
 		val settings = SettingsContainer.multiblockSettings(
 			data, SettingsProperty(BazaarTerminalMultiblockEntity::owner, UuidDataType(), null)
 		)
