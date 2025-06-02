@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTermina
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
@@ -34,6 +35,7 @@ import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
+import org.litote.kmongo.gt
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.window.Window
@@ -234,7 +236,9 @@ class BazaarTerminalMainMenu(
 	}.makeGuiButton { _, _ -> handlePurchase() }
 
 	private fun handlePurchase() {
-		println("Purchase") //TODO
+		val listedItems = BazaarItem.find(and(BazaarItem::cityTerritory eq terminalMultiblockEntity.territory?.id, BazaarItem::stock gt 0))
+		val item = listedItems.toList().random()
+		BazaarGUIs.openTerminalPurchaseMenu(viewer, item, terminalMultiblockEntity, { openGui() }) //TODO
 	}
 
 	private val recieveOrdersDescription = listOf(

@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.listings
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase.listings
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
@@ -21,8 +21,8 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.SearchGui
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.BazaarPurchaseMenuParent
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -56,7 +56,7 @@ abstract class ItemListingMenu(viewer: Player, protected val itemString: String)
 	override fun createItem(entry: BazaarItem): Item = AsyncItem(
 		resultProvider = { fromItemString(entry.itemString).updateDisplayName(entry.price.toCreditComponent()).updateLore(getItemLore(entry)).stripAttributes() },
 		handleClick = { _ ->
-			BazaarGUIs.openPurchaseMenu(player = viewer, item = entry, backButtonHandler = { openGui() })
+			BazaarGUIs.openBrowsePurchaseMenu(player = viewer, item = entry, backButtonHandler = { openGui() })
 		}
 	)
 

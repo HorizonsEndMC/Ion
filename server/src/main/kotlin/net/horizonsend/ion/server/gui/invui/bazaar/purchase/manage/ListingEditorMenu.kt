@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase.window.manage
+package net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
