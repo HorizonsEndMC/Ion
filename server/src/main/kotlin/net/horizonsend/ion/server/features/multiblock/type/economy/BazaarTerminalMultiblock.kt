@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.economy
 
+import com.manya.pdc.base.UuidDataType
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
@@ -18,9 +20,12 @@ import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.bazaar.terminal.BazaarTerminalMainMenu
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.persistence.SettingsContainer
+import net.horizonsend.ion.server.miscellaneous.utils.persistence.SettingsContainer.SettingsProperty
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.World
@@ -30,7 +35,9 @@ import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.util.Vector
+import java.util.UUID
 
 sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity>, InteractableMultiblock {
 	override val name: String = "bazaarterminal"
@@ -195,6 +202,18 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		}
 	}
 
+	override fun setupSign(player: Player, sign: Sign) {
+		super.setupSign(player, sign)
+
+		Tasks.syncDelay(2L) {
+			val entity = getMultiblockEntity(sign) ?: return@syncDelay
+			if (entity.owner == null) {
+				entity.owner = player.uniqueId
+				player.information("You claimed ownership of this multiblock!")
+			}
+		}
+	}
+
 	class BazaarTerminalMultiblockEntity(
 		data: PersistentMultiblockData,
 		manager: MultiblockManager,
@@ -205,6 +224,17 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		z: Int,
 		structureDirection: BlockFace
 	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, 100_000), RemotePipeMultiblock {
+		val settings = SettingsContainer.multiblockSettings(
+			data, SettingsProperty(BazaarTerminalMultiblockEntity::owner, UuidDataType(), null)
+		)
+
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
+			settings.save(store.getAdditionalDataRaw(), adapterContext)
+			super.storeAdditionalData(store, adapterContext)
+		}
+
+		var owner: UUID? by settings.getDelegate()
+
 		override val displayHandler: TextDisplayHandler = standardPowerDisplay(this)
 
 		fun isWithdrawAvailable(): Boolean {
@@ -226,7 +256,7 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 			return depositAvailable
 		}
 
-		private val mergeEnd = createLinkage(
+		val mergeEnd = createLinkage(
 			offsetRight = -2,
 			offsetUp = -1,
 			offsetForward = 2,
@@ -236,6 +266,11 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		)
 
 		fun handleInteract(player: Player) {
+			if (owner == null) {
+				owner = player.uniqueId
+				player.information("You claimed ownership of this multiblock!")
+			}
+
 			for (reference in getBazaarWithdrawInventories()) {
 				val location = reference.inventory.location ?: continue
 
