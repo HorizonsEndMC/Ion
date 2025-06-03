@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.purchase.listings
+package net.horizonsend.ion.server.gui.invui.bazaar.terminal.browse
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
@@ -18,46 +18,45 @@ import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.EnumScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
+import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.IndividualBrowseGui
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.BazaarPurchaseMenuParent
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.SearchGui
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import org.bson.conversions.Bson
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import xyz.xenondevs.invui.gui.Gui
+import org.litote.kmongo.and
+import org.litote.kmongo.eq
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
+import xyz.xenondevs.invui.window.Window
+import java.util.function.Consumer
 
-abstract class ItemListingMenu(viewer: Player, protected val itemString: String) : BazaarPurchaseMenuParent<BazaarItem>(viewer), IndividualBrowseGui<BazaarItem> {
-	override val menuTitleLeft: Component = empty()
-	override val menuTitleRight: Component = empty()
-
-	override val isGlobalBrowse: Boolean = false
-
+class TerminalIndividualBrowseGui(
+	viewer: Player,
+	private val contextName: Component,
+	override val isGlobalBrowse: Boolean,
+	private val itemString: String,
+	private val parentBson: Bson,
+	private val purchaseHandler: (BazaarItem) -> Unit,
+	private val openGlobalBrowse: Consumer<Player>,
+	private val openCityBrowse: Consumer<Player>
+) : ListInvUIWindow<BazaarItem>(viewer, async = true), IndividualBrowseGui<BazaarItem> {
 	override val listingsPerPage: Int = 36
 
-	abstract val searchBson: Bson
 	private var sortingMethod: BazaarSort = PlayerSettingsCache.getEnumSettingOrThrow(viewer.slPlayerId, PlayerSettings::defaultBazaarIndividualSort)
 
-	override fun generateEntries(): List<BazaarItem> = BazaarItem.find(searchBson)
+	override fun generateEntries(): List<BazaarItem> = BazaarItem.find(and(parentBson, BazaarItem::itemString eq itemString))
 		.apply { sortingMethod.sortSellOrders(this) }
 		.filter { TradeCities.isCity(Regions[it.cityTerritory]) }
 
 	override fun createItem(entry: BazaarItem): Item = formatItem(entry)
-
-	override fun onClickDisplayedItem(entry: BazaarItem) {
-		BazaarGUIs.openBrowsePurchaseMenu(player = viewer, item = entry, backButtonHandler = { openGui() })
-	}
 
 	override fun formatItemStack(entry: BazaarItem): ItemStack {
 		return super.formatItemStack(entry).updateDisplayName(entry.price.toCreditComponent())
@@ -68,42 +67,32 @@ abstract class ItemListingMenu(viewer: Player, protected val itemString: String)
 		template(text("Stock: {0}", HE_MEDIUM_GRAY), entry.stock)
 	)
 
-	override fun getGui(): Gui = PagedGui.items()
-		.setStructure(
-			"# # # # # # # # #",
-			"# # # # # # # # #",
-			"# # # # # # # # #",
-			"# # # # # # # # #",
-			"< . s . . . S . >"
-		)
-		.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
-		.addIngredient('<', GuiItems.PageLeftItem())
-		.addIngredient('>', GuiItems.PageRightItem())
-		.addIngredient('s', searchButton)
-		.addIngredient('S', sortButton)
-		.setContent(items)
-		.addPageChangeHandler { _, new ->
-			pageNumber = new
-			refreshAll()
-		}
-		.build()
+	override fun onClickDisplayedItem(entry: BazaarItem) = purchaseHandler.invoke(entry)
 
-	override fun buildTitle(): Component = GuiText("")
-		.setSlotOverlay(
-			"# # # # # # # # #",
-			". . . . . . . . .",
-			". . . . . . . . .",
-			". . . . . . . . .",
-			". . . . . . . . .",
-			"# # # # # # # # #"
-		)
-		.addBackground(GuiText.GuiBackground(
-			backgroundChar = BACKGROUND_EXTENDER,
-			verticalShift = -11
-		))
-		.add(getMenuTitleName(fromItemString(itemString)), line = -2, verticalShift = -4)
-		.add(ofChildren(text(contextName)), line = -1, verticalShift = -2)
-		.build()
+	override fun buildWindow(): Window {
+		val gui = PagedGui.items().setStructure(
+				"x . . c g . . . .",
+				"# # # # # # # # #",
+				"# # # # # # # # #",
+				"# # # # # # # # #",
+				"< . s . . . S . >"
+			)
+			.addIngredient('x', parentOrBackButton())
+			.addIngredient('c', citySelectionButton)
+			.addIngredient('g', globalBrowseButton)
+//			.addIngredient('i', infoButton)
+
+			.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
+			.addIngredient('<', GuiItems.PageLeftItem())
+			.addIngredient('>', GuiItems.PageRightItem())
+			.addIngredient('s', searchButton)
+			.addIngredient('S', sortButton)
+			.setContent(items)
+			.handlePageChange()
+			.build()
+
+		return normalWindow(gui)
+	}
 
 	private val sortButton = EnumScrollButton(
 		providedItem = { GuiItem.SORT.makeItem(text("Change Sorting Method")) },
@@ -114,16 +103,28 @@ abstract class ItemListingMenu(viewer: Player, protected val itemString: String)
 		valueConsumer = {
 			sortingMethod = it
 			viewer.setEnumSetting(PlayerSettings::defaultBazaarIndividualSort, sortingMethod)
-
 			openGui()
 		}
 	)
 
-	abstract val contextName: String
+	override fun buildTitle(): Component = GuiText("")
+		.setSlotOverlay(
+			"# # # # # # # # #",
+			". . . . . . . . .",
+			". . . . . . . . .",
+			". . . . . . . . .",
+			"# # # # # # # # #"
+		)
+		.addBackground(
+			GuiText.GuiBackground(
+			backgroundChar = BACKGROUND_EXTENDER,
+			verticalShift = -11
+		))
+		.add(getMenuTitleName(fromItemString(itemString)), line = -2, verticalShift = -4)
+		.add(ofChildren(contextName), line = -1, verticalShift = -2)
+		.build()
 
-	override fun getSearchEntries(): Collection<BazaarItem> {
-		return BazaarItem.find(searchBson).toList()
-	}
+	override fun getSearchEntries(): Collection<BazaarItem> = entries
 
 	override fun getSearchTerms(entry: BazaarItem): List<String> {
 		val terms = mutableListOf(cityName(Regions[entry.cityTerritory]), entry.itemString, fromItemString(itemString).displayNameString)
@@ -131,21 +132,11 @@ abstract class ItemListingMenu(viewer: Player, protected val itemString: String)
 		return terms
 	}
 
-	private fun openSearchMenu() = SearchGui(
-		player = viewer,
-		contextName = contextName,
-		rawItemBson = searchBson,
-		backButtonHandler = ::openGui,
-		resultStringConsumer = ::openSearchResults
-	).openGui()
-
-	abstract fun openSearchResults(string: String)
-
-	override fun goToCitySelection(viewer: Player) {
-		BazaarGUIs.openCitySelection(viewer, this)
+	override fun goToGlobalBrowse(viewer: Player) {
+		openGlobalBrowse.accept(viewer)
 	}
 
-	override fun goToGlobalBrowse(viewer: Player) {
-		BazaarGUIs.openGlobalBrowse(viewer, this)
+	override fun goToCitySelection(viewer: Player) {
+		openCityBrowse.accept(viewer)
 	}
 }

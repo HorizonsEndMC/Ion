@@ -23,7 +23,7 @@ import net.horizonsend.ion.server.gui.invui.bazaar.orders.manage.ListOrderManage
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.manage.OrderEditorMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.BazaarCitySelectionMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.browse.BazaarCityBrowseMenu
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.browse.BazaarGlowbalBrowseMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.browse.BazaarGlobalBrowseMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.listings.CityItemListingsMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.listings.GlobalItemListingsMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.GridListingManagementMenu
@@ -54,7 +54,7 @@ object BazaarGUIs {
 	}
 
 	fun openGlobalBrowse(player: Player, parentWindow: CommonGuiWrapper?) {
-		val menu = BazaarGlowbalBrowseMenu(player)
+		val menu = BazaarGlobalBrowseMenu(player)
 		menu.openGui(parentWindow)
 	}
 

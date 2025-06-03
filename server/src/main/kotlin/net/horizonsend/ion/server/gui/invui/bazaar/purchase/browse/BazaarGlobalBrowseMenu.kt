@@ -10,7 +10,7 @@ import org.bson.conversions.Bson
 import org.bukkit.entity.Player
 import org.litote.kmongo.gt
 
-class BazaarGlowbalBrowseMenu(viewer: Player) : BazaarBrowseMenu(viewer) {
+open class BazaarGlobalBrowseMenu(viewer: Player) : BazaarBrowseMenu(viewer) {
 	override val menuTitleRight: Component = text("Global")
 	override val contextName: String = "Global"
 	override val isGlobalBrowse: Boolean = true

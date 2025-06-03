@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
+import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.Item
 import kotlin.math.ceil
 
@@ -68,5 +69,10 @@ abstract class ListInvUIWindow<T: Any?>(viewer: Player, protected var pageNumber
 	/** Returns a list of entries that are currently displayed */
 	fun getDisplayedItems(): List<Item> {
 		return items.subList(displayRange.first, displayRange.last)
+	}
+
+	protected fun <S: PagedGui.Builder<*>> S.handlePageChange(): S {
+		addPageChangeHandler { _, new -> pageNumber = new; refreshAll() }
+		return this
 	}
 }
