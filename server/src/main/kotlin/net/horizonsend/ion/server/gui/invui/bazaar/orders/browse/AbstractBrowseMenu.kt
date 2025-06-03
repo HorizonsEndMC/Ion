@@ -9,32 +9,24 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.gui.GuiBorder
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
-import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
+import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.gui.item.CollectionScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.getBazaarSettingsButton
-import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
-import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.searchEntires
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
-import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
-import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bson.conversions.Bson
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
@@ -48,13 +40,11 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 	override fun generateEntries(): List<BazaarOrder> {
 		return BazaarOrder.find(findBson)
 			.apply { SORTING_METHODS[sortingMethod].sortBuyOrders(this) }
+			.filter { TradeCities.isCity(Regions[it.cityTerritory]) }
 			.filterNot { BazaarOrder.isFulfilled(it._id) }
 	}
 
-	override fun createItem(entry: BazaarOrder): Item = AsyncItem(
-		resultProvider = { formatItem((entry)) },
-		handleClick = { _ -> BazaarGUIs.openBuyOrderFulfillmentMenu(viewer, entry._id, this)}
-	)
+	override fun createItem(entry: BazaarOrder): Item = formatItem(entry)
 
 	override fun buildWindow(): Window {
 		val gui = PagedGui.items()
@@ -110,39 +100,29 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 		return withPageNumber(text)
 	}
 
-	private fun formatItem(document: BazaarOrder): ItemStack {
-		return fromItemString(document.itemString)
-			.stripAttributes()
-			.updateLore(listOf(
-				template(text("Order from {0} at {1}", HE_MEDIUM_GRAY), SLPlayer.getName(document.player), cityName(Regions[document.cityTerritory])),
-				template(text("Requested {0}, {1} have been fulfilled.", HE_MEDIUM_GRAY), document.requestedQuantity, document.fulfilledQuantity),
-				template(text("Priced at {0} Per item.", HE_MEDIUM_GRAY), document.pricePerItem.toCreditComponent()),
-				template(text("Possible profit of {0} for fulfilling the rest of the order.", HE_MEDIUM_GRAY), document.balance.toCreditComponent()),
-			))
+	override fun getItemLore(entry: BazaarOrder): List<Component> {
+		return listOf(
+			template(text("Order from {0} at {1}", HE_MEDIUM_GRAY), SLPlayer.getName(entry.player), cityName(Regions[entry.cityTerritory])),
+			template(text("Requested {0}, {1} have been fulfilled.", HE_MEDIUM_GRAY), entry.requestedQuantity, entry.fulfilledQuantity),
+			template(text("Priced at {0} Per item.", HE_MEDIUM_GRAY), entry.pricePerItem.toCreditComponent()),
+			template(text("Possible profit of {0} for fulfilling the rest of the order.", HE_MEDIUM_GRAY), entry.balance.toCreditComponent()),
+		)
 	}
 
-	private val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search entries")).makeGuiButton { _, _ -> Tasks.async {
-		val searchItems = BazaarOrder.find(findBson).toList()
+	override fun onClickDisplayedItem(entry: BazaarOrder) {
+		BazaarGUIs.openBuyOrderFulfillmentMenu(viewer, entry._id, this)
+	}
 
-		Tasks.sync {
-			viewer.searchEntires<BazaarOrder>(
-				entries = searchItems,
-				searchTermProvider = { order ->
-					val terms = mutableListOf(cityName(Regions[order.cityTerritory]), order.itemString)
-					SLPlayer.getName(order.player)?.let(terms::add)
+	override fun getSearchEntries(): Collection<BazaarOrder> {
+		return BazaarOrder.find(findBson).toList()
+	}
 
-					return@searchEntires terms
-				},
-				prompt = text("Search for orders"),
-				description = Component.empty(),
-				backButtonHandler = { openGui() },
-				componentTransformer = { fromItemString(it.itemString).displayNameComponent },
-				itemTransformer = { formatItem(it) },
-			) { _, result: BazaarOrder ->
-				BazaarGUIs.openBuyOrderFulfillmentMenu(viewer, result._id, this)
-			}
-		}
-	} }
+	override fun getSearchTerms(entry: BazaarOrder): List<String> {
+		val terms = mutableListOf(cityName(Regions[entry.cityTerritory]), entry.itemString)
+		SLPlayer.getName(entry.player)?.let(terms::add)
+
+		return terms
+	}
 
 	companion object {
 		private val SORTING_METHODS = listOf(
