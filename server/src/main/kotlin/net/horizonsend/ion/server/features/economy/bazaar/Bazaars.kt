@@ -41,7 +41,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
-import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
@@ -400,7 +399,7 @@ object Bazaars : IonServerComponent() {
 	/**
 	 * @param itemConsumer is a function that returns a function. It is run async, then the returned function is run sync. This allows async setup then a sync execution.
 	 **/
-	fun tryBuyFromSellOrder(player: Player, item: BazaarItem, amount: Int, remote: Boolean, itemConsumer: (ItemStack, Int) -> (() -> Pair<Int, Int>)): PotentiallyFutureResult {
+	fun tryBuyFromSellOrder(player: Player, item: BazaarItem, amount: Int, remote: Boolean, itemConsumer: (ItemStack, Int, Double, Int) -> (() -> InputResult)): PotentiallyFutureResult {
 		val price: Double = item.price
 		val revenue: Double = amount * price
 		val priceMult = priceMult(remote)
@@ -437,28 +436,11 @@ object Bazaars : IonServerComponent() {
 			}
 
 			// Runs setup that creates a function to be invoked sync
-			val syncBlock = itemConsumer.invoke(itemStack, amount)
+			val syncBlock = itemConsumer.invoke(itemStack, amount, cost, priceMult)
 
 			Tasks.sync {
 				VAULT_ECO.withdrawPlayer(player, cost)
-				val (fullStacks, remainder) = syncBlock.invoke()
-
-				val quantityMessage = if (itemStack.maxStackSize == 1) "{0}" else "{0} stack${if (fullStacks == 1) "" else "s"} and {1} item${if (remainder == 1) "" else "s"}"
-
-				val fullMessage = template(
-					text("Bought $quantityMessage of {2} for {3}", GREEN),
-					fullStacks,
-					remainder,
-					itemStack.displayNameComponent,
-					cost.toCreditComponent(),
-				)
-
-				val priceMultiplicationMessage = template(text("(Price multiplied by {0} due to browsing remotely)", YELLOW), priceMult)
-
-				val lore = mutableListOf(fullMessage)
-				if (priceMult > 1) lore.add(priceMultiplicationMessage)
-
-				futureResult.complete(InputResult.SuccessReason(lore))
+				futureResult.complete(syncBlock.invoke())
 			}
 		}
 

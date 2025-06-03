@@ -229,16 +229,18 @@ class BazaarTerminalMainMenu(
 		text("", HE_MEDIUM_GRAY) //TODO
 	)
 
-	private val buyButton = ItemProvider {
-		if (terminalMultiblockEntity.isWithdrawAvailable()) GuiItem.EMPTY.makeItem(text("Purchase Items")).updateLore(buyDescription)
-		else GuiItem.EMPTY.makeItem(text("Item Purchase not available")).updateLore(listOf(text("The left merge port is occupying the withdraw capabilities.", HE_MEDIUM_GRAY)))
-
-	}.makeGuiButton { _, _ -> handlePurchase() }
+	private val buyButton = FeedbackLike.withHandler(
+		providedItem = {
+			if (terminalMultiblockEntity.isWithdrawAvailable()) GuiItem.EMPTY.makeItem(text("Purchase Items")).updateLore(buyDescription)
+			else GuiItem.EMPTY.makeItem(text("Item Purchase not available")).updateLore(listOf(text("The left merge port is occupying the withdraw capabilities.", HE_MEDIUM_GRAY)))
+		},
+		clickHandler = { _, _ -> handlePurchase() }
+	)
 
 	private fun handlePurchase() {
 		val listedItems = BazaarItem.find(and(BazaarItem::cityTerritory eq terminalMultiblockEntity.territory?.id, BazaarItem::stock gt 0))
 		val item = listedItems.toList().random()
-		BazaarGUIs.openTerminalPurchaseMenu(viewer, item, terminalMultiblockEntity, { openGui() }) //TODO
+		BazaarGUIs.openTerminalPurchaseMenu(viewer, item, buyButton, terminalMultiblockEntity, { openGui() }) //TODO
 	}
 
 	private val recieveOrdersDescription = listOf(
