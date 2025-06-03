@@ -11,7 +11,7 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.gt
 
-class BazaarCityBrowseMenu(viewer: Player, private val cityData: TradeCityData) : BazaarBrowseMenu(viewer) {
+open class BazaarCityBrowseMenu(viewer: Player, protected val cityData: TradeCityData) : BazaarBrowseMenu(viewer) {
 	override val menuTitleRight: Component = text(cityData.displayName)
 	override val contextName: String = "${cityData.displayName}'s"
 	override val isGlobalBrowse: Boolean = false
