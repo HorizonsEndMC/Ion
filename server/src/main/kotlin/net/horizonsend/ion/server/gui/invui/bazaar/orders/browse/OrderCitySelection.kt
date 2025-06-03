@@ -113,4 +113,15 @@ class OrderCitySelection(viewer: Player) : ListInvUIWindow<TradeCityData>(viewer
 		text("To view orders from every city in one menu, click the view global listings button"),
 		text("button (top center).")
 	)
+
+	override fun getItemLore(entry: BazaarOrder): List<Component> = listOf()
+	override fun onClickDisplayedItem(entry: BazaarOrder) {}
+
+	override fun getSearchTerms(entry: BazaarOrder): List<String> {
+		TODO("Not yet implemented")
+	}
+
+	override fun getSearchEntries(): Collection<BazaarOrder> {
+		TODO("Not yet implemented")
+	}
 }

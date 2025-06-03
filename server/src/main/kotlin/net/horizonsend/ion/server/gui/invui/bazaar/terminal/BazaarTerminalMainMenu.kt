@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
+import net.horizonsend.ion.server.gui.invui.bazaar.terminal.browse.TerminalCitySelection
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -238,6 +239,8 @@ class BazaarTerminalMainMenu(
 	)
 
 	private fun handlePurchase() {
+		TerminalCitySelection(viewer, terminalMultiblockEntity).openGui(this)
+
 		val listedItems = BazaarItem.find(and(BazaarItem::cityTerritory eq terminalMultiblockEntity.territory?.id, BazaarItem::stock gt 0))
 		val item = listedItems.toList().random()
 		BazaarGUIs.openTerminalPurchaseMenu(viewer, item, buyButton, terminalMultiblockEntity, { openGui() }) //TODO
