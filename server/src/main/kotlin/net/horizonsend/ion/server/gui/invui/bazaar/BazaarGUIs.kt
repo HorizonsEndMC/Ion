@@ -4,6 +4,9 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.common.utils.input.InputResult
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.giveOrDropItems
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
@@ -27,7 +30,12 @@ import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.GridListingMa
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.ListListingManagementMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.ListingEditorMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.SellOrderCreationMenu
+import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
+import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.entity.Player
 
 object BazaarGUIs {
@@ -60,18 +68,38 @@ object BazaarGUIs {
 		menu.openGui(parentWindow)
 	}
 
-	fun openBrowsePurchaseMenu(player: Player, item: BazaarItem, backButtonHandler: () -> Unit) {
+	fun openBrowsePurchaseMenu(player: Player, item: BazaarItem, clickedButton: FeedbackLike? = null, backButtonHandler: () -> Unit) {
 		val menu = PurchaseItemMenu(
 			player,
 			item,
-			{ itemStack, amount -> { giveOrDropItems(itemStack, amount, player) } },
+			{ itemStack, amount, cost, priceMult -> {
+				val (fullStacks, remainder) = giveOrDropItems(itemStack, amount, player)
+
+				val quantityMessage = if (itemStack.maxStackSize == 1) "{0}" else "{0} stack${if (fullStacks == 1) "" else "s"} and {1} item${if (remainder == 1) "" else "s"}"
+
+				val fullMessage = template(
+					text("Bought $quantityMessage of {2} for {3}", GREEN),
+					fullStacks,
+					remainder,
+					itemStack.displayNameComponent,
+					cost.toCreditComponent(),
+				)
+
+				val priceMultiplicationMessage = template(text("(Price multiplied by {0} due to browsing remotely)", YELLOW), priceMult)
+
+				val lore = mutableListOf(fullMessage)
+				if (priceMult > 1) lore.add(priceMultiplicationMessage)
+
+				InputResult.SuccessReason(lore)
+			} },
+			clickedButton,
 			backButtonHandler
 		)
 		menu.openGui()
 	}
 
-	fun openTerminalPurchaseMenu(player: Player, item: BazaarItem, terminal: BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity, backButtonHandler: () -> Unit) {
-		val menu = PurchaseItemMenu(player, item, terminal::intakeItems, backButtonHandler)
+	fun openTerminalPurchaseMenu(player: Player, item: BazaarItem, clickedButton: FeedbackLike? = null, terminal: BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity, backButtonHandler: () -> Unit) {
+		val menu = PurchaseItemMenu(player, item, terminal::intakeItems, clickedButton, backButtonHandler)
 		menu.openGui()
 	}
 
