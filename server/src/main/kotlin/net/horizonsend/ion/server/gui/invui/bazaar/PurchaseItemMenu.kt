@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.gui.invui.bazaar
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
@@ -12,6 +13,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.input.TextInputMenu
 import net.horizonsend.ion.server.gui.invui.input.validator.RangeIntegerValidator
+import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -20,7 +22,8 @@ import java.util.function.Supplier
 class PurchaseItemMenu(
 	private val viewer: Player,
 	private val item: BazaarItem,
-	private val itemConsumer: (ItemStack, Int) -> (() -> Pair<Int, Int>),
+	private val itemConsumer: (ItemStack, Int, Double, Int) -> (() -> InputResult),
+	private val parentButton: FeedbackLike? = null,
 	private val backButtonHandler: () -> Unit
 ) : CommonGuiWrapper {
 	override fun openGui() {
@@ -58,6 +61,7 @@ class PurchaseItemMenu(
 					} else {
 						buyResult.sendReason(viewer)
 						backButtonHandler.invoke()
+						parentButton?.updateWith(buyResult)
 					}
 				}
 			}
