@@ -1,6 +1,5 @@
 package net.horizonsend.ion.common.database.schema.economy
 
-import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.objId
@@ -22,9 +21,9 @@ import java.util.Date
 class BazaarOrder(
 	override val _id: Oid<BazaarOrder>,
 	val player: SLPlayerId,
-	val cityTerritory: Oid<Territory>,
+	override val cityTerritory: Oid<Territory>,
 
-	val itemString: String,
+	override val itemString: String,
 
 	val requestedQuantity: Int,
 	val pricePerItem: Double,
@@ -35,7 +34,7 @@ class BazaarOrder(
 	var fulfilledQuantity: Int = 0,
 	var stock: Int = 0,
 	var fulfillments: List<Pair<SLPlayerId, Int>> = listOf()
-) : DbObject {
+) : BazaarEntry {
 	companion object : OidDbObjectCompanion<BazaarOrder>(BazaarOrder::class, setup = {
 		ensureIndex(BazaarOrder::cityTerritory)
 		ensureIndex(BazaarOrder::player)
