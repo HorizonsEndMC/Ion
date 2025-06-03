@@ -7,9 +7,9 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
+import net.horizonsend.ion.server.gui.invui.bazaar.BrowseGui
 import net.horizonsend.ion.server.gui.invui.bazaar.getBazaarSettingsButton
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
-import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
@@ -19,7 +19,7 @@ import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.window.Window
 
-abstract class BazaarPurchaseMenuParent<T : Any>(viewer: Player) : ListInvUIWindow<T>(viewer, async = true) {
+abstract class BazaarPurchaseMenuParent<T : Any>(viewer: Player) : ListInvUIWindow<T>(viewer, async = true), BrowseGui {
 	abstract fun getGui(): Gui
 
 	private fun getMenuGUI(): Gui = TabGui.normal()
@@ -67,16 +67,6 @@ abstract class BazaarPurchaseMenuParent<T : Any>(viewer: Player) : ListInvUIWind
 		)
 		.build()
 
-	abstract val isGlobalBrowse: Boolean
-
-	private val citySelectionButton get() =
-		(if (!isGlobalBrowse) GuiItem.CITY.makeItem(text("Go to city selection")).updateLore(listOf(text("You already have this menu selected.")))
-		else GuiItem.CITY_GRAY.makeItem(text("Go to city selection"))).makeGuiButton { _, player -> BazaarGUIs.openCitySelection(player, this) }
-
-	private val globalBrowseButton get() =
-		(if (isGlobalBrowse) GuiItem.WORLD .makeItem(text("Go to global browse")).updateLore(listOf(text("You already have this menu selected.")))
-		else GuiItem.WORLD_GRAY.makeItem(text("Go to global browse"))).makeGuiButton { _, player -> BazaarGUIs.openGlobalBrowse(player, this) }
-
 	abstract val infoButton: ItemProvider
 
 	private val manageListingsButton = GuiItem.MATERIALS
@@ -90,4 +80,12 @@ abstract class BazaarPurchaseMenuParent<T : Any>(viewer: Player) : ListInvUIWind
 		.makeGuiButton { _, _ ->
 			BazaarGUIs.openBuyOrderMainMenu(viewer, this)
 		}
+
+	override fun goToCitySelection(viewer: Player) {
+		BazaarGUIs.openCitySelection(viewer, this)
+	}
+
+	override fun goToGlobalBrowse(viewer: Player) {
+		BazaarGUIs.openGlobalBrowse(viewer, this)
+	}
 }
