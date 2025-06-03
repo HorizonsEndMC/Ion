@@ -24,16 +24,14 @@ class FutureInputResult : Future<InputResult>, PotentiallyFutureResult {
 	override fun withResult(consumer: Consumer<InputResult>) {
 		future.whenComplete { result: InputResult?, exception: Throwable? ->
 			if (exception != null) {
-				consumer.accept(
-					InputResult.FailureReason(
-						listOf(
-							ofChildren(
-								text("Sorry, there was an error getting the result. Please forward this to staff:", RED),
-								formatException(exception)
-							)
-						)
-					)
-				)
+				consumer.accept(InputResult.FailureReason(
+					listOf(ofChildren(
+						text("Sorry, there was an error getting the result. Please forward this to staff:", RED),
+						formatException(exception)
+					))
+				))
+
+				exception.printStackTrace()
 
 				return@whenComplete
 			}
