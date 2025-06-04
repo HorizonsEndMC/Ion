@@ -28,9 +28,11 @@ sealed interface ValidatorResult<T : Any> : InputResult {
 		override fun getReason(): List<Component>? = null
 	}
 
-	data class FailureResult<T : Any>(val message: Component) : ValidatorResult<T> {
+	data class FailureResult<T : Any>(val message: List<Component>) : ValidatorResult<T> {
+		constructor(message: Component) : this(listOf(message))
+
 		override fun getReason(): List<Component> {
-			return listOf(message)
+			return message
 		}
 
 		override val result: T? = null
