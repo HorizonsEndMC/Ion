@@ -7,8 +7,8 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs.openTerminalPurchaseMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.browse.BazaarCityBrowseMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.terminal.browse.IndividualBrowseGui
 import net.horizonsend.ion.server.gui.invui.bazaar.terminal.browse.TerminalCitySelection
-import net.horizonsend.ion.server.gui.invui.bazaar.terminal.browse.TerminalIndividualBrowseGui
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.PagedGui
@@ -64,7 +64,7 @@ class TerminalCityBrowse(viewer: Player, val entity: BazaarTerminalMultiblock.Ba
 	}
 
 	override fun onClickDisplayedItem(entry: Map.Entry<String, List<BazaarItem>>) {
-		TerminalIndividualBrowseGui(
+		IndividualBrowseGui(
 			viewer = viewer,
 			contextName = Component.text(cityData.displayName),
 			isGlobalBrowse = false,
