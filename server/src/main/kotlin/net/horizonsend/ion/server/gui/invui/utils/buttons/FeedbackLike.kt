@@ -37,7 +37,7 @@ abstract class FeedbackLike(
 			currentLore = when (result) {
 				is InputResult.SuccessReason -> Supplier { result.reasonText }
 				is InputResult.FailureReason -> Supplier { result.reasonText }
-				is ValidatorResult.FailureResult<*> -> Supplier { listOf(result.message) }
+				is ValidatorResult.FailureResult<*> -> Supplier { result.message }
 				else -> return@withResult
 			}
 

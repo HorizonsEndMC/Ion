@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.gui.custom.settings.button
+package net.horizonsend.ion.server.features.gui.custom.settings.button.general
 
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
@@ -12,21 +12,13 @@ import java.util.function.Consumer
 import java.util.function.Supplier
 
 class BooleanSupplierConsumerButton(
-	private val valueSupplier: Supplier<Boolean>,
-	private val valueConsumer: Consumer<Boolean>,
+	valueSupplier: Supplier<Boolean>,
+	valueConsumer: Consumer<Boolean>,
 	name: Component,
 	description: String,
 	icon: GuiItem,
 	defaultValue: Boolean
-) : SettingsMenuButton<Boolean>(name, description, icon, defaultValue) {
-	override fun setState(player: Player, state: Boolean) {
-		valueConsumer.accept(state)
-	}
-
-	override fun getState(player: Player): Boolean {
-		return valueSupplier.get()
-	}
-
+) : SupplierConsumerButton<Boolean>(valueSupplier, valueConsumer, name, description, icon, defaultValue) {
 	override fun getSecondLine(player: Player): Component {
 		val state = getState(player)
 		return if (state) text("ENABLED", GREEN) else text("DISABLED", RED)

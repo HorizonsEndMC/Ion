@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.giveOrDropItem
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
-import net.horizonsend.ion.server.features.gui.custom.settings.button.DBCachedBooleanToggle
+import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedBooleanToggle
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.BuyOrderMainMenu

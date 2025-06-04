@@ -163,7 +163,7 @@ class TextInputMenu<T : Any>(
 				return base
 			}
 
-			return base.updateLore(listOf(result.message))
+			return base.updateLore(result.message)
 		}
 
 		override fun getItemProvider(): ItemProvider {

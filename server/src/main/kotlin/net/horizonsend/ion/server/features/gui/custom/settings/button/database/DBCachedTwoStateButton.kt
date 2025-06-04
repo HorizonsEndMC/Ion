@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.gui.custom.settings.button
+package net.horizonsend.ion.server.features.gui.custom.settings.button.database
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.features.gui.GuiItem
