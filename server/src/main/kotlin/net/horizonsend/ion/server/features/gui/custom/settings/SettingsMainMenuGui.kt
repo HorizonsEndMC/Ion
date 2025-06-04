@@ -4,11 +4,11 @@ import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.command.misc.IonSitCommand.sitStateNode
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
-import net.horizonsend.ion.server.features.gui.custom.settings.button.DBCachedBooleanToggle
-import net.horizonsend.ion.server.features.gui.custom.settings.button.DBCachedEnumCycle
-import net.horizonsend.ion.server.features.gui.custom.settings.button.DBCachedIntCycle
-import net.horizonsend.ion.server.features.gui.custom.settings.button.DBCachedIntegerInput
-import net.horizonsend.ion.server.features.gui.custom.settings.button.PermissionBooleanToggle
+import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedBooleanToggle
+import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedEnumCycle
+import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedIntCycle
+import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedIntegerInput
+import net.horizonsend.ion.server.features.gui.custom.settings.button.permission.PermissionBooleanToggle
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSettingsCommand.CruiseIndicatorSounds
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.ContactsColoring
