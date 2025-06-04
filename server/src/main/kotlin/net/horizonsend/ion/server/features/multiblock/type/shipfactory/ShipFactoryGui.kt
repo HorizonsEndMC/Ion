@@ -184,7 +184,7 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 		.withStaticFallbackLore(listOf(text("Start the ship factory.")))
 		.withSuccessHandler { _, player ->
 			Tasks.async {
-				entity.enable(player)
+				entity.enable(player, this@ShipFactoryGui)
 
 				Tasks.sync {
 					notifyWindows()
@@ -193,6 +193,7 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 			}
 		}
 		.build()
+		.tracked()
 
 	private val disableButton: FeedbackItem = FeedbackItem
 		.builder(GuiItem.EMPTY.makeItem(text("Stop"))) { _, _ ->
