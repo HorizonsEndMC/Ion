@@ -75,6 +75,8 @@ abstract class ShipFactoryEntity(
 		blueprintName = blueprint.name
 		currentBlueprint = blueprint._id
 		cachedBlueprintData = blueprint
+
+		boundingBoxPreviews.clear()
 	}
 
 	// Not saved, loaded async when #ensureBlueprintLoaded is called
