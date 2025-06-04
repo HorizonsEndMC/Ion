@@ -1,10 +1,11 @@
-package net.horizonsend.ion.server.features.gui.custom.settings.button
+package net.horizonsend.ion.server.features.gui.custom.settings.button.database
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.custom.settings.button.SettingsMenuButton
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player

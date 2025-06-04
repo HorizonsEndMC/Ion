@@ -22,7 +22,7 @@ abstract class SettingsPageGui(
 ) : AbstractBackgroundPagedGui(viewer), SettingsGuiItem {
 	protected abstract val buttonsList: List<SettingsGuiItem>
 
-	protected open val backButton: Item = parentOrBackButton()
+	protected open val backButton: Item get() = parentOrBackButton()
 
 	protected var currentPage: Int = 0; private set
 
@@ -42,7 +42,7 @@ abstract class SettingsPageGui(
 			.addIngredient('<', GuiItems.PageLeftItem())
 			.addIngredient('>', GuiItems.PageRightItem())
 			.addIngredient('v', backButton)
-			.addPageChangeHandler { old, new ->
+			.addPageChangeHandler { _, new ->
 				currentPage = new
 				refreshTitle()
 			}
@@ -112,12 +112,13 @@ abstract class SettingsPageGui(
 				override val buttonsList: List<SettingsGuiItem> = buttons.toList().apply {
 					filterIsInstance<SettingsPageGui>().forEach { subMenu -> subMenu.setParent(thisReference) }
 				}
+
 				override fun getFirstLine(player: Player): Component = text(title)
 				override fun getSecondLine(player: Player): Component = Component.empty()
 
 				override fun makeButton(pageGui: SettingsPageGui): GuiItems.AbstractButtonItem {
 					return GuiItem.LIST.makeButton(this, title, "") { _, _, _ ->
-						openGui()
+						openGui(pageGui)
 					}
 				}
 			}

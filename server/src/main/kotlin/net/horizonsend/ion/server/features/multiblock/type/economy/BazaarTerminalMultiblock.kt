@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.type.economy
 
+import com.manya.pdc.base.MapDataType
 import com.manya.pdc.base.UuidDataType
 import com.manya.pdc.base.array.StringArrayDataType
+import com.manya.util.MapCollectors
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.template
@@ -48,6 +50,7 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.persistence.PersistentDataType.BOOLEAN
 import org.bukkit.persistence.PersistentDataType.DOUBLE
 import org.bukkit.util.Vector
@@ -244,13 +247,14 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		companion object {
 			val uuidSerializer = UuidDataType()
 			val stringArraySerializer = StringArrayDataType(Charset.defaultCharset())
+			val materialMapSerializer: MapDataType<Map<String, Double>, Map<String, Double>, String, Double> = MapDataType(MapCollectors.toMap { mutableMapOf() }, PersistentDataType.STRING, DOUBLE)
 		}
 
 		val settings = SettingsContainer.multiblockSettings(data,
 			SettingsProperty(BazaarTerminalMultiblockEntity::owner, uuidSerializer, null),
 			SettingsProperty(BazaarTerminalMultiblockEntity::enableShipFactoryIntegration, BOOLEAN, true),
-			SettingsProperty(BazaarTerminalMultiblockEntity::shipFactoryMaxUnitPrice, DOUBLE, null),
-			SettingsProperty(BazaarTerminalMultiblockEntity::shipFactoryPriceCap, DOUBLE, null),
+			SettingsProperty(BazaarTerminalMultiblockEntity::shipFactoryMaxUnitPrice, materialMapSerializer, mapOf()),
+			SettingsProperty(BazaarTerminalMultiblockEntity::shipFactoryPriceCap, DOUBLE, 10_000_000.0),
 			SettingsProperty(BazaarTerminalMultiblockEntity::shipFactoryItemRestriction, stringArraySerializer, arrayOf()),
 			SettingsProperty(BazaarTerminalMultiblockEntity::shipFactoryWhitelistMode, BOOLEAN, true),
 		)
@@ -261,9 +265,12 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		}
 
 		var owner: UUID? by settings.getDelegate()
+
 		var enableShipFactoryIntegration: Boolean by settings.getDelegate()
-		var shipFactoryMaxUnitPrice: Double? by settings.getDelegate()
-		var shipFactoryPriceCap: Double? by settings.getDelegate()
+
+		var shipFactoryMaxUnitPrice: Map<String, Double> by settings.getDelegate()
+		var shipFactoryPriceCap: Double by settings.getDelegate()
+
 		var shipFactoryItemRestriction: Array<String> by settings.getDelegate()
 		var shipFactoryWhitelistMode: Boolean by settings.getDelegate()
 
