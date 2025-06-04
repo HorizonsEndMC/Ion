@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.starship.factory
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
-import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap
+import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap
+import it.unimi.dsi.fastutil.longs.Long2ObjectSortedMaps
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
@@ -32,8 +33,8 @@ abstract class ShipFactoryBlockProcessor(
 	protected val clipboard: Clipboard by lazy { blueprint.loadClipboard() }
 
 	// Use a RB tree map for key ordering.
-	protected val blockMap = Object2ObjectRBTreeMap<BlockKey, BlockData>()
-	protected val signMap = Object2ObjectRBTreeMap<BlockKey, SignData>()
+	protected val blockMap: MutableMap<BlockKey, BlockData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
+	protected val signMap: MutableMap<BlockKey, SignData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
 
 	protected val blockQueue = ConcurrentLinkedQueue<Long>()
 

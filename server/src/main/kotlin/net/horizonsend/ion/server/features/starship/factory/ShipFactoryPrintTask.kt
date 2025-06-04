@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultib
 import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock.InventoryReference
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
+import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryGui
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories.missingMaterialsCache
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
@@ -45,15 +46,18 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.atomic.AtomicInteger
 
-class ShipFactoryTask(
+class ShipFactoryPrintTask(
 	blueprint: Blueprint,
 	settings: ShipFactorySettings,
 	entity: ShipFactoryEntity,
+	val gui: ShipFactoryGui?,
 	private val inventories: Set<InventoryReference>,
 	private val player: Player
 ) : ShipFactoryBlockProcessor(blueprint, settings, entity), MultiblockEntityTask<ShipFactoryEntity> {
+
 	override val taskEntity: ShipFactoryEntity get() = entity
 	private val missingMaterials = mutableMapOf<PrintItem, AtomicInteger>()
+
 	private var skippedBlocks = 0
 	private var totalBlocks = 0
 
@@ -79,6 +83,7 @@ class ShipFactoryTask(
 	private var consumedCredits: Double = 0.0
 
 	private fun runTick() {
+		if (!queueLoaded) return
 		missingMaterials.clear()
 
 		// Blocks that are gonna be printed
@@ -237,11 +242,17 @@ class ShipFactoryTask(
 		} else {
 			updateStatus()
 		}
+
+		gui?.refreshAll()
 	}
+
+	private var queueLoaded = false
+	private var startBlocks = 0
 
 	override fun onEnable() {
 		loadBlockQueue()
-		totalBlocks = blockQueue.size
+		startBlocks = blockQueue.size
+		queueLoaded = true
 	}
 
 	override fun onDisable() {
@@ -408,7 +419,9 @@ class ShipFactoryTask(
 
 	private fun updateStatus() {
 		val blueprintName = text(entity.blueprintName)
-		val percent = formatProgress(WHITE, (totalBlocks - blockQueue.size) / totalBlocks.toDouble())
+		val percentValue = 1.0 - (blockQueue.size / startBlocks.toDouble())
+		val percent = formatProgress(WHITE, percentValue)
+
 		val formatted = ofChildren(blueprintName, text(": ", HEColorScheme.HE_DARK_GRAY), percent)
 		entity.setStatus(formatted)
 	}
