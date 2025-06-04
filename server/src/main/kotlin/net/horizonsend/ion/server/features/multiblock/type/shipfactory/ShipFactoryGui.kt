@@ -16,8 +16,11 @@ import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.C
 import net.horizonsend.ion.server.features.gui.custom.settings.button.BooleanSupplierConsumerButton
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem
 import net.horizonsend.ion.server.features.gui.item.ValueScrollButton
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
+import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.searchEntires
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -34,7 +37,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.eq
 import xyz.xenondevs.invui.gui.Gui
-import xyz.xenondevs.invui.item.ItemProvider
+import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
 
 class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindowWrapper(viewer, async = true) {
@@ -119,7 +122,7 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 			.addIngredient('I', itemMenu)
 			.addIngredient('d', disableButton)
 			.addIngredient('e', enableButton)
-			.addIngredient('m', mergeIndicator)
+			.addIngredient('m', getMergeIndicator())
 			.build()
 
 		if (!isValid()) return null
@@ -171,7 +174,7 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 		return text.build()
 	}
 
-	private val enableButton: FeedbackItem = FeedbackItem
+	val enableButton: FeedbackItem = FeedbackItem
 		.builder({ if (entity.isRunning) GuiItem.SHIP_FACTORY_RUNNING.makeItem(text("Start")) else GuiItem.EMPTY.makeItem(text("Start")) }) { _, player ->
 			if (entity.userManager.currentlyUsed()) return@builder InputResult.FailureReason(listOf(text("This ship factory is already being used!", NamedTextColor.RED)))
 			if (!entity.ensureBlueprintLoaded(player)) return@builder InputResult.FailureReason(listOf(text("Blueprint not found!", NamedTextColor.RED)))
@@ -375,14 +378,41 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 		),
 	).apply { setParent(this@ShipFactoryGui) }
 
-	val mergeIndicator = ItemProvider {
-		val empty = GuiItem.EMPTY.makeItem(Component.empty())
+	fun getMergeIndicator(): Item {
+		val empty = GuiItem.EMPTY.makeItem(Component.empty()).makeGuiButton { _, _ -> }
 
-		if (entity !is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) return@ItemProvider empty
-		if (entity.multiblock !is AdvancedShipFactoryParent.AdvancedShipFactoryMergeable) return@ItemProvider empty
+		if (entity !is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) return empty
+		if (entity.multiblock !is AdvancedShipFactoryParent.AdvancedShipFactoryMergeable) return empty
 
-		val mergePartner = entity.mergeEnd?.get()
+		val mergePartner = entity.mergeEnd?.get() ?: return empty
+		return when (mergePartner) {
+			is BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity -> getShipFactoryMergeButton(mergePartner)
+			else -> throw NotImplementedError()
+		}
+	}
 
-		GuiItem.CHECKMARK.makeItem(template(text("Merged with {0}", GREEN), mergePartner))
+	private fun getShipFactoryMergeButton(entity: BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity): Item {
+		return GuiItem.CHECKMARK.makeItem(template(text("Merged with {0}", GREEN), entity.multiblock.getDisplayName())).makeGuiButton { _, _ ->
+			createSettingsPage(
+				viewer,
+				"Bazaar Integration Settings",
+				BooleanSupplierConsumerButton(
+					valueSupplier = entity::enableShipFactoryIntegration,
+					valueConsumer = { entity.enableShipFactoryIntegration = it },
+					name = text("Enable Bazaar Integration"),
+					description = "Toggles whether missing items should be bought from the bazaar, when available.",
+					icon = GuiItem.LIST,
+					defaultValue = true
+				),
+				BooleanSupplierConsumerButton(
+					valueSupplier = entity::shipFactoryWhitelistMode,
+					valueConsumer = { entity.shipFactoryWhitelistMode = it },
+					name = text("Item List Whitelist Mode"),
+					description = "When enabled, uses the restricted items list as a whitelist. When disabled, a blacklist.",
+					icon = GuiItem.LIST,
+					defaultValue = true
+				),
+			).openGui(this)
+		}
 	}
 }
