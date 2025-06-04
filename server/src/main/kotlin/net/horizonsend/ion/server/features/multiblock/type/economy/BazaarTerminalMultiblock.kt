@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.economy
 
 import com.manya.pdc.base.UuidDataType
+import com.manya.pdc.base.array.StringArrayDataType
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.template
@@ -47,14 +48,17 @@ import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
+import org.bukkit.persistence.PersistentDataType.BOOLEAN
+import org.bukkit.persistence.PersistentDataType.DOUBLE
 import org.bukkit.util.Vector
+import java.nio.charset.Charset
 import java.util.UUID
 
 sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity>, InteractableMultiblock {
 	override val name: String = "bazaarterminal"
 
 	override val signText: Array<Component?> = createSignText(
-		Component.text("Bazaar Terminal"),
+		text("Bazaar Terminal"),
 		null,
 		null,
 		null
@@ -107,7 +111,7 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 				y(0) {
 					x(2).anyPipedInventory()
 					x(1).sponge()
-					x(0).ironBlock()
+					x(0).netheriteCasing()
 					x(-1).sponge()
 					x(-2).anyPipedInventory()
 				}
@@ -177,7 +181,7 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 				y(0) {
 					x(2).anyPipedInventory()
 					x(1).sponge()
-					x(0).ironBlock()
+					x(0).netheriteCasing()
 					x(-1).sponge()
 					x(-2).type(Material.LODESTONE)
 				}
@@ -237,8 +241,18 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, 100_000), RemotePipeMultiblock {
 		val territory: RegionTerritory? get() = Regions.findFirstOf(location)
 
-		val settings = SettingsContainer.multiblockSettings(
-			data, SettingsProperty(BazaarTerminalMultiblockEntity::owner, UuidDataType(), null)
+		companion object {
+			val uuidSerializer = UuidDataType()
+			val stringArraySerializer = StringArrayDataType(Charset.defaultCharset())
+		}
+
+		val settings = SettingsContainer.multiblockSettings(data,
+			SettingsProperty(BazaarTerminalMultiblockEntity::owner, uuidSerializer, null),
+			SettingsProperty(BazaarTerminalMultiblockEntity::enableShipFactoryIntegration, BOOLEAN, true),
+			SettingsProperty(BazaarTerminalMultiblockEntity::shipFactoryMaxUnitPrice, DOUBLE, null),
+			SettingsProperty(BazaarTerminalMultiblockEntity::shipFactoryPriceCap, DOUBLE, null),
+			SettingsProperty(BazaarTerminalMultiblockEntity::shipFactoryItemRestriction, stringArraySerializer, arrayOf()),
+			SettingsProperty(BazaarTerminalMultiblockEntity::shipFactoryWhitelistMode, BOOLEAN, true),
 		)
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
@@ -247,6 +261,11 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		}
 
 		var owner: UUID? by settings.getDelegate()
+		var enableShipFactoryIntegration: Boolean by settings.getDelegate()
+		var shipFactoryMaxUnitPrice: Double? by settings.getDelegate()
+		var shipFactoryPriceCap: Double? by settings.getDelegate()
+		var shipFactoryItemRestriction: Array<String> by settings.getDelegate()
+		var shipFactoryWhitelistMode: Boolean by settings.getDelegate()
 
 		override val displayHandler: TextDisplayHandler = standardPowerDisplay(this)
 
