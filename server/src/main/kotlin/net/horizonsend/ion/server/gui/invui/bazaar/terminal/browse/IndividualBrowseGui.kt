@@ -38,7 +38,7 @@ import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
 import java.util.function.Consumer
 
-class TerminalIndividualBrowseGui(
+class IndividualBrowseGui(
 	viewer: Player,
 	private val contextName: Component,
 	override val isGlobalBrowse: Boolean,
