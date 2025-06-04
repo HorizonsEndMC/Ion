@@ -32,7 +32,6 @@ import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.ListingEditor
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.SellOrderCreationMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
@@ -169,7 +168,7 @@ object BazaarGUIs {
 			player,
 			"Placement Settings",
 			DBCachedBooleanToggle(
-                Component.text("Skip Single Entry Menus"),
+                text("Skip Single Entry Menus"),
                 butonDescription = "Skip directly to purchase menu when there is only one listing of an item.",
                 icon = GuiItem.LIST,
                 defaultValue = false,
