@@ -18,7 +18,7 @@ import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMul
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.factory.BoundingBoxTask
 import net.horizonsend.ion.server.features.starship.factory.PreviewTask
-import net.horizonsend.ion.server.features.starship.factory.ShipFactoryTask
+import net.horizonsend.ion.server.features.starship.factory.ShipFactoryPrintTask
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.canAccess
@@ -53,7 +53,7 @@ abstract class ShipFactoryEntity(
 	y,
 	z,
 	structureDirection
-), StatusTickedMultiblockEntity, AsyncTickingMultiblockEntity, UserManagedMultiblockEntity, DisplayMultiblockEntity, TaskHandlingMultiblockEntity<ShipFactoryTask> {
+), StatusTickedMultiblockEntity, AsyncTickingMultiblockEntity, UserManagedMultiblockEntity, DisplayMultiblockEntity, TaskHandlingMultiblockEntity<ShipFactoryPrintTask> {
 	val settings = ShipFactorySettings.load(data)
 
 	override val userManager: UserManagedMultiblockEntity.UserManager = UserManagedMultiblockEntity.UserManager(data, persistent = false)
@@ -88,9 +88,9 @@ abstract class ShipFactoryEntity(
 		store.addAdditionalData(NamespacedKeys.BLUEPRINT_NAME, PersistentDataType.STRING, blueprintName)
 	}
 
-	override var task: ShipFactoryTask? = null
+	override var task: ShipFactoryPrintTask? = null
 
-	fun enable(user: Player) {
+	fun enable(user: Player, gui: ShipFactoryGui?) {
 		if (userManager.currentlyUsed()) return
 
 		if (!ensureBlueprintLoaded(user)) return
@@ -99,7 +99,7 @@ abstract class ShipFactoryEntity(
 		if (!checkBlueprintPermissions(blueprint, user)) return
 
 		userManager.setUser(user)
-		startTask(ShipFactoryTask(blueprint, settings,this, getInventories(), user))
+		startTask(ShipFactoryPrintTask(blueprint, settings,this, gui, getInventories(), user))
 	}
 
 	fun disable() {
