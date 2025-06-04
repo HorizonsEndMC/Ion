@@ -22,7 +22,7 @@ abstract class SettingsPageGui(
 ) : AbstractBackgroundPagedGui(viewer), SettingsGuiItem {
 	protected abstract val buttonsList: List<SettingsGuiItem>
 
-	protected open val backButton: Item = GuiItem.DOWN.makeButton(this, "Return to Previous Menu", "") { _, _, _ -> getParent()?.openGui() }
+	protected open val backButton: Item = parentOrBackButton()
 
 	protected var currentPage: Int = 0; private set
 
