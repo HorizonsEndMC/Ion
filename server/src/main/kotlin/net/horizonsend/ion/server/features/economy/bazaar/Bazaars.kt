@@ -29,6 +29,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
+import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.searchEntires
 import net.horizonsend.ion.server.gui.invui.input.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -43,6 +44,7 @@ import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.and
@@ -50,6 +52,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.gt
 import org.litote.kmongo.inc
 import org.litote.kmongo.ne
+import java.util.function.Consumer
 import kotlin.math.roundToInt
 
 object Bazaars : IonServerComponent() {
@@ -61,6 +64,27 @@ object Bazaars : IonServerComponent() {
 		strings.addAll(MultiblockRegistration.getAllMultiblocks().map { "MULTIBLOCK_TOKEN[multiblock=${it.javaClass.simpleName}]" })
 		strings.remove("MULTIBLOCK_TOKEN")
 		strings.remove("PACKAGED_MULTIBLOCK")
+	}
+
+	fun searchStrings(
+		player: Player,
+		prompt: Component,
+		description: Component,
+		backButtonHandler: ((Player) -> Unit)? = null,
+		consumer: Consumer<String>
+	) {
+		Tasks.sync {
+			player.searchEntires(
+				entries = strings,
+				searchTermProvider = { string: String -> listOf(string) },
+				prompt = prompt,
+				description = description,
+				backButtonHandler = backButtonHandler,
+				componentTransformer = { fromItemString(it).displayNameComponent },
+				itemTransformer = { fromItemString(it) },
+				handler = { _: ClickType, result: String -> consumer.accept(result) }
+			)
+		}
 	}
 
 	override fun onEnable() {
