@@ -1,36 +1,51 @@
 package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
+import com.google.common.collect.Maps
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.ADVANCED_SHIP_FACTORY_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.common.utils.text.toCreditComponent
+import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.command.starship.BlueprintCommand.blueprintInfo
 import net.horizonsend.ion.server.command.starship.BlueprintCommand.showMaterials
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.custom.blueprint.BlueprintMenu
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
-import net.horizonsend.ion.server.features.gui.custom.settings.button.BooleanSupplierConsumerButton
+import net.horizonsend.ion.server.features.gui.custom.settings.button.general.BooleanSupplierConsumerButton
+import net.horizonsend.ion.server.features.gui.custom.settings.button.general.DoubleSupplierConsumerInputButton
+import net.horizonsend.ion.server.features.gui.custom.settings.button.general.collection.CollectionModificationButton
+import net.horizonsend.ion.server.features.gui.custom.settings.button.general.collection.MapEntryCreationMenu
+import net.horizonsend.ion.server.features.gui.custom.settings.button.general.collection.MapEntryEditorMenu
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem
 import net.horizonsend.ion.server.features.gui.item.ValueScrollButton
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
+import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
+import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.anvilInputText
 import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.searchEntires
+import net.horizonsend.ion.server.gui.invui.input.validator.RangeDoubleValidator
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
+import net.horizonsend.ion.server.miscellaneous.utils.toMap
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.ShadowColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -39,6 +54,7 @@ import org.litote.kmongo.eq
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
+import java.util.function.Consumer
 
 class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindowWrapper(viewer, async = true) {
 	private fun isValid(): Boolean = entity.isAlive
@@ -403,6 +419,143 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 					description = "Toggles whether missing items should be bought from the bazaar, when available.",
 					icon = GuiItem.LIST,
 					defaultValue = true
+				),
+				CollectionModificationButton(
+					viewer = viewer,
+					title = text("Item Price Caps"),
+					description = "Click to Modify",
+					collectionSupplier = { entity.shipFactoryMaxUnitPrice.entries },
+					modifiedConsumer = { entity.shipFactoryMaxUnitPrice = it.toMap() },
+					itemTransformer = { fromItemString(it.key) },
+					getItemLines = { (key, value) ->
+						Pair(
+							template(text("Key: {0}"), getMenuTitleName(text(key, WHITE))),
+							template(text("Value: {0}"), getMenuTitleName(value.toCreditComponent())),
+						)
+					},
+					toMutableCollection = { it.toMutableSet() },
+					playerModifier = { existing: Map.Entry<String, Double>, newConsumer: Consumer<Map.Entry<String, Double>> ->
+						MapEntryEditorMenu(
+							viewer = viewer,
+							initKey = existing.key,
+							initValue = existing.value,
+							title = "Add a Price Limit",
+							entryValidator = {
+								if (!entity.shipFactoryMaxUnitPrice.containsKey(it.first)) return@MapEntryEditorMenu InputResult.FailureReason(listOf(
+									text("This entry is no longer present!", RED),
+								))
+
+								InputResult.InputSuccess
+							},
+							keyItemFormatter = { fromItemString(it) },
+							keyNameFormatter = { fromItemString(it).displayNameComponent },
+							newKey = { player: Player, consumer: Consumer<String> ->
+								Bazaars.searchStrings(
+									player = player,
+									prompt = text("Enter new key"),
+									description = text("Any bazaar string"),
+									backButtonHandler = { this.openGui() },
+									consumer = {
+										consumer.accept(it)
+										this@MapEntryEditorMenu.openGui()
+									}
+								)
+							},
+							valueItemFormatter = { GuiItem.RIGHT.makeItem(text(it)) },
+							valueNameFormatter = { it.toCreditComponent() },
+							newValue = { player: Player, consumer: Consumer<Double> ->
+								player.anvilInputText(
+									prompt = text("Enter new value"),
+									description = text("Between 0.01 & 10,000,000"),
+									backButtonHandler = { this.openGui() },
+									componentTransformer = { double: Double -> double.toCreditComponent() },
+									inputValidator = RangeDoubleValidator(0.001..10_000_000.0),
+									handler = { _, (_, validator) ->
+										consumer.accept(validator.result)
+										this@MapEntryEditorMenu.openGui()
+									}
+								)
+							},
+							valueConsumer = { newConsumer.accept(Maps.immutableEntry(it.first, it.second)) }
+						).openGui(this@CollectionModificationButton)
+					},
+					entryCreator = { valueConsumer ->
+						MapEntryCreationMenu(
+							title = "Add a Price Limit",
+							viewer = viewer,
+							entryValidator = {
+								if (entity.shipFactoryMaxUnitPrice.containsKey(it.first)) return@MapEntryCreationMenu InputResult.FailureReason(listOf(
+									text("There is already a value present for this item!", RED),
+									text("You must remove that value, or modify it.", RED),
+								))
+
+								InputResult.InputSuccess
+							},
+							keyItemFormatter = { fromItemString(it) },
+							keyNameFormatter = { fromItemString(it).displayNameComponent },
+							newKey = { player: Player, consumer: Consumer<String> ->
+								Bazaars.searchStrings(
+									player = player,
+									prompt = text("Enter new key"),
+									description = text("Any bazaar string"),
+									backButtonHandler = { this.openGui() },
+									consumer = {
+										consumer.accept(it)
+										this@MapEntryCreationMenu.openGui()
+									}
+								)
+							},
+							valueItemFormatter = { GuiItem.RIGHT.makeItem(text(it)) },
+							valueNameFormatter = { it.toCreditComponent() },
+							newValue = { player: Player, consumer: Consumer<Double> ->
+								player.anvilInputText(
+									prompt = text("Enter new value"),
+									description = text("Between 0.01 & 10,000,000"),
+									backButtonHandler = { this.openGui() },
+									componentTransformer = { double: Double -> double.toCreditComponent() },
+									inputValidator = RangeDoubleValidator(0.001..10_000_000.0),
+									handler = { _, (_, validator) ->
+										consumer.accept(validator.result)
+										this@MapEntryCreationMenu.openGui()
+									}
+								)
+							},
+							valueConsumer = { valueConsumer.accept(Maps.immutableEntry(it.first, it.second)) }
+						).openGui(this)
+					}
+				),
+				DoubleSupplierConsumerInputButton(
+					valueSupplier = entity::shipFactoryPriceCap,
+					valueConsumer = { entity.shipFactoryPriceCap = it },
+					0.001,
+					10_000_000.0,
+					text("Printing Price Cap"),
+					"Sets a maximum credit usage during a print operation.",
+					icon = GuiItem.LIST,
+					defaultValue = 10_000_000.0
+				),
+				CollectionModificationButton<String, List<String>>(
+					viewer = viewer,
+					title = text("Item Price Caps"),
+					description = "Click to Modify",
+					collectionSupplier = { entity.shipFactoryItemRestriction.toList() },
+					modifiedConsumer = { entity.shipFactoryItemRestriction = it.toTypedArray() },
+					itemTransformer = { fromItemString(it) },
+					getItemLines = { entry -> Pair(getMenuTitleName(text(entry, WHITE)), null) },
+					toMutableCollection = { it.toMutableList() },
+					playerModifier = null,
+					entryCreator = { consumer ->
+						Bazaars.searchStrings(
+							player = viewer,
+							prompt = text("Enter new key"),
+							description = text("Any bazaar string"),
+							backButtonHandler = { this.openGui() },
+							consumer = {
+								consumer.accept(it)
+								this@CollectionModificationButton.openGui()
+							}
+						)
+					}
 				),
 				BooleanSupplierConsumerButton(
 					valueSupplier = entity::shipFactoryWhitelistMode,

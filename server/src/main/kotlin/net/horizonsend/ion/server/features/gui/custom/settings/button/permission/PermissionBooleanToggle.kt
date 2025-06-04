@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.gui.custom.settings.button
+package net.horizonsend.ion.server.features.gui.custom.settings.button.permission
 
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.luckPerms
@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.command.misc.IonSitCommand.sitStateNode
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
+import net.horizonsend.ion.server.features.gui.custom.settings.button.SettingsMenuButton
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
