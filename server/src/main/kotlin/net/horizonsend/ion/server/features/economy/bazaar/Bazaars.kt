@@ -420,6 +420,37 @@ object Bazaars : IonServerComponent() {
 		return InputResult.SuccessReason(listOf(template(text("Collected {0} from {1} listings.", GREEN), total.toCreditComponent(), count)))
 	}
 
+	fun canBuyFromSellOrder(player: Player, item: BazaarItem, amount: Int, remote: Boolean): PotentiallyFutureResult {
+		val price: Double = item.price
+		val revenue: Double = amount * price
+		val priceMult = priceMult(remote)
+		val cost: Double = revenue * priceMult
+
+		val moneyCheck = checkHasMoney(player, cost)
+		if (!moneyCheck.isSuccess()) return moneyCheck
+
+		val cityResult = checkValidTerritory(Regions[item.cityTerritory])
+		if (!cityResult.isSuccess()) return cityResult
+
+		val futureResult = FutureInputResult()
+
+		Tasks.async {
+			if (!BazaarItem.hasStock(item._id, amount)) {
+				futureResult.complete(InputResult.FailureReason(listOf(text("Item no longer has $amount in stock", RED))))
+				return@async
+			}
+
+			if (BazaarItem.matches(item._id, BazaarItem::price ne price)) {
+				futureResult.complete(InputResult.FailureReason(listOf(text("Price has changed", RED))))
+				return@async
+			}
+
+			futureResult.complete(InputResult.InputSuccess)
+		}
+
+		return futureResult
+	}
+
 	/**
 	 * @param itemConsumer is a function that returns a function. It is run async, then the returned function is run sync. This allows async setup then a sync execution.
 	 **/
