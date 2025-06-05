@@ -7,7 +7,6 @@ import io.papermc.paper.registry.keys.tags.BlockTypeTagKeys
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.input.InputResult
@@ -52,6 +51,7 @@ import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
@@ -83,16 +83,32 @@ class ShipFactoryPrintTask(
 	private val player: Player
 ) : ShipFactoryBlockProcessor(blueprint, settings, entity), MultiblockEntityTask<ShipFactoryEntity> {
 	override val taskEntity: ShipFactoryEntity get() = entity
+
+	/** Counts of missing materials */
 	private val missingMaterials = mutableMapOf<PrintItem, AtomicInteger>()
 
-	override fun disable() {
-		entity.disable()
-	}
-
-	private var queueLoaded = false
-	private var startBlocks = 0
-
+	/**
+	 * Stores a list of references to bazaar items that may be purchased from for this blueprint.
+	 * It is loaded at the start of processing to avoid slow database lookups during the printing process
+	 **/
 	private val bazaarReferences = multimapOf<PrintItem, BazaarReference>()
+
+	/** Total number of blocks that were skipped due to obstruction */
+	private var skippedBlocks = 0
+	/** Total number of blocks that placed successfully */
+	private var printedBlocks = 0
+
+	/** Total number of credits used while printing */
+	private var consumedCredits = 0.0
+	/** Total number of credits used while buying from the bazaar */
+	private var bazaarConsumedCredits = 0.0
+	/** Collection of responses from attempts to buy from the bazaar */
+	private val bazaarPurchaseMessages = mutableListOf<Component>()
+
+	/** Holds whether the queue has been fully loaded. Prevents ticking while loading. */
+	private var queueLoaded = false
+	/** Stores the number of blocks that were initially in the queue, can be used to obtain a percentage completion. */
+	private var startBlocks = 0
 
 	override fun onEnable() {
 		loadBlockQueue()
@@ -106,13 +122,19 @@ class ShipFactoryPrintTask(
 		queueLoaded = true
 	}
 
-	override fun onDisable() {
-		disabledSignal = true
+	/** Signal that the rest of the processing loop may use to tell when it is disabled. */
+	override var isDisabled = false
 
+	override fun onDisable() {
+		isDisabled = true
 		player.userError("Disabled ship factory.")
 	}
 
-	// Prevents multiple ticks from running concurrently, this might happen if a large blueprint is being done, and the execution takes more than 5 ms
+	override fun disable() {
+		entity.disable()
+	}
+
+	/** Prevents multiple ticks from running concurrently, this might happen if a large blueprint is being done, and the execution takes more than 5 ms */
 	private var isTicking = false
 
 	override fun tick() {
@@ -120,20 +142,11 @@ class ShipFactoryPrintTask(
 
 		isTicking = true
 		try {
-		    runTick()
+			runTick()
 		} finally {
-		    isTicking = false
+			isTicking = false
 		}
 	}
-
-	private var disabledSignal = false
-
-	private var skippedBlocks = 0
-	private var printedBlocks = 0
-
-	private var consumedCredits = 0.0
-	private var bazaarConsumedCredits = 0.0
-	private val bazaarPurchaseMessages = mutableListOf<Component>()
 
 	private fun runTick() {
 		if (!queueLoaded) return
@@ -148,35 +161,28 @@ class ShipFactoryPrintTask(
 		// All items available in inventories
 		val availableItems = getAvailableItems()
 
-		var availableCredits = player.getMoneyBalance()
+		val availableCredits = player.getMoneyBalance()
 
-		if (!ConfigurationFiles.featureFlags().economy) {
-			availableCredits = Double.MAX_VALUE
-		}
+		// Check if the player has any credits
+		checkAvailablecredits(availableCredits, 0.001)
 
-		if (availableCredits <= 0.0) {
-			player.userError("You don't have enough credits to print!")
-			gui?.enableButton?.updateWith(InputResult.FailureReason(listOf(text("You don't have enough credits to print!", RED))))
-			disable()
-		}
-
-		var usedPower = 0
+		var consumedPower = 0
 		val bazaarTransaction = mutableMapOf<Oid<BazaarItem>, MutableMap<BlockKey, Int>>()
 
 		// Find the first blocks that can be placed with the available resources, up to the limit
 		val keyIterator = blockQueue.iterator()
 		while (keyIterator.hasNext()) {
-			if (disabledSignal) {
-				disabledSignal = false
+			if (isDisabled) {
+				isDisabled = false
 				break
 			}
 
-			val key: BlockKey = keyIterator.next()
+			val printPosition: BlockKey = keyIterator.next()
 			if (toPrint.size >= printLimit) break
 
-			val blockData = blockMap[key] ?: continue
+			val blockData = blockMap[printPosition] ?: continue
 
-			val vec3i = toVec3i(key)
+			val vec3i = toVec3i(printPosition)
 			val worldBlockData = entity.world.getBlockData(vec3i.x, vec3i.y, vec3i.z)
 			if (worldBlockData == blockData) {
 				// Save an iteration
@@ -192,25 +198,27 @@ class ShipFactoryPrintTask(
 
 			val requiredAmount = StarshipFactories.getRequiredAmount(blockData)
 
+			// Check if the position is obstructed, if it is, skip the block and try the next.
 			if (checkObstruction(printItem, blockData, requiredAmount)) {
 				skippedBlocks++
 				continue
 			}
 
-			var toBreak = false
+			// Check for power consumption. This check will only apply if it is an advanced ship factory.
+			if (!checkPowerConsumption(consumedPower)) break
 
-			val breakLoop = {
-				toBreak = true
-				disable()
+			val price = ShipFactoryMaterialCosts.getPrice(blockData)
+			if (!checkAvailablecredits(availableCredits, price)) break
+
+			val success = checkAvailableItems(printPosition, availableItems, printItem, requiredAmount, bazaarTransaction)
+			if (success) {
+				toPrint.add(printPosition)
+				printedBlocks++
+
+				consumedCredits += price
+				consumedPower += 10
 			}
-
-			val consumeResources = { credits: Double ->
-				consumedCredits += credits
-				usedPower += 10
-			}
-
-			checkResource(key, availableItems, printItem, blockData, requiredAmount, availableCredits, toPrint, consumeResources, breakLoop, bazaarTransaction)
-			if (toBreak) break
+			if (isDisabled) break
 		}
 
 		// If the block map is empty, printing has finished
@@ -221,14 +229,14 @@ class ShipFactoryPrintTask(
 		if (toPrint.isEmpty() && !hasFinished) {
 			if (missingMaterials.isNotEmpty()) {
 				sendMissing(missingMaterials, skippedBlocks)
-				gui?.enableButton?.updateWith(InputResult.FailureReason(listOf(
+				updateGuiButton(InputResult.FailureReason(listOf(
 					text("Missing Materials!", RED),
 					template(text("Printing consumed {0}", GREEN), consumedCredits.toCreditComponent())
 				)))
 			}
 
-			player.information("Printing consumed C${consumedCredits.roundToHundredth()}")
-			if (bazaarPurchaseMessages.isNotEmpty()) player.sendMessage(getBazaarReport())
+			sendCreditConsumption()
+			sendBazaarReport()
 			entity.disable()
 		}
 
@@ -244,97 +252,33 @@ class ShipFactoryPrintTask(
 			}
 
 			player.success("Ship factory has finished printing.")
-			player.information("Printing consumed C${consumedCredits.roundToHundredth()}")
-			gui?.enableButton?.updateWith(InputResult.SuccessReason(listOf(
+			sendCreditConsumption()
+			updateGuiButton(InputResult.SuccessReason(listOf(
 				text("Ship factory has finished printing.", GREEN),
-				template(text("Printing consumed {0}", GREEN), consumedCredits.toCreditComponent())
+				template(text("Printing consumed {0}", GREEN), consumedCredits.roundToHundredth().toCreditComponent())
 			)))
-			if (bazaarPurchaseMessages.isNotEmpty()) player.sendMessage(getBazaarReport())
+
+			sendBazaarReport()
 			entity.disable()
 		} else {
-			updateStatus()
+			updatePercentageStatus()
 		}
 
 		gui?.refreshAll()
 	}
 
-	private fun printBlocks(blocks: List<BlockKey>) {
-		var consumedMoney = 0.0
-
-		var placements = 0
-		for (entry in blocks) {
-			blockQueue.remove(entry)
-			val blockData = blockMap.remove(entry) ?: continue
-			val signData = signMap.remove(entry)
-
-			val price = ShipFactoryMaterialCosts.getPrice(blockData)
-			if (!player.hasEnoughMoney(consumedMoney + price) && ConfigurationFiles.featureFlags().economy) continue
-			consumedMoney += price
-
-			// If all good, place the block
-			placements++
-			placeBlock(entry, blockData, signData)
-		}
-
-		if (entity is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) {
-			entity.powerStorage.removePower(placements * 10)
-		}
-
-		if (ConfigurationFiles.featureFlags().economy) player.withdrawMoney(consumedMoney)
-	}
-
-	private fun placeBlock(location: BlockKey, data: BlockData, signData: SignData?) {
-		var placedData = data
-
-		val (x, y, z) = toVec3i(location)
-		val world = entity.world
-		val block = world.getBlockAt(x, y, z)
-
-		if (placedData is Waterlogged && block.type == Material.WATER) {
-			placedData = data.clone() // Don't affect placements if moved
-			(placedData as Waterlogged).isWaterlogged = true
-		}
-
-		world.setNMSBlockData(x, y, z, getRotatedBlockData(placedData))
-
-		val state = block.state as? Sign
-		if (state != null) {
-			signData?.applyTo(state)
-			Tasks.sync {
-				MultiblockEntities.loadFromSign(state)
-			}
-		}
-	}
-
-	private fun getAvailableItems(): Map<PrintItem, AvailableItemInformation> {
-		val items = mutableMapOf<PrintItem, AvailableItemInformation>()
-
-		for (inventoryReference in inventories) {
-			for ((index, item: ItemStack?) in inventoryReference.inventory.contents.withIndex()) {
-				if (item == null || item.type.isEmpty) continue
-				val printItem = runCatching { PrintItem(item) }.getOrNull() ?: continue
-
-				if (!inventoryReference.isAvailable(item)) {
-					continue
-				}
-
-				val information = items.getOrPut(printItem) { AvailableItemInformation(AtomicInteger(), mutableListOf()) }
-
-				information.amount.addAndGet(item.amount)
-				information.references.add(ItemReference(inventoryReference.inventory, index))
-			}
-		}
-
-		// If asked to leave one remaining, reduce the available items in each slot by 1 so they won't be consumed
-		if (settings.leaveItemRemaining) {
-			for ((_, information) in items) {
-				if (information.amount.get() > 0) information.amount.decrementAndGet()
-			}
-		}
-
-		return items
-	}
-
+	//<editor-fold desc="Region Block Placement">
+	/**
+	 * Checks for obstructions when printing.
+	 *
+	 * This checks a variety of settings in the ship factory including:
+	 * 	* overrideReplaceableBlocks
+	 * 	* placeBlocksUnderwater
+	 * 	* markObstrcutedBlocksAsComplete
+	 *
+	 * It returns whether the block can be placed in this position, and handles
+	 * marking it missing if the user has that setting checked.
+	 **/
 	@Suppress("UnstableApiUsage")
 	private fun checkObstruction(
 		printItem: PrintItem,
@@ -372,154 +316,92 @@ class ShipFactoryPrintTask(
 		return true
 	}
 
-	private fun checkResource(
-		position: BlockKey,
-		availableItems: Map<PrintItem, AvailableItemInformation>,
-		printItem: PrintItem,
-		printItemBlockData: BlockData,
-		requiredAmount: Int,
-		availableCredits: Double,
-		toPrint: MutableList<BlockKey>,
-		consumeResourcesFunction: (Double) -> Unit,
-		breakLoopFunction: () -> Unit,
-		bazaarTransaction: MutableMap<Oid<BazaarItem>, MutableMap<BlockKey, Int>>
-	) {
-		val price = ShipFactoryMaterialCosts.getPrice(printItemBlockData)
+	private fun printBlocks(blocks: List<BlockKey>) {
+		var consumedMoney = 0.0
 
-		if (availableCredits < price) {
-			gui?.enableButton?.updateWith(InputResult.FailureReason(listOf(text("Insufficent Credits!", RED))))
-			entity.statusManager.setStatus(text("Insufficient Credits!", RED))
-			player.userError("Insufficient Credits!")
+		var placements = 0
+		for (entry in blocks) {
+			blockQueue.remove(entry)
+			val blockData = blockMap.remove(entry) ?: continue
+			val signData = signMap.remove(entry)
 
-			breakLoopFunction.invoke()
-			disable()
-			return
+			val price = ShipFactoryMaterialCosts.getPrice(blockData)
+			if (!player.hasEnoughMoney(consumedMoney + price) && ConfigurationFiles.featureFlags().economy) continue
+			consumedMoney += price
+
+			// If all good, place the block
+			placements++
+			placeBlock(entry, blockData, signData)
 		}
-
-		val resourceInformation = availableItems[printItem]
-			?: if (isBazaarIntegrationEnabled() && consumeItemFromBazaarReferences(printItem, position, requiredAmount, bazaarTransaction)) {
-				// It has been sucessfully purchased from bazaar
-				toPrint.add(position)
-				printedBlocks++
-
-				//TODO deduplicate this
-				if (entity is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) {
-					val power = entity.powerStorage.getPower()
-					if (power < toPrint.size * 10) {
-						gui?.enableButton?.updateWith(InputResult.FailureReason(listOf(text("Insufficient Power!", RED))))
-						entity.statusManager.setStatus(text("Insufficient Power!", RED))
-						player.userError("Ship factory has insufficient power")
-
-						breakLoopFunction.invoke()
-						disable()
-						return
-					}
-				}
-
-				return
-			} else {
-				markItemMissing(printItem, requiredAmount)
-				// Don't break loop
-				return
-			}
-
-		if (resourceInformation.amount.get() < requiredAmount) {
-			markItemMissing(printItem, requiredAmount - resourceInformation.amount.get())
-			// Don't break loop
-			return
-		}
-
-		toPrint.add(position)
-		printedBlocks++
 
 		if (entity is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) {
-			val power = entity.powerStorage.getPower()
-			if (power < toPrint.size * 10) {
-				gui?.enableButton?.updateWith(InputResult.FailureReason(listOf(text("Insufficient Power!", RED))))
-				entity.statusManager.setStatus(text("Insufficient Power!", RED))
-				player.userError("Ship factory has insufficient power")
-
-				breakLoopFunction.invoke()
-				disable()
-				return
-			}
+			entity.powerStorage.removePower(placements * 10)
 		}
 
-		resourceInformation.amount.addAndGet(-requiredAmount)
-
-		if (missingMaterials.containsKey(printItem)) {
-			val atomic = missingMaterials[printItem]
-
-			if (atomic != null) {
-				if (atomic.get() >= requiredAmount) atomic.addAndGet(-requiredAmount)
-			}
-		}
-
-		val references = resourceInformation.references
-		val missing = consumeItemFromReferences(references, requiredAmount)
-
-		if (missing > 0) {
-			if (!isBazaarIntegrationEnabled() || !consumeItemFromBazaarReferences(printItem, position, missing, bazaarTransaction)) {
-				markItemMissing(printItem, missing)
-				return
-			}
-		}
-
-		consumeResourcesFunction.invoke(price)
+		if (ConfigurationFiles.featureFlags().economy) player.withdrawMoney(consumedMoney)
 	}
 
-	private data class AvailableItemInformation(val amount: AtomicInteger, val references: MutableList<ItemReference>)
+	private fun placeBlock(printPosition: BlockKey, data: BlockData, signData: SignData?) {
+		var placedData = data
 
-	private fun sendMissing(missingMaterials: MutableMap<PrintItem, AtomicInteger>, skippedBlocks: Int) {
-		missingMaterialsCache[player.uniqueId] = missingMaterials.mapValues { it.value.get() }
+		val (x, y, z) = toVec3i(printPosition)
+		val world = entity.world
+		val block = world.getBlockAt(x, y, z)
 
-		val sorted = missingMaterials.entries.toList().sortedBy { it.value.get() }
-
-		player.userError("Missing Materials: ")
-
-		player.sendMessage(
-			formatPaginatedMenu(
-			entries = sorted.size,
-			command = "/shipfactory listmissing",
-			currentPage = 1,
-		) { index ->
-			val (item, count) = sorted[index]
-
-			return@formatPaginatedMenu ofChildren(
-				item.toComponent(color = RED),
-				text(": ", DARK_GRAY),
-				text(count.get(), WHITE)
-			)
-		})
-
-		if (skippedBlocks > 0) player.userError("$skippedBlocks were skipped due to being obstructed.")
-		player.userError("Use <italic><underlined><click:run_command:/shipfactory listmissing all>/shipfactory listmissing all</click></italic> to list all missing materials in one message.")
-	}
-
-	private fun consumeItemFromReferences(references: Collection<ItemReference>, amount: Int): Int {
-		var remaining = amount
-
-		for (reference in references) {
-			val item = reference.get() ?: continue
-			val stackAmount = item.amount
-
-			if (remaining >= stackAmount) {
-				remaining -= stackAmount
-				reference.inventory.setItem(reference.index, null)
-			} else {
-				val toRemove = minOf(stackAmount, remaining)
-				item.amount -= toRemove
-				remaining -= toRemove
-			}
+		if (placedData is Waterlogged && block.type == Material.WATER) {
+			placedData = data.clone() // Don't affect placements if moved
+			(placedData as Waterlogged).isWaterlogged = true
 		}
 
-		return remaining
+		world.setNMSBlockData(x, y, z, getRotatedBlockData(placedData))
+
+		val state = block.state as? Sign
+		if (state != null) {
+			signData?.applyTo(state)
+			Tasks.sync {
+				MultiblockEntities.loadFromSign(state)
+			}
+		}
+	}
+	//</editor-fold>
+
+	//<editor-fold desc="Region Misc Consumption">
+	/**
+	 * Returns if the machine has enough power to proceed
+	 * Disables the process and updates the status if the check does not pass
+	 **/
+	private fun checkPowerConsumption(consumedPower: Int): Boolean {
+		if (entity !is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) return true
+
+		val power = entity.powerStorage.getPower()
+		if (power >= consumedPower) return true
+
+		updateAll(text("Ship Factory has Insufficient Power!", RED))
+		disable()
+		return false
 	}
 
 	/**
-	 * Returns true if enough items could be purchased from the bazaar to cover the amount needed.
+	 * Returns if the player has enough credits to proceed
+	 * Disables the process and updates the status if the check does not pass
 	 **/
-	private fun consumeItemFromBazaarReferences(printItem: PrintItem, location: BlockKey, amount: Int, bazaarTransaction: MutableMap<Oid<BazaarItem>, MutableMap<BlockKey, Int>>): Boolean {
+	private fun checkAvailablecredits(availableCredits: Double, price: Double): Boolean {
+		if (ConfigurationFiles.featureFlags().economy) return true
+
+		if (availableCredits >= price) return true
+
+		updateAll(text("Insufficent Credits!", RED))
+		disable()
+		return false
+	}
+	//</editor-fold>
+
+	//<editor-fold desc="Region Bazaar Integration">
+	/**
+	 * Returns true if enough items could be purchased from the bazaar to cover the amount needed.
+	 * The @param printPosition is needed to mark if there were sufficient items, as the bazaar transactions are bundled at the end to avoid multiple database checks.
+	 **/
+	private fun consumeItemFromBazaarReferences(printItem: PrintItem, printPosition: BlockKey, amount: Int, bazaarTransaction: MutableMap<Oid<BazaarItem>, MutableMap<BlockKey, Int>>): Boolean {
 		val references = bazaarReferences[printItem]
 		if (references.isEmpty()) return false
 
@@ -536,32 +418,18 @@ class ShipFactoryPrintTask(
 
 			if (!idealReference.consume(removeStock)) continue
 
-			newTransactions.getOrPut(idealReference.id) { mutableMapOf() }[location] = removeStock
+			newTransactions.getOrPut(idealReference.id) { mutableMapOf() }[printPosition] = removeStock
 			toConsume -= removeStock
 		}
 
-		if (toConsume > 0) {
-			return false
-		}
+		// If the references are not sufficient, abandon the transaction.
+		if (toConsume > 0) return false
 
+		// Merge the new transactions into the map if they are sufficient to meet the needs.
 		newTransactions.forEach { (reference, blockMap) ->
 			bazaarTransaction.getOrPut(reference) { mutableMapOf() }.putAll(blockMap)
 		}
-
 		return true
-	}
-
-	private fun markItemMissing(printItem: PrintItem, amount: Int): Int {
-		return missingMaterials.getOrPut(printItem) { AtomicInteger() }.addAndGet(amount)
-	}
-
-	private fun updateStatus() {
-		val blueprintName = text(entity.blueprintName)
-		val percentValue = 1.0 - (blockQueue.size / startBlocks.toDouble())
-		val percent = formatProgress(WHITE, percentValue)
-
-		val formatted = ofChildren(blueprintName, text(": ", HEColorScheme.HE_DARK_GRAY), percent)
-		entity.setStatus(formatted)
 	}
 
 	private fun loadBazaarReferences() {
@@ -572,12 +440,14 @@ class ShipFactoryPrintTask(
 
 		val territory = Regions.findFirstOf<RegionTerritory>(entity.location)
 
-		val matchingItems = BazaarItem.find(and(
-			BazaarItem::stock gt 0,
-			matchingTypesCheck,
-			if (!partner.shipFactoryAllowRemote) BazaarItem::cityTerritory eq territory?.id else EMPTY_BSON,
-			if (partner.shipFactoryWhitelistMode) BazaarItem::itemString `in` partner.shipFactoryItemRestriction.toList() else BazaarItem::itemString nin partner.shipFactoryItemRestriction.toList()
-		))
+		val matchingItems = BazaarItem.find(
+			and(
+				BazaarItem::stock gt 0,
+				matchingTypesCheck,
+				if (!partner.shipFactoryAllowRemote) BazaarItem::cityTerritory eq territory?.id else EMPTY_BSON,
+				if (partner.shipFactoryWhitelistMode) BazaarItem::itemString `in` partner.shipFactoryItemRestriction.toList() else BazaarItem::itemString nin partner.shipFactoryItemRestriction.toList()
+			)
+		)
 
 		for (document in matchingItems) {
 			val maxPrice = partner.shipFactoryMaxUnitPrice[document.itemString]
@@ -612,35 +482,38 @@ class ShipFactoryPrintTask(
 				val document = BazaarItem.findById(referenceId) ?: return@runCatching null
 				val remote = !Regions.get<RegionTerritory>(document.cityTerritory).contains(entity.location)
 
-				val purchaseFutureResult = Bazaars.tryBuyFromSellOrder(player, document, count, remote) { itemStack, amount, cost, priceMult-> {
-					consumedCredits += cost
-					bazaarConsumedCredits += cost
+				val purchaseFutureResult = Bazaars.tryBuyFromSellOrder(player, document, count, remote) { itemStack, amount, cost, priceMult ->
+					{
+						consumedCredits += cost
+						bazaarConsumedCredits += cost
 
-					val maxStackSize = itemStack.maxStackSize
-					val fullStacks = amount / maxStackSize
-					val remainder = amount % maxStackSize
+						val maxStackSize = itemStack.maxStackSize
+						val fullStacks = amount / maxStackSize
+						val remainder = amount % maxStackSize
 
-					val quantityMessage = if (itemStack.maxStackSize == 1) "{0}" else "{0} stack${if (fullStacks == 1) "" else "s"} and {1} item${if (remainder == 1) "" else "s"}"
+						val quantityMessage = if (itemStack.maxStackSize == 1) "{0}" else "{0} stack${if (fullStacks == 1) "" else "s"} and {1} item${if (remainder == 1) "" else "s"}"
 
-					var fullMessage = template(
-						text("Bought $quantityMessage of {2} for {3}", GREEN),
-						fullStacks,
-						remainder,
-						itemStack.displayNameComponent,
-						cost.toCreditComponent(),
-					)
+						var fullMessage = template(
+							text("Bought $quantityMessage ({2}) of {3} for {4}", GREEN),
+							fullStacks,
+							remainder,
+							amount,
+							itemStack.displayNameComponent,
+							cost.toCreditComponent(),
+						)
 
-					if (priceMult > 1) {
-						val priceMultiplicationMessage = template(text("(Price multiplied by {0} due to browsing remotely)", YELLOW), priceMult)
-						fullMessage = ofChildren(fullMessage, space(), priceMultiplicationMessage)
+						if (priceMult > 1) {
+							val priceMultiplicationMessage = template(text("(Price multiplied by {0} due to browsing remotely)", YELLOW), priceMult)
+							fullMessage = ofChildren(fullMessage, space(), priceMultiplicationMessage)
+						}
+
+						// Once it is sucessful, count it as consumed credits.
+						consumedCredits += printPrice
+
+						bazaarPurchaseMessages.add(fullMessage)
+						InputResult.InputSuccess
 					}
-
-					// Once it is sucessful, count it as consumed credits.
-					consumedCredits += printPrice
-
-					bazaarPurchaseMessages.add(fullMessage)
-					InputResult.InputSuccess
-				} }.get()
+				}.get()
 
 				purchaseFutureResult.withResult { result ->
 					if (result.isSuccess()) return@withResult // Condition already handled
@@ -651,11 +524,15 @@ class ShipFactoryPrintTask(
 
 					val reference = getBazaarReference(referenceId)
 
-					bazaarPurchaseMessages.add(ofChildren(template(
-						text("Could not buy {0} of {1}: ", RED),
-						count,
-						reference.string,
-					), reason.join(separator = space())))
+					bazaarPurchaseMessages.add(
+						ofChildren(
+							template(
+								text("Could not buy {0} of {1}: ", RED),
+								count,
+								reference.string,
+							), reason.join(separator = space())
+						)
+					)
 				}
 			}.onFailure {
 				it.printStackTrace()
@@ -665,23 +542,28 @@ class ShipFactoryPrintTask(
 		return failures
 	}
 
-	private fun getBazaarReport(): Component {
+	private fun sendBazaarReport() {
+		if (bazaarPurchaseMessages.isEmpty()) return
+
 		val buyReport = ofChildren(
 			template(
 				text("{0} purchases were attempted on the bazaar to cover missing materials for a total cost of {1}", YELLOW),
 				bazaarPurchaseMessages.size,
 				bazaarConsumedCredits.toCreditComponent()
-			), newline(),
+			),
+			newline(),
 			text("Hover over this message to see the full list.", YELLOW),
 		)
 
 		val hoverText = bazaarPurchaseMessages.join(separator = newline())
 
-		return text()
+		val message = text()
 			.hoverEvent(HoverEvent.showText(hoverText))
 			.clickEvent(ClickEvent.callback { player.sendMessage(hoverText) })
 			.append(buyReport)
 			.build()
+
+		sendPlayerMessage(message)
 	}
 
 	private val bazaarReferenceCache = mutableMapOf<Oid<BazaarItem>, BazaarReference>()
@@ -696,4 +578,187 @@ class ShipFactoryPrintTask(
 	private fun getBazaarReference(id: Oid<BazaarItem>): BazaarReference {
 		return bazaarReferenceCache[id]!!
 	}
+	//</editor-fold>
+
+	//<editor-fold desc="Region Item Consumption">
+	private data class AvailableItemInformation(val amount: AtomicInteger, val references: MutableList<ItemReference>)
+
+	/**
+	 * Returns a map of all available items, using a print item as a key,
+	 * and the value holding a sum and references to those items in available inventories.
+	 **/
+	private fun getAvailableItems(): Map<PrintItem, AvailableItemInformation> {
+		val items = mutableMapOf<PrintItem, AvailableItemInformation>()
+
+		for (inventoryReference in inventories) {
+			for ((index, item: ItemStack?) in inventoryReference.inventory.contents.withIndex()) {
+				if (item == null || item.type.isEmpty) continue
+				val printItem = runCatching { PrintItem(item) }.getOrNull() ?: continue
+
+				if (!inventoryReference.isAvailable(item)) {
+					continue
+				}
+
+				val information = items.getOrPut(printItem) { AvailableItemInformation(AtomicInteger(), mutableListOf()) }
+
+				information.amount.addAndGet(item.amount)
+				information.references.add(ItemReference(inventoryReference.inventory, index))
+			}
+		}
+
+		// If asked to leave one remaining, reduce the available items in each slot by 1 so they won't be consumed
+		if (settings.leaveItemRemaining) {
+			for ((_, information) in items) {
+				if (information.amount.get() > 0) information.amount.decrementAndGet()
+			}
+		}
+
+		return items
+	}
+
+	private fun checkAvailableItems(
+		printPosition: BlockKey,
+		availableItems: Map<PrintItem, AvailableItemInformation>,
+		printItem: PrintItem,
+		requiredAmount: Int,
+		bazaarTransaction: MutableMap<Oid<BazaarItem>, MutableMap<BlockKey, Int>>
+	): Boolean {
+		val resourceInformation = availableItems[printItem]
+			?: if (isBazaarIntegrationEnabled() && consumeItemFromBazaarReferences(printItem, printPosition, requiredAmount, bazaarTransaction)) return true
+			else {
+				markItemMissing(printItem, requiredAmount)
+				// Don't break loop
+				return false
+			}
+
+		if (resourceInformation.amount.get() < requiredAmount) {
+			val missing = requiredAmount - resourceInformation.amount.get()
+
+			// Try and make a partial purchase with the missing amount
+			if (!isBazaarIntegrationEnabled() || !consumeItemFromBazaarReferences(printItem, printPosition, missing, bazaarTransaction)) {
+				markItemMissing(printItem, missing)
+				return false
+			} else {
+				resourceInformation.amount.addAndGet(-resourceInformation.amount.get())
+
+				val missingFromInventories = consumeItemFromReferences(resourceInformation.references, missing)
+
+				if (missingFromInventories == 0) return true
+				else {
+					markItemMissing(printItem, missingFromInventories)
+					return false
+				}
+			}
+		}
+
+		resourceInformation.amount.addAndGet(-requiredAmount)
+
+		if (missingMaterials.containsKey(printItem)) {
+			val atomic = missingMaterials[printItem]
+
+			if (atomic != null) {
+				if (atomic.get() >= requiredAmount) atomic.addAndGet(-requiredAmount)
+			}
+		}
+
+		val references = resourceInformation.references
+		val missing = consumeItemFromReferences(references, requiredAmount)
+
+		if (missing > 0) {
+			if (!isBazaarIntegrationEnabled() || !consumeItemFromBazaarReferences(printItem, printPosition, missing, bazaarTransaction)) {
+				markItemMissing(printItem, missing)
+				return false
+			}
+		}
+
+		return true
+	}
+
+	private fun consumeItemFromReferences(references: Collection<ItemReference>, amount: Int): Int {
+		var remaining = amount
+
+		for (reference in references) {
+			val item = reference.get() ?: continue
+			val stackAmount = item.amount
+
+			if (remaining >= stackAmount) {
+				remaining -= stackAmount
+				reference.inventory.setItem(reference.index, null)
+			} else {
+				val toRemove = minOf(stackAmount, remaining)
+				item.amount -= toRemove
+				remaining -= toRemove
+			}
+		}
+
+		return remaining
+	}
+
+	private fun markItemMissing(printItem: PrintItem, amount: Int): Int {
+		return missingMaterials.getOrPut(printItem) { AtomicInteger() }.addAndGet(amount)
+	}
+	//</editor-fold>
+
+	//<editor-fold desc="Region Communication">
+	private fun updateGuiButton(text: Component) {
+		gui?.enableButton?.updateWith(InputResult.FailureReason(listOf(text)))
+	}
+
+	private fun updateGuiButton(inputResult: InputResult) {
+		gui?.enableButton?.updateWith(inputResult)
+	}
+
+	private fun updateMultiblockDisplay(text: Component) {
+		entity.statusManager.setStatus(text)
+	}
+
+	private fun sendPlayerMessage(text: Component) {
+		player.sendMessage(text)
+	}
+
+	private fun updateAll(text: Component) {
+		updateGuiButton(text)
+		updateMultiblockDisplay(text)
+		sendPlayerMessage(text)
+	}
+
+	private fun sendMissing(missingMaterials: MutableMap<PrintItem, AtomicInteger>, skippedBlocks: Int) {
+		missingMaterialsCache[player.uniqueId] = missingMaterials.mapValues { it.value.get() }
+
+		val sorted = missingMaterials.entries.toList().sortedBy { it.value.get() }
+
+		player.userError("Missing Materials: ")
+
+		player.sendMessage(
+			formatPaginatedMenu(
+				entries = sorted.size,
+				command = "/shipfactory listmissing",
+				currentPage = 1,
+			) { index ->
+				val (item, count) = sorted[index]
+
+				return@formatPaginatedMenu ofChildren(
+					item.toComponent(color = RED),
+					text(": ", DARK_GRAY),
+					text(count.get(), WHITE)
+				)
+			})
+
+		if (skippedBlocks > 0) player.userError("$skippedBlocks were skipped due to being obstructed.")
+		player.userError("Use <italic><underlined><click:run_command:/shipfactory listmissing all>/shipfactory listmissing all</click></italic> to list all missing materials in one message.")
+	}
+
+	private fun updatePercentageStatus() {
+		val blueprintName = text(entity.blueprintName)
+		val percentValue = ((startBlocks - (skippedBlocks + printedBlocks)) / startBlocks.toDouble())
+		val percent = formatProgress(WHITE, percentValue)
+
+		val formatted = ofChildren(blueprintName, text(": ", HEColorScheme.HE_DARK_GRAY), percent)
+		entity.setStatus(formatted)
+	}
+
+	private fun sendCreditConsumption() {
+		sendPlayerMessage(template(text("Printing Consumed {0}", NamedTextColor.BLUE), consumedCredits.toCreditComponent()))
+	}
+	//</editor-fold>
 }
