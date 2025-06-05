@@ -28,15 +28,15 @@ import kotlin.math.sin
 abstract class ShipFactoryBlockProcessor(
 	protected val blueprint: Blueprint,
 	protected val settings: ShipFactorySettings,
-	protected open val entity: ShipFactoryEntity
+	val entity: ShipFactoryEntity
 ) {
 	protected val clipboard: Clipboard by lazy { blueprint.loadClipboard() }
 
 	// Use a RB tree map for key ordering.
-	protected val blockMap: MutableMap<BlockKey, BlockData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
+	val blockMap: MutableMap<BlockKey, BlockData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
 	protected val signMap: MutableMap<BlockKey, SignData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
 
-	protected var blockQueue = ConcurrentLinkedQueue<Long>()
+	var blockQueue = ConcurrentLinkedQueue<Long>()
 
 	protected open val clipboardNormalizationOffset: Vec3i = getClipboardOffset()
 	protected open val target = calculateTarget()
