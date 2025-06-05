@@ -253,6 +253,7 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		val settings = SettingsContainer.multiblockSettings(data,
 			SettingsProperty(BazaarTerminalMultiblockEntity::owner, uuidSerializer, null),
 			SettingsProperty(BazaarTerminalMultiblockEntity::enableShipFactoryIntegration, BOOLEAN, true),
+			SettingsProperty(BazaarTerminalMultiblockEntity::shipFactoryAllowRemote, BOOLEAN, false),
 			SettingsProperty(BazaarTerminalMultiblockEntity::shipFactoryMaxUnitPrice, materialMapSerializer, mapOf()),
 			SettingsProperty(BazaarTerminalMultiblockEntity::shipFactoryPriceCap, DOUBLE, 10_000_000.0),
 			SettingsProperty(BazaarTerminalMultiblockEntity::shipFactoryItemRestriction, stringArraySerializer, arrayOf()),
@@ -268,6 +269,7 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 
 		var enableShipFactoryIntegration: Boolean by settings.getDelegate()
 
+		var shipFactoryAllowRemote: Boolean by settings.getDelegate()
 		var shipFactoryMaxUnitPrice: Map<String, Double> by settings.getDelegate()
 		var shipFactoryPriceCap: Double by settings.getDelegate()
 

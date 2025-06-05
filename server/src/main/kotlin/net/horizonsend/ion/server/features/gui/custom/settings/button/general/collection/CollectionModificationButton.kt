@@ -45,7 +45,7 @@ class CollectionModificationButton<T: Any, C: Collection<T>>(
 
 	override val listingsPerPage: Int = 5
 
-	override fun buildWindow(): Window {
+	override fun buildWindow(): Window? {
 		val gui = PagedGui.items()
 			.setStructure(
 				"x 0 0 0 0 0 0 0 b",
@@ -76,7 +76,17 @@ class CollectionModificationButton<T: Any, C: Collection<T>>(
 
 			.handlePageChange()
 
-		return normalWindow(gui.build())
+			.build()
+
+		val newPageNumber = minOf(pageNumber, maxPageNumber)
+		if (newPageNumber != pageNumber) {
+			gui.setPage(newPageNumber)
+			pageNumber = newPageNumber
+			openGui()
+			return null
+		}
+
+		return normalWindow(gui)
 	}
 
 	private val emptyButton = GuiItem.EMPTY.makeGuiButton { _, _ ->  }
