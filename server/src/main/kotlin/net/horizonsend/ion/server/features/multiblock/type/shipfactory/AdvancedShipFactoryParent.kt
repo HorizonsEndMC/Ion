@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMul
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent.AdvancedShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.factory.ShipFactoryPrintTask
+import net.horizonsend.ion.server.features.starship.factory.integration.BazaarTerminalIntegration
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.BACKWARD
@@ -193,8 +194,12 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 		)
 
 		override fun startTask(blueprint: Blueprint, gui: ShipFactoryGui?, user: Player) {
-			val terminal = mergeEnd?.get() as? BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity
-			startTask(ShipFactoryPrintTask(blueprint, settings,this, terminal, gui, getInventories(), user))
+			val integration = when (val merged = mergeEnd?.get()) {
+				is BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity -> BazaarTerminalIntegration(this, merged)
+				else -> null
+			}
+
+			startTask(ShipFactoryPrintTask(blueprint, settings,this, integration, gui, getInventories(), user))
 		}
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
