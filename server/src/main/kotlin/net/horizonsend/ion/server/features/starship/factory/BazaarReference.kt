@@ -2,12 +2,12 @@ package net.horizonsend.ion.server.features.starship.factory
 
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import java.util.concurrent.atomic.AtomicInteger
 
-data class BazaarReference(val price: Double, var amount: Int, val id: Oid<BazaarItem>) {
+data class BazaarReference(val string: String, val price: Double, val amount: AtomicInteger, val id: Oid<BazaarItem>) {
 	fun consume(consumeAmount: Int): Boolean {
-		if (amount < consumeAmount) return false
-		kotlin.runCatching { BazaarItem.removeStock(id, consumeAmount) }.onFailure { return false }
-		amount -= consumeAmount
+		if (amount.get() < consumeAmount) return false
+		amount.addAndGet(-consumeAmount)
 		return true
 	}
 }
