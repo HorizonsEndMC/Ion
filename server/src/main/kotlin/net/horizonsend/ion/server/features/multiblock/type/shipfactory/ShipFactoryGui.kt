@@ -420,6 +420,14 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 					icon = GuiItem.LIST,
 					defaultValue = true
 				),
+				BooleanSupplierConsumerButton(
+					valueSupplier = entity::shipFactoryAllowRemote,
+					valueConsumer = { entity.shipFactoryAllowRemote = it },
+					name = text("Enable Remote Listenings"),
+					description = "Toggles whether items should be purchased from remote bazaar listings.",
+					icon = GuiItem.LIST,
+					defaultValue = true
+				),
 				CollectionModificationButton(
 					viewer = viewer,
 					title = text("Item Price Caps"),
@@ -534,9 +542,9 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 					icon = GuiItem.LIST,
 					defaultValue = 10_000_000.0
 				),
-				CollectionModificationButton<String, List<String>>(
+				CollectionModificationButton(
 					viewer = viewer,
-					title = text("Item Price Caps"),
+					title = text("Restricted Item List"),
 					description = "Click to Modify",
 					collectionSupplier = { entity.shipFactoryItemRestriction.toList() },
 					modifiedConsumer = { entity.shipFactoryItemRestriction = it.toTypedArray() },
