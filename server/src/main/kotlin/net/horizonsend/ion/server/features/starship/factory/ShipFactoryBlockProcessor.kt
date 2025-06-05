@@ -36,7 +36,7 @@ abstract class ShipFactoryBlockProcessor(
 	protected val blockMap: MutableMap<BlockKey, BlockData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
 	protected val signMap: MutableMap<BlockKey, SignData> = Long2ObjectSortedMaps.synchronize(Long2ObjectRBTreeMap())
 
-	protected val blockQueue = ConcurrentLinkedQueue<Long>()
+	protected var blockQueue = ConcurrentLinkedQueue<Long>()
 
 	protected open val clipboardNormalizationOffset: Vec3i = getClipboardOffset()
 	protected open val target = calculateTarget()

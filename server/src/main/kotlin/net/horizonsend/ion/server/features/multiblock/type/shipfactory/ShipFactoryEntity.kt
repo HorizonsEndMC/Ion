@@ -101,7 +101,11 @@ abstract class ShipFactoryEntity(
 		if (!checkBlueprintPermissions(blueprint, user)) return
 
 		userManager.setUser(user)
-		startTask(ShipFactoryPrintTask(blueprint, settings,this, gui, getInventories(), user))
+		startTask(blueprint, gui, user)
+	}
+
+	open fun startTask(blueprint: Blueprint, gui: ShipFactoryGui?, user: Player) {
+		startTask(ShipFactoryPrintTask(blueprint, settings,this, null, gui, getInventories(), user))
 	}
 
 	fun disable() {
