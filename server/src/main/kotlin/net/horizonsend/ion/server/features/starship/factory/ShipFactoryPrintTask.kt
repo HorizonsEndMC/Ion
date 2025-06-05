@@ -402,19 +402,18 @@ class ShipFactoryPrintTask(
 	 * The @param printPosition is needed to mark if there were sufficient items, as the bazaar transactions are bundled at the end to avoid multiple database checks.
 	 **/
 	private fun consumeItemFromBazaarReferences(printItem: PrintItem, printPosition: BlockKey, amount: Int, bazaarTransaction: MutableMap<Oid<BazaarItem>, MutableMap<BlockKey, Int>>): Boolean {
-		val references = bazaarReferences[printItem]
+		val references = bazaarReferences[printItem].toMutableSet()
 		if (references.isEmpty()) return false
 
 		var toConsume = amount
-		val referencesFor = bazaarReferences[printItem].toMutableSet()
 
 		val newTransactions = mutableMapOf<Oid<BazaarItem>, MutableMap<BlockKey, Int>>()
 
-		while (toConsume > 0 && referencesFor.isNotEmpty()) {
+		while (toConsume > 0 && references.isNotEmpty()) {
 			val idealReference = references.minBy { it.price }
 			val removeStock = minOf(toConsume, idealReference.amount.get())
 
-			referencesFor.remove(idealReference)
+			references.remove(idealReference)
 
 			if (!idealReference.consume(removeStock)) continue
 
