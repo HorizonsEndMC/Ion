@@ -43,9 +43,10 @@ abstract class ListInvUIWindow<T: Any?>(viewer: Player, protected var pageNumber
 
 	protected open val pageNumberLine = 10
 
+	protected val maxPageNumber get() = ceil(items.size.toDouble() / (listingsPerPage.toDouble())).toInt() - 1
+
 	protected fun getPageNumberText(): Component {
-		val maxPageNumber = ceil(items.size.toDouble() / (listingsPerPage.toDouble())).toInt()
-		val pageNumberString = "${pageNumber + 1} / $maxPageNumber"
+		val pageNumberString = "${pageNumber + 1} / ${maxPageNumber + 1}"
 
 		return GuiText("").add(
 			text(pageNumberString),
