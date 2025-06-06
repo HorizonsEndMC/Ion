@@ -98,7 +98,7 @@ class DirectControlHandler(controller: PlayerController) : PlayerMovementInputHa
 		// Ping compensation
 		val ping = getPing(player)
 		val movementCooldown = starship.directControlCooldown
-		val playerDcModifier = PlayerCache[player.uniqueId].dcSpeedModifier
+		val playerDcModifier = 1 /*PlayerCache[player.uniqueId].dcSpeedModifier*/ // Ensure all DC is the same
 		val speedFac = if (ping > movementCooldown) max(2, playerDcModifier) else playerDcModifier
 
 		val selectedSpeed = controller.selectedDirectControlSpeed

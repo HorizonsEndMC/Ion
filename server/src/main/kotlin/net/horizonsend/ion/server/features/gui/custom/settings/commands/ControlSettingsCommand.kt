@@ -27,6 +27,7 @@ object ControlSettingsCommand : SLCommand() {
         }
     }
 
+    /*
     @CommandAlias("dcSpeedModifier")
     fun onChangeDcModifier(sender: Player) {
         val currentSetting = PlayerCache[sender.uniqueId].dcSpeedModifier
@@ -36,4 +37,5 @@ object ControlSettingsCommand : SLCommand() {
         PlayerCache[sender].dcSpeedModifier = newSetting
         sender.success("Changed DC speed modifier to $newSetting")
     }
+     */
 }
