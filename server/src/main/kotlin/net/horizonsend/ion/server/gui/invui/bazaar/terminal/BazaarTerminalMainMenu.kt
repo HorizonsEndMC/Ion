@@ -216,7 +216,7 @@ class BazaarTerminalMainMenu(
 
 	private val depositButton = FeedbackLike.withHandler({
 		if (terminalMultiblockEntity.isDepositAvailable()) GuiItem.EMPTY.makeItem(text("Deposit Items To Your Sell Orders"))
-		else GuiItem.EMPTY.makeItem(text("Item deposit Not Available")).updateLore(listOf(text("Items may only be deposited in trade cities!", RED)))
+		else GuiItem.EMPTY.makeItem(text("Item deposit Not Available")).updateLore(listOf(text("Items may only be deposited in trade cities, and if the merge port is not occupied!", RED)))
 
 	}, fallbackLoreProvider = ::depositDescription) { _, _ -> handleDeposit() }
 
