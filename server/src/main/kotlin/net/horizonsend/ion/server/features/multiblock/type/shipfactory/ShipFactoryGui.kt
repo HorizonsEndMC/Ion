@@ -24,10 +24,12 @@ import net.horizonsend.ion.server.features.gui.custom.settings.button.general.co
 import net.horizonsend.ion.server.features.gui.custom.settings.button.general.collection.MapEntryEditorMenu
 import net.horizonsend.ion.server.features.gui.item.FeedbackItem
 import net.horizonsend.ion.server.features.gui.item.ValueScrollButton
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
+import net.horizonsend.ion.server.gui.invui.input.ItemMenu
 import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.anvilInputText
 import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.searchEntires
 import net.horizonsend.ion.server.gui.invui.input.validator.RangeDoubleValidator
@@ -399,14 +401,26 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 
 		if (entity !is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) return empty
 
-		val mergePartner = entity.getMergedWith()
+		val mergePartners = entity.getMergedWith()
 
 		return when {
-			mergePartner.isEmpty() -> empty
-			mergePartner.size == 1 -> when (val first = mergePartner.first()) {
-				is BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity -> getShipFactoryMergeButton(first)
-				else -> throw NotImplementedError() //TODO
-			}
+			mergePartners.isEmpty() -> empty
+			mergePartners.size == 1 -> getMergeButtonForEntity(mergePartners.first())
+			else -> getMultiMergeButton(mergePartners)
+		}
+	}
+
+	private fun getMultiMergeButton(partners: Collection<MultiblockEntity>): Item {
+		val buttons = partners.map(::getMergeButtonForEntity)
+
+		return GuiItem.CHECKMARK.makeItem(template(text("Merged with {0}", GREEN), entity.multiblock.getDisplayName())).makeGuiButton { _, player ->
+			ItemMenu(text("Select Merged"), player, buttons) { _ -> openGui() }.openGui(this)
+		}
+	}
+
+	private fun getMergeButtonForEntity(mergePartner: MultiblockEntity): Item {
+		return when (mergePartner) {
+			is BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity -> getShipFactoryMergeButton(mergePartner)
 			else -> throw NotImplementedError() //TODO
 		}
 	}
@@ -427,7 +441,7 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 				BooleanSupplierConsumerButton(
 					valueSupplier = entity::shipFactoryAllowRemote,
 					valueConsumer = { entity.shipFactoryAllowRemote = it },
-					name = text("Enable Remote Listenings"),
+					name = text("Enable Remote Purchase"),
 					description = "Toggles whether items should be purchased from remote bazaar listings.",
 					icon = GuiItem.LIST,
 					defaultValue = true
