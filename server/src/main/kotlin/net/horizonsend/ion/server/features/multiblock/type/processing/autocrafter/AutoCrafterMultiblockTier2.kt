@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.autocrafter
+package net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter
 
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW

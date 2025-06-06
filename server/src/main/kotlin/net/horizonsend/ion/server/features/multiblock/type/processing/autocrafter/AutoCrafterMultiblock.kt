@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.autocrafter
+package net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter
 
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
@@ -139,14 +139,14 @@ abstract class AutoCrafterMultiblock(
 	}
 
 	class AutoCrafterEntity(
-		data: PersistentMultiblockData,
-		manager: MultiblockManager,
-		override val multiblock: AutoCrafterMultiblock,
-		x: Int,
-		y: Int,
-		z: Int,
-		world: World,
-		structureDirection: BlockFace,
+        data: PersistentMultiblockData,
+        manager: MultiblockManager,
+        override val multiblock: AutoCrafterMultiblock,
+        x: Int,
+        y: Int,
+        z: Int,
+        world: World,
+        structureDirection: BlockFace,
 	) : SimplePoweredEntity(data, multiblock, manager, x, y, z, world, structureDirection, multiblock.maxPower), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, LegacyMultiblockEntity {
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
