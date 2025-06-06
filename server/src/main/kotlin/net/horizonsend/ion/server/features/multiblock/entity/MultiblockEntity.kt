@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.entity
 
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlerHolder
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkageHolder
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.linkage.MultiblockLinkageHolder
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
