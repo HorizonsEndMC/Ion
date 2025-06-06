@@ -49,7 +49,7 @@ abstract class IndustryEntity(data: PersistentMultiblockData, multiblock: Multib
 		migrateLegacyPower(sign)
 	}
 
-	override fun buildRecipeEnviornment(): FurnaceEnviornment {
+	override fun buildRecipeEnviornment(): FurnaceEnviornment? {
 		return FurnaceEnviornment(this)
 	}
 

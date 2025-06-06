@@ -1,7 +1,6 @@
-package net.horizonsend.ion.server.features.multiblock.linkage
+package net.horizonsend.ion.server.features.multiblock.entity.linkages
 
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkage
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
