@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
@@ -17,6 +18,7 @@ import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedS
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.factory.ShipFactoryPrintTask
 import net.horizonsend.ion.server.features.starship.factory.integration.BazaarTerminalIntegration
+import net.horizonsend.ion.server.features.starship.factory.integration.ShipFactoryIntegration
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.BACKWARD
@@ -49,7 +51,13 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 	override val displayName: Component get() = text("Advanced Ship Factory")
 	override val description: Component get() = text("Print starships and other structures with materials and credits. Provides more configuration settings.")
 
+	abstract val leftMergeAvailable: Boolean
+	abstract val rightMergeAvailable: Boolean
+
 	data object AdvancedShipFactoryMultiblock : AdvancedShipFactoryParent() {
+		override val rightMergeAvailable: Boolean = false
+		override val leftMergeAvailable: Boolean = false
+
 		override fun MultiblockShape.buildStructure() {
 			z(0) {
 				y(-1) {
@@ -102,7 +110,10 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 		}
 	}
 
-	data object AdvancedShipFactoryMergeable : AdvancedShipFactoryParent() {
+	data object AdvancedShipFactoryMergeableRight : AdvancedShipFactoryParent() {
+		override val rightMergeAvailable: Boolean = true
+		override val leftMergeAvailable: Boolean = false
+
 		override fun MultiblockShape.buildStructure() {
 			z(2) {
 				y(-1) {
@@ -155,6 +166,118 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 		}
 	}
 
+	data object AdvancedShipFactoryMergeableLeft : AdvancedShipFactoryParent() {
+		override val rightMergeAvailable: Boolean = false
+		override val leftMergeAvailable: Boolean = true
+
+		override fun MultiblockShape.buildStructure() {
+			z(0) {
+				y(-1) {
+					x(2).anyStairs(PrepackagedPreset.stairs(FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+					x(1).ironBlock()
+					x(0).powerInput()
+					x(-1).ironBlock()
+					x(-2).netheriteCasing()
+				}
+				y(0) {
+					x(2).anyStairs(PrepackagedPreset.stairs(FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+					x(1).ironBlock()
+					x(0).anyGlass()
+					x(-1).ironBlock()
+					x(-2).netheriteCasing()
+				}
+			}
+			z(1) {
+				y(-1) {
+					x(2).type(Material.LODESTONE)
+					x(1).sponge()
+					x(0).sponge()
+					x(-1).sponge()
+					x(-2).type(Material.LODESTONE)
+				}
+				y(0) {
+					x(2).anyPipedInventory()
+					x(1).sponge()
+					x(0).anyGlass()
+					x(-1).sponge()
+					x(-2).type(Material.LODESTONE)
+				}
+			}
+			z(2) {
+				y(-1) {
+					x(2).anyStairs(PrepackagedPreset.stairs(BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+					x(1).ironBlock()
+					x(0).anyGlass()
+					x(-1).ironBlock()
+					x(-2).netheriteCasing()
+				}
+				y(0) {
+					x(2).anyStairs(PrepackagedPreset.stairs(BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+					x(1).ironBlock()
+					x(0).anyGlass()
+					x(-1).ironBlock()
+					x(-2).netheriteCasing()
+				}
+			}
+		}
+	}
+
+	data object AdvancedShipFactoryMergeableDouble : AdvancedShipFactoryParent() {
+		override val rightMergeAvailable: Boolean = true
+		override val leftMergeAvailable: Boolean = true
+
+		override fun MultiblockShape.buildStructure() {
+			z(0) {
+				y(-1) {
+					x(2).netheriteCasing()
+					x(1).ironBlock()
+					x(0).powerInput()
+					x(-1).ironBlock()
+					x(-2).netheriteCasing()
+				}
+				y(0) {
+					x(2).netheriteCasing()
+					x(1).ironBlock()
+					x(0).anyGlass()
+					x(-1).ironBlock()
+					x(-2).netheriteCasing()
+				}
+			}
+			z(1) {
+				y(-1) {
+					x(2).type(Material.LODESTONE)
+					x(1).sponge()
+					x(0).sponge()
+					x(-1).sponge()
+					x(-2).type(Material.LODESTONE)
+				}
+				y(0) {
+					x(2).type(Material.LODESTONE)
+					x(1).sponge()
+					x(0).anyGlass()
+					x(-1).sponge()
+					x(-2).type(Material.LODESTONE)
+				}
+			}
+			z(2) {
+				y(-1) {
+					x(2).netheriteCasing()
+					x(1).ironBlock()
+					x(0).anyGlass()
+					x(-1).ironBlock()
+					x(-2).netheriteCasing()
+				}
+				y(0) {
+					x(2).netheriteCasing()
+					x(1).ironBlock()
+					x(0).anyGlass()
+					x(-1).ironBlock()
+					x(-2).netheriteCasing()
+				}
+			}
+		}
+	}
+
 	override fun createEntity(
 		manager: MultiblockManager,
 		data: PersistentMultiblockData,
@@ -173,7 +296,7 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 
 	class AdvancedShipFactoryEntity(
 		data: PersistentMultiblockData,
-		multiblock: AdvancedShipFactoryParent,
+		override val multiblock: AdvancedShipFactoryParent,
 		manager: MultiblockManager,
 		x: Int,
 		y: Int,
@@ -184,22 +307,42 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 		override val maxPower: Int = 300_000
 		override val powerStorage: PowerStorage = loadStoredPower(data)
 
-		val mergeEnd = createLinkage(
+		private val mergeRight = createLinkage(
 			offsetRight = 2,
 			offsetUp = -1,
 			offsetForward = 1,
 			linkageDirection = RelativeFace.RIGHT,
-			predicate = { multiblock is AdvancedShipFactoryMergeable },
+			predicate = { multiblock.rightMergeAvailable },
+			BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity::class
+		)
+
+		private val mergeLeft = createLinkage(
+			offsetRight = -2,
+			offsetUp = -1,
+			offsetForward = 1,
+			linkageDirection = RelativeFace.LEFT,
+			predicate = { multiblock.leftMergeAvailable },
 			BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity::class
 		)
 
 		override fun startTask(blueprint: Blueprint, gui: ShipFactoryGui?, user: Player) {
-			val integration = when (val merged = mergeEnd?.get()) {
-				is BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity -> BazaarTerminalIntegration(this, merged)
-				else -> null
-			}
+			val integrations = getMergedWith().mapNotNull(::getMergeIntegration)
 
-			startTask(ShipFactoryPrintTask(blueprint, settings,this, integration, gui, getInventories(), user))
+			startTask(ShipFactoryPrintTask(blueprint, settings,this, integrations, gui, getInventories(), user))
+		}
+
+		fun getMergeIntegration(multiblockEntity: MultiblockEntity): ShipFactoryIntegration<*>? = when (multiblockEntity) {
+			is BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity -> BazaarTerminalIntegration(this, multiblockEntity)
+			else -> null
+		}
+
+		fun getMergedWith(): Collection<MultiblockEntity> {
+			val integrations = mutableListOf<MultiblockEntity>()
+
+			if (multiblock.leftMergeAvailable) mergeLeft?.get()?.let(integrations::add)
+			if (multiblock.rightMergeAvailable) mergeRight?.get()?.let(integrations::add)
+
+			return integrations
 		}
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
