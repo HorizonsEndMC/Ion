@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.AutoMasonRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.FurnaceMultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.PowerRequirement
@@ -38,6 +39,7 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 
 	override fun onEnable() {
 		registerGasFurnaceRecipes()
+		registerAutoMasonRecipes()
 	}
 
 	val URANIUM_ENRICHMENT = register(FurnaceMultiblockRecipe(
@@ -269,6 +271,16 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 				.updateFurnace()
 			))
 		}
+	}
+
+	private fun registerAutoMasonRecipes() {
+		register(AutoMasonRecipe(
+			"TEST",
+			ItemRequirement.MaterialRequirement(Material.MELON),
+			Material.MELON,
+			PowerRequirement(10),
+			ResultHolder.of(ItemResult.simpleResult(CustomItemRegistry.ENRICHED_URANIUM))
+		))
 	}
 
 	fun <E: RecipeEnviornment, R: MultiblockRecipe<E>> register(recipe: R): R {
