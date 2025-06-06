@@ -80,7 +80,7 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 	abstract val withdrawInventoryOffsets: Array<Vec3i>
 	abstract val withdrawPipeOrigin: Array<Vec3i>
 
-	data object BazaarTerminalStandardMultiblock : BazaarTerminalMultiblock() {
+	data object BazaarTerminalMultiblockStandard : BazaarTerminalMultiblock() {
 		override val depositInventoryOffsets: Array<Vec3i> = arrayOf(Vec3i(2, 0, 2))
 		override val depositPipeOrigin: Array<Vec3i> = arrayOf(Vec3i(2, -1, 2))
 		override val withdrawInventoryOffsets: Array<Vec3i> = arrayOf(Vec3i(-2, 0, 2))
@@ -150,7 +150,7 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		}
 	}
 
-	data object BazaarTerminalMergeableMultiblock : BazaarTerminalMultiblock() {
+	data object BazaarTerminalMultiblockMergeableLeft : BazaarTerminalMultiblock() {
 		override val depositInventoryOffsets: Array<Vec3i> = arrayOf(Vec3i(2, 0, 2))
 		override val depositPipeOrigin: Array<Vec3i> = arrayOf(Vec3i(2, -1, 2))
 		override val withdrawInventoryOffsets: Array<Vec3i> = arrayOf()
@@ -203,6 +203,76 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 					x(0).ironBlock()
 					x(-1).steelBlock()
 					x(-2).netheriteCasing()
+				}
+			}
+			z(0) {
+				y(-1) {
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+					x(0).powerInput()
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(0) {
+					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT))
+					x(0).anyGlass()
+					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT))
+				}
+			}
+		}
+	}
+
+	data object BazaarTerminalMultiblockMergeableRight : BazaarTerminalMultiblock() {
+		override val depositInventoryOffsets: Array<Vec3i> = arrayOf()
+		override val depositPipeOrigin: Array<Vec3i> = arrayOf()
+		override val withdrawInventoryOffsets: Array<Vec3i> = arrayOf(Vec3i(-2, 0, 2))
+		override val withdrawPipeOrigin: Array<Vec3i> = arrayOf(Vec3i(-2, -1, 2))
+
+		override fun MultiblockShape.buildStructure() {
+			z(1) {
+				y(-1) {
+					x(2).netheriteCasing()
+					x(1).steelBlock()
+					x(0).ironBlock()
+					x(-1).steelBlock()
+					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(0) {
+					x(2).netheriteCasing()
+					x(1).steelBlock()
+					x(0).ironBlock()
+					x(-1).steelBlock()
+					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				}
+			}
+			z(2) {
+				y(-1) {
+					x(2).type(Material.LODESTONE)
+					x(1).sponge()
+					x(0).netheriteCasing()
+					x(-1).sponge()
+					x(-2).extractor()
+				}
+				y(0) {
+					x(2).type(Material.LODESTONE)
+					x(1).sponge()
+					x(0).netheriteCasing()
+					x(-1).sponge()
+					x(-2).anyPipedInventory()
+				}
+			}
+			z(3) {
+				y(-1) {
+					x(2).netheriteCasing()
+					x(1).steelBlock()
+					x(0).ironBlock()
+					x(-1).steelBlock()
+					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(0) {
+					x(2).netheriteCasing()
+					x(1).steelBlock()
+					x(0).ironBlock()
+					x(-1).steelBlock()
+					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				}
 			}
 			z(0) {
@@ -279,10 +349,12 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		override val displayHandler: TextDisplayHandler = standardPowerDisplay(this)
 
 		fun isWithdrawAvailable(): Boolean {
-			return multiblock == BazaarTerminalStandardMultiblock
+			return multiblock == BazaarTerminalMultiblockStandard
 		}
 
 		fun isDepositAvailable(): Boolean {
+			if (multiblock is BazaarTerminalMultiblockMergeableRight) return false
+
 			var depositAvailable = true
 
 			val region = Regions.findFirstOf<RegionTerritory>(location)
@@ -298,11 +370,11 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		}
 
 		val mergeEnd = createLinkage(
-			offsetRight = -2,
+			offsetRight = if (multiblock is BazaarTerminalMultiblockMergeableRight) 2 else -2,
 			offsetUp = -1,
 			offsetForward = 2,
-			linkageDirection = RelativeFace.LEFT,
-			predicate = { multiblock is BazaarTerminalMergeableMultiblock },
+			linkageDirection = if (multiblock is BazaarTerminalMultiblockMergeableRight) RelativeFace.RIGHT else RelativeFace.LEFT,
+			predicate = { multiblock !is BazaarTerminalMultiblockStandard },
 			AdvancedShipFactoryEntity::class
 		)
 
