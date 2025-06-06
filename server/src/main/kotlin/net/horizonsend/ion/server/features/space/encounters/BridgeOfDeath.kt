@@ -3,9 +3,9 @@ package net.horizonsend.ion.server.features.space.encounters
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.utils.text.toComponent
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
+import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.input.validator.InputValidator
+import net.horizonsend.ion.server.gui.invui.input.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.INACTIVE
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.LOCKED
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
@@ -79,7 +79,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 
 		event.player.anvilInputText(
 			prompt = "What is your name?".toComponent(),
-			inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it, it) }
+			inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it) }
 		) { _, (response, _) ->
 			if (response != event.player.name) return@anvilInputText fail()
 		}
@@ -88,7 +88,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 
 		event.player.anvilInputText(
 			prompt = "What is your quest?".toComponent(),
-			inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it, it) }
+			inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it) }
 		) { _, _ -> }
 
 		var promptNation: NationCache.NationData? = null
@@ -104,7 +104,7 @@ object BridgeOfDeath : Encounter(identifier = "bridge_of_death") {
 			else -> 0 to "What is your favorite color?"
 		}
 
-		event.player.anvilInputText(prompt.toComponent(), inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it, it) }) { _, (answer, _) ->
+		event.player.anvilInputText(prompt.toComponent(), inputValidator = InputValidator { ValidatorResult.ValidatorSuccessSingleEntry(it) }) { _, (answer, _) ->
 			when (id) {
 				2 ->
 					if (answer.contains("august", true) || answer.contains("2021", true)) return@anvilInputText

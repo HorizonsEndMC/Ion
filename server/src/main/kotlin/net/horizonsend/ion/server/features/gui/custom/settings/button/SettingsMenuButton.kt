@@ -30,7 +30,7 @@ abstract class SettingsMenuButton<T: Any>(
 
 			val newValueHandler = Consumer<T> {
 				setState(player, it)
-				page.refreshPageText(player, gui)
+				page.refreshTitle()
 			}
 
 			handleClick(player, value, gui, page, newValueHandler)

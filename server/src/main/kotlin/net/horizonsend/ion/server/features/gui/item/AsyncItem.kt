@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.gui.item
 
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
@@ -13,6 +14,8 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
+import java.util.UUID
+import java.util.function.Consumer
 import java.util.function.Supplier
 
 class AsyncItem(
@@ -20,12 +23,14 @@ class AsyncItem(
 	val handleClick: (InventoryClickEvent) -> Unit
 ) : AbstractItem() {
 	private var provider = loadingItem
+	private var loaded: Boolean = false
 
 	override fun getItemProvider(viewer: Player): ItemProvider {
 		return provider
 	}
 
 	override fun handleClick(p0: ClickType, p1: Player, event: InventoryClickEvent) {
+		if (!loaded) return
 		handleClick.invoke(event)
 	}
 
@@ -41,6 +46,7 @@ class AsyncItem(
 			val item = buildResultItem()
 			provider = ItemProvider { item }
 
+			loaded = true
 			Tasks.sync { notifyWindows() }
 		}
 	}
@@ -64,8 +70,15 @@ class AsyncItem(
 			.updateDisplayName(Component.text("ERROR", NamedTextColor.RED))
 			.updateLore(listOf(
 				Component.text("Sorry, there was an error getting the result, please forward this to staff.", NamedTextColor.RED),
+				Component.text(exception.toString(), NamedTextColor.RED),
 				Component.text("Message: ${exception.message ?: "NULL"}", NamedTextColor.RED),
 				*exception.stackTrace.map { element -> Component.text(element.toString(), NamedTextColor.RED) }.toTypedArray()
 			))
+		
+		fun getHeadItem(uuid: UUID, playerName: String, headEditor: Consumer<ItemStack>, handleClick: (InventoryClickEvent) -> Unit): AsyncItem =
+			AsyncItem(
+				{ skullItem(uuid, playerName).apply { headEditor.accept(this) } },
+				handleClick
+			)
 	}
 }

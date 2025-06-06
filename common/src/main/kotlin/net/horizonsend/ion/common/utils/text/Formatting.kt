@@ -17,6 +17,7 @@ import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -67,7 +68,7 @@ fun bracketed(value: ComponentLike, leftBracket: ComponentLike, rightBracket: Co
  **/
 fun templateMiniMessage(
 	message: String,
-	paramColor: TextColor = NamedTextColor.WHITE,
+	paramColor: TextColor? = NamedTextColor.WHITE,
 	useQuotesAroundObjects: Boolean = true,
 	vararg parameters: Any?
 ): Component {
@@ -77,7 +78,7 @@ fun templateMiniMessage(
 fun template(
 	message: String,
 	color: TextColor,
-	paramColor: TextColor = NamedTextColor.WHITE,
+	paramColor: TextColor? = NamedTextColor.WHITE,
 	useQuotesAroundObjects: Boolean = true,
 	vararg parameters: Any?
 ): Component {
@@ -86,14 +87,14 @@ fun template(
 
 fun template(message: Component, vararg parameters: Any?) = template(message, paramColor = NamedTextColor.WHITE, useQuotesAroundObjects = true, *parameters)
 
-fun template(message: Component, paramColor: TextColor, vararg parameters: Any?) = template(message, paramColor = paramColor, useQuotesAroundObjects = true, *parameters)
+fun template(message: Component, paramColor: TextColor?, vararg parameters: Any?) = template(message, paramColor = paramColor, useQuotesAroundObjects = true, *parameters)
 
 fun template(message: Component, useQuotesAroundObjects: Boolean = true, vararg parameters: Any?) =
 	template(message, paramColor = NamedTextColor.WHITE, useQuotesAroundObjects = useQuotesAroundObjects, *parameters)
 
 fun template(
 	message: Component,
-	paramColor: TextColor,
+	paramColor: TextColor?,
 	useQuotesAroundObjects: Boolean,
 	vararg parameters: Any?
 ): Component {
@@ -105,6 +106,7 @@ fun template(
 			return@replacement when (val param = parameters[index]) {
 				is ComponentLike -> param
 				is Number -> text(param.toString(), paramColor)
+				is String -> text(param, paramColor)
 				else -> text(
 					if (useQuotesAroundObjects) {
 						"\"$param\""
@@ -314,9 +316,22 @@ fun formatSettlementName(id: Oid<Settlement>): Component {
 fun formatException(throwable: Throwable): Component {
 	val stackTrace = "$throwable\n" + throwable.stackTrace.joinToString(separator = "\n")
 
-	return ofChildren(text(throwable.message ?: "No message provided", RED), space(), bracketed(text("Hover for info", HE_LIGHT_GRAY)))
+	return ofChildren(
+		text(throwable.toString(), RED),
+		text(throwable.message ?: "No message provided", RED),
+		space(),
+		bracketed(text("Hover for info", HE_LIGHT_GRAY))
+	)
 		.hoverEvent(text(stackTrace))
 		.clickEvent(ClickEvent.copyToClipboard(stackTrace))
 }
 
 fun button(text: Component, onClick: (Audience) -> Unit): Component = bracketed(text).clickEvent(ClickEvent.callback(onClick))
+
+/** Returns a new component with the provided shadow color. This component is appended to the new component. */
+fun Component.withShadowColor(color: String): Component {
+	return text()
+		.shadowColor(ShadowColor.fromHexString(color)!!)
+		.append(this)
+		.build()
+}
