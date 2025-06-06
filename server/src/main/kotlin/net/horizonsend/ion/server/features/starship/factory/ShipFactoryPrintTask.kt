@@ -56,7 +56,7 @@ class ShipFactoryPrintTask(
 	blueprint: Blueprint,
 	settings: ShipFactorySettings,
 	entity: ShipFactoryEntity,
-	private val integration: ShipFactoryIntegration<*>?,
+	private val integration: Collection<ShipFactoryIntegration<*>>,
 	val gui: ShipFactoryGui?,
 	private val inventories: Set<InventoryReference>,
 	val player: Player
@@ -83,7 +83,7 @@ class ShipFactoryPrintTask(
 		loadBlockQueue()
 		startBlocks = blockQueue.size
 
-		integration?.setup(this)
+		integration.forEach { it.setup(this) }
 
 		queueLoaded = true
 	}
@@ -133,7 +133,7 @@ class ShipFactoryPrintTask(
 		checkAvailablecredits(availableCredits, 0.001)
 
 		var consumedPower = 0
-		integration?.startNewTransaction(this)
+		integration.forEach { it.startNewTransaction(this) }
 
 		// Find the first blocks that can be placed with the available resources, up to the limit
 		val keyIterator = blockQueue.iterator()
@@ -202,14 +202,14 @@ class ShipFactoryPrintTask(
 			}
 
 			sendCreditConsumption()
-			integration?.sendReport(this, false)
+			integration.forEach { it.sendReport(this, false) }
 			entity.disable()
 		}
 
-		val consumptionFailures = integration?.commitTransaction(this) ?: listOf()
+		val consumptionFailures = integration.flatMapTo(mutableSetOf()) { it.commitTransaction(this) }
 
 		Tasks.sync {
-			printBlocks(toPrint.minus(consumptionFailures.toSet()))
+			printBlocks(toPrint.minus(consumptionFailures))
 		}
 
 		if (hasFinished) {
@@ -224,7 +224,7 @@ class ShipFactoryPrintTask(
 				template(text("Printing consumed {0}", GREEN), consumedCredits.roundToHundredth().toCreditComponent())
 			)))
 
-			integration?.sendReport(this, true)
+			integration.forEach { it.sendReport(this, true) }
 			entity.disable()
 		} else {
 			updatePercentageStatus()
@@ -405,7 +405,7 @@ class ShipFactoryPrintTask(
 		requiredAmount: Int
 	): Boolean {
 		val resourceInformation = availableItems[printItem]
-			?: if (integration != null && integration.canAddTransaction(printItem, printPosition, requiredAmount)) return true
+			?: if (integration.any { it.canAddTransaction(printItem, printPosition, requiredAmount) }) return true
 			else {
 				markItemMissing(printItem, requiredAmount)
 				// Don't break loop
@@ -416,7 +416,7 @@ class ShipFactoryPrintTask(
 			val missing = requiredAmount - resourceInformation.amount.get()
 
 			// Try and make a partial purchase with the missing amount
-			if (integration == null || !integration.canAddTransaction(printItem, printPosition, missing)) {
+			if (integration.any { it.canAddTransaction(printItem, printPosition, requiredAmount) }) {
 				markItemMissing(printItem, missing)
 				return false
 			} else {
@@ -446,7 +446,7 @@ class ShipFactoryPrintTask(
 		val missing = consumeItemFromReferences(references, requiredAmount)
 
 		if (missing > 0) {
-			if (integration == null || !integration.canAddTransaction(printItem, printPosition, missing)) {
+			if (integration.any { it.canAddTransaction(printItem, printPosition, requiredAmount) }) {
 				markItemMissing(printItem, missing)
 				return false
 			}

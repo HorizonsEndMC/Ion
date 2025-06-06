@@ -105,7 +105,7 @@ abstract class ShipFactoryEntity(
 	}
 
 	open fun startTask(blueprint: Blueprint, gui: ShipFactoryGui?, user: Player) {
-		startTask(ShipFactoryPrintTask(blueprint, settings,this, null, gui, getInventories(), user))
+		startTask(ShipFactoryPrintTask(blueprint, settings,this, listOf(), gui, getInventories(), user))
 	}
 
 	fun disable() {
