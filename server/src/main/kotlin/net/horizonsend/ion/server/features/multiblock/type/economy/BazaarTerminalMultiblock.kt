@@ -6,6 +6,7 @@ import com.manya.pdc.base.array.StringArrayDataType
 import com.manya.util.MapCollectors
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.input.InputResult
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
@@ -37,6 +38,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.persistence.SettingsContai
 import net.horizonsend.ion.server.miscellaneous.utils.persistence.SettingsContainer.SettingsProperty
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
@@ -61,8 +65,8 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 	override val name: String = "bazaarterminal"
 
 	override val signText: Array<Component?> = createSignText(
-		text("Bazaar Terminal"),
-		null,
+		ofChildren(text("Bazaar", DARK_AQUA), text(" Terminal", GRAY)),
+		text("Ecomanage, LLC", AQUA),
 		null,
 		null
 	)
