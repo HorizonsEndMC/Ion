@@ -387,7 +387,9 @@ object MultiblockRegistration : IonServerComponent() {
 		// Machine
 		registerMultiblock(ShipFactoryMultiblock)
 		registerMultiblock(AdvancedShipFactoryMultiblock)
-		registerMultiblock(AdvancedShipFactoryParent.AdvancedShipFactoryMergeable)
+		registerMultiblock(AdvancedShipFactoryParent.AdvancedShipFactoryMergeableRight)
+		registerMultiblock(AdvancedShipFactoryParent.AdvancedShipFactoryMergeableLeft)
+		registerMultiblock(AdvancedShipFactoryParent.AdvancedShipFactoryMergeableDouble)
 
 		registerMultiblock(DecomposerMultiblock)
 
@@ -402,8 +404,9 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(MediumTractorBeamMultiblock)
 		registerMultiblock(LargeTractorBeamMultiblock)
 
-		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalStandardMultiblock)
-		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMergeableMultiblock)
+		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockStandard)
+		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableRight)
+		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableLeft)
 
 		registerMultiblock(AntiAirCannonBaseMultiblock)
 	}

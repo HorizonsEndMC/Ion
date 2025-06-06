@@ -394,16 +394,20 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 		),
 	).apply { setParent(this@ShipFactoryGui) }
 
-	fun getMergeIndicator(): Item {
+	private fun getMergeIndicator(): Item {
 		val empty = GuiItem.EMPTY.makeItem(Component.empty()).makeGuiButton { _, _ -> }
 
 		if (entity !is AdvancedShipFactoryParent.AdvancedShipFactoryEntity) return empty
-		if (entity.multiblock !is AdvancedShipFactoryParent.AdvancedShipFactoryMergeable) return empty
 
-		val mergePartner = entity.mergeEnd?.get() ?: return empty
-		return when (mergePartner) {
-			is BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity -> getShipFactoryMergeButton(mergePartner)
-			else -> throw NotImplementedError()
+		val mergePartner = entity.getMergedWith()
+
+		return when {
+			mergePartner.isEmpty() -> empty
+			mergePartner.size == 1 -> when (val first = mergePartner.first()) {
+				is BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity -> getShipFactoryMergeButton(first)
+				else -> throw NotImplementedError() //TODO
+			}
+			else -> throw NotImplementedError() //TODO
 		}
 	}
 
