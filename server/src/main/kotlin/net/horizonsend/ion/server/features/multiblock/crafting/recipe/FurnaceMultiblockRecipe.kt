@@ -23,7 +23,7 @@ class FurnaceMultiblockRecipe(
 	clazz: KClass<out RecipeProcessingMultiblockEntity<FurnaceEnviornment>>,
 	smeltingItem: ItemRequirement?,
 	fuelItem: ItemRequirement?,
-	power: PowerRequirement,
+	power: PowerRequirement<FurnaceEnviornment>,
 	private val result: ResultHolder<FurnaceEnviornment, ItemResult<FurnaceEnviornment>>
 ) : MultiblockRecipe<FurnaceEnviornment>(identifier, clazz) {
 

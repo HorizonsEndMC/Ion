@@ -24,5 +24,5 @@ abstract class MultiblockRecipe<E: RecipeEnviornment>(val identifier: String, va
 
 	fun getAllRequirements(): Collection<RequirementHolder<E, *, *>> = requirements
 
-	abstract fun assemble(input: E)
+	abstract fun assemble(enviornment: E)
 }
