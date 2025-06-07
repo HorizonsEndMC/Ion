@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.multiblock.crafting.recipe.Multiblock
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.PowerRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.GasCanisterRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement.MaterialRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ItemResult
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultHolder
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.WarmupResult
@@ -24,13 +25,22 @@ import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMu
 import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.processing.automason.CenterType
+import net.horizonsend.ion.server.features.multiblock.type.processing.automason.CenterType.PLANKS
+import net.horizonsend.ion.server.features.multiblock.type.processing.automason.CenterType.STRIPPED
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.STRIPPED_LOG_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.STRIPPED_WOOD_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.UNSTRIPPED_LOG_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.UNSTRIPPED_WOOD_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.kyori.adventure.sound.Sound
 import net.minecraft.server.MinecraftServer
+import net.minecraft.world.item.crafting.RecipeHolder
 import net.minecraft.world.item.crafting.RecipeType
 import org.bukkit.Material
 import org.bukkit.SoundCategory
+import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.RecipeChoice.ExactChoice
 import org.bukkit.inventory.RecipeChoice.MaterialChoice
 import org.bukkit.inventory.StonecuttingRecipe
@@ -78,7 +88,7 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 	val STEEL_PRODUCTION = register(FurnaceMultiblockRecipe(
 		identifier = "STEEL_PRODUCTION",
 		clazz = GasFurnaceMultiblock.GasFurnaceMultiblockEntity::class,
-		smeltingItem = ItemRequirement.MaterialRequirement(Material.IRON_INGOT),
+		smeltingItem = MaterialRequirement(Material.IRON_INGOT),
 		fuelItem = GasCanisterRequirement(Gasses.OXYGEN, 5),
 		power = PowerRequirement(10),
 		result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
@@ -266,7 +276,7 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 			register(FurnaceMultiblockRecipe(
 				identifier = "${ingredient}_OXIDATION",
 				clazz = GasFurnaceMultiblock.GasFurnaceMultiblockEntity::class,
-				smeltingItem = ItemRequirement.MaterialRequirement(ingredient),
+				smeltingItem = MaterialRequirement(ingredient),
 				fuelItem = GasCanisterRequirement(Gasses.OXYGEN, 5),
 				power = PowerRequirement(100),
 				result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
@@ -279,24 +289,53 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 	}
 
 	private fun registerAutoMasonRecipes() {
-		for (recipeHolder in MinecraftServer.getServer().recipeManager.recipes.byType[RecipeType.STONECUTTING]) {
+		val recipeTable = CenterType.getRecipeTable()
+
+		for (recipeHolder: RecipeHolder<*> in MinecraftServer.getServer().recipeManager.recipes.byType[RecipeType.STONECUTTING]) {
 			val recipe = recipeHolder.toBukkitRecipe() as StonecuttingRecipe
 			val input: ItemRequirement = when (val choice = recipe.inputChoice) {
-				is MaterialChoice -> ItemRequirement.any(*choice.choices.map { ItemRequirement.MaterialRequirement(it) }.toTypedArray())
+				is MaterialChoice -> ItemRequirement.any(*choice.choices.map { MaterialRequirement(it) }.toTypedArray())
 				is ExactChoice -> ItemRequirement.any(*choice.choices.map { ItemRequirement.ItemStackRequirement(it) }.toTypedArray())
 				else -> ItemRequirement.ignore()
 			}
 
 			val result = recipe.result
 
-			register(AutoMasonRecipe(
-				identifier = "STONECUTTING_${recipeHolder.id.location()}",
-				inputItem = input,
-				centerMaterial = result.type,
-				power = PowerRequirement(10),
-				result = ResultHolder.of(ItemResult.simpleResult(result))
-			))
+			val inputMaterial = input.asItemStack()?.type ?: continue
+			val centerType = CenterType[result.type]
+
+			if (centerType == null) {
+				log.warn("recipe ${recipe.key} doesn't have a registered center type for $inputMaterial to ${result.type}")
+				continue
+			}
+
+			val tableResult = recipeTable.get(inputMaterial, centerType)
+
+			if (tableResult == null) {
+				log.warn("recipe ${recipe.key} doesn't have a registered result type for $inputMaterial $centerType ${result.type}")
+				continue
+			}
+
+			registerAutoMasonRecipe(input, centerType, result)
 		}
+
+		UNSTRIPPED_LOG_TYPES.forEach { registerAutoMasonRecipe(MaterialRequirement(it), PLANKS, ItemStack(Material.valueOf(it.name.removeSuffix("_LOG") + "_PLANKS"), 4)) }
+		UNSTRIPPED_WOOD_TYPES.forEach { registerAutoMasonRecipe(MaterialRequirement(it), PLANKS, ItemStack(Material.valueOf(it.name.removeSuffix("_WOOD") + "_PLANKS"), 4)) }
+		STRIPPED_LOG_TYPES.forEach { registerAutoMasonRecipe(MaterialRequirement(it), PLANKS, ItemStack(Material.valueOf(it.name.removePrefix("STRIPPED_").removeSuffix("_LOG") + "_PLANKS"), 4)) }
+		STRIPPED_WOOD_TYPES.forEach { registerAutoMasonRecipe(MaterialRequirement(it), PLANKS, ItemStack(Material.valueOf(it.name.removePrefix("STRIPPED_").removeSuffix("_WOOD") + "_PLANKS"), 4)) }
+
+		UNSTRIPPED_LOG_TYPES.forEach { registerAutoMasonRecipe(MaterialRequirement(it), STRIPPED, ItemStack(Material.valueOf("STRIPPED_" + it.name))) }
+		UNSTRIPPED_WOOD_TYPES.forEach { registerAutoMasonRecipe(MaterialRequirement(it), STRIPPED, ItemStack(Material.valueOf("STRIPPED_" + it.name))) }
+	}
+
+	private fun registerAutoMasonRecipe(input: ItemRequirement, category: CenterType, result: ItemStack) {
+		register(AutoMasonRecipe(
+			identifier = "STONECUTTING_${input}_$category",
+			inputItem = input,
+			centerCheck = category::matches,
+			power = PowerRequirement(10),
+			result = ResultHolder.of(ItemResult.simpleResult(result))
+		))
 	}
 
 	fun <E: RecipeEnviornment, R: MultiblockRecipe<E>> register(recipe: R): R {
