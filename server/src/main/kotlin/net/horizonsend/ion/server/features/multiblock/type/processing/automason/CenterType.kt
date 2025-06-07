@@ -22,72 +22,72 @@ import org.bukkit.Material
 enum class CenterType {
 	POLISHED {
 		override fun matches(material: Material?): Boolean {
-			return material?.isPolished == true
+			return material == null || material.isPolished
 		}
 	},
 	CHISELED {
 		override fun matches(material: Material?): Boolean {
-			return material?.isChiseled == true
+			return material == null || material.isChiseled
 		}
 	},
 	SMOOTH {
 		override fun matches(material: Material?): Boolean {
-			return material != null && SMOOTH_TYPES.contains(material)
+			return material == null || SMOOTH_TYPES.contains(material)
 		}
 	},
 	STRIPPED {
 		override fun matches(material: Material?): Boolean {
-			return material != null && STRIPPED_LOG_TYPES.contains(material) || STRIPPED_WOOD_TYPES.contains(material)
+			return material == null || STRIPPED_LOG_TYPES.contains(material) || STRIPPED_WOOD_TYPES.contains(material)
 		}
 	},
 	PLANKS {
 		override fun matches(material: Material?): Boolean {
-			return material != null && PLANKS_TYPES.contains(material)
+			return material == null || PLANKS_TYPES.contains(material)
 		}
 	},
 	SLAB {
 		override fun matches(material: Material?): Boolean {
-			return material?.isSlab == true
+			return material == null || material.isSlab
 		}
 	},
 	STAIR {
 		override fun matches(material: Material?): Boolean {
-			return material?.isStairs == true
+			return material == null || material.isStairs
 		}
 	},
 	WALL {
 		override fun matches(material: Material?): Boolean {
-			return material?.isWall == true
+			return material == null || material.isWall
 		}
 	},
 	BUTTON {
 		override fun matches(material: Material?): Boolean {
-			return material?.isButton == true
+			return material == null || material.isButton
 		}
 	},
 	BRICKS {
 		override fun matches(material: Material?): Boolean {
-			return material != null && BRICK_TYPES.contains(material)
+			return material == null || BRICK_TYPES.contains(material)
 		}
 	},
 	PILLAR {
 		override fun matches(material: Material?): Boolean {
-			return material != null && PILLAR_TYPES.contains(material)
+			return material == null || PILLAR_TYPES.contains(material)
 		}
 	},
 	CUT {
 		override fun matches(material: Material?): Boolean {
-			return material != null && CUT_TYPES.contains(material)
+			return material == null || CUT_TYPES.contains(material)
 		}
 	},
 	TILES {
 		override fun matches(material: Material?): Boolean {
-			return material != null && TILES_TYPES.contains(material)
+			return material == null || TILES_TYPES.contains(material)
 		}
 	},
 	GRATE {
 		override fun matches(material: Material?): Boolean {
-			return material != null && GRATE_TYPES.contains(material)
+			return material == null || GRATE_TYPES.contains(material)
 		}
 	},
 
