@@ -10,7 +10,12 @@ abstract class ShipFactoryIntegration<T : MultiblockEntity>(val taskEntity: Ship
 	/**
 	 * Performs any setup tasks when the ship factory does
 	 **/
-	abstract fun setup(task: ShipFactoryPrintTask)
+	open fun asyncSetup(task: ShipFactoryPrintTask) {}
+
+	/**
+	 * Performs any setup tasks when the ship factory does
+	 **/
+	open fun syncSetup(task: ShipFactoryPrintTask) {}
 
 	/**
 	 * Sends a report of the integration's activities when the ship factory finishes

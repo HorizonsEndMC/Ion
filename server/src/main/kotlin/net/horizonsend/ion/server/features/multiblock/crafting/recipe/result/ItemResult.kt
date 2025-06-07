@@ -6,6 +6,8 @@ import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 interface ItemResult<E: ItemResultEnviornment> : RecipeResult<E> {
+	fun asItem(): ItemStack
+
 	override fun verifySpace(enviornment: E): Boolean {
 		val resultItem = getResultItem(enviornment) ?: return true
 		return enviornment.getResultSpaceFor(resultItem) >= resultItem.amount
@@ -31,6 +33,7 @@ interface ItemResult<E: ItemResultEnviornment> : RecipeResult<E> {
 	}
 
 	class SimpleResult<E: ItemResultEnviornment>(private val item: ItemStack) : ItemResult<E> {
+		override fun asItem(): ItemStack = item
 		override fun getResultItem(enviornment: E): ItemStack = item
 		override fun buildTransaction(
 			recipeEnviornment: E,

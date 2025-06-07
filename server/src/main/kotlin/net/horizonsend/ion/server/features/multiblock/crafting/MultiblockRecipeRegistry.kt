@@ -306,6 +306,8 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 		return recipe
 	}
 
+	fun getRecipes() = recipes
+
 	fun <E: RecipeEnviornment> getRecipesFor(entity: RecipeProcessingMultiblockEntity<E>): Collection<MultiblockRecipe<E>> {
 		@Suppress("UNCHECKED_CAST")
 		return byMultiblock[entity::class] as Collection<MultiblockRecipe<E>>
