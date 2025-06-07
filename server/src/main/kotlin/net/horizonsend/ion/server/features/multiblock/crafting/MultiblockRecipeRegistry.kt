@@ -27,8 +27,13 @@ import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMu
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.kyori.adventure.sound.Sound
+import net.minecraft.server.MinecraftServer
+import net.minecraft.world.item.crafting.RecipeType
 import org.bukkit.Material
 import org.bukkit.SoundCategory
+import org.bukkit.inventory.RecipeChoice.ExactChoice
+import org.bukkit.inventory.RecipeChoice.MaterialChoice
+import org.bukkit.inventory.StonecuttingRecipe
 import java.time.Duration
 import kotlin.reflect.KClass
 
@@ -274,13 +279,24 @@ object MultiblockRecipeRegistry : IonServerComponent() {
 	}
 
 	private fun registerAutoMasonRecipes() {
-		register(AutoMasonRecipe(
-			"TEST",
-			ItemRequirement.MaterialRequirement(Material.MELON),
-			Material.MELON,
-			PowerRequirement(10),
-			ResultHolder.of(ItemResult.simpleResult(CustomItemRegistry.ENRICHED_URANIUM))
-		))
+		for (recipeHolder in MinecraftServer.getServer().recipeManager.recipes.byType[RecipeType.STONECUTTING]) {
+			val recipe = recipeHolder.toBukkitRecipe() as StonecuttingRecipe
+			val input: ItemRequirement = when (val choice = recipe.inputChoice) {
+				is MaterialChoice -> ItemRequirement.any(*choice.choices.map { ItemRequirement.MaterialRequirement(it) }.toTypedArray())
+				is ExactChoice -> ItemRequirement.any(*choice.choices.map { ItemRequirement.ItemStackRequirement(it) }.toTypedArray())
+				else -> ItemRequirement.ignore()
+			}
+
+			val result = recipe.result
+
+			register(AutoMasonRecipe(
+				identifier = "STONECUTTING_${recipeHolder.id.location()}",
+				inputItem = input,
+				centerMaterial = result.type,
+				power = PowerRequirement(10),
+				result = ResultHolder.of(ItemResult.simpleResult(result))
+			))
+		}
 	}
 
 	fun <E: RecipeEnviornment, R: MultiblockRecipe<E>> register(recipe: R): R {
