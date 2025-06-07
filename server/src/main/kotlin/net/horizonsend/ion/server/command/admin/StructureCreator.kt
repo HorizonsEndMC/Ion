@@ -172,7 +172,7 @@ object StructureCreator : SLCommand() {
 			data.material == Material.END_ROD -> {
 				data as Directional
 				val facing = RelativeFace[forwards, data.facing]
-				".endRod(PrepackagedPreset.simpleDirectional(RelativeFace.$facing, example = Material.GRINDSTONE.createBlockData()))"
+				".endRod(PrepackagedPreset.simpleDirectional(RelativeFace.$facing, example = Material.END_ROD.createBlockData()))"
 			}
 
 			data.material == Material.LIGHTNING_ROD -> {
