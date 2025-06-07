@@ -28,6 +28,7 @@ class AutoStonecutterIntegration(
 
 	override fun syncSetup(task: ShipFactoryPrintTask) {
 		recipeEnviornment = buildRecipeEnviornment()
+		recipeEnviornment?.wildcard = true
 
 		availableItems = ShipFactoryPrintTask.getAvailableItems(
 			setOfNotNull(integratedEntity.getInputInventory()?.let(InventoryReference::wrap)),
