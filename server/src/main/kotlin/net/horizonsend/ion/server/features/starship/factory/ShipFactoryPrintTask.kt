@@ -83,9 +83,13 @@ class ShipFactoryPrintTask(
 		loadBlockQueue()
 		startBlocks = blockQueue.size
 
-		integration.forEach { it.setup(this) }
+		integration.forEach { it.asyncSetup(this) }
 
-		queueLoaded = true
+		Tasks.sync {
+			integration.forEach { it.syncSetup(this) }
+
+			queueLoaded = true
+		}
 	}
 
 	/** Signal that the rest of the processing loop may use to tell when it is disabled. */
@@ -125,7 +129,7 @@ class ShipFactoryPrintTask(
 		val printLimit = entity.multiblock.blockPlacementsPerTick
 
 		// All items available in inventories
-		val availableItems = getAvailableItems()
+		val availableItems = getAvailableItems(inventories, settings)
 
 		val availableCredits = player.getMoneyBalance()
 
@@ -363,39 +367,39 @@ class ShipFactoryPrintTask(
 	//</editor-fold>
 
 	//<editor-fold desc="Region Item Consumption">
-	private data class AvailableItemInformation(val amount: AtomicInteger, val references: MutableList<ItemReference>)
+	companion object {
+		/**
+		 * Returns a map of all available items, using a print item as a key,
+		 * and the value holding a sum and references to those items in available inventories.
+		 **/
+		fun getAvailableItems(inventories: Set<InventoryReference>, settings: ShipFactorySettings): Map<PrintItem, AvailableItemInformation> {
+			val items = mutableMapOf<PrintItem, AvailableItemInformation>()
 
-	/**
-	 * Returns a map of all available items, using a print item as a key,
-	 * and the value holding a sum and references to those items in available inventories.
-	 **/
-	private fun getAvailableItems(): Map<PrintItem, AvailableItemInformation> {
-		val items = mutableMapOf<PrintItem, AvailableItemInformation>()
+			for (inventoryReference in inventories) {
+				for ((index, item: ItemStack?) in inventoryReference.inventory.contents.withIndex()) {
+					if (item == null || item.type.isEmpty) continue
+					val printItem = runCatching { PrintItem(item) }.getOrNull() ?: continue
 
-		for (inventoryReference in inventories) {
-			for ((index, item: ItemStack?) in inventoryReference.inventory.contents.withIndex()) {
-				if (item == null || item.type.isEmpty) continue
-				val printItem = runCatching { PrintItem(item) }.getOrNull() ?: continue
+					if (!inventoryReference.isAvailable(item)) {
+						continue
+					}
 
-				if (!inventoryReference.isAvailable(item)) {
-					continue
+					val information = items.getOrPut(printItem) { AvailableItemInformation(AtomicInteger(), mutableListOf()) }
+
+					information.amount.addAndGet(item.amount)
+					information.references.add(ItemReference(inventoryReference.inventory, index))
 				}
-
-				val information = items.getOrPut(printItem) { AvailableItemInformation(AtomicInteger(), mutableListOf()) }
-
-				information.amount.addAndGet(item.amount)
-				information.references.add(ItemReference(inventoryReference.inventory, index))
 			}
-		}
 
-		// If asked to leave one remaining, reduce the available items in each slot by 1 so they won't be consumed
-		if (settings.leaveItemRemaining) {
-			for ((_, information) in items) {
-				if (information.amount.get() > 0) information.amount.decrementAndGet()
+			// If asked to leave one remaining, reduce the available items in each slot by 1 so they won't be consumed
+			if (settings.leaveItemRemaining) {
+				for ((_, information) in items) {
+					if (information.amount.get() > 0) information.amount.decrementAndGet()
+				}
 			}
-		}
 
-		return items
+			return items
+		}
 	}
 
 	private fun checkAvailableItems(

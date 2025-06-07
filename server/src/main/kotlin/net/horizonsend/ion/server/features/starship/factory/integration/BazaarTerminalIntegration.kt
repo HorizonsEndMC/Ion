@@ -58,7 +58,7 @@ class BazaarTerminalIntegration(
 	/** Collection of responses from attempts to buy from the bazaar */
 	private val bazaarPurchaseMessages = mutableListOf<Component>()
 
-	override fun setup(task: ShipFactoryPrintTask) {
+	override fun asyncSetup(task: ShipFactoryPrintTask) {
 		task.blockQueue = ConcurrentLinkedQueue(task.blockQueue.sortedBy { task.blockMap[it]?.material })
 		loadBazaarReferences(task)
 	}

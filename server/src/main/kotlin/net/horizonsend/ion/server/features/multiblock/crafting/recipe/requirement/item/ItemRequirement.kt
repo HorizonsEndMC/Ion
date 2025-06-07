@@ -18,10 +18,14 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 		item.amount--
 	}
 
+	open fun asItemStack(): ItemStack? = null
+
 	class CustomItemRequirement(val customItem: CustomItem) : ItemRequirement {
 		override fun matches(item: ItemStack?): Boolean {
 			return item?.customItem == customItem && item.amount >= 1
 		}
+
+		override fun asItemStack(): ItemStack = customItem.constructItemStack()
 	}
 
 	class MaterialRequirement(val material: Material, val count: Int = 1) : ItemRequirement {
@@ -32,12 +36,16 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 		override fun consume(item: ItemStack, environment: RecipeEnviornment) {
 			item.amount -= count
 		}
+
+		override fun asItemStack(): ItemStack = ItemStack(material)
 	}
 
 	class ItemStackRequirement(val itemStack: ItemStack) : ItemRequirement {
 		override fun matches(item: ItemStack?): Boolean {
 			return item != null && itemStack.isSimilar(item) && item.amount >= 1
 		}
+
+		override fun asItemStack(): ItemStack = itemStack.clone()
 	}
 
 	companion object {
@@ -70,6 +78,8 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 			override fun consume(item: ItemStack, environment: RecipeEnviornment) {
 				requirements.first { requirement -> requirement.matches(item) }.consume(item, environment)
 			}
+
+			override fun asItemStack(): ItemStack? = requirements.first().asItemStack()
 		}
 
 		class AllRequirements(vararg  val requirements: ItemRequirement) : ItemRequirement {
@@ -84,6 +94,8 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 			override fun consume(item: ItemStack, environment: RecipeEnviornment) {
 				requirements.first { requirement -> requirement.matches(item) }.consume(item, environment)
 			}
+
+			override fun asItemStack(): ItemStack? = requirements.first().asItemStack()
 		}
 
 		data object EmptyRequirement: ItemRequirement {

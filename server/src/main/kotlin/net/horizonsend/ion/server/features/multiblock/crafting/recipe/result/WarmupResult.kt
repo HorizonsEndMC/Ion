@@ -6,6 +6,8 @@ import org.bukkit.inventory.ItemStack
 import java.time.Duration
 
 class WarmupResult<E : ProgressEnviornment>(val duration: Duration, val normalResult: ItemResult<E>) : ItemResult<E> {
+	override fun asItem(): ItemStack = normalResult.asItem()
+
 	override fun verifySpace(enviornment: E): Boolean {
 		return normalResult.verifySpace(enviornment)
 	}
