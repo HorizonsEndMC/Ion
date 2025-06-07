@@ -21,6 +21,8 @@ sealed class AutoMasonMultiblock : Multiblock(), EntityMultiblock<AutoMasonMulti
 	abstract val inputOffset: Vec3i?
 	abstract val outputOffset: Vec3i?
 
+	open val mergeEnabled: Boolean = false
+
 	override val signText: Array<Component?> = createSignText(
 		Component.text("Auto Mason"),
 		null,
@@ -298,6 +300,8 @@ sealed class AutoMasonMultiblock : Multiblock(), EntityMultiblock<AutoMasonMulti
 		override val outputOffset: Vec3i = Vec3i(3, 0, 3)
 		override val inputOffset: Vec3i = Vec3i(-3, 0, 3)
 
+		override val mergeEnabled: Boolean = true
+
 		override fun MultiblockShape.buildStructure() {
 			z(4) {
 				y(-1) {
@@ -426,8 +430,10 @@ sealed class AutoMasonMultiblock : Multiblock(), EntityMultiblock<AutoMasonMulti
 	}
 
 	data object StandardAutoMasonMirroredMergableMultiblock : AutoMasonMultiblock() {
-		override val outputOffset: Vec3i = Vec3i(3, 0, 3)
-		override val inputOffset: Vec3i = Vec3i(-3, 0, 3)
+		override val outputOffset: Vec3i = Vec3i(-3, 0, 3)
+		override val inputOffset: Vec3i = Vec3i(3, 0, 3)
+
+		override val mergeEnabled: Boolean = true
 
 		override fun MultiblockShape.buildStructure() {
 			z(4) {

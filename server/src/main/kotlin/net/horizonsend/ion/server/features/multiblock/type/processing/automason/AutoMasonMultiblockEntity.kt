@@ -14,8 +14,11 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusT
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent.AdvancedShipFactoryEntity
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.inventory.Inventory
 import org.bukkit.persistence.PersistentDataAdapterContext
 
 class AutoMasonMultiblockEntity(data: PersistentMultiblockData, override val multiblock: AutoMasonMultiblock, manager: MultiblockManager, x: Int, y: Int, z: Int, world: World, structureFace: BlockFace) : SimplePoweredEntity(
@@ -41,6 +44,15 @@ class AutoMasonMultiblockEntity(data: PersistentMultiblockData, override val mul
 		{ StatusDisplayModule(it, statusManager) }
 	)
 
+	val mergeEnd = createLinkage(
+		offsetRight = if (multiblock is AutoMasonMultiblock.StandardAutoMasonMirroredMergableMultiblock) -3 else 3,
+		offsetUp = -1,
+		offsetForward = 3,
+		linkageDirection = if (multiblock is AutoMasonMultiblock.StandardAutoMasonMirroredMergableMultiblock) RelativeFace.LEFT else RelativeFace.RIGHT,
+		predicate = { multiblock.mergeEnabled },
+		AdvancedShipFactoryEntity::class
+	)
+
 	companion object {
 		private const val PROCESSING_COUNT = 4
 	}
@@ -53,8 +65,10 @@ class AutoMasonMultiblockEntity(data: PersistentMultiblockData, override val mul
 		savePowerData(store)
 	}
 
+	fun getInputInventory(): Inventory? = multiblock.inputOffset?.let { getInventory(it.x, it.y, it.z) }
+
 	override fun buildRecipeEnviornment(): AutoMasonRecipeEnviornment? {
-		val input = multiblock.inputOffset?.let { getInventory(it.x, it.y, it.z) } ?: return null
+		val input = getInputInventory() ?: return null
 		val output = multiblock.outputOffset?.let { getInventory(it.x, it.y, it.z) } ?: return null
 
 		return AutoMasonRecipeEnviornment(
