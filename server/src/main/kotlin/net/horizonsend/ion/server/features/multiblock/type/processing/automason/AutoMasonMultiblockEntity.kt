@@ -41,8 +41,12 @@ class AutoMasonMultiblockEntity(data: PersistentMultiblockData, override val mul
 		{ StatusDisplayModule(it, statusManager) }
 	)
 
+	companion object {
+		private const val PROCESSING_COUNT = 4
+	}
+
 	override fun tick() {
-		tryProcessRecipe()
+		repeat(PROCESSING_COUNT) { tryProcessRecipe() }
 	}
 
 	override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
