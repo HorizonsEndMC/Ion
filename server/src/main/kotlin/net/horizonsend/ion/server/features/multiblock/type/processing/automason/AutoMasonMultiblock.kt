@@ -33,8 +33,8 @@ sealed class AutoMasonMultiblock : Multiblock(), EntityMultiblock<AutoMasonMulti
 	}
 
 	data object StandardAutoMasonMultiblock : AutoMasonMultiblock() {
-		override val outputOffset: Vec3i = Vec3i(-3, 0, 3)
-		override val inputOffset: Vec3i = Vec3i(3, 0, 3)
+		override val outputOffset: Vec3i = Vec3i(3, 0, 3)
+		override val inputOffset: Vec3i = Vec3i(-3, 0, 3)
 
 		override fun MultiblockShape.buildStructure() {
 			z(4) {
