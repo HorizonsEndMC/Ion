@@ -27,6 +27,7 @@ import net.horizonsend.ion.server.features.gui.item.ValueScrollButton
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.processing.automason.AutoMasonMultiblockEntity
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.input.ItemMenu
@@ -421,8 +422,13 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 	private fun getMergeButtonForEntity(mergePartner: MultiblockEntity): Item {
 		return when (mergePartner) {
 			is BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity -> getShipFactoryMergeButton(mergePartner)
+			is AutoMasonMultiblockEntity -> getAutoMasonMergeButton(mergePartner)
 			else -> throw NotImplementedError() //TODO
 		}
+	}
+
+	private fun getAutoMasonMergeButton(entity: AutoMasonMultiblockEntity): Item {
+		return GuiItem.CHECKMARK.makeItem(template(text("Merged with {0}", GREEN), entity.multiblock.getDisplayName())).makeGuiButton { _, _ ->  }
 	}
 
 	private fun getShipFactoryMergeButton(entity: BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity): Item {

@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.craftbukkit.inventory.CraftInventory
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
 interface RemotePipeMultiblock {
@@ -99,6 +100,10 @@ interface RemotePipeMultiblock {
 	sealed interface InventoryReference {
 		val inventory: CraftInventory
 		fun isAvailable(itemStack: ItemStack): Boolean
+
+		companion object {
+			fun wrap(inventory: Inventory) = StandardInventoryReference(inventory as CraftInventory)
+		}
 
 		data class StandardInventoryReference(override val inventory: CraftInventory): InventoryReference {
 			override fun isAvailable(itemStack: ItemStack): Boolean = true
