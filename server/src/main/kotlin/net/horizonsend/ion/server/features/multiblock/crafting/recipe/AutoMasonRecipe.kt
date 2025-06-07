@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.crafting.recipe
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.crafting.input.AutoMasonRecipeEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.CenterBlockRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.PowerRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.RequirementHolder
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement
@@ -9,12 +10,13 @@ import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.Ite
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultExecutionEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultHolder
 import net.horizonsend.ion.server.features.multiblock.type.processing.automason.AutoMasonMultiblockEntity
+import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import org.bukkit.Material
 
 class AutoMasonRecipe(
 	identifier: String,
 	inputItem: ItemRequirement,
-	centerMaterial: Material,
+	centerCheck: (Material?) -> Boolean,
 	power: PowerRequirement<AutoMasonRecipeEnviornment>,
 	val result: ResultHolder<AutoMasonRecipeEnviornment, ItemResult<AutoMasonRecipeEnviornment>>
 ) : MultiblockRecipe<AutoMasonRecipeEnviornment>(identifier, AutoMasonMultiblockEntity::class) {
@@ -29,11 +31,11 @@ class AutoMasonRecipe(
 			power
 		),
 		// Center Block requirement
-//		RequirementHolder(
-//			Material::class.java as Class<Material?>,
-//			{ it.getCenterBlock().getTypeSafe() },
-//			CenterBlockRequirement(centerMaterial)
-//		)
+		RequirementHolder(
+			Material::class.java as Class<Material?>,
+			{ it.getCenterBlock().getTypeSafe() },
+			CenterBlockRequirement(centerCheck)
+		)
 	)
 
 	fun consumeIngredients(enviornment: AutoMasonRecipeEnviornment) {

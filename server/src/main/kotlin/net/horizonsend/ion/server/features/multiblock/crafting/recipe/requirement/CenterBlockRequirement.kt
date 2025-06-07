@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.crafting.recipe.requireme
 
 import org.bukkit.Material
 
-class CenterBlockRequirement(val material: Material): RecipeRequirement<Material?> {
+class CenterBlockRequirement(val predicate: (Material?) -> Boolean): RecipeRequirement<Material?> {
 	override fun ensureAvailable(resource: Material?): Boolean {
-		return resource == material
+		return predicate(resource)
 	}
 }
