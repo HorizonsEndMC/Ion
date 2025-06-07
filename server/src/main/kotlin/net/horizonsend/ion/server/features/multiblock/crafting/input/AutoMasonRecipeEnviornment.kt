@@ -15,7 +15,10 @@ class AutoMasonRecipeEnviornment(
 	override val powerStorage: PowerStorage,
 	val tickingManager: TickedMultiblockEntityParent.TickingManager
 ) : InventoryResultEnviornment, PoweredEnviornment {
-	fun getCenterBlock(): Block {
+	var wildcard: Boolean = false
+
+	fun getCenterBlock(): Block? {
+		if (wildcard) return null
 		return multiblock.getBlockRelative(0, 0, 3)
 	}
 
