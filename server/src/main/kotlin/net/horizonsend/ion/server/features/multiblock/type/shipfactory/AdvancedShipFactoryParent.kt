@@ -14,9 +14,11 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock.InventoryReference
+import net.horizonsend.ion.server.features.multiblock.type.processing.automason.AutoMasonMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent.AdvancedShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.factory.ShipFactoryPrintTask
+import net.horizonsend.ion.server.features.starship.factory.integration.AutoStonecutterIntegration
 import net.horizonsend.ion.server.features.starship.factory.integration.BazaarTerminalIntegration
 import net.horizonsend.ion.server.features.starship.factory.integration.ShipFactoryIntegration
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
@@ -313,7 +315,8 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 			offsetForward = 1,
 			linkageDirection = RelativeFace.RIGHT,
 			predicate = { multiblock.rightMergeAvailable },
-			BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity::class
+			BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity::class,
+			AutoMasonMultiblockEntity::class
 		)
 
 		private val mergeLeft = createLinkage(
@@ -322,7 +325,8 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 			offsetForward = 1,
 			linkageDirection = RelativeFace.LEFT,
 			predicate = { multiblock.leftMergeAvailable },
-			BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity::class
+			BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity::class,
+			AutoMasonMultiblockEntity::class
 		)
 
 		override fun startTask(blueprint: Blueprint, gui: ShipFactoryGui?, user: Player) {
@@ -333,6 +337,7 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 
 		fun getMergeIntegration(multiblockEntity: MultiblockEntity): ShipFactoryIntegration<*>? = when (multiblockEntity) {
 			is BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity -> BazaarTerminalIntegration(this, multiblockEntity)
+			is AutoMasonMultiblockEntity -> AutoStonecutterIntegration(this, multiblockEntity)
 			else -> null
 		}
 
