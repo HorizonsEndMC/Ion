@@ -32,9 +32,9 @@ class AutoMasonRecipe(
 		),
 		// Center Block requirement
 		RequirementHolder(
-			Material::class.java as Class<Material?>,
-			{ it.getCenterBlock().getTypeSafe() },
-			CenterBlockRequirement(centerCheck)
+			dataTypeClass = Material::class.java as Class<Material?>,
+			getter = { it.getCenterBlock()?.getTypeSafe() },
+			requirement = CenterBlockRequirement(centerCheck)
 		)
 	)
 
