@@ -81,17 +81,33 @@ class AutoCrafterEntity(
 	}
 
 	override fun tick() {
-		val inputInventory: Inventory = getInput() ?: return sleepWithStatus(Component.text("Not Intact", NamedTextColor.RED), 50)
-		val recipeHolder: Inventory = getRecipeHolder() ?: return sleepWithStatus(Component.text("Not Intact", NamedTextColor.RED), 50)
-		val output: Inventory = getOutput() ?: return sleepWithStatus(Component.text("Not Intact", NamedTextColor.RED), 50)
+		val inputInventory: Inventory? = getInput()
+		val recipeHolder: Inventory? = getRecipeHolder()
+		val output: Inventory? = getOutput()
+
+		if (inputInventory == null || recipeHolder == null || output == null) {
+			resultHash = null
+			sleepWithStatus(Component.text("Not Intact", NamedTextColor.RED), 50)
+			return
+		}
 
 		// material data of each item in the recipe holder, used as the crafting transportNetwork
 		val grid: List<BukkitItemStack?> = recipeHolder.contents.toList()
 
 		val startPower = powerStorage.getPower()
-		if (startPower < POWER_USAGE_PER_INGREDIENT) return sleepWithStatus(Component.text("Low Power", NamedTextColor.RED), 50)
+		if (startPower < POWER_USAGE_PER_INGREDIENT) {
+			resultHash = null
+			sleepWithStatus(Component.text("Low Power", NamedTextColor.RED), 50)
+			return
+		}
 
-		val recipe = recipeCache.get(grid).getOrNull() ?: return sleepWithStatus(Component.text("Invalid Recipe", NamedTextColor.RED), 50)
+		val recipe = recipeCache.get(grid).getOrNull()
+		if (recipe == null) {
+			resultHash = null
+			sleepWithStatus(Component.text("Invalid Recipe", NamedTextColor.RED), 50)
+			return
+		}
+
 		val input = CraftingInput.of(3, 3, grid.map(CraftItemStack::asNMSCopy))
 
 		// result item of this recipe
@@ -108,6 +124,7 @@ class AutoCrafterEntity(
 			for (iteration in (1..multiblock.craftingIterations)) {
 				if (power < powerUsage) {
 					sleepWithStatus(Component.text("Low Power", NamedTextColor.RED), 50)
+					resultHash = null
 					break
 				}
 
@@ -133,6 +150,7 @@ class AutoCrafterEntity(
 					statusManager.setStatus(result.displayName())
 				}
 			} else {
+				resultHash = null
 				sleepWithStatus(Component.text("Sleeping"), 50)
 			}
 		}
@@ -180,6 +198,7 @@ class AutoCrafterEntity(
 
 		// stop iterating if not all the ingredients were found
 		if (insufficientIngredients) {
+			resultHash = null
 			return 0
 		}
 
