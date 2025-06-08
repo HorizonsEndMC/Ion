@@ -400,6 +400,26 @@ class ShipFactoryPrintTask(
 
 			return items
 		}
+
+		fun consumeItemFromReferences(references: Collection<ItemReference>, amount: Int): Int {
+			var remaining = amount
+
+			for (reference in references) {
+				val item = reference.get() ?: continue
+				val stackAmount = item.amount
+
+				if (remaining >= stackAmount) {
+					remaining -= stackAmount
+					reference.inventory.setItem(reference.index, null)
+				} else {
+					val toRemove = minOf(stackAmount, remaining)
+					item.amount -= toRemove
+					remaining -= toRemove
+				}
+			}
+
+			return remaining
+		}
 	}
 
 	private fun checkAvailableItems(
@@ -457,26 +477,6 @@ class ShipFactoryPrintTask(
 		}
 
 		return true
-	}
-
-	private fun consumeItemFromReferences(references: Collection<ItemReference>, amount: Int): Int {
-		var remaining = amount
-
-		for (reference in references) {
-			val item = reference.get() ?: continue
-			val stackAmount = item.amount
-
-			if (remaining >= stackAmount) {
-				remaining -= stackAmount
-				reference.inventory.setItem(reference.index, null)
-			} else {
-				val toRemove = minOf(stackAmount, remaining)
-				item.amount -= toRemove
-				remaining -= toRemove
-			}
-		}
-
-		return remaining
 	}
 
 	private fun markItemMissing(printItem: PrintItem, amount: Int): Int {
