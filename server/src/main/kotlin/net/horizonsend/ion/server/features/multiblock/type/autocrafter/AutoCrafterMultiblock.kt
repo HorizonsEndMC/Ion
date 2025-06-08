@@ -157,9 +157,9 @@ abstract class AutoCrafterMultiblock(
 			{ StatusDisplayModule(it, statusManager) }
 		).register()
 
-		private fun getInput(): Inventory? = getInventory(-2, 0, 1)
+		private fun getInput(): Inventory? = getInventory(if (multiblock.mirrored) +2 else -2, 0, 1)
 		private fun getRecipeHolder(): Inventory? = getInventory(0, 0, 1)
-		private fun getOutput(): Inventory? = getInventory(+2, 0, 1)
+		private fun getOutput(): Inventory? = getInventory(if (multiblock.mirrored) -2 else +2, 0, 1)
 
 		private var resultHash: Int? = null
 
