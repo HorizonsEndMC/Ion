@@ -208,6 +208,15 @@ object CustomBlocks {
 		)
 	) { CustomItemRegistry.CRUISER_REACTOR_CORE })
 
+	val LIGHT_BARGE_REACTOR_CORE : CustomBlock = register(CustomBlock(
+		identifier = "LIGHT_BARGE_REACTOR_CORE",
+		blockData = mushroomBlockData(setOf(NORTH, EAST, WEST, DOWN)),
+		drops = BlockLoot(
+			requiredTool = null,
+			drops = customItemDrop(CustomItemRegistry::LIGHT_BARGE_REACTOR_CORE)
+		)
+	) { CustomItemRegistry.LIGHT_BARGE_REACTOR_CORE })
+
 	fun customItemDrop(customItem: Supplier<CustomItem>, amount: Int = 1): Supplier<Collection<ItemStack>> {
 		return customItem.map { item -> listOf(item.constructItemStack(amount)) }
 	}

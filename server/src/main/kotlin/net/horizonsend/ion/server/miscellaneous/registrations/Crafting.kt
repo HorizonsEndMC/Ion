@@ -59,6 +59,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_C
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_CANISTER_OXYGEN
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GUN_BARREL
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ITEM_FILTER
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.LIGHT_BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.MOTHERBOARD
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.MULTIBLOCK_WORKBENCH
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.NETHERITE_CASING
@@ -631,6 +632,14 @@ object Crafting : IonServerComponent() {
 			setIngredient('x', REACTOR_CONTROL.constructItemStack())
 			setIngredient('y', SUPERCONDUCTOR_CORE.constructItemStack())
 			setIngredient('z', FUEL_CONTROL.constructItemStack())
+		}
+		shaped("lightbargereactorCore", LIGHT_BARGE_REACTOR_CORE.constructItemStack()) {
+			shape("wxw", "zzz", "wyw")
+
+			setIngredient('w', REINFORCED_FRAME.constructItemStack())
+			setIngredient('x', REACTOR_CONTROL.constructItemStack())
+			setIngredient('y', FUEL_CONTROL.constructItemStack())
+			setIngredient('z', SUPERCONDUCTOR.constructItemStack())
 		}
 
 		shaped("multiblock_workbench", MULTIBLOCK_WORKBENCH.constructItemStack()) {
