@@ -805,7 +805,7 @@ object Crafting : IonServerComponent() {
 		registerPowerArmorModule(ARMOR_MODIFICATION_ROCKET_BOOSTING, MaterialChoice(FIREWORK_ROCKET))
 		registerPowerArmorModule(ARMOR_MODIFICATION_NIGHT_VISION, MaterialChoice(SPIDER_EYE))
 		registerPowerArmorModule(ARMOR_MODIFICATION_ENVIRONMENT, MaterialChoice(CHAINMAIL_HELMET))
-		registerPowerArmorModule(ARMOR_MODIFICATION_PRESSURE_FIELD, RecipeChoice.ExactChoice(GAS_CANISTER_EMPTY.constructItemStack()))
+		registerPowerArmorModule(ARMOR_MODIFICATION_PRESSURE_FIELD, ExactChoice(GAS_CANISTER_EMPTY.constructItemStack()))
 
 		fun registerSwordRecipes(sword: CustomItem, choice: RecipeChoice) = shaped(sword.identifier.lowercase(), sword) {
 			shape("aga", "a*a", "ata")
