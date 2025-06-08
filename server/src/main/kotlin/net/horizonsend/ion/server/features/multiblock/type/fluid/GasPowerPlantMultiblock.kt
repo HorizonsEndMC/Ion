@@ -192,6 +192,7 @@ object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMul
 		).register()
 
 		override fun tick() {
+			if (powerStorage.isFull()) return
 			val inventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return
 
 			val fuelItem = inventory.smelting ?: return
