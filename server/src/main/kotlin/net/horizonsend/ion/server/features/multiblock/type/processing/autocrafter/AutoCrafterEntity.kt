@@ -17,7 +17,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTic
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.starship.factory.AvailableItemInformation
-import net.horizonsend.ion.server.features.starship.factory.ShipFactoryPrintTask
+import net.horizonsend.ion.server.features.starship.factory.ShipFactoryTask
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.features.transport.items.util.canAddAll
 import net.horizonsend.ion.server.miscellaneous.utils.front
@@ -192,7 +192,7 @@ class AutoCrafterEntity(
 		outputInventory.addItem(result.clone(), *remainingResults.toTypedArray())
 
 		for ((itemType, amount) in consumption) {
-			ShipFactoryPrintTask.consumeItemFromReferences(inputItemReferences[itemType]!!.references, amount.get())
+			ShipFactoryTask.consumeItemFromReferences(inputItemReferences[itemType]!!.references, amount.get())
 		}
 
 		return powerUsage
