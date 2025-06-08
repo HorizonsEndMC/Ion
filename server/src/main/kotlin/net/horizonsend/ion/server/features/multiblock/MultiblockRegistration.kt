@@ -5,12 +5,6 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.StandardAmmoPressMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1
-import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1Mirrored
-import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2
-import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2Mirrored
-import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3
-import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3Mirrored
 import net.horizonsend.ion.server.features.multiblock.type.defense.active.AntiAirCannonBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield10
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield20
@@ -87,6 +81,12 @@ import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterM
 import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblockMirrored
+import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter.AutoCrafterMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter.AutoCrafterMultiblockTier1Mirrored
+import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter.AutoCrafterMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter.AutoCrafterMultiblockTier2Mirrored
+import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter.AutoCrafterMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter.AutoCrafterMultiblockTier3Mirrored
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock

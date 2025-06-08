@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.autocrafter
+package net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter
 
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
