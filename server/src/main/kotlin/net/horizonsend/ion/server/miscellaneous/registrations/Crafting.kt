@@ -141,8 +141,10 @@ import org.bukkit.Material
 import org.bukkit.Material.AMETHYST_SHARD
 import org.bukkit.Material.BELL
 import org.bukkit.Material.BLACKSTONE
+import org.bukkit.Material.BLACK_DYE
 import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.CHAINMAIL_HELMET
+import org.bukkit.Material.CHARCOAL
 import org.bukkit.Material.CHERRY_LEAVES
 import org.bukkit.Material.COAL
 import org.bukkit.Material.COBWEB
@@ -592,7 +594,7 @@ object Crafting : IonServerComponent() {
 		shaped("reactiveComponent", REACTIVE_HOUSING.constructItemStack()) {
 			shape("xxx", "yyy", "xxx")
 
-			setIngredient('x', RecipeChoice.MaterialChoice(*TERRACOTTA_TYPES.toTypedArray()) )
+			setIngredient('x', MaterialChoice(*TERRACOTTA_TYPES.toTypedArray()) )
 			setIngredient('y', SPONGE)
 		}
 		shaped("netheriteCasing", NETHERITE_CASING.constructItemStack()) {
@@ -799,10 +801,10 @@ object Crafting : IonServerComponent() {
 		}
 
 		registerPowerArmorModule(ARMOR_MODIFICATION_SHOCK_ABSORBING, ExactChoice(TITANIUM_INGOT.constructItemStack()))
-		registerPowerArmorModule(ARMOR_MODIFICATION_SPEED_BOOSTING, RecipeChoice.MaterialChoice(FEATHER))
-		registerPowerArmorModule(ARMOR_MODIFICATION_ROCKET_BOOSTING, RecipeChoice.MaterialChoice(FIREWORK_ROCKET))
-		registerPowerArmorModule(ARMOR_MODIFICATION_NIGHT_VISION, RecipeChoice.MaterialChoice(SPIDER_EYE))
-		registerPowerArmorModule(ARMOR_MODIFICATION_ENVIRONMENT, RecipeChoice.MaterialChoice(CHAINMAIL_HELMET))
+		registerPowerArmorModule(ARMOR_MODIFICATION_SPEED_BOOSTING, MaterialChoice(FEATHER))
+		registerPowerArmorModule(ARMOR_MODIFICATION_ROCKET_BOOSTING, MaterialChoice(FIREWORK_ROCKET))
+		registerPowerArmorModule(ARMOR_MODIFICATION_NIGHT_VISION, MaterialChoice(SPIDER_EYE))
+		registerPowerArmorModule(ARMOR_MODIFICATION_ENVIRONMENT, MaterialChoice(CHAINMAIL_HELMET))
 		registerPowerArmorModule(ARMOR_MODIFICATION_PRESSURE_FIELD, RecipeChoice.ExactChoice(GAS_CANISTER_EMPTY.constructItemStack()))
 
 		fun registerSwordRecipes(sword: CustomItem, choice: RecipeChoice) = shaped(sword.identifier.lowercase(), sword) {
@@ -813,13 +815,13 @@ object Crafting : IonServerComponent() {
 			setIngredient('t', TITANIUM_INGOT)
 		}
 
-		registerSwordRecipes(ENERGY_SWORD_BLUE, RecipeChoice.MaterialChoice(DIAMOND))
-		registerSwordRecipes(ENERGY_SWORD_RED, RecipeChoice.MaterialChoice(REDSTONE))
-		registerSwordRecipes(ENERGY_SWORD_YELLOW, RecipeChoice.MaterialChoice(COAL))
-		registerSwordRecipes(ENERGY_SWORD_GREEN, RecipeChoice.MaterialChoice(EMERALD))
+		registerSwordRecipes(ENERGY_SWORD_BLUE, MaterialChoice(DIAMOND))
+		registerSwordRecipes(ENERGY_SWORD_RED, MaterialChoice(REDSTONE))
+		registerSwordRecipes(ENERGY_SWORD_YELLOW, MaterialChoice(COAL))
+		registerSwordRecipes(ENERGY_SWORD_GREEN, MaterialChoice(EMERALD))
 		registerSwordRecipes(ENERGY_SWORD_PURPLE, ExactChoice(CHETHERITE.constructItemStack()))
-		registerSwordRecipes(ENERGY_SWORD_ORANGE, RecipeChoice.MaterialChoice(COPPER_INGOT))
-		registerSwordRecipes(ENERGY_SWORD_PINK, RecipeChoice.MaterialChoice(PINK_TULIP))
+		registerSwordRecipes(ENERGY_SWORD_ORANGE, MaterialChoice(COPPER_INGOT))
+		registerSwordRecipes(ENERGY_SWORD_PINK, MaterialChoice(PINK_TULIP))
 	}
 
 	private fun registerOreFurnaceRecipes() {
@@ -872,6 +874,13 @@ object Crafting : IonServerComponent() {
 			setIngredient('g', MaterialChoice(*ALL_GLASS_TYPES.toTypedArray()))
 			setIngredient('r', REDSTONE)
 		}
+		Bukkit.addRecipe(FurnaceRecipe(
+			NamespacedKey(IonServer, "black_dye_smelting"),
+			ItemStack(BLACK_DYE),
+			MaterialChoice(CHARCOAL),
+			0.5f,
+			200
+		))
 	}
 
 	// Different names due to signature problems from type erasure
@@ -929,7 +938,7 @@ object Crafting : IonServerComponent() {
 	private fun shapeless(name: String, result: ItemStack, vararg ingredients: Material) {
 		val recipe = ShapelessRecipe(NamespacedKeys.key(name), result)
 		for (ingreidient in ingredients) {
-			recipe.addIngredient(RecipeChoice.MaterialChoice(ingreidient))
+			recipe.addIngredient(MaterialChoice(ingreidient))
 		}
 		Bukkit.addRecipe(recipe)
 	}
