@@ -138,7 +138,7 @@ class AutoCrafterEntity(
 		}
 	}
 
-	fun getReferencesFromItem(inventory: Inventory, items: MutableMap<ItemStack, AvailableItemInformation>) {
+	private fun getReferencesFromItem(inventory: Inventory, items: MutableMap<ItemStack, AvailableItemInformation>) {
 		for ((index, item: ItemStack?) in inventory.contents.withIndex()) {
 			if (item == null || item.type.isEmpty) continue
 			val information = items.getOrPut(item.asOne()) { AvailableItemInformation(AtomicInteger(), mutableListOf()) }
