@@ -354,8 +354,6 @@ class ShipFactoryTask(
 		return true
 	}
 
-	private data class AvailableItemInformation(val amount: AtomicInteger, val references: MutableList<ItemReference>)
-
 	private fun sendMissing(missingMaterials: MutableMap<PrintItem, AtomicInteger>) {
 		missingMaterialsCache[player.uniqueId] = missingMaterials.mapValues { it.value.get() }
 
@@ -381,24 +379,26 @@ class ShipFactoryTask(
 		player.userError("Use <italic><underlined><click:run_command:/shipfactory listmissing all>/shipfactory listmissing all</click></italic> to list all missing materials in one message.")
 	}
 
-	private fun consumeItemFromReferences(references: Collection<ItemReference>, amount: Int): Int {
-		var remaining = amount
+	companion object {
+		fun consumeItemFromReferences(references: Collection<ItemReference>, amount: Int): Int {
+			var remaining = amount
 
-		for (reference in references) {
-			val item = reference.get() ?: continue
-			val stackAmount = item.amount
+			for (reference in references) {
+				val item = reference.get() ?: continue
+				val stackAmount = item.amount
 
-			if (remaining >= stackAmount) {
-				remaining -= stackAmount
-				reference.inventory.setItem(reference.index, null)
-			} else {
-				val toRemove = minOf(stackAmount, remaining)
-				item.amount -= toRemove
-				remaining -= toRemove
+				if (remaining >= stackAmount) {
+					remaining -= stackAmount
+					reference.inventory.setItem(reference.index, null)
+				} else {
+					val toRemove = minOf(stackAmount, remaining)
+					item.amount -= toRemove
+					remaining -= toRemove
+				}
 			}
-		}
 
-		return remaining
+			return remaining
+		}
 	}
 
 	private fun markItemMissing(printItem: PrintItem, amount: Int): Int {

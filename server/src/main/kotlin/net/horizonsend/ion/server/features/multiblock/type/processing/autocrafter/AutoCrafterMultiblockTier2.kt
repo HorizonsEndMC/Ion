@@ -4,7 +4,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Material
 
-object AutoCrafterMultiblockTier2 : AutoCrafterMultiblock(text("Tier 2", YELLOW), Material.GOLD_BLOCK, iterations = 4) {
+object AutoCrafterMultiblockTier2 : AutoCrafterMultiblock(text("Tier 2", YELLOW), Material.GOLD_BLOCK, craftingIterations = 4) {
 	override val maxPower: Int = 400_000
 }
 
