@@ -767,7 +767,7 @@ object Crafting : IonServerComponent() {
 		shaped("vein_miner_modifier", VEIN_MINER_25.constructItemStack()) {
 			shape("ipi", "prp", "ipi")
 
-			setIngredient('i', ExactChoice(ALUMINUM_BLOCK.constructItemStack()))
+			setIngredient('i', ALUMINUM_INGOT)
 			setIngredient('p', OBSERVER)
 			setIngredient('r', RANGE_1.constructItemStack())
 		}
