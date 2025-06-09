@@ -61,7 +61,7 @@ object Bazaars : IonServerComponent() {
 	private fun buildStrings() {
 		strings.addAll(Material.entries.filter { it.isItem && !it.isLegacy && !it.isAir }.map { it.name })
 		strings.addAll(CustomItemRegistry.identifiers)
-		strings.addAll(MultiblockRegistration.getAllMultiblocks().map { "MULTIBLOCK_TOKEN[multiblock=${it.javaClass.simpleName}]" })
+		strings.addAll(MultiblockRegistration.getAllMultiblocks().map { "MULTIBLOCK_TOKEN[multiblock=\"${it.javaClass.simpleName}\"]" })
 		strings.remove("MULTIBLOCK_TOKEN")
 		strings.remove("PACKAGED_MULTIBLOCK")
 	}
