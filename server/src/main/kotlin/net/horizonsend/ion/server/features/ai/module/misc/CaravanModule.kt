@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.ai.module.misc
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyTemplate
 import net.horizonsend.ion.server.features.ai.convoys.ConvoyContext
 import net.horizonsend.ion.server.features.ai.convoys.ConvoyRoute
@@ -18,6 +19,7 @@ import net.horizonsend.ion.server.features.starship.fleet.FleetLogic
 import net.horizonsend.ion.server.features.starship.fleet.FleetMember
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import java.lang.ref.WeakReference
@@ -44,6 +46,7 @@ class CaravanModule(
 		if (fleet.logic != null) return
 		val logic = CaravanFleetLogic(template,source,route,fleet)
 		fleet.logic  = logic
+		debugAudience.debug("Added a caravan fleet logic to this ships fleet: ${this.starship.getDisplayNamePlain()}")
 	}
 
 	override fun tick() {
@@ -74,7 +77,7 @@ class CaravanModule(
 			isTraveling = false
 		} else {
 			if ((fleet.logic as? CaravanFleetLogic)?.isTraveling == true)
-				enmity.addTarget(target)
+				enmity.addTarget(target, decay = false, aggroed = true)
 			isTraveling = true
 		}
 	}
@@ -102,11 +105,11 @@ class CaravanModule(
 		return when (leader) {
 			is FleetMember.PlayerMember -> {
 				val player = Bukkit.getPlayer(leader.uuid) ?: return null
-				PlayerTarget(player) //TODO cast to piloted starship
+				PlayerTarget(player, attack = false) //TODO cast to piloted starship
 			}
 			is FleetMember.AIShipMember -> {
 				val ship = leader.shipRef.get() ?: return null
-				StarshipTarget(ship)
+				StarshipTarget(ship, attack = false)
 			}
 		}
 	}
@@ -124,7 +127,7 @@ class CaravanFleetLogic(
 
 	fun advanceDestination() : Location {
 		val next = route.advanceDestination()
-
+		debugAudience.debug("New convoy destination: $next")
 		if (next != null) {
 			return next
 		}
@@ -141,6 +144,7 @@ class CaravanFleetLogic(
 
 		if (largest != null) {
 			fleet.leader = FleetMember.AIShipMember(WeakReference(largest))
+			debugAudience.debug("Assigned fleet leader to ${largest.getDisplayNamePlain()}")
 		}
 	}
 

@@ -150,8 +150,9 @@ object AISpawners : IonServerComponent(true) {
 		// Initialize all the per world spawners, after the worlds have all initialized
 		for (world in IonServer.server.worlds) {
 			if (!world.ion.hasFlag(ALLOW_AI_SPAWNS)) continue
-
-			spawners.addAll(perWorldSpawners.map { it.invoke(world) })
+			val new = perWorldSpawners.map { it.invoke(world) }
+			spawners.addAll(new)
+			new.mapNotNullTo(tickedAISpawners) { it.scheduler as? TickedScheduler }
 		}
 	}
 

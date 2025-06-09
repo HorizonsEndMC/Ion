@@ -28,7 +28,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.UUID
 
-class Fleet(var leader: FleetMember?) : ForwardingAudience {
+class Fleet(var leader: FleetMember?, var initalized : Boolean = true) : ForwardingAudience {
 
     val members = mutableSetOf<FleetMember>()
     private val invited = mutableSetOf<FleetMember>()

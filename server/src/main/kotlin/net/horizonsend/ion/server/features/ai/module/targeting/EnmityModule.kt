@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.ai.module.targeting
 
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.AIEmities
 import net.horizonsend.ion.server.features.ai.module.AIModule
@@ -22,6 +22,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
+import net.horizonsend.ion.server.features.starship.fleet.Fleet
+import net.horizonsend.ion.server.features.starship.fleet.FleetMember
 import net.horizonsend.ion.server.features.starship.fleet.toFleetMember
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -29,6 +31,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.event.entity.PlayerDeathEvent
 import java.util.function.Supplier
 import kotlin.math.cbrt
+import kotlin.math.max
 
 open class EnmityModule(
 	controller: AIController,
@@ -52,7 +55,7 @@ open class EnmityModule(
 		decayEnmity()
 		generateEnmity()
 		updateAggro()
-		debugAudience.information("Number of targets: ${enmityList.size}")
+		debugAudience.debug("Number of targets: ${enmityList.size}, agrooed: ${enmityList.filter{ it.aggroed }.size}")
 		sortEnmity()
 	}
 
@@ -84,7 +87,7 @@ open class EnmityModule(
 		return findTargetsAnywhere().firstOrNull()
 	}
 	fun findTargetsAnywhere() : List<AITarget>{
-		return enmityList.map { it.target }
+		return enmityList.filter { it.aggroed }.map { it.target }
 	}
 
 	fun generateEnmity() {
@@ -151,10 +154,11 @@ open class EnmityModule(
 
 	private fun aggroOnDamager() {
 		val topDamager = starship.damagers.maxByOrNull { it.value.points.get() } ?: return
+		val points = starship.damagers.maxOfOrNull{ it.value.points.get() } ?: return
 		val tempTarget  = topDamager.key.getAITarget()?.let { AIOpponent(it) } ?: return
 		if (!targetFilter(starship,tempTarget.target,targetAI)) return
 
-		//extra friendly fire check
+		//extra friendly fire check for AI ships
 		if ((tempTarget.target as? StarshipTarget)?.ship?.controller is AIController) {
 			val targetController = (tempTarget.target as StarshipTarget).ship.controller as AIController
 
@@ -168,17 +172,46 @@ open class EnmityModule(
 
 		val index = enmityList.indexOf(tempTarget)
 		if (index != -1) {
+			if (enmityList[index].damagePoints >= points) return
+			enmityList[index].damagePoints = points
 			enmityList[index].damagerWeight += config.damagerAggroWeight * 0.5 //the highest damager will generate base emity
 		} else {
 			tempTarget.damagerWeight = config.damagerAggroWeight
+			tempTarget.damagePoints = points
 			enmityList.add(tempTarget)
 		}
 	}
 
 	private fun updateAggro() {
-		enmityList.forEach {
+		val fleet = controller.getUtilModule(AIFleetManageModule::class.java)?.fleet
+
+		enmityList.filter { !it.aggroed }.forEach {
 			if (it.baseWeight >= config.initialAggroThreshold) it.aggroed = true
 			if (it.damagerWeight >= config.initialAggroThreshold * 4) it.aggroed = true
+			if (it.aggroed && it.target.attack && fleet != null) propagateToFleet(it, fleet)
+		}
+	}
+
+	private fun propagateToFleet(opponent : AIOpponent, fleet: Fleet) {
+		val aiFleetMembers = fleet.members.filterIsInstance<FleetMember.AIShipMember>().mapNotNull { it.shipRef.get() }
+		aiFleetMembers.forEach {starship ->
+			val enmityModule = (starship.controller as? AIController)?.getCoreModuleByType<EnmityModule>() ?: return
+			val otherList = enmityModule.enmityList
+			val index = otherList.indexOf(opponent)
+
+			if (index != -1) {
+				otherList[index].aggroed = opponent.aggroed
+				otherList[index].baseWeight = max(config.initialAggroThreshold, opponent.baseWeight)
+				otherList[index].damagerWeight = max(otherList[index].damagerWeight, opponent.damagerWeight)
+			} else {
+				val newAIOpponent = AIOpponent(
+					opponent.target, aggroed = opponent.aggroed,
+					baseWeight = config.initialAggroThreshold,
+					damagerWeight = opponent.damagerWeight,
+					decay = opponent.decay)
+				otherList.add(newAIOpponent)
+			}
+
 		}
 	}
 
@@ -250,6 +283,7 @@ open class EnmityModule(
 		var damagerWeight : Double = 0.0,
 		var aggroed : Boolean = false,
 		val decay : Boolean = true,
+		var damagePoints : Int = 0
 	) {
 
 		override fun hashCode(): Int {

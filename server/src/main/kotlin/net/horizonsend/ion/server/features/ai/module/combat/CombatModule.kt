@@ -54,6 +54,7 @@ abstract class CombatModule<T>(
 	protected fun fireAllWeapons(origin: Vec3i, target: AITarget, aimAtRandom : Boolean	) {
 
 		if (!AIDebugModule.showAims && !AIDebugModule.fireWeapons) return //dont do anything if both of the options are false
+		if (!target.attack) return //dont mess with goals
 
 		val targetPos = target.getVec3i()
 		//println("targetPos : $targetPos")

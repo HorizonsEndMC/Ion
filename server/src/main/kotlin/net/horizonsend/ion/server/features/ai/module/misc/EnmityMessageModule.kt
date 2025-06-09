@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.ai.configuration.AIEmities
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
+import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -30,7 +31,11 @@ class EnmityMessageModule(
 				if (messaged.contains(key)) continue
 				if (!msg.shouldTrigger(opponent,config)) continue
 
-				val player = (opponent.target as? PlayerTarget)?.player ?: continue
+				val player = if (opponent.target is PlayerTarget) {
+					(opponent.target as PlayerTarget).player
+				} else {
+					(opponent.target as? StarshipTarget)?.ship?.playerPilot
+				} ?: continue
 				player.sendMessage(buildMessage(msg.message))
 				messaged.add(key)
 			}

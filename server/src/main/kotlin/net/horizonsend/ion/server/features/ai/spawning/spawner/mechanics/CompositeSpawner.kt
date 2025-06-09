@@ -78,6 +78,7 @@ class CompositeSpawner(
 			individualSpawnMessage?.broadcast(spawnPoint, ship.template)
 
 		}
+		aiFleet.initalized = true
 
 		if (aiFleet.members.isNotEmpty() && groupMessage != null) {
 			IonServer.server.sendMessage(

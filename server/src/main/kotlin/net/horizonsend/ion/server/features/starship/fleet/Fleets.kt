@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.starship.fleet
 
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -26,8 +28,9 @@ object Fleets : IonServerComponent() {
     fun create(player: Player) = fleetList.add(Fleet(player.toFleetMember()))
 
 	fun createAIFleet() : Fleet{
-		val fleet = Fleet(null)
+		val fleet = Fleet(null, initalized = false)
 		fleetList.add(fleet)
+		debugAudience.debug("Created fleet")
 		return fleet
 	}
 
@@ -35,6 +38,7 @@ object Fleets : IonServerComponent() {
         if (fleetList.contains(fleet)) {
             fleet.delete()
             fleetList.remove(fleet)
+			debugAudience.debug("removed fleet")
         }
     }
 
@@ -54,7 +58,7 @@ object Fleets : IonServerComponent() {
 
 	private fun cleanUp() {
 		val toRemove = mutableSetOf<Fleet>()
-		for (fleet in fleetList) {
+		for (fleet in fleetList.filter { it.initalized }) {
 			cleanupDeadAiMembers(fleet) ?: toRemove.add(fleet)
 			reassignLeader(fleet)
 		}
@@ -72,10 +76,10 @@ object Fleets : IonServerComponent() {
 			fleet.leader = null
 		}
 
-		if (fleet.members.isEmpty()) {
-			return fleet
+		if (fleet.members.isEmpty() && fleet.leader !is FleetMember.PlayerMember) {
+			return null
 		}
-		return null
+		return fleet
 	}
 
 	private fun reassignLeader(fleet: Fleet) {

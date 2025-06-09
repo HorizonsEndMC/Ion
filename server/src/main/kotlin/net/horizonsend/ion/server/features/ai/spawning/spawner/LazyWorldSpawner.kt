@@ -20,10 +20,10 @@ class LazyWorldSpawner(
 	/* temporary dummy – we replace it the moment trigger() runs */
 	object : SpawnerMechanic() {
 		override suspend fun trigger(logger: Logger) {
-			TODO("Not yet implemented")
+
 		}
 		override fun getAvailableShips(): Collection<SpawnedShip> {
-			TODO("Not yet implemented")
+			return emptyList()
 		}
 	}
 ) {

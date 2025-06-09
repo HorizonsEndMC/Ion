@@ -70,6 +70,7 @@ abstract class MultiSpawner(
 
 			individualSpawnMessage?.broadcast(spawnPoint, spawnedShip.template)
 		}
+		aiFleet.initalized = true
 
 		if (aiFleet.members.isNotEmpty() && groupMessage != null) {
 			IonServer.server.sendMessage(template(
