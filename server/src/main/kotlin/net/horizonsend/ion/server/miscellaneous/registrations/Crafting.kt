@@ -745,23 +745,23 @@ object Crafting : IonServerComponent() {
 		shaped("aoe_1_modifier", RANGE_1.constructItemStack()) {
 			shape("ipi", "prp", "ipi")
 
-			setIngredient('i', IRON_BLOCK)
+			setIngredient('i', IRON_INGOT)
 			setIngredient('p', PISTON)
 			setIngredient('r', REDSTONE_BLOCK)
 		}
 		shaped("aoe_2_modifier", RANGE_2.constructItemStack()) {
-			shape("ipi", "prp", "ipi")
+			shape("iii", "prp", "iii")
 
-			setIngredient('i', ExactChoice(STEEL_BLOCK.constructItemStack()))
+			setIngredient('i', IRON_BLOCK)
 			setIngredient('p', PISTON)
 			setIngredient('r', ExactChoice(RANGE_1.constructItemStack()))
 		}
 
 		shaped("aoe_3_modifier", RANGE_3.constructItemStack()) {
-			shape("ipi", "prp", "ipi")
+			shape("iii", "prp", "iii")
 
-			setIngredient('i', ExactChoice(STEEL_BLOCK.constructItemStack()))
-			setIngredient('p', ExactChoice(STEEL_PLATE.constructItemStack()))
+			setIngredient('i', ExactChoice(STEEL_INGOT.constructItemStack()))
+			setIngredient('p', PISTON)
 			setIngredient('r', ExactChoice(RANGE_2.constructItemStack()))
 		}
 		shaped("vein_miner_modifier", VEIN_MINER_25.constructItemStack()) {
