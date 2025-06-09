@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.PowerEntityDisplayModule
@@ -27,8 +28,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.B
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.FORWARD
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.BLUE
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -42,15 +45,22 @@ import org.bukkit.persistence.PersistentDataAdapterContext
 
 sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedShipFactoryEntity>() {
 	override val signText = createSignText(
-		line1 = text("Starship Factory", NamedTextColor.BLUE),
-		line2 = text("Advanced", NamedTextColor.YELLOW),
+		line1 = text("Starship Factory", BLUE),
+		line2 = text("Advanced", YELLOW),
 		line3 = null,
 		line4 = null
 	)
 
 	override val blockPlacementsPerTick: Int = 100
 
-	override val displayName: Component get() = text("Advanced Ship Factory")
+	override val displayName: Component get() = ofChildren(
+		text("Advanced ", YELLOW), text("Starship Factory", BLUE),
+
+		if (leftMergeAvailable && rightMergeAvailable) text(" Mergable Left and Right")
+		else if (leftMergeAvailable) text(" Mergable Left")
+		else if (rightMergeAvailable) text(" Mergable Right")
+		else empty(),
+	)
 	override val description: Component get() = text("Print starships and other structures with materials and credits. Provides more configuration settings.")
 
 	abstract val leftMergeAvailable: Boolean
