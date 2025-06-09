@@ -705,7 +705,7 @@ object Crafting : IonServerComponent() {
 		shaped("auto_smelt_modifier", AUTO_SMELT.constructItemStack()) {
 			shape("iri", "bfb", "ici")
 
-			setIngredient('s', IRON_INGOT)
+			setIngredient('i', IRON_INGOT)
 			setIngredient('b', GOLD_BLOCK)
 			setIngredient('f', BLAST_FURNACE)
 			setIngredient('r', REDSTONE_BLOCK)
