@@ -17,7 +17,7 @@ import net.minecraft.world.inventory.ResultContainer
 import org.bukkit.Material
 import org.bukkit.craftbukkit.inventory.CraftInventory
 
-class AutoStonecutterIntegration(
+class AutoMasonIntegration(
 	taskEntity: ShipFactoryEntity,
 	entity: AutoMasonMultiblockEntity
 ) : ShipFactoryIntegration<AutoMasonMultiblockEntity>(taskEntity, entity) {
