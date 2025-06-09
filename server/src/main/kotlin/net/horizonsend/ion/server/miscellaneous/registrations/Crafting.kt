@@ -702,13 +702,13 @@ object Crafting : IonServerComponent() {
 			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
 		}
 		shaped("auto_smelt_modifier", AUTO_SMELT.constructItemStack()) {
-			shape("srs", "bfb", "scs")
+			shape("iri", "bfb", "ici")
 
-			setIngredient('s', STEEL_PLATE.constructItemStack())
+			setIngredient('s', IRON_INGOT)
 			setIngredient('b', GOLD_BLOCK)
 			setIngredient('f', BLAST_FURNACE)
 			setIngredient('r', REDSTONE_BLOCK)
-			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
+			setIngredient('c', CIRCUITRY.constructItemStack())
 		}
 		shaped("auto_compost_modifier", AUTO_COMPOST.constructItemStack()) {
 			shape("tit", "tct", "trt")
