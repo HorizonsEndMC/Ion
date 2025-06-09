@@ -27,7 +27,7 @@ class HyperspaceWarmup(
     val ship: ActiveStarship,
     var warmup: Int,
     val dest: Location,
-    val drive: HyperdriveSubsystem,
+    val drive: HyperdriveSubsystem?,
     private val useFuel: Boolean
 ) : BukkitRunnable() {
 	init {
@@ -60,7 +60,7 @@ class HyperspaceWarmup(
 			)
 		}
 
-		if (!drive.isIntact()) {
+		if (drive != null && !drive.isIntact()) {
 			ship.onlinePassengers.forEach { player ->
 				player.alertAction(
 					"Drive damaged! Jump failed!"
@@ -94,6 +94,7 @@ class HyperspaceWarmup(
 		}
 
 		if (useFuel) {
+			require(drive != null) {"No hyperdrive to pull fuel from (null state)"}
 			require(drive.hasFuel()) { "Hyperdrive doesn't have fuel!" }
 			drive.useFuel()
 		}
@@ -106,7 +107,7 @@ class HyperspaceWarmup(
 	// 500 block starfighter would be 12 blocks
 	// 12000 block destroyer would be 42
 	private val particleRadius = ship.initialBlockCount.toDouble().pow(2.0/5.0)
-	private val startLocation = drive.pos.toLocation(ship.world)
+	private val startLocation = drive?.pos?.toLocation(ship.world) ?: ship.centerOfMass.toLocation(ship.world)
 	private val count = maxOf(100, 50 / (seconds - warmup) + 20)
 
 	private fun displayParticles() {

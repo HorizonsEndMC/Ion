@@ -122,18 +122,12 @@ class CaravanFleetLogic(
 	fleet: Fleet
 ) : FleetLogic(fleet) {
 	var isTraveling = true
-	var currentDestination = advanceDestination()
-	val waitTime = 600 // number of seconds to wait at a location
+	var currentDestination = advanceDestination() ?: source
+	val waitTime = 60 // number of seconds to wait at a location
 
-	fun advanceDestination() : Location {
+	fun advanceDestination() : Location? {
 		val next = route.advanceDestination()
-		debugAudience.debug("New convoy destination: $next")
-		if (next != null) {
-			return next
-		}
-		// If we ran out of destinations, disband
-		disband()
-		return source
+		return next
 	}
 
 	fun assignLeader() {
@@ -174,11 +168,18 @@ class CaravanFleetLogic(
 		if (currentLoc.world == currentDestination.world &&
 			currentLoc.distance(currentDestination) < 100.0) {
 
-			currentDestination = advanceDestination()
+			val nextDestination = advanceDestination()
+
+			if (nextDestination == null) {
+				disband()
+				return
+			}
 			isTraveling = false
 
 			// Schedule resumption after waitTime seconds
 			Tasks.syncDelay(waitTime * 20L) { // 20 ticks per second
+				currentDestination = nextDestination
+				debugAudience.debug("New convoy destination: $nextDestination")
 				isTraveling = true
 			}
 		}

@@ -56,6 +56,8 @@ class NavigationModule(
 		validateNavigation()
 		//only try to use hyperdrive when navigation calls for it and after navigation has been evaluated
 		if (navigate && hyperdriveNavigate && !triggerUpdate && ticks % 20 == 0) attemptHyperdrive() //tick every second
+		//interrupt hyperdrive if not necessary to prevent oscillations
+		if (!hyperdriveNavigate && Hyperspace.isWarmingUp(starship)) Hyperspace.interruptWarmup(starship)
 
 		ticks++
 		if (ticks % tickRate != 0 && !triggerUpdate) return
@@ -87,9 +89,9 @@ class NavigationModule(
 
 		val dist = navigationTarget.position.toVector().distance(location.toVector())
 		if (starship.beacon != null && starship.beacon!!.radius > dist) { // if nearby beacon use beacon
-			val hyperdrive = starship.hyperdrives.firstOrNull{it.isIntact()}
-			if (hyperdrive == null) {
-				starship.debug("Need hyperdrive to use beacon, giving up")
+			val hyperdrive = starship.hyperdrives.firstOrNull()
+			if (hyperdrive != null && !hyperdrive.isIntact()) {
+				starship.debug("Need hyperdrive to use beacon,it is broken, giving up")
 				navigationTarget.hyperspace = false
 				setOverride(null) // give up navigation
 				return
@@ -101,9 +103,9 @@ class NavigationModule(
 		}
 
 		//navigating intrasystem
-		val hyperdrive = starship.hyperdrives.firstOrNull{it.isIntact()}
-		if (hyperdrive == null) {
-			starship.debug("Missing hyperdrive, cruising instead")
+		val hyperdrive = starship.hyperdrives.firstOrNull()
+		if (hyperdrive != null && !hyperdrive.isIntact()) {
+			starship.debug("Broken hyperdrive, cruising instead")
 			navigationTarget.hyperspace = false
 			return
 		}
@@ -114,13 +116,13 @@ class NavigationModule(
 
 	}
 
-	private fun useBeacon(hyperdrive : HyperdriveSubsystem) {
+	private fun useBeacon(hyperdrive : HyperdriveSubsystem?) {
 		val beacon = starship.beacon!!
 		val other = beacon.exits?.randomOrNull() ?: beacon.destination
 		tryJump(hyperdrive, other.toLocation(), Int.MAX_VALUE)
 	}
 
-	private fun tryJump(hyperdrive : HyperdriveSubsystem, jumpLocation: Location, maxRange : Int) {
+	private fun tryJump(hyperdrive : HyperdriveSubsystem?, jumpLocation: Location, maxRange : Int) {
 		if (getHyperspaceWorld(world) == null) {
 			starship.debug("no hyperspace world attached to space world")
 			return
@@ -162,7 +164,7 @@ class NavigationModule(
 		x1 += randomInt(-offset, offset)
 		z1 += randomInt(-offset, offset)
 
-		Hyperspace.beginJumpWarmup(starship, hyperdrive, x1, z1, jumpLocation.world, false)
+		Hyperspace.beginJumpWarmup(starship, hyperdrive, x1, z1, jumpLocation.world, false, nullable = true)
 
 	}
 
@@ -192,6 +194,7 @@ class NavigationModule(
 		}
 		if (!world.hasFlag(WorldFlag.HYPERSPACE_WORLD)) {
 			navigate = false //target is close enough to not require navigation
+			hyperdriveNavigate = false
 			setOverride(null)
 			return
 		} else {} // not sure what the other condition should be
