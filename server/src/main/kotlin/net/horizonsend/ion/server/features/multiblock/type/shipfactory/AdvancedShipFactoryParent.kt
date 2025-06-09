@@ -19,7 +19,7 @@ import net.horizonsend.ion.server.features.multiblock.type.processing.automason.
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent.AdvancedShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.factory.ShipFactoryPrintTask
-import net.horizonsend.ion.server.features.starship.factory.integration.AutoStonecutterIntegration
+import net.horizonsend.ion.server.features.starship.factory.integration.AutoMasonIntegration
 import net.horizonsend.ion.server.features.starship.factory.integration.BazaarTerminalIntegration
 import net.horizonsend.ion.server.features.starship.factory.integration.ShipFactoryIntegration
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
@@ -347,7 +347,7 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 
 		fun getMergeIntegration(multiblockEntity: MultiblockEntity): ShipFactoryIntegration<*>? = when (multiblockEntity) {
 			is BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity -> BazaarTerminalIntegration(this, multiblockEntity)
-			is AutoMasonMultiblockEntity -> AutoStonecutterIntegration(this, multiblockEntity)
+			is AutoMasonMultiblockEntity -> AutoMasonIntegration(this, multiblockEntity)
 			else -> null
 		}
 
