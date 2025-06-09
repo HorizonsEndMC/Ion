@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
+import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
@@ -12,7 +13,10 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.Signl
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.averageBy
+import net.horizonsend.ion.server.miscellaneous.utils.isGlass
+import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
 import net.minecraft.core.component.DataComponents
+import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 import org.bukkit.craftbukkit.util.CraftMagicNumbers
@@ -24,31 +28,41 @@ import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.FileWriter
 import java.io.InputStreamReader
+import java.util.concurrent.CompletableFuture
 import kotlin.system.measureTimeMillis
 
 @CommandPermission("ion.nope")
 @CommandAlias("modelcreator")
 object ModelCreator : SLCommand() {
-	val packDir = IonServer.dataFolder.resolve("generated/pack").apply { mkdirs() }
-	val itemModelPath = packDir.resolve("assets/horizonsend/models/item/multiblock").apply { mkdirs() }
-	val itemDefinitionPath = packDir.resolve("assets/horizonsend/items/multiblock").apply { mkdirs() }
+	private val packDir = IonServer.dataFolder.resolve("generated/pack").apply { mkdirs() }
+	private val itemModelPath = packDir.resolve("assets/horizonsend/models/item/multiblock").apply { mkdirs() }
+	private val itemDefinitionPath = packDir.resolve("assets/horizonsend/items/multiblock").apply { mkdirs() }
 
 	@Default
 	fun createModels(sender: Player) {
 		Tasks.async {
 			val time = measureTimeMillis {
 				val multiblocks = MultiblockRegistration.getAllMultiblocks()
+				val futures = mutableListOf<CompletableFuture<Unit>>()
 
 				for (multiblock in multiblocks) {
-					makeModelFiles(multiblock)
+					val future = CompletableFuture<Unit>()
+					futures.add(future)
+
+					Tasks.async {
+						future.complete(makeModelFiles(multiblock))
+						sender.informationAction("Completed $multiblock")
+					}
 				}
+
+				CompletableFuture.allOf(*futures.toTypedArray()).join()
 			}
 
 			sender.success("success, $time ms")
 		}
 	}
 
-	fun makeModelFiles(multiblock: Multiblock) {
+	private fun makeModelFiles(multiblock: Multiblock) {
 		val parent = if (multiblock is SignlessStarshipWeaponMultiblock<*>) "weapon" else multiblock.name.lowercase()
 		val name = multiblock.javaClass.simpleName.lowercase()
 
@@ -74,7 +88,7 @@ object ModelCreator : SLCommand() {
 		defintitionWriter.close()
 	}
 
-	fun createModel(from: MultiblockShape): String {
+	private fun createModel(from: MultiblockShape): String {
 		val requirements = from.getRequirementMap(BlockFace.NORTH)
 		val examples: List<String> = requirements.mapTo(mutableListOf()) { getMaterialTexture(it.value.example) }.distinct()
 
@@ -143,7 +157,7 @@ object ModelCreator : SLCommand() {
 	 * Creates a json block representing a single cube at the offset provided.
 	 * The material index is computed ahead of time.
 	 **/
-	fun createBlockString(offsetX: Double, offsetY: Double, offsetZ: Double, materialIndex: Int): String {
+	private fun createBlockString(offsetX: Double, offsetY: Double, offsetZ: Double, materialIndex: Int): String {
 		val builder = StringBuilder()
 
 		builder.append("\t\t{\n") // Cube block open {
@@ -168,14 +182,16 @@ object ModelCreator : SLCommand() {
 	/** To ensure a lack of mistakes, handle the quotation of text in a separate function */
 	private fun getQuoted(text: String): String = "\"$text\""
 
-	fun getMaterialTexture(blockData: BlockData): String {
+	private fun getMaterialTexture(blockData: BlockData): String {
 		val customBlock = CustomBlocks.getByBlockData(blockData)
 		if (customBlock != null) {
 			val item = customBlock.customItem
 			return "horizonsend:block/${item.customModel}"
 		}
 
-		val material = blockData.material
+		var material = blockData.material
+		if (material.isGlass) material = Material.GLASS
+		if (material.isGlassPane) material = Material.GLASS
 
 		val nmsItem = CraftMagicNumbers.getBlock(material).asItem()
 		val nmsModel = nmsItem.components().get(DataComponents.ITEM_MODEL)!!.path
@@ -184,7 +200,7 @@ object ModelCreator : SLCommand() {
 		var withName = heAssetsFolder.resolve("$nmsModel.json")
 
 		if (!withName.exists()) {
-			val closest = heAssetsFolder.listFiles().firstOrNull { file -> file.name.startsWith(nmsModel) }
+			val closest = heAssetsFolder.listFiles()?.firstOrNull { file -> file.name.startsWith(nmsModel) }
 
 			if (closest != null) {
 				withName = closest
