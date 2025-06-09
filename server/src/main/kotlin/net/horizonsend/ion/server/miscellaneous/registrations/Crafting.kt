@@ -161,6 +161,7 @@ import org.bukkit.Material.DISPENSER
 import org.bukkit.Material.EMERALD
 import org.bukkit.Material.EMERALD_BLOCK
 import org.bukkit.Material.ENCHANTED_BOOK
+import org.bukkit.Material.END_ROD
 import org.bukkit.Material.FEATHER
 import org.bukkit.Material.FIREWORK_ROCKET
 import org.bukkit.Material.GILDED_BLACKSTONE
@@ -686,20 +687,20 @@ object Crafting : IonServerComponent() {
 			setIngredient('s', FORTUNE_2.constructItemStack())
 		}
 		shaped("power_capacity_25_modifier", POWER_CAPACITY_25.constructItemStack()) {
-			shape("sbs", "brb", "scs")
+			shape("ibi", "brb", "ici")
 
-			setIngredient('s', STEEL_INGOT.constructItemStack())
+			setIngredient('i', IRON_INGOT)
 			setIngredient('b', BATTERY_M.constructItemStack())
 			setIngredient('r', REDSTONE_BLOCK)
-			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('c', END_ROD)
 		}
 		shaped("power_capacity_50_modifier", POWER_CAPACITY_50.constructItemStack()) {
 			shape("sbs", "brb", "scs")
 
-			setIngredient('s', STEEL_PLATE.constructItemStack())
+			setIngredient('s', IRON_INGOT)
 			setIngredient('b', BATTERY_G.constructItemStack())
-			setIngredient('r', REDSTONE_BLOCK)
-			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
+			setIngredient('r', POWER_CAPACITY_25.constructItemStack())
+			setIngredient('c', END_ROD)
 		}
 		shaped("auto_smelt_modifier", AUTO_SMELT.constructItemStack()) {
 			shape("iri", "bfb", "ici")
