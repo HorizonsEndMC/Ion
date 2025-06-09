@@ -737,11 +737,10 @@ object Crafting : IonServerComponent() {
 			setIngredient('r', REDSTONE_BLOCK)
 		}
 		shaped("extended_bar_modifier", EXTENDED_BAR.constructItemStack()) {
-			shape("st ", "tct", " ts")
+			shape("st ", "tst", " ts")
 
-			setIngredient('s', STEEL_PLATE.constructItemStack())
+			setIngredient('s', STEEL_INGOT.constructItemStack())
 			setIngredient('t', TITANIUM_INGOT.constructItemStack())
-			setIngredient('c', STEEL_CHASSIS.constructItemStack())
 		}
 		shaped("aoe_1_modifier", RANGE_1.constructItemStack()) {
 			shape("ipi", "prp", "ipi")
