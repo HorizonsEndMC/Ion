@@ -45,10 +45,10 @@ class AutoMasonMultiblockEntity(data: PersistentMultiblockData, override val mul
 	)
 
 	val mergeEnd = createLinkage(
-		offsetRight = if (multiblock is AutoMasonMultiblock.StandardAutoMasonMirroredMergableMultiblock) -3 else 3,
+		offsetRight = if (multiblock is AutoMasonMultiblock.AutoMasonLeftMergable) -3 else 3,
 		offsetUp = -1,
 		offsetForward = 3,
-		linkageDirection = if (multiblock is AutoMasonMultiblock.StandardAutoMasonMirroredMergableMultiblock) RelativeFace.LEFT else RelativeFace.RIGHT,
+		linkageDirection = if (multiblock is AutoMasonMultiblock.AutoMasonLeftMergable) RelativeFace.LEFT else RelativeFace.RIGHT,
 		predicate = { multiblock.mergeEnabled },
 		AdvancedShipFactoryEntity::class
 	)

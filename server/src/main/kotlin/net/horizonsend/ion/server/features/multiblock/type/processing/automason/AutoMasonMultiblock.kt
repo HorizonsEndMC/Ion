@@ -1,40 +1,54 @@
 package net.horizonsend.ion.server.features.multiblock.type.processing.automason
 
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
 
-sealed class AutoMasonMultiblock : Multiblock(), EntityMultiblock<AutoMasonMultiblockEntity> {
+sealed class AutoMasonMultiblock(val mergeEnabled: Boolean, left: Boolean) : Multiblock(), EntityMultiblock<AutoMasonMultiblockEntity>, DisplayNameMultilblock {
 	override val name: String = "automason"
 
 	abstract val inputOffset: Vec3i?
 	abstract val outputOffset: Vec3i?
 
-	open val mergeEnabled: Boolean = false
-
 	override val signText: Array<Component?> = createSignText(
-		Component.text("Auto Mason"),
-		null,
+		ofChildren(text("Auto ", NamedTextColor.DARK_GRAY), text("Mason", HE_LIGHT_ORANGE)),
+		if (mergeEnabled) text("Mergable", RED) else empty(),
 		null,
 		null
 	)
+
+	override val displayName: Component = ofChildren(
+		text("Auto ", NamedTextColor.DARK_GRAY),
+		text("Mason", HE_LIGHT_ORANGE),
+		if (left) text(" Left", NamedTextColor.GRAY) else text(" Right", NamedTextColor.GRAY),
+		if (mergeEnabled) text(" Mergable", RED) else empty()
+	)
+
+	override val description: Component = text("Executes the type of stonecutter recipe of the block displayed in the center. Input items are consumed to craft the output.")
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): AutoMasonMultiblockEntity {
 		return AutoMasonMultiblockEntity(data, this, manager, x, y, z, world, structureDirection)
 	}
 
-	data object StandardAutoMasonMultiblock : AutoMasonMultiblock() {
+	data object AutoMasonRight : AutoMasonMultiblock(false, false) {
 		override val outputOffset: Vec3i = Vec3i(3, 0, 3)
 		override val inputOffset: Vec3i = Vec3i(-3, 0, 3)
 
@@ -165,7 +179,7 @@ sealed class AutoMasonMultiblock : Multiblock(), EntityMultiblock<AutoMasonMulti
 		}
 	}
 
-	data object StandardAutoMasonMirroredMultiblock : AutoMasonMultiblock() {
+	data object AutoMasonLeft : AutoMasonMultiblock(mergeEnabled = false, left = true) {
 		override val outputOffset: Vec3i = Vec3i(-3, 0, 3)
 		override val inputOffset: Vec3i = Vec3i(3, 0, 3)
 
@@ -296,11 +310,9 @@ sealed class AutoMasonMultiblock : Multiblock(), EntityMultiblock<AutoMasonMulti
 		}
 	}
 
-	data object StandardAutoMasonMergableMultiblock : AutoMasonMultiblock() {
+	data object AutoMasonRightMergable : AutoMasonMultiblock(mergeEnabled = true, left = false) {
 		override val outputOffset: Vec3i = Vec3i(3, 0, 3)
 		override val inputOffset: Vec3i = Vec3i(-3, 0, 3)
-
-		override val mergeEnabled: Boolean = true
 
 		override fun MultiblockShape.buildStructure() {
 			z(4) {
@@ -429,11 +441,9 @@ sealed class AutoMasonMultiblock : Multiblock(), EntityMultiblock<AutoMasonMulti
 		}
 	}
 
-	data object StandardAutoMasonMirroredMergableMultiblock : AutoMasonMultiblock() {
+	data object AutoMasonLeftMergable : AutoMasonMultiblock(mergeEnabled = true, left = true) {
 		override val outputOffset: Vec3i = Vec3i(-3, 0, 3)
 		override val inputOffset: Vec3i = Vec3i(3, 0, 3)
-
-		override val mergeEnabled: Boolean = true
 
 		override fun MultiblockShape.buildStructure() {
 			z(4) {
