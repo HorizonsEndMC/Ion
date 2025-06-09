@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock.InventoryReference
@@ -37,6 +38,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.persistence.SettingsContainer
 import net.horizonsend.ion.server.miscellaneous.utils.persistence.SettingsContainer.SettingsProperty
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
@@ -61,7 +63,7 @@ import org.bukkit.util.Vector
 import java.nio.charset.Charset
 import java.util.UUID
 
-sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity>, InteractableMultiblock {
+sealed class BazaarTerminalMultiblock(private val mergeEnabled: Boolean) : Multiblock(), EntityMultiblock<BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity>, InteractableMultiblock, DisplayNameMultilblock {
 	override val name: String = "bazaarterminal"
 
 	override val signText: Array<Component?> = createSignText(
@@ -84,7 +86,14 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 	abstract val withdrawInventoryOffsets: Array<Vec3i>
 	abstract val withdrawPipeOrigin: Array<Vec3i>
 
-	data object BazaarTerminalMultiblockStandard : BazaarTerminalMultiblock() {
+	override val description: Component = text("Allows bulk interaction with bazaar, and provides on the fly purchasing when merged with an Advanced Ship Factory.")
+
+	override val displayName: Component = ofChildren(
+		text("Bazaar", DARK_AQUA), text(" Terminal", GRAY),
+		if (mergeEnabled) text(" Mergable", RED) else empty()
+	)
+
+	data object BazaarTerminalMultiblockStandard : BazaarTerminalMultiblock(false) {
 		override val depositInventoryOffsets: Array<Vec3i> = arrayOf(Vec3i(2, 0, 2))
 		override val depositPipeOrigin: Array<Vec3i> = arrayOf(Vec3i(2, -1, 2))
 		override val withdrawInventoryOffsets: Array<Vec3i> = arrayOf(Vec3i(-2, 0, 2))
@@ -154,7 +163,7 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		}
 	}
 
-	data object BazaarTerminalMultiblockMergeableLeft : BazaarTerminalMultiblock() {
+	data object BazaarTerminalMultiblockMergeableLeft : BazaarTerminalMultiblock(true) {
 		override val depositInventoryOffsets: Array<Vec3i> = arrayOf(Vec3i(2, 0, 2))
 		override val depositPipeOrigin: Array<Vec3i> = arrayOf(Vec3i(2, -1, 2))
 		override val withdrawInventoryOffsets: Array<Vec3i> = arrayOf()
@@ -224,7 +233,7 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 		}
 	}
 
-	data object BazaarTerminalMultiblockMergeableRight : BazaarTerminalMultiblock() {
+	data object BazaarTerminalMultiblockMergeableRight : BazaarTerminalMultiblock(true) {
 		override val depositInventoryOffsets: Array<Vec3i> = arrayOf()
 		override val depositPipeOrigin: Array<Vec3i> = arrayOf()
 		override val withdrawInventoryOffsets: Array<Vec3i> = arrayOf(Vec3i(-2, 0, 2))
@@ -378,7 +387,7 @@ sealed class BazaarTerminalMultiblock : Multiblock(), EntityMultiblock<BazaarTer
 			offsetUp = -1,
 			offsetForward = 2,
 			linkageDirection = if (multiblock is BazaarTerminalMultiblockMergeableRight) RelativeFace.RIGHT else RelativeFace.LEFT,
-			predicate = { multiblock !is BazaarTerminalMultiblockStandard },
+			predicate = { multiblock.mergeEnabled },
 			AdvancedShipFactoryEntity::class
 		)
 
