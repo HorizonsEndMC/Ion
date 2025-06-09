@@ -146,7 +146,7 @@ object ItemDebugCommand : SLCommand() {
 
 	@Subcommand("test deserialization")
 	@CommandCompletion("@newCustomItem @nothing")
-	fun deserializationTest(sender: Player, value: String) {
+	fun deserializationTest(sender: Player, value: String) = asyncCommand(sender) {
 		sender.information(CustomItemSerialization.getCompletions(value)?.joinToString { it } ?: "null")
 
 		val data = "[${value.substringAfter('[')}"
