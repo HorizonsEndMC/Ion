@@ -260,10 +260,10 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(GasFurnaceMultiblock)
 		registerMultiblock(MissileLoaderMultiblock)
 		registerMultiblock(AmmoLoaderMultiblock)
-		registerMultiblock(AutoMasonMultiblock.StandardAutoMasonMultiblock)
-		registerMultiblock(AutoMasonMultiblock.StandardAutoMasonMirroredMultiblock)
-		registerMultiblock(AutoMasonMultiblock.StandardAutoMasonMergableMultiblock)
-		registerMultiblock(AutoMasonMultiblock.StandardAutoMasonMirroredMergableMultiblock)
+		registerMultiblock(AutoMasonMultiblock.AutoMasonRight)
+		registerMultiblock(AutoMasonMultiblock.AutoMasonLeft)
+		registerMultiblock(AutoMasonMultiblock.AutoMasonRightMergable)
+		registerMultiblock(AutoMasonMultiblock.AutoMasonLeftMergable)
 
 		// Moreso powered multis than ship multis, could go in either spot tbh
 		registerMultiblock(MiningLaserMultiblockTier1Top)
