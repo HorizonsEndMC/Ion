@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.ensureUniqueIndexCaseInsensitive
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
 import net.horizonsend.ion.common.database.trx
 import net.horizonsend.ion.common.utils.DBVec3i
 import org.litote.kmongo.combine
@@ -19,13 +20,14 @@ import org.litote.kmongo.updateOneById
 class StationRentalArea(
 	override val _id: Oid<StationRentalArea>,
 
+	val station: Oid<NPCSpaceStation>,
 	val world: String,
 	val minPoint: DBVec3i,
 	val maxPoint: DBVec3i,
 
 	val name: String,
 
-	var rent: Int,
+	var rent: Double,
 
 	var owner: SLPlayerId? = null,
 	var rentBalance: Double = 0.0,
@@ -35,9 +37,9 @@ class StationRentalArea(
 		ensureUniqueIndexCaseInsensitive(StationRentalArea::name, indexOptions = IndexOptions().textVersion(3))
 		ensureIndex(StationRentalArea::world)
 	}) {
-		fun create(name: String, world: String, minPoint: DBVec3i, maxPoint: DBVec3i, rent: Int): Oid<StationRentalArea> = trx { sess ->
+		fun create(name: String, parent: Oid<NPCSpaceStation>, world: String, minPoint: DBVec3i, maxPoint: DBVec3i, rent: Double): Oid<StationRentalArea> = trx { sess ->
 			val id = objId<StationRentalArea>()
-			col.insertOne(sess, StationRentalArea(id, world, minPoint, maxPoint, name, rent))
+			col.insertOne(sess, StationRentalArea(id, parent, world, minPoint, maxPoint, name, rent))
 			return@trx id
 		}
 
