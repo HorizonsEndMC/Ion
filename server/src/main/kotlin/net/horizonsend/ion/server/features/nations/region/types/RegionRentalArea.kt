@@ -4,7 +4,6 @@ import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.database.document
 import net.horizonsend.ion.common.database.double
 import net.horizonsend.ion.common.database.get
-import net.horizonsend.ion.common.database.int
 import net.horizonsend.ion.common.database.long
 import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
@@ -25,7 +24,7 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 
 	var name: String = zone.name; private set
 
-	var rent: Int = zone.rent; private set
+	var rent: Double = zone.rent; private set
 	var owner: SLPlayerId? = zone.owner; private set
 	var rentBalance: Double = zone.rentBalance; private set
 	var rentLastCharged: Long = zone.rentLastCharged; private set
@@ -43,7 +42,7 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 		delta[StationRentalArea::maxPoint]?.let { maxPoint = Vec3i(it.document<DBVec3i>()) }
 
 		delta[StationRentalArea::owner]?.let { owner = it.slPlayerId() }
-		delta[StationRentalArea::rent]?.let { rent = it.int() }
+		delta[StationRentalArea::rent]?.let { rent = it.double() }
 		delta[StationRentalArea::rentBalance]?.let { rentBalance = it.double() }
 		delta[StationRentalArea::rentLastCharged]?.let { rentLastCharged = it.long() }
 	}
