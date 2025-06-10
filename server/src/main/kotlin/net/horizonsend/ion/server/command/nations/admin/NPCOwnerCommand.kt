@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import org.bukkit.Color
 import org.bukkit.Particle
 import org.bukkit.World
+import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.combine
@@ -175,8 +176,11 @@ internal object NPCOwnerCommand : SLCommand() {
 
 	@Subcommand("station rentalarea create")
 	@CommandCompletion("@npcStations")
-	fun onSetRentalAreaStation(sender: Player, stationName: String, regionName: String, world: World, x: Int, z: Int, rent: Double) {
+	fun onSetRentalAreaStation(sender: Player, stationName: String, regionName: String, rent: Double) {
 		val station = NPCSpaceStation.findOne(NPCSpaceStation::name eq stationName) ?: fail { "Station $stationName not found!" }
+
+		val signLocation = sender.location
+		if (signLocation.block.state !is Sign) fail { "You must be standing in the name plate sign!" }
 
 		val selection = requireSelection(sender)
 		if (selection !is CuboidRegion) fail { "You must make a cuboid selection!" }
@@ -184,7 +188,7 @@ internal object NPCOwnerCommand : SLCommand() {
 		val minPoint = Vec3i(selection.minimumPoint.x(), selection.minimumPoint.y(), selection.minimumPoint.z())
 		val maxPoint = Vec3i(selection.maximumPoint.x(), selection.maximumPoint.y(), selection.maximumPoint.z())
 
-		StationRentalArea.create(regionName, station._id, sender.world.name, minPoint, maxPoint, rent)
+		StationRentalArea.create(regionName, station._id, sender.world.name, Vec3i(signLocation), minPoint, maxPoint, rent)
 		sender.information("Created rental area $regionName in station $stationName")
 	}
 
@@ -228,7 +232,9 @@ internal object NPCOwnerCommand : SLCommand() {
 
 		sender.information("Station: $stationName")
 		sender.information("Rental area: $regionName")
+		sender.information("Sign Location: ${rentalArea.signLocation}")
 		sender.information("Min Point: ${rentalArea.minPoint}")
+		sender.information("Max Point: ${rentalArea.maxPoint}")
 		sender.information("Rent: ${rentalArea.rent}")
 		sender.information("Owner: ${rentalArea.owner?.let(SLPlayer::getName)}")
 		sender.information("Rent Balance: ${rentalArea.rentBalance}")
