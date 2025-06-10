@@ -53,7 +53,6 @@ import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
-import net.luckperms.api.node.NodeEqualityPredicate
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -78,13 +77,9 @@ enum class ChatChannel(
 				player.userErrorAction("You can't use global chat in this world! <italic>(If you need assistance, please use /msg)")
 			}
 
-			if (GToggleCommand.noGlobalInheritanceNode != null) {
-				val user = player.common().getUser()
-
-				if (user.data().contains(GToggleCommand.noGlobalInheritanceNode, NodeEqualityPredicate.IGNORE_EXPIRY_TIME).asBoolean()) {
-					player.userErrorAction("You have gtoggle on! Use /gtoggle to disable.")
-					return
-				}
+			if (GToggleCommand.isEnabled(player)) {
+				player.userErrorAction("You have gtoggle on! Use /gtoggle to disable.")
+				return
 			}
 
 			globalAction(formatChatMessage(
@@ -482,13 +477,7 @@ enum class ChatChannel(
 				if (ConfigurationFiles.legacySettings().chat.noGlobalWorlds.contains(player.world.name)) continue
 				if (PlayerCache[player].blockedPlayerIDs.contains(sender)) continue
 
-				if (GToggleCommand.noGlobalInheritanceNode != null) {
-					val user = player.common().getUser()
-
-					if (user.data().contains(GToggleCommand.noGlobalInheritanceNode, NodeEqualityPredicate.IGNORE_EXPIRY_TIME).asBoolean()) {
-						continue
-					}
-				}
+				if (GToggleCommand.isEnabled(player)) continue
 
 				player.sendMessage(message.buildChatComponent(
 					useLevelsPrefix = true,
