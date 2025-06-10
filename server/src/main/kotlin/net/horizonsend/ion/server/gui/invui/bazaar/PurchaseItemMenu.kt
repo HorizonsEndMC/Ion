@@ -11,8 +11,8 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
-import net.horizonsend.ion.server.gui.invui.input.TextInputMenu
-import net.horizonsend.ion.server.gui.invui.input.validator.RangeIntegerValidator
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeIntegerValidator
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player

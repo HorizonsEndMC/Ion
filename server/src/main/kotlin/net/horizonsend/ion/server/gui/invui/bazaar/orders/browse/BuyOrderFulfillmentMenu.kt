@@ -17,14 +17,14 @@ import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
-import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.anvilInputText
-import net.horizonsend.ion.server.gui.invui.input.validator.RangeIntegerValidator
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeIntegerValidator
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
+import net.horizonsend.ion.server.gui.invui.utils.buttons.getHeadItem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
@@ -77,7 +77,7 @@ class BuyOrderFulfillmentMenu(viewer: Player, val item: Oid<BazaarOrder>) : InvU
 		val owner = props[BazaarOrder::player]
 		val name = SLPlayer.getName(owner) ?: return null
 
-		val playerHeadItem = AsyncItem.getHeadItem(owner.uuid, name, { it.updateDisplayName(text(name)).updateLore(listOf(text("$name issued this order"))) }) {}
+		val playerHeadItem = getHeadItem(owner.uuid, name, { it.updateDisplayName(text(name)).updateLore(listOf(text("$name issued this order"))) }) {}
 
 		val territory = props[BazaarOrder::cityTerritory]
 		val creationDate = item.id.date
