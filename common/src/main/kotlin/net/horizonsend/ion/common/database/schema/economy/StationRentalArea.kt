@@ -22,6 +22,7 @@ class StationRentalArea(
 
 	val station: Oid<NPCSpaceStation>,
 	val world: String,
+	val signLocation: DBVec3i,
 	val minPoint: DBVec3i,
 	val maxPoint: DBVec3i,
 
@@ -37,9 +38,9 @@ class StationRentalArea(
 		ensureUniqueIndexCaseInsensitive(StationRentalArea::name, indexOptions = IndexOptions().textVersion(3))
 		ensureIndex(StationRentalArea::world)
 	}) {
-		fun create(name: String, parent: Oid<NPCSpaceStation>, world: String, minPoint: DBVec3i, maxPoint: DBVec3i, rent: Double): Oid<StationRentalArea> = trx { sess ->
+		fun create(name: String, parent: Oid<NPCSpaceStation>, world: String, signLocation: DBVec3i, minPoint: DBVec3i, maxPoint: DBVec3i, rent: Double): Oid<StationRentalArea> = trx { sess ->
 			val id = objId<StationRentalArea>()
-			col.insertOne(sess, StationRentalArea(id, parent, world, minPoint, maxPoint, name, rent))
+			col.insertOne(sess, StationRentalArea(id, parent, world, signLocation, minPoint, maxPoint, name, rent))
 			return@trx id
 		}
 
