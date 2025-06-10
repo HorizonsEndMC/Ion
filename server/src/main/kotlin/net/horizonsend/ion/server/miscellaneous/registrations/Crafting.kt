@@ -536,6 +536,14 @@ object Crafting : IonServerComponent() {
 			setIngredient('d', GREEN_DYE)
 			setIngredient('r', REDSTONE)
 		}
+		shaped("circuitry_3", CIRCUITRY.constructItemStack()) {
+			shape("grg", "qqq", "ccc")
+
+			setIngredient('c', COPPER_INGOT)
+			setIngredient('g', GOLD_INGOT)
+			setIngredient('q', QUARTZ)
+			setIngredient('r', REDSTONE)
+		}
 		shaped("standard_magazine", STANDARD_MAGAZINE.constructItemStack()) {
 			shape("   ", "rlr", "ttt")
 
