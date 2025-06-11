@@ -16,6 +16,8 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.economy.misc.StationRentalAreas
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
@@ -23,6 +25,7 @@ import org.bukkit.Color
 import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.block.Sign
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.combine
@@ -30,6 +33,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.setValue
 import java.util.Date
 import java.util.concurrent.TimeUnit
+import kotlin.time.measureTime
 
 @CommandPermission("nations.npcowner")
 @CommandAlias("npcowner")
@@ -239,5 +243,14 @@ internal object NPCOwnerCommand : SLCommand() {
 		sender.information("Owner: ${rentalArea.owner?.let(SLPlayer::getName)}")
 		sender.information("Rent Balance: ${rentalArea.rentBalance}")
 		sender.information("Rent last charged: ${Date(rentalArea.rentLastCharged)}")
+	}
+
+	@Subcommand("station rentalarea collectRent")
+	fun collectRent(sender: CommandSender) {
+		sender.information("Collected rents")
+		Tasks.async {
+			val duration = measureTime { StationRentalAreas.collectRents() }
+			sender.information("Collection took ${duration.inWholeMilliseconds}ms")
+		}
 	}
 }
