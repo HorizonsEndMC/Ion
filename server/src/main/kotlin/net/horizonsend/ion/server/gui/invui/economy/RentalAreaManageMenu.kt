@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_D
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.gui.icons.GuiIcon
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.economy.misc.StationRentalAreas
@@ -15,10 +16,13 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionRentalArea
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.misc.util.ConfirmationMenu
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeDoubleValidator
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -165,9 +169,34 @@ class RentalAreaManageMenu(viewer: Player, val region: RegionRentalArea) : InvUI
 		}
 	}
 
-	private val depositButton = GuiItem.EMPTY.makeItem(text("Deposit Rent"))
-		.updateLore(listOf(text("Highlight rental area boundaries for 30 seconds.", HE_MEDIUM_GRAY)))
-		.makeGuiButton { _, _ -> }
+	private val depositButton = FeedbackLike.withHandler(GuiItem.EMPTY.makeItem(text("Deposit Rent")), fallbackLoreProvider = {
+		listOf(
+			text(""),
+			text(""),
+			text("")
+		)
+	}) { _, _ -> deposit() }
+
+	fun deposit() {
+		viewer.anvilInputText(
+			prompt = text("Enter Deposit Amount"),
+			description = template(text("Between {0} and {1}"), getMenuTitleName(0.0.toCreditComponent()), getMenuTitleName(viewer.getMoneyBalance().toCreditComponent())),
+			backButtonHandler = { openGui() },
+			inputValidator = RangeDoubleValidator(0.0..viewer.getMoneyBalance()),
+			handler = { _, (_, result) ->
+				val depositAmount = result.result
+
+				val depositResult = StationRentalAreas.depositBalance(viewer, region, depositAmount)
+
+				depositResult.withResult {
+					depositButton.updateWith(it)
+
+					refreshAll()
+					openGui()
+				}
+			}
+		)
+	}
 
 	private val manageButton = GuiItem.EMPTY.makeItem(text("Manage Area"))
 		.updateLore(listOf(text("Highlight rental area boundaries for 30 seconds.", HE_MEDIUM_GRAY)))
