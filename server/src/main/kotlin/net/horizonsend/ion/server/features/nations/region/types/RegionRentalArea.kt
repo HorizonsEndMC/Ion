@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.database.document
 import net.horizonsend.ion.common.database.double
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.long
+import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
@@ -15,6 +16,7 @@ import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.DBVec3i
 import net.horizonsend.ion.server.features.economy.misc.StationRentalAreas
+import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -55,7 +57,7 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 		delta[StationRentalArea::minPoint]?.let { minPoint = Vec3i(it.document<DBVec3i>()) }
 		delta[StationRentalArea::maxPoint]?.let { maxPoint = Vec3i(it.document<DBVec3i>()) }
 
-		delta[StationRentalArea::owner]?.let { owner = it.slPlayerId() }
+		delta[StationRentalArea::owner]?.let { owner = it.nullable()?.slPlayerId() }
 		delta[StationRentalArea::rent]?.let { rent = it.double() }
 		delta[StationRentalArea::rentBalance]?.let { rentBalance = it.double() }
 		delta[StationRentalArea::rentLastCharged]?.let { rentLastCharged = it.long() }
@@ -79,5 +81,7 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 	override fun onCreate() {
 		StationRentalAreas.refreshSign(this)
 	}
+
+	fun getParentRegion(): RegionNPCSpaceStation = Regions[station]
 }
 
