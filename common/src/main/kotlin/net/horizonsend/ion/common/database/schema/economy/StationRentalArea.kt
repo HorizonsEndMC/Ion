@@ -5,7 +5,6 @@ import com.mongodb.client.result.DeleteResult
 import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
-import net.horizonsend.ion.common.database.ensureUniqueIndexCaseInsensitive
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
@@ -14,6 +13,7 @@ import net.horizonsend.ion.common.utils.DBVec3i
 import org.litote.kmongo.combine
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.setValue
 import org.litote.kmongo.updateOneById
 
@@ -21,12 +21,12 @@ class StationRentalArea(
 	override val _id: Oid<StationRentalArea>,
 
 	val station: Oid<NPCSpaceStation>,
+	val name: String,
+
 	val world: String,
 	val signLocation: DBVec3i,
 	val minPoint: DBVec3i,
 	val maxPoint: DBVec3i,
-
-	val name: String,
 
 	var rent: Double,
 
@@ -35,12 +35,23 @@ class StationRentalArea(
 	var rentLastCharged: Long = 0
 ) : DbObject {
 	companion object : OidDbObjectCompanion<StationRentalArea>(StationRentalArea::class, setup = {
-		ensureUniqueIndexCaseInsensitive(StationRentalArea::name, indexOptions = IndexOptions().textVersion(3))
+		ensureUniqueIndex(StationRentalArea::name, StationRentalArea::station, indexOptions = IndexOptions().textVersion(3))
+		ensureIndex(StationRentalArea::owner)
+		ensureIndex(StationRentalArea::station)
 		ensureIndex(StationRentalArea::world)
 	}) {
 		fun create(name: String, parent: Oid<NPCSpaceStation>, world: String, signLocation: DBVec3i, minPoint: DBVec3i, maxPoint: DBVec3i, rent: Double): Oid<StationRentalArea> = trx { sess ->
 			val id = objId<StationRentalArea>()
-			col.insertOne(sess, StationRentalArea(id, parent, world, signLocation, minPoint, maxPoint, name, rent))
+			col.insertOne(sess, StationRentalArea(
+				_id = id,
+				station = parent,
+				world = world,
+				signLocation = signLocation,
+				minPoint = minPoint,
+				maxPoint = maxPoint,
+				name = name,
+				rent = rent
+			))
 			return@trx id
 		}
 
