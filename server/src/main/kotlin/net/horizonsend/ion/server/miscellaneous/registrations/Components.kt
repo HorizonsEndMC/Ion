@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.collectors.CollectionMissions
 import net.horizonsend.ion.server.features.economy.collectors.Collectors
+import net.horizonsend.ion.server.features.economy.misc.StationRentalAreas
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AreaShields
@@ -225,4 +226,5 @@ val components: List<IonComponent> = listOf(
 	PlanetTeleportCooldown,
 	MultiBlockDisplay,
 	MultiblockRecipeRegistry,
+	StationRentalAreas,
 )
