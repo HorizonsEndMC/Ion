@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.gui.invui.misc.util.ConfirmationMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.gui.invui.utils.setTitle
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -147,10 +148,21 @@ class RentalAreaManageMenu(viewer: Player, val region: RegionRentalArea) : InvUI
 			text("to the area inside, and it will be made available to  other players.", HE_MEDIUM_GRAY),
 			text("The remaining balance will be refunded to you.", HE_MEDIUM_GRAY),
 		)
-	}) { _, _ -> ConfirmationMenu.promptConfirmation(this, GuiText("Confirm Claim Abandonment")) { abandon() } }
+	}) { _, _ -> ConfirmationMenu.promptConfirmation(this, GuiText("Confirm Claim Abandonment")) { abandon(this) } }
 
-	private fun abandon() {
-		abandonButton.updateWith(StationRentalAreas.abandon(viewer, region))
+	private fun abandon(confimButton: FeedbackLike) {
+		val async = StationRentalAreas.abandon(viewer, region)
+		async.withResult {
+			if (it.isSuccess())  {
+				it.sendReason(viewer)
+				Tasks.sync {
+					viewer.closeInventory()
+				}
+			} else {
+				confimButton.updateWith(it)
+				abandonButton.updateWith(async)
+			}
+		}
 	}
 
 	private val depositButton = GuiItem.EMPTY.makeItem(text("Deposit Rent"))
