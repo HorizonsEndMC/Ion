@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import com.sk89q.worldedit.regions.CuboidRegion
+import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
@@ -16,7 +17,9 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.economy.misc.StationRentalAreas
+import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
@@ -57,6 +60,12 @@ internal object NPCOwnerCommand : SLCommand() {
 		failIf(!name.isAlphanumeric()) { "Name must be alphanumeric" }
 
 		failIf(!NPCSpaceStation.none(NPCTerritoryOwner.nameQuery(name))) { "An npc owner named $name already exists" }
+	}
+
+	private fun validateRentalAreaName(station: Oid<NPCSpaceStation>, name: String) {
+		failIf(!name.isAlphanumeric()) { "Name must be alphanumeric" }
+
+		failIf(!StationRentalArea.none(and(StationRentalArea::station eq station, StationRentalArea::name eq name))) { "An npc owner named $name already exists" }
 	}
 
 	private fun validateColor(red: Int, green: Int, blue: Int): Int {
@@ -182,9 +191,10 @@ internal object NPCOwnerCommand : SLCommand() {
 	@CommandCompletion("@npcStations")
 	fun onSetRentalAreaStation(sender: Player, stationName: String, regionName: String, rent: Double) {
 		val station = NPCSpaceStation.findOne(NPCSpaceStation::name eq stationName) ?: fail { "Station $stationName not found!" }
+		validateRentalAreaName(station._id, regionName)
 
 		val signLocation = sender.location
-		if (signLocation.block.state !is Sign) fail { "You must be standing in the name plate sign!" }
+		signLocation.block.state as? Sign ?: fail { "You must be standing in the name plate sign!" }
 
 		val selection = requireSelection(sender)
 		if (selection !is CuboidRegion) fail { "You must make a cuboid selection!" }
@@ -192,7 +202,7 @@ internal object NPCOwnerCommand : SLCommand() {
 		val minPoint = Vec3i(selection.minimumPoint.x(), selection.minimumPoint.y(), selection.minimumPoint.z())
 		val maxPoint = Vec3i(selection.maximumPoint.x(), selection.maximumPoint.y(), selection.maximumPoint.z())
 
-		StationRentalArea.create(regionName, station._id, sender.world.name, Vec3i(signLocation), minPoint, maxPoint, rent)
+		val new = StationRentalArea.create(regionName, station._id, sender.world.name, Vec3i(signLocation), minPoint, maxPoint, rent)
 		sender.information("Created rental area $regionName in station $stationName")
 	}
 
@@ -206,6 +216,7 @@ internal object NPCOwnerCommand : SLCommand() {
 
 		val startTime = System.currentTimeMillis()
 
+		sender.highlightBlock(Vec3i(rentalArea.signLocation), durationSeconds * 20)
 		runnable {
 			if ((System.currentTimeMillis() - startTime) > TimeUnit.SECONDS.toMillis(durationSeconds) || !sender.isOnline) {
 				cancel()
@@ -252,5 +263,13 @@ internal object NPCOwnerCommand : SLCommand() {
 			val duration = measureTime { StationRentalAreas.collectRents() }
 			sender.information("Collection took ${duration.inWholeMilliseconds}ms")
 		}
+	}
+
+	@Subcommand("station rentalarea refreshsign")
+	@CommandCompletion("@npcStations @rentalAreas @nothing")
+	fun refreshSign(sender: CommandSender, stationName: String, regionName: String) {
+		val station = NPCSpaceStation.findOne(NPCSpaceStation::name eq stationName) ?: fail { "Station $stationName not found!" }
+		val rentalArea = StationRentalArea.findOne(and(StationRentalArea::station eq station._id, StationRentalArea::station eq station._id)) ?: fail { "Rental area $regionName not found!" }
+		StationRentalAreas.refreshSign(Regions[rentalArea._id])
 	}
 }
