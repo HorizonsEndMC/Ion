@@ -14,6 +14,7 @@ import org.litote.kmongo.combine
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
+import org.litote.kmongo.inc
 import org.litote.kmongo.setValue
 import org.litote.kmongo.updateOneById
 
@@ -70,6 +71,11 @@ class StationRentalArea(
 		/** When an owners are transferring ownership, don't adjust charged rent or anything */
 		fun transferOwnership(id: Oid<StationRentalArea>, newOwner: SLPlayerId) {
 			col.updateOneById(id, setValue(StationRentalArea::owner, newOwner))
+		}
+
+		/**  */
+		fun depositMoney(id: Oid<StationRentalArea>, amount: Double) {
+			col.updateOneById(id, inc(StationRentalArea::rentBalance, amount))
 		}
 
 		/** Resets the ownership of this area */
