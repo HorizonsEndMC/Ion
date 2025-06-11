@@ -15,7 +15,7 @@ import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.discord.Embed
-import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
+import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdownString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
@@ -224,7 +224,7 @@ object StationSieges : IonServerComponent() {
 				val remainingTime = lastSiege.time.time + duration - currentTimeMillis()
 				player.information(
 					"Your nation has already besieged stations in the past $daysPerSiege day(s)!" +
-						" Time until next siege: ${getDurationBreakdown(remainingTime)}"
+						" Time until next siege: ${getDurationBreakdownString(remainingTime)}"
 				)
 				player.information(
 					"Note: Please do not try to bypass this restriction using " +
