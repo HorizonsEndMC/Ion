@@ -27,8 +27,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
 import net.horizonsend.ion.server.miscellaneous.utils.depositMoney
 import net.horizonsend.ion.server.miscellaneous.utils.front
+import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
@@ -177,6 +179,25 @@ object StationRentalAreas : IonServerComponent() {
 		Tasks.async {
 			StationRentalArea.claim(area.id, player.slPlayerId)
 			future.complete(InputResult.InputSuccess)
+		}
+
+		return future
+	}
+
+	fun depositBalance(player: Player, area: RegionRentalArea, depositAmount: Double): FutureInputResult {
+		val future = FutureInputResult()
+
+		Tasks.sync {
+			if (!player.hasEnoughMoney(depositAmount)) {
+				future.complete(InputResult.FailureReason(listOf(text("You don't have enough money for that!", RED))))
+			}
+
+			player.withdrawMoney(depositAmount)
+			Tasks.async {
+				StationRentalArea.depositMoney(area.id, depositAmount)
+			}
+
+			future.complete(InputResult.SuccessReason(listOf(template(text("You deposited {0} to the rent balance.", GREEN), depositAmount.toCreditComponent()))))
 		}
 
 		return future
