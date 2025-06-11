@@ -7,26 +7,33 @@ import net.horizonsend.ion.common.utils.input.FutureInputResult
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.input.PotentiallyFutureResult
 import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdownString
+import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionRentalArea
+import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.economy.RentalAreaManageMenu
-import net.horizonsend.ion.server.gui.invui.economy.RentalAreaPurchaseMenu
+import net.horizonsend.ion.server.gui.invui.misc.util.ConfirmationMenu
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
+import net.horizonsend.ion.server.miscellaneous.utils.depositMoney
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Particle
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -55,13 +62,38 @@ object StationRentalAreas : IonServerComponent() {
 		val rentalArea = getFromSign(state) ?: return
 
 		when (rentalArea.owner) {
-			null -> return RentalAreaPurchaseMenu(event.player, rentalArea).openGui()
-			event.player.slPlayerId -> return RentalAreaManageMenu(event.player, rentalArea).openGui()
+			null -> return openPurchaseMenu(rentalArea, event.player)
+			event.player.slPlayerId -> return openManagementMenu(rentalArea, event.player)
 		}
 
 		Tasks.async {
 			event.player.information("${rentalArea.name} is owned by ${rentalArea.owner?.let(SLPlayer::getName)}.")
 		}
+	}
+
+	private fun openPurchaseMenu(region: RegionRentalArea, player: Player) {
+		val text = GuiText("")
+			.addBackground(GuiText.GuiBackground(BACKGROUND_EXTENDER, verticalShift = -17))
+			.add(template(text("{0} is available for rent."), getMenuTitleName(text(region.name, WHITE)), getMenuTitleName(region.rent.toCreditComponent())), line = -3, alignment = GuiText.TextAlignment.CENTER)
+			.add(template(text("{0} will be charged weekly."), getMenuTitleName(region.rent.toCreditComponent())), line = -2, alignment = GuiText.TextAlignment.CENTER)
+
+		val fallbackLore = listOf(
+			template(text("You will be required to pay {0} to", HE_MEDIUM_GRAY), region.rent.toCreditComponent()),
+			text("cover the first weeks rent.", HE_MEDIUM_GRAY)
+		)
+
+		ConfirmationMenu.promptConfirmation(player, text, confirmationFallbackLore = { fallbackLore }) {
+			val result = purchase(player, region)
+			result.sendReason(player)
+			result.withResult {
+				Tasks.asyncDelay(5L) { openManagementMenu(region, player) }
+			}
+		}
+	}
+
+	private fun openManagementMenu(region: RegionRentalArea, player: Player) {
+		if (region.owner != player.slPlayerId) return
+		RentalAreaManageMenu(player, region).openGui()
 	}
 
 	fun getFromSign(sign: Sign): RegionRentalArea? {
@@ -123,18 +155,27 @@ object StationRentalAreas : IonServerComponent() {
 
 		Tasks.async {
 			StationRentalArea.removeOwner(area.id)
-			future.complete(InputResult.InputSuccess)
+			Tasks.sync {
+				player.depositMoney(area.rentBalance)
+			}
+
+			future.complete(InputResult.SuccessReason(listOf(
+				template(text("You gave up ownership of {0} at {1}.", HE_MEDIUM_GRAY), area.name, area.getParentRegion().name),
+				template(text("{0} of the remaining rent balance has been added to your accont.", GREEN), area.rentBalance.toCreditComponent()),
+			)))
 		}
 
 		return future
 	}
 
 	fun purchase(player: Player, area: RegionRentalArea): PotentiallyFutureResult {
-		if (player.slPlayerId != area.owner) return InputResult.FailureReason(listOf(text("You don't own that area!", RED)))
+		if (player.slPlayerId == area.owner) return InputResult.FailureReason(listOf(text("You already own that area!", RED)))
+		if (area.owner != null) return InputResult.FailureReason(listOf(text("Someone else already owns that area!", RED)))
+
 		val future = FutureInputResult()
 
 		Tasks.async {
-			StationRentalArea.removeOwner(area.id)
+			StationRentalArea.claim(area.id, player.slPlayerId)
 			future.complete(InputResult.InputSuccess)
 		}
 
