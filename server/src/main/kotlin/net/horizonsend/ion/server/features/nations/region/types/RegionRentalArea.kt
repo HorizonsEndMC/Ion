@@ -12,9 +12,14 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.string
+import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.DBVec3i
+import net.horizonsend.ion.server.features.economy.misc.StationRentalAreas
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
 class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone) {
@@ -54,11 +59,25 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 		delta[StationRentalArea::rent]?.let { rent = it.double() }
 		delta[StationRentalArea::rentBalance]?.let { rentBalance = it.double() }
 		delta[StationRentalArea::rentLastCharged]?.let { rentLastCharged = it.long() }
+
+		StationRentalAreas.refreshSign(this)
+	}
+
+	override fun onDelete() {
+		val owner = this.owner ?: return
+		// Return balance
+		Tasks.sync {
+			VAULT_ECO.depositPlayer(Bukkit.getOfflinePlayer(owner.uuid), rentBalance)
+		}
 	}
 
 	override fun calculateInaccessMessage(player: Player): String? {
 		if (player.slPlayerId != owner) return "You don't own this zone!".intern()
 		return null
+	}
+
+	override fun onCreate() {
+		StationRentalAreas.refreshSign(this)
 	}
 }
 

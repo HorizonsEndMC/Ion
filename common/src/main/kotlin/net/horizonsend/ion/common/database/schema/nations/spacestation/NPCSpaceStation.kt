@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.objId
+import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
 import net.horizonsend.ion.common.database.trx
 import org.litote.kmongo.and
 import org.litote.kmongo.deleteOneById
@@ -54,6 +55,10 @@ class NPCSpaceStation(
 			return@trx id
 		}
 
-		fun delete(id: Oid<NPCSpaceStation>) = trx { col.deleteOneById(it, id) }
+		fun delete(id: Oid<NPCSpaceStation>) = trx { sess ->
+			StationRentalArea.col.deleteMany(StationRentalArea::station eq id)
+
+			col.deleteOneById(sess, id)
+		}
 	}
 }

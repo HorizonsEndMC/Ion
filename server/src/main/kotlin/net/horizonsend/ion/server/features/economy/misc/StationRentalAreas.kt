@@ -1,25 +1,41 @@
 package net.horizonsend.ion.server.features.economy.misc
 
+import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
+import net.horizonsend.ion.common.utils.input.FutureInputResult
+import net.horizonsend.ion.common.utils.input.InputResult
+import net.horizonsend.ion.common.utils.input.PotentiallyFutureResult
+import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdownString
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.common.utils.text.toCreditComponent
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionRentalArea
+import net.horizonsend.ion.server.gui.invui.economy.RentalAreaManageMenu
+import net.horizonsend.ion.server.gui.invui.economy.RentalAreaPurchaseMenu
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.kyori.adventure.text.Component
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
+import net.horizonsend.ion.server.miscellaneous.utils.front
+import net.horizonsend.ion.server.miscellaneous.utils.runnable
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import org.bukkit.Particle
 import org.bukkit.block.Sign
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import java.util.Date
 import java.util.concurrent.TimeUnit
 
 object StationRentalAreas : IonServerComponent() {
@@ -33,9 +49,65 @@ object StationRentalAreas : IonServerComponent() {
 		}
 	}
 
+	@EventHandler
+	fun onClickSign(event: PlayerInteractEvent) {
+		val state = event.clickedBlock?.state as? Sign ?: return
+		val rentalArea = getFromSign(state) ?: return
+
+		when (rentalArea.owner) {
+			null -> return RentalAreaPurchaseMenu(event.player, rentalArea).openGui()
+			event.player.slPlayerId -> return RentalAreaManageMenu(event.player, rentalArea).openGui()
+		}
+
+		Tasks.async {
+			event.player.information("${rentalArea.name} is owned by ${rentalArea.owner?.let(SLPlayer::getName)}.")
+		}
+	}
+
+	fun getFromSign(sign: Sign): RegionRentalArea? {
+		val npcStation = Regions.findFirstOf<RegionNPCSpaceStation>(sign.location) ?: return null
+		val inWorld = Regions.getAllOfInWorld<RegionRentalArea>(sign.world)
+		return inWorld.filter { it.station == npcStation.id }.firstOrNull { it.signLocation == Vec3i(sign.location) }
+	}
+
+	fun highlightBoundaries(audience: Player, rentalArea: RegionRentalArea, duration: Duration) {
+		val world = rentalArea.bukkitWorld ?: return
+		val points = cube(Vec3i(rentalArea.minPoint).toLocation(world), Vec3i(rentalArea.maxPoint).toLocation(world).add(1.0, 1.0, 1.0))
+		val startTime = System.currentTimeMillis()
+
+		runnable {
+			if ((System.currentTimeMillis() - startTime) > duration.toMillis() || !audience.isOnline) {
+				cancel()
+				return@runnable
+			}
+
+			points.forEach { audience.spawnParticle(Particle.SOUL_FIRE_FLAME, it, 1, 0.0, 0.0, 0.0, 0.0) }
+
+		}.runTaskTimerAsynchronously(IonServer, 10L, 10L)
+	}
+
+	fun getSign(area: RegionRentalArea): Sign? {
+		return area.bukkitWorld?.getBlockState(area.signLocation.x, area.signLocation.y, area.signLocation.z) as? Sign
+	}
+
+	private fun setupSign(area: RegionRentalArea, sign: Sign) {
+		val newLines = listOf(
+			text(area.name, NamedTextColor.AQUA),
+			text(area.owner?.let(SLPlayer::getName) ?: "[UNCLAIMED]", NamedTextColor.WHITE),
+			template(text("Rent: {0}", NamedTextColor.BLACK), area.rent.toCreditComponent()),
+			text("Per Week.", NamedTextColor.BLACK)
+		)
+
+		Tasks.sync { with(sign.front()) { newLines.forEachIndexed(::line) }; sign.update() }
+	}
+
+	fun refreshSign(area: RegionRentalArea) {
+		Tasks.sync { getSign(area)?.let { Tasks.async { setupSign(area, it) } } }
+	}
+
 	fun collectRents() {
 		val duration = getTimeUntilCollection()
-		Notify.chatAndGlobal(Component.text(getDurationBreakdown(duration.toMillis())))
+		Notify.chatAndGlobal(text(getDurationBreakdownString(duration.toMillis())))
 	}
 
 	fun getTimeUntilCollection(): Duration {
@@ -45,25 +117,27 @@ object StationRentalAreas : IonServerComponent() {
 		return Duration.ofMillis(TimeUnit.SECONDS.toMillis(nextCollection - Instant.now().epochSecond))
 	}
 
-	@EventHandler
-	fun onClickSign(event: PlayerInteractEvent) {
-		val state = event.clickedBlock?.state as? Sign ?: return
-		val rentalArea = getFromSign(state) ?: return
+	fun abandon(player: Player, area: RegionRentalArea): PotentiallyFutureResult {
+		if (player.slPlayerId != area.owner) return InputResult.FailureReason(listOf(text("You don't own that area!", RED)))
+		val future = FutureInputResult()
 
-		event.player.information("Station: ${rentalArea.station}")
-		event.player.information("Rental area: ${rentalArea.name}")
-		event.player.information("Sign Location: ${rentalArea.signLocation}")
-		event.player.information("Min Point: ${rentalArea.minPoint}")
-		event.player.information("Max Point: ${rentalArea.maxPoint}")
-		event.player.information("Rent: ${rentalArea.rent}")
-		event.player.information("Owner: ${rentalArea.owner?.let(SLPlayer::getName)}")
-		event.player.information("Rent Balance: ${rentalArea.rentBalance}")
-		event.player.information("Rent last charged: ${Date(rentalArea.rentLastCharged)}")
+		Tasks.async {
+			StationRentalArea.removeOwner(area.id)
+			future.complete(InputResult.InputSuccess)
+		}
+
+		return future
 	}
 
-	fun getFromSign(sign: Sign): RegionRentalArea? {
-		val npcStation = Regions.findFirstOf<RegionNPCSpaceStation>(sign.location) ?: return null
-		val inWorld = Regions.getAllOfInWorld<RegionRentalArea>(sign.world)
-		return inWorld.filter { it.station == npcStation.id }.firstOrNull { it.signLocation == Vec3i(sign.location) }
+	fun purchase(player: Player, area: RegionRentalArea): PotentiallyFutureResult {
+		if (player.slPlayerId != area.owner) return InputResult.FailureReason(listOf(text("You don't own that area!", RED)))
+		val future = FutureInputResult()
+
+		Tasks.async {
+			StationRentalArea.removeOwner(area.id)
+			future.complete(InputResult.InputSuccess)
+		}
+
+		return future
 	}
 }
