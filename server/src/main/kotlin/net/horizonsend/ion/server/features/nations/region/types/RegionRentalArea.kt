@@ -1,12 +1,15 @@
 package net.horizonsend.ion.server.features.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
+import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.document
 import net.horizonsend.ion.common.database.double
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.long
+import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.common.utils.DBVec3i
@@ -19,6 +22,9 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 
 	override val world: String = zone.world
 
+	var station: Oid<NPCSpaceStation> = zone.station; private set
+
+	var signLocation: Vec3i = Vec3i(zone.signLocation); private set
 	var minPoint: Vec3i = Vec3i(zone.minPoint); private set
 	var maxPoint: Vec3i = Vec3i(zone.maxPoint); private set
 
@@ -38,6 +44,9 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 	override fun update(delta: ChangeStreamDocument<StationRentalArea>) {
 		delta[StationRentalArea::name]?.let { name = it.string() }
 
+		delta[StationRentalArea::station]?.let { station = it.oid() }
+
+		delta[StationRentalArea::signLocation]?.let { signLocation = Vec3i(it.document<DBVec3i>()) }
 		delta[StationRentalArea::minPoint]?.let { minPoint = Vec3i(it.document<DBVec3i>()) }
 		delta[StationRentalArea::maxPoint]?.let { maxPoint = Vec3i(it.document<DBVec3i>()) }
 
