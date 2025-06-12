@@ -77,7 +77,10 @@ class StationRentalArea(
 
 		/** When an owners are transferring ownership, don't adjust charged rent or anything */
 		fun transferOwnership(id: Oid<StationRentalArea>, newOwner: SLPlayerId) {
-			col.updateOneById(id, setValue(StationRentalArea::owner, newOwner))
+			col.updateOneById(id, combine(
+				setValue(StationRentalArea::owner, newOwner), // Prevent one player from draining another's balance
+				setValue(StationRentalArea::collectRentFromOwnerBalance, false)
+			))
 		}
 
 		/**  */
