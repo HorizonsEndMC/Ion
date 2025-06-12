@@ -4,12 +4,13 @@ import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.input.FutureInputResult
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.input.PotentiallyFutureResult
 import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
-import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdownString
+import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -27,7 +28,6 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionRentalArea
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.economy.RentalAreaHomeMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.ConfirmationMenu
-import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -187,8 +187,43 @@ object StationRentalAreas : IonServerComponent() {
 	}
 
 	fun collectRents() {
-		val duration = getTimeUntilCollection()
-		Notify.chatAndGlobal(text(getDurationBreakdownString(duration.toMillis())))
+		val all = Regions.getAllOf<RegionRentalArea>()
+
+		for (rentalArea in all.filterNot(::canPayRent)) {
+			if (rentalArea.rentBalance < 0) {
+				rentalArea.owner?.uuid?.let(Bukkit::getPlayer)?.alert("Your rental zone ${rentalArea.name} at ${rentalArea.getParentRegion().name} was unclaimed due to unpaid rent!")
+				StationRentalArea.removeOwner(rentalArea.id)
+				continue
+			}
+		}
+
+		for (regionRentalArea in all.filter { it.owner != null }) {
+			collectRent(regionRentalArea)
+		}
+	}
+
+	private fun collectRent(rentalArea: RegionRentalArea) {
+		val owner = rentalArea.owner ?: return
+		val requiredAmount = getRequiredAmount(rentalArea)
+
+		val collectFromPlayerBalance = rentalArea.collectRentFromOwnerBalance
+
+		var fromRentalBalance = requiredAmount
+
+		if (collectFromPlayerBalance && VAULT_ECO.getBalance(Bukkit.getOfflinePlayer(owner.uuid)) > requiredAmount - minOf(rentalArea.rentBalance, requiredAmount)) {
+			fromRentalBalance = minOf(rentalArea.rentBalance, requiredAmount)
+		}
+
+		if (fromRentalBalance > 0) StationRentalArea.depositMoney(rentalArea.id, -fromRentalBalance)
+
+		rentalArea.owner?.uuid?.let(Bukkit::getPlayer)?.alert("Your rental zone ${rentalArea.name} at ${rentalArea.getParentRegion().name} was charged ${requiredAmount.toCreditsString()} for rent!")
+
+		if (!collectFromPlayerBalance) return
+
+		Tasks.sync {
+			val removeFromPlayer = requiredAmount - fromRentalBalance
+			VAULT_ECO.withdrawPlayer(Bukkit.getOfflinePlayer(owner.uuid), removeFromPlayer)
+		}
 	}
 
 	fun getTimeUntilCollection(): Duration {
@@ -273,21 +308,20 @@ object StationRentalAreas : IonServerComponent() {
 		return result
 	}
 
+	private fun getRequiredAmount(region: RegionRentalArea): Double {
+		var charged = region.rent
+		if (region.rentBalance < 0) charged -= region.rentBalance
+
+		return charged
+	}
+
 	fun canPayRent(region: RegionRentalArea): Boolean {
 		val owner = region.owner ?: return true
 
 		val fromBalance = region.collectRentFromOwnerBalance
-		val rent = region.rent
 
-		var charged = rent
-		if (region.rentBalance < 0) charged -= region.rentBalance
-
-		if (region.rentBalance < rent) {
-			if (fromBalance && VAULT_ECO.getBalance(Bukkit.getOfflinePlayer(owner.uuid)) >= charged) {
-				return true
-			}
-
-			return false
+		if (region.rentBalance < region.rent) {
+			return fromBalance && VAULT_ECO.getBalance(Bukkit.getOfflinePlayer(owner.uuid)) >= getRequiredAmount(region)
 		}
 
 		return true
