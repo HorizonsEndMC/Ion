@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.gui.invui.economy
 
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
@@ -12,11 +14,13 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.economy.misc.StationRentalAreas
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.nations.region.types.RegionRentalArea
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.misc.util.ConfirmationMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchEntires
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeDoubleValidator
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
@@ -25,6 +29,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.RED
@@ -45,11 +50,12 @@ class RentalAreaManageMenu(viewer: Player, val region: RegionRentalArea) : InvUI
 			.setStructure(
 				". . . . . . . . .",
 				"w w w w w . . . .",
-				"o . . . . . . . .",
+				"o . t . . . . . .",
 				"a a a d d d m m m",
 				"a a a d d d m m m",
 			)
 			.addIngredient('o', highlightButton)
+			.addIngredient('t', transferButton)
 			.addIngredient('a', abandonButton)
 			.addIngredient('d', depositButton)
 			.addIngredient('m', manageButton)
@@ -219,5 +225,29 @@ class RentalAreaManageMenu(viewer: Player, val region: RegionRentalArea) : InvUI
 		}
 		else GuiItem.EMPTY.makeItem(text(""))
 	}.makeGuiButton { _, _ ->  }.tracked()
+
+	private val transferButton = GuiItem.RIGHT.makeItem(text("Transfer This Claim")).makeGuiButton { _, _ -> transfer() }
+	private fun transfer() {
+		Tasks.async {
+			val players = SLPlayer.allIds().toList()
+
+			Tasks.sync {
+				viewer.searchEntires(
+					entries = players,
+					searchTermProvider = { listOfNotNull(SLPlayer.getName(it)) },
+					prompt = text("Enter Player Name"),
+					description = empty(),
+					componentTransformer = { text(SLPlayer.getName(it) ?: "UNKNOWN") },
+					itemTransformer = {
+						val name = SLPlayer.getName(it)
+						skullItem(it.uuid, name!!)
+					},
+					handler = { _, result ->
+						StationRentalAreas.transferOwnership(viewer, region, result)
+					}
+				)
+			}
+		}
+	}
 }
 
