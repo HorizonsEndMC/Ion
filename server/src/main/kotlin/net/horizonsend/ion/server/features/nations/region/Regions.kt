@@ -73,9 +73,9 @@ object Regions : IonServerComponent() {
 
 		registerRegionType(SolarSiegeZone.Companion) { RegionSolarSiegeZone(it) }
 
-		registerRegionType(StationRentalArea.Companion) { RegionRentalArea(it) }
-
 		registerRegionType(NPCSpaceStation.Companion) { RegionNPCSpaceStation(it) }
+
+		registerRegionType(StationRentalArea.Companion) { RegionRentalArea(it) }
 
 		cache.forEach { it.refreshAccessCache() }
 

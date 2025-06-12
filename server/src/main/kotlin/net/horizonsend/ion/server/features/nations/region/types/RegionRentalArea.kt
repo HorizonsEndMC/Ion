@@ -86,6 +86,12 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 		Tasks.sync {
 			VAULT_ECO.depositPlayer(Bukkit.getOfflinePlayer(owner.uuid), rentBalance)
 		}
+
+		getParentRegion().children.remove(this)
+	}
+
+	init {
+		getParentRegion().children.add(this)
 	}
 
 	override fun calculateInaccessMessage(player: Player): String? {
