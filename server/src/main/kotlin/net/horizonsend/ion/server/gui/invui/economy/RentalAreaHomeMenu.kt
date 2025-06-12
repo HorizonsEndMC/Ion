@@ -112,7 +112,7 @@ class RentalAreaHomeMenu(viewer: Player, val region: RegionRentalArea) : InvUIWi
 			warningText.add(ofChildren(text("=« ", HE_DARK_GRAY), text("WARNING", TextColor.color(255, 0 , 0)), text(" »=", HE_DARK_GRAY),), line = 2, alignment = GuiText.TextAlignment.CENTER)
 			warningText.add(text("Deposit Now!", RED), line = 3, alignment = GuiText.TextAlignment.CENTER)
 		}
-		else if (region.rentBalance < region.rent) {
+		else if (StationRentalAreas.canPayRent(region)) {
 			warningText.add(ofChildren(text("=« ", HE_DARK_GRAY), text("WARNING", TextColor.color(255, 0 , 0)), text(" »=", HE_DARK_GRAY),), line = 2, alignment = GuiText.TextAlignment.CENTER)
 			warningText.add(text("Low Balance!", RED), line = 3, alignment = GuiText.TextAlignment.CENTER)
 		}
@@ -233,7 +233,7 @@ class RentalAreaHomeMenu(viewer: Player, val region: RegionRentalArea) : InvUIWi
 				text("to this claim, and whatever is stored inside it.", HE_MEDIUM_GRAY)
 			))
 		}
-		else if (region.rentBalance < region.rent) {
+		else if (StationRentalAreas.canPayRent(region)) {
 			GuiItem.EMPTY.makeItem(text("Warning: Low Balance!")).updateLore(listOf(
 				text("There are not enough credits to pay for the next rent collection!", HE_MEDIUM_GRAY),
 				text("If the balance remains negative for another week, you will lose access", HE_MEDIUM_GRAY),
