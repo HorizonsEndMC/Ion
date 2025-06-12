@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.gui.invui.economy
 
-import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
+import net.horizonsend.ion.common.database.schema.economy.StationRentalZone
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
@@ -12,13 +12,13 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.economy.misc.StationRentalAreas
+import net.horizonsend.ion.server.features.economy.misc.StationRentalZones
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
 import net.horizonsend.ion.server.features.gui.custom.settings.button.general.BooleanSupplierConsumerButton
 import net.horizonsend.ion.server.features.nations.gui.skullItem
-import net.horizonsend.ion.server.features.nations.region.types.RegionRentalArea
+import net.horizonsend.ion.server.features.nations.region.types.RegionRentalZone
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.misc.AccessManagementMenu
@@ -47,7 +47,7 @@ import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.window.Window
 import java.time.Duration
 
-class RentalAreaHomeMenu(viewer: Player, val region: RegionRentalArea) : InvUIWindowWrapper(viewer, async = true) {
+class RentalZoneHomeMenu(viewer: Player, val region: RegionRentalZone) : InvUIWindowWrapper(viewer, async = true) {
 	var refreshTask: UpdateTask? = null
 
 	override fun buildWindow(): Window {
@@ -81,10 +81,9 @@ class RentalAreaHomeMenu(viewer: Player, val region: RegionRentalArea) : InvUIWi
 	}
 
 	override fun buildTitle(): Component {
-		val (days, hours, minutes, seconds) = getDurationBreakdown(StationRentalAreas.getTimeUntilCollection().toMillis())
-
+		val (days, hours, minutes, seconds) = getDurationBreakdown(StationRentalZones.getTimeUntilCollection().toMillis())
 		val mainText = GuiText("")
-			.add(text("Area Management"), line = -1, alignment = GuiText.TextAlignment.CENTER, verticalShift = -4)
+			.add(text("Zone Management"), line = -1, alignment = GuiText.TextAlignment.CENTER, verticalShift = -4)
 			.setSlotOverlay(
 				"# # # # # # # # #",
 				"# # # # # # # # #",
@@ -112,7 +111,7 @@ class RentalAreaHomeMenu(viewer: Player, val region: RegionRentalArea) : InvUIWi
 			warningText.add(ofChildren(text("=« ", HE_DARK_GRAY), text("WARNING", TextColor.color(255, 0 , 0)), text(" »=", HE_DARK_GRAY),), line = 2, alignment = GuiText.TextAlignment.CENTER)
 			warningText.add(text("Deposit Now!", RED), line = 3, alignment = GuiText.TextAlignment.CENTER)
 		}
-		else if (!StationRentalAreas.canPayRent(region)) {
+		else if (!StationRentalZones.canPayRent(region)) {
 			warningText.add(ofChildren(text("=« ", HE_DARK_GRAY), text("WARNING", TextColor.color(255, 0 , 0)), text(" »=", HE_DARK_GRAY),), line = 2, alignment = GuiText.TextAlignment.CENTER)
 			warningText.add(text("Low Balance!", RED), line = 3, alignment = GuiText.TextAlignment.CENTER)
 		}
@@ -154,20 +153,20 @@ class RentalAreaHomeMenu(viewer: Player, val region: RegionRentalArea) : InvUIWi
 		}
 	}
 
-	private val highlightButton = GuiItem.OUTLINE.makeItem(text("Outline Area"))
-		.updateLore(listOf(text("Highlight rental area boundaries for 30 seconds.", HE_MEDIUM_GRAY)))
-		.makeGuiButton { _, _ -> StationRentalAreas.highlightBoundaries(viewer, region, Duration.ofSeconds(30L)) }
+	private val highlightButton = GuiItem.OUTLINE.makeItem(text("Outline Zone"))
+		.updateLore(listOf(text("Highlight rental zone boundaries for 30 seconds.", HE_MEDIUM_GRAY)))
+		.makeGuiButton { _, _ -> StationRentalZones.highlightBoundaries(viewer, region, Duration.ofSeconds(30L)) }
 
-	private val abandonButton = FeedbackLike.withHandler(GuiItem.EMPTY.makeItem(text("Abandon Area")), fallbackLoreProvider = {
+	private val abandonButton = FeedbackLike.withHandler(GuiItem.EMPTY.makeItem(text("Abandon Zone")), fallbackLoreProvider = {
 		listOf(
-			text("Give up your claim on this area. You will lose access", HE_MEDIUM_GRAY),
-			text("to the area inside, and it will be made available to  other players.", HE_MEDIUM_GRAY),
+			text("Give up your claim on this zone. You will lose access", HE_MEDIUM_GRAY),
+			text("to the zone inside, and it will be made available to  other players.", HE_MEDIUM_GRAY),
 			text("The remaining balance will be refunded to you.", HE_MEDIUM_GRAY),
 		)
 	}) { _, _ -> ConfirmationMenu.promptConfirmation(this, GuiText("Confirm Claim Abandonment")) { abandon(this) } }
 
 	private fun abandon(confimButton: FeedbackLike) {
-		val async = StationRentalAreas.abandon(viewer, region)
+		val async = StationRentalZones.abandon(viewer, region)
 		async.withResult {
 			if (it.isSuccess())  {
 				it.sendReason(viewer)
@@ -198,7 +197,7 @@ class RentalAreaHomeMenu(viewer: Player, val region: RegionRentalArea) : InvUIWi
 			handler = { _, (_, result) ->
 				val depositAmount = result.result
 
-				val depositResult = StationRentalAreas.depositBalance(viewer, region, depositAmount)
+				val depositResult = StationRentalZones.depositBalance(viewer, region, depositAmount)
 
 				depositResult.withResult {
 					depositButton.updateWith(it)
@@ -218,10 +217,10 @@ class RentalAreaHomeMenu(viewer: Player, val region: RegionRentalArea) : InvUIWi
 			AccessManagementMenu(
 				viewer,
 				region.id,
-				StationRentalArea.Companion,
-				StationRentalArea::trustedPlayers,
-				StationRentalArea::trustedSettlements,
-				StationRentalArea::trustedNations
+				StationRentalZone.Companion,
+				StationRentalZone::trustedPlayers,
+				StationRentalZone::trustedSettlements,
+				StationRentalZone::trustedNations
 			).openGui(this)
 		}
 
@@ -233,7 +232,7 @@ class RentalAreaHomeMenu(viewer: Player, val region: RegionRentalArea) : InvUIWi
 				text("to this claim, and whatever is stored inside it.", HE_MEDIUM_GRAY)
 			))
 		}
-		else if (!StationRentalAreas.canPayRent(region)) {
+		else if (!StationRentalZones.canPayRent(region)) {
 			GuiItem.EMPTY.makeItem(text("Warning: Low Balance!")).updateLore(listOf(
 				text("There are not enough credits to pay for the next rent collection!", HE_MEDIUM_GRAY),
 				text("If the balance remains negative for another week, you will lose access", HE_MEDIUM_GRAY),
@@ -260,7 +259,7 @@ class RentalAreaHomeMenu(viewer: Player, val region: RegionRentalArea) : InvUIWi
 						skullItem(it.uuid, name!!)
 					},
 					handler = { _, result ->
-						StationRentalAreas.transferOwnership(viewer, region, result)
+						StationRentalZones.transferOwnership(viewer, region, result)
 					}
 				)
 			}
