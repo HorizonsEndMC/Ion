@@ -21,7 +21,7 @@ fun ItemStack.makeGuiButton(clickConsumer: (ClickType, Player) -> Unit): Abstrac
 
 fun makeInformationButton(title: Component, vararg loreLines: Component) = GuiItem.INFO.makeItem(title).updateLore(listOf(*loreLines)).asItemProvider()
 
-fun getHeadItem(uuid: UUID, playerName: String, headEditor: Consumer<ItemStack>, handleClick: (InventoryClickEvent) -> Unit): AsyncItem =
+fun getHeadItem(uuid: UUID, playerName: String, headEditor: Consumer<ItemStack> = Consumer {}, handleClick: (InventoryClickEvent) -> Unit): AsyncItem =
 	AsyncItem(
 		{ skullItem(uuid, playerName).apply { headEditor.accept(this) } },
 		handleClick

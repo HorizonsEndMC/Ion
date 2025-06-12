@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.InputValid
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
 import net.horizonsend.ion.server.gui.invui.utils.changeTitle
 import net.horizonsend.ion.server.gui.invui.utils.setTitle
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
@@ -61,7 +62,6 @@ class TextInputMenu<T : Any>(
 
 	override fun openGui() {
 		val gui = createGui()
-
 		val text = buildGuiText()
 
 		val window = AnvilWindow.single()
@@ -76,7 +76,9 @@ class TextInputMenu<T : Any>(
 
 		this.window = window
 
-		window.open()
+		Tasks.sync {
+			window.open()
+		}
 	}
 
 	fun refreshTitle() {
