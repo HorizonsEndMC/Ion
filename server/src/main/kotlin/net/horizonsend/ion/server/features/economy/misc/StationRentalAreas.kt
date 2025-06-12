@@ -1,8 +1,11 @@
 package net.horizonsend.ion.server.features.economy.misc
 
+import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.input.FutureInputResult
 import net.horizonsend.ion.common.utils.input.InputResult
@@ -223,5 +226,137 @@ object StationRentalAreas : IonServerComponent() {
 		}
 
 		return result
+	}
+
+	fun trustPlayer(region: RegionRentalArea, trustedId: SLPlayerId): PotentiallyFutureResult {
+		val future = FutureInputResult()
+
+		Tasks.async {
+			val trusted = StationRentalArea.findOnePropById(region.id, RegionRentalArea::trustedPlayers)
+			if (trusted == null) {
+				future.complete(InputResult.FailureReason(listOf(text("There was a problem getting your result, please try again.", RED))))
+				return@async
+			}
+
+			if (trusted.contains(trustedId)) {
+				future.complete(InputResult.FailureReason(listOf(text("That player is already trusted!", RED))))
+				return@async
+			}
+
+			StationRentalArea.trustPlayer(region.id, trustedId)
+			future.complete(InputResult.SuccessReason(listOf(text("Successfully trusted that player", GREEN))))
+		}
+
+		return future
+	}
+
+	fun trustSettlement(region: RegionRentalArea, trustedId: Oid<Settlement>): PotentiallyFutureResult {
+		val future = FutureInputResult()
+
+		Tasks.async {
+			val trusted = StationRentalArea.findOnePropById(region.id, RegionRentalArea::trustedSettlements)
+			if (trusted == null) {
+				future.complete(InputResult.FailureReason(listOf(text("There was a problem getting your result, please try again.", RED))))
+				return@async
+			}
+
+			if (trusted.contains(trustedId)) {
+				future.complete(InputResult.FailureReason(listOf(text("That settlement is already trusted!", RED))))
+				return@async
+			}
+
+			StationRentalArea.trustSettlement(region.id, trustedId)
+			future.complete(InputResult.SuccessReason(listOf(text("Successfully trusted that settlement", GREEN))))
+		}
+
+		return future
+	}
+
+	fun trustNation(region: RegionRentalArea, trustedId: Oid<Nation>): PotentiallyFutureResult {
+		val future = FutureInputResult()
+
+		Tasks.async {
+			val trusted = StationRentalArea.findOnePropById(region.id, RegionRentalArea::trustedNations)
+			if (trusted == null) {
+				future.complete(InputResult.FailureReason(listOf(text("There was a problem getting your result, please try again.", RED))))
+				return@async
+			}
+
+			if (trusted.contains(trustedId)) {
+				future.complete(InputResult.FailureReason(listOf(text("That nation is already trusted!", RED))))
+				return@async
+			}
+
+			StationRentalArea.trustNation(region.id, trustedId)
+			future.complete(InputResult.SuccessReason(listOf(text("Successfully trusted that nation", GREEN))))
+		}
+
+		return future
+	}
+
+	fun unTrustPlayer(region: RegionRentalArea, trustedId: SLPlayerId): PotentiallyFutureResult {
+		val future = FutureInputResult()
+
+		Tasks.async {
+			val trusted = StationRentalArea.findOnePropById(region.id, RegionRentalArea::trustedPlayers)
+			if (trusted == null) {
+				future.complete(InputResult.FailureReason(listOf(text("There was a problem getting your result, please try again.", RED))))
+				return@async
+			}
+
+			if (trusted.contains(trustedId)) {
+				future.complete(InputResult.FailureReason(listOf(text("That player is already trusted!", RED))))
+				return@async
+			}
+
+			StationRentalArea.trustPlayer(region.id, trustedId)
+			future.complete(InputResult.SuccessReason(listOf(text("Successfully trusted that player", GREEN))))
+		}
+
+		return future
+	}
+
+	fun unTrustSettlement(region: RegionRentalArea, trustedId: Oid<Settlement>): PotentiallyFutureResult {
+		val future = FutureInputResult()
+
+		Tasks.async {
+			val trusted = StationRentalArea.findOnePropById(region.id, RegionRentalArea::trustedSettlements)
+			if (trusted == null) {
+				future.complete(InputResult.FailureReason(listOf(text("There was a problem getting your result, please try again.", RED))))
+				return@async
+			}
+
+			if (trusted.contains(trustedId)) {
+				future.complete(InputResult.FailureReason(listOf(text("That settlement is already trusted!", RED))))
+				return@async
+			}
+
+			StationRentalArea.trustSettlement(region.id, trustedId)
+			future.complete(InputResult.SuccessReason(listOf(text("Successfully trusted that settlement", GREEN))))
+		}
+
+		return future
+	}
+
+	fun unTrustNation(region: RegionRentalArea, trustedId: Oid<Nation>): PotentiallyFutureResult {
+		val future = FutureInputResult()
+
+		Tasks.async {
+			val trusted = StationRentalArea.findOnePropById(region.id, RegionRentalArea::trustedNations)
+			if (trusted == null) {
+				future.complete(InputResult.FailureReason(listOf(text("There was a problem getting your result, please try again.", RED))))
+				return@async
+			}
+
+			if (trusted.contains(trustedId)) {
+				future.complete(InputResult.FailureReason(listOf(text("That nation is already trusted!", RED))))
+				return@async
+			}
+
+			StationRentalArea.trustNation(region.id, trustedId)
+			future.complete(InputResult.SuccessReason(listOf(text("Successfully trusted that nation", GREEN))))
+		}
+
+		return future
 	}
 }

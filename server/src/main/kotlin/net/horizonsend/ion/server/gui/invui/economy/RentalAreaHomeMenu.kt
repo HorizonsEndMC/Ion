@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.gui.invui.economy
 
+import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
@@ -14,10 +15,13 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.economy.misc.StationRentalAreas
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
+import net.horizonsend.ion.server.features.gui.custom.settings.button.general.BooleanSupplierConsumerButton
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.nations.region.types.RegionRentalArea
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
+import net.horizonsend.ion.server.gui.invui.misc.AccessManagementMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.ConfirmationMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchEntires
@@ -27,6 +31,7 @@ import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
@@ -50,12 +55,13 @@ class RentalAreaHomeMenu(viewer: Player, val region: RegionRentalArea) : InvUIWi
 			.setStructure(
 				". . . . . . . . .",
 				"w w w w w . . . .",
-				"o . t . . . . . .",
+				"o . t . s . . . .",
 				"a a a d d d m m m",
 				"a a a d d d m m m",
 			)
 			.addIngredient('o', highlightButton)
 			.addIngredient('t', transferButton)
+			.addIngredient('s', settingsButton)
 			.addIngredient('a', abandonButton)
 			.addIngredient('d', depositButton)
 			.addIngredient('m', manageButton)
@@ -113,10 +119,10 @@ class RentalAreaHomeMenu(viewer: Player, val region: RegionRentalArea) : InvUIWi
 
 		val durationText = GuiText("", guiWidth = DEFAULT_GUI_WIDTH / 2)
 			.add(text("Next Collection:"), line = 0, horizontalShift = DEFAULT_GUI_WIDTH / 2)
-			.add(ofChildren(getMenuTitleName(text(days, WHITE)), text(" Days,")), line = 1, horizontalShift = (DEFAULT_GUI_WIDTH / 2) + 3)
-			.add(ofChildren(getMenuTitleName(text(hours, WHITE)), text(" Hours,")), line = 2, horizontalShift = (DEFAULT_GUI_WIDTH / 2) + 3)
-			.add(ofChildren(getMenuTitleName(text(minutes, WHITE)), text(" Minutes,")), line = 3, horizontalShift = (DEFAULT_GUI_WIDTH / 2) + 3)
-			.add(ofChildren(getMenuTitleName(text(seconds, WHITE)), text(" Seconds")), line = 4, horizontalShift = (DEFAULT_GUI_WIDTH / 2) + 3)
+			.add(ofChildren(getMenuTitleName(text(days, WHITE)), text(" Days,")), line = 1, horizontalShift = (DEFAULT_GUI_WIDTH / 2) + 9)
+			.add(ofChildren(getMenuTitleName(text(hours, WHITE)), text(" Hours,")), line = 2, horizontalShift = (DEFAULT_GUI_WIDTH / 2) + 9)
+			.add(ofChildren(getMenuTitleName(text(minutes, WHITE)), text(" Minutes,")), line = 3, horizontalShift = (DEFAULT_GUI_WIDTH / 2) + 9)
+			.add(ofChildren(getMenuTitleName(text(seconds, WHITE)), text(" Seconds")), line = 4, horizontalShift = (DEFAULT_GUI_WIDTH / 2) + 9)
 			.build()
 
 		return ofChildren(mainText, durationText, warningText.build())
@@ -204,9 +210,20 @@ class RentalAreaHomeMenu(viewer: Player, val region: RegionRentalArea) : InvUIWi
 		)
 	}
 
-	private val manageButton = GuiItem.EMPTY.makeItem(text("Manage Area"))
-		.updateLore(listOf(text("Highlight rental area boundaries for 30 seconds.", HE_MEDIUM_GRAY)))
-		.makeGuiButton { _, _ -> }
+	private val manageButton = GuiItem.EMPTY.makeItem(text("Manage Access"))
+		.updateLore(listOf(text("Manage who can access this menu.", HE_MEDIUM_GRAY)))
+		.makeGuiButton { _, _ ->
+			if (region.owner != viewer.slPlayerId) return@makeGuiButton
+
+			AccessManagementMenu(
+				viewer,
+				region.id,
+				StationRentalArea.Companion,
+				StationRentalArea::trustedPlayers,
+				StationRentalArea::trustedSettlements,
+				StationRentalArea::trustedNations
+			).openGui(this)
+		}
 
 	private fun getWarningButton() = ItemProvider {
 		if (region.rentBalance < 0) {
@@ -248,6 +265,21 @@ class RentalAreaHomeMenu(viewer: Player, val region: RegionRentalArea) : InvUIWi
 				)
 			}
 		}
+	}
+
+	private val settingsButton = GuiItem.GEAR.makeItem(text("Settings")).makeGuiButton { _, _ ->
+		createSettingsPage(
+			viewer,
+			"Rental Zone Settings",
+			BooleanSupplierConsumerButton(
+				valueSupplier = region::collectRentFromOwnerBalance,
+				valueConsumer = { region.setCollectRentFromBalance(it) },
+				name = text("Collect Rent From Balance"),
+				description = "If enabled, rent will be collected from the balance of the owner, ignoring the deposit on this claim, unless the balance is insufficient.",
+				icon = GuiItem.LIST,
+				defaultValue = false
+			)
+		).openGui(this)
 	}
 }
 
