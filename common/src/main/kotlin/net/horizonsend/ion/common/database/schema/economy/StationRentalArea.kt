@@ -7,6 +7,8 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
 import net.horizonsend.ion.common.database.trx
 import net.horizonsend.ion.common.utils.DBVec3i
@@ -32,6 +34,10 @@ class StationRentalArea(
 	var rent: Double,
 
 	var owner: SLPlayerId? = null,
+	var trustedPlayers: Set<SLPlayerId> = setOf(),
+	var trustedSettlements: Set<Oid<Settlement>> = setOf(),
+	var trustedNations: Set<Oid<Nation>> = setOf(),
+
 	var rentBalance: Double = 0.0,
 	var rentLastCharged: Long = 0
 ) : DbObject {
