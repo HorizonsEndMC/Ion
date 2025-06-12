@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.economy.misc
 
 import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.input.FutureInputResult
 import net.horizonsend.ion.common.utils.input.InputResult
@@ -201,5 +202,26 @@ object StationRentalAreas : IonServerComponent() {
 		}
 
 		return future
+	}
+
+	fun transferOwnership(player: Player, area: RegionRentalArea, newOwner: SLPlayerId): PotentiallyFutureResult {
+		val result = FutureInputResult()
+
+		Tasks.async {
+			val name = SLPlayer.getName(newOwner)
+			if (name == null) {
+				result.complete(InputResult.FailureReason(listOf(text("Player not found!", RED))))
+				return@async
+			}
+
+			ConfirmationMenu.promptConfirmation(player, GuiText("Confirm transfer to $name?")) {
+				StationRentalArea.transferOwnership(area.id, newOwner)
+				Tasks.sync {
+					player.closeInventory()
+				}
+			}
+		}
+
+		return result
 	}
 }
