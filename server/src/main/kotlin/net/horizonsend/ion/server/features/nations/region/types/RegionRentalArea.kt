@@ -6,10 +6,13 @@ import net.horizonsend.ion.common.database.document
 import net.horizonsend.ion.common.database.double
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.long
+import net.horizonsend.ion.common.database.mappedSet
 import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.schema.nations.Nation
+import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.string
@@ -37,8 +40,12 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 
 	var name: String = zone.name; private set
 
-	var rent: Double = zone.rent; private set
 	var owner: SLPlayerId? = zone.owner; private set
+	var trustedPlayers: Set<SLPlayerId> = zone.trustedPlayers; private set
+	var trustedSettlements: Set<Oid<Settlement>> = zone.trustedSettlements; private set
+	var trustedNations: Set<Oid<Nation>> = zone.trustedNations; private set
+
+	var rent: Double = zone.rent; private set
 	var rentBalance: Double = zone.rentBalance; private set
 	var rentLastCharged: Long = zone.rentLastCharged; private set
 
@@ -58,6 +65,10 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 		delta[StationRentalArea::maxPoint]?.let { maxPoint = Vec3i(it.document<DBVec3i>()) }
 
 		delta[StationRentalArea::owner]?.let { owner = it.nullable()?.slPlayerId() }
+		delta[StationRentalArea::trustedPlayers]?.let { trustedPlayers = it.mappedSet { entry -> entry.slPlayerId() } }
+		delta[StationRentalArea::trustedSettlements]?.let { trustedSettlements = it.mappedSet { entry -> entry.oid() } }
+		delta[StationRentalArea::trustedNations]?.let { trustedNations = it.mappedSet { entry -> entry.oid() } }
+
 		delta[StationRentalArea::rent]?.let { rent = it.double() }
 		delta[StationRentalArea::rentBalance]?.let { rentBalance = it.double() }
 		delta[StationRentalArea::rentLastCharged]?.let { rentLastCharged = it.long() }
