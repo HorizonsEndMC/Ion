@@ -16,7 +16,7 @@ import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.economy.CollectedItem
 import net.horizonsend.ion.common.database.schema.economy.CompletedCollectionMission
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
-import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
+import net.horizonsend.ion.common.database.schema.economy.StationRentalZone
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
@@ -144,7 +144,7 @@ object DBManager : IonComponent() {
 		CollectedItem.init()
 		EcoStation.init()
 		CompletedCollectionMission.init()
-		StationRentalArea.init()
+		StationRentalZone.init()
 		BazaarItem.init()
 		BazaarOrder.init()
 

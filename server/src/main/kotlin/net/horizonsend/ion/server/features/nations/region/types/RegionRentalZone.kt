@@ -10,7 +10,7 @@ import net.horizonsend.ion.common.database.long
 import net.horizonsend.ion.common.database.mappedSet
 import net.horizonsend.ion.common.database.nullable
 import net.horizonsend.ion.common.database.oid
-import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
+import net.horizonsend.ion.common.database.schema.economy.StationRentalZone
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
@@ -20,7 +20,7 @@ import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.DBVec3i
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.economy.misc.StationRentalAreas
+import net.horizonsend.ion.server.features.economy.misc.StationRentalZones
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
@@ -30,7 +30,7 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.litote.kmongo.setValue
 
-class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone) {
+class RegionRentalZone(zone: StationRentalZone) : Region<StationRentalZone>(zone) {
 	override val priority: Int = 1
 
 	override val world: String = zone.world
@@ -59,26 +59,26 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 		return !(z > maxPoint.z || z < minPoint.z)
 	}
 
-	override fun update(delta: ChangeStreamDocument<StationRentalArea>) {
-		delta[StationRentalArea::name]?.let { name = it.string() }
+	override fun update(delta: ChangeStreamDocument<StationRentalZone>) {
+		delta[StationRentalZone::name]?.let { name = it.string() }
 
-		delta[StationRentalArea::station]?.let { station = it.oid() }
+		delta[StationRentalZone::station]?.let { station = it.oid() }
 
-		delta[StationRentalArea::signLocation]?.let { signLocation = Vec3i(it.document<DBVec3i>()) }
-		delta[StationRentalArea::minPoint]?.let { minPoint = Vec3i(it.document<DBVec3i>()) }
-		delta[StationRentalArea::maxPoint]?.let { maxPoint = Vec3i(it.document<DBVec3i>()) }
+		delta[StationRentalZone::signLocation]?.let { signLocation = Vec3i(it.document<DBVec3i>()) }
+		delta[StationRentalZone::minPoint]?.let { minPoint = Vec3i(it.document<DBVec3i>()) }
+		delta[StationRentalZone::maxPoint]?.let { maxPoint = Vec3i(it.document<DBVec3i>()) }
 
-		delta[StationRentalArea::owner]?.let { owner = it.nullable()?.slPlayerId() }
-		delta[StationRentalArea::trustedPlayers]?.let { trustedPlayers = it.mappedSet { entry -> entry.slPlayerId() } }
-		delta[StationRentalArea::trustedSettlements]?.let { trustedSettlements = it.mappedSet { entry -> entry.oid() } }
-		delta[StationRentalArea::trustedNations]?.let { trustedNations = it.mappedSet { entry -> entry.oid() } }
-		delta[StationRentalArea::collectRentFromOwnerBalance]?.let { collectRentFromOwnerBalance = it.boolean() }
+		delta[StationRentalZone::owner]?.let { owner = it.nullable()?.slPlayerId() }
+		delta[StationRentalZone::trustedPlayers]?.let { trustedPlayers = it.mappedSet { entry -> entry.slPlayerId() } }
+		delta[StationRentalZone::trustedSettlements]?.let { trustedSettlements = it.mappedSet { entry -> entry.oid() } }
+		delta[StationRentalZone::trustedNations]?.let { trustedNations = it.mappedSet { entry -> entry.oid() } }
+		delta[StationRentalZone::collectRentFromOwnerBalance]?.let { collectRentFromOwnerBalance = it.boolean() }
 
-		delta[StationRentalArea::rent]?.let { rent = it.double() }
-		delta[StationRentalArea::rentBalance]?.let { rentBalance = it.double() }
-		delta[StationRentalArea::rentLastCharged]?.let { rentLastCharged = it.long() }
+		delta[StationRentalZone::rent]?.let { rent = it.double() }
+		delta[StationRentalZone::rentBalance]?.let { rentBalance = it.double() }
+		delta[StationRentalZone::rentLastCharged]?.let { rentLastCharged = it.long() }
 
-		StationRentalAreas.refreshSign(this)
+		StationRentalZones.refreshSign(this)
 	}
 
 	override fun onDelete() {
@@ -108,14 +108,14 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 	}
 
 	override fun onCreate() {
-		StationRentalAreas.refreshSign(this)
+		StationRentalZones.refreshSign(this)
 	}
 
 	fun getParentRegion(): RegionNPCSpaceStation = Regions[station]
 
 	fun setCollectRentFromBalance(newValue: Boolean) {
 		collectRentFromOwnerBalance = newValue
-		Tasks.async { StationRentalArea.updateById(id, setValue(StationRentalArea::collectRentFromOwnerBalance, newValue)) }
+		Tasks.async { StationRentalZone.updateById(id, setValue(StationRentalZone::collectRentFromOwnerBalance, newValue)) }
 	}
 }
 
