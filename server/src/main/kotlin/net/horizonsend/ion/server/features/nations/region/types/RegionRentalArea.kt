@@ -19,6 +19,7 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.DBVec3i
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.economy.misc.StationRentalAreas
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -95,8 +96,15 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 	}
 
 	override fun calculateInaccessMessage(player: Player): String? {
-		if (player.slPlayerId != owner) return "You don't own this zone!".intern()
-		return null
+		if (player.slPlayerId == owner) return null
+
+		val cached = PlayerCache[player]
+
+		if (trustedPlayers.contains(player.slPlayerId)) return null
+		if (trustedSettlements.contains(cached.settlementOid)) return null
+		if (trustedNations.contains(cached.nationOid)) return null
+
+		return "You don't have access to this zone!".intern()
 	}
 
 	override fun onCreate() {
