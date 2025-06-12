@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.custom.blueprint.BlueprintMenu
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
 import net.horizonsend.ion.server.features.gui.custom.settings.button.general.BooleanSupplierConsumerButton
 import net.horizonsend.ion.server.features.gui.custom.settings.button.general.DoubleSupplierConsumerInputButton
@@ -30,6 +29,7 @@ import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTermina
 import net.horizonsend.ion.server.features.multiblock.type.processing.automason.AutoMasonMultiblockEntity
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
+import net.horizonsend.ion.server.gui.invui.blueprint.BlueprintMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.ItemMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchEntires
@@ -50,9 +50,7 @@ import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.ShadowColor
-import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.eq
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.Item
@@ -232,11 +230,11 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 		.build()
 
 	private val blueprintMenuBotton = GuiItems.createButton(GuiItem.MAGNIFYING_GLASS.makeItem(text("Open Blueprint Menu"))) { _, player, _ ->
-		BlueprintMenu(player, GuiItems.createButton(ItemStack(Material.BARRIER).updateDisplayName(text("Go back"))) { _, _, _ -> entity.openMenu(player) }) { blueprint, _ ->
+		BlueprintMenu(player) { blueprint, _ ->
 			entity.setBlueprint(blueprint)
 			entity.ensureBlueprintLoaded(player)
 			entity.openMenu(player)
-		}.openGui()
+		}.openGui(this)
 	}
 
 	private val searchMenuBotton = GuiItems.createButton(GuiItem.EMPTY.makeItem(text("Search for Blueprint"))) { _, player, _ ->
