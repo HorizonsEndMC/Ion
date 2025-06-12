@@ -20,7 +20,7 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionRentalArea
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
-import net.horizonsend.ion.server.gui.invui.economy.RentalAreaManageMenu
+import net.horizonsend.ion.server.gui.invui.economy.RentalAreaHomeMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.ConfirmationMenu
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -96,7 +96,7 @@ object StationRentalAreas : IonServerComponent() {
 
 	private fun openManagementMenu(region: RegionRentalArea, player: Player) {
 		if (region.owner != player.slPlayerId) return
-		RentalAreaManageMenu(player, region).openGui()
+		RentalAreaHomeMenu(player, region).openGui()
 	}
 
 	fun getFromSign(sign: Sign): RegionRentalArea? {
