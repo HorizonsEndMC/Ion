@@ -17,8 +17,6 @@ import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.inc
-import org.litote.kmongo.pull
-import org.litote.kmongo.push
 import org.litote.kmongo.setValue
 import org.litote.kmongo.updateOneById
 
@@ -98,26 +96,6 @@ class StationRentalArea(
 				setValue(StationRentalArea::trustedNations, setOf()),
 				setValue(StationRentalArea::collectRentFromOwnerBalance, false),
 			))
-		}
-
-		fun trustPlayer(id: Oid<StationRentalArea>, trustedId: SLPlayerId) {
-			col.updateOneById(id, push(StationRentalArea::trustedPlayers, trustedId))
-		}
-		fun trustSettlement(id: Oid<StationRentalArea>, trustedId: Oid<Settlement>) {
-			col.updateOneById(id, push(StationRentalArea::trustedSettlements, trustedId))
-		}
-		fun trustNation(id: Oid<StationRentalArea>, trustedId: Oid<Nation>) {
-			col.updateOneById(id, push(StationRentalArea::trustedNations, trustedId))
-		}
-
-		fun unTrustPlayer(id: Oid<StationRentalArea>, trustedId: SLPlayerId) {
-			col.updateOneById(id, pull(StationRentalArea::trustedPlayers, trustedId))
-		}
-		fun unTrustSettlement(id: Oid<StationRentalArea>, trustedId: Oid<Settlement>) {
-			col.updateOneById(id, pull(StationRentalArea::trustedSettlements, trustedId))
-		}
-		fun unTrustNation(id: Oid<StationRentalArea>, trustedId: Oid<Nation>) {
-			col.updateOneById(id, pull(StationRentalArea::trustedNations, trustedId))
 		}
 	}
 }
