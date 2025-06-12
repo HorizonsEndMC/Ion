@@ -260,9 +260,18 @@ object StationRentalAreas : IonServerComponent() {
 
 		val future = FutureInputResult()
 
-		Tasks.async {
-			StationRentalArea.claim(area.id, player.slPlayerId)
-			future.complete(InputResult.InputSuccess)
+		Tasks.sync {
+			if (!player.hasEnoughMoney(area.rent)) {
+				future.complete(InputResult.FailureReason(listOf(text("You can't afford that!", RED))))
+				return@sync
+			}
+
+			player.withdrawMoney(area.rent)
+
+			Tasks.async {
+				StationRentalArea.claim(area.id, player.slPlayerId)
+				future.complete(InputResult.InputSuccess)
+			}
 		}
 
 		return future

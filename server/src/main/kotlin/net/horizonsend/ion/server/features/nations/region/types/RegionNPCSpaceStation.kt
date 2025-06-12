@@ -11,8 +11,9 @@ import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import org.bukkit.entity.Player
+import java.util.concurrent.ConcurrentHashMap
 
-class RegionNPCSpaceStation(spaceStation: NPCSpaceStation) : Region<NPCSpaceStation>(spaceStation), RegionTopLevel {
+class RegionNPCSpaceStation(spaceStation: NPCSpaceStation) : Region<NPCSpaceStation>(spaceStation), RegionTopLevel, RegionParent {
 	override var world: String = spaceStation.world; private set
 
 	var name: String = spaceStation.name; private set
@@ -28,6 +29,8 @@ class RegionNPCSpaceStation(spaceStation: NPCSpaceStation) : Region<NPCSpaceStat
 	override fun contains(x: Int, y: Int, z: Int): Boolean {
 		return distanceSquared(this.x.d(), 0.0, this.z.d(), x.d(), 0.0, z.d()) <= radius.toDouble().squared()
 	}
+
+	override val children: MutableSet<Region<*>> = ConcurrentHashMap.newKeySet()
 
 	override fun update(delta: ChangeStreamDocument<NPCSpaceStation>) {
 		delta[NPCSpaceStation::name]?.let { name = it.string() }
