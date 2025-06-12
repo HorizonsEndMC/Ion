@@ -42,7 +42,7 @@ import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.window.Window
 import java.time.Duration
 
-class RentalAreaManageMenu(viewer: Player, val region: RegionRentalArea) : InvUIWindowWrapper(viewer, async = true) {
+class RentalAreaHomeMenu(viewer: Player, val region: RegionRentalArea) : InvUIWindowWrapper(viewer, async = true) {
 	var refreshTask: UpdateTask? = null
 
 	override fun buildWindow(): Window {
