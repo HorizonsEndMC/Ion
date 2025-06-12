@@ -17,7 +17,6 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
-import net.horizonsend.ion.server.features.gui.custom.blueprint.BlueprintMenu
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -28,6 +27,7 @@ import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.factory.PrintItem
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
+import net.horizonsend.ion.server.gui.invui.blueprint.BlueprintMenu
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -45,7 +45,6 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
-import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq
 import org.litote.kmongo.save
 import java.util.LinkedList
@@ -166,12 +165,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val slPlayerId = sender.slPlayerId
 
 		Tasks.async {
-			val blueprints: List<Blueprint> = Blueprint
-				.find(Blueprint::owner eq slPlayerId)
-				.descendingSort(Blueprint::size)
-				.toList()
-
-			failIf(blueprints.isEmpty()) {
+			failIf(!Blueprint.any(Blueprint::owner eq slPlayerId)) {
 				"You have no blueprints"
 			}
 
