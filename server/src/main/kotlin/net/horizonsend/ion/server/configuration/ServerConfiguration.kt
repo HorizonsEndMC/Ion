@@ -34,7 +34,7 @@ data class ServerConfiguration(
 	val restartHour: Int = 8,
 	val globalCustomSpawns: List<WorldSettings.SpawnedMob> = listOf(),
 	val worldResetSettings: AutoWorldReset = AutoWorldReset(),
-	val rentalAreaCollectionDay: DayOfWeek = DayOfWeek.SUNDAY
+	val rentalZoneCollectionDay: DayOfWeek = DayOfWeek.SUNDAY
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
