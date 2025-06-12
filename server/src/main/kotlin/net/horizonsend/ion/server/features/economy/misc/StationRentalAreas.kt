@@ -1,18 +1,20 @@
 package net.horizonsend.ion.server.features.economy.misc
 
-import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.input.FutureInputResult
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.input.PotentiallyFutureResult
+import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
 import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdownString
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
+import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.colors.PIRATE_DARK_RED
+import net.horizonsend.ion.common.utils.text.colors.PIRATE_SATURATED_RED
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServer
@@ -27,6 +29,7 @@ import net.horizonsend.ion.server.gui.invui.economy.RentalAreaHomeMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.ConfirmationMenu
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
 import net.horizonsend.ion.server.miscellaneous.utils.depositMoney
@@ -40,11 +43,14 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
+import org.bukkit.Bukkit
 import org.bukkit.Particle
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerJoinEvent
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDate
@@ -74,6 +80,43 @@ object StationRentalAreas : IonServerComponent() {
 
 		Tasks.async {
 			event.player.information("${rentalArea.name} is owned by ${rentalArea.owner?.let(SLPlayer::getName)}.")
+		}
+	}
+
+	@EventHandler
+	fun onLogin(event: PlayerJoinEvent) {
+		Tasks.async {
+			val regions = Regions.getAllOf<RegionRentalArea>().filter { it.owner == event.player.slPlayerId }
+
+			val cantPayRent = regions.filterNot(::canPayRent)
+
+			for (region in cantPayRent.filter { it.rentBalance >= 0 }) {
+				val warning = bracketed(text("WARNING", YELLOW))
+				val message = template(
+					text("{0}: Your rented zone {1} at {2} does not have enough balance to pay rent this week! It will be unclaimed if there is not enough to pay for a subsequent week.", HE_MEDIUM_GRAY),
+					paramColor = PIRATE_SATURATED_RED,
+					warning,
+					region.name,
+					region.getParentRegion().name
+				)
+				event.player.sendMessage(message)
+			}
+
+			// Super important
+			val (days, hours, minutes, seconds) = getDurationBreakdown(getTimeUntilCollection().toMillis())
+
+			for (region in cantPayRent.filter { it.rentBalance < 0 }) {
+				val warning = bracketed(text("WARNING", PIRATE_DARK_RED))
+				val message = template(
+					text("{0}: Your rented zone {1} at {2} has a negative balance! It will be unclaimed in {3} days, {4} hours, {5} minutes, and {6} seconds.", HE_MEDIUM_GRAY),
+					paramColor = PIRATE_SATURATED_RED,
+					warning,
+					region.name,
+					region.getParentRegion().name,
+					days, hours, minutes, seconds
+				)
+				event.player.sendMessage(message)
+			}
 		}
 	}
 
@@ -161,14 +204,16 @@ object StationRentalAreas : IonServerComponent() {
 
 		Tasks.async {
 			StationRentalArea.removeOwner(area.id)
+
+			val messages = mutableListOf(template(text("You gave up ownership of {0} at {1}.", HE_MEDIUM_GRAY), area.name, area.getParentRegion().name))
+
+			if (area.rentBalance > 0) messages.add(template(text("{0} of the remaining rent balance has been added to your accont.", GREEN), area.rentBalance.toCreditComponent()))
+
 			Tasks.sync {
-				player.depositMoney(area.rentBalance)
+				if (area.rentBalance > 0) player.depositMoney(area.rentBalance)
 			}
 
-			future.complete(InputResult.SuccessReason(listOf(
-				template(text("You gave up ownership of {0} at {1}.", HE_MEDIUM_GRAY), area.name, area.getParentRegion().name),
-				template(text("{0} of the remaining rent balance has been added to your accont.", GREEN), area.rentBalance.toCreditComponent()),
-			)))
+			future.complete(InputResult.SuccessReason(messages))
 		}
 
 		return future
@@ -228,135 +273,23 @@ object StationRentalAreas : IonServerComponent() {
 		return result
 	}
 
-	fun trustPlayer(region: RegionRentalArea, trustedId: SLPlayerId): PotentiallyFutureResult {
-		val future = FutureInputResult()
+	fun canPayRent(region: RegionRentalArea): Boolean {
+		val owner = region.owner ?: return true
 
-		Tasks.async {
-			val trusted = StationRentalArea.findOnePropById(region.id, RegionRentalArea::trustedPlayers)
-			if (trusted == null) {
-				future.complete(InputResult.FailureReason(listOf(text("There was a problem getting your result, please try again.", RED))))
-				return@async
+		val fromBalance = region.collectRentFromOwnerBalance
+		val rent = region.rent
+
+		var charged = rent
+		if (region.rentBalance < 0) charged -= region.rentBalance
+
+		if (region.rentBalance < rent) {
+			if (fromBalance && VAULT_ECO.getBalance(Bukkit.getOfflinePlayer(owner.uuid)) >= charged) {
+				return true
 			}
 
-			if (trusted.contains(trustedId)) {
-				future.complete(InputResult.FailureReason(listOf(text("That player is already trusted!", RED))))
-				return@async
-			}
-
-			StationRentalArea.trustPlayer(region.id, trustedId)
-			future.complete(InputResult.SuccessReason(listOf(text("Successfully trusted that player", GREEN))))
+			return false
 		}
 
-		return future
-	}
-
-	fun trustSettlement(region: RegionRentalArea, trustedId: Oid<Settlement>): PotentiallyFutureResult {
-		val future = FutureInputResult()
-
-		Tasks.async {
-			val trusted = StationRentalArea.findOnePropById(region.id, RegionRentalArea::trustedSettlements)
-			if (trusted == null) {
-				future.complete(InputResult.FailureReason(listOf(text("There was a problem getting your result, please try again.", RED))))
-				return@async
-			}
-
-			if (trusted.contains(trustedId)) {
-				future.complete(InputResult.FailureReason(listOf(text("That settlement is already trusted!", RED))))
-				return@async
-			}
-
-			StationRentalArea.trustSettlement(region.id, trustedId)
-			future.complete(InputResult.SuccessReason(listOf(text("Successfully trusted that settlement", GREEN))))
-		}
-
-		return future
-	}
-
-	fun trustNation(region: RegionRentalArea, trustedId: Oid<Nation>): PotentiallyFutureResult {
-		val future = FutureInputResult()
-
-		Tasks.async {
-			val trusted = StationRentalArea.findOnePropById(region.id, RegionRentalArea::trustedNations)
-			if (trusted == null) {
-				future.complete(InputResult.FailureReason(listOf(text("There was a problem getting your result, please try again.", RED))))
-				return@async
-			}
-
-			if (trusted.contains(trustedId)) {
-				future.complete(InputResult.FailureReason(listOf(text("That nation is already trusted!", RED))))
-				return@async
-			}
-
-			StationRentalArea.trustNation(region.id, trustedId)
-			future.complete(InputResult.SuccessReason(listOf(text("Successfully trusted that nation", GREEN))))
-		}
-
-		return future
-	}
-
-	fun unTrustPlayer(region: RegionRentalArea, trustedId: SLPlayerId): PotentiallyFutureResult {
-		val future = FutureInputResult()
-
-		Tasks.async {
-			val trusted = StationRentalArea.findOnePropById(region.id, RegionRentalArea::trustedPlayers)
-			if (trusted == null) {
-				future.complete(InputResult.FailureReason(listOf(text("There was a problem getting your result, please try again.", RED))))
-				return@async
-			}
-
-			if (trusted.contains(trustedId)) {
-				future.complete(InputResult.FailureReason(listOf(text("That player is already trusted!", RED))))
-				return@async
-			}
-
-			StationRentalArea.trustPlayer(region.id, trustedId)
-			future.complete(InputResult.SuccessReason(listOf(text("Successfully trusted that player", GREEN))))
-		}
-
-		return future
-	}
-
-	fun unTrustSettlement(region: RegionRentalArea, trustedId: Oid<Settlement>): PotentiallyFutureResult {
-		val future = FutureInputResult()
-
-		Tasks.async {
-			val trusted = StationRentalArea.findOnePropById(region.id, RegionRentalArea::trustedSettlements)
-			if (trusted == null) {
-				future.complete(InputResult.FailureReason(listOf(text("There was a problem getting your result, please try again.", RED))))
-				return@async
-			}
-
-			if (trusted.contains(trustedId)) {
-				future.complete(InputResult.FailureReason(listOf(text("That settlement is already trusted!", RED))))
-				return@async
-			}
-
-			StationRentalArea.trustSettlement(region.id, trustedId)
-			future.complete(InputResult.SuccessReason(listOf(text("Successfully trusted that settlement", GREEN))))
-		}
-
-		return future
-	}
-
-	fun unTrustNation(region: RegionRentalArea, trustedId: Oid<Nation>): PotentiallyFutureResult {
-		val future = FutureInputResult()
-
-		Tasks.async {
-			val trusted = StationRentalArea.findOnePropById(region.id, RegionRentalArea::trustedNations)
-			if (trusted == null) {
-				future.complete(InputResult.FailureReason(listOf(text("There was a problem getting your result, please try again.", RED))))
-				return@async
-			}
-
-			if (trusted.contains(trustedId)) {
-				future.complete(InputResult.FailureReason(listOf(text("That nation is already trusted!", RED))))
-				return@async
-			}
-
-			StationRentalArea.trustNation(region.id, trustedId)
-			future.complete(InputResult.SuccessReason(listOf(text("Successfully trusted that nation", GREEN))))
-		}
-
-		return future
+		return true
 	}
 }
