@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.nations.region.types
 
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.boolean
 import net.horizonsend.ion.common.database.document
 import net.horizonsend.ion.common.database.double
 import net.horizonsend.ion.common.database.get
@@ -26,6 +27,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import org.litote.kmongo.setValue
 
 class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone) {
 	override val priority: Int = 1
@@ -44,6 +46,7 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 	var trustedPlayers: Set<SLPlayerId> = zone.trustedPlayers; private set
 	var trustedSettlements: Set<Oid<Settlement>> = zone.trustedSettlements; private set
 	var trustedNations: Set<Oid<Nation>> = zone.trustedNations; private set
+	var collectRentFromOwnerBalance: Boolean = zone.collectRentFromOwnerBalance; private set
 
 	var rent: Double = zone.rent; private set
 	var rentBalance: Double = zone.rentBalance; private set
@@ -68,6 +71,7 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 		delta[StationRentalArea::trustedPlayers]?.let { trustedPlayers = it.mappedSet { entry -> entry.slPlayerId() } }
 		delta[StationRentalArea::trustedSettlements]?.let { trustedSettlements = it.mappedSet { entry -> entry.oid() } }
 		delta[StationRentalArea::trustedNations]?.let { trustedNations = it.mappedSet { entry -> entry.oid() } }
+		delta[StationRentalArea::collectRentFromOwnerBalance]?.let { collectRentFromOwnerBalance = it.boolean() }
 
 		delta[StationRentalArea::rent]?.let { rent = it.double() }
 		delta[StationRentalArea::rentBalance]?.let { rentBalance = it.double() }
@@ -94,5 +98,10 @@ class RegionRentalArea(zone: StationRentalArea) : Region<StationRentalArea>(zone
 	}
 
 	fun getParentRegion(): RegionNPCSpaceStation = Regions[station]
+
+	fun setCollectRentFromBalance(newValue: Boolean) {
+		collectRentFromOwnerBalance = newValue
+		Tasks.async { StationRentalArea.updateById(id, setValue(StationRentalArea::collectRentFromOwnerBalance, newValue)) }
+	}
 }
 
