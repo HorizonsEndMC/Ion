@@ -8,7 +8,7 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
 import com.sk89q.worldedit.regions.CuboidRegion
 import net.horizonsend.ion.common.database.Oid
-import net.horizonsend.ion.common.database.schema.economy.StationRentalArea
+import net.horizonsend.ion.common.database.schema.economy.StationRentalZone
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
@@ -18,7 +18,7 @@ import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
-import net.horizonsend.ion.server.features.economy.misc.StationRentalAreas
+import net.horizonsend.ion.server.features.economy.misc.StationRentalZones
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -46,7 +46,7 @@ internal object NPCOwnerCommand : SLCommand() {
 		manager.commandCompletions.registerAsyncCompletion("rentalAreas") { context ->
 			val stationName = context.getContextValueByName(String::class.java, "stationName") ?: throw InvalidCommandArgument("Station not specified!")
 			val station = NPCSpaceStation.findOne(NPCSpaceStation::name eq stationName) ?: throw InvalidCommandArgument("Station not found!")
-			StationRentalArea.find(StationRentalArea::station eq station._id).map(StationRentalArea::name).toList()
+			StationRentalZone.find(StationRentalZone::station eq station._id).map(StationRentalZone::name).toList()
 		}
 	}
 
@@ -65,7 +65,7 @@ internal object NPCOwnerCommand : SLCommand() {
 	private fun validateRentalAreaName(station: Oid<NPCSpaceStation>, name: String) {
 		failIf(!name.isAlphanumeric()) { "Name must be alphanumeric" }
 
-		failIf(!StationRentalArea.none(and(StationRentalArea::station eq station, StationRentalArea::name eq name))) { "An npc owner named $name already exists" }
+		failIf(!StationRentalZone.none(and(StationRentalZone::station eq station, StationRentalZone::name eq name))) { "An npc owner named $name already exists" }
 	}
 
 	private fun validateColor(red: Int, green: Int, blue: Int): Int {
@@ -202,7 +202,7 @@ internal object NPCOwnerCommand : SLCommand() {
 		val minPoint = Vec3i(selection.minimumPoint.x(), selection.minimumPoint.y(), selection.minimumPoint.z())
 		val maxPoint = Vec3i(selection.maximumPoint.x(), selection.maximumPoint.y(), selection.maximumPoint.z())
 
-		val new = StationRentalArea.create(regionName, station._id, sender.world.name, Vec3i(signLocation), minPoint, maxPoint, rent)
+		val new = StationRentalZone.create(regionName, station._id, sender.world.name, Vec3i(signLocation), minPoint, maxPoint, rent)
 		sender.information("Created rental area $regionName in station $stationName")
 	}
 
@@ -210,7 +210,7 @@ internal object NPCOwnerCommand : SLCommand() {
 	@CommandCompletion("@npcStations @rentalAreas")
 	fun outline(sender: Player, stationName: String, regionName: String, durationSeconds: Long) {
 		val station = NPCSpaceStation.findOne(NPCSpaceStation::name eq stationName) ?: fail { "Station $stationName not found!" }
-		val rentalArea = StationRentalArea.findOne(and(StationRentalArea::station eq station._id, StationRentalArea::station eq station._id)) ?: fail { "Rental area $regionName not found!" }
+		val rentalArea = StationRentalZone.findOne(and(StationRentalZone::station eq station._id, StationRentalZone::station eq station._id)) ?: fail { "Rental area $regionName not found!" }
 
 		val points = cube(Vec3i(rentalArea.minPoint).toLocation(sender.world), Vec3i(rentalArea.maxPoint).toLocation(sender.world).add(1.0, 1.0, 1.0))
 
@@ -234,16 +234,16 @@ internal object NPCOwnerCommand : SLCommand() {
 	@CommandCompletion("@npcStations @rentalAreas")
 	fun clearOwner(sender: Player, stationName: String, regionName: String) {
 		val station = NPCSpaceStation.findOne(NPCSpaceStation::name eq stationName) ?: fail { "Station $stationName not found!" }
-		val rentalArea = StationRentalArea.findOne(and(StationRentalArea::station eq station._id, StationRentalArea::station eq station._id)) ?: fail { "Rental area $regionName not found!" }
+		val rentalArea = StationRentalZone.findOne(and(StationRentalZone::station eq station._id, StationRentalZone::station eq station._id)) ?: fail { "Rental area $regionName not found!" }
 
-		StationRentalArea.removeOwner(rentalArea._id)
+		StationRentalZone.removeOwner(rentalArea._id)
 	}
 
 	@Subcommand("station rentalarea info")
 	@CommandCompletion("@npcStations @rentalAreas @nothing")
 	fun rentalAreaInfo(sender: Player, stationName: String, regionName: String) {
 		val station = NPCSpaceStation.findOne(NPCSpaceStation::name eq stationName) ?: fail { "Station $stationName not found!" }
-		val rentalArea = StationRentalArea.findOne(and(StationRentalArea::station eq station._id, StationRentalArea::station eq station._id)) ?: fail { "Rental area $regionName not found!" }
+		val rentalArea = StationRentalZone.findOne(and(StationRentalZone::station eq station._id, StationRentalZone::station eq station._id)) ?: fail { "Rental area $regionName not found!" }
 
 		sender.information("Station: $stationName")
 		sender.information("Rental area: $regionName")
@@ -260,7 +260,7 @@ internal object NPCOwnerCommand : SLCommand() {
 	fun collectRent(sender: CommandSender) {
 		sender.information("Collected rents")
 		Tasks.async {
-			val duration = measureTime { StationRentalAreas.collectRents() }
+			val duration = measureTime { StationRentalZones.collectRents() }
 			sender.information("Collection took ${duration.inWholeMilliseconds}ms")
 		}
 	}
@@ -269,7 +269,7 @@ internal object NPCOwnerCommand : SLCommand() {
 	@CommandCompletion("@npcStations @rentalAreas @nothing")
 	fun refreshSign(sender: CommandSender, stationName: String, regionName: String) {
 		val station = NPCSpaceStation.findOne(NPCSpaceStation::name eq stationName) ?: fail { "Station $stationName not found!" }
-		val rentalArea = StationRentalArea.findOne(and(StationRentalArea::station eq station._id, StationRentalArea::station eq station._id)) ?: fail { "Rental area $regionName not found!" }
-		StationRentalAreas.refreshSign(Regions[rentalArea._id])
+		val rentalArea = StationRentalZone.findOne(and(StationRentalZone::station eq station._id, StationRentalZone::station eq station._id)) ?: fail { "Rental area $regionName not found!" }
+		StationRentalZones.refreshSign(Regions[rentalArea._id])
 	}
 }
