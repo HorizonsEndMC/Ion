@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.features.misc.AutoRestart
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
 import net.horizonsend.ion.server.features.misc.ProxyMessaging
+import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.misc.Shuttles
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
@@ -227,4 +228,5 @@ val components: List<IonComponent> = listOf(
 	MultiBlockDisplay,
 	MultiblockRecipeRegistry,
 	StationRentalZones,
+	ServerInboxes
 )

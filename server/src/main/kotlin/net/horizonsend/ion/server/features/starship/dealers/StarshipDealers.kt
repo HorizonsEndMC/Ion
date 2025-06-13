@@ -8,7 +8,6 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.npcs.NPCManager
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.progression.Levels
@@ -33,7 +32,6 @@ object StarshipDealers : IonServerComponent(true) {
 	val manager = NPCManager(log, "StarshipDealerNPCs")
 
 	private val lastBuyTimes = mutableMapOf<DealerShip, MutableMap<UUID, Long>>()
-	val schematicMap = ConfigurationFiles.serverConfiguration().soldShips.associateWith { it.schematic() }
 
 	override fun onEnable() {
 		manager.enableRegistry()
@@ -69,8 +67,8 @@ object StarshipDealers : IonServerComponent(true) {
 				return@async
 			}
 
-			if (ship is NPCDealerShip && !player.hasEnoughMoney(ship.price)) {
-				player.userError("This ship is too expensive for you\n It costs ${ship.price}, you currently have ${player.getMoneyBalance()}")
+			if (ship is NPCDealerShip && !player.hasEnoughMoney(ship.serialized.price)) {
+				player.userError("This ship is too expensive for you\n It costs ${ship.serialized.price}, you currently have ${player.getMoneyBalance()}")
 				return@async
 			}
 
@@ -86,7 +84,7 @@ object StarshipDealers : IonServerComponent(true) {
 				player.teleport(target.add(0.0, 1.0, 0.0).toCenterLocation())
 
 				if (ship is NPCDealerShip) Tasks.sync {
-					player.withdrawMoney(ship.price)
+					player.withdrawMoney(ship.serialized.price)
 				}
 
 				shipLastBuy[player.uniqueId] = currentTimeMillis()
@@ -94,13 +92,13 @@ object StarshipDealers : IonServerComponent(true) {
 
 				BlueprintCommand.tryPilot(player, vec3i, ship.starshipType, miniMessage().serialize(ship.displayName)) {
 					if (ship is NPCDealerShip) (it.data as PlayerStarshipData).shipDealerInformation = PlayerStarshipData.ShipDealerInformation(
-						soldType = ship.schematicName,
+						soldType = ship.serialized.schematicName,
 						soldTime = currentTimeMillis(),
 						creationBlockKey = it.data.blockKey
 					)
 				}
 
-				if (ship is NPCDealerShip) player.success("Successfully bought a ${ship.schematicName} (Cost: ${ship.price}\n Remaining Balance: ${player.getMoneyBalance()})")
+				if (ship is NPCDealerShip) player.success("Successfully bought a ${ship.serialized.schematicName} (Cost: ${ship.serialized.price}\n Remaining Balance: ${player.getMoneyBalance()})")
 
 				player.rewardAchievement(Achievement.BUY_SPAWN_SHUTTLE)
 			}
