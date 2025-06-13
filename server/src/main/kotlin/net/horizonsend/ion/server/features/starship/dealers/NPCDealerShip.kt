@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.dealers
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
+import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.IonServer
@@ -14,28 +15,33 @@ import org.bukkit.inventory.ItemStack
 import java.time.Duration
 
 class NPCDealerShip(
-	val price: Double,
-	displayName: String,
-	val schematicName: String,
-	val guiMaterial: Material,
-	cooldown: Long,
-	protectionCanBypass: Boolean,
-	private val shipClass: StarshipTypeDB,
-	val lore: List<String>
-) : DealerShip(displayName.miniMessage(), Duration.ofMillis(cooldown), protectionCanBypass, shipClass.actualType) {
+	val serialized: SerializableDealerShipInformation
+) : DealerShip(serialized.displayName.miniMessage(), Duration.ofMillis(serialized.cooldown), serialized.protectionCanBypass, serialized.shipClass.actualType) {
 
-	private val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("$schematicName.schem")
+	private val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("${serialized.schematicName}.schem")
 
 	override fun getClipboard(): Clipboard {
 		return readSchematic(schematicFile)!!
 	}
 
 	override fun getIcon(): ItemStack {
-		return ItemStack(guiMaterial)
+		return ItemStack(serialized.guiMaterial)
 			.updateDisplayName(displayName)
-			.updateLore(lore.map { loreLine ->
+			.updateLore(serialized.lore.map { loreLine ->
 				MiniMessage.miniMessage().deserialize(loreLine)
 			})
 
 	}
+
+	@Serializable
+	data class SerializableDealerShipInformation(
+		val price: Double,
+		val schematicName: String,
+		val guiMaterial: Material,
+		val displayName: String,
+		val cooldown: Long,
+		val protectionCanBypass: Boolean,
+		val shipClass: StarshipTypeDB,
+		val lore: List<String>
+	)
 }

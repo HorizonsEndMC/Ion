@@ -43,6 +43,7 @@ import net.horizonsend.ion.common.database.schema.space.RoguePlanet
 import net.horizonsend.ion.common.database.schema.space.Star
 import net.horizonsend.ion.common.database.schema.starships.AIStarshipData
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.database.schema.starships.PlayerSoldShip
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import org.bson.BsonDocument
@@ -152,6 +153,7 @@ object DBManager : IonComponent() {
 		PlayerStarshipData.init()
 		AIStarshipData.init()
 		Blueprint.init()
+		PlayerSoldShip.init()
 
 		Cryopod.init()
 		Bookmark.init()
