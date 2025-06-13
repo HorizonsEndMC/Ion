@@ -18,7 +18,6 @@ import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.PilotedStarships
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -54,6 +53,8 @@ object CombatTimer : IonServerComponent() {
 	private const val REASON_PVP_WITHIN_GRAVITY_WELL = "Getting caught in non-friendly starship's gravity well"
 	const val REASON_PVP_GROUND_COMBAT = "Engaging in combat with another player on the ground"
 	private const val REASON_ENEMY_PROXIMITY = "Being in close proximity to a hostile starship"
+	const val MINIMUM_WELL_PROXIMITY_BLOCK_COUNT = 1000
+	private const val MINIMUM_IMMUNITY_TO_SMALL_SHIP_COMBAT_TAG_BLOCK_COUNT = 4000
 
 	private var enabled = false
 
@@ -85,18 +86,24 @@ object CombatTimer : IonServerComponent() {
 			Bukkit.getOnlinePlayers().forEach { player ->
 				val pilotedStarship = PilotedStarships[player]
 
-				// Only actively controlled warships (that are not starfighter or interceptor) can cause proximity triggered combat tags
+				// Three types of proximity combat tag triggers:
+				// - Starship enters the interdiction range of an enemy starship that is currently interdicting
+				// - Player enters the SvP range of an enemy ship
+				// - Ship pilot is already combat tagged and there is an enemy ship within the maintain combat range
+
+				// If the aggressing ship is less than MINIMUM_WELL_PROXIMITY_BLOCK_COUNT, they can only incur proximity tag on other ships that are smaller than 4000 blocks
 				if (pilotedStarship != null && pilotedStarship.controller !is UnpilotedController &&
-					pilotedStarship.type.typeCategory == TypeCategory.WAR_SHIP &&
-					pilotedStarship.type != StarshipType.INTERCEPTOR && pilotedStarship.type != StarshipType.STARFIGHTER) {
+					pilotedStarship.type.typeCategory == TypeCategory.WAR_SHIP) {
 					val starshipCom  = pilotedStarship.centerOfMass.toLocation(player.world)
 
 					if (pilotedStarship.isInterdicting && pilotedStarship.world.hasFlag(WorldFlag.SPACE_WORLD)) {
-						// Interdicting ships will place combat tags on other player starships that are within the well range, are less than neutral, and not in a protected city
+						// Interdicting ships will place combat tags on other player starships that are within the well range, are less than neutral, not in a protected city, and
+						// (either the interdicting ship is larger than MINIMUM_WELL_PROXIMITY_BLOCK_COUNT, or the other ship is smaller than MINIMUM_IMMUNITY_TO_SMALL_SHIP_COMBAT_TAG_BLOCK_COUNT)
 						toPlayersInRadius(starshipCom, Interdiction.starshipInterdictionRangeEquation(pilotedStarship)) { otherPlayer ->
 							val otherStarship = PilotedStarships[otherPlayer]
 							if (otherStarship != null &&
-								!ProtectionListener.isProtectedCity(otherStarship.centerOfMass.toLocation(otherPlayer.world))) {
+								!ProtectionListener.isProtectedCity(otherStarship.centerOfMass.toLocation(otherPlayer.world)) &&
+								(pilotedStarship.initialBlockCount >= MINIMUM_WELL_PROXIMITY_BLOCK_COUNT || otherStarship.initialBlockCount < MINIMUM_IMMUNITY_TO_SMALL_SHIP_COMBAT_TAG_BLOCK_COUNT)) {
 								evaluatePvp(
 									player,
 									otherPlayer,
@@ -107,10 +114,12 @@ object CombatTimer : IonServerComponent() {
 						}
 					}
 
-					// Piloted ships will place combat tags on other players that are unfriendly if they are within 500 blocks, the defender is not piloting a ship, and they are not in a protected city
+					// Piloted ships will place combat tags on other players that are unfriendly if they are within SVP_ENTER_COMBAT_DIST blocks, the defender is not piloting a ship, not in a protected city, and
+					// larger than MINIMUM_WELL_PROXIMITY_BLOCK_COUNT
 					toPlayersInRadius(starshipCom, SVP_ENTER_COMBAT_DIST) { otherPlayer ->
 						if (PilotedStarships[otherPlayer] == null &&
-							!ProtectionListener.isProtectedCity(otherPlayer.location)) {
+							!ProtectionListener.isProtectedCity(otherPlayer.location) &&
+							pilotedStarship.initialBlockCount >= MINIMUM_WELL_PROXIMITY_BLOCK_COUNT) {
 							evaluatePvp(
 								player,
 								otherPlayer,
@@ -121,10 +130,14 @@ object CombatTimer : IonServerComponent() {
 						}
 					}
 
-					// Piloted ships will maintain combat tag on all players, within 1000 blocks if the pilot is unfriendly to them and the other player was already tagged and not in a protected city
+					// Piloted ships will maintain combat tag on all players, within MAINTAIN_COMBAT_DIST blocks if the pilot is unfriendly to them and the other player was already tagged and not in a protected city,
+					// and if the other player is not piloting a starship, or the other player piloting a starship and the piloted ship is larger than MINIMUM_WELL_PROXIMITY_BLOCK_COUNT, or
+					// the other player is piloting a starship and the other player's ship is smaller than MINIMUM_IMMUNITY_TO_SMALL_SHIP_COMBAT_TAG_BLOCK_COUNT
 					toPlayersInRadius(starshipCom, MAINTAIN_COMBAT_DIST) { otherPlayer ->
+						val otherStarship = PilotedStarships[otherPlayer]
 						if (isPvpCombatTagged(otherPlayer) &&
-							!ProtectionListener.isProtectedCity(otherPlayer.location)) {
+							!ProtectionListener.isProtectedCity(otherPlayer.location) &&
+							(otherStarship == null || pilotedStarship.initialBlockCount >= MINIMUM_WELL_PROXIMITY_BLOCK_COUNT || otherStarship.initialBlockCount < MINIMUM_IMMUNITY_TO_SMALL_SHIP_COMBAT_TAG_BLOCK_COUNT)) {
 							evaluatePvp(
 								player,
 								otherPlayer,
