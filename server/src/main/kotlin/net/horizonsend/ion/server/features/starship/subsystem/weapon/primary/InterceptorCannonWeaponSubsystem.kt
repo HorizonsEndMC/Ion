@@ -35,7 +35,7 @@ class InterceptorCannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, fac
 	override val extraDistance: Int = balancing.extraDistance
 
 	override fun getName(): Component {
-		return Component.text("Interceptor Cannon")
+		return Component.text("Maser Cannon")
 	}
 
 	override fun getMaxPerShot(): Int = 4
