@@ -46,7 +46,6 @@ import net.horizonsend.ion.server.features.nations.NationsMasterTasks
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.nations.sieges.StationSieges
-import net.horizonsend.ion.server.features.npcs.StarshipDealers
 import net.horizonsend.ion.server.features.npcs.TutorialNPCs
 import net.horizonsend.ion.server.features.npcs.traits.NPCTraits
 import net.horizonsend.ion.server.features.ores.generation.OreGeneration
@@ -81,6 +80,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCru
 import net.horizonsend.ion.server.features.starship.control.signs.StarshipSignControl
 import net.horizonsend.ion.server.features.starship.control.weaponry.PlayerStarshipWeaponry
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
+import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
