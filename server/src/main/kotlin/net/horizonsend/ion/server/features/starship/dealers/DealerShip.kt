@@ -7,10 +7,10 @@ import org.bukkit.inventory.ItemStack
 import java.time.Duration
 
 abstract class DealerShip(
-	val displayName: Component,
-	val cooldown: Duration,
-	val protectionCanBypass: Boolean,
-	val starshipType: StarshipType
+	open val displayName: Component,
+	open val cooldown: Duration,
+	open val protectionCanBypass: Boolean,
+	open val starshipType: StarshipType
 ) {
 	abstract fun getClipboard(): Clipboard
 	abstract fun getIcon(): ItemStack
