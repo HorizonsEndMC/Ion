@@ -1,5 +1,6 @@
 package net.horizonsend.ion.common.extensions
 
+import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.kyori.adventure.text.Component
 import net.luckperms.api.model.user.User
@@ -7,6 +8,8 @@ import java.util.UUID
 
 /** Represents all the common information between different implementations of Players */
 interface CommonPlayer {
+	val slPlayerId get() = uniqueId.slPlayerId
+
 	val uniqueId: UUID
 
 	val name: String
