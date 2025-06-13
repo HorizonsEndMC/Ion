@@ -22,12 +22,14 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
+import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.economy.city.TradeCities
+import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -37,7 +39,12 @@ import net.horizonsend.ion.server.features.nations.utils.isSemiActive
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.CommonPlayerWrapper.Companion.common
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
+import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
+import net.horizonsend.ion.server.miscellaneous.utils.depositMoney
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -877,5 +884,12 @@ internal object SettlementCommand : SLCommand() {
 		Settlement.setMotd(ownerSettlementId, null)
 
 		sender.success("Success: The motd was cleared.")
+	}
+
+	@Subcommand("broadcast")
+	fun onBroadcast(sender: Player, message: String) = asyncCommand(sender) {
+		val settlementId = requireSettlementIn(sender)
+		requireSettlementPermission(sender, settlementId, SettlementRole.Permission.BRODCAST)
+		ServerInboxes.sendToSettlementMembers(sender.common(), settlementId, message.miniMessage())
 	}
 }
