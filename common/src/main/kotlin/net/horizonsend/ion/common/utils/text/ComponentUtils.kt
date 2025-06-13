@@ -35,6 +35,9 @@ import java.text.MessageFormat
 import java.util.Locale
 import java.util.function.Consumer
 
+typealias MiniMessageString = String
+typealias GsonComponentString = String
+
 // Serialization
 /** Skip building the serializer */
 val miniMessage = MiniMessage.miniMessage()
