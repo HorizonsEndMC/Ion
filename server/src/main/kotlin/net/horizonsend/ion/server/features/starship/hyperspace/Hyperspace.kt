@@ -66,7 +66,7 @@ object Hyperspace : IonServerComponent() {
 		if (massShadows != null) {
 			var combinedWellStrength = 0.0
 			massShadows.forEach { combinedWellStrength += it.wellStrength }
-			if (starship.balancing.jumpStrength < combinedWellStrength) {
+			if (starship.balancing.jumpStrength <= combinedWellStrength) {
 				starship.userError("Ship is within a strong Gravity Well! Jump cancelled")
 				return
 			}

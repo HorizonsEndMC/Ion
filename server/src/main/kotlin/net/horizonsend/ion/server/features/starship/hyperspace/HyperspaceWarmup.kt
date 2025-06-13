@@ -66,7 +66,7 @@ class HyperspaceWarmup(
 		if (massShadows != null) {
 			var combinedWellStrength = 0.0
 			massShadows.forEach { combinedWellStrength += it.wellStrength }
-			if (ship.balancing.jumpStrength < combinedWellStrength) {
+			if (ship.balancing.jumpStrength <= combinedWellStrength) {
 				ship.onlinePassengers.forEach { player ->
 					player.userErrorAction("Ship is within a strong Gravity Well! Jump cancelled")
 				}
