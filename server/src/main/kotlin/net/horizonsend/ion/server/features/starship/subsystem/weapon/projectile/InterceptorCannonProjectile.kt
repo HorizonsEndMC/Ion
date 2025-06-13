@@ -30,7 +30,7 @@ class InterceptorCannonProjectile(
 	override val pitch: Float = balancing.pitch
 	override val soundName: String = balancing.soundName
 
-	private val explosionSize = 12.0f
+	private val explosionSize = 4.0f
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		val calcExplosionSize = if (starship.initialBlockCount < 700) explosionSize
