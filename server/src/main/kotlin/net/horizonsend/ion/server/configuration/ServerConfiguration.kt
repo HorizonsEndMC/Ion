@@ -198,7 +198,7 @@ data class ServerConfiguration(
 		val guiMaterial: Material,
 		val cooldown: Long,
 		val protectionCanBypass: Boolean,
-		private val shipClass: StarshipTypeDB,
+		val shipClass: StarshipTypeDB,
 		val lore: List<String>
 	) {
 		val shipType: StarshipType get() = shipClass.actualType

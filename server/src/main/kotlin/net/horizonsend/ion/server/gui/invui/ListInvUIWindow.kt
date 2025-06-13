@@ -7,6 +7,8 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.PagedGui
+import xyz.xenondevs.invui.gui.structure.Marker
+import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 import kotlin.math.ceil
 
@@ -74,6 +76,13 @@ abstract class ListInvUIWindow<T: Any?>(viewer: Player, protected var pageNumber
 
 	protected fun <S: PagedGui.Builder<*>> S.handlePageChange(): S {
 		addPageChangeHandler { _, new -> pageNumber = new; refreshAll() }
+		return this
+	}
+
+	protected fun <S: PagedGui.Builder<Item>> S.handlePaginatedMenu(itemsChar: Char, marker: Marker = Markers.CONTENT_LIST_SLOT_HORIZONTAL): S {
+		addIngredient(itemsChar, marker)
+		setContent(items)
+		handlePageChange()
 		return this
 	}
 }
