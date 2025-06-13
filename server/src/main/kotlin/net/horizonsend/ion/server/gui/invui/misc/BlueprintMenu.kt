@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.blueprint
+package net.horizonsend.ion.server.gui.invui.misc
 
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.utils.text.miniMessage
