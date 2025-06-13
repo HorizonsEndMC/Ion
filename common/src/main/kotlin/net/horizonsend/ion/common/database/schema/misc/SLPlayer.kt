@@ -125,7 +125,7 @@ data class SLPlayer(
 	var skipBazaarSingleEntryMenus: Boolean = false,
 
 	var blockedPlayerIDs: Set<SLPlayerId> = setOf(),
-	var wasKilledOn: Set<String> = setOf(),
+	var wasKilledOn: Set<String> = setOf()
 ) : DbObject {
 	companion object : DbObjectCompanion<SLPlayer, SLPlayerId>(
 		SLPlayer::class, setup = {

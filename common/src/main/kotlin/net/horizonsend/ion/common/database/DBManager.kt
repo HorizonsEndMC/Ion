@@ -18,6 +18,7 @@ import net.horizonsend.ion.common.database.schema.economy.CompletedCollectionMis
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
 import net.horizonsend.ion.common.database.schema.economy.StationRentalZone
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
+import net.horizonsend.ion.common.database.schema.misc.Message
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.Shuttle
@@ -112,6 +113,7 @@ object DBManager : IonComponent() {
 		PlayerSettings.init()
 		Shuttle.init()
 		Bookmark.init()
+		Message.init()
 
 		// nations
 		CapturableStation.init()
