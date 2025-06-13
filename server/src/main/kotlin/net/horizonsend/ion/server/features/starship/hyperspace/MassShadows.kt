@@ -93,7 +93,7 @@ object MassShadows {
 			val dist = distance(x, 128.0, z, center.x, 128.0, center.z)
 			if (dist > locusScheduler.radius) continue
 
-			allMassShadows.add(MassShadowInfo(text("AI locus"), center.blockX, center.blockZ, locusScheduler.radius.roundToInt(), dist.toInt(), 1))
+			allMassShadows.add(MassShadowInfo(text("AI Locus"), center.blockX, center.blockZ, locusScheduler.radius.roundToInt(), dist.toInt(), 1))
 		}
 
 		if (allMassShadows.isEmpty()) return null

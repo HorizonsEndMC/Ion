@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.hyperspace
 
-import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.common.extensions.alertActionMessage
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.utils.text.plainText
@@ -69,7 +68,7 @@ class HyperspaceMovement(
 			if (shadows != null) {
 				var combinedWellStrength = 0.0
 				shadows.forEach { combinedWellStrength += it.wellStrength }
-				if (ship.balancing.jumpStrength < combinedWellStrength) {
+				if (ship.balancing.jumpStrength <= combinedWellStrength) {
 					if (shadows.size == 1) {
 						val shadow = shadows.first()
 						val message = "Ship caught by a mass shadow! Mass Shadow: ${shadow.description.plainText()} at ${shadow.x}, ${shadow.z} " +

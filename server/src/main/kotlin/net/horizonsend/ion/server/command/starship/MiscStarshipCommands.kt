@@ -19,7 +19,6 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
-import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
@@ -348,7 +347,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		)
 		var combinedWellStrength = 0.0
 		massShadows?.forEach { combinedWellStrength += it.wellStrength }
-		if (massShadows != null && combinedWellStrength > starship.balancing.jumpStrength) {
+		if (massShadows != null && combinedWellStrength >= starship.balancing.jumpStrength) {
 			val escapeVector = starship.centerOfMass.toVector().setY(128)
 			massShadows.forEach { massShadow->
 				escapeVector.subtract(Vector(massShadow.x, 128, massShadow.z)).rotateAroundY(PI / 2)
