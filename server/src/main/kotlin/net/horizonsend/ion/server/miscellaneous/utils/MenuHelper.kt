@@ -69,10 +69,6 @@ object MenuHelper {
 		}
 	}
 
-	fun GuiItem.setLoreComponent(lines: List<Component>): GuiItem = apply {
-		item.itemMeta = item.itemMeta?.apply { lore(lines) }
-	}
-
 	fun Player.openPaginatedMenu(title: String, items: List<GuiItem>, titleItems: List<GuiItem> = listOf()) =
 		Tasks.sync {
 			require(titleItems.size <= 6)
