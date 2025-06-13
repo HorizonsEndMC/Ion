@@ -18,18 +18,7 @@ class ShipDealerGUI(viewer: Player) : ListInvUIWindow<DealerShip>(viewer, async 
 	override val listingsPerPage: Int = 18
 
 	override fun generateEntries(): List<DealerShip> {
-		return ConfigurationFiles.serverConfiguration().soldShips.map {
-			NPCDealerShip(
-				it.price,
-				it.displayName,
-				it.schematicName,
-				it.guiMaterial,
-				it.cooldown,
-				it.protectionCanBypass,
-				it.shipClass,
-				it.lore
-			)
-		}
+		return ConfigurationFiles.serverConfiguration().soldShips.map(::NPCDealerShip)
 	}
 
 	override fun createItem(entry: DealerShip): Item {
