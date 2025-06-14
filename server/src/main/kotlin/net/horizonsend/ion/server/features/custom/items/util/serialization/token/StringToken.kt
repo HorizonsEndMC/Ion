@@ -16,4 +16,20 @@ class StringToken : SerializationToken<String>() {
 	override fun storeValue(value: String): String {
 		return "\"$value\""
 	}
+
+	override fun getValueRange(string: String): IntRange {
+		if (string[0] != '"')  throw IllegalArgumentException("String is not properly opened!")
+
+		val minusOpening = string.substring(1..string.lastIndex)
+
+		var lastChar: Char? = null
+		val index =  minusOpening.indexOfFirst { char ->
+			val escaped = lastChar != null && lastChar == '\\'
+			lastChar = char
+			char == '"'  && !escaped
+		}
+
+		if (index == -1) throw IllegalArgumentException("String is not properly closed!")
+		return 1.. index
+	}
 }

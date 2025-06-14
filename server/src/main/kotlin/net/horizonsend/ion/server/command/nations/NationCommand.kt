@@ -23,7 +23,9 @@ import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
+import net.horizonsend.ion.common.utils.text.lineBreak
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
+import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
@@ -31,6 +33,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
+import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -40,6 +43,7 @@ import net.horizonsend.ion.server.features.nations.utils.isSemiActive
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
+import net.horizonsend.ion.server.miscellaneous.utils.CommonPlayerWrapper.Companion.common
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
@@ -448,10 +452,6 @@ internal object NationCommand : SLCommand() {
 	@Subcommand("top|list")
 	@Description("View the top nations on Star Legacy")
 	fun onTop(sender: CommandSender, @Optional page: Int?): Unit = asyncCommand(sender) {
-		val message = text()
-			.append(lineBreakWithCenterText(nationMessageFormat("Top Nations"), 17))
-			.append(newline())
-
 		val nations = Nation.allIds()
 
 		val nationMembers: Map<Oid<Nation>, List<SLPlayerId>> =
@@ -481,13 +481,12 @@ internal object NationCommand : SLCommand() {
 		val outpostsColor = YELLOW
 		val split = text(" | ", HEColorScheme.HE_MEDIUM_GRAY)
 
-		message.append(ofChildren(
+		val headerLine = (ofChildren(
 			text("Name", nameColor),
 			split, text("Leader", leaderColor),
 			split, text("Members", membersColor),
 			split, text("Settlements", settlementsColor),
 			split, text("Outposts", outpostsColor),
-			newline()
 		))
 
 		val menu = formatPaginatedMenu(
@@ -529,11 +528,14 @@ internal object NationCommand : SLCommand() {
 				.build()
 		}
 
-		message
-			.append(menu, newline())
-			.append(net.horizonsend.ion.common.utils.text.lineBreak(47))
+		val fullMessage = ofChildren(
+			lineBreakWithCenterText(nationMessageFormat("Top Nations"), 17), newline(),
+			headerLine, newline(),
+			menu, newline(),
+			lineBreak(47)
+		)
 
-		sender.sendMessage(message.build())
+		sender.sendMessage(fullMessage)
 	}
 
 	@Subcommand("info")
@@ -558,7 +560,7 @@ internal object NationCommand : SLCommand() {
 		val message = text().color(TextColor.fromHexString("#b8e0d4"))
 
 		val lineWidth = 45
-		val lineBreak = net.horizonsend.ion.common.utils.text.lineBreak(lineWidth)
+		val lineBreak = lineBreak(lineWidth)
 
 		val data = Nation.findById(nationId) ?: fail { "Failed to load data" }
 		val cached = NationCache[nationId]
@@ -776,4 +778,11 @@ internal object NationCommand : SLCommand() {
 
 	@Subcommand("role")
 	fun onRole(sender: CommandSender): Unit = fail { "Use /nrole, not /n role (remove the space)" }
+
+	@Subcommand("broadcast")
+	fun onBroadcast(sender: Player, message: String) = asyncCommand(sender) {
+		val nationId = requireNationIn(sender)
+		requireNationPermission(sender, nationId, NationRole.Permission.BRODCAST)
+		ServerInboxes.sendToNationMembers(sender.common(), nationId, message.miniMessage())
+	}
 }

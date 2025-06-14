@@ -83,6 +83,10 @@ abstract class DbObjectCompanion<T : DbObject, ID : Id<T>>(
 //        col.projection(property, query).firstOrNull()
 		col.findOneValue(query, property)?.get(property)
 
+	inline fun <reified R> findOnePropById(id: Oid<*>, property: KProperty<R>): R? =
+//        col.projection(property, query).firstOrNull()
+		col.findValuesById(id, property)?.get(property)
+
 	inline fun <reified R> findPropById(id: ID, property: KProperty<R>): R? =
 		col.findOneValue(Filters.eq("_id", id), property)?.get(property)
 

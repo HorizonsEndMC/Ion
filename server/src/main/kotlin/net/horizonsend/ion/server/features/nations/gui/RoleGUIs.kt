@@ -4,11 +4,11 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
 import net.horizonsend.ion.common.utils.text.miniMessage
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.LegacyChatColorValidator
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.RangeIntegerValidator
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.InputValidator
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.LegacyChatColorValidator
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeIntegerValidator
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component.text
@@ -55,7 +55,7 @@ private fun InventoryClickEvent.createRoleMenu(commandName: String) {
 			when {
 				!input.isAlphanumeric() -> ValidatorResult.FailureResult(text("Must be alphanumeric!"))
 				input.length !in 3..20 -> ValidatorResult.FailureResult(text("Must be from 3 to 20 characters!"))
-				else -> ValidatorResult.ValidatorSuccessEmpty(input)
+				else -> ValidatorResult.ValidatorSuccessEmpty
 			}
 		}
 	) { _, (entry, _) ->
@@ -102,7 +102,7 @@ fun editRoleGUI(
 						when {
 							!input.isAlphanumeric() -> ValidatorResult.FailureResult(text("Must be alphanumeric!"))
 							input.length !in 3..20 -> ValidatorResult.FailureResult(text("Must be from 3 to 20 characters!"))
-							else -> ValidatorResult.ValidatorSuccessEmpty(input)
+							else -> ValidatorResult.ValidatorSuccessEmpty
 						}
 					}
 				) { _, (raw, _) ->
