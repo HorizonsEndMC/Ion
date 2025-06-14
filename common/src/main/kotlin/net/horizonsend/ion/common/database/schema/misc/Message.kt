@@ -42,13 +42,13 @@ data class Message(
 			return@trx id
 		}
 
-		fun sendMany(recipients: Iterable<SLPlayerId>, senderName: GsonComponentString, content: GsonComponentString, subjec: GsonComponentString? = null): Set<Oid<Message>> = trx { sess ->
+		fun sendMany(recipients: Iterable<SLPlayerId>, senderName: GsonComponentString, content: GsonComponentString, subject: GsonComponentString? = null): Set<Oid<Message>> = trx { sess ->
 			val ids = mutableSetOf<Oid<Message>>()
 
 			val messages = recipients.map { recipient ->
 				val id = objId<Message>()
 				ids.add(id)
-				Message(_id = id, recipient = recipient, subjec = subjec, senderName = senderName, content = content)
+				Message(_id = id, recipient = recipient, subjec = subject, senderName = senderName, content = content)
 			}
 
 			col.insertMany(sess, messages)
