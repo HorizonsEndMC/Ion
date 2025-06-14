@@ -35,10 +35,10 @@ data class Message(
 			ensureIndex(Message::recipient)
 		}
 	) {
-		fun send(recipient: SLPlayerId, senderName: GsonComponentString, content: GsonComponentString, subjec: GsonComponentString? = null): Oid<Message> = trx { sess ->
+		fun send(recipient: SLPlayerId, senderName: GsonComponentString, content: GsonComponentString, subject: GsonComponentString? = null): Oid<Message> = trx { sess ->
 			val id = objId<Message>()
 
-			col.insertOne(sess, Message(_id = id, recipient = recipient, subjec = subjec, senderName = senderName, content = content))
+			col.insertOne(sess, Message(_id = id, recipient = recipient, subjec = subject, senderName = senderName, content = content))
 
 			return@trx id
 		}
