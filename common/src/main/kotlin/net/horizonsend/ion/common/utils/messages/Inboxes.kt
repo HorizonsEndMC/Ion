@@ -19,34 +19,39 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 
 abstract class Inboxes : IonComponent() {
 	abstract fun runAsync(task: () -> Unit)
+	abstract fun notify(recipient: SLPlayerId, message: Component)
 
 	private fun Component.seralize(): String = GsonComponentSerializer.gson().serialize(this)
 
-	fun sendMessage(content: Component, senderName: Component, prefix: Component? = null, vararg recipient: SLPlayerId) {
-		sendMessage(content, senderName, prefix, setOf(*recipient))
+	fun sendMessage(content: Component, senderName: Component, subject: Component? = null, vararg recipient: SLPlayerId) {
+		sendMessage(content = content, senderName = senderName, subject = subject, recipients = setOf(*recipient))
 	}
 
-	fun sendMessage(content: Component, senderName: Component, prefix: Component? = null, recipients: Iterable<SLPlayerId>) {
+	fun sendMessage(content: Component, senderName: Component, subject: Component? = null, recipients: Iterable<SLPlayerId>) {
 		runAsync {
-			Message.sendMany(recipients = recipients, subjec = prefix?.seralize(), senderName = senderName.seralize(), content = content.seralize())
+			Message.sendMany(recipients = recipients, subject = subject?.seralize(), senderName = senderName.seralize(), content = content.seralize())
+			val inboxCommand = text("/inbox", WHITE).clickEvent(ClickEvent.runCommand("/inbox")).hoverEvent(text("/inbox"))
+			val sentMessage = template(text("You recieved a message from {0}! Use {1} to read it.", HE_MEDIUM_GRAY), senderName, inboxCommand)
+			recipients.forEach { notify(it, sentMessage) }
 		}
 	}
 
 	fun sendToNationMembers(sender: CommonPlayer, nation: Oid<Nation>, content: Component) {
 		runAsync {
 			val members = Nation.getMembers(nation)
-			sendMessage(content = content, senderName = formatNationName(nation), prefix = bracketed(text("Nation Broadcast", NamedTextColor.RED)), recipients = members)
+			sendMessage(content = content, senderName = formatNationName(nation), subject = bracketed(text("Nation Broadcast", NamedTextColor.RED), leftBracket = '<', rightBracket = '>'), recipients = members)
 		}
 	}
 
 	fun sendToSettlementMembers(sender: CommonPlayer, settlement: Oid<Settlement>, content: Component) {
 		runAsync {
 			val members = Settlement.getMembers(settlement)
-			sendMessage(content = content, senderName = formatSettlementName(settlement), prefix = bracketed(text("Settlement Broadcast", NamedTextColor.DARK_AQUA)), recipients = members)
+			sendMessage(content = content, senderName = formatSettlementName(settlement), subject = bracketed(text("Settlement Broadcast", NamedTextColor.DARK_AQUA), leftBracket = '<', rightBracket = '>'), recipients = members)
 		}
 	}
 

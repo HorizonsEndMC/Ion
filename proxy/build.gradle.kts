@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
 	id("com.github.johnrengelman.shadow")
 
@@ -33,6 +35,12 @@ dependencies {
 
 tasks.build { dependsOn("shadowJar") }
 tasks.shadowJar { archiveFileName.set("../../../build/IonProxy.jar") }
+
+tasks.named<KotlinJvmCompile>("compileKotlin") {
+	compilerOptions {
+		javaParameters = true
+	}
+}
 
 kotlin.jvmToolchain(21)
 
