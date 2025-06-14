@@ -14,6 +14,7 @@ import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.common.utils.text.bootstrapCustomTranslations
+import net.horizonsend.ion.proxy.commands.velocity.StandardCompletions
 import net.horizonsend.ion.proxy.configuration.ProxyConfiguration
 import net.horizonsend.ion.proxy.features.cache.Listener
 import net.horizonsend.ion.proxy.registration.commands
@@ -71,6 +72,8 @@ class IonProxy @Inject constructor(val server: ProxyServer, val logger: Logger, 
 		}
 
 		commandManager = VelocityCommandManager(this.server, this)
+
+		StandardCompletions.registerStandardCompletions(commandManager)
 
 		for (command in commands) {
 			command.onEnable(commandManager)
