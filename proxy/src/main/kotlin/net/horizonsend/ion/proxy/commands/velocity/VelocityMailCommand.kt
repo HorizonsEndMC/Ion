@@ -9,6 +9,7 @@ import com.velocitypowered.api.proxy.Player
 import net.horizonsend.ion.common.database.schema.misc.Message
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.messages.MessageState
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
@@ -64,13 +65,42 @@ object VelocityMailCommand : ProxyCommand() {
 		))
 	}
 
+	@Subcommand("inbox all|all")
+	fun viewInboxAll(sender: Player, @Optional pageNumber: Int?) = asyncCommand(sender) {
+		val messages = Message.findInState(sender.slPlayerId, *MessageState.entries.toTypedArray()).toList()
+		val count = messages.count()
+
+		sender.sendMessage(lineBreakWithCenterTextSpecificWidth(template(text("You have {0} total message${if (count != 1) "s" else ""}.", HE_MEDIUM_GRAY), useQuotesAroundObjects = false, count), 240))
+		sender.sendMessage(formatPaginatedMenu(
+			entries = messages,
+			command = "/mail inbox all",
+			currentPage = pageNumber ?: 1,
+			maxPerPage = 3,
+			footerSeparator = lineBreak(40),
+			entryProvider = { message, _ ->
+				val subject = message.subjec?.let { ofChildren(GsonComponentSerializer.gson().deserialize(it), space()) } ?: bracketed(text("No Subject"))
+				val senderName = GsonComponentSerializer.gson().deserialize(message.senderName)
+				val content = GsonComponentSerializer.gson().deserialize(message.content)
+
+				val state = bracketed(text(message.state.name, WHITE))
+
+				ofChildren(
+					state, space(), senderName, text(" » ", HE_DARK_GRAY), subject, newline(),
+					content, newline(),
+					getButtonRow(message)
+				)
+			}
+		))
+	}
+
 	private fun getButtonRow(message: Message): Component {
 		return ofChildren(
 			bracketed(text("Delete", RED))
 				.hoverEvent(text("Delete Message command"))
 				.clickEvent(ClickEvent.callback {
 					PLUGIN.proxy.scheduler.async {
-						Message.delete(message._id)
+						val result = Message.delete(message._id)
+						if (result.deletedCount == 0L) return@async it.userError("Message not found!")
 						it.success("Deleted Message")
 					}
 				}),
@@ -79,7 +109,8 @@ object VelocityMailCommand : ProxyCommand() {
 				.hoverEvent(text("Archive Message Command"))
 				.clickEvent(ClickEvent.callback {
 					PLUGIN.proxy.scheduler.async {
-						Message.setState(message._id, MessageState.ARCHIVED)
+						val result = Message.setState(message._id, MessageState.ARCHIVED)
+						if (result.matchedCount == 0L) return@async it.userError("Message not found!")
 						it.success("Archived Message")
 					}
 				}),
@@ -88,7 +119,8 @@ object VelocityMailCommand : ProxyCommand() {
 				.hoverEvent(text("Mark Read Command"))
 				.clickEvent(ClickEvent.callback {
 					PLUGIN.proxy.scheduler.async {
-						Message.setState(message._id, MessageState.READ)
+						val result = Message.setState(message._id, MessageState.READ)
+						if (result.matchedCount == 0L) return@async it.userError("Message not found!")
 						it.success("Marked Message as Read")
 					}
 				})
