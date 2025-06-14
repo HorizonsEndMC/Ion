@@ -28,11 +28,11 @@ abstract class Inboxes : IonComponent() {
 
 	private fun Component.seralize(): String = GsonComponentSerializer.gson().serialize(this)
 
-	fun sendMessage(content: Component, senderName: Component, subject: Component? = null, vararg recipient: SLPlayerId) {
-		sendMessage(content = content, senderName = senderName, subject = subject, recipients = setOf(*recipient))
+	fun sendMessages(content: Component, senderName: Component, subject: Component? = null, vararg recipient: SLPlayerId) {
+		sendMessages(content = content, senderName = senderName, subject = subject, recipients = setOf(*recipient))
 	}
 
-	fun sendMessage(content: Component, senderName: Component, subject: Component? = null, recipients: Iterable<SLPlayerId>) {
+	fun sendMessages(content: Component, senderName: Component, subject: Component? = null, recipients: Iterable<SLPlayerId>) {
 		runAsync {
 			Message.sendMany(recipients = recipients, subject = subject?.seralize(), senderName = senderName.seralize(), content = content.seralize())
 			val inboxCommand = text("/inbox", WHITE).clickEvent(ClickEvent.runCommand("/inbox")).hoverEvent(text("/inbox"))
@@ -53,14 +53,14 @@ abstract class Inboxes : IonComponent() {
 	fun sendToNationMembers(sender: CommonPlayer, nation: Oid<Nation>, content: Component) {
 		runAsync {
 			val members = Nation.getMembers(nation)
-			sendMessage(content = content, senderName = formatNationName(nation), subject = bracketed(text("Nation Broadcast", NamedTextColor.RED), leftBracket = '<', rightBracket = '>'), recipients = members)
+			sendMessages(content = content, senderName = formatNationName(nation), subject = bracketed(text("Nation Broadcast", NamedTextColor.RED), leftBracket = '<', rightBracket = '>'), recipients = members)
 		}
 	}
 
 	fun sendToSettlementMembers(sender: CommonPlayer, settlement: Oid<Settlement>, content: Component) {
 		runAsync {
 			val members = Settlement.getMembers(settlement)
-			sendMessage(content = content, senderName = formatSettlementName(settlement), subject = bracketed(text("Settlement Broadcast", NamedTextColor.DARK_AQUA), leftBracket = '<', rightBracket = '>'), recipients = members)
+			sendMessages(content = content, senderName = formatSettlementName(settlement), subject = bracketed(text("Settlement Broadcast", NamedTextColor.DARK_AQUA), leftBracket = '<', rightBracket = '>'), recipients = members)
 		}
 	}
 
