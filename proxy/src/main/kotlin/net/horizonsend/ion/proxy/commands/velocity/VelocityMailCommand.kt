@@ -132,7 +132,7 @@ object VelocityMailCommand : ProxyCommand() {
 	fun sendMail(sender: Player, recipientName: String, content: String) = asyncCommand(sender) {
 		val player = resolveOfflinePlayer(recipientName)
 		val playerName = text().color(WHITE).append(WrappedPlayer(sender).getDisplayName()).build()
-		ProxyInbox.sendMessage(content = text(content), senderName = playerName, subject = null, player.slPlayerId)
+		ProxyInbox.sendMessage(content = text(content), senderName = playerName, subject = null, recipient = player.slPlayerId)
 		sender.success("Sent message to $recipientName")
 	}
 }
