@@ -41,6 +41,15 @@ abstract class Inboxes : IonComponent() {
 		}
 	}
 
+	fun sendMessage(content: Component, senderName: Component, subject: Component? = null, recipient: SLPlayerId) {
+		runAsync {
+			Message.send(recipient = recipient, subject = subject?.seralize(), senderName = senderName.seralize(), content = content.seralize())
+			val inboxCommand = text("/inbox", WHITE).clickEvent(ClickEvent.runCommand("/inbox")).hoverEvent(text("/inbox"))
+			val sentMessage = template(text("You recieved a message from {0}! Use {1} to read it.", HE_MEDIUM_GRAY), senderName, inboxCommand)
+			notify(recipient, sentMessage)
+		}
+	}
+
 	fun sendToNationMembers(sender: CommonPlayer, nation: Oid<Nation>, content: Component) {
 		runAsync {
 			val members = Nation.getMembers(nation)
