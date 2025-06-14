@@ -2,6 +2,7 @@ package net.horizonsend.ion.common.database.schema.misc
 
 import com.mongodb.client.FindIterable
 import com.mongodb.client.result.DeleteResult
+import com.mongodb.client.result.UpdateResult
 import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
@@ -60,8 +61,8 @@ data class Message(
 			col.deleteOneById(sess, messageId)
 		}
 
-		fun setState(messageId: Oid<Message>, newState: MessageState) {
-			col.updateOneById(messageId, setValue(Message::state, newState))
+		fun setState(messageId: Oid<Message>, newState: MessageState): UpdateResult {
+			return col.updateOneById(messageId, setValue(Message::state, newState))
 		}
 
 		fun findInState(recipient: SLPlayerId, vararg state: MessageState): FindIterable<Message> {
