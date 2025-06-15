@@ -65,7 +65,8 @@ object VelocityMailCommand : ProxyCommand() {
 		))
 	}
 
-	@Subcommand("inbox all|all")
+	@Default
+	@Subcommand("all|inbox all")
 	fun viewInboxAll(sender: Player, @Optional pageNumber: Int?) = asyncCommand(sender) {
 		val messages = Message.findInState(sender.slPlayerId, *MessageState.entries.toTypedArray()).toList()
 		val count = messages.count()
@@ -132,7 +133,7 @@ object VelocityMailCommand : ProxyCommand() {
 	fun sendMail(sender: Player, recipientName: String, content: String) = asyncCommand(sender) {
 		val player = resolveOfflinePlayer(recipientName)
 		val playerName = text().color(WHITE).append(WrappedPlayer(sender).getDisplayName()).build()
-		ProxyInbox.sendMessage(content = text(content), senderName = playerName, subject = null, recipient = player.slPlayerId)
+		ProxyInbox.sendMessage(recipient = player.slPlayerId, senderName = playerName, subject = null, content = text(content))
 		sender.success("Sent message to $recipientName")
 	}
 }

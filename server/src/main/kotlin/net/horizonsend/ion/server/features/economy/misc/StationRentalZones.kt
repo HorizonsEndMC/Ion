@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionRentalZone
@@ -52,14 +53,14 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import java.time.Duration
-import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
 object StationRentalZones : IonServerComponent() {
 	private val collectionDay get() = ConfigurationFiles.serverConfiguration().rentalZoneCollectionDay
-	private val dayOfWeek get() = LocalDate.now().dayOfWeek
+	private val dayOfWeek get() = LocalDate.now(ZoneId.of("UTC")).dayOfWeek
 
 	override fun onEnable() {
 		Tasks.asyncAtHour(0) {
@@ -153,8 +154,10 @@ object StationRentalZones : IonServerComponent() {
 	fun onLogin(event: PlayerJoinEvent) {
 		Tasks.async {
 			val regions = Regions.getAllOf<RegionRentalZone>().filter { it.owner == event.player.slPlayerId }
+			if (regions.isEmpty()) return@async
 
 			val cantPayRent = regions.filterNot(::canPayRent)
+			if (cantPayRent.isEmpty()) return@async
 
 			for (region in cantPayRent.filter { it.rentBalance >= 0 }) {
 				val warning = bracketed(text("WARNING", YELLOW))
@@ -191,8 +194,12 @@ object StationRentalZones : IonServerComponent() {
 
 		for (zoneRegion in all.filterNot(::canPayRent)) {
 			if (zoneRegion.rentBalance < 0) {
-				zoneRegion.owner?.uuid?.let(Bukkit::getPlayer)?.alert("Your rental zone ${zoneRegion.name} at ${zoneRegion.getParentRegion().name} was unclaimed due to unpaid rent!")
+				val owner = zoneRegion.owner ?: continue
+
+				ServerInboxes.sendServerMessages(owner, text("Failure to Pay Rent", RED), template(text("Your rental zone {0} at {1} was unclaimed due to unpaid rent!", RED), zoneRegion.name, zoneRegion.getParentRegion().name))
+
 				StationRentalZone.removeOwner(zoneRegion.id)
+
 				continue
 			}
 		}
@@ -246,10 +253,17 @@ object StationRentalZones : IonServerComponent() {
 	}
 
 	fun getTimeUntilCollection(): Duration {
-		val separation = collectionDay.value - dayOfWeek.value
+		val now = ZonedDateTime.now(ZoneId.of("UTC"))
+		val separation = (collectionDay.value - dayOfWeek.value).toLong()
+		var nextCollection = ZonedDateTime.now(ZoneId.of("UTC")).withHour(0).withMinute(0).withSecond(0).plusDays(separation)
 
-		val nextCollection = ZonedDateTime.now().withHour(0).withMinute(0).withSecond(0).toInstant().epochSecond + TimeUnit.DAYS.toSeconds(separation.toLong())
-		return Duration.ofMillis(TimeUnit.SECONDS.toMillis(nextCollection - Instant.now().epochSecond))
+		if (nextCollection.isBefore(now)) {
+			nextCollection = nextCollection.plusDays(7)
+		}
+
+		val timeUntil = nextCollection.toEpochSecond() - now.toEpochSecond()
+
+		return Duration.ofMillis(TimeUnit.SECONDS.toMillis(timeUntil))
 	}
 
 	fun abandon(player: Player, zoneRegion: RegionRentalZone): PotentiallyFutureResult {

@@ -43,7 +43,6 @@ import net.horizonsend.ion.server.features.nations.utils.isSemiActive
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
-import net.horizonsend.ion.server.miscellaneous.utils.CommonPlayerWrapper.Companion.common
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
@@ -783,6 +782,6 @@ internal object NationCommand : SLCommand() {
 	fun onBroadcast(sender: Player, message: String) = asyncCommand(sender) {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.BRODCAST)
-		ServerInboxes.sendToNationMembers(sender.common(), nationId, message.miniMessage())
+		ServerInboxes.sendToNationMembers(nationId, message.miniMessage())
 	}
 }
