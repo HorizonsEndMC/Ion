@@ -203,8 +203,9 @@ object CombatTimer : IonServerComponent() {
 
 		if (attacker.hasPermission("group.dutymode") || defender.hasPermission("group.dutymode")) return
 
+		// 2025/06/14 we are deciding that this should actually run for NPCs
 		// don't run for combat NPCs
-		if (defender.hasMetadata("NPC")) return
+		// if (defender.hasMetadata("NPC")) return
 
 		val attackerData = PlayerCache[attacker]
 		val attackerNation = attackerData.nationOid
