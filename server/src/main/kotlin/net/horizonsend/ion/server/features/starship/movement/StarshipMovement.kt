@@ -220,9 +220,16 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		val newMin = displacedVec(min).toLocation(world2)
 		val newMax = displacedVec(max).toLocation(world2)
 
-		val boundingBox = rectangle(newMin, newMax)
+		val oldBoundingBox = rectangle(min.toLocation(world2), max.toLocation(world2))
+		val newBoundingBox = rectangle(newMin, newMax)
 
-		for (point in boundingBox) {
+		// if any point of the old starship's bounding box was inside a trade city, do not perform this check
+		// this should allow for ships that are combat tagged to leave a city, but not return
+		for (point in oldBoundingBox) {
+			if (ProtectionListener.isProtectedCity(point)) return
+		}
+
+		for (point in newBoundingBox) {
 			if (ProtectionListener.isProtectedCity(point) && starship.type.typeCategory == TypeCategory.WAR_SHIP &&
 				CombatTimer.isPvpCombatTagged((starship.controller as PlayerController).player)) {
 
