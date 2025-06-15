@@ -6,7 +6,6 @@ import net.horizonsend.ion.common.database.schema.misc.Message
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
-import net.horizonsend.ion.common.extensions.CommonPlayer
 import net.horizonsend.ion.common.utils.text.HORIZONS_END_BRACKETED
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -21,51 +20,65 @@ import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import org.litote.kmongo.and
+import org.litote.kmongo.eq
 
 abstract class Inboxes : IonComponent() {
 	abstract fun runAsync(task: () -> Unit)
 	abstract fun notify(recipient: SLPlayerId, message: Component)
 
-	private fun Component.seralize(): String = GsonComponentSerializer.gson().serialize(this)
-
-	fun sendMessages(content: Component, senderName: Component, subject: Component? = null, vararg recipient: SLPlayerId) {
-		sendMessages(content = content, senderName = senderName, subject = subject, recipients = setOf(*recipient))
+	fun sendMessages(vararg recipient: SLPlayerId, senderName: Component, subject: Component? = null, content: Component) {
+		sendMessages(recipients = setOf(*recipient), senderName = senderName, subject = subject, content = content)
 	}
 
-	fun sendMessages(content: Component, senderName: Component, subject: Component? = null, recipients: Iterable<SLPlayerId>) {
+	fun sendMessages(recipients: Iterable<SLPlayerId>, senderName: Component, subject: Component? = null, content: Component) {
 		runAsync {
-			Message.sendMany(recipients = recipients, subject = subject?.seralize(), senderName = senderName.seralize(), content = content.seralize())
+			Message.sendMany(recipients = recipients, subject = subject?.serialize(), senderName = senderName.serialize(), content = content.serialize())
 			val inboxCommand = text("/inbox", WHITE).clickEvent(ClickEvent.runCommand("/inbox")).hoverEvent(text("/inbox"))
 			val sentMessage = template(text("You recieved a message from {0}! Use {1} to read it.", HE_MEDIUM_GRAY), senderName, inboxCommand)
 			recipients.forEach { notify(it, sentMessage) }
 		}
 	}
 
-	fun sendMessage(content: Component, senderName: Component, subject: Component? = null, recipient: SLPlayerId) {
+	fun sendMessage(recipient: SLPlayerId, senderName: Component, subject: Component? = null, content: Component) {
 		runAsync {
-			Message.send(recipient = recipient, subject = subject?.seralize(), senderName = senderName.seralize(), content = content.seralize())
+			Message.send(recipient = recipient, subject = subject?.serialize(), senderName = senderName.serialize(), content = content.serialize())
 			val inboxCommand = text("/inbox", WHITE).clickEvent(ClickEvent.runCommand("/inbox")).hoverEvent(text("/inbox"))
 			val sentMessage = template(text("You recieved a message from {0}! Use {1} to read it.", HE_MEDIUM_GRAY), senderName, inboxCommand)
 			notify(recipient, sentMessage)
 		}
 	}
 
-	fun sendToNationMembers(sender: CommonPlayer, nation: Oid<Nation>, content: Component) {
+	fun sendToNationMembers(nation: Oid<Nation>, content: Component) {
 		runAsync {
 			val members = Nation.getMembers(nation)
-			sendMessages(content = content, senderName = formatNationName(nation), subject = bracketed(text("Nation Broadcast", NamedTextColor.RED), leftBracket = '<', rightBracket = '>'), recipients = members)
+			sendMessages(
+				recipients = members,
+				senderName = formatNationName(nation),
+				subject = bracketed(text("Nation Broadcast", NamedTextColor.RED), leftBracket = '<', rightBracket = '>'),
+				content = content
+			)
 		}
 	}
 
-	fun sendToSettlementMembers(sender: CommonPlayer, settlement: Oid<Settlement>, content: Component) {
+	fun sendToSettlementMembers(settlement: Oid<Settlement>, content: Component) {
 		runAsync {
 			val members = Settlement.getMembers(settlement)
-			sendMessages(content = content, senderName = formatSettlementName(settlement), subject = bracketed(text("Settlement Broadcast", NamedTextColor.DARK_AQUA), leftBracket = '<', rightBracket = '>'), recipients = members)
+			sendMessages(
+				recipients = members,
+				senderName = formatSettlementName(settlement),
+				subject = bracketed(text("Settlement Broadcast", NamedTextColor.DARK_AQUA), leftBracket = '<', rightBracket = '>'),
+				content = content
+			)
 		}
 	}
 
-	fun sendServerMessage(recipients: Iterable<SLPlayerId>) {
+	fun sendServerMessages(recipient: SLPlayerId, subject: Component?, content: Component) {
+		sendMessage(recipient, HORIZONS_END_BRACKETED, subject, content)
+	}
 
+	fun sendServerMessage(recipients: Iterable<SLPlayerId>, subject: Component?, content: Component) {
+		sendMessages(recipients, HORIZONS_END_BRACKETED, subject, content)
 	}
 
 	fun markRead(messageId: Oid<Message>) {
@@ -85,7 +98,7 @@ abstract class Inboxes : IonComponent() {
 			val unread = Message.findInState(player, MessageState.UNREAD)
 			val count = unread.count()
 
-			val clickText = bracketed(text("Here", NamedTextColor.WHITE)).clickEvent(ClickEvent.runCommand("/mail inbox"))
+			val clickText = bracketed(text("Here", WHITE)).clickEvent(ClickEvent.runCommand("/mail inbox"))
 
 			val message = ofChildren(
 				template(text("{0} » You have {1} unread message${if (count != 1) "s" else ""}!", HE_MEDIUM_GRAY), HORIZONS_END_BRACKETED, count), Component.newline(),
@@ -93,6 +106,62 @@ abstract class Inboxes : IonComponent() {
 			)
 
 			playerAudience.sendMessage(message)
+		}
+	}
+
+	companion object {
+		private fun Component.serialize(): String = GsonComponentSerializer.gson().serialize(this)
+	}
+
+	fun serverMessage(senderName: Component, body: Component): MessageBuilder = MessageBuilder(this, senderName, body)
+	fun settlementMessage(id: Oid<Settlement>, body: Component): MessageBuilder = MessageBuilder(this, formatSettlementName(id), body, Settlement.getMembers(id).toMutableSet())
+	fun nationMessage(id: Oid<Nation>, body: Component): MessageBuilder = MessageBuilder(this, formatNationName(id), body, Nation.getMembers(id).toMutableSet())
+
+	class MessageBuilder(
+		private val inboxes: Inboxes,
+		private var senderName: Component,
+		private var body: Component,
+		private var recipients: MutableSet<SLPlayerId> = mutableSetOf(),
+		private var subject: Component? = null,
+		private var allowDuplicates: Boolean = false
+	) {
+		fun send() {
+			inboxes.runAsync {
+				val matchingPlayers = if (allowDuplicates) recipients
+				else recipients.filterTo(mutableSetOf()) { Message.none(and(Message::recipient eq it, Message::subjec eq subject?.serialize(), Message::content eq body.serialize())) }
+
+				inboxes.sendMessages(matchingPlayers, senderName, subject, body)
+			}
+		}
+
+		fun addRecipients(recipients: Iterable<SLPlayerId>): MessageBuilder {
+			this.recipients.addAll(recipients)
+			return this
+		}
+
+		fun addRecipient(recipient: SLPlayerId): MessageBuilder {
+			this.recipients.add(recipient)
+			return this
+		}
+
+		fun setSubject(subject: Component?): MessageBuilder {
+			this.subject = subject
+			return this
+		}
+
+		fun disallowDuplicates(): MessageBuilder {
+			this.allowDuplicates = false
+			return this
+		}
+
+		fun setAllowDuplicates(allowDuplicates: Boolean): MessageBuilder {
+			this.allowDuplicates = allowDuplicates
+			return this
+		}
+
+		fun filterRecipients(filter: (SLPlayerId) -> Boolean): MessageBuilder {
+			this.recipients = recipients.filterTo(mutableSetOf(), filter)
+			return this
 		}
 	}
 }
