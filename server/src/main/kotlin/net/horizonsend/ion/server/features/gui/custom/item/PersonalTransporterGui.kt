@@ -11,20 +11,20 @@ import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
-import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
-class PersonalTransporterGui(val player: Player) : AbstractBackgroundPagedGui {
+class PersonalTransporterGui(viewer: Player) : AbstractBackgroundPagedGui(viewer) {
 
     companion object {
         private const val SETTINGS_PER_PAGE = 5
         private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
     }
 
-    override var currentWindow: Window? = null
     // cache current player list
     private val playerList = mutableListOf<Player>()
+
+	private var currentPage: Int = 0
 
     override fun createGui(): PagedGui<Item> {
         val gui = PagedGui.items()
@@ -41,13 +41,17 @@ class PersonalTransporterGui(val player: Player) : AbstractBackgroundPagedGui {
         gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
             .addIngredient('<', GuiItems.PageLeftItem())
             .addIngredient('>', GuiItems.PageRightItem())
+			.addPageChangeHandler { _, new ->
+				currentPage = new
+				refreshTitle()
+			}
 
         // populate player list cache
         playerList.addAll(Bukkit.getOnlinePlayers())
 
         for (otherPlayer in playerList) {
             val button = GuiItems.PlayerHeadItem(otherPlayer.uniqueId, otherPlayer.name) {
-                PersonalTransporterManager.addTpRequest(player, otherPlayer)
+                PersonalTransporterManager.addTpRequest(viewer, otherPlayer)
             }
             gui.addContent(button)
 
@@ -57,7 +61,7 @@ class PersonalTransporterGui(val player: Player) : AbstractBackgroundPagedGui {
         return gui.build()
     }
 
-    override fun createText(player: Player, currentPage: Int): Component {
+	override fun buildTitle(): Component {
         // create a new GuiText builder
         val header = "Personal Transporter"
         val guiText = GuiText(header)
@@ -97,9 +101,5 @@ class PersonalTransporterGui(val player: Player) : AbstractBackgroundPagedGui {
         )
 
         return guiText.build()
-    }
-
-    fun openMainWindow() {
-        currentWindow = buildWindow(player).apply { open() }
     }
 }

@@ -61,6 +61,13 @@ val Material.isLeaves: Boolean get() = LEAF_TYPES.contains(this)
 val LOG_TYPES = getMatchingMaterials { it.name.endsWith("_LOG") }
 val Material.isLog: Boolean get() = LOG_TYPES.contains(this)
 
+val STRIPPED_LOG_TYPES = getMatchingMaterials { it.name.endsWith("_LOG") && it.name.startsWith("STRIPPED_") }
+
+val UNSTRIPPED_LOG_TYPES = getMatchingMaterials { it.name.endsWith("_LOG") && !it.name.startsWith("STRIPPED_") }
+
+val STRIPPED_WOOD_TYPES = getMatchingMaterials { it.name.endsWith("_WOOD") && it.name.startsWith("STRIPPED_") }
+val UNSTRIPPED_WOOD_TYPES = getMatchingMaterials { it.name.endsWith("_WOOD") && !it.name.startsWith("STRIPPED_") }
+
 val WOOD_TYPES = getMatchingMaterials { it.name.endsWith("_WOOD") }
 val Material.isWood: Boolean get() = WOOD_TYPES.contains(this)
 
@@ -113,6 +120,44 @@ val WALL_TYPES = getMatchingMaterials { it.name.endsWith("_WALL") }
 val Material.isWall: Boolean get() = WALL_TYPES.contains(this)
 
 val CHISELED_TYPES = getMatchingMaterials { it.name.contains("CHISELED_") }
+val Material.isChiseled: Boolean get() = CHISELED_TYPES.contains(this)
+
+val POLISHED_TYPES = enumSetOf(
+	Material.POLISHED_GRANITE, Material.POLISHED_DIORITE, Material.POLISHED_ANDESITE,
+	Material.POLISHED_DEEPSLATE, Material.POLISHED_TUFF, Material.POLISHED_BASALT,
+	Material.POLISHED_BLACKSTONE,
+)
+val Material.isPolished: Boolean get() = POLISHED_TYPES.contains(this)
+
+val SMOOTH_TYPES = enumSetOf(
+	Material.SMOOTH_STONE, Material.SMOOTH_SANDSTONE, Material.SMOOTH_RED_SANDSTONE,
+	Material.SMOOTH_BASALT, Material.SMOOTH_QUARTZ
+)
+
+val CUT_TYPES = enumSetOf(
+	Material.CUT_RED_SANDSTONE, Material.CUT_SANDSTONE, Material.CUT_COPPER, Material.EXPOSED_CUT_COPPER,
+	Material.WEATHERED_CUT_COPPER, Material.OXIDIZED_CUT_COPPER, Material.WAXED_CUT_COPPER,
+	Material.WAXED_EXPOSED_CUT_COPPER, Material.WAXED_WEATHERED_CUT_COPPER, Material.WAXED_OXIDIZED_CUT_COPPER,
+)
+
+val BRICK_TYPES = enumSetOf(
+	Material.BRICKS, Material.STONE_BRICKS, Material.DEEPSLATE_BRICKS,
+	Material.TUFF_BRICKS, Material.MUD_BRICKS, Material.RESIN_BRICKS,
+	Material.PRISMARINE_BRICKS, Material.NETHER_BRICKS, Material.RED_NETHER_BRICKS,
+	Material.POLISHED_BLACKSTONE_BRICKS, Material.END_STONE_BRICKS, Material.QUARTZ_BRICKS
+)
+
+val GRATE_TYPES = enumSetOf(
+	Material.COPPER_GRATE, Material.EXPOSED_COPPER_GRATE, Material.WEATHERED_COPPER_GRATE,
+	Material.OXIDIZED_COPPER_GRATE, Material.WAXED_COPPER_GRATE, Material.WAXED_EXPOSED_COPPER_GRATE,
+	Material.WAXED_WEATHERED_COPPER_GRATE, Material.WAXED_OXIDIZED_COPPER_GRATE
+)
+
+val TILES_TYPES = enumSetOf(
+	Material.DEEPSLATE_TILES
+)
+
+val PILLAR_TYPES = getMatchingMaterials { it.name.contains("_PILLAR") }
 
 val FROGLIGHT_TYPES = getMatchingMaterials { it.name.endsWith("_FROGLIGHT") }
 val Material.isFroglight: Boolean get() = FROGLIGHT_TYPES.contains(this)

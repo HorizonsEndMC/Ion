@@ -4,6 +4,7 @@ import co.aikar.commands.PaperCommandManager
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.server.features.chat.ChatChannel
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
@@ -17,9 +18,15 @@ object GlobalCompletions {
 		manager.commandContexts.registerContext(AnyItem::class.java) {
 			fromItemString(it.popFirstArg())
 		}
-
 		manager.commandCompletions.registerAsyncCompletion( "anyItem") { Bazaars.strings }
 		manager.commandCompletions.setDefaultCompletion("anyItem", AnyItem::class.java)
+
+		manager.commandContexts.registerContext(SLPlayer::class.java) {
+			SLPlayer[it.popFirstArg()]
+		}
+		manager.commandCompletions.registerAsyncCompletion("allPlayers") { SLPlayer.findProp(property =  SLPlayer::lastKnownName).toList() }
+		manager.commandCompletions.setDefaultCompletion("allPlayers", SLPlayer::class.java)
+
 		manager.commandCompletions.registerAsyncCompletion("anyBlock") { Material.entries.filter { it.isBlock && !it.isLegacy }.map { it.name } }
 		manager.commandCompletions.registerAsyncCompletion("chatChannel") { ChatChannel.entries.map { it.name.lowercase() } }
 	}

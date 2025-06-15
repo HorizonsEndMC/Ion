@@ -24,9 +24,6 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -35,6 +32,9 @@ import net.horizonsend.ion.server.features.progression.achievements.rewardAchiev
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.TypeCategory
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.InputValidator
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
@@ -202,7 +202,7 @@ object ShipmentManager : IonServerComponent() {
 				val amount = result.toIntOrNull() ?: return@InputValidator ValidatorResult.FailureResult(text("Amount must be an integer"))
 				if (amount !in min..max) return@InputValidator ValidatorResult.FailureResult(text("Amount must be between $min and $max"))
 
-				ValidatorResult.ValidatorSuccessSingleEntry(result, amount)
+				ValidatorResult.ValidatorSuccessSingleEntry(amount)
 			},
 		) { _, (_, result) ->
 			if (result !is ValidatorResult.ValidatorSuccessSingleEntry) return@anvilInputText
