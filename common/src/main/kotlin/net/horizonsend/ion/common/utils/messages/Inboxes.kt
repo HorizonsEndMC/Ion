@@ -34,7 +34,7 @@ abstract class Inboxes : IonComponent() {
 	fun sendMessages(recipients: Iterable<SLPlayerId>, senderName: Component, subject: Component? = null, content: Component) {
 		runAsync {
 			Message.sendMany(recipients = recipients, subject = subject?.serialize(), senderName = senderName.serialize(), content = content.serialize())
-			val inboxCommand = text("/inbox", WHITE).clickEvent(ClickEvent.runCommand("/inbox")).hoverEvent(text("/inbox"))
+			val inboxCommand = text("/mail", WHITE).clickEvent(ClickEvent.runCommand("/mail")).hoverEvent(text("/mail"))
 			val sentMessage = template(text("You recieved a message from {0}! Use {1} to read it.", HE_MEDIUM_GRAY), senderName, inboxCommand)
 			recipients.forEach { notify(it, sentMessage) }
 		}
@@ -43,7 +43,7 @@ abstract class Inboxes : IonComponent() {
 	fun sendMessage(recipient: SLPlayerId, senderName: Component, subject: Component? = null, content: Component) {
 		runAsync {
 			Message.send(recipient = recipient, subject = subject?.serialize(), senderName = senderName.serialize(), content = content.serialize())
-			val inboxCommand = text("/inbox", WHITE).clickEvent(ClickEvent.runCommand("/inbox")).hoverEvent(text("/inbox"))
+			val inboxCommand = text("/mail", WHITE).clickEvent(ClickEvent.runCommand("/mail")).hoverEvent(text("/mail"))
 			val sentMessage = template(text("You recieved a message from {0}! Use {1} to read it.", HE_MEDIUM_GRAY), senderName, inboxCommand)
 			notify(recipient, sentMessage)
 		}
