@@ -24,10 +24,12 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHE
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
+import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.PUMPKIN_GRENADE
 import net.horizonsend.ion.server.features.world.WorldSettings.DroppedItem
@@ -861,7 +863,8 @@ object AITemplateRegistry {
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
 			)
 		})
 		.build()
@@ -890,7 +893,8 @@ object AITemplateRegistry {
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
 			)
 		})
 		.build()
@@ -919,7 +923,8 @@ object AITemplateRegistry {
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE).withRandomRadialOffset(75.0, 150.0, 0.0), 3),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 75.0, 0.0), 5),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 50.0, 0.0), 10),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
 			)
 		})
 		.build()
@@ -963,7 +968,8 @@ object AITemplateRegistry {
 				null,
 				null,
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
 			)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
@@ -994,7 +1000,8 @@ object AITemplateRegistry {
 				null,
 				null,
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
 			)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
@@ -1024,7 +1031,8 @@ object AITemplateRegistry {
 				null,
 				null,
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
 			)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
@@ -1054,7 +1062,8 @@ object AITemplateRegistry {
 				null,
 				null,
 				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
 			)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))

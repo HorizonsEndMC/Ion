@@ -19,8 +19,8 @@ class PowerModeModule(
 	val difficulty: DifficultyModule,
 	val generalTargetSupplier : Supplier<AITarget?>,
 	val steeringModule: SteeringModule,
-	val configSupplier: Supplier<AIPowerModes.AIPowerModeConfiguration> = Supplier(
-		ConfigurationFiles.aiPowerModeConfiguration()::defaultAIPowerModeConfiguration),
+	val configSupplier: Supplier<AIPowerModes.AIPowerModeConfiguration> = Supplier{
+		ConfigurationFiles.aiPowerModeConfiguration().defaultAIPowerModeConfiguration},
 ) : AIModule(controller) {
     private val ship: Starship get() = controller.starship
 	private val config get() = configSupplier.get()

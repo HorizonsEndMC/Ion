@@ -1,17 +1,13 @@
 package net.horizonsend.ion.server.features.ai.convoys
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
-import net.horizonsend.ion.common.utils.text.colors.PIRATE_SATURATED_RED
 import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_LIGHT_TEAL
-import net.horizonsend.ion.common.utils.text.colors.WATCHER_ACCENT
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.configuration.util.VariableIntegerAmount
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEUS_EXPLORERS
-import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PIRATES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.CaravanModule
-import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
@@ -21,8 +17,6 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleS
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SpawnerMechanic
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.AMPH
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.BULWARK
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.CONTRACTOR
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAGGER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DESSLE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MINHAUL_CHETHERITE
@@ -34,12 +28,11 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.STRIKE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TENETA
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VETERAN
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.WAYFINDER
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.economy.city.TradeCities
-import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import org.bukkit.Location
 import java.util.function.Supplier
 
 object AIConvoyRegistry {
@@ -59,11 +52,12 @@ object AIConvoyRegistry {
 			groupMessage         = "Small convoy fleet!".miniMessage(),
 			individualSpawnMessage = SpawnMessage.WorldMessage("Ship joined the convoy!".miniMessage()),
 			onPostSpawn          = { c -> attachCaravanModule(c, route, "SMALL_TC_CARAVAN") },
-			components           = makeSmallCaravanComponents(route, fixedDifficulty(2))
+			components           = makeSmallCaravanComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
+			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED)
 		)
 	}
 
-	fun makeSmallCaravanComponents(route : ConvoyRoute, difficulty : (String) -> Supplier<Int>): List<SpawnerMechanic> {
+	fun makeSmallCaravanComponents(route : ConvoyRoute, difficulty : (String) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
 		return listOf(
 			SingleSpawn(
 				RandomShipSupplier(
@@ -74,7 +68,7 @@ object AIConvoyRegistry {
 				),
 				{route.getSourceLocation()},
 				SpawnMessage.WorldMessage("Flag trade ship joined the convoy!".miniMessage()),
-				difficulty
+				difficulty, targetModeSupplier = targetMode
 			),
 			BagSpawner(
 				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
@@ -89,7 +83,7 @@ object AIConvoyRegistry {
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(MINHAUL_REDSTONE).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(MINHAUL_TITANIUM).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(AMPH).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
-				difficultySupplier = difficulty
+				difficultySupplier = difficulty, targetModeSupplier = targetMode
 			),
 			BagSpawner(
 				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
@@ -100,7 +94,7 @@ object AIConvoyRegistry {
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
-				difficultySupplier = difficulty
+				difficultySupplier = difficulty, targetModeSupplier = targetMode
 			),
 		)
 	}
@@ -114,7 +108,8 @@ object AIConvoyRegistry {
 			groupMessage         = "Debug convoy (local)".miniMessage(),
 			individualSpawnMessage = null,
 			onPostSpawn          = { c -> attachCaravanModule(c, route, "DEBUG_CONVOY_LOCAL") },
-			components           = makedebugComponents(route, fixedDifficulty(2))
+			components           = makedebugComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
+			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED)
 		)
 	}
 
@@ -127,11 +122,12 @@ object AIConvoyRegistry {
 			groupMessage         = "Debug convoy (global)".miniMessage(),
 			individualSpawnMessage = null,
 			onPostSpawn          = { c -> attachCaravanModule(c, route, "DEBUG_CONVOY_GLOBAL") },
-			components           = makedebugComponents(route, fixedDifficulty(2))
+			components           = makedebugComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
+			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED)
 		)
 	}
 
-	fun makedebugComponents(route : ConvoyRoute, difficulty : (String) -> Supplier<Int>): List<SpawnerMechanic> {
+	fun makedebugComponents(route : ConvoyRoute, difficulty : (String) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
 		return listOf(
 			SingleSpawn(
 				RandomShipSupplier(
@@ -139,7 +135,7 @@ object AIConvoyRegistry {
 				),
 				{route.getSourceLocation()},
 				SpawnMessage.WorldMessage("Flag trade ship joined the convoy!".miniMessage()),
-				difficulty
+				difficulty,targetMode
 			),
 			BagSpawner(
 				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
@@ -150,7 +146,7 @@ object AIConvoyRegistry {
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
-				difficultySupplier = difficulty
+				difficultySupplier = difficulty, targetModeSupplier = targetMode
 			),
 		)
 	}
@@ -207,6 +203,7 @@ object AIConvoyRegistry {
 	}
 
 	private fun fixedDifficulty(v: Int) = { _: String -> Supplier { v } }
+	private fun fixedTargetMode(mode : AITarget.TargetMode): Supplier<AITarget.TargetMode> {return Supplier{mode}}
 	private fun <C : ConvoyContext> register(template: AIConvoyTemplate<C>) : AIConvoyTemplate<C> {
 		templates[template.identifier] = template   // <- just store it
 		return template                              // <- and return it unchanged

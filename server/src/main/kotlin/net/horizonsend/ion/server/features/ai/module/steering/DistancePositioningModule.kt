@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.ai.module.steering
 
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
@@ -13,9 +14,10 @@ class DistancePositioningModule(
 	controller: AIController,
 	val difficulty : DifficultyModule,
 	val generalTarget : Supplier<AITarget?>,
-	val config : AISteeringConfiguration.DistanceConfiguration
+	val configSupplier: Supplier<AISteeringConfiguration.DistanceConfiguration>
 ) : AIModule(controller){
 	val ship get() = controller.starship
+	val config : AISteeringConfiguration.DistanceConfiguration get() = configSupplier.get()
 	private val minDist get() = config.minDist
 	private val maxDist get() = config.maxDist
 	private val fleeDist get() = config.fleeDist

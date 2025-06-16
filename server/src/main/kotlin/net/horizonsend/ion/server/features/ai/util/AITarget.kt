@@ -12,6 +12,7 @@ import java.util.concurrent.ThreadLocalRandom
 import kotlin.random.asKotlinRandom
 
 abstract class AITarget(val attack : Boolean = true) {
+	enum class TargetMode {PLAYER_ONLY,AI_ONLY,MIXED}
 	abstract var offset: Vec3i
 
 

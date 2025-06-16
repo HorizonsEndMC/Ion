@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.ai.spawning.isSystemOccupied
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.WeightedShipSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.SpawnerScheduler
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.miscellaneous.utils.weightedRandomOrNull
@@ -24,17 +25,18 @@ class LegacyFactionSpawner(
 ) : AISpawner(
 	identifier,
 	SingleSpawn(
-		WeightedShipSupplier(*worlds.flatMap { it.templates }.toTypedArray()),
-		Supplier {
-			val occupiedWorlds = worlds.filter { isSystemOccupied(it.getWorld() ?: return@filter false) }
-			val worldConfig = occupiedWorlds.weightedRandomOrNull { it.probability } ?: return@Supplier null
-			val bukkitWorld = worldConfig.getWorld() ?: return@Supplier null
+        WeightedShipSupplier(*worlds.flatMap { it.templates }.toTypedArray()),
+        Supplier {
+            val occupiedWorlds = worlds.filter { isSystemOccupied(it.getWorld() ?: return@filter false) }
+            val worldConfig = occupiedWorlds.weightedRandomOrNull { it.probability } ?: return@Supplier null
+            val bukkitWorld = worldConfig.getWorld() ?: return@Supplier null
 
-			return@Supplier formatLocationSupplier(bukkitWorld, worldConfig.minDistanceFromPlayer, worldConfig.maxDistanceFromPlayer) { player -> !player.hasProtection() }.get()
-		},
-		SpawnMessage.WorldMessage(spawnMessage),
-		DifficultyModule::regularSpawnDifficultySupplier
-	)
+            return@Supplier formatLocationSupplier(bukkitWorld, worldConfig.minDistanceFromPlayer, worldConfig.maxDistanceFromPlayer) { player -> !player.hasProtection() }.get()
+        },
+        SpawnMessage.WorldMessage(spawnMessage),
+        DifficultyModule::regularSpawnDifficultySupplier,
+		{ AITarget.TargetMode.PLAYER_ONLY }
+    )
 ) {
 	init {
 		scheduler.setSpawner(this)

@@ -56,7 +56,7 @@ class WanderContext(
 	val ship : Starship,
 	val offset : Double,//offset doesnt change so okay to just copy it
 	val configSupplier : Supplier<AIContextConfiguration.WanderContextConfiguration> =
-		Supplier(ConfigurationFiles.aiContextConfiguration()::defaultWanderContext)
+		Supplier{ConfigurationFiles.aiContextConfiguration().defaultWanderContext}
 ) : ContextMap(linearbins = true) {
 	val config get() = configSupplier.get()
 	val generator = SimplexOctaveGenerator(1, 1)
@@ -118,7 +118,7 @@ class WanderContext(
 class CommitmentContext(
 	val ship : Starship,
 	val configSupplier: Supplier<AIContextConfiguration.CommitmentContextConfiguration> =
-		Supplier(ConfigurationFiles.aiContextConfiguration()::defaultCommitmentContext)
+		Supplier{ConfigurationFiles.aiContextConfiguration().defaultCommitmentContext}
 ) : ContextMap() {
 	private val config get() = configSupplier.get()
 	private var headingHist: ContextMap = object : ContextMap() {}
@@ -147,7 +147,7 @@ class CommitmentContext(
 class MomentumContext(
 	val ship : Starship,
 	val configSupplier: Supplier<AIContextConfiguration.MomentumContextConfiguration> =
-		Supplier(ConfigurationFiles.aiContextConfiguration()::defaultMomentumContextConfiguration),
+		Supplier{ConfigurationFiles.aiContextConfiguration().defaultMomentumContextConfiguration},
 	private val maxSpeedSupplier: Supplier<Double>
 ) : ContextMap() {
 	private val config get() = configSupplier.get()
@@ -186,7 +186,7 @@ class OffsetSeekContext(
 	private val generalTarget : Supplier<AITarget?>,
 	val module : SteeringModule,
 	val configSupplier: Supplier<AIContextConfiguration.OffsetSeekContextConfiguration> =
-		Supplier(ConfigurationFiles.aiContextConfiguration()::defaultOffsetSeekContextConfiguration),
+		Supplier{ConfigurationFiles.aiContextConfiguration().defaultOffsetSeekContextConfiguration},
 	private val offsetSupplier: Supplier<Double> = Supplier { configSupplier.get().defaultOffsetDist }
 ) : ContextMap() {
 	private val config get() = configSupplier.get()
@@ -262,7 +262,7 @@ class FaceSeekContext(
 	private val generalTarget : Supplier<AITarget?>,
 	val difficulty: DifficultyModule,
 	val configSupplier: Supplier<AIContextConfiguration.FaceSeekContextConfiguration> =
-		Supplier(ConfigurationFiles.aiContextConfiguration()::defaultFaceSeekContextConfiguration),
+		Supplier{ConfigurationFiles.aiContextConfiguration().defaultFaceSeekContextConfiguration},
 	private val offsetSupplier: Supplier<Double> = Supplier {configSupplier.get().falloff}
 ) : ContextMap() {
 	private val config get() = configSupplier.get()
@@ -303,7 +303,7 @@ class GoalSeekContext(
 	val ship : Starship,
 	private val goalPoint : Vec3i,
 	val configSupplier: Supplier<AIContextConfiguration.GoalSeekContextConfiguration> =
-		Supplier(ConfigurationFiles.aiContextConfiguration()::defaultGoalSeekContextConfiguration)
+		Supplier{ConfigurationFiles.aiContextConfiguration().defaultGoalSeekContextConfiguration}
 ) : ContextMap() {
 	private val config get() = configSupplier.get()
 	private var reached = false
@@ -335,7 +335,7 @@ class GoalSeekContext(
 class FleetGravityContext(
 	val ship : Starship,
 	val configSupplier: Supplier<AIContextConfiguration.FleetGravityContextConfiguration> =
-		Supplier(ConfigurationFiles.aiContextConfiguration()::defaultFleetGravityContextConfiguration)
+		Supplier{ConfigurationFiles.aiContextConfiguration().defaultFleetGravityContextConfiguration}
 ) : ContextMap() {
 	private val config get() = configSupplier.get()
 	override fun populateContext() {
@@ -433,7 +433,7 @@ class ShieldAwarenessContext(
 	val ship : Starship,
 	val difficulty: DifficultyModule,
 	val configSupplier: Supplier<AIContextConfiguration.ShieldAwarenessContextConfiguration> =
-		Supplier(ConfigurationFiles.aiContextConfiguration()::defaultShieldAwarenessContextConfiguration)
+		Supplier{ConfigurationFiles.aiContextConfiguration().defaultShieldAwarenessContextConfiguration}
 ) : ContextMap() {
 	private val config get() = configSupplier.get()
 	private val incomingFire : ContextMap = object : ContextMap() {}
@@ -533,7 +533,7 @@ class ShipDangerContext(
 	private val maxSpeedSupplier: Supplier<Double>,
 	val module : SteeringModule,
 	val configSupplier : Supplier<AIContextConfiguration.ShipDangerContextConfiguration> =
-		Supplier(ConfigurationFiles.aiContextConfiguration()::defaultShipDangerContextConfiguration)
+		Supplier{ConfigurationFiles.aiContextConfiguration().defaultShipDangerContextConfiguration}
 ) : ContextMap() {
 	private val config get() = configSupplier.get()
 	private val maxSpeed get() = maxSpeedSupplier.get()
@@ -626,7 +626,7 @@ private var particleDanger: ContextMap = object : ContextMap() {
 class BorderDangerContext(
 	val ship : Starship,
 	val configSupplier : Supplier<AIContextConfiguration.BorderDangerContextConfiguration> =
-		Supplier(ConfigurationFiles.aiContextConfiguration()::defaultBorderDangerContextConfiguration)
+		Supplier{ConfigurationFiles.aiContextConfiguration().defaultBorderDangerContextConfiguration}
 ) : ContextMap() {
 	private val config get() = configSupplier.get()
 	override fun populateContext() {
@@ -680,7 +680,7 @@ class BorderDangerContext(
 class WorldBlockDangerContext(
 	val ship : Starship,
 	val configSupplier : Supplier<AIContextConfiguration.WorldBlockDangerContextConfiguration> =
-		Supplier(ConfigurationFiles.aiContextConfiguration()::defaultWorldBlockDangerContextConfiguration)
+		Supplier{ConfigurationFiles.aiContextConfiguration().defaultWorldBlockDangerContextConfiguration}
 ) : ContextMap() {
 	private val config get() = configSupplier.get()
 	override fun populateContext() {
@@ -713,7 +713,7 @@ class ObstructionDangerContext(
 	val ship : Starship,
 	private val obstructions : ConcurrentHashMap<Vec3i, Long>,
 	val configSupplier : Supplier<AIContextConfiguration.ObstructionDangerContextConfiguration> =
-		Supplier(ConfigurationFiles.aiContextConfiguration()::defaultObstructionDangerContextConfiguration)
+		Supplier{ConfigurationFiles.aiContextConfiguration().defaultObstructionDangerContextConfiguration}
 ): ContextMap() {
 	private val config get() = configSupplier.get()
 	override fun populateContext() {

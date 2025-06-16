@@ -24,7 +24,7 @@ class GunshipSteeringModule(
 	difficulty : DifficultyModule,
 	generalTarget: Supplier<AITarget?>,
 	orbitDist : Supplier<Double>,
-	override val configSupplier: Supplier<AISteeringConfiguration.BasicSteeringConfiguration> = Supplier(ConfigurationFiles.aiSteeringConfiguration()::gunshipBasicSteeringConfiguration)
+	override val configSupplier: Supplier<AISteeringConfiguration.BasicSteeringConfiguration> = Supplier{ConfigurationFiles.aiSteeringConfiguration().gunshipBasicSteeringConfiguration}
 ) : BasicSteeringModule(controller,difficulty, generalTarget){
 
 	init {
@@ -52,7 +52,7 @@ class GunshipSteeringModule(
 		contexts["wander"] = WanderContext(ship,offset)
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this,offsetSupplier = orbitDist)
 		contexts["faceSeek"]= FaceSeekContext(ship, generalTarget,difficulty,
-			Supplier(ConfigurationFiles.aiContextConfiguration()::gunshipFaceSeekContextConfiguration),offsetSupplier = orbitDist)
+			{ConfigurationFiles.aiContextConfiguration().gunshipFaceSeekContextConfiguration},offsetSupplier = orbitDist)
 		contexts["fleetGravity"] = FleetGravityContext(ship)
 		contexts["avoidIllius"] = AvoidIlliusContext(ship)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty)

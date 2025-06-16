@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.ships.spawn
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
@@ -22,6 +23,7 @@ abstract class MultiSpawner(
 	private val groupMessage: Component?,
 	private val individualSpawnMessage: SpawnMessage?,
 	private val difficultySupplier: (String) -> Supplier<Int>,
+	private val targetModeSupplier: Supplier<AITarget.TargetMode>,
 ) : SpawnerMechanic() {
 	abstract fun getShips(): List<SpawnedShip>
 
@@ -66,7 +68,7 @@ abstract class MultiSpawner(
 
 			debugAudience.debug("Spawning ${spawnedShip.template.identifier} at $spawnPoint")
 
-			spawnedShip.spawn(logger, spawnPoint,difficulty) { addUtilModule(AIFleetManageModule(this, aiFleet)) }
+			spawnedShip.spawn(logger, spawnPoint, difficulty,targetModeSupplier.get()) { addUtilModule(AIFleetManageModule(this, aiFleet)) }
 
 			individualSpawnMessage?.broadcast(spawnPoint, spawnedShip.template)
 		}

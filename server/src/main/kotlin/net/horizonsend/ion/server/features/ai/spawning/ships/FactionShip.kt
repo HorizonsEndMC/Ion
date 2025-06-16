@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.ai.spawning.ships
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.faction.AIFaction
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.kyori.adventure.text.Component
@@ -18,7 +19,12 @@ class FactionShip(
 	override var absoluteHeight: Double? = null
 	override var pilotName : Component? = null
 
-	override fun createController(logger: Logger, starship: ActiveStarship, difficulty: Int): AIController {
+	override fun createController(
+        logger: Logger,
+        starship: ActiveStarship,
+        difficulty: Int,
+        targetMode: AITarget.TargetMode
+    ): AIController {
 		val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
 
 		val controller = factory.invoke(
@@ -26,7 +32,8 @@ class FactionShip(
 			getName(difficulty),
 			template.starshipInfo.autoWeaponSets,
 			template.starshipInfo.manualWeaponSets,
-			difficulty
+			difficulty,
+			targetMode
 		)
 
 		faction.controllerModifier.invoke(controller)

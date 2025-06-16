@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics
 
 import net.horizonsend.ion.server.configuration.util.IntegerAmount
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
@@ -14,7 +15,8 @@ class BagSpawner(
     individualSpawnMessage: SpawnMessage?,
     vararg bagSpawnedShips: BagSpawnShip,
 	difficultySupplier: (String) -> Supplier<Int>,
-) : MultiSpawner(locationProvider, groupMessage, individualSpawnMessage, difficultySupplier) {
+	private val targetModeSupplier: Supplier<AITarget.TargetMode>
+) : MultiSpawner(locationProvider, groupMessage, individualSpawnMessage, difficultySupplier,targetModeSupplier) {
 	private val bagSpawnedShips: List<BagSpawnShip> = listOf(*bagSpawnedShips)
 
 	override fun getShips(): List<SpawnedShip> {

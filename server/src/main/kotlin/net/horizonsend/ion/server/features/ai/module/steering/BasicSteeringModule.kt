@@ -31,7 +31,7 @@ open class BasicSteeringModule(
 	generalTarget : Supplier<AITarget?>
 ) : SteeringModule(controller, difficulty) {
 
-	open val configSupplier = Supplier(ConfigurationFiles.aiSteeringConfiguration()::defaultBasicSteeringConfiguration)
+	open val configSupplier = Supplier{ConfigurationFiles.aiSteeringConfiguration().defaultBasicSteeringConfiguration}
 	val config get() = configSupplier.get()
 
 	init {
@@ -111,7 +111,7 @@ open class BasicSteeringModule(
         // magnitude then it will lead to an agent jittering under a certain ship.velocity threshold.
         //mixing
         val rotationMovementPrior = (ship.velocity.length()/controller.maxSpeed).coerceIn(0.0,1.0)
-		starship.debug("speed ratio: $rotationMovementPrior")
+		//starship.debug("speed ratio: $rotationMovementPrior")
         //println(rotationMovementPrior)
 		val movementMix = {ratio : Double ->
 			(ratio+ 0.1).coerceIn(0.0,1.0).pow(config.defaultRotationBleed)

@@ -25,7 +25,7 @@ class CapitalSteeringModule(
 	difficulty : DifficultyModule,
 	generalTarget: Supplier<AITarget?>,
 	orbitDist : Supplier<Double>,
-	override val configSupplier: Supplier<AISteeringConfiguration.BasicSteeringConfiguration> = Supplier(ConfigurationFiles.aiSteeringConfiguration()::frigateBasicSteeringConfiguration)
+	override val configSupplier: Supplier<AISteeringConfiguration.BasicSteeringConfiguration> = Supplier{ConfigurationFiles.aiSteeringConfiguration().frigateBasicSteeringConfiguration}
 ) : BasicSteeringModule(controller,difficulty, generalTarget){
 
 	init {
@@ -52,12 +52,12 @@ class CapitalSteeringModule(
 		contexts["danger"]= BlankContext()
 		contexts["wander"] = WanderContext(ship,offset)
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this,
-			Supplier(ConfigurationFiles.aiContextConfiguration()::capitalOffsetSeekContextConfiguration), offsetSupplier = orbitDist)
+			{ConfigurationFiles.aiContextConfiguration().capitalOffsetSeekContextConfiguration}, offsetSupplier = orbitDist)
 		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty, offsetSupplier = orbitDist)
 		contexts["fleetGravity"] = FleetGravityContext(ship)
 		contexts["avoidIllius"] = AvoidIlliusContext(ship)
-		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty,
-			Supplier(ConfigurationFiles.aiContextConfiguration()::capitalShieldAwarenessContextConfiguration))
+		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty
+		) { ConfigurationFiles.aiContextConfiguration().capitalShieldAwarenessContextConfiguration }
 		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed },this)
 		contexts["borderDanger"]= BorderDangerContext(ship)
 		contexts["worldBlockDanger"]= WorldBlockDangerContext(ship)

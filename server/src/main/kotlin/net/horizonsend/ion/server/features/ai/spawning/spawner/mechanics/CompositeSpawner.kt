@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.ships.spawn
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
@@ -29,6 +30,7 @@ class CompositeSpawner(
 	private val groupMessage: Component?,
 	private val individualSpawnMessage: SpawnMessage?,
 	private val difficultySupplier: (String) -> Supplier<Int>,
+	private val targetModeSupplier: Supplier<AITarget.TargetMode>,
 	private val onPostSpawn: (AIController) -> Unit
 ) : SpawnerMechanic() {
 
@@ -67,10 +69,11 @@ class CompositeSpawner(
 
 			val difficulty = shipDifficultySupplier.get()
 				.coerceIn(DifficultyModule.minDifficulty, DifficultyModule.maxDifficulty)
+			println("difficulty: $difficulty")
 
 			debugAudience.debug("Spawning ${ship.template.identifier} at $spawnPoint")
 
-			ship.spawn(logger, spawnPoint, difficulty) {
+			ship.spawn(logger, spawnPoint, difficulty,targetModeSupplier.get()) {
 				addUtilModule(AIFleetManageModule(this, aiFleet))
 				onPostSpawn(this)
 			}

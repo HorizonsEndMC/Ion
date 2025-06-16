@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.command.misc
 
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
@@ -17,6 +18,7 @@ import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -42,29 +44,46 @@ object AIOpponentCommand : SLCommand() {
 		}
 
 		manager.commandCompletions.setDefaultCompletion("allTemplates", AITemplate::class.java)
+
+		manager.commandCompletions.registerAsyncCompletion("targetMode") { _ ->
+			AITarget.TargetMode.entries.map { it.name }
+		}
 	}
 
 	@Subcommand("summon")
-	fun summon(sender: Player, template: AITemplate, @Optional difficulty : Int?, @Optional targetAI : Boolean?) {
+	@CommandCompletion("@allTemplates difficulty @targetMode")
+	fun summon(
+		sender: Player,
+		template: AITemplate,
+		@Optional difficulty : Int?,
+		@Optional targetMode : String?) {
 		val world = sender.world
 		failIf(!world.ion.hasFlag(WorldFlag.AI_ARENA)) { "AI Opponents may only be spawned in arena worlds!" }
 
 		sender.hint("Spawning ${template.starshipInfo.miniMessageName}")
 
-		summonShip(sender, template, null,difficulty,targetAI)
+		summonShip(sender, template, null,difficulty,
+			targetMode?.let { AITarget.TargetMode.valueOf(it) } ?: AITarget.TargetMode.PLAYER_ONLY)
 	}
 
 	@Subcommand("summon")
-	fun summon(sender: Player, template: AITemplate, x: Int, y: Int, z: Int, @Optional difficulty : Int?, @Optional targetAI : Boolean?) {
+	@CommandCompletion("@allTemplates x y z difficulty @targetMode")
+	fun summon(
+		sender: Player,
+		template: AITemplate,
+		x: Int, y: Int, z: Int,
+		@Optional difficulty : Int?,
+		@Optional targetMode : String?) {
 		val world = sender.world
 		failIf(!world.ion.hasFlag(WorldFlag.AI_ARENA)) { "AI Opponents may only be spawned in arena worlds!" }
 
 		sender.hint("Spawning ${template.starshipInfo.miniMessageName}")
 
-		summonShip(sender, template, Vec3i(x, y, z),difficulty,targetAI)
+		summonShip(sender, template, Vec3i(x, y, z),difficulty,
+			targetMode?.let { AITarget.TargetMode.valueOf(it) } ?: AITarget.TargetMode.PLAYER_ONLY)
 	}
 
-	private fun summonShip(summoner: Player, template: AITemplate, vec: Vec3i?, difficulty: Int?, targetAI: Boolean?) {
+	private fun summonShip(summoner: Player, template: AITemplate, vec: Vec3i?, difficulty: Int?, targetMode: AITarget.TargetMode) {
 		val location = vec?.toLocation(summoner.world) ?: summoner.location.add(summoner.location.direction.multiply(500.0))
 
 		Tasks.async {
@@ -85,7 +104,7 @@ object AIOpponentCommand : SLCommand() {
 								template.starshipInfo.autoWeaponSets,
 								template.starshipInfo.manualWeaponSets,
 								difficulty ?: template.difficulty.get(),
-								targetAI ?: false
+								targetMode
 							)
 
 							processController(summoner, controller)

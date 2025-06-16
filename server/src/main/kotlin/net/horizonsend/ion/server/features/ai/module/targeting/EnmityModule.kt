@@ -36,10 +36,10 @@ import kotlin.math.max
 open class EnmityModule(
 	controller: AIController,
 	val difficulty : DifficultyModule,
-	val targetAI : Boolean,
+	val targetMode: AITarget.TargetMode,
 	val configSupplier: Supplier<AIEmities.AIEmityConfiguration>
-	= Supplier(ConfigurationFiles.aiEmityConfiguration()::defaultAIEmityConfiguration),
-	val enmityFilter : (starship : Starship, AITarget : AITarget, targetAI : Boolean) -> Boolean = fleetAwareTargetFilter(controller)
+	= Supplier{ConfigurationFiles.aiEmityConfiguration().defaultAIEmityConfiguration},
+	val enmityFilter : (starship : Starship, aiTarget : AITarget, targetMode : AITarget.TargetMode) -> Boolean = fleetAwareTargetFilter(controller)
 ) : AIModule(controller), AIModuleHandlePlayerDeath, AIModuleHandleShipSink{
 	val config get() = configSupplier.get()
 	val enmityList : MutableList<AIOpponent> = mutableListOf()
@@ -100,7 +100,7 @@ open class EnmityModule(
 		for (otherStarship in ActiveStarships.getInWorld(starship.world)) {
 			if (!otherStarship.isInterdicting) continue
 			val tempTarget = AIOpponent(StarshipTarget(otherStarship))
-			if (!enmityFilter(starship,tempTarget.target,targetAI)) continue
+			if (!enmityFilter(starship,tempTarget.target,targetMode)) continue
 			val dist = getOpponentDistance(tempTarget.target)!!
 			if (dist > Interdiction.starshipInterdictionRangeEquation(otherStarship)) continue
 			val index = enmityList.indexOf(tempTarget)
@@ -117,7 +117,7 @@ open class EnmityModule(
 	private fun aggroOnDistance() {
 		for (otherStarship in ActiveStarships.getInWorld(starship.world)) {
 			val tempTarget = AIOpponent(StarshipTarget(otherStarship))
-			if (!enmityFilter(starship,tempTarget.target,targetAI)) continue
+			if (!enmityFilter(starship,tempTarget.target,targetMode)) continue
 			val dist = getOpponentDistance(tempTarget.target)!! + 1e-4
 			val weight : Double
 			if (dist > config.aggroRange) {
@@ -138,7 +138,7 @@ open class EnmityModule(
 		for (player in starship.world.players) {
 			if (ActiveStarships.findByPassenger(player) != null) continue
 			val tempTarget = AIOpponent(PlayerTarget(player))
-			if (!enmityFilter(starship,tempTarget.target,targetAI)) continue
+			if (!enmityFilter(starship,tempTarget.target,targetMode)) continue
 			val dist = getOpponentDistance(tempTarget.target)!!
 			if (dist > config.aggroRange ) continue
 			val index = enmityList.indexOf(tempTarget)
@@ -156,7 +156,7 @@ open class EnmityModule(
 		val topDamager = starship.damagers.maxByOrNull { it.value.points.get() } ?: return
 		val points = starship.damagers.maxOfOrNull{ it.value.points.get() } ?: return
 		val tempTarget  = topDamager.key.getAITarget()?.let { AIOpponent(it) } ?: return
-		if (!targetFilter(starship,tempTarget.target,targetAI)) return
+		if (!targetFilter(starship,tempTarget.target,targetMode)) return
 
 		//extra friendly fire check for AI ships
 		if ((tempTarget.target as? StarshipTarget)?.ship?.controller is AIController) {
@@ -174,7 +174,9 @@ open class EnmityModule(
 		if (index != -1) {
 			if (enmityList[index].damagePoints >= points) return
 			enmityList[index].damagePoints = points
-			enmityList[index].damagerWeight += config.damagerAggroWeight * 0.5 //the highest damager will generate base emity
+			println("damagePoints : $points")
+			enmityList[index].damagerWeight += config.damagerAggroWeight //the highest damager will generate base emity
+			println("damagerWeight : ${enmityList[index].damagerWeight}")
 		} else {
 			tempTarget.damagerWeight = config.damagerAggroWeight
 			tempTarget.damagePoints = points
@@ -304,19 +306,20 @@ open class EnmityModule(
 	}
 
 	companion object {
-		fun targetFilter(starship: Starship, aiTarget: AITarget, targetAI : Boolean) : Boolean {
+		fun targetFilter(starship: Starship, aiTarget: AITarget, targetMode: AITarget.TargetMode) : Boolean {
 			when  {
 				aiTarget is StarshipTarget && aiTarget.ship.controller is PlayerController -> {
-					if (targetAI) return false
+					if (targetMode == AITarget.TargetMode.AI_ONLY) return false
 					val player = (aiTarget.ship.controller as PlayerController).player
 					if (!player.hasProtection()) return true // check for prot
 					if (starship.world.ion.hasFlag(WorldFlag.NOT_SECURE)) return true //ignore prot in unsafe areas
 					if (starship.damagers.keys.any{(it as PlayerDamager).player == player}) return true //fire first
 				}
 				aiTarget is StarshipTarget && aiTarget.ship.controller is AIController -> {
-					return targetAI && aiTarget.ship.controller != starship.controller
+					return if (targetMode == AITarget.TargetMode.PLAYER_ONLY) {false}
+					else {aiTarget.ship.controller != starship.controller}
 				}
-				aiTarget is PlayerTarget && !targetAI -> {
+				aiTarget is PlayerTarget && targetMode != AITarget.TargetMode.AI_ONLY -> {
 					if (starship.world.ion.hasFlag(WorldFlag.NOT_SECURE)) return true
 					return !aiTarget.player.hasProtection()
 				}
@@ -324,8 +327,8 @@ open class EnmityModule(
 			return false
 		}
 
-		fun fleetAwareTargetFilter(controller: AIController): (Starship, AITarget, Boolean) -> Boolean =
-			FleetAwareTargetFilter@{ starship, target, targetAI ->
+		fun fleetAwareTargetFilter(controller: AIController): (Starship, AITarget, AITarget.TargetMode) -> Boolean =
+			FleetAwareTargetFilter@{ starship, target, targetMode ->
 				val fleetModule = controller.getUtilModule(AIFleetManageModule::class.java)
 				val fleet = fleetModule?.fleet
 				val isCaravanProtected = controller.getUtilModule(CaravanModule::class.java) != null
@@ -348,13 +351,14 @@ open class EnmityModule(
 
 					// Block if it's an AI in the same fleet
 					if (targetController is AIController) {
+						if (isCaravanProtected) return@FleetAwareTargetFilter false
 						val targetFleet = targetController.getUtilModule(AIFleetManageModule::class.java)?.fleet
 						if (targetFleet != null && targetFleet == fleet) return@FleetAwareTargetFilter false
 					}
 				}
 
 				// All other cases fall back on normal targeting
-				targetFilter(starship, target, targetAI)
+				targetFilter(starship, target, targetMode)
 			}
 	}
 }

@@ -28,6 +28,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.AISpawnerTicker
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
@@ -72,6 +73,9 @@ object AIDebugCommand : SLCommand() {
 		manager.commandCompletions.registerAsyncCompletion("controllerFactories") { _ ->
 			AIControllerFactories.presetControllers.keys
 		}
+		manager.commandCompletions.registerAsyncCompletion("targetMode") { _ ->
+			AITarget.TargetMode.entries.map { it.name }
+		}
 
 		manager.commandCompletions.registerAsyncCompletion("AIDebugColors") { _ ->
 			AIDebugModule.Companion.DebugColor.entries.map { it.name }
@@ -91,12 +95,12 @@ object AIDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("ai")
-	@CommandCompletion("@controllerFactories difficulty x y z manualSets autoSets @autoTurretTargets ")
+	@CommandCompletion("@controllerFactories difficulty @targetMode manualSets autoSets")
 	fun ai(
 		sender: Player,
 		controller: AIControllerFactory,
 		@Optional difficulty: Int?,
-		@Optional targetAI: Boolean?,
+		@Optional targetMode: String?,
 		@Optional manualSets: String?,
 		@Optional autoSets: String?,
 	) {
@@ -110,7 +114,7 @@ object AIDebugCommand : SLCommand() {
 			Configuration.parse<WeaponSetsCollection>(manualSets ?: "{}").sets,
 			Configuration.parse<WeaponSetsCollection>(autoSets ?: "{}").sets,
 			difficulty ?: 3,
-			targetAI ?: false
+			targetMode?.let { AITarget.TargetMode.valueOf(it) } ?: AITarget.TargetMode.PLAYER_ONLY
 		)
 
 		AIControlUtils.guessWeaponSets(starship,newController)
@@ -219,11 +223,17 @@ object AIDebugCommand : SLCommand() {
 	data class WeaponSetsCollection(val sets: MutableSet<AIStarshipTemplate.WeaponSet> = mutableSetOf())
 
 	@Subcommand("spawn")
-	fun spawn(sender: Player, spawner: AISpawner, template: SpawnedShip, difficulty: Int) {
+	@CommandCompletion("@controllerFactories difficulty @targetMode") //TODO: fix command
+	fun spawn(
+		sender: Player,
+		template: SpawnedShip,
+		difficulty: Int,
+		@Optional targetMode: String?) {
 		failIf(difficulty < 0) { "ILLEGAL DIFFICULTY" }
 
 		AISpawningManager.context.launch {
-			template.spawn(log, sender.location, difficulty)
+			template.spawn(log, sender.location, difficulty,
+				targetMode?.let { AITarget.TargetMode.valueOf(it) } ?: AITarget.TargetMode.PLAYER_ONLY)
 			sender.success("Spawned ship")
 		}
 	}

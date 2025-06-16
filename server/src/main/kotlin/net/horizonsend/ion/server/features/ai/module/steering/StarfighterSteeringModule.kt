@@ -24,7 +24,7 @@ class StarfighterSteeringModule(
 	difficulty : DifficultyModule,
 	generalTarget: Supplier<AITarget?>,
 	orbitDist : Supplier<Double>,
-	override val configSupplier: Supplier<AISteeringConfiguration.BasicSteeringConfiguration> = Supplier(ConfigurationFiles.aiSteeringConfiguration()::starfighterBasicSteeringConfiguration)
+	override val configSupplier: Supplier<AISteeringConfiguration.BasicSteeringConfiguration> = Supplier{ConfigurationFiles.aiSteeringConfiguration().starfighterBasicSteeringConfiguration}
 ) : BasicSteeringModule(controller, difficulty ,generalTarget){
 
 
@@ -52,9 +52,9 @@ class StarfighterSteeringModule(
 		contexts["danger"]= BlankContext()
 		contexts["wander"] = WanderContext(ship,offset)
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this,
-			Supplier(ConfigurationFiles.aiContextConfiguration()::starfighterOffsetSeekContextConfiguration), offsetSupplier = orbitDist)
+			{ConfigurationFiles.aiContextConfiguration().starfighterOffsetSeekContextConfiguration}, offsetSupplier = orbitDist)
 		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty,
-			Supplier(ConfigurationFiles.aiContextConfiguration()::starfighterFaceSeekContextConfiguration), offsetSupplier = orbitDist)
+			{ConfigurationFiles.aiContextConfiguration().starfighterFaceSeekContextConfiguration}, offsetSupplier = orbitDist)
 		contexts["fleetGravity"] = FleetGravityContext(ship)
 		contexts["avoidIllius"] = AvoidIlliusContext(ship)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty)
