@@ -45,7 +45,7 @@ object Discord : IonProxyComponent() {
 	override fun onEnable() {
 		PLUGIN.proxy.scheduler.async { try {
 			val jda = JDABuilder.createLight(configuration.token)
-				.setEnabledIntents(GatewayIntent.GUILD_MEMBERS)
+				.setEnabledIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_MESSAGES, GatewayIntent.MESSAGE_CONTENT)
 				.setMemberCachePolicy(MemberCachePolicy.ALL)
 				.setChunkingFilter(ChunkingFilter.ALL)
 				.disableCache(CacheFlag.entries)
@@ -68,6 +68,8 @@ object Discord : IonProxyComponent() {
 			commandManager.build()
 
 			enabled = true
+
+			jda.addEventListener(ServerNewsFunctionality(jda))
 
 			PLUGIN.proxy.scheduler.repeat(5, 5, TimeUnit.SECONDS, Discord::updateBotPresence)
 		} catch (e: Throwable) {
