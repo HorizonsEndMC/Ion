@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.command.admin.ForbiddenBlocksCommand
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.IonChunkCommand
 import net.horizonsend.ion.server.command.admin.IonCommand
+import net.horizonsend.ion.server.command.admin.IonNPCCommand
 import net.horizonsend.ion.server.command.admin.ItemDebugCommand
 import net.horizonsend.ion.server.command.admin.RemoveGhostShipCommand
 import net.horizonsend.ion.server.command.admin.StructureCreator
@@ -204,5 +205,6 @@ val commands: List<SLCommand> = listOf(
 	ModelCreator,
 	NavigationCommand,
 	DisplayDebug,
-	ChatCommand
+	ChatCommand,
+	IonNPCCommand
 )
