@@ -2,7 +2,6 @@ package net.horizonsend.ion.proxy.commands.velocity
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
-import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import com.velocitypowered.api.proxy.Player
@@ -34,10 +33,12 @@ import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
+import org.litote.kmongo.and
+import org.litote.kmongo.eq
+import org.litote.kmongo.ne
 
 @CommandAlias("mail|inbox|messages")
 object VelocityMailCommand : ProxyCommand() {
-	@Default
 	@Subcommand("inbox")
 	fun viewInbox(sender: Player, @Optional specifiedState: MessageState?, @Optional pageNumber: Int?) = asyncCommand(sender) {
 		val state = specifiedState ?: MessageState.UNREAD
@@ -65,7 +66,6 @@ object VelocityMailCommand : ProxyCommand() {
 		))
 	}
 
-	@Default
 	@Subcommand("all|inbox all")
 	fun viewInboxAll(sender: Player, @Optional pageNumber: Int?) = asyncCommand(sender) {
 		val messages = Message.findInState(sender.slPlayerId, *MessageState.entries.toTypedArray()).toList()
@@ -126,6 +126,12 @@ object VelocityMailCommand : ProxyCommand() {
 					}
 				})
 		)
+	}
+
+	@Subcommand("clear|inbox clear")
+	fun onInboxClear(sender: Player) = asyncCommand(sender) {
+		val deleteResult = Message.col.deleteMany(and(Message::recipient eq sender.slPlayerId, Message::state ne MessageState.ARCHIVED)).deletedCount
+		sender.sendMessage(template(text("Deleted {0} messages", HE_MEDIUM_GRAY), deleteResult))
 	}
 
 	@Subcommand("send")
