@@ -48,6 +48,7 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.nations.sieges.StationSieges
 import net.horizonsend.ion.server.features.npcs.TutorialNPCs
+import net.horizonsend.ion.server.features.npcs.database.DatabaseNPCs
 import net.horizonsend.ion.server.features.npcs.traits.NPCTraits
 import net.horizonsend.ion.server.features.ores.generation.OreGeneration
 import net.horizonsend.ion.server.features.player.CombatNPCs
@@ -185,6 +186,7 @@ val components: List<IonComponent> = listOf(
 	StarshipFactories,
 	Tutorials,
 	Interdiction,
+	DatabaseNPCs,
 	StarshipDealers,
 	TutorialNPCs,
 	ShipKillXP,
