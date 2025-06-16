@@ -22,6 +22,7 @@ import net.horizonsend.ion.common.database.schema.misc.Message
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.Shuttle
+import net.horizonsend.ion.common.database.schema.misc.UniversalNPC
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
@@ -144,6 +145,7 @@ object DBManager : IonComponent() {
 		CargoCrate.init()
 		CargoCrateShipment.init()
 		CityNPC.init()
+		UniversalNPC.init()
 		CollectedItem.init()
 		EcoStation.init()
 		CompletedCollectionMission.init()
