@@ -26,6 +26,7 @@ import org.bukkit.NamespacedKey
 import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.player.PlayerTeleportEvent
 import java.util.UUID
 
 object DatabaseNPCs : IonServerComponent(true) {
@@ -48,13 +49,13 @@ object DatabaseNPCs : IonServerComponent(true) {
 
 	private fun loadNPCs() {
 		Tasks.async {
-			UniversalNPC.all()
+			UniversalNPC.all().forEach(::load)
 		}
 	}
 
 	private fun watchChanges() {
-		UniversalNPC.watchInserts { it.fullDocument?.let(::addNew) }
-		UniversalNPC.watchDeletes(fullDocument = true) { it.fullDocument?.let(::handleRemoval) }
+		UniversalNPC.watchInserts { it.fullDocument?.let(::load) }
+		UniversalNPC.watchDeletes { it.oid.let(::handleRemoval) }
 		UniversalNPC.watchUpdates { change ->
 			val npc = oidMap[change.oid] ?: return@watchUpdates
 			val wrapped = wrapperMap[npc] ?: return@watchUpdates
@@ -86,6 +87,14 @@ object DatabaseNPCs : IonServerComponent(true) {
 			return
 		}
 
+		spawn(location, type, metadata, skinData)
+	}
+
+	fun <M : UniversalNPCMetadata, T: DatabaseNPCType<M>> spawn(location: Location, type: T, metadata: M, skinData: Skins.SkinData) {
+		if (!isCitizensLoaded) {
+			return
+		}
+
 		UniversalNPC.create(
 			location.world.key.value(),
 			location.x,
@@ -97,7 +106,7 @@ object DatabaseNPCs : IonServerComponent(true) {
 		)
 	}
 
-	private fun addNew(document: UniversalNPC) = Tasks.sync {
+	private fun load(document: UniversalNPC) = Tasks.sync {
 		val type = DatabaseNPCTypes.getByIdentifier(document.typeId)
 		val metaData = type.deSerializeMetaData(document.jsonMetadata)
 		val location = document.bukkitLocation() ?: return@sync
@@ -132,20 +141,45 @@ object DatabaseNPCs : IonServerComponent(true) {
 		)
 	}
 
-	fun handleRemoval(document: UniversalNPC) {
-		npcManager.removeNPC(document.npcID)
+	fun handleRemoval(document: Oid<UniversalNPC>) {
+		val npcId = oidMap[document] ?: return
 
-		wrapperMap.remove(document.npcID)
-		typeMap[DatabaseNPCTypes.getByIdentifier(document.typeId)].remove(document.npcID)
-		oidMap.remove(document._id)
+		Tasks.sync {
+			npcManager.removeNPC(npcId)
+
+			wrapperMap.remove(npcId)
+			typeMap.keys().toSet().forEach { typeMap[it].remove(npcId) }
+			oidMap.remove(document)
+		}
 	}
 
-	fun handleMovement(id: Oid<UniversalNPC>) {
+	private fun handleMovement(id: Oid<UniversalNPC>) {
+		Tasks.async {
+			val npcId = oidMap[id] ?: return@async
+			val wrapped = wrapperMap[npcId] ?: return@async
+			val fullDocument = UniversalNPC.findById(id) ?: return@async
 
+			val newLocation = fullDocument.bukkitLocation() ?: return@async
+
+			Tasks.sync {
+				wrapped.npc.teleport(newLocation, PlayerTeleportEvent.TeleportCause.PLUGIN)
+			}
+		}
 	}
 
-	fun handleSkinChange(id: Oid<UniversalNPC>, new: ByteArray) {
+	private fun handleSkinChange(id: Oid<UniversalNPC>, new: ByteArray) {
+		Tasks.async {
+			val npcId = oidMap[id] ?: return@async
+			val wrapped = wrapperMap[npcId] ?: return@async
 
+			val newSkin = Skins.SkinData.fromBytes(new)
+
+			Tasks.sync {
+				wrapped.npc.getOrAddTrait(SkinTrait::class.java).apply {
+					setSkinPersistent(npc.name, newSkin.signature, newSkin.value)
+				}
+			}
+		}
 	}
 
 	fun UniversalNPC.bukkitWorld(): World? {
