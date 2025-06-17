@@ -6,7 +6,7 @@ import net.citizensnpcs.trait.HologramTrait
 import net.citizensnpcs.trait.LookClose
 import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.common.extensions.serverError
-import net.horizonsend.ion.common.utils.configuration.UUIDSerializer
+import net.horizonsend.ion.common.redis.kserializers.UUIDSerializer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.util.Pos

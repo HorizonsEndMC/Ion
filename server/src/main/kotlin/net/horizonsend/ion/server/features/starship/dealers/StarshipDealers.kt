@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.starship.dealers
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
-import net.citizensnpcs.api.event.NPCRightClickEvent
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
@@ -13,7 +12,6 @@ import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtect
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
-import net.horizonsend.ion.server.gui.invui.misc.ShipDealerGUI
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
@@ -23,8 +21,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import org.bukkit.Location
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.EventPriority
 import java.lang.System.currentTimeMillis
 import java.util.UUID
 
@@ -39,11 +35,6 @@ object StarshipDealers : IonServerComponent(true) {
 
 	override fun onDisable() {
 		manager.disableRegistry()
-	}
-
-	@EventHandler(priority = EventPriority.LOWEST)
-	fun onClickNPC(event: NPCRightClickEvent) {
-		ShipDealerGUI(event.clicker).openGui()
 	}
 
 	fun loadShip(player: Player, ship: DealerShip) {
