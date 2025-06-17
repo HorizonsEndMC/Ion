@@ -1,10 +1,8 @@
 package net.horizonsend.ion.server.gui.invui.misc
 
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.starship.dealers.DealerShip
-import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
 import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
@@ -14,11 +12,11 @@ import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
 
-class ShipDealerGUI(viewer: Player) : ListInvUIWindow<DealerShip>(viewer, async = true) {
+class ShipDealerGUI(viewer: Player, private val ships: List<DealerShip>) : ListInvUIWindow<DealerShip>(viewer, async = true) {
 	override val listingsPerPage: Int = 18
 
 	override fun generateEntries(): List<DealerShip> {
-		return ConfigurationFiles.serverConfiguration().soldShips.map(::NPCDealerShip)
+		return ships
 	}
 
 	override fun createItem(entry: DealerShip): Item {
