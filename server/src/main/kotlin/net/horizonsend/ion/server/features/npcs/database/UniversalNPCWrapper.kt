@@ -4,10 +4,10 @@ import net.citizensnpcs.api.npc.NPC
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.misc.UniversalNPC
 import net.horizonsend.ion.server.features.npcs.database.metadata.UniversalNPCMetadata
-import net.horizonsend.ion.server.features.npcs.database.type.DatabaseNPCType
+import net.horizonsend.ion.server.features.npcs.database.type.UniversalNPCType
 import org.bukkit.entity.Player
 
-class UniversalNPCWrapper<T : DatabaseNPCType<M>, M : UniversalNPCMetadata>(val npc: NPC, val oid: Oid<UniversalNPC>, val type: T, metaData: UniversalNPCMetadata) {
+class UniversalNPCWrapper<T : UniversalNPCType<M>, M : UniversalNPCMetadata>(val npc: NPC, val oid: Oid<UniversalNPC>, val type: T, metaData: UniversalNPCMetadata) {
 	@Suppress("UNCHECKED_CAST")
 	var metaData = metaData as M
 
