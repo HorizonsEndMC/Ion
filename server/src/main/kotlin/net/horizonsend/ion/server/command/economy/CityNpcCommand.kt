@@ -65,7 +65,7 @@ object CityNpcCommand : net.horizonsend.ion.server.command.SLCommand() {
 		sender.success("Created NPC!")
 	}
 
-	private fun getIdFromName(name: String): UUID = SLPlayer[name]?._id?.uuid
+	fun getIdFromName(name: String): UUID = SLPlayer[name]?._id?.uuid
 		?: Bukkit.createProfile(name).apply { complete(false) }.id
 		?: fail { "Player $name not found" }
 
