@@ -13,7 +13,7 @@ import org.bukkit.entity.Player
 import java.util.function.Consumer
 import kotlin.reflect.KClass
 
-object ServerShipDealerType : DatabaseNPCType<ServerShipDealerMetadata> {
+object ServerShipDealerType : UniversalNPCType<ServerShipDealerMetadata> {
 	override val metaTypeClass: KClass<ServerShipDealerMetadata> = ServerShipDealerMetadata::class
 	override val identifier: String = "SERVER_SHIP_DEALER"
 

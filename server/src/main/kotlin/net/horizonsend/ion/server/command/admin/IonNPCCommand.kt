@@ -10,10 +10,10 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.economy.CityNpcCommand.getIdFromName
-import net.horizonsend.ion.server.features.npcs.database.DatabaseNPCs
 import net.horizonsend.ion.server.features.npcs.database.UniversalNPCWrapper
-import net.horizonsend.ion.server.features.npcs.database.type.DatabaseNPCType
-import net.horizonsend.ion.server.features.npcs.database.type.DatabaseNPCTypes
+import net.horizonsend.ion.server.features.npcs.database.UniversalNPCs
+import net.horizonsend.ion.server.features.npcs.database.type.UniversalNPCType
+import net.horizonsend.ion.server.features.npcs.database.type.UniversalNPCTypes
 import net.horizonsend.ion.server.miscellaneous.utils.Skins
 import org.bukkit.entity.Player
 import org.litote.kmongo.combine
@@ -24,29 +24,29 @@ import java.util.UUID
 @CommandAlias("ionnpc")
 object IonNPCCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
-		manager.commandCompletions.registerAsyncCompletion("ionNPCTypes") { _ -> DatabaseNPCTypes.allKeys() }
-		manager.commandContexts.registerContext(DatabaseNPCType::class.java) { context ->
+		manager.commandCompletions.registerAsyncCompletion("ionNPCTypes") { _ -> UniversalNPCTypes.allKeys() }
+		manager.commandContexts.registerContext(UniversalNPCType::class.java) { context ->
 			val name = context.popFirstArg()
-			DatabaseNPCTypes.getByIdentifier(name)
+			UniversalNPCTypes.getByIdentifier(name)
 		}
 //		manager.commandCompletions.register
 	}
 
 	@Subcommand("create")
 	@CommandCompletion("@ionNPCTypes @nothing")
-	fun create(sender: Player, type: DatabaseNPCType<*>) {
+	fun create(sender: Player, type: UniversalNPCType<*>) {
 		type.createNew(sender, Skins[sender.uniqueId]!!)
 	}
 
 	/** Map of player UUID to NPC UUID */
 	private val selectionMap: MutableMap<UUID, UUID> = mutableMapOf()
 
-	private fun requireSelectedNPC(sender: Player): UniversalNPCWrapper<*, *> = selectionMap[sender.uniqueId]?.let(DatabaseNPCs::getWrapped) ?: fail { "You don't have a NPC selected!" }
+	private fun requireSelectedNPC(sender: Player): UniversalNPCWrapper<*, *> = selectionMap[sender.uniqueId]?.let(UniversalNPCs::getWrapped) ?: fail { "You don't have a NPC selected!" }
 	private fun requireManagedNPC(sender: Player, npc: UniversalNPCWrapper<*, *>): Unit = failIf(!npc.canManage(sender)) { "You can't manage that NPC!" }
 
 	@Subcommand("select|sel")
 	fun onSelect(sender: Player) {
-		val nearest = DatabaseNPCs.getAll().filter {
+		val nearest = UniversalNPCs.getAll().filter {
 			it.npc.storedLocation.world.uid == sender.world.uid &&
 			it.npc.storedLocation.distance(sender.location) < 5.0
 		}.minByOrNull { it.npc.storedLocation.distance(sender.location) }
@@ -69,7 +69,7 @@ object IonNPCCommand : SLCommand() {
 		val selected = requireSelectedNPC(sender)
 		requireManagedNPC(sender, selected)
 
-		if (!DatabaseNPCs.remove(selected.npc.uniqueId)) sender.serverError("Could not remove NPC.")
+		if (!UniversalNPCs.remove(selected.npc.uniqueId)) sender.serverError("Could not remove NPC.")
 		else sender.success("Removed ${selected.npc.name}.")
 	}
 
