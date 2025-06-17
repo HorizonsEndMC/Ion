@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.npcs.database.type
 
 import net.citizensnpcs.api.npc.NPC
+import net.citizensnpcs.trait.LookClose
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.server.features.npcs.database.UniversalNPCWrapper
 import net.horizonsend.ion.server.features.npcs.database.metadata.ServerShipDealerMetadata
@@ -32,6 +33,9 @@ object ServerShipDealerType : DatabaseNPCType<ServerShipDealerMetadata> {
 	}
 
 	override fun applyTraits(npc: NPC, metaData: ServerShipDealerMetadata) {
-
+		npc.getOrAddTrait(LookClose::class.java).apply {
+			lookClose(true)
+			setRealisticLooking(true)
+		}
 	}
 }
