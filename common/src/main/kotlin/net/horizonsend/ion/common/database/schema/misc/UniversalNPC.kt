@@ -4,8 +4,11 @@ import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.objId
+import net.horizonsend.ion.common.database.trx
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.setValue
+import org.litote.kmongo.updateOneById
 import java.util.UUID
 
 class UniversalNPC(
@@ -37,14 +40,22 @@ class UniversalNPC(
 			skinData: ByteArray,
 			type: String,
 			jsonMetadata: String = "{}"
-		): Oid<UniversalNPC> {
+		): Oid<UniversalNPC> = trx { sess ->
 			val id = objId<UniversalNPC>()
-			col.insertOne(UniversalNPC(id, worldKey, x, y, z, skinData, type, UUID.randomUUID(), jsonMetadata))
-			return id
+			col.insertOne(sess, UniversalNPC(id, worldKey, x, y, z, skinData, type, UUID.randomUUID(), jsonMetadata))
+			id
 		}
 
-		fun delete(npcId: Oid<UniversalNPC>) {
-			col.deleteOneById(npcId)
+		fun delete(npcId: Oid<UniversalNPC>) = trx { sess ->
+			col.deleteOneById(sess, npcId)
+		}
+
+		fun updateMetaData(npcId: Oid<UniversalNPC>, new: String) {
+			col.updateOneById(npcId, setValue(UniversalNPC::jsonMetadata, new))
+		}
+
+		fun updateSkinData(npcId: Oid<UniversalNPC>, new: ByteArray) {
+			col.updateOneById(npcId, setValue(UniversalNPC::skinData, new))
 		}
 	}
 }
