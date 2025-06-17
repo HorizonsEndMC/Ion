@@ -14,4 +14,7 @@ object DatabaseNPCTypes {
 	fun getByIdentifier(identifier: String): DatabaseNPCType<*> {
 		return typeMap[identifier] ?: error("NPC type $identifier not registered!")
 	}
+
+	fun all() = typeMap.toMap()
+	fun allKeys() = typeMap.keys
 }
