@@ -28,7 +28,7 @@ interface UniversalNPCType<T: UniversalNPCMetadata> {
 	 * The player will be checked for the ability to use this type, and recieve feedback if it was successful.
 	 **/
 	fun createNew(player: Player, skinData: Skins.SkinData) {
-		UniversalNPCs.create(player, player.location, this, getDefaultMetaData(), skinData)
+		UniversalNPCs.create(player, player.location, this, getDefaultMetaData(player), skinData)
 	}
 
 	/** Returns the metadata from string storage */
@@ -45,6 +45,11 @@ interface UniversalNPCType<T: UniversalNPCMetadata> {
 	 * Returns the stock metadata of this NPC
 	 **/
 	fun getDefaultMetaData(): T
+
+	/**
+	 * Returns the stock metadata of this NPC, with the player available.
+	 **/
+	fun getDefaultMetaData(creator: Player): T = getDefaultMetaData()
 
 	/**
 	 * Code to update the NPC if the metadata changes.

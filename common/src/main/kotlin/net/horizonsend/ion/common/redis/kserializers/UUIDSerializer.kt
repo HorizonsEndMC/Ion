@@ -1,4 +1,4 @@
-package net.horizonsend.ion.common.utils.configuration
+package net.horizonsend.ion.common.redis.kserializers
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.PrimitiveKind

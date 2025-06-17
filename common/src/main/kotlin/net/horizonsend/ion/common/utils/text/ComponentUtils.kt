@@ -27,6 +27,7 @@ import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.kyori.adventure.translation.GlobalTranslator
@@ -43,6 +44,8 @@ typealias GsonComponentString = String
 val miniMessage = MiniMessage.miniMessage()
 
 val legacyAmpersand = LegacyComponentSerializer.legacyAmpersand()
+
+val gson = GsonComponentSerializer.gson()
 
 /** Serializes the component to minimessage format */
 fun miniMessage(component: Component): String = miniMessage.serialize(component)
