@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.misc.UniversalNPC
 import net.horizonsend.ion.common.database.string
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.server.IonServerComponent
@@ -34,6 +35,9 @@ object DatabaseNPCs : IonServerComponent(true) {
 	private val wrapperMap: MutableMap<UUID, UniversalNPCWrapper<*, *>> = mutableMapOf()
 	private val typeMap: Multimap<DatabaseNPCType<*>, UUID> = multimapOf()
 	private val oidMap: MutableMap<Oid<UniversalNPC>, UUID> = mutableMapOf()
+
+	fun getAll() = wrapperMap.values
+	fun getWrapped(npcId: UUID) = wrapperMap[npcId]
 
 	override fun onEnable() {
 		if (!isCitizensLoaded) return
@@ -76,7 +80,7 @@ object DatabaseNPCs : IonServerComponent(true) {
 		}
 	}
 
-	fun <M : UniversalNPCMetadata, T: DatabaseNPCType<M>> spawn(player: Player, location: Location, type: T, metadata: M, skinData: Skins.SkinData) {
+	fun <M : UniversalNPCMetadata, T: DatabaseNPCType<M>> create(player: Player, location: Location, type: T, metadata: M, skinData: Skins.SkinData) {
 		if (!isCitizensLoaded) {
 			player.userError("Citizens is not loaded! NPCs will not function.")
 			return
@@ -87,10 +91,12 @@ object DatabaseNPCs : IonServerComponent(true) {
 			return
 		}
 
-		spawn(location, type, metadata, skinData)
+		create(location, type, metadata, skinData)
+
+		player.success("Created NPC")
 	}
 
-	fun <M : UniversalNPCMetadata, T: DatabaseNPCType<M>> spawn(location: Location, type: T, metadata: M, skinData: Skins.SkinData) {
+	fun <M : UniversalNPCMetadata, T: DatabaseNPCType<M>> create(location: Location, type: T, metadata: M, skinData: Skins.SkinData) {
 		if (!isCitizensLoaded) {
 			return
 		}
@@ -104,6 +110,13 @@ object DatabaseNPCs : IonServerComponent(true) {
 			type.identifier,
 			type.serializeMetaData(metadata)
 		)
+	}
+
+	fun remove(npcId: UUID): Boolean {
+		val wrapped = wrapperMap[npcId] ?: return false
+
+		val result = UniversalNPC.delete(wrapped.oid)
+		return result.deletedCount >= 1L
 	}
 
 	private fun load(document: UniversalNPC) = Tasks.sync {
@@ -131,7 +144,7 @@ object DatabaseNPCs : IonServerComponent(true) {
 					setSkinPersistent(npc.name, skin.signature, skin.value)
 				}
 
-				val wrapped = UniversalNPCWrapper(npc, type, metaData)
+				val wrapped = UniversalNPCWrapper(npc, document._id, type, metaData)
 				wrapped.applyTraits()
 
 				wrapperMap[document.npcID] = wrapped

@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.npcs.database.type
 
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.trait.LookClose
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.server.features.npcs.database.UniversalNPCWrapper
 import net.horizonsend.ion.server.features.npcs.database.metadata.ServerShipDealerMetadata
@@ -9,6 +10,7 @@ import net.horizonsend.ion.server.features.npcs.database.metadata.UniversalNPCMe
 import net.horizonsend.ion.server.gui.invui.misc.ShipDealerGUI
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
+import java.util.function.Consumer
 import kotlin.reflect.KClass
 
 object ServerShipDealerType : DatabaseNPCType<ServerShipDealerMetadata> {
@@ -20,11 +22,16 @@ object ServerShipDealerType : DatabaseNPCType<ServerShipDealerMetadata> {
 	}
 
 	override fun handleMetaDataChange(new: String, npc: UniversalNPCWrapper<*, *>) {
+		@Suppress("UNCHECKED_CAST")
 		npc as UniversalNPCWrapper<ServerShipDealerType, ServerShipDealerMetadata>
 		npc.metaData = 	deSerializeMetaData(new)
 	}
 
 	override fun canUseType(player: Player, metaData: ServerShipDealerMetadata): Boolean {
+		return player.hasPermission("ion.npc.shipDealer")
+	}
+
+	override fun canManage(player: Player, wrapper: UniversalNPCWrapper<*, ServerShipDealerMetadata>): Boolean {
 		return player.hasPermission("ion.npc.shipDealer")
 	}
 
@@ -37,5 +44,13 @@ object ServerShipDealerType : DatabaseNPCType<ServerShipDealerMetadata> {
 			lookClose(true)
 			setRealisticLooking(true)
 		}
+	}
+
+	override fun getDefaultMetaData(): ServerShipDealerMetadata {
+		return ServerShipDealerMetadata()
+	}
+
+	override fun manage(player: Player, managed: UniversalNPCWrapper<*, ServerShipDealerMetadata>, newMetaDataConsumer: Consumer<ServerShipDealerMetadata>) {
+		player.userError("This NPC cannot be managed!")
 	}
 }
