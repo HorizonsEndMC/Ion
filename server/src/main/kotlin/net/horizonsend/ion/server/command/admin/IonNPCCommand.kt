@@ -18,4 +18,6 @@ object IonNPCCommand : SLCommand() {
 	fun onCreateShipDealer(sender: Player) = asyncCommand(sender) {
 		DatabaseNPCs.spawn(sender, sender.location, DatabaseNPCTypes.SERVER_SHIP_DEALER, ServerShipDealerMetadata(), Skins[sender.uniqueId]!!)
 	}
+
+
 }
