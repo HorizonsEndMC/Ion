@@ -9,14 +9,14 @@ import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.misc.UniversalNPC
 import net.horizonsend.ion.common.database.string
-import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.npcs.NPCManager
 import net.horizonsend.ion.server.features.npcs.database.metadata.UniversalNPCMetadata
-import net.horizonsend.ion.server.features.npcs.database.type.DatabaseNPCType
-import net.horizonsend.ion.server.features.npcs.database.type.DatabaseNPCTypes
+import net.horizonsend.ion.server.features.npcs.database.type.UniversalNPCType
+import net.horizonsend.ion.server.features.npcs.database.type.UniversalNPCTypes
 import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.Skins
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -30,10 +30,10 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerTeleportEvent
 import java.util.UUID
 
-object DatabaseNPCs : IonServerComponent(true) {
-	private val npcManager = NPCManager(log, "DatabaseNPCs")
+object UniversalNPCs : IonServerComponent(true) {
+	private val npcManager = NPCManager(log, "UniversalNPCs")
 	private val wrapperMap: MutableMap<UUID, UniversalNPCWrapper<*, *>> = mutableMapOf()
-	private val typeMap: Multimap<DatabaseNPCType<*>, UUID> = multimapOf()
+	private val typeMap: Multimap<UniversalNPCType<*>, UUID> = multimapOf()
 	private val oidMap: MutableMap<Oid<UniversalNPC>, UUID> = mutableMapOf()
 
 	fun getAll() = wrapperMap.values
@@ -43,22 +43,11 @@ object DatabaseNPCs : IonServerComponent(true) {
 		if (!isCitizensLoaded) return
 		npcManager.enableRegistry()
 
-		loadNPCs()
-		watchChanges()
-	}
+		// Load NPCs from storage
+		Tasks.async { UniversalNPC.all().forEach(::loadNPCFromStorage) }
 
-	override fun onDisable() {
-		npcManager.disableRegistry()
-	}
-
-	private fun loadNPCs() {
-		Tasks.async {
-			UniversalNPC.all().forEach(::load)
-		}
-	}
-
-	private fun watchChanges() {
-		UniversalNPC.watchInserts { it.fullDocument?.let(::load) }
+		// Watch changes in stored NPCs
+		UniversalNPC.watchInserts { it.fullDocument?.let(::loadNPCFromStorage) }
 		UniversalNPC.watchDeletes { it.oid.let(::handleRemoval) }
 		UniversalNPC.watchUpdates { change ->
 			val npc = oidMap[change.oid] ?: return@watchUpdates
@@ -80,25 +69,34 @@ object DatabaseNPCs : IonServerComponent(true) {
 		}
 	}
 
-	fun <M : UniversalNPCMetadata, T: DatabaseNPCType<M>> create(player: Player, location: Location, type: T, metadata: M, skinData: Skins.SkinData) {
+	override fun onDisable() {
+		npcManager.disableRegistry()
+	}
+
+	fun <M : UniversalNPCMetadata, T: UniversalNPCType<M>> create(player: Player, location: Location, type: T, metadata: M, skinData: Skins.SkinData): Boolean {
 		if (!isCitizensLoaded) {
 			player.userError("Citizens is not loaded! NPCs will not function.")
-			return
+			return false
 		}
 
 		if (!type.canUseType(player, metadata)) {
 			player.userError("You cannot use this NPC type!")
-			return
+			return false
 		}
 
-		create(location, type, metadata, skinData)
+		val result = create(location, type, metadata, skinData)
 
-		player.success("Created NPC")
+		if (!result) {
+			player.serverError("Could not create NPC!")
+			return false
+		}
+
+		return true
 	}
 
-	fun <M : UniversalNPCMetadata, T: DatabaseNPCType<M>> create(location: Location, type: T, metadata: M, skinData: Skins.SkinData) {
+	fun <M : UniversalNPCMetadata, T: UniversalNPCType<M>> create(location: Location, type: T, metadata: M, skinData: Skins.SkinData): Boolean {
 		if (!isCitizensLoaded) {
-			return
+			return false
 		}
 
 		UniversalNPC.create(
@@ -110,8 +108,13 @@ object DatabaseNPCs : IonServerComponent(true) {
 			type.identifier,
 			type.serializeMetaData(metadata)
 		)
+
+		return true
 	}
 
+	/**
+	 * Removes this NPC from the database and the server
+	 **/
 	fun remove(npcId: UUID): Boolean {
 		val wrapped = wrapperMap[npcId] ?: return false
 
@@ -119,8 +122,11 @@ object DatabaseNPCs : IonServerComponent(true) {
 		return result.deletedCount >= 1L
 	}
 
-	private fun load(document: UniversalNPC) = Tasks.sync {
-		val type = DatabaseNPCTypes.getByIdentifier(document.typeId)
+	/**
+	 * Loads the NPC from the stored info on the database
+	 **/
+	private fun loadNPCFromStorage(document: UniversalNPC) = Tasks.sync {
+		val type = UniversalNPCTypes.getByIdentifier(document.typeId)
 		val metaData = type.deSerializeMetaData(document.jsonMetadata)
 		val location = document.bukkitLocation() ?: return@sync
 
@@ -154,6 +160,9 @@ object DatabaseNPCs : IonServerComponent(true) {
 		)
 	}
 
+	/**
+	 * Handles the removal of the NPC on the server when it is removed from the database.
+	 **/
 	fun handleRemoval(document: Oid<UniversalNPC>) {
 		val npcId = oidMap[document] ?: return
 
@@ -166,6 +175,9 @@ object DatabaseNPCs : IonServerComponent(true) {
 		}
 	}
 
+	/**
+	 * If the location of this NPC changes, moves it to its new location
+	 **/
 	private fun handleMovement(id: Oid<UniversalNPC>) {
 		Tasks.async {
 			val npcId = oidMap[id] ?: return@async
@@ -180,6 +192,9 @@ object DatabaseNPCs : IonServerComponent(true) {
 		}
 	}
 
+	/**
+	 * If the skin of this NPC changes, updates it on the server
+	 **/
 	private fun handleSkinChange(id: Oid<UniversalNPC>, new: ByteArray) {
 		Tasks.async {
 			val npcId = oidMap[id] ?: return@async
