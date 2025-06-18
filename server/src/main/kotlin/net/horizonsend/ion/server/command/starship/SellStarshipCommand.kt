@@ -7,9 +7,13 @@ import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.schema.starships.PlayerSoldShip
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.GsonComponentString
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.gson
 import net.horizonsend.ion.common.utils.text.miniMessage
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.starship.StarshipSchematic
@@ -19,14 +23,26 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.createData
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
+import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
+import kotlin.math.roundToInt
 
 @CommandAlias("starshipsell")
 object SellStarshipCommand : SLCommand() {
 	@Default
-	fun onSellStarship(sender: Player, className: String, shipName: String, price: Double, @Optional description: String?, ) = asyncCommand(sender) {
+	fun onSellStarship(sender: Player, className: String, shipName: String, price: Double, @Optional description: String?, @Optional priceConfirm: Double?) = asyncCommand(sender) {
 		requireNotInCombat(sender)
 		val starship = getStarshipPiloting(sender)
+
+		val listingTax = price * 0.10
+		// Do a fuzzy comparison to avoid floating point inaccuracy
+		failIf(priceConfirm?.roundToInt() != listingTax.roundToInt()) {
+			"Listing a ship requires a tax of 10% of the asking price. You must acknowledge the price to list the ship." +
+				"Enter /starshipsell $className $shipName $price ${description ?: ""} ${listingTax.roundToHundredth()} to confirm."
+		}
+
+		requireMoney(sender, listingTax)
 
 		var pilotLoc = Vec3i(sender.location)
 		failIf(!starship.isWithinHitbox(pilotLoc.x, pilotLoc.y, pilotLoc.z, 1)) { "Must be inside the ship." }
@@ -39,6 +55,9 @@ object SellStarshipCommand : SLCommand() {
 		Tasks.sync {
 			StarshipDestruction.vanish(starship, false) { vanishResult ->
 				if (vanishResult) {
+					sender.sendMessage(template(Component.text("{0} has been withdrawn from your account.", HE_MEDIUM_GRAY), listingTax.toCreditComponent()))
+					sender.withdrawMoney(listingTax)
+
 					val parsedDescription = description?.let(miniMessage::deserialize)?.wrap(150)?.map(gson::serialize)
 					createSoldShip(sender, className, shipName, parsedDescription, price, pilotLoc, starship.type, blockCount, clipboardData)
 				}

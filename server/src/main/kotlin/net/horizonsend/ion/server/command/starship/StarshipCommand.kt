@@ -171,5 +171,5 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 	fun onDownload(sender: Player) = MiscStarshipCommands.onDownload(sender)
 
 	@Subcommand("sell")
-	fun onSell(sender: Player, className: String, shipName: String, price: Double, @Optional description: String?, ) = SellStarshipCommand.onSellStarship(sender, className, shipName, price, description)
+	fun onSell(sender: Player, className: String, shipName: String, price: Double, @Optional description: String?, @Optional priceConfirm: Double?) = SellStarshipCommand.onSellStarship(sender, className, shipName, price, description, priceConfirm)
 }
