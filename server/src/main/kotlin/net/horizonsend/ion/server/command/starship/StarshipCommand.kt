@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.command.starship
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.starship.Interdiction
@@ -26,10 +27,10 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.round
 import kotlin.math.roundToInt
 
-@CommandAlias("starshipinfo|starship")
-object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
-	@Suppress("Unused")
+@CommandAlias("starship|starshipinfo")
+object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Default
+	@Subcommand("info")
 	fun onExecute(sender: Player) {
 		val ship = getStarshipPiloting(sender)
 
@@ -144,6 +145,12 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	private fun createPercent(fraction: Double) = "${round(fraction * 1000) / 10}%"
 
+	val cooldown = object : AbstractCooldown<UUID>(10L, TimeUnit.SECONDS) {
+		override fun cooldownRejected(player: UUID) {
+			Bukkit.getPlayer(player)?.userError("You're doing that too often!")
+		}
+	}
+
 	@Subcommand("shields")
 	fun onDisplayShields(sender: Player) {
 		val ship = getStarshipPiloting(sender)
@@ -160,9 +167,9 @@ object StarshipInfoCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 	}
 
-	val cooldown = object : AbstractCooldown<UUID>(10L, TimeUnit.SECONDS) {
-		override fun cooldownRejected(player: UUID) {
-			Bukkit.getPlayer(player)?.userError("You're doing that too often!")
-		}
-	}
+	@Subcommand("download")
+	fun onDownload(sender: Player) = MiscStarshipCommands.onDownload(sender)
+
+	@Subcommand("sell")
+	fun onSell(sender: Player, className: String, shipName: String, price: Double, @Optional description: String?, ) = SellStarshipCommand.onSellStarship(sender, className, shipName, price, description)
 }
