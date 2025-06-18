@@ -66,12 +66,13 @@ abstract class ListInvUIWindow<T: Any?>(viewer: Player, protected var pageNumber
 
 	/** Returns a list of entries that are currently displayed */
 	fun getDisplayedEntries(): List<T> {
-		return entries.subList(displayRange.first, displayRange.last)
+		if (entries.isEmpty()) return listOf()
+		return entries.subList(maxOf(0, displayRange.first), minOf(displayRange.last, entries.size))
 	}
 
 	/** Returns a list of entries that are currently displayed */
 	fun getDisplayedItems(): List<Item> {
-		return items.subList(displayRange.first, displayRange.last)
+		return items.subList(maxOf(0, displayRange.first), minOf(displayRange.last, items.size))
 	}
 
 	protected fun <S: PagedGui.Builder<*>> S.handlePageChange(): S {

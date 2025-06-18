@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.database.schema.starships.BlueprintLike
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.database.slPlayerId
@@ -52,7 +53,7 @@ fun Blueprint.Companion.parseData(data: String): Clipboard {
 	return StarshipSchematic.deserializeSchematic(Base64.getDecoder().decode(data))
 }
 
-fun Blueprint.loadClipboard(): Clipboard {
+fun BlueprintLike.loadClipboard(): Clipboard {
 	return Blueprint.parseData(blockData)
 }
 
