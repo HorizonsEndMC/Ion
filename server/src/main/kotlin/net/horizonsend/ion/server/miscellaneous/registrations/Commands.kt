@@ -77,6 +77,7 @@ import net.horizonsend.ion.server.command.space.StarCommand
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
 import net.horizonsend.ion.server.command.starship.RainbowProjectileCommand
+import net.horizonsend.ion.server.command.starship.SellStarshipCommand
 import net.horizonsend.ion.server.command.starship.StarshipDebugCommand
 import net.horizonsend.ion.server.command.starship.StarshipInfoCommand
 import net.horizonsend.ion.server.command.starship.StarshipsCommand
@@ -143,6 +144,7 @@ val commands: List<SLCommand> = listOf(
 	TradeDebugCommand,
 
 	MiscStarshipCommands,
+	SellStarshipCommand,
 	BlueprintCommand,
 	StarshipDebugCommand,
 	AIDebugCommand,

@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.npcs.database.UniversalNPCWrapper
 import net.horizonsend.ion.server.features.npcs.database.metadata.ServerShipDealerMetadata
 import net.horizonsend.ion.server.features.npcs.database.metadata.UniversalNPCMetadata
 import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
-import net.horizonsend.ion.server.gui.invui.misc.ShipDealerGUI
+import net.horizonsend.ion.server.gui.invui.misc.shipdealer.ShipDealerGUI
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import java.util.function.Consumer

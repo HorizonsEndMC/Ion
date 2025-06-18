@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacem
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material
+import java.util.function.Consumer
 
 object StarshipDestruction {
 	const val MAX_SAFE_HULL_INTEGRITY = 0.8
@@ -21,8 +22,9 @@ object StarshipDestruction {
 	 * If urgent, all will be done on the main thread.
 	 * @param ephemeral Whether to skip saving the deactivated ship data to the cache.
 	 **/
-	fun vanish(starship: Starship, ephemeral: Boolean = false, urgent: Boolean = false) {
+	fun vanish(starship: Starship, ephemeral: Boolean = false, urgent: Boolean = false, successConsumer: Consumer<Boolean> = Consumer {}) {
 		if (starship.isExploding) {
+			successConsumer.accept(false)
 			return
 		}
 
@@ -36,22 +38,22 @@ object StarshipDestruction {
 				DeactivatedPlayerStarships.deactivateNow(starship = starship, ephemeral = ephemeral)
 				DeactivatedPlayerStarships.destroy(starship.data)
 
-				vanishShip(starship)
+				vanishShip(starship, successConsumer)
 			}
 		}
 
 		DeactivatedPlayerStarships.deactivateAsync(starship = starship, ephemeral = ephemeral) {
 			DeactivatedPlayerStarships.destroyAsync(starship.data) {
-				vanishShip(starship)
+				vanishShip(starship, successConsumer)
 			}
 		}
 	}
 
-	private fun vanishShip(starship: ActiveStarship) {
+	private fun vanishShip(starship: ActiveStarship, successConsumer: Consumer<Boolean> = Consumer {}) {
 		val air = Material.AIR.createBlockData().nms
 		val queue = Long2ObjectOpenHashMap<BlockState>(starship.initialBlockCount)
 		starship.blocks.associateWithTo(queue) { air }
-		BlockPlacement.placeImmediate(starship.world, queue)
+		BlockPlacement.placeImmediate(starship.world, queue) { successConsumer.accept(true) }
 	}
 
 	fun destroy(starship: ActiveStarship) {
