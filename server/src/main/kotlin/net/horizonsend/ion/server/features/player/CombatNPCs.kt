@@ -86,7 +86,7 @@ object CombatNPCs : IonServerComponent(true) {
 				npc.isProtected = false
 
 				npc.getOrAddTrait(Gravity::class.java).apply {
-					setHasGravity(true) // nogravity = true
+					setHasGravity(false)
 				}
 
 				npc.getOrAddTrait(CombatNPCTrait::class.java).apply {
