@@ -24,7 +24,7 @@ import org.bukkit.entity.Player
 @CommandAlias("starshipsell")
 object SellStarshipCommand : SLCommand() {
 	@Default
-	fun onSellStarship(sender: Player, className: String, shipName: String, price: Double, @Optional description: String?) = asyncCommand(sender) {
+	fun onSellStarship(sender: Player, className: String, shipName: String, price: Double, @Optional description: String?, ) = asyncCommand(sender) {
 		requireNotInCombat(sender)
 		val starship = getStarshipPiloting(sender)
 
