@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.misc
+package net.horizonsend.ion.server.gui.invui.misc.shipdealer
 
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -40,6 +40,8 @@ class ShipDealerGUI(viewer: Player, private val ships: List<DealerShip>) : ListI
 		return normalWindow(gui)
 	}
 
+	override val pageNumberLine: Int = 6
+
 	override fun buildTitle(): Component {
 		val text = GuiText("Available Ships")
 			.setSlotOverlay(
@@ -51,6 +53,6 @@ class ShipDealerGUI(viewer: Player, private val ships: List<DealerShip>) : ListI
 
 		if (maxPageNumber > 1) return withPageNumber(text)
 
-		return text
+		return withPageNumber(text)
 	}
 }
