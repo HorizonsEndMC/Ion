@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemStack
 import java.time.Duration
+import java.util.Date
 
 class PlayerCreatedDealerShip(
 	val id: Oid<PlayerSoldShip>,
@@ -25,7 +26,8 @@ class PlayerCreatedDealerShip(
 	val price: Double,
 	cooldown: Duration,
 	protectionCanBypass: Boolean,
-	starshipType: StarshipType
+	starshipType: StarshipType,
+	val creationDate: Date,
 ) : DealerShip(displayName, cooldown, protectionCanBypass, starshipType) {
 	override fun getClipboard(): Clipboard {
 		return PlayerSoldShip.findById(id)!!.loadClipboard()
@@ -40,6 +42,7 @@ class PlayerCreatedDealerShip(
 		lore.add(template(Component.text("Class: {0}", HE_MEDIUM_GRAY), starshipType.displayNameComponent))
 		lore.add(template(Component.text("Size: {0}", HE_MEDIUM_GRAY), size))
 		lore.add(template(Component.text("Price: {0}", HE_MEDIUM_GRAY), price.toCreditComponent()))
+		lore.add(template(Component.text("Listed: {0}", HE_MEDIUM_GRAY), useQuotesAroundObjects = false, creationDate))
 
 		return starshipType.menuItemRaw.get()
 			.updateDisplayName(displayName)
@@ -56,7 +59,8 @@ class PlayerCreatedDealerShip(
 			price = ship.price,
 			cooldown = Duration.ofMillis(1L),
 			protectionCanBypass = false,
-			starshipType = ship.type.actualType
+			starshipType = ship.type.actualType,
+			creationDate = ship.creationTime
 		)
 	}
 }

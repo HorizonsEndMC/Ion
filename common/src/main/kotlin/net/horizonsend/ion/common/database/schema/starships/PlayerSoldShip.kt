@@ -23,7 +23,7 @@ class PlayerSoldShip(
 	val owner: SLPlayerId,
 
 	val className: String,
-	var name: GsonComponentString,
+	var name: String,
 	var description: List<GsonComponentString>? = null,
 
 	val price: Double,
