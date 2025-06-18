@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.gui.invui.misc.util.input
 
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
+import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.text.ANVIL_BACKGROUND
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
 import net.horizonsend.ion.common.utils.text.bracketed
@@ -8,6 +11,7 @@ import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.CollectionSearchValidator
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.InputValidator
@@ -18,6 +22,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -29,6 +35,7 @@ import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.AnvilWindow
 import xyz.xenondevs.invui.window.Window
+import java.util.function.Consumer
 import java.util.function.Supplier
 
 class TextInputMenu<T : Any>(
@@ -295,6 +302,28 @@ class TextInputMenu<T : Any>(
             )
 
 			textInput.openGui()
+		}
+
+		fun searchSLPlayers(viewer: Player, entryConsumer: Consumer<SLPlayerId>) = Tasks.async {
+			val players = SLPlayer.allIds()
+
+			val nameCache = mutableMapOf<SLPlayerId, String>()
+
+			fun getName(slPlayer: SLPlayerId): String {
+				return nameCache.getOrPut(slPlayer) { SLPlayer.getName(slPlayer) ?: "UNKNOWN" }
+			}
+
+			Tasks.sync {
+				viewer.searchEntires(
+					entries = players.toList(),
+					searchTermProvider = { listOfNotNull(getName(it)) },
+					prompt = text("Enter Player Name"),
+					description = empty(),
+					componentTransformer = { text(getName(it)) },
+					itemTransformer = { skullItem(it.uuid, getName(it)) },
+					handler = { _, result -> entryConsumer.accept(result) }
+				)
+			}
 		}
 	}
 }
