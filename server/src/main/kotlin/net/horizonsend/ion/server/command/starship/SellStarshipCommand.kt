@@ -36,7 +36,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.ne
 import kotlin.math.roundToInt
 
-@CommandAlias("starshipsell")
+@CommandAlias("starshipsell|shipsell")
 object SellStarshipCommand : SLCommand() {
 	@Default
 	fun onSellStarship(sender: Player, className: String, shipName: String, price: Double, @Optional description: String?, @Optional priceConfirm: Double?) = asyncCommand(sender) {
