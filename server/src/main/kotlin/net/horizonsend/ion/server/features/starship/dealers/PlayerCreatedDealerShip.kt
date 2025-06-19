@@ -4,6 +4,7 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.starships.PlayerSoldShip
+import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.gson
@@ -15,6 +16,7 @@ import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.depositMoney
@@ -81,6 +83,10 @@ class PlayerCreatedDealerShip(
 
 		Bukkit.getOfflinePlayer(seller.uuid).depositMoney(price)
 		Bukkit.getPlayer(seller.uuid)?.let { sendDepositMessage(it, price) }
+	}
+
+	override fun postPilot(purchaser: Player, ship: Starship) {
+		(ship.data as? PlayerStarshipData)?.disallowBlueprinting = true
 	}
 
 	companion object {
