@@ -10,6 +10,9 @@ import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
 import net.horizonsend.ion.server.features.gui.custom.settings.button.general.collection.CollectionModificationButton
 import net.horizonsend.ion.server.features.nations.gui.skullItem
+import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.Region
+import net.horizonsend.ion.server.features.nations.region.types.RegionTopLevel
 import net.horizonsend.ion.server.features.npcs.database.UniversalNPCWrapper
 import net.horizonsend.ion.server.features.npcs.database.metadata.PlayerShipDealerMetadata
 import net.horizonsend.ion.server.features.npcs.database.metadata.UniversalNPCMetadata
@@ -19,6 +22,7 @@ import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Compan
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
+import org.litote.kmongo.and
 import org.litote.kmongo.`in`
 import java.util.UUID
 import java.util.function.Consumer
@@ -70,7 +74,11 @@ object PlayerShipDealerType : UniversalNPCType<PlayerShipDealerMetadata> {
 
 	override fun handleClick(player: Player, npc: NPC, metaData: PlayerShipDealerMetadata) {
 		Tasks.async {
-			val ships = PlayerSoldShip.find(PlayerSoldShip::owner `in` metaData.sellers.mapTo(mutableSetOf(), UUID::slPlayerId)).toList().map(PlayerCreatedDealerShip::create)
+			val territories = Regions.find(player.location).filter { it is RegionTopLevel }.map(Region<*>::id)
+			val ships = PlayerSoldShip
+				.find(and(PlayerSoldShip::owner `in` metaData.sellers.mapTo(mutableSetOf(), UUID::slPlayerId), PlayerSoldShip::creationTerritory `in` territories))
+				.toList()
+				.map(PlayerCreatedDealerShip::create)
 
 			PlayerShipDealerGUI(player, ships).openGui()
 		}
