@@ -67,12 +67,23 @@ interface UniversalNPCType<T: UniversalNPCMetadata> {
 	fun getDisplayName(metaData: UniversalNPCMetadata): Component
 
 	/**
+	 * Checks if this NPC type is allowable at this location
+	 *
+	 * @param player: The player creating or moving this NPC
+	 **/
+	fun checkLocation(player: Player, location: Location): Boolean
+
+	/**
 	 * Returns whether the player may use this type of NPC (spawn it).
+	 *
+	 * @param player: The player to check
 	 **/
 	fun canUseType(player: Player, metaData: T): Boolean
 
 	/**
 	 * Returns whether the player can manage this individual NPC.
+	 *
+	 * @param player: The player to check
 	 **/
 	fun canManage(player: Player, wrapper: UniversalNPCWrapper<*, T>): Boolean
 

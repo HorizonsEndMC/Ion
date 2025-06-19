@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.npcs.database.metadata.UniversalNPCMe
 import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
 import net.horizonsend.ion.server.gui.invui.misc.shipdealer.ShipDealerGUI
 import net.kyori.adventure.text.Component
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import java.util.function.Consumer
 import kotlin.reflect.KClass
@@ -35,6 +36,10 @@ object ServerShipDealerType : UniversalNPCType<ServerShipDealerMetadata> {
 
 	override fun canManage(player: Player, wrapper: UniversalNPCWrapper<*, ServerShipDealerMetadata>): Boolean {
 		return player.hasPermission("ion.npc.shipDealer")
+	}
+
+	override fun checkLocation(player: Player, location: Location): Boolean {
+		return true
 	}
 
 	override fun handleClick(player: Player, npc: NPC, metaData: ServerShipDealerMetadata) {
