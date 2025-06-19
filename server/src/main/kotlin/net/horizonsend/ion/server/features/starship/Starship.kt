@@ -16,11 +16,12 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_L
 import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.randomString
+import net.horizonsend.ion.common.utils.text.restrictedMiniMessageSerializer
+import net.horizonsend.ion.common.utils.text.serialize
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.gui.custom.starship.RenameButton.Companion.starshipNameSerializer
 import net.horizonsend.ion.server.features.multiblock.manager.ShipMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
@@ -627,14 +628,14 @@ class Starship(
 
 	//region Display Name
 	/** Gets the minimessage display name of this starship */
-	fun getDisplayNameMiniMessage(): String = starshipNameSerializer.serialize(getDisplayName())
+	fun getDisplayNameMiniMessage(): String = getDisplayName().serialize(restrictedMiniMessageSerializer)
 
 	/** Gets the component display name of this starship */
 	fun getDisplayName(): Component {
 		return text()
 			.color(WHITE)
 			.decoration(TextDecoration.ITALIC, false)
-			.append(this.data.name?.let { starshipNameSerializer.deserialize(it) } ?: return type.displayNameComponent)
+			.append(this.data.name?.let { restrictedMiniMessageSerializer.deserialize(it) } ?: return type.displayNameComponent)
 			.hoverEvent(template(text("A {0} block {1}", HE_LIGHT_GRAY), initialBlockCount, type))
 			.build()
 	}

@@ -8,12 +8,19 @@ import com.velocitypowered.api.proxy.Player
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.deserializeComponent
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.restrictedMiniMessageSerializer
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.proxy.PLUGIN
 import net.horizonsend.ion.proxy.commands.ProxyCommand
 import net.horizonsend.ion.proxy.features.cache.PlayerCache
-import net.horizonsend.ion.proxy.utils.sendRichMessage
 import net.horizonsend.ion.proxy.utils.slPlayerId
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.space
+import net.kyori.adventure.text.format.TextColor
 import kotlin.jvm.optionals.getOrNull
 
 private val conversation = mutableMapOf<SLPlayerId, SLPlayerId>()
@@ -22,7 +29,14 @@ private val conversation = mutableMapOf<SLPlayerId, SLPlayerId>()
 @CommandPermission("ion.message")
 object MessageCommand : ProxyCommand() {
 	private val format = { sender: String, receiver: String, msg: String ->
-		"<#7f7fff>[<#b8e0d4>$sender <#7f7fff>-> <#b8e0d4>$receiver<#7f7fff>] <white>$msg"
+		ofChildren(
+			bracketed(
+				template(Component.text("{0} -> {1}", TextColor.fromHexString("#7f7fff")!!), paramColor = TextColor.fromHexString("#b8e0d4"), sender, receiver),
+				bracketColor = TextColor.fromHexString("#7f7fff")!!
+			),
+			space(),
+			deserializeComponent(msg, restrictedMiniMessageSerializer)
+		)
 	}
 
 	@Default
@@ -50,12 +64,12 @@ object MessageCommand : ProxyCommand() {
 
 		val formatted = message.replace("${recipient.name} ", "")
 
-		sender.sendRichMessage(format.invoke("me", recipient.name, formatted))
+		sender.sendMessage(format.invoke("me", recipient.name, formatted))
 
 		// Let the sender see that the message has been sent, but don't send it to the recipient, or set the convo
 		if (cachedRecipient.blockedPlayerIDs.contains(sender.slPlayerId)) return
 
-		recipient.sendRichMessage(format.invoke(sender.name, "me", formatted))
+		recipient.sendMessage(format.invoke(sender.name, "me", formatted))
 
 		conversation[sender.slPlayerId] = recipient.slPlayerId
 		conversation[recipient.slPlayerId] = sender.slPlayerId
