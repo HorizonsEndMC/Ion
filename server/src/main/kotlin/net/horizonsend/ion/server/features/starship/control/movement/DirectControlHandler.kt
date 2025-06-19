@@ -55,6 +55,16 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 		}
 
 		val data = input.getData()
+		var strafeVector = data.strafeVector
+
+
+		val vectors = directControlPreviousVectors
+		if (vectors.size > 3) {
+			vectors.poll()
+		}
+		// Store strafe vectors
+		vectors.add(strafeVector)
+
 
 		val cooldown = calculateCooldown(movementCooldown, data.selectedSpeed) * speedFac
 		val currentTime = System.currentTimeMillis()
@@ -84,16 +94,6 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 			dx *= 2
 			dz *= 2
 		}
-
-		var strafeVector = data.strafeVector
-
-
-		val vectors = directControlPreviousVectors
-		if (vectors.size > 3) {
-			vectors.poll()
-		}
-		// Store strafe vectors
-		vectors.add(strafeVector)
 
 
 		var highestFrequency = Collections.frequency(vectors, strafeVector)

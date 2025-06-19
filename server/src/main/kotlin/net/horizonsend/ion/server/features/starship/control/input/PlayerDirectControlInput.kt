@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.starship.control.input
 
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.features.nations.utils.getPing
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -13,6 +15,7 @@ import net.minecraft.world.entity.Relative
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.util.Vector
+import kotlin.math.ceil
 import kotlin.math.round
 import kotlin.math.roundToInt
 
@@ -25,6 +28,9 @@ class PlayerDirectControlInput(override val controller: PlayerController
 	override var isBoosting : Boolean
 		get() = player.isSneaking
 		set(value) {}
+
+	private var internalTick = 0
+	private var cachedState = DirectControlInput.DirectControlData(Vector(), 9, false)
 
 	override fun create() {
 		val message = ofChildren(
@@ -73,6 +79,14 @@ class PlayerDirectControlInput(override val controller: PlayerController
 	}
 
 	override fun getData(): DirectControlInput.DirectControlData {
+
+		// Ping compensation
+		val refreshRate = getPing(player) * 1.5 //TODO: add refreshRate setting
+		val catchCooldown = (ceil(refreshRate / 50.0)).toInt().coerceAtLeast(2)
+
+		internalTick++
+		if (internalTick % catchCooldown != 0) return cachedState // reduce teleports to make it non hyper sensitive
+		internalTick = 0
 		// Use the player's location
 		val pilotLocation = player.location
 
@@ -122,10 +136,12 @@ class PlayerDirectControlInput(override val controller: PlayerController
 				),
 				0f,
 				0f,
-				true,
+				false,
 				PlayerTeleportEvent.TeleportCause.PLUGIN
 			)
 		}
-		return DirectControlInput.DirectControlData(vector,selectedSpeed,isBoosting)
+		cachedState = DirectControlInput.DirectControlData(vector,selectedSpeed,isBoosting)
+		//starship.debug(cachedState.toString())
+		return cachedState
 	}
 }
