@@ -43,7 +43,7 @@ class PlayerSoldShip(
 			ensureIndex(PlayerSoldShip::size)
 		}
 	) {
-		fun delete(id: Oid<Blueprint>) = trx { sess ->
+		fun delete(id: Oid<PlayerSoldShip>) = trx { sess ->
 			col.deleteOneById(sess, id)
 		}
 
