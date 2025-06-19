@@ -50,8 +50,8 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 		if (input is PlayerInput) {
 			// Ping compensation
 			val ping = getPing(input.player)
-			val playerDcModifier = PlayerCache[input.player.uniqueId].dcSpeedModifier
-			speedFac = if (ping > movementCooldown) max(2, playerDcModifier) else playerDcModifier
+			val playerDcRefreshRate = PlayerCache[input.player.uniqueId].dcRefreshRate
+			speedFac = if (ping > movementCooldown) max(2, playerDcRefreshRate) else playerDcRefreshRate
 		}
 
 		val data = input.getData()
