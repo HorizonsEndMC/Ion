@@ -37,6 +37,7 @@ object UniversalNPCs : IonServerComponent(true) {
 	private val oidMap: MutableMap<Oid<UniversalNPC>, UUID> = mutableMapOf()
 
 	fun getAll() = wrapperMap.values
+	fun <M : UniversalNPCMetadata, T: UniversalNPCType<M>> getAll(type: T): List<UniversalNPCWrapper<T, M>> = typeMap[type].map(wrapperMap::get).filterIsInstance<UniversalNPCWrapper<T, M>>()
 	fun getWrapped(npcId: UUID) = wrapperMap[npcId]
 
 	override fun onEnable() {
