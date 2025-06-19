@@ -25,7 +25,6 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import java.time.Duration
 import java.util.Date
 
 class PlayerCreatedDealerShip(
@@ -39,7 +38,7 @@ class PlayerCreatedDealerShip(
 	protectionCanBypass: Boolean,
 	starshipType: StarshipType,
 	val creationDate: Date,
-) : DealerShip(displayName, Duration.ZERO, price, protectionCanBypass, starshipType) {
+) : DealerShip(displayName, price, protectionCanBypass, starshipType) {
 	override fun getClipboard(): Clipboard {
 		return PlayerSoldShip.findById(id)!!.loadClipboard()
 	}
@@ -61,6 +60,7 @@ class PlayerCreatedDealerShip(
 	}
 
 	override fun onPurchase(purchaser: Player) {
+		super.onPurchase(purchaser)
 		PlayerSoldShip.delete(id)
 
 		val name: String = when (val region = Regions.find(purchaser.location).firstOrNull()) {
