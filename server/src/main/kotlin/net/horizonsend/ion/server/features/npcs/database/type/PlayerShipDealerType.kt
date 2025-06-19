@@ -2,16 +2,23 @@ package net.horizonsend.ion.server.features.npcs.database.type
 
 import net.citizensnpcs.api.npc.NPC
 import net.citizensnpcs.trait.LookClose
+import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.starships.PlayerSoldShip
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.text.legacyAmpersand
+import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
 import net.horizonsend.ion.server.features.gui.custom.settings.button.general.collection.CollectionModificationButton
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.Region
+import net.horizonsend.ion.server.features.nations.region.types.RegionRentalZone
+import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
+import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTopLevel
 import net.horizonsend.ion.server.features.npcs.database.UniversalNPCWrapper
 import net.horizonsend.ion.server.features.npcs.database.metadata.PlayerShipDealerMetadata
@@ -20,7 +27,9 @@ import net.horizonsend.ion.server.features.starship.dealers.PlayerCreatedDealerS
 import net.horizonsend.ion.server.gui.invui.misc.shipdealer.PlayerShipDealerGUI
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchSLPlayers
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.`in`
@@ -70,6 +79,46 @@ object PlayerShipDealerType : UniversalNPCType<PlayerShipDealerMetadata> {
 
 	override fun canUseType(player: Player, metaData: PlayerShipDealerMetadata): Boolean {
 		return true
+	}
+
+	override fun checkLocation(player: Player, location: Location): Boolean {
+		val regions = Regions.find(location).sortedByDescending { it.priority }
+		val cached = PlayerCache[player]
+
+		// Go down the priority level, if any allow then it overrides the ones below
+		for (region in regions) {
+			when (region) {
+				is RegionTerritory -> {
+					if (!TradeCities.isCity(region)) continue
+
+					val settlement = region.settlement
+					if (settlement != null) {
+						val cachedSettlement = SettlementCache[settlement]
+						if (player.slPlayerId == cachedSettlement.leader) return true
+						if (SettlementRole.hasPermission(player.slPlayerId, SettlementRole.Permission.MANAGE_NPCS)) return true
+					}
+				}
+				is RegionSettlementZone -> {
+					if (!TradeCities.isCity(Regions[region.territory])) continue
+
+					if (region.owner == player.slPlayerId) return true
+					if (region.trustedPlayers?.contains(player.slPlayerId) == true) return true
+					if (region.trustedSettlements?.contains(cached.settlementOid) == true) return true
+					if (region.trustedNations?.contains(cached.nationOid) == true) return true
+
+					TODO()
+				}
+				is RegionRentalZone -> {
+					if (region.owner == player.slPlayerId) return true
+					if (region.trustedPlayers.contains(player.slPlayerId)) return true
+					if (region.trustedSettlements.contains(cached.settlementOid)) return true
+					if (region.trustedNations.contains(cached.nationOid)) return true
+				}
+				else -> continue
+			}
+		}
+
+		return false
 	}
 
 	override fun handleClick(player: Player, npc: NPC, metaData: PlayerShipDealerMetadata) {
