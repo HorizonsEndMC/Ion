@@ -16,7 +16,7 @@ import java.time.Duration
 
 class NPCDealerShip(
 	val serialized: SerializableDealerShipInformation
-) : DealerShip(serialized.displayName.miniMessage(), Duration.ofMillis(serialized.cooldown), serialized.protectionCanBypass, serialized.shipClass.actualType) {
+) : DealerShip(serialized.displayName.miniMessage(), Duration.ofMillis(serialized.cooldown), serialized.price, serialized.protectionCanBypass, serialized.shipClass.actualType) {
 
 	private val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("${serialized.schematicName}.schem")
 
