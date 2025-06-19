@@ -73,11 +73,11 @@ abstract class Inboxes : IonComponent() {
 		}
 	}
 
-	fun sendServerMessages(recipient: SLPlayerId, subject: Component?, content: Component) {
+	fun sendServerMessage(recipient: SLPlayerId, subject: Component?, content: Component) {
 		sendMessage(recipient, HORIZONS_END_BRACKETED, subject, content)
 	}
 
-	fun sendServerMessage(recipients: Iterable<SLPlayerId>, subject: Component?, content: Component) {
+	fun sendServerMessages(recipients: Iterable<SLPlayerId>, subject: Component?, content: Component) {
 		sendMessages(recipients, HORIZONS_END_BRACKETED, subject, content)
 	}
 
