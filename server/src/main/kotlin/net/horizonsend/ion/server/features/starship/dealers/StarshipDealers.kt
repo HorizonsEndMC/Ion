@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.gui.sendWithdrawMessage
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
@@ -68,6 +69,8 @@ object StarshipDealers : IonServerComponent(true) {
 				player.teleport(target.add(0.0, 1.0, 0.0).toCenterLocation())
 
 				player.withdrawMoney(ship.price)
+				sendWithdrawMessage(player, ship.price)
+
 				ship.onPurchase(player)
 
 				shipLastBuy[player.uniqueId] = currentTimeMillis()

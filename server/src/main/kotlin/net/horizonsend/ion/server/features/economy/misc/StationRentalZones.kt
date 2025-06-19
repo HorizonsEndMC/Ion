@@ -196,7 +196,7 @@ object StationRentalZones : IonServerComponent() {
 			if (zoneRegion.rentBalance < 0) {
 				val owner = zoneRegion.owner ?: continue
 
-				ServerInboxes.sendServerMessages(owner, text("Failure to Pay Rent", RED), template(text("Your rental zone {0} at {1} was unclaimed due to unpaid rent!", RED), zoneRegion.name, zoneRegion.getParentRegion().name))
+				ServerInboxes.sendServerMessage(owner, text("Failure to Pay Rent", RED), template(text("Your rental zone {0} at {1} was unclaimed due to unpaid rent!", RED), zoneRegion.name, zoneRegion.getParentRegion().name))
 
 				StationRentalZone.removeOwner(zoneRegion.id)
 

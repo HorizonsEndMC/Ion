@@ -10,11 +10,9 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.GsonComponentString
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.gson
+import net.horizonsend.ion.common.utils.text.gui.sendWithdrawMessage
 import net.horizonsend.ion.common.utils.text.miniMessage
-import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -29,7 +27,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.createData
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
-import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
@@ -76,8 +73,8 @@ object SellStarshipCommand : SLCommand() {
 		Tasks.sync {
 			StarshipDestruction.vanish(starship, false) { vanishResult ->
 				if (vanishResult) {
-					sender.sendMessage(template(Component.text("{0} has been withdrawn from your account.", HE_MEDIUM_GRAY), listingTax.toCreditComponent()))
 					sender.withdrawMoney(listingTax)
+					sendWithdrawMessage(sender, listingTax)
 
 					val parsedDescription = description?.let(miniMessage::deserialize)?.wrap(150)?.map(gson::serialize)
 					createSoldShip(sender, territory.id, className, shipName, parsedDescription, price, pilotLoc, starship.type, blockCount, clipboardData)
