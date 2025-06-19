@@ -78,7 +78,7 @@ object NationsMasterTasks : IonServerComponent() {
 		val territoryId: Oid<Territory> = results[Settlement::territory]
 		val territory: RegionTerritory = Regions[territoryId]
 
-		ServerInboxes.sendServerMessage(
+		ServerInboxes.sendServerMessages(
 			recipients = Settlement.getMembers(settlementId),
 			subject = Component.text("Settlement Purged.", NamedTextColor.RED),
 			content = template(Component.text("Your settlement, {0} was purged due to 30 days of complete inactivity.", NamedTextColor.RED), name)
@@ -96,7 +96,7 @@ object NationsMasterTasks : IonServerComponent() {
 	fun purgeNation(nationId: Oid<Nation>, sendMessage: Boolean) {
 		val nation = Nation.findById(nationId) ?: return
 
-		ServerInboxes.sendServerMessage(
+		ServerInboxes.sendServerMessages(
 			recipients = Nation.getMembers(nationId),
 			subject = Component.text("Nation Purged.", NamedTextColor.RED),
 			content = template(Component.text("Your nation, {0} was purged due to the capital settlement being inactive for 30 days.", NamedTextColor.RED), nation.name)
