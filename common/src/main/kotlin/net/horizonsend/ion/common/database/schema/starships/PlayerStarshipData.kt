@@ -36,6 +36,8 @@ data class PlayerStarshipData(
 	override var lastUsed: Long = System.currentTimeMillis(),
 	override var isLockEnabled: Boolean = false,
 
+	var disallowBlueprinting: Boolean = false,
+
 	var shipDealerInformation: ShipDealerInformation? = null
 ) : StarshipData {
 	companion object : StarshipDataCompanion<PlayerStarshipData>(
