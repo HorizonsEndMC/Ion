@@ -23,12 +23,11 @@ class PlayerCreatedDealerShip(
 	displayName: Component,
 	val description: List<Component>,
 	val size: Int,
-	val price: Double,
-	cooldown: Duration,
+	price: Double,
 	protectionCanBypass: Boolean,
 	starshipType: StarshipType,
 	val creationDate: Date,
-) : DealerShip(displayName, cooldown, protectionCanBypass, starshipType) {
+) : DealerShip(displayName, Duration.ZERO, price, protectionCanBypass, starshipType) {
 	override fun getClipboard(): Clipboard {
 		return PlayerSoldShip.findById(id)!!.loadClipboard()
 	}
@@ -57,7 +56,6 @@ class PlayerCreatedDealerShip(
 			description = ship.description?.map(gson::deserialize) ?: listOf(),
 			size = ship.size,
 			price = ship.price,
-			cooldown = Duration.ofMillis(1L),
 			protectionCanBypass = false,
 			starshipType = ship.type.actualType,
 			creationDate = ship.creationTime

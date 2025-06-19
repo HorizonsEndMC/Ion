@@ -26,12 +26,16 @@ import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
+import org.litote.kmongo.and
+import org.litote.kmongo.eq
+import org.litote.kmongo.ne
 import kotlin.math.roundToInt
 
 @CommandAlias("starshipsell")
 object SellStarshipCommand : SLCommand() {
 	@Default
 	fun onSellStarship(sender: Player, className: String, shipName: String, price: Double, @Optional description: String?, @Optional priceConfirm: Double?) = asyncCommand(sender) {
+		requireEconomyEnabled()
 		requireNotInCombat(sender)
 		val starship = getStarshipPiloting(sender)
 
@@ -51,6 +55,10 @@ object SellStarshipCommand : SLCommand() {
 		val clipboardData = Blueprint.createData(clipboard)
 
 		pilotLoc = Vec3i(pilotLoc.x - clipboard.origin.x(), pilotLoc.y - clipboard.origin.y(), pilotLoc.z - clipboard.origin.z())
+
+		failIf(PlayerSoldShip.any(and(PlayerSoldShip::owner eq sender.slPlayerId, PlayerSoldShip::className eq className, PlayerSoldShip::type ne starship.type.name))) {
+			"All ships of the same class must be of the same type!"
+		}
 
 		Tasks.sync {
 			StarshipDestruction.vanish(starship, false) { vanishResult ->
