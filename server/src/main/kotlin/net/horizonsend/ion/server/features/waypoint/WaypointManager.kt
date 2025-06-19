@@ -239,7 +239,7 @@ object WaypointManager : IonServerComponent() {
      */
     private fun populateMainGraphVertices() {
         // add all planets as vertices to mainGraph
-        for (planet in Space.getAllPlanets()) {
+        for (planet in Space.getAllPlanets().filter { it.spaceWorld != null }) {
             val vertex = WaypointVertex(
                 name = planet.name,
                 icon = SidebarIcon.PLANET_ICON.text.first(),

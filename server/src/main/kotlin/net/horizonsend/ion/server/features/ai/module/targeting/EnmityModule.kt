@@ -76,7 +76,12 @@ open class EnmityModule(
 	 *  this is used shooting at multiple targets only
 	 */
 	fun findTargets() : List<AITarget> {
-		return findTargetsAnywhere().filter { it.getWorld() == world && getOpponentDistance(it)!! < config.aggroRange}
+		if (difficulty.doNavigation) {
+			return findTargetsAnywhere().filter { it.getWorld() == world}
+		}
+		else {
+			return findTargetsAnywhere().filter { it.getWorld() == world && getOpponentDistance(it)!! < config.aggroRange}
+		}
 	}
 
 	/**
@@ -294,7 +299,7 @@ open class EnmityModule(
 
 		override fun equals(other: Any?): Boolean {
 			if (this === other) return true
-			if (other is StarshipTarget) {
+			if (other is AITarget) {
 				return target == other
 			}
 			if (javaClass != other?.javaClass) return false

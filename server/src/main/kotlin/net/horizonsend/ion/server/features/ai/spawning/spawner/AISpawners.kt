@@ -1039,7 +1039,7 @@ object AISpawners : IonServerComponent(true) {
 		registerGlobalSpawner(
 			LazyWorldSpawner(
 				id = "DEBUG_CONVOY_GLOBAL",
-				worldFilter      = { true },
+				worldFilter      = { it.hasFlag(SPACE_WORLD) },
 				mechanicSupplier = {
 					DEBUG_CONVOY_GLOBAL.spawnMechanicBuilder(anyCtx())
 				}

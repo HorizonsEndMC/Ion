@@ -71,23 +71,31 @@ class DifficultyModule(
 
 	companion object {
 
-		val maxDifficulty = 2
+		val maxDifficulty = 4
 		val minDifficulty = 0
 
 		fun regularSpawnDifficultySupplier(world: String) : Supplier<Int> {
+			//println(world)
 			return when (world) {
 				"Trench" -> WeightedIntegerAmount(setOf(
 					Pair(0,0.15),
 					Pair(1,0.35),
-					Pair(2,0.5)))
+					Pair(2,0.35),
+					Pair(3,0.10)
+				))
 				"AU-0821" -> WeightedIntegerAmount(setOf(
 					Pair(0,0.0),
-					Pair(1,0.4),
-					Pair(2,0.6)))
+					Pair(1,0.1),
+					Pair(2,0.55),
+					Pair(3,0.25),
+					Pair(4,0.1),
+				))
 				"Horizon" -> WeightedIntegerAmount(setOf(
-					Pair(0,0.3),
-					Pair(1,0.4),
-					Pair(2,0.4)))
+					Pair(0,0.2),
+					Pair(1,0.35),
+					Pair(2,0.4),
+					Pair(3,0.05),
+					))
 				"Asteri" -> WeightedIntegerAmount(setOf(
 					Pair(0,0.5),
 					Pair(1,0.35),

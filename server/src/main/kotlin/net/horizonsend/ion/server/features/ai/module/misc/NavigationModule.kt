@@ -179,25 +179,31 @@ class NavigationModule(
 		}
 
 		if (targetLocation == null) { // no target, nothing to navigate to
+			starship.debug("No target to navigate towards")
 			navigate = false
 			setOverride(null)
 			return
 		}
-		if (targetLocation!!.getWorld() != world) { //need to navigate to a different world
+		if (targetLocation!!.world != world) { //need to navigate to a different world
+			starship.debug("target in different world")
 			navigate = true
 			return
 		}
 		val dist = targetLocation!!.toVector().distance(location.toVector())
 		if (dist >= engageHyperdiveRange && world.hasFlag(WorldFlag.SPACE_WORLD)) {
+			starship.debug("target far away")
 			navigate = true
 			return
 		}
 		if (!world.hasFlag(WorldFlag.HYPERSPACE_WORLD)) {
+			starship.debug("target is close by")
 			navigate = false //target is close enough to not require navigation
 			hyperdriveNavigate = false
 			setOverride(null)
 			return
-		} else {} // not sure what the other condition should be
+		} else {
+			starship.debug("weird final condition met!")
+		} // not sure what the other condition should be
 
 	}
 
