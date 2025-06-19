@@ -2,8 +2,11 @@ package net.horizonsend.ion.server.gui.invui.misc.shipdealer
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.npcs.database.UniversalNPCWrapper
+import net.horizonsend.ion.server.features.npcs.database.metadata.PlayerShipDealerMetadata
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.dealers.PlayerCreatedDealerShip
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
@@ -14,9 +17,10 @@ import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.Item
+import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.window.Window
 
-class PlayerShipDealerGUI(viewer: Player, val ships: List<PlayerCreatedDealerShip>) : ListInvUIWindow<Map.Entry<PlayerShipDealerGUI.ShipClass, List<PlayerCreatedDealerShip>>>(viewer) {
+class PlayerShipDealerGUI(viewer: Player, val npc: UniversalNPCWrapper<*, PlayerShipDealerMetadata>, val ships: List<PlayerCreatedDealerShip>) : ListInvUIWindow<Map.Entry<PlayerShipDealerGUI.ShipClass, List<PlayerCreatedDealerShip>>>(viewer) {
 	override val listingsPerPage: Int = 18
 
 	override fun generateEntries(): List<Map.Entry<ShipClass, List<PlayerCreatedDealerShip>>> {
@@ -35,12 +39,13 @@ class PlayerShipDealerGUI(viewer: Player, val ships: List<PlayerCreatedDealerShi
 	override fun buildWindow(): Window {
 		val gui = PagedGui.items()
 			.setStructure(
-				"x . . . . . . . .",
+				"x . . . . . . . s",
 				"# # # # # # # # #",
 				"# # # # # # # # #",
 				"< . . . . . . . >",
 			)
 			.addIngredient('x', parentOrBackButton())
+			.addIngredient('s', settingsButton)
 			.addIngredient('<', GuiItems.PageLeftItem())
 			.addIngredient('>', GuiItems.PageRightItem())
 			.handlePaginatedMenu('#')
@@ -63,6 +68,14 @@ class PlayerShipDealerGUI(viewer: Player, val ships: List<PlayerCreatedDealerShi
 		if (maxPageNumber > 1) return withPageNumber(text)
 
 		return withPageNumber(text)
+	}
+
+	private val settingsButton = ItemProvider {
+		if (npc.metaData.owner != viewer.uniqueId) return@ItemProvider GuiItem.EMPTY.makeItem(Component.empty())
+
+		return@ItemProvider GuiItem.GEAR.makeItem(Component.text("Manage NPC"))
+	}.makeGuiButton { _, _ ->
+		if (npc.metaData.owner == viewer.uniqueId) npc.manage(viewer)
 	}
 
 	data class ShipClass(val name: String, val type: StarshipType)

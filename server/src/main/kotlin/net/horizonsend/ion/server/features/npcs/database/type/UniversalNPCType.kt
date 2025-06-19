@@ -90,7 +90,7 @@ interface UniversalNPCType<T: UniversalNPCMetadata> {
 	/**
 	 * Any code to be run when a player right-clicks on this NPC.
 	 **/
-	fun handleClick(player: Player, npc: NPC, metaData: T)
+	fun handleClick(player: Player, npc: UniversalNPCWrapper<*, T>, metaData: T)
 
 	/**
 	 * Any code handle the management of this NPC. The edited metadata is accepted through the consumer, then applied.
