@@ -11,5 +11,6 @@ import java.util.UUID
 data class PlayerShipDealerMetadata(
 	val owner: @Serializable(with = UUIDSerializer::class) UUID?,
 	val sellers: Set<@Serializable(with = UUIDSerializer::class) UUID> = setOf(),
-	val name: @Serializable(with = ComponentKSerializer::class) Component = Component.text("Ship Dealer", HE_LIGHT_ORANGE)
+	val name: @Serializable(with = ComponentKSerializer::class) Component = Component.text("Ship Dealer", HE_LIGHT_ORANGE),
+	val titleLine: @Serializable(with = ComponentKSerializer::class) Component? = null
 ) : UniversalNPCMetadata
