@@ -42,7 +42,7 @@ object ServerShipDealerType : UniversalNPCType<ServerShipDealerMetadata> {
 		return true
 	}
 
-	override fun handleClick(player: Player, npc: NPC, metaData: ServerShipDealerMetadata) {
+	override fun handleClick(player: Player, npc: UniversalNPCWrapper<*, ServerShipDealerMetadata>, metaData: ServerShipDealerMetadata) {
 		ShipDealerGUI(player, ConfigurationFiles.serverConfiguration().soldShips.map(::NPCDealerShip)).openGui()
 	}
 
