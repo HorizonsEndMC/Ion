@@ -7,7 +7,6 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
-import net.horizonsend.ion.server.features.npcs.NPCManager
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
@@ -25,16 +24,10 @@ import java.lang.System.currentTimeMillis
 import java.util.UUID
 
 object StarshipDealers : IonServerComponent(true) {
-	val manager = NPCManager(log, "StarshipDealerNPCs")
-
 	private val lastBuyTimes = mutableMapOf<DealerShip, MutableMap<UUID, Long>>()
 
-	override fun onEnable() {
-		manager.enableRegistry()
-	}
+	fun doPurchase(player: Player, ship: DealerShip) {
 
-	override fun onDisable() {
-		manager.disableRegistry()
 	}
 
 	fun loadShip(player: Player, ship: DealerShip) {
@@ -74,9 +67,8 @@ object StarshipDealers : IonServerComponent(true) {
 				val vec3i = Vec3i(target.blockX, target.blockY, target.blockZ)
 				player.teleport(target.add(0.0, 1.0, 0.0).toCenterLocation())
 
-				if (ship is NPCDealerShip) Tasks.sync {
-					player.withdrawMoney(ship.serialized.price)
-				}
+				player.withdrawMoney(ship.price)
+				ship.onPurchase(player)
 
 				shipLastBuy[player.uniqueId] = currentTimeMillis()
 				lastBuyTimes[ship] = shipLastBuy
