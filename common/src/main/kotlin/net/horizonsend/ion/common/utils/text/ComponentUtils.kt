@@ -26,38 +26,11 @@ import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import net.kyori.adventure.translation.GlobalTranslator
 import net.kyori.adventure.translation.TranslationStore
 import java.text.MessageFormat
 import java.util.Locale
 import java.util.function.Consumer
-
-typealias MiniMessageString = String
-typealias GsonComponentString = String
-
-// Serialization
-/** Skip building the serializer */
-val miniMessage = MiniMessage.miniMessage()
-
-val legacyAmpersand = LegacyComponentSerializer.legacyAmpersand()
-
-val gson = GsonComponentSerializer.gson()
-
-/** Serializes the component to minimessage format */
-fun miniMessage(component: Component): String = miniMessage.serialize(component)
-
-/** Converts the provided MiniMessage string to a component using the MiniMessage serializer. */
-fun String.miniMessage() = miniMessage.deserialize(this)
-
-/** Skip building the serializer */
-val plainText = PlainTextComponentSerializer.plainText()
-
-/** Converts the provided Component to a string using the PlainText serializer. */
-fun ComponentLike.plainText(): String = plainText.serialize(this.asComponent())
 
 // Component manipulation
 operator fun Component.plus(other: ComponentLike): Component = this.append(other)
