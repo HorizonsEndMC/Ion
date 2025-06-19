@@ -92,6 +92,8 @@ object IonNPCCommand : SLCommand() {
 
 		if (sender.world.uid != selected.npc.storedLocation.world.uid) fail { "You can't move a NPC to another world!" }
 
+		failIf(!selected.type.checkLocation(sender, sender.location)) { "You can't move that NPC here!" }
+
 		UniversalNPC.updateById(selected.oid, combine(
 			setValue(UniversalNPC::x, sender.location.x),
 			setValue(UniversalNPC::y, sender.location.y),

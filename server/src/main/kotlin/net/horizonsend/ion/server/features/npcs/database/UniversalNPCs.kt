@@ -80,6 +80,11 @@ object UniversalNPCs : IonServerComponent(true) {
 			return false
 		}
 
+		if (!type.checkLocation(player, location)) {
+			player.userError("You cannot use this NPC type in this location!")
+			return false
+		}
+
 		if (!type.canUseType(player, metadata)) {
 			player.userError("You cannot use this NPC type!")
 			return false

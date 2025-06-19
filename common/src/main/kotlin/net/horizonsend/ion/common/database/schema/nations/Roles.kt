@@ -164,6 +164,7 @@ data class SettlementRole(
 		DELETE_STATION,
 		TAKE_SHIP_OWNERSHIP,
 		BRODCAST,
+		MANAGE_NPCS,
 	}
 }
 
