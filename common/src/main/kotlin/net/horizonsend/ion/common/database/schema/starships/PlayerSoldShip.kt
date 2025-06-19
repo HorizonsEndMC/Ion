@@ -18,6 +18,7 @@ import java.util.Date
 
 class PlayerSoldShip(
 	override val _id: Oid<PlayerSoldShip>,
+	val creationTerritory: Oid<*>,
 	val creationTime: Date = Date(System.currentTimeMillis()),
 
 	val owner: SLPlayerId,
@@ -52,6 +53,7 @@ class PlayerSoldShip(
 
 		fun create(
 			owner: SLPlayerId,
+			territory: Oid<*>,
 			className: String,
 			name: String,
 			description: List<GsonComponentString>?,
@@ -65,6 +67,7 @@ class PlayerSoldShip(
 
 			col.insertOne(sess, PlayerSoldShip(
 				_id = id,
+				creationTerritory = territory,
 				owner = owner,
 				className = className,
 				name = name,
