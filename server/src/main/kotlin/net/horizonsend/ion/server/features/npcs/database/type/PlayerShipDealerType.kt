@@ -1,20 +1,27 @@
 package net.horizonsend.ion.server.features.npcs.database.type
 
 import net.citizensnpcs.api.npc.NPC
+import net.citizensnpcs.trait.HologramTrait
 import net.citizensnpcs.trait.LookClose
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.UniversalNPC
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.starships.PlayerSoldShip
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.legacyAmpersand
+import net.horizonsend.ion.common.utils.text.serialize
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.gui.GuiItem
+import net.horizonsend.ion.server.features.gui.GuiItems
+import net.horizonsend.ion.server.features.gui.custom.settings.SettingsGuiItem
+import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
 import net.horizonsend.ion.server.features.gui.custom.settings.button.general.ComponentSupplierConsumerInputButton
+import net.horizonsend.ion.server.features.gui.custom.settings.button.general.NullableComponentSupplierConsumerInputButton
 import net.horizonsend.ion.server.features.gui.custom.settings.button.general.collection.CollectionModificationButton
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -29,9 +36,11 @@ import net.horizonsend.ion.server.features.npcs.database.metadata.UniversalNPCMe
 import net.horizonsend.ion.server.features.starship.dealers.PlayerCreatedDealerShip
 import net.horizonsend.ion.server.gui.invui.misc.shipdealer.PlayerShipDealerGUI
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchSLPlayers
+import net.horizonsend.ion.server.miscellaneous.utils.Skins
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
@@ -61,6 +70,13 @@ object PlayerShipDealerType : UniversalNPCType<PlayerShipDealerMetadata> {
 
 		Tasks.sync {
 			npc.npc.name = legacyAmpersand.serialize(deserialized.name)
+
+			npc.npc.getOrAddTrait(HologramTrait::class.java).apply {
+				val newLine = deserialized.titleLine
+
+				if (newLine == null) clear()
+				else setLine(0, newLine.serialize(legacyAmpersand))
+			}
 		}
 	}
 
@@ -73,6 +89,12 @@ object PlayerShipDealerType : UniversalNPCType<PlayerShipDealerMetadata> {
 		npc.getOrAddTrait(LookClose::class.java).apply {
 			lookClose(true)
 			setRealisticLooking(true)
+		}
+
+		if (metaData.titleLine != null) {
+			npc.getOrAddTrait(HologramTrait::class.java).apply {
+				setLine(0, metaData.titleLine.serialize(legacyAmpersand))
+			}
 		}
 	}
 
@@ -141,6 +163,7 @@ object PlayerShipDealerType : UniversalNPCType<PlayerShipDealerMetadata> {
 		// A copy is maintained since the DB changes take time to propogate. It's possible for there to be desync but its not the end of the world.
 
 		var npcName = managed.metaData.name
+		var npcTitleLine = managed.metaData.titleLine
 
 		createSettingsPage(
 			player,
@@ -171,7 +194,37 @@ object PlayerShipDealerType : UniversalNPCType<PlayerShipDealerMetadata> {
 				buttonDescription = "Change the NPC's name.",
 				icon = GuiItem.LIST,
 				defaultValue = Component.text("Ship Dealer", HE_LIGHT_ORANGE)
-			)
+			),
+			NullableComponentSupplierConsumerInputButton(
+				valueSupplier = { npcTitleLine },
+				valueConsumer = {
+					npcTitleLine = it
+					newMetaDataConsumer.accept(managed.metaData.copy(titleLine = it))
+				},
+				inputDescription = Component.text("Enter new NPC title."),
+				name = Component.text("Change Title"),
+				buttonDescription = "Change the title line.",
+				icon = GuiItem.LIST,
+				defaultValue = Component.empty()
+			),
+			object : SettingsGuiItem {
+				override fun getFirstLine(player: Player): Component = Component.text("Change Skin", NamedTextColor.BLUE)
+				override fun getSecondLine(player: Player): Component = Component.empty()
+
+				override fun makeButton(pageGui: SettingsPageGui): GuiItems.AbstractButtonItem {
+					return GuiItem.LIST.makeButton(pageGui, Component.text("Change Skin"), "Click to change the NPC's skin") { player, _, parent ->
+						searchSLPlayers(player) { id ->
+							Tasks.async {
+								runCatching {
+									val skinData: Skins.SkinData = Skins[id.uuid] ?: return@async
+									UniversalNPC.updateSkinData(managed.oid, skinData.toBytes())
+								}
+								parent.openGui()
+							}
+						}
+					}
+				}
+			}
 		).openGui()
 	}
 }

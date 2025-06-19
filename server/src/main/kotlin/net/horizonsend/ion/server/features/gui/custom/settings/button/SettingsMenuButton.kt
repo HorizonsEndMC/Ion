@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.PagedGui
 import java.util.function.Consumer
 
-abstract class SettingsMenuButton<T: Any>(
+abstract class SettingsMenuButton<T: Any?>(
 	val name: Component,
 	val buttonDescription: String,
 	val icon: GuiItem,
