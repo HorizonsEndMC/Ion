@@ -4,6 +4,8 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.restrictedMiniMessageSerializer
+import net.horizonsend.ion.common.utils.text.serialize
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
@@ -15,7 +17,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
 import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
 import net.horizonsend.ion.server.miscellaneous.utils.placeSchematicEfficiently
-import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import org.bukkit.Location
 import org.bukkit.entity.Player
 
@@ -51,7 +52,7 @@ object StarshipDealers : IonServerComponent(false) {
 
 				ship.onPurchase(player)
 
-				BlueprintCommand.tryPilot(player, vec3i, ship.starshipType, miniMessage().serialize(ship.displayName)) { starship ->
+				BlueprintCommand.tryPilot(player, vec3i, ship.starshipType, ship.displayName.serialize(restrictedMiniMessageSerializer)) { starship ->
 					ship.postPilot(player, starship)
 				}
 

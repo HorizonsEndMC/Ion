@@ -6,7 +6,8 @@ import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.utils.text.miniMessage
+import net.horizonsend.ion.common.utils.text.deserializeComponent
+import net.horizonsend.ion.common.utils.text.restrictedMiniMessageSerializer
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.Starship
@@ -14,7 +15,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
-import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -24,7 +24,7 @@ import java.util.UUID
 
 class NPCDealerShip(
 	val serialized: SerializableDealerShipInformation,
-) : DealerShip(serialized.displayName.miniMessage(), serialized.price, serialized.protectionCanBypass, serialized.shipClass.actualType) {
+) : DealerShip(deserializeComponent(serialized.displayName, restrictedMiniMessageSerializer), serialized.price, serialized.protectionCanBypass, serialized.shipClass.actualType) {
 	val cooldown: Duration = Duration.ofMillis(serialized.cooldown)
 
 	private val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("${serialized.schematicName}.schem")
@@ -37,7 +37,7 @@ class NPCDealerShip(
 		return ItemStack(serialized.guiMaterial)
 			.updateDisplayName(displayName)
 			.updateLore(serialized.lore.map { loreLine ->
-				MiniMessage.miniMessage().deserialize(loreLine)
+				deserializeComponent(loreLine, restrictedMiniMessageSerializer)
 			})
 
 	}
