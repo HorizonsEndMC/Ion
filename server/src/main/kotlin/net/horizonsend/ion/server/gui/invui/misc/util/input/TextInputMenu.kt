@@ -41,7 +41,7 @@ import java.util.function.Supplier
 class TextInputMenu<T : Any>(
     val player: Player,
     val titleSupplier: Supplier<Component>,
-    val descriptionSupplier: Supplier<Component> = Supplier { Component.empty() },
+    val descriptionSupplier: Supplier<Component> = Supplier { empty() },
     val backButtonHandler: ((Player) -> Unit)?,
     val inputValidator: InputValidator<T>,
     val componentTransformer: (T) -> Component = { it.toComponent() },
@@ -109,7 +109,7 @@ class TextInputMenu<T : Any>(
         )
 		.build()
 
-	private val backButton = GuiItems.createButton(GuiItem.CANCEL.makeItem(Component.text("Go Back"))) { _, player, _ ->
+	private val backButton = GuiItems.createButton(GuiItem.CANCEL.makeItem(text("Go Back"))) { _, player, _ ->
         player.closeInventory()
         backButtonHandler?.invoke(player)
     }
@@ -124,7 +124,7 @@ class TextInputMenu<T : Any>(
 		}
 
 		private fun getSuccessState(result: ValidatorResult.ValidatorSuccess<T>): ItemStack {
-			val base = GuiItem.CHECKMARK.makeItem().updateDisplayName(Component.text("Confirm", NamedTextColor.GREEN))
+			val base = GuiItem.CHECKMARK.makeItem().updateDisplayName(text("Confirm", NamedTextColor.GREEN))
 
 			if (loreOverride != null) {
 				val clone = loreOverride!!.toList()
@@ -149,10 +149,10 @@ class TextInputMenu<T : Any>(
 						.map { parent.componentTransformer.invoke(it) }
 						.plus(
 							if (more) template(
-                            	Component.text("{0} more results", NamedTextColor.WHITE),
-                            	bracketed(Component.text(result.results.size - 5, NamedTextColor.AQUA))
+                            	text("{0} more results", NamedTextColor.WHITE),
+                            	bracketed(text(result.results.size - 5, NamedTextColor.AQUA))
                         	)
-							else Component.empty()
+							else empty()
                         )
 				)
 			}
@@ -162,7 +162,7 @@ class TextInputMenu<T : Any>(
 
 		private fun getFailureState(result: ValidatorResult.FailureResult<T>): ItemStack {
 			val base = ItemStack(Material.BARRIER)
-				.updateDisplayName(Component.text("Invalid Input!", NamedTextColor.RED))
+				.updateDisplayName(text("Invalid Input!", NamedTextColor.RED))
 
 			if (loreOverride != null) {
 				val clone = loreOverride!!.toList()
@@ -197,7 +197,7 @@ class TextInputMenu<T : Any>(
 	companion object {
 		fun <T : Any> Player.anvilInputText(
             prompt: Component,
-            description: Component = Component.empty(),
+            description: Component = empty(),
             backButtonHandler: ((Player) -> Unit)? = null,
             componentTransformer: (T) -> Component = { it.toComponent() },
             inputValidator: InputValidator<T>,
@@ -213,7 +213,7 @@ class TextInputMenu<T : Any>(
 
 		fun <T : Any> Player.anvilInputText(
             prompt: Supplier<Component>,
-            description: Supplier<Component> = Supplier { Component.empty() },
+            description: Supplier<Component> = Supplier { empty() },
             backButtonHandler: ((Player) -> Unit)? = null,
             componentTransformer: (T) -> Component = { it.toComponent() },
             inputValidator: InputValidator<T>,
@@ -234,7 +234,7 @@ class TextInputMenu<T : Any>(
             entries: Collection<T>,
             searchTermProvider: (T) -> Collection<String>,
             prompt: Component,
-            description: Component = Component.empty(),
+            description: Component = empty(),
             backButtonHandler: ((Player) -> Unit)? = null,
             componentTransformer: (T) -> Component = { it.toComponent() },
             itemTransformer: (T) -> ItemStack = { GuiItem.RIGHT.makeItem(it.toComponent()) },
@@ -254,7 +254,7 @@ class TextInputMenu<T : Any>(
             entries: Collection<T>,
             searchTermProvider: (T) -> Collection<String>,
             prompt: Supplier<Component>,
-            description: Supplier<Component> = Supplier { Component.empty() },
+            description: Supplier<Component> = Supplier { empty() },
             backButtonHandler: ((Player) -> Unit)? = null,
             componentTransformer: (T) -> Component = { it.toComponent() },
             itemTransformer: (T) -> ItemStack = { GuiItem.RIGHT.makeItem(it.toComponent()) },
@@ -282,8 +282,8 @@ class TextInputMenu<T : Any>(
                                         verticalShift = -11
                                     )
                                 )
-                                .add(Component.text("Search Results For:"), line = -2, verticalShift = -4)
-                                .add(Component.text("\"$search\""), line = -1, verticalShift = -2)
+                                .add(text("Search Results For:"), line = -2, verticalShift = -4)
+                                .add(text("\"$search\""), line = -1, verticalShift = -2)
                                 .build()
 
                             ItemMenu.selector(
