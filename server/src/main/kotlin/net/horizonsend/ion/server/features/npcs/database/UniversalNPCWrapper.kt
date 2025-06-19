@@ -27,6 +27,6 @@ class UniversalNPCWrapper<T : UniversalNPCType<M>, M : UniversalNPCMetadata>(val
 	}
 
 	fun handleClick(player: Player) {
-		type.handleClick(player, npc, metaData)
+		type.handleClick(player, this, metaData)
 	}
 }

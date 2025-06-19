@@ -8,10 +8,13 @@ import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.starships.PlayerSoldShip
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.economy.city.TradeCities
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
+import net.horizonsend.ion.server.features.gui.custom.settings.button.general.ComponentSupplierConsumerInputButton
 import net.horizonsend.ion.server.features.gui.custom.settings.button.general.collection.CollectionModificationButton
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.nations.region.Regions
@@ -121,7 +124,7 @@ object PlayerShipDealerType : UniversalNPCType<PlayerShipDealerMetadata> {
 		return false
 	}
 
-	override fun handleClick(player: Player, npc: NPC, metaData: PlayerShipDealerMetadata) {
+	override fun handleClick(player: Player, npc: UniversalNPCWrapper<*, PlayerShipDealerMetadata>, metaData: PlayerShipDealerMetadata) {
 		Tasks.async {
 			val territories = Regions.find(player.location).filter { it is RegionTopLevel }.map(Region<*>::id)
 			val ships = PlayerSoldShip
@@ -129,13 +132,15 @@ object PlayerShipDealerType : UniversalNPCType<PlayerShipDealerMetadata> {
 				.toList()
 				.map(PlayerCreatedDealerShip::create)
 
-			PlayerShipDealerGUI(player, ships).openGui()
+			PlayerShipDealerGUI(player, npc, ships).openGui()
 		}
 	}
 
 	override fun manage(player: Player, managed: UniversalNPCWrapper<*, PlayerShipDealerMetadata>, newMetaDataConsumer: Consumer<PlayerShipDealerMetadata>) {
 		var sellersCopy = managed.metaData.sellers
 		// A copy is maintained since the DB changes take time to propogate. It's possible for there to be desync but its not the end of the world.
+
+		var npcName = managed.metaData.name
 
 		createSettingsPage(
 			player,
@@ -154,6 +159,18 @@ object PlayerShipDealerType : UniversalNPCType<PlayerShipDealerMetadata> {
 				getItemLines = { Component.text(SLPlayer.getName(it.slPlayerId) ?: "Null") to null },
 				playerModifier = { _, _ -> },
 				entryCreator = { consumer -> searchSLPlayers(player) { consumer.accept(it.uuid) } }
+			),
+			ComponentSupplierConsumerInputButton(
+				valueSupplier = { npcName },
+				valueConsumer = {
+					npcName = it
+					newMetaDataConsumer.accept(managed.metaData.copy(name = it))
+				},
+				inputDescription = Component.text("Enter new NPC name."),
+				name = Component.text("Rename NPC"),
+				buttonDescription = "Change the NPC's name.",
+				icon = GuiItem.LIST,
+				defaultValue = Component.text("Ship Dealer", HE_LIGHT_ORANGE)
 			)
 		).openGui()
 	}
