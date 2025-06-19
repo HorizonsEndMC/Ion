@@ -13,6 +13,7 @@ import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.world.block.BlockState
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
@@ -83,6 +84,10 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		// TODO: confirm accept rules
 		val slPlayerId = sender.slPlayerId
 		val starship = getStarshipPiloting(sender)
+
+		val starshipData = starship.data
+		failIf(starshipData is PlayerStarshipData && starshipData.disallowBlueprinting) { "You cannot blueprint ships you do did not create without explicit permission from the creator!" }
+
 		validateName(name)
 		var pilotLoc = Vec3i(sender.location)
 		failIf(!starship.isWithinHitbox(pilotLoc.x, pilotLoc.y, pilotLoc.z, 1)) {
