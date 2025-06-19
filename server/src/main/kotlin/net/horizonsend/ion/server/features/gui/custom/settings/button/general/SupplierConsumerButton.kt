@@ -7,7 +7,7 @@ import org.bukkit.entity.Player
 import java.util.function.Consumer
 import java.util.function.Supplier
 
-abstract class SupplierConsumerButton<T : Any>(
+abstract class SupplierConsumerButton<T : Any?>(
 	private val valueSupplier: Supplier<T>,
 	private val valueConsumer: Consumer<T>,
 	name: Component,
