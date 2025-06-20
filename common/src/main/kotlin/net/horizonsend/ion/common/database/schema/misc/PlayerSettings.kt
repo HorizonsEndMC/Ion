@@ -71,6 +71,11 @@ data class PlayerSettings(
 	var orderManageDefaultListView: Boolean = false,
 	var orderBrowseSort: Int = 0,
 	var orderManageSort: Int = 0,
+
+	var bazaarSellBrowseFilters: String = "{}",
+	var bazaarSellManageFilters: String = "{}",
+	var bazaarOrderBrowseFilters: String = "{}",
+	var bazaarOrderManageFilters: String = "{}",
 ) : DbObject {
 	companion object : DbObjectCompanion<PlayerSettings, StringId<PlayerSettings>>(PlayerSettings::class, setup = {})
 }

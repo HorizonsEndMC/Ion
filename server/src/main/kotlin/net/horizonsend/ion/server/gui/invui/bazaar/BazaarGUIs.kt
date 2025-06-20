@@ -9,10 +9,12 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.giveOrDropItems
+import net.horizonsend.ion.server.features.economy.bazaar.PlayerFilters
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
 import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedBooleanToggle
+import net.horizonsend.ion.server.features.gui.custom.settings.button.general.collection.CollectionModificationButton
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.BuyOrderMainMenu
@@ -30,6 +32,7 @@ import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.GridListingMa
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.ListListingManagementMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.ListingEditorMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.SellOrderCreationMenu
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.kyori.adventure.text.Component.text
@@ -177,5 +180,27 @@ object BazaarGUIs {
 		)
 
 		page.openGui(parent)
+	}
+
+	fun openBazaarFilterMenu(viewer: Player, data: PlayerFilters, parent: CommonGuiWrapper?) {
+		CollectionModificationButton(
+			viewer = viewer,
+			title = text("Filters List"),
+			description = "Configure Filters",
+			collectionSupplier = { data.filters },
+			modifiedConsumer = { data.filters = it.toList() },
+			toMutableCollection = { it.toMutableList() },
+			itemTransformer = { GuiItem.LIST.makeItem(text(PlayerFilters.getKey(it))) },
+			getItemLines = { text(PlayerFilters.getKey(it)) to it.description },
+			playerModifier = { filter, _ -> filter.getSettingsMenu(viewer, data).openGui(this) },
+			entryCreator = {
+				viewer.openSearchMenu(
+					PlayerFilters.getAllFilters().keys,
+					{ listOf(it) },
+					text("Enter filter name"),
+					backButtonHandler = { this.openGui() }
+				) { _, result -> it.accept(PlayerFilters.getFilter(result).generator.invoke()) }
+			}
+		).openGui(parent)
 	}
 }
