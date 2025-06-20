@@ -512,8 +512,8 @@ class AIFaction private constructor(
 			)
 			.addDifficultySuffix(0,"✦")
 			.addDifficultySuffix(1,"✦✦")
-			.addDifficultySuffix(2,"\uD83D")
-			.addDifficultySuffix(3,"\uD83D\uD83D")
+			.addDifficultySuffix(2,"\uD83D\uDEE1\uFE0F")
+			.addDifficultySuffix(3,"\uD83D\uDEE1\uFE0F\uD83D\uDEE1\uFE0F")
 			.addDifficultySuffix(4,"♠️")
 			.build()
 
