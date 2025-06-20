@@ -22,7 +22,7 @@ import net.horizonsend.ion.server.gui.invui.bazaar.WITHDRAW_COLOR
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.misc.util.ConfirmationMenu
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeDoubleValidator
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeIntegerValidator
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
@@ -36,7 +36,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
-import java.util.function.Supplier
 
 class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUIWindowWrapper(viewer, true) {
 	override fun buildWindow(): Window {
@@ -131,23 +130,23 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 	private fun setPrice() {
 		val region = Regions.get<RegionTerritory>(listing.cityTerritory)
 
-		viewer.anvilInputText(
-			prompt = Supplier { text("Enter new price.") },
-			description = Supplier { text("Value above 0.01.") },
+		viewer.openInputMenu(
+			prompt = text("Enter new price."),
+			description = text("Value above 0.01."),
 			backButtonHandler = { openGui() },
 			inputValidator = RangeDoubleValidator(0.01..Double.MAX_VALUE)
 		) { _, validatorResult ->
-			val changePriceResult = Bazaars.setListingPrice(viewer, region, listing.itemString, validatorResult.second.result)
+			val changePriceResult = Bazaars.setListingPrice(viewer, region, listing.itemString, validatorResult.result)
 
 			if (changePriceResult.isSuccess()) {
 				// Update it so the menu isn't outdated. Regular safeguards will still be in place
-				listing.price = validatorResult.second.result
-				openGui()
+				listing.price = validatorResult.result
+				this@ListingEditorMenu.openGui()
 				changePriceResult.sendReason(viewer)
 				setPriceButton.updateWith(changePriceResult)
 			}
 			else {
-				openGui()
+				this@ListingEditorMenu.openGui()
 				withdrawStockButton.updateWith(changePriceResult)
 				withdrawStockButtonVisible.updateWith(changePriceResult)
 				changePriceResult.sendReason(viewer)
@@ -179,22 +178,22 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 			return
 		}
 
-		viewer.anvilInputText(
-			prompt = Supplier { text("Enter amount to withdraw.") },
-			description = Supplier { text("Value between 1 and ${listing.stock}.") },
+		viewer.openInputMenu(
+			prompt = text("Enter amount to withdraw."),
+			description = text("Value between 1 and ${listing.stock}."),
 			backButtonHandler = { openGui() },
 			inputValidator = RangeIntegerValidator(1..listing.stock)
 		) { _, validatorResult ->
-			val withdrawResult = Bazaars.withdrawListingBalance(viewer, region, listing.itemString, validatorResult.second.result)
+			val withdrawResult = Bazaars.withdrawListingBalance(viewer, region, listing.itemString, validatorResult.result)
 
 			if (withdrawResult.isSuccess()) {
 				// Update it so the menu isn't outdated. Regular safeguards will still be in place
-				listing.stock -= validatorResult.second.result
-				openGui()
+				listing.stock -= validatorResult.result
+				this@ListingEditorMenu.openGui()
 				withdrawResult.sendReason(viewer)
 			}
 			else {
-				openGui()
+				this@ListingEditorMenu.openGui()
 				withdrawStockButton.updateWith(withdrawResult)
 				withdrawStockButtonVisible.updateWith(withdrawResult)
 				withdrawResult.sendReason(viewer)

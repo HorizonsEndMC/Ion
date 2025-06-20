@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.gui.custom.settings.button.general
 
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeDoubleValidator
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -28,12 +28,12 @@ class DoubleSupplierConsumerInputButton(
 	}
 
 	override fun handleClick(clicker: Player, oldValue: Double, gui: PagedGui<*>, parent: SettingsPageGui, newValueConsumer: Consumer<Double>) {
-		clicker.anvilInputText(
+		clicker.openInputMenu(
 			prompt = text("Enter new value"),
 			description = text("Value between $min & $max"),
 			backButtonHandler = { parent.openGui() },
 			inputValidator = RangeDoubleValidator(min..max),
-			handler = { _, (_, result) ->
+			handler = { _, result ->
 				newValueConsumer.accept(result.result)
 				parent.openGui()
 			}
