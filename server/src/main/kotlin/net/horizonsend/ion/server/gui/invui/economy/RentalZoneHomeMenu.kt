@@ -163,7 +163,7 @@ class RentalZoneHomeMenu(viewer: Player, val region: RegionRentalZone) : InvUIWi
 			text("to the zone inside, and it will be made available to  other players.", HE_MEDIUM_GRAY),
 			text("The remaining balance will be refunded to you.", HE_MEDIUM_GRAY),
 		)
-	}) { _, _ -> ConfirmationMenu.promptConfirmation(this, GuiText("Confirm Claim Abandonment")) { abandon(this) } }
+	}) { _, _ -> ConfirmationMenu.promptConfirmation(this@RentalZoneHomeMenu, GuiText("Confirm Claim Abandonment")) { abandon(this) } }
 
 	private fun abandon(confimButton: FeedbackLike) {
 		val async = StationRentalZones.abandon(viewer, region)
