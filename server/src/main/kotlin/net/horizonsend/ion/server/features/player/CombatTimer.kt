@@ -53,6 +53,7 @@ object CombatTimer : IonServerComponent() {
 	private const val REASON_PVP_WITHIN_GRAVITY_WELL = "Getting caught in non-friendly starship's gravity well"
 	const val REASON_PVP_GROUND_COMBAT = "Engaging in combat with another player on the ground"
 	private const val REASON_ENEMY_PROXIMITY = "Being in close proximity to a hostile starship"
+	const val REASON_SIEGE_STATION = "Initiating a station siege"
 	const val MINIMUM_WELL_PROXIMITY_BLOCK_COUNT = 1000
 	private const val MINIMUM_IMMUNITY_TO_SMALL_SHIP_COMBAT_TAG_BLOCK_COUNT = 4000
 
