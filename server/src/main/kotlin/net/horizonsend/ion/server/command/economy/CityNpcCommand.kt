@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
@@ -46,7 +47,7 @@ object CityNpcCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		when (cityData.type) {
 			TradeCityType.NPC -> throw ConditionFailedException("You don't have control over NPC cities!")
-			TradeCityType.SETTLEMENT -> requireSettlementLeader(sender, cityData.settlementId)
+			TradeCityType.SETTLEMENT -> requireSettlementPermission(sender, cityData.settlementId, SettlementRole.Permission.MANAGE_NPCS)
 		}
 	}
 
