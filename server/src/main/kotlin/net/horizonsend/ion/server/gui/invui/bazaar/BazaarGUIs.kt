@@ -16,8 +16,8 @@ import net.horizonsend.ion.server.features.gui.custom.settings.button.database.D
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.BuyOrderMainMenu
-import net.horizonsend.ion.server.gui.invui.bazaar.orders.CreateBuyOrderMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.browse.BuyOrderFulfillmentMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.orders.manage.CreateBuyOrderMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.manage.GridOrderManagementWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.manage.ListOrderManagementMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.manage.OrderEditorMenu

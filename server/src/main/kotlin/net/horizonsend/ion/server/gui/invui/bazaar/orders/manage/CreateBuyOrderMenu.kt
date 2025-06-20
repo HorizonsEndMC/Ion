@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.bazaar.orders
+package net.horizonsend.ion.server.gui.invui.bazaar.orders.manage
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.input.InputResult
@@ -168,7 +168,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 		},
 		handleClick = { inputNewCity(uuid) }
 	) }
-	private val emptyCityButton = tracked { uuid -> ItemProvider { GuiItem.EMPTY.makeItem(text("Click to change item string")).updateLore(getCityButtonLore()) }.makeGuiButton { _, _ -> inputNewCity(uuid) } }
+	private val emptyCityButton = tracked { uuid -> ItemProvider { GuiItem.EMPTY.makeItem(text("Click to change trade city")).updateLore(getCityButtonLore()) }.makeGuiButton { _, _ -> inputNewCity(uuid) } }
 
 	private fun inputNewCity(uuid: UUID) {
 		val cities: List<TradeCityData> = TradeCities.getAll().filter { BAZAAR_CITY_TERRITORIES.contains(it.territoryId) }

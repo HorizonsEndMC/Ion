@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
-import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
+import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
@@ -22,7 +22,11 @@ class ItemMenu(
 	viewer: Player,
 	private val guiItems: List<Item>,
 	private val backButtonHandler: (Player) -> Unit
-) : InvUIWindowWrapper(viewer) {
+) : ListInvUIWindow<Item>(viewer) {
+	override val listingsPerPage: Int = 36
+	override fun generateEntries(): List<Item> = guiItems
+	override fun createItem(entry: Item): Item = entry
+
     private fun createGui(): Gui {
 		val gui = PagedGui.items()
 			.setStructure(
@@ -37,14 +41,15 @@ class ItemMenu(
 			.addIngredient('l', GuiItems.PageLeftItem())
 			.addIngredient('r', GuiItems.PageRightItem())
 			.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
-			.setContent(guiItems)
+			.setContent(items)
+			.handlePageChange()
 			.build()
 
         return gui
     }
 
 	override fun buildTitle(): Component {
-		return title
+		return withPageNumber(title)
 	}
 
 	override fun buildWindow(): Window = normalWindow(createGui())

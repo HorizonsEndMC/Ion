@@ -49,16 +49,16 @@ abstract class FeedbackLike(
 		fun withHandler(
 			item: ItemStack,
 			fallbackLoreProvider: Supplier<List<Component>> = Supplier { listOf() },
-			clickHandler: (ClickType, Player) -> Unit,
+			clickHandler: FeedbackLike.(ClickType, Player) -> Unit,
 		) = withHandler(item.asItemProvider(), fallbackLoreProvider, clickHandler)
 
 		fun withHandler(
 			providedItem: ItemProvider,
 			fallbackLoreProvider: Supplier<List<Component>> = Supplier { listOf() },
-			clickHandler: (ClickType, Player) -> Unit,
+			clickHandler: FeedbackLike.(ClickType, Player) -> Unit,
 		) = object : FeedbackLike(providedItem, fallbackLoreProvider) {
 			override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-				clickHandler.invoke(clickType, player)
+				clickHandler.invoke(this, clickType, player)
 			}
 		}
 	}
