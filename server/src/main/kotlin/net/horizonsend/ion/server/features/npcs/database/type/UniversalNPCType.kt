@@ -31,6 +31,9 @@ interface UniversalNPCType<T: UniversalNPCMetadata> {
 		UniversalNPCs.create(player, player.location, this, getDefaultMetaData(player), skinData)
 	}
 
+	open fun onSpawn(wrapper: UniversalNPCWrapper<*, *>) {}
+	open fun onRemove(wrapper: UniversalNPCWrapper<*, *>) {}
+
 	/** Returns the metadata from string storage */
 	fun deSerializeMetaData(raw: String): T {
 		return Configuration.parse(metaTypeClass, raw)

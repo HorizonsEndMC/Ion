@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionRentalZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTopLevel
+import net.horizonsend.ion.server.features.npcs.NPCDisplay
 import net.horizonsend.ion.server.features.npcs.database.UniversalNPCWrapper
 import net.horizonsend.ion.server.features.npcs.database.UniversalNPCs
 import net.horizonsend.ion.server.features.npcs.database.metadata.PlayerShipDealerMetadata
@@ -80,6 +81,8 @@ object PlayerShipDealerType : UniversalNPCType<PlayerShipDealerMetadata> {
 				else setLine(0, newLine.serialize(legacyAmpersand))
 			}
 		}
+
+		refreshMarker(npc)
 	}
 
 	override fun getDisplayName(metaData: UniversalNPCMetadata): Component {
@@ -157,13 +160,17 @@ object PlayerShipDealerType : UniversalNPCType<PlayerShipDealerMetadata> {
 		return false
 	}
 
+	private fun getSoldShips(npc: UniversalNPCWrapper<*, PlayerShipDealerMetadata>, metaData: PlayerShipDealerMetadata): List<PlayerCreatedDealerShip> {
+		val territories = Regions.find(npc.npc.storedLocation).filter { it is RegionTopLevel }.map(Region<*>::id)
+		return PlayerSoldShip
+			.find(and(PlayerSoldShip::owner `in` metaData.sellers.mapTo(mutableSetOf(), UUID::slPlayerId), PlayerSoldShip::creationTerritory `in` territories))
+			.toList()
+			.map(PlayerCreatedDealerShip::create)
+	}
+
 	override fun handleClick(player: Player, npc: UniversalNPCWrapper<*, PlayerShipDealerMetadata>, metaData: PlayerShipDealerMetadata) {
 		Tasks.async {
-			val territories = Regions.find(player.location).filter { it is RegionTopLevel }.map(Region<*>::id)
-			val ships = PlayerSoldShip
-				.find(and(PlayerSoldShip::owner `in` metaData.sellers.mapTo(mutableSetOf(), UUID::slPlayerId), PlayerSoldShip::creationTerritory `in` territories))
-				.toList()
-				.map(PlayerCreatedDealerShip::create)
+			val ships = getSoldShips(npc, metaData)
 
 			PlayerShipDealerGUI(player, npc, ships).openGui()
 		}
@@ -237,5 +244,28 @@ object PlayerShipDealerType : UniversalNPCType<PlayerShipDealerMetadata> {
 				}
 			}
 		).openGui()
+	}
+
+	override fun onSpawn(wrapper: UniversalNPCWrapper<*, *>) {
+		refreshMarker(wrapper)
+	}
+
+	fun refreshMarker(wrapper: UniversalNPCWrapper<*, *>) {
+		@Suppress("UNCHECKED_CAST")
+		wrapper as UniversalNPCWrapper<PlayerShipDealerType, PlayerShipDealerMetadata>
+
+		val label = wrapper.npc.fullName
+
+		val description = """
+			<h3><b>Type:</b> Player Ship Dealer</h3>
+			<h3><b>Sellers:</b> ${wrapper.metaData.sellers.map { SLPlayer.getName(it.slPlayerId) }.joinToString()}</h3>
+			<h3><b>Selling:</b> ${getSoldShips(wrapper, wrapper.metaData).mapTo(mutableSetOf()) { "${it.className} class [${it.starshipType}]" }.joinToString()}</h3>
+		""".trimIndent()
+
+		NPCDisplay.getMarkerIcon("star")?.let { NPCDisplay.createMarker(wrapper, label, it, description) }
+	}
+
+	override fun onRemove(wrapper: UniversalNPCWrapper<*, *>) {
+		NPCDisplay.removeMarker(wrapper)
 	}
 }

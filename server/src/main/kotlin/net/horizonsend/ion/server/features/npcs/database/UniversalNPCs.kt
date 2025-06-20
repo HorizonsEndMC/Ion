@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.database.binary
 import net.horizonsend.ion.common.database.get
 import net.horizonsend.ion.common.database.oid
 import net.horizonsend.ion.common.database.schema.misc.UniversalNPC
+import net.horizonsend.ion.common.database.schema.starships.PlayerSoldShip
 import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
@@ -15,6 +16,7 @@ import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.npcs.NPCManager
 import net.horizonsend.ion.server.features.npcs.database.metadata.UniversalNPCMetadata
+import net.horizonsend.ion.server.features.npcs.database.type.PlayerShipDealerType
 import net.horizonsend.ion.server.features.npcs.database.type.UniversalNPCType
 import net.horizonsend.ion.server.features.npcs.database.type.UniversalNPCTypes
 import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
@@ -68,6 +70,9 @@ object UniversalNPCs : IonServerComponent(true) {
 				handleMovement(change.oid)
 			}
 		}
+
+		PlayerSoldShip.watchInserts { getAll(PlayerShipDealerType).forEach { PlayerShipDealerType.refreshMarker(it) } }
+		PlayerSoldShip.watchDeletes { getAll(PlayerShipDealerType).forEach { PlayerShipDealerType.refreshMarker(it) } }
 	}
 
 	override fun onDisable() {
@@ -158,6 +163,7 @@ object UniversalNPCs : IonServerComponent(true) {
 
 				val wrapped = UniversalNPCWrapper(npc, document._id, type, metaData)
 				wrapped.applyTraits()
+				wrapped.type.onSpawn(wrapped)
 
 				wrapperMap[document.npcID] = wrapped
 				typeMap[type].add(document.npcID)
@@ -175,7 +181,9 @@ object UniversalNPCs : IonServerComponent(true) {
 		Tasks.sync {
 			npcManager.removeNPC(npcId)
 
-			wrapperMap.remove(npcId)
+			wrapperMap.remove(npcId)?.let {
+				it.type.onRemove(it)
+			}
 			typeMap.keys().toSet().forEach { typeMap[it].remove(npcId) }
 			oidMap.remove(document)
 		}
