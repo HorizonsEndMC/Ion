@@ -87,7 +87,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 		var protectionMessagesEnabled: Boolean = true,
 		var useAlternateDCCruise: Boolean = true,
-		var dcSpeedModifier: Int = 1,
+		var dcRefreshRate: Int = 100,
 		var enableAdditionalSounds: Boolean = true,
 		var soundCruiseIndicator: Int = 0,
 		var enableCombatTimerAlerts: Boolean = true,
@@ -577,12 +577,12 @@ abstract class AbstractPlayerCache : ManualCache() {
 				}
 			}
 
-			change[SLPlayer::dcSpeedModifier]?.let {
+			change[SLPlayer::dcRefreshRate]?.let {
 				synced{
 					val data = PLAYER_DATA[id.uuid] ?: return@synced
 
-					val dcSpeedModifier = it.int()
-					data.dcSpeedModifier = dcSpeedModifier
+					val dcRefreshRate = it.int()
+					data.dcRefreshRate = dcRefreshRate
 				}
 			}
 
@@ -719,7 +719,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 			showItemSearchItem = data.showItemSearchItem,
 			protectionMessagesEnabled = data.protectionMessagesEnabled,
 			useAlternateDCCruise = data.useAlternateDCCruise,
-			dcSpeedModifier = data.dcSpeedModifier,
+			dcRefreshRate = data.dcRefreshRate,
 			enableAdditionalSounds = data.enableAdditionalSounds,
 			soundCruiseIndicator = data.soundCruiseIndicator,
 			enableCombatTimerAlerts = data.enableCombatTimerAlerts,
