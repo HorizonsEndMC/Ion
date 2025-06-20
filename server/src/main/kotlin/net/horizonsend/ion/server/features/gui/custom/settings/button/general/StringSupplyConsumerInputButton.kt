@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.gui.custom.settings.button.general
 
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.InputValidator
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -28,12 +28,12 @@ class StringSupplierConsumerInputButton(
 	}
 
 	override fun handleClick(clicker: Player, oldValue: String, gui: PagedGui<*>, parent: SettingsPageGui, newValueConsumer: Consumer<String>) {
-		clicker.anvilInputText(
+		clicker.openInputMenu(
 			prompt = text("Enter new value"),
 			description = inputDescription,
 			backButtonHandler = { parent.openGui() },
 			inputValidator = validator,
-			handler = { _, (_, result) ->
+			handler = { _, result ->
 				newValueConsumer.accept(result.result)
 				parent.openGui()
 			}
