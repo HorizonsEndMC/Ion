@@ -45,7 +45,7 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 				"e . . . . . . . .",
 				". . . . p p p p p",
 				"d d d w w w r r r",
-				"d D d w W w r r r",
+				"d d d w w w r r r",
 				"d d d w w w r r r"
 			)
 			.addIngredient('e', fromItemString(listing.itemString).stripAttributes())
@@ -53,8 +53,6 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 			.addIngredient('p', setPriceButton)
 			.addIngredient('d', depositStockButton)
 			.addIngredient('w', withdrawStockButton)
-			.addIngredient('D', depositStockButtonVisible)
-			.addIngredient('W', withdrawStockButtonVisible)
 			.addIngredient('r', deleteListingButton)
 			.addIngredient('i', informationButton)
 			.build()
@@ -108,17 +106,9 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 		GuiItem.EMPTY.makeItem(text("Deposit Stock")).asItemProvider(),
 		{ listOf() }
 	) { _, _ -> deposit() }
-	private val depositStockButtonVisible = FeedbackLike.withHandler(
-		GuiItem.DOWN.makeItem(text("Deposit Stock")).asItemProvider(),
-		{ listOf() }
-	) { _, _ -> deposit() }
 
 	private val withdrawStockButton = FeedbackLike.withHandler(
 		GuiItem.EMPTY.makeItem(text("Withdraw Stock")).asItemProvider(),
-		{ listOf() }
-	) { _, _ -> withdraw() }
-	private val withdrawStockButtonVisible = FeedbackLike.withHandler(
-		GuiItem.UP.makeItem(text("Withdraw Stock")).asItemProvider(),
 		{ listOf() }
 	) { _, _ -> withdraw() }
 
@@ -148,7 +138,6 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 			else {
 				this@ListingEditorMenu.openGui()
 				withdrawStockButton.updateWith(changePriceResult)
-				withdrawStockButtonVisible.updateWith(changePriceResult)
 				changePriceResult.sendReason(viewer)
 				setPriceButton.updateWith(changePriceResult)
 			}
@@ -160,13 +149,11 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 		val presenceCheckResult = Bazaars.checkTerritoryPresence(viewer, region)
 		if (!presenceCheckResult.isSuccess()) {
 			depositStockButton.updateWith(presenceCheckResult)
-			depositStockButtonVisible.updateWith(presenceCheckResult)
 			return
 		}
 
 		val depositResult = Bazaars.depositListingStock(viewer, viewer.inventory, region, listing.itemString, Int.MAX_VALUE)
 		depositStockButton.updateWith(depositResult)
-		depositStockButtonVisible.updateWith(depositResult)
 	}
 
 	private fun withdraw() {
@@ -174,7 +161,6 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 		val presenceCheckResult = Bazaars.checkTerritoryPresence(viewer, region)
 		if (!presenceCheckResult.isSuccess()) {
 			withdrawStockButton.updateWith(presenceCheckResult)
-			withdrawStockButtonVisible.updateWith(presenceCheckResult)
 			return
 		}
 
@@ -195,7 +181,6 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 			else {
 				this@ListingEditorMenu.openGui()
 				withdrawStockButton.updateWith(withdrawResult)
-				withdrawStockButtonVisible.updateWith(withdrawResult)
 				withdrawResult.sendReason(viewer)
 			}
 		}
