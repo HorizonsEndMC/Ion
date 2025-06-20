@@ -26,6 +26,10 @@ class AsyncItem(
 		return provider
 	}
 
+	override fun getItemProvider(): ItemProvider {
+		return provider
+	}
+
 	override fun handleClick(p0: ClickType, p1: Player, event: InventoryClickEvent) {
 		if (!loaded) return
 		handleClick.invoke(event)
