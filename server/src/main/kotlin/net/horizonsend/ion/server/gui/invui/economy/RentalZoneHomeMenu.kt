@@ -182,7 +182,7 @@ class RentalZoneHomeMenu(viewer: Player, val region: RegionRentalZone) : InvUIWi
 
 	private val depositButton = FeedbackLike.withHandler(GuiItem.EMPTY.makeItem(text("Deposit Rent")), fallbackLoreProvider = {
 		listOf(
-			text(""),
+			text(""), //TODO
 			text(""),
 			text("")
 		)
