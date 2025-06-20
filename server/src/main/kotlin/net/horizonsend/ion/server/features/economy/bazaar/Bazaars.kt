@@ -42,6 +42,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -650,17 +651,21 @@ object Bazaars : IonServerComponent() {
 	 * Returns a pair of full stacks of items to the remainder
 	 **/
 	fun giveOrDropItems(itemStack: ItemStack, amount: Int, sender: Player): Pair<Int, Int> {
+		return giveOrDropItems(itemStack, amount, sender.inventory, sender.eyeLocation)
+	}
+
+	fun giveOrDropItems(itemStack: ItemStack, amount: Int, inventory: Inventory, location: Location): Pair<Int, Int> {
 		val maxStackSize = itemStack.maxStackSize
 		val fullStacks = amount / maxStackSize
 
 		fun add(amount: Int) {
 			val stack = itemStack.clone().apply { this.amount = amount }
-			val remainder: HashMap<Int, ItemStack> = sender.inventory.addItem(stack)
+			val remainder: HashMap<Int, ItemStack> = inventory.addItem(stack)
 
 			// remainder is when the inventory didn't have space
 
 			for (remainingItem in remainder.values) {
-				sender.world.dropItem(sender.eyeLocation, remainingItem)
+				location.world.dropItem(location, remainingItem)
 			}
 		}
 

@@ -6,10 +6,12 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomComponen
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.rightClickListener
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry.AUTO_REPLANT
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropSource
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
@@ -104,9 +106,14 @@ class PowerHoe(identifier: String, displayName: Component, modLimit: Int, basePo
 			}
 		}
 
-		for ((key, items) in drops) {
-			val location = BlockPos.of(key).toLocation(origin.world)
-			items.forEach { origin.world.dropItemNaturally(location, it) }
+		val collectorPresent = mods.contains(ItemModRegistry.COLLECTOR)
+
+		for ((dropLocation, items) in drops) {
+			val location = BlockPos.of(dropLocation).toLocation(origin.world)
+			items.forEach {
+				if (collectorPresent) Bazaars.giveOrDropItems(it, it.amount, player.inventory, location)
+				else origin.world.dropItemNaturally(location, it)
+			}
 		}
 
 		if (broken <= 0) return
