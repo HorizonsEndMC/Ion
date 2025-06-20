@@ -78,7 +78,7 @@ interface UniversalNPCType<T: UniversalNPCMetadata> {
 	 *
 	 * @param player: The player to check
 	 **/
-	fun canUseType(player: Player, metaData: T): Boolean
+	fun canCreate(player: Player, metaData: T): Boolean
 
 	/**
 	 * Returns whether the player can manage this individual NPC.
