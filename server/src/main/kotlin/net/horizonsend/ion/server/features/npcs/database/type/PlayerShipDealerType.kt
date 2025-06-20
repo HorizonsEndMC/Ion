@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.starships.PlayerSoldShip
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.common.utils.text.serialize
@@ -31,6 +32,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionSettlement
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.nations.region.types.RegionTopLevel
 import net.horizonsend.ion.server.features.npcs.database.UniversalNPCWrapper
+import net.horizonsend.ion.server.features.npcs.database.UniversalNPCs
 import net.horizonsend.ion.server.features.npcs.database.metadata.PlayerShipDealerMetadata
 import net.horizonsend.ion.server.features.npcs.database.metadata.UniversalNPCMetadata
 import net.horizonsend.ion.server.features.starship.dealers.PlayerCreatedDealerShip
@@ -102,8 +104,17 @@ object PlayerShipDealerType : UniversalNPCType<PlayerShipDealerMetadata> {
 		return player.uniqueId == wrapper.metaData.owner
 	}
 
-	override fun canUseType(player: Player, metaData: PlayerShipDealerMetadata): Boolean {
-		return true
+	override fun canCreate(player: Player, metaData: PlayerShipDealerMetadata): Boolean {
+		val currentTerritories = Regions.find(player.location)
+		val otherOwned = UniversalNPCs.getAll(PlayerShipDealerType).filter { it.metaData.owner == player.uniqueId }
+		val regionEmpty = otherOwned.none {
+			val npcTerritories = Regions.find(it.npc.storedLocation)
+			currentTerritories.intersect(npcTerritories.toSet()).isNotEmpty()
+		}
+
+		if (!regionEmpty) player.userError("You already have a NPC of this type in this region!")
+
+		return regionEmpty
 	}
 
 	override fun checkLocation(player: Player, location: Location): Boolean {
