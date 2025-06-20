@@ -338,8 +338,6 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		val controller = starship.controller
 		if (controller is PlayerController) {
 			if (PlanetTeleportCooldown.cannotExitPlanets(controller.player)) return false
-			// Restrict planet exit if combat tagged
-			PlanetTeleportCooldown.addExitPlanetRestriction(controller.player)
 		}
 
 		val blockCountSquareRoot = sqrt(starship.initialBlockCount.toDouble())
@@ -349,7 +347,12 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			.toLocation(spaceWorld)
 			.add(direction.x * distance, 0.0, direction.z * distance)
 
-		StarshipTeleportation.teleportStarship(starship, exitPoint)
+		StarshipTeleportation.teleportStarship(starship, exitPoint) {
+			if (controller is PlayerController) {
+				// (Callback) If planet teleportation was successful, add exit planet restriction (if applicable)
+				PlanetTeleportCooldown.addExitPlanetRestriction(controller.player)
+			}
+		}
 
 		IonServer.slF4JLogger.info("Attempting to exit planet")
 
