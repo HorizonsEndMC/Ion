@@ -6,10 +6,15 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropSource
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.SilkTouchSource
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.PowerUsageIncrease
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
@@ -86,9 +91,14 @@ class PowerDrill(identifier: String, displayName: Component, modLimit: Int, base
 
 		powerManager.setPower(this, itemStack, availablePower)
 
-		for ((key, items) in drops) {
-			val location = BlockPos.of(key).toLocation(player.world).toCenterLocation()
-			items.forEach { player.world.dropItemNaturally(location, it) }
+		val collectorPresent = mods.contains(ItemModRegistry.COLLECTOR)
+
+		for ((dropLocation, items) in drops) {
+			val location = BlockPos.of(dropLocation).toLocation(origin.world)
+			items.forEach {
+				if (collectorPresent) Bazaars.giveOrDropItems(it, it.amount, player.inventory, location)
+				else origin.world.dropItemNaturally(location, it)
+			}
 		}
 
 		return
@@ -99,7 +109,7 @@ class PowerDrill(identifier: String, displayName: Component, modLimit: Int, base
 			player: Player,
 			block: Block,
 			mods: Array<ItemModification>,
-			drops: MutableMap<Long, Collection<ItemStack>>,
+			drops: MutableMap<BlockKey, Collection<ItemStack>>,
 			usage: PowerHoe.UsageReference
 		): Boolean {
 			val blockType = block.type
@@ -133,12 +143,12 @@ class PowerDrill(identifier: String, displayName: Component, modLimit: Int, base
 				val baseDrops = dropSource.getDrop(customBlock)
 				usage.multiplier = handleModifiers(baseDrops, dropModifiers)
 
-				drops[BlockPos.asLong(block.x, block.y, block.z)] = baseDrops
+				drops[toBlockKey(block.x, block.y, block.z)] = baseDrops
 			} else {
 				val baseDrops = dropSource.getDrop(block)
 				usage.multiplier = handleModifiers(baseDrops, dropModifiers)
 
-				drops[BlockPos.asLong(block.x, block.y, block.z)] = baseDrops
+				drops[toBlockKey(block.x, block.y, block.z)] = baseDrops
 				block.world.playEffect(block.location, Effect.STEP_SOUND, blockType)
 			}
 
@@ -155,7 +165,7 @@ class PowerDrill(identifier: String, displayName: Component, modLimit: Int, base
 
 			for (drop in drops) {
 				dropModifiers.forEach {
-					if (it.modifyDrop(drop) && it is net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.PowerUsageIncrease) {
+					if (it.modifyDrop(drop) && it is PowerUsageIncrease) {
 						multiplier *= it.usageMultiplier
 					}
 				}
