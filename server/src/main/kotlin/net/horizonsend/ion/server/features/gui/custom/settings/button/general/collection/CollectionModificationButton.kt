@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.RED
@@ -18,6 +19,7 @@ import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
+import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.window.Window
 import java.util.function.Consumer
 import java.util.function.Supplier
@@ -78,7 +80,7 @@ class CollectionModificationButton<T: Any, C: Collection<T>>(
 
 			.build()
 
-		val newPageNumber = minOf(pageNumber, maxPageNumber)
+		val newPageNumber = minOf(maxOf(0, pageNumber), maxPageNumber)
 		if (newPageNumber != pageNumber) {
 			gui.setPage(newPageNumber)
 			pageNumber = newPageNumber
@@ -89,12 +91,15 @@ class CollectionModificationButton<T: Any, C: Collection<T>>(
 		return normalWindow(gui)
 	}
 
-	private val emptyButton = GuiItem.EMPTY.makeGuiButton { _, _ ->  }
+	private val emptyButton = GuiItem.EMPTY.makeItem(empty()).makeGuiButton { _, _ ->  }
 
 	private fun getBackingButton(index: Int): Item {
-		val displayed = getDisplayedEntries().getOrNull(index) ?: return emptyButton
-
-		return GuiItem.EMPTY.makeGuiButton { _, _ -> clickEntry(displayed) }
+		return ItemProvider {
+			GuiItem.EMPTY.makeItem(empty())
+		}.makeGuiButton { _, _ ->
+			val displayed = getDisplayedEntries().getOrNull(index) ?: return@makeGuiButton
+			clickEntry(displayed)
+		}
 	}
 
 	private fun clickEntry(entry: T) {
@@ -162,6 +167,7 @@ class CollectionModificationButton<T: Any, C: Collection<T>>(
 				val cloned = toMutableCollection.invoke(collectionSupplier.get())
 				cloned.add(new)
 				modifiedConsumer.accept(cloned)
+				refreshAll()
 				openGui()
 			}
 		}
