@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
+import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.depositMoney
@@ -43,7 +44,6 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.Inventory
@@ -60,7 +60,7 @@ object Bazaars : IonServerComponent() {
 	val strings = mutableListOf<String>()
 
 	private fun buildStrings() {
-		strings.addAll(Material.entries.filter { it.isItem && !it.isLegacy && !it.isAir }.map { it.name })
+		strings.addAll(MATERIALS.filter { it.isItem && !it.isLegacy && !it.isAir }.map { it.name })
 		strings.addAll(CustomItemRegistry.identifiers)
 		strings.addAll(MultiblockRegistration.getAllMultiblocks().map { "MULTIBLOCK_TOKEN[multiblock=\"${it.javaClass.simpleName}\"]" })
 		strings.remove("MULTIBLOCK_TOKEN")
