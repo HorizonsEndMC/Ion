@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
+import net.horizonsend.ion.server.gui.invui.bazaar.getFilterButton
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
@@ -45,7 +46,7 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
 	override fun generateEntries(): List<BazaarItem> {
 		val items = BazaarItem.find(BazaarItem::seller eq viewer.slPlayerId)
 		SORTING_METHODS[sortingMethod].sortSellOrders(items)
-		return items.toList()
+		return items.toList().filter { filterData.matches(it) }
 	}
 
 	override fun createItem(entry: BazaarItem): Item {
@@ -115,11 +116,9 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
 		)
 	}
 
-	protected val filterButton = GuiItem.FILTER.makeItem(text("Filter Listings")).makeGuiButton { _, _ -> doFilterMenu() }
-
-	private fun doFilterMenu() {
-		//TODO
-	}
+	private val filterInfo = getFilterButton(this, PlayerSettings::bazaarSellManageFilters)
+	protected val filterData get() = filterInfo.first
+	protected val filterButton get() = filterInfo.second
 
     protected val sortButton = CollectionScrollButton(
 		entries = SORTING_METHODS,
