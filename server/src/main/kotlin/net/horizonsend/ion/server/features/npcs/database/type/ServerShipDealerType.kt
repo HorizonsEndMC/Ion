@@ -30,7 +30,7 @@ object ServerShipDealerType : UniversalNPCType<ServerShipDealerMetadata> {
 		npc.metaData = 	deSerializeMetaData(new)
 	}
 
-	override fun canUseType(player: Player, metaData: ServerShipDealerMetadata): Boolean {
+	override fun canCreate(player: Player, metaData: ServerShipDealerMetadata): Boolean {
 		return player.hasPermission("ion.npc.shipDealer")
 	}
 
