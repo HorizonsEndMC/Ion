@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.utils.text.restrictedMiniMessageSerializer
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -32,20 +32,20 @@ class ComponentSupplierConsumerInputButton(
 	}
 
 	override fun handleClick(clicker: Player, oldValue: Component, gui: PagedGui<*>, parent: SettingsPageGui, newValueConsumer: Consumer<Component>) {
-		clicker.anvilInputText(
+		clicker.openInputMenu(
 			prompt = text("Enter new value"),
 			description = inputDescription,
 			backButtonHandler = { parent.openGui() },
 			inputValidator = {
 				val deserialized = restrictedMiniMessageSerializer.deserializeOrNull(it)
 
-				if (deserialized != null && deserialized.plainText().isEmpty()) return@anvilInputText ValidatorResult.FailureResult(text("Result must not be empty!", RED))
+				if (deserialized != null && deserialized.plainText().isEmpty()) return@openInputMenu ValidatorResult.FailureResult(text("Result must not be empty!", RED))
 
 				if (deserialized != null) ValidatorResult.ValidatorSuccessSingleEntry(deserialized)
 				else ValidatorResult.FailureResult(text("Could not deserialize component!", RED))
 			},
 			componentTransformer = { it },
-			handler = { _, (_, result) ->
+			handler = { _, result ->
 				newValueConsumer.accept(result.result)
 				parent.openGui()
 			}

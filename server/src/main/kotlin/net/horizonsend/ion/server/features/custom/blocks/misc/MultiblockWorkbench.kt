@@ -23,7 +23,7 @@ import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilbloc
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDescription
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getIcon
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchEntires
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
@@ -238,7 +238,7 @@ object MultiblockWorkbench : CustomBlock(
 		private fun openSearchMenu() {
 			isSearching = true
 
-			viewer.searchEntires(
+			viewer.openSearchMenu(
 				entries = MultiblockRegistration.getAllMultiblocks(),
 				searchTermProvider = { getSearchTerms(it) },
 				prompt = text("Search by Multiblock Name"),
