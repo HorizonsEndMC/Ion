@@ -35,7 +35,10 @@ import xyz.xenondevs.invui.item.Item
 abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>(viewer, async = true) {
 	override fun generateEntries(): List<BazaarOrder> {
 		// TODO filtering
-		return BazaarOrder.find(BazaarOrder::player eq viewer.slPlayerId).apply { SORTING_METHODS[sortingMethod].sortBuyOrders(this) }.toList()
+		return BazaarOrder
+			.find(BazaarOrder::player eq viewer.slPlayerId)
+			.apply { SORTING_METHODS[sortingMethod].sortBuyOrders(this) }
+			.toList()
 	}
 
 	override fun createItem(entry: BazaarOrder): Item {
@@ -94,7 +97,8 @@ abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<Baz
 		)
 	}
 
-	protected val filterButton = GuiItem.FILTER.makeItem(text("Filter Orders")).makeGuiButton { _, _ -> println("filter") } //TODO
+
+	protected val filterButton: Item = TODO()
 
 	protected val createBuyOrderMenu = GuiItem.PLUS.makeItem(text("Create Bazaar Order")).makeGuiButton { _, _ ->
 		BazaarGUIs.openBuyOrderCreationMenu(viewer, this)
