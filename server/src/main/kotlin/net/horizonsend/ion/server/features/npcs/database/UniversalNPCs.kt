@@ -85,8 +85,8 @@ object UniversalNPCs : IonServerComponent(true) {
 			return false
 		}
 
-		if (!type.canUseType(player, metadata)) {
-			player.userError("You cannot use this NPC type!")
+		if (!type.canCreate(player, metadata)) {
+			// Leave it to the functions to do the warning
 			return false
 		}
 
