@@ -23,7 +23,7 @@ import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchEntires
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeInformationButton
@@ -85,7 +85,7 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
 	private fun doSearch() {
 		val cityNames = mutableMapOf<Oid<Territory>, String>()
 
-		viewer.searchEntires(
+		viewer.openSearchMenu(
 			entries = entries,
 			prompt = text("Search your sell orders."),
 			description = empty(),

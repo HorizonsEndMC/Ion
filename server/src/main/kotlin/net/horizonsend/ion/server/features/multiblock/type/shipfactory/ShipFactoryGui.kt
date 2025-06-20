@@ -31,8 +31,8 @@ import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.misc.BlueprintMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.ItemMenu
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchEntires
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeDoubleValidator
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -240,7 +240,7 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 	private val searchMenuBotton = GuiItems.createButton(GuiItem.EMPTY.makeItem(text("Search for Blueprint"))) { _, player, _ ->
 		val playerBlueprints = Blueprint.find(Blueprint::owner eq player.slPlayerId).toList()
 
-		player.searchEntires(
+		player.openSearchMenu(
 			entries = playerBlueprints,
 			searchTermProvider = { listOf(it.name, it.type) },
 			prompt = text("Search for Blueprint"),
@@ -277,7 +277,7 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 //				return@InputValidator ValidatorResult.ValidatorSuccessMultiEntry(text, filtered.map { it to it.name.toComponent() })
 //			},
 //			componentTransformer = { it.second }
-//		) { _, (_, result) ->
+//		) { _, result ->
 //			val blueprint: Blueprint = (
 //				if (result is ValidatorResult.ValidatorSuccessSingleEntry) result.result.first
 //				else result.result.first
@@ -494,13 +494,13 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 							valueItemFormatter = { GuiItem.RIGHT.makeItem(text(it)) },
 							valueNameFormatter = { it.toCreditComponent() },
 							newValue = { player: Player, consumer: Consumer<Double> ->
-								player.anvilInputText(
+								player.openInputMenu(
 									prompt = text("Enter new value"),
 									description = text("Between 0.01 & 10,000,000"),
 									backButtonHandler = { this.openGui() },
 									componentTransformer = { double: Double -> double.toCreditComponent() },
 									inputValidator = RangeDoubleValidator(0.001..10_000_000.0),
-									handler = { _, (_, validator) ->
+									handler = { _, validator ->
 										consumer.accept(validator.result)
 										this@MapEntryEditorMenu.openGui()
 									}
@@ -538,13 +538,13 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 							valueItemFormatter = { GuiItem.RIGHT.makeItem(text(it)) },
 							valueNameFormatter = { it.toCreditComponent() },
 							newValue = { player: Player, consumer: Consumer<Double> ->
-								player.anvilInputText(
+								player.openInputMenu(
 									prompt = text("Enter new value"),
 									description = text("Between 0.01 & 10,000,000"),
 									backButtonHandler = { this.openGui() },
 									componentTransformer = { double: Double -> double.toCreditComponent() },
 									inputValidator = RangeDoubleValidator(0.001..10_000_000.0),
-									handler = { _, (_, validator) ->
+									handler = { _, validator ->
 										consumer.accept(validator.result)
 										this@MapEntryCreationMenu.openGui()
 									}

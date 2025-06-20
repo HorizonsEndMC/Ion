@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.gui.invui.bazaar
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchEntires
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
@@ -34,7 +34,7 @@ interface ItemBrowseGui<T : Any> : BrowseGui {
 	fun getSearchEntries(): Collection<T>
 
 	fun search(viewer: Player, entries: Collection<T>) {
-		viewer.searchEntires(
+		viewer.openSearchMenu(
 			entries = entries,
 			prompt = text("Search for Items"),
 			description = Component.empty(),

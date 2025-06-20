@@ -20,7 +20,7 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeIntegerValidator
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
@@ -185,13 +185,13 @@ class BuyOrderFulfillmentMenu(viewer: Player, val item: Oid<BazaarOrder>) : InvU
 		clickHandler = { _, _ -> setQuantity() }
 	)
 
-	private fun setQuantity(): Unit = viewer.anvilInputText(
+	private fun setQuantity(): Unit = viewer.openInputMenu(
 		prompt = text("Select Fulfillment Limit"),
 		description = text("1 through $remainingAmount"),
 		backButtonHandler = { openGui() },
 		inputValidator = RangeIntegerValidator(1..remainingAmount),
 		handler = { _, result ->
-			fulfillmentAmount = result.second.result
+			fulfillmentAmount = result.result
 			setQuantityButton.updateWith(
 				InputResult.SuccessReason(
 				listOf(template(text("Set fulfillment limit to {0}", GREEN), fulfillmentAmount))

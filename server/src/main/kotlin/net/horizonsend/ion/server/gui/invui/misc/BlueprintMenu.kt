@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.gui.item.CollectionScrollButton
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchEntires
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -85,7 +85,7 @@ class BlueprintMenu(viewer: Player, val consumer: (Blueprint, Player) -> Unit) :
 	}
 
 	val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search Blueprints")).makeGuiButton { _, _ ->
-		viewer.searchEntires(
+		viewer.openSearchMenu(
 			entries = entries,
 			searchTermProvider = { listOf(it.name, it.type) },
 			prompt = text("Search for Blueprint"),

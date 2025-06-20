@@ -31,8 +31,8 @@ import net.horizonsend.ion.server.gui.invui.bazaar.getBazaarSettingsButton
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.misc.util.ConfirmationMenu.Companion.promptConfirmation
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchEntires
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeDoubleValidator
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeIntegerValidator
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
@@ -140,7 +140,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 	private val emptyStringButton = tracked { uuid ->  ItemProvider { GuiItem.EMPTY.makeItem(text("Click to change item string")).updateLore(getStringButtonLore()) }.makeGuiButton { _, _ -> inputNewItemString(uuid) } }
 
 	private fun inputNewItemString(uuid: UUID) {
-		viewer.searchEntires(
+		viewer.openSearchMenu(
 			entries = Bazaars.strings,
 			searchTermProvider = { itemString: String -> listOf(itemString) },
 			prompt = text("Search for Bazaar Strings"),
@@ -173,7 +173,7 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 	private fun inputNewCity(uuid: UUID) {
 		val cities: List<TradeCityData> = TradeCities.getAll().filter { BAZAAR_CITY_TERRITORIES.contains(it.territoryId) }
 
-		viewer.searchEntires(
+		viewer.openSearchMenu(
 			entries = cities,
 			searchTermProvider = { cityData: TradeCityData -> listOf(cityData.displayName, cityData.type.name) },
 			prompt = text("Search for Trade Cities"),
@@ -220,12 +220,12 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 			text("The order price will also be updated", HE_MEDIUM_GRAY)
 		))
 	}.makeGuiButton { _, _ ->
-		viewer.anvilInputText(
+		viewer.openInputMenu(
 			prompt = text("Select Item Count"),
 			description = text("Must be greater than 0"),
 			backButtonHandler = { openGui() },
 			inputValidator = RangeIntegerValidator(1..Int.MAX_VALUE),
-			handler = { _, (_, validatorResult) ->
+			handler = { _, validatorResult ->
 				count = validatorResult.result
 				openGui()
 				refreshButtons()
@@ -239,12 +239,12 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 			text("The order price will also be updated", HE_MEDIUM_GRAY)
 		))
 	}.makeGuiButton { _, _ ->
-		viewer.anvilInputText(
+		viewer.openInputMenu(
 			prompt = text("Select Unit Price"),
 			description = text("Must be greater than 0"),
 			backButtonHandler = { openGui() },
 			inputValidator = RangeDoubleValidator(0.01..Double.MAX_VALUE),
-			handler = { _, (_, validatorResult) ->
+			handler = { _, validatorResult ->
 				unitPrice = validatorResult.result
 				openGui()
 				refreshButtons()
@@ -257,12 +257,12 @@ class CreateBuyOrderMenu(viewer: Player) : InvUIWindowWrapper(viewer, true) {
 			text("The unit price will also be updated", HE_MEDIUM_GRAY)
 		))
 	}.makeGuiButton { _, _ ->
-		viewer.anvilInputText(
+		viewer.openInputMenu(
 			prompt = text("Select Total Order Price"),
 			description = text("Must be greater than 0"),
 			backButtonHandler = { openGui() },
 			inputValidator = RangeDoubleValidator(1.0..Double.MAX_VALUE),
-			handler = { _, (_, validatorResult) ->
+			handler = { _, validatorResult ->
 				unitPrice = validatorResult.result / count
 				openGui()
 				refreshButtons()
