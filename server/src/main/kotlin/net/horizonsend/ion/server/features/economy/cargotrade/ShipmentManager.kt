@@ -32,7 +32,7 @@ import net.horizonsend.ion.server.features.progression.achievements.rewardAchiev
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.TypeCategory
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.InputValidator
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -195,7 +195,7 @@ object ShipmentManager : IonServerComponent() {
 		val min = balancing.generator.minShipmentSize
 		val max = min(balancing.generator.maxShipmentSize, maxCrateCount)
 
-		player.anvilInputText(
+		player.openInputMenu(
 			prompt = "Select amount of crates:".toComponent(),
 			description = "Between $min and $max".toComponent(),
 			inputValidator = InputValidator { result ->
@@ -204,11 +204,11 @@ object ShipmentManager : IonServerComponent() {
 
 				ValidatorResult.ValidatorSuccessSingleEntry(amount)
 			},
-		) { _, (_, result) ->
-			if (result !is ValidatorResult.ValidatorSuccessSingleEntry) return@anvilInputText
+		) { _, result ->
+			if (result !is ValidatorResult.ValidatorSuccessSingleEntry) return@openInputMenu
 
 			giveShipment(player, shipment, result.result)
-			return@anvilInputText
+			return@openInputMenu
 		}
 	}
 

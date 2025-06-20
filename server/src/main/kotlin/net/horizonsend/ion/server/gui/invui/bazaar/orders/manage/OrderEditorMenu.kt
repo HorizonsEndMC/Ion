@@ -19,7 +19,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeIntegerValidator
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeInformationButton
@@ -142,13 +142,13 @@ class OrderEditorMenu(viewer: Player, private val order: Oid<BazaarOrder>) : Inv
 			}
 
 			Tasks.sync {
-				viewer.anvilInputText(
+				viewer.openInputMenu(
 					prompt = text("Select amount to withdraw."),
 					description = text("$stock available."),
 					inputValidator = RangeIntegerValidator(0..stock),
 					backButtonHandler = { this@OrderEditorMenu.openGui() },
 					handler = { _, validatorResult ->
-						val amount = validatorResult.second.result
+						val amount = validatorResult.result
 
 						val result = Bazaars.withdrawOrderStock(viewer, order, amount)
 						withdrawStockButton.updateWith(result)

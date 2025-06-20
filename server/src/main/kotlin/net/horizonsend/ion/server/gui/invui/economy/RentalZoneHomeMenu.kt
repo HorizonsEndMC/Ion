@@ -23,8 +23,8 @@ import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.misc.AccessManagementMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.ConfirmationMenu
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchEntires
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeDoubleValidator
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
@@ -189,12 +189,12 @@ class RentalZoneHomeMenu(viewer: Player, val region: RegionRentalZone) : InvUIWi
 	}) { _, _ -> deposit() }
 
 	fun deposit() {
-		viewer.anvilInputText(
+		viewer.openInputMenu(
 			prompt = text("Enter Deposit Amount"),
 			description = template(text("Between {0} and {1}"), getMenuTitleName(0.0.toCreditComponent()), getMenuTitleName(viewer.getMoneyBalance().toCreditComponent())),
 			backButtonHandler = { openGui() },
 			inputValidator = RangeDoubleValidator(0.0..viewer.getMoneyBalance()),
-			handler = { _, (_, result) ->
+			handler = { _, result ->
 				val depositAmount = result.result
 
 				val depositResult = StationRentalZones.depositBalance(viewer, region, depositAmount)
@@ -248,7 +248,7 @@ class RentalZoneHomeMenu(viewer: Player, val region: RegionRentalZone) : InvUIWi
 			val players = SLPlayer.allIds().toList()
 
 			Tasks.sync {
-				viewer.searchEntires(
+				viewer.openSearchMenu(
 					entries = players,
 					searchTermProvider = { listOfNotNull(SLPlayer.getName(it)) },
 					prompt = text("Enter Player Name"),

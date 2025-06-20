@@ -18,7 +18,7 @@ import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
-import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchEntires
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
@@ -124,7 +124,7 @@ class TrustManagementMenu<D : DbObject, I : Oid<D>, C : DbObjectCompanion<D, I>,
 	private val createNewEntryButton = GuiItem.PLUS.makeItem(text("Add Entry")).makeGuiButton { _, _ -> addNewEntry() }
 
 	private fun addNewEntry() = Tasks.async {
-		viewer.searchEntires(
+		viewer.openSearchMenu(
 			entries = available.toList(),
 			searchTermProvider = { listOf(getName(it)) },
 			prompt = text("Add to ${property.name}"),
