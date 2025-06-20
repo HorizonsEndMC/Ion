@@ -26,8 +26,8 @@ import org.dynmap.markers.MarkerIcon
 import org.dynmap.markers.MarkerSet
 
 object StarshipDisplay : IonServerComponent(true) {
-	private lateinit var starshipMarkers: MarkerSet
 	private lateinit var walk: MarkerIcon
+	private lateinit var starshipMarkers: MarkerSet
 	private val markerAPI: MarkerAPI get() = DynmapPlugin.plugin.markerAPI
 	private val starshipsIcons: MutableMap<String, StarshipIcon> = mutableMapOf()
 
@@ -80,7 +80,6 @@ object StarshipDisplay : IonServerComponent(true) {
 		}
 
 		val starshipIcon = if (isInHyperspace) {
-			if (starship !is ActiveControlledStarship) return
 			val movement = Hyperspace.getHyperspaceMovement(starship)!!
 
 			if (movement.originWorld != movement.dest.world) {
