@@ -1,19 +1,26 @@
 package net.horizonsend.ion.server.gui.invui.misc.util.input
 
+import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.text.ANVIL_BACKGROUND
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
 import net.horizonsend.ion.common.utils.text.bracketed
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toComponent
+import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.gui.skullItem
+import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
+import net.horizonsend.ion.server.gui.invui.bazaar.REMOTE_WARINING
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.CollectionSearchValidator
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.InputValidator
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
@@ -25,11 +32,14 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
+import org.litote.kmongo.eq
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
@@ -241,5 +251,35 @@ class TextInputMenu<T : Any>(
 				)
 			}
 		}
+
+		fun searchTradeCities(
+			viewer: Player,
+			cities: List<TradeCityData>,
+			backButtonHandler: ((Player) -> Unit)? = null,
+			handler: CommonGuiWrapper.(ClickType, TradeCityData) -> Unit
+		) = viewer.openSearchMenu(
+			entries = cities,
+			searchTermProvider = { cityData: TradeCityData -> listOf(cityData.displayName, cityData.type.name) },
+			prompt = text("Search for Trade Cities"),
+			backButtonHandler = backButtonHandler,
+			componentTransformer = { city: TradeCityData -> text(city.displayName) },
+			itemTransformer = { city: TradeCityData ->
+				val planet = city.planetIcon.updateDisplayName(text(city.displayName))
+
+				val listingCount = BazaarItem.count(BazaarItem::cityTerritory eq city.territoryId)
+				val territoryRegion = Regions.get<RegionTerritory>(city.territoryId)
+
+				val lore = listOf(
+					ofChildren(
+						text("Located at ", HE_MEDIUM_GRAY), text(territoryRegion.name, AQUA),
+						text(" on ", HE_MEDIUM_GRAY), text(territoryRegion.world, AQUA), text(".", GRAY)
+					),
+					template(text("{0} item listing${if (listingCount != 1L) "s" else ""}.", HE_MEDIUM_GRAY), listingCount)
+				)
+
+				planet.updateLore(if (!territoryRegion.contains(viewer.location)) lore.plus(REMOTE_WARINING) else lore)
+			},
+			handler = handler
+		)
 	}
 }
