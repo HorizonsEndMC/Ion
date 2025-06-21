@@ -59,6 +59,7 @@ object AIOpponentCommand : SLCommand() {
 		@Optional targetMode : String?) {
 		val world = sender.world
 		failIf(!world.ion.hasFlag(WorldFlag.AI_ARENA)) { "AI Opponents may only be spawned in arena worlds!" }
+		//failIf((difficulty != null) && (difficulty > 5 || difficulty < 0)) {"Difficulty must be b/w 0 and 5"}
 
 		sender.hint("Spawning ${template.starshipInfo.miniMessageName}")
 

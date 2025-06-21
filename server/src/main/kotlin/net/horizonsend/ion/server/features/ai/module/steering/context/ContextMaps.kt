@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextCo
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
+import net.horizonsend.ion.server.features.ai.util.GoalTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.Starship
@@ -270,6 +271,7 @@ class FaceSeekContext(
 		clearContext()
 		val seekPos =  generalTarget.get()?.getLocation()?.toVector()
 		seekPos ?: return
+		if (generalTarget.get() is GoalTarget) return
 		val target= seekPos.clone()
 		val shipPos = ship.centerOfMass.toVector()
 		val offset = target.add(shipPos.clone().multiply(-1.0))

@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringC
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
+import net.horizonsend.ion.server.features.ai.util.GoalTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import java.util.function.Supplier
@@ -42,6 +43,7 @@ class DistancePositioningModule(
 
 	private fun calcCombatDist() : Double{
 		val target = generalTarget.get()
+		if (target is GoalTarget) return 0.1
 		if (target !is StarshipTarget) return optimalDist
 		val blockRatio = target.ship.initialBlockCount.toDouble() / starship.initialBlockCount.toDouble()
 		return distanceFromRatio(blockRatio,minDist,optimalDist,maxDist)

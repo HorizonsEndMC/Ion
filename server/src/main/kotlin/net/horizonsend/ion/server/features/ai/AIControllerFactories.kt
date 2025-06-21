@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.misc.GravityWellModule
 import net.horizonsend.ion.server.features.ai.module.misc.NavigationModule
 import net.horizonsend.ion.server.features.ai.module.misc.PowerModeModule
+import net.horizonsend.ion.server.features.ai.module.misc.RandomGoalModule
 import net.horizonsend.ion.server.features.ai.module.steering.BasicSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.CapitalSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.DistancePositioningModule
@@ -823,6 +824,68 @@ object AIControllerFactories : IonServerComponent() {
 	}
 
 	val passive_cruise = registerFactory("EXPLORER_CRUISE") {
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			// Combat handling
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
+
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
+				controller,
+				difficultyManager,
+				targetAI))
+
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller,difficultyManager))
+			builder.addModule(CombatModule::class, DefensiveCombatModule(controller ,difficultyManager,aiming, targeting::findTarget))
+
+			// Movement handling
+			val distance = builder.addModule(DistancePositioningModule::class, DistancePositioningModule(
+				controller, difficultyManager,targeting::findTarget) { aiSteeringConfig.interdictionCorvetteDistanceConfiguration })
+			val steering = builder.addModule(SteeringModule::class, GunshipSteeringModule(
+				controller,
+				difficultyManager,
+				targeting::findTarget,
+				distance::calcDistance
+			)
+			)
+
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering,
+					difficultyManager,
+					targeting::findTarget ,
+					SteeringSolverModule.MovementType.DC
+				))
+
+			builder.addModule(
+				PowerModeModule::class,PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = {aiPowerModeConfig.gunshipPowerModeConfiguration}
+				)
+			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(NavigationModule::class, NavigationModule(
+					controller,
+					targeting,
+					difficultyManager
+				))
+			}
+
+			builder
+		}
+
+		addUtilModule { AIDebugModule(it) }
+		addUtilModule { RandomGoalModule(it) }
+
+		build()
+	}
+
+	val passive_cruise_legacy = registerFactory("EXPLORER_CRUISE_LEGACY") {
 		val cruiseEndpoint: (AIController) -> Optional<Vec3i> = lambda@{ controller ->
 			var iterations = 0
 			val origin = controller.getCenter()
