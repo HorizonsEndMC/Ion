@@ -69,7 +69,7 @@ class SteeringSolverModule(
 		val isBoosting = !difficulty.speedDebuff
 
 		//map onto player slots
-		var selectedSpeed = round(throttle * 8.0).toInt() + 1
+		var selectedSpeed = round(throttle * 7.0).toInt() + 1
 		if (thrust.dot(ship.forward.direction) < -0.01) selectedSpeed = 0 //ship wants to go backwards
 		val data = DirectControlInput.DirectControlData(thrust,selectedSpeed,isBoosting)
 		(controller.movementHandler.input as? AIInput)?.updateInput(data)

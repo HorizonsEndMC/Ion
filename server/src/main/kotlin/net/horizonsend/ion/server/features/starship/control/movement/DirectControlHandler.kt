@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
 import net.horizonsend.ion.common.extensions.userErrorAction
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.utils.getPing
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -50,11 +51,11 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 		if (input is PlayerInput) {
 			// Ping compensation
 			val ping = getPing(input.player)
-			val playerDcRefreshRate = PlayerCache[input.player.uniqueId].dcRefreshRate
-			speedFac = if (ping > movementCooldown) max(2, playerDcRefreshRate) else playerDcRefreshRate
+			speedFac = if (ping > movementCooldown) 2 else 1
 		}
 
 		val data = input.getData()
+		//starship.debug(data.toString())
 		var strafeVector = data.strafeVector
 
 

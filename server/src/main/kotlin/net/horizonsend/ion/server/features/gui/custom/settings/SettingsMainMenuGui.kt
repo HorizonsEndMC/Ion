@@ -37,7 +37,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
     override val buttonsList = listOf(
 		createSettingsPage(player, "Control Settings",
 			DBCachedBooleanToggle(text("DC Overrides Cruise"), "", GuiItem.GUNSHIP, false, SLPlayer::useAlternateDCCruise, AbstractPlayerCache.PlayerData::useAlternateDCCruise),
-			DBCachedIntegerInput(-1, 1_000_000, text("DC Refresh Rate"), "How frequently DC responds to your movement and teleports you, a value of -1 means that refresh is entirely ping driven. High values means more forging feedback but less responsive", GuiItem.GUNSHIP, 100, SLPlayer::dcRefreshRate, AbstractPlayerCache.PlayerData::dcRefreshRate) ,
+			DBCachedIntegerInput(-1, 1_000_000, text("DC Refresh Rate"), "How frequently DC responds to your movement and teleports you, a value of -1 means that refresh is entirely ping driven. High values means more forging feedback but less responsive", GuiItem.GUNSHIP, -1, SLPlayer::dcRefreshRate, AbstractPlayerCache.PlayerData::dcRefreshRate) ,
 		),
 		createSettingsPage(player, "Sidebar Settings",
 			createSettingsPage(player, "Combat Timer Settings",

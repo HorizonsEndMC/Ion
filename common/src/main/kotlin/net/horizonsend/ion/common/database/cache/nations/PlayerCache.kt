@@ -87,7 +87,7 @@ abstract class AbstractPlayerCache : ManualCache() {
 
 		var protectionMessagesEnabled: Boolean = true,
 		var useAlternateDCCruise: Boolean = true,
-		var dcRefreshRate: Int = 100,
+		var dcRefreshRate: Int = -1,
 		var enableAdditionalSounds: Boolean = true,
 		var soundCruiseIndicator: Int = 0,
 		var enableCombatTimerAlerts: Boolean = true,

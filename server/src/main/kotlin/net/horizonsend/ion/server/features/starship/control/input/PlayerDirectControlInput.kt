@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.control.input
 
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.utils.getPing
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
@@ -81,7 +82,8 @@ class PlayerDirectControlInput(override val controller: PlayerController
 	override fun getData(): DirectControlInput.DirectControlData {
 
 		// Ping compensation
-		val refreshRate = getPing(player) * 1.5 //TODO: add refreshRate setting
+		val refreshRate = if (PlayerCache[player.uniqueId].dcRefreshRate == -1) {getPing(player) * 1.5}
+			else (PlayerCache[player.uniqueId].dcRefreshRate.toDouble())
 		val catchCooldown = (ceil(refreshRate / 50.0)).toInt().coerceAtLeast(2)
 
 		internalTick++
