@@ -10,11 +10,15 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.common.database.schema.nations.SettlementRole
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -23,9 +27,13 @@ import net.horizonsend.ion.server.features.nations.utils.INACTIVE_BEFORE_TIME
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.Bukkit
 import org.litote.kmongo.and
+import org.litote.kmongo.contains
 import org.litote.kmongo.eq
 import org.litote.kmongo.gte
 import org.litote.kmongo.ne
@@ -64,12 +72,17 @@ object NationsMasterTasks : IonServerComponent() {
 			}
 		}
 
-		val results: ProjectedResults = Settlement.findPropsById(settlementId, Settlement::name, Settlement::territory)
-			?: return
+		val results: ProjectedResults = Settlement.findPropsById(settlementId, Settlement::name, Settlement::territory) ?: return
 
 		val name: String = results[Settlement::name]
 		val territoryId: Oid<Territory> = results[Settlement::territory]
 		val territory: RegionTerritory = Regions[territoryId]
+
+		ServerInboxes.sendServerMessages(
+			recipients = Settlement.getMembers(settlementId),
+			subject = Component.text("Settlement Purged.", NamedTextColor.RED),
+			content = template(Component.text("Your settlement, {0} was purged due to 30 days of complete inactivity.", NamedTextColor.RED), name)
+		)
 
 		Settlement.delete(settlementId)
 
@@ -82,6 +95,12 @@ object NationsMasterTasks : IonServerComponent() {
 
 	fun purgeNation(nationId: Oid<Nation>, sendMessage: Boolean) {
 		val nation = Nation.findById(nationId) ?: return
+
+		ServerInboxes.sendServerMessages(
+			recipients = Nation.getMembers(nationId),
+			subject = Component.text("Nation Purged.", NamedTextColor.RED),
+			content = template(Component.text("Your nation, {0} was purged due to the capital settlement being inactive for 30 days.", NamedTextColor.RED), nation.name)
+		)
 
 		Nation.delete(nationId)
 
@@ -215,16 +234,35 @@ object NationsMasterTasks : IonServerComponent() {
 
 			if (!VAULT_ECO.has(offlinePlayer, rent.toDouble())) {
 				Notify.settlementCrossServer(zone.settlement, MiniMessage.miniMessage().deserialize("<red>${offlinePlayer.name} failed to pay rent for zone ${zone.name}"))
+
+				ServerInboxes.settlementMessage(zone.settlement, template(Component.text("{0} failed to pay rent for zone {1}", RED), offlinePlayer.name, zone.name))
+					.setSubject(Component.text("Failure to Pay Zone Rent", RED))
+					.setAllowDuplicates(false)
+					.filterRecipients { playerId ->
+						if (Settlement.matches(zone.settlement, Settlement::leader eq playerId)) {
+							return@filterRecipients true// leaders have all perms
+						}
+
+						SettlementRole.any(and(
+							SettlementRole::parent eq zone.settlement, // just in case, but should never have a role from another settlement
+							SettlementRole::members contains playerId,
+							SettlementRole::permissions contains SettlementRole.Permission.MANAGE_ZONES
+						))
+					}
+					.send()
+
+				ServerInboxes.settlementMessage(zone.settlement, template(Component.text("You failed to pay {0} in rent for zone {1}", RED), rent.toCreditComponent(), zone.name))
+					.setSubject(Component.text("Failure to Pay Zone Rent", RED))
+					.setAllowDuplicates(false)
+					.send()
+
 				continue
 			}
 
 			VAULT_ECO.withdrawPlayer(offlinePlayer, rent.toDouble())
 			Settlement.deposit(zone.settlement, rent)
 
-			Notify.playerCrossServer(owner.uuid, MiniMessage.miniMessage().deserialize(
-				"Paid ${rent.toCreditsString()} rent for zone ${zone.id}"
-				)
-			)
+			Notify.playerCrossServer(owner.uuid, MiniMessage.miniMessage().deserialize("Paid ${rent.toCreditsString()} rent for zone ${zone.id}"))
 		}
 	}
 }

@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType.SPEEDER
 import net.horizonsend.ion.server.features.starship.destruction.StarshipDestruction
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
@@ -128,24 +129,24 @@ object ActiveStarships : IonServerComponent() {
 		return shipLocationMap[world][blockKey(x, y, z)]
 	}
 
-	fun getInWorld(world: World): Collection<ActiveStarship> = worldMap[world]
+	fun getInWorld(world: World): Collection<Starship> = worldMap[world]
 
-	fun findByPassenger(player: Player): ActiveStarship? = set.firstOrNull { it.isPassenger(player.uniqueId) }
+	fun findByPassenger(player: Player): Starship? = set.firstOrNull { it.isPassenger(player.uniqueId) }
 
-	fun findByPilot(player: Player): ActiveControlledStarship? = PilotedStarships[player]
-	fun findByPilot(player: UUID): ActiveControlledStarship? = PilotedStarships[player]
+	fun findByPilot(player: Player): Starship? = PilotedStarships[player]
+	fun findByPilot(player: UUID): Starship? = PilotedStarships[player]
 
-	fun findByBlock(block: Block): ActiveStarship? {
+	fun findByBlock(block: Block): Starship? {
 		return findByBlock(block.world, block.x, block.y, block.z)
 	}
 
-	fun findByBlock(location: Location): ActiveStarship? {
+	fun findByBlock(location: Location): Starship? {
 		return findByBlock(location.world, location.blockX, location.blockY, location.blockZ)
 	}
 
-	fun findByBlock(world: World, x: Int, y: Int, z: Int): ActiveStarship? {
+	fun findByBlock(world: World, x: Int, y: Int, z: Int): Starship? {
 		return getInWorld(world).firstOrNull { it.contains(x, y, z) }
 	}
 
-	fun isActive(starship: ActiveStarship) = worldMap[starship.world].contains(starship)
+	fun isActive(starship: Starship) = worldMap[starship.world].contains(starship)
 }

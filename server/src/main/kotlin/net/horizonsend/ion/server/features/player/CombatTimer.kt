@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.player
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
@@ -14,6 +15,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.Interdiction
@@ -183,7 +185,7 @@ object CombatTimer : IonServerComponent() {
 	fun refreshNpcTimer(player: Player, reason: String) {
 		if (!enabled) return
 
-		if (!isNpcCombatTagged(player) && PlayerCache[player].enableCombatTimerAlerts) {
+		if (!isNpcCombatTagged(player) && player.getSetting(PlayerSettings::enableCombatTimerAlerts)) {
 			player.alert("You are now in combat (NPC)")
 			player.sendMessage(npcTimerAlertComponent(reason))
 		}
@@ -197,7 +199,7 @@ object CombatTimer : IonServerComponent() {
 	fun refreshPvpTimer(player: Player, reason: String) {
 		if (!enabled) return
 
-		if (!isPvpCombatTagged(player) && PlayerCache[player].enableCombatTimerAlerts) {
+		if (!isPvpCombatTagged(player) && player.getSetting(PlayerSettings::enableCombatTimerAlerts)) {
 			player.alert("You are now in combat (PVP)")
 			player.sendMessage(pvpTimerAlertComponent(reason))
 		}

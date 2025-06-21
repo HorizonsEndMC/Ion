@@ -13,7 +13,10 @@ import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
+import net.horizonsend.ion.common.utils.text.bootstrapCustomTranslations
+import net.horizonsend.ion.proxy.commands.velocity.StandardCompletions
 import net.horizonsend.ion.proxy.configuration.ProxyConfiguration
+import net.horizonsend.ion.proxy.features.cache.Listener
 import net.horizonsend.ion.proxy.registration.commands
 import net.horizonsend.ion.proxy.registration.components
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
@@ -52,6 +55,8 @@ class IonProxy @Inject constructor(val server: ProxyServer, val logger: Logger, 
 				else -> "to [Unknown]: "
 			}
 		}
+
+		bootstrapCustomTranslations()
 	}
 
 	@Subscribe
@@ -61,12 +66,14 @@ class IonProxy @Inject constructor(val server: ProxyServer, val logger: Logger, 
 		val eventManager = server.eventManager
 
 		for (component in components) {
-			if (component is IonProxyComponent) eventManager.register(this@IonProxy, component)
+			if (component is Listener) eventManager.register(this@IonProxy, component)
 
 			component.onEnable()
 		}
 
 		commandManager = VelocityCommandManager(this.server, this)
+
+		StandardCompletions.registerStandardCompletions(commandManager)
 
 		for (command in commands) {
 			command.onEnable(commandManager)

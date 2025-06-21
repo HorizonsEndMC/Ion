@@ -141,8 +141,10 @@ import org.bukkit.Material
 import org.bukkit.Material.AMETHYST_SHARD
 import org.bukkit.Material.BELL
 import org.bukkit.Material.BLACKSTONE
+import org.bukkit.Material.BLACK_DYE
 import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.CHAINMAIL_HELMET
+import org.bukkit.Material.CHARCOAL
 import org.bukkit.Material.CHERRY_LEAVES
 import org.bukkit.Material.COAL
 import org.bukkit.Material.COBWEB
@@ -159,6 +161,7 @@ import org.bukkit.Material.DISPENSER
 import org.bukkit.Material.EMERALD
 import org.bukkit.Material.EMERALD_BLOCK
 import org.bukkit.Material.ENCHANTED_BOOK
+import org.bukkit.Material.END_ROD
 import org.bukkit.Material.FEATHER
 import org.bukkit.Material.FIREWORK_ROCKET
 import org.bukkit.Material.GILDED_BLACKSTONE
@@ -533,6 +536,14 @@ object Crafting : IonServerComponent() {
 			setIngredient('d', GREEN_DYE)
 			setIngredient('r', REDSTONE)
 		}
+		shaped("circuitry_3", CIRCUITRY.constructItemStack()) {
+			shape("grg", "qqq", "ccc")
+
+			setIngredient('c', COPPER_INGOT)
+			setIngredient('g', GOLD_INGOT)
+			setIngredient('q', QUARTZ)
+			setIngredient('r', REDSTONE)
+		}
 		shaped("standard_magazine", STANDARD_MAGAZINE.constructItemStack()) {
 			shape("   ", "rlr", "ttt")
 
@@ -592,7 +603,7 @@ object Crafting : IonServerComponent() {
 		shaped("reactiveComponent", REACTIVE_HOUSING.constructItemStack()) {
 			shape("xxx", "yyy", "xxx")
 
-			setIngredient('x', RecipeChoice.MaterialChoice(*TERRACOTTA_TYPES.toTypedArray()) )
+			setIngredient('x', MaterialChoice(*TERRACOTTA_TYPES.toTypedArray()) )
 			setIngredient('y', SPONGE)
 		}
 		shaped("netheriteCasing", NETHERITE_CASING.constructItemStack()) {
@@ -684,29 +695,29 @@ object Crafting : IonServerComponent() {
 			setIngredient('s', FORTUNE_2.constructItemStack())
 		}
 		shaped("power_capacity_25_modifier", POWER_CAPACITY_25.constructItemStack()) {
-			shape("sbs", "brb", "scs")
+			shape("ibi", "brb", "ici")
 
-			setIngredient('s', STEEL_INGOT.constructItemStack())
+			setIngredient('i', IRON_INGOT)
 			setIngredient('b', BATTERY_M.constructItemStack())
 			setIngredient('r', REDSTONE_BLOCK)
-			setIngredient('c', CIRCUITRY.constructItemStack())
+			setIngredient('c', END_ROD)
 		}
 		shaped("power_capacity_50_modifier", POWER_CAPACITY_50.constructItemStack()) {
 			shape("sbs", "brb", "scs")
 
-			setIngredient('s', STEEL_PLATE.constructItemStack())
+			setIngredient('s', IRON_INGOT)
 			setIngredient('b', BATTERY_G.constructItemStack())
-			setIngredient('r', REDSTONE_BLOCK)
-			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
+			setIngredient('r', POWER_CAPACITY_25.constructItemStack())
+			setIngredient('c', END_ROD)
 		}
 		shaped("auto_smelt_modifier", AUTO_SMELT.constructItemStack()) {
-			shape("srs", "bfb", "scs")
+			shape("iri", "bfb", "ici")
 
-			setIngredient('s', STEEL_PLATE.constructItemStack())
+			setIngredient('i', IRON_INGOT)
 			setIngredient('b', GOLD_BLOCK)
 			setIngredient('f', BLAST_FURNACE)
 			setIngredient('r', REDSTONE_BLOCK)
-			setIngredient('c', CIRCUIT_BOARD.constructItemStack())
+			setIngredient('c', CIRCUITRY.constructItemStack())
 		}
 		shaped("auto_compost_modifier", AUTO_COMPOST.constructItemStack()) {
 			shape("tit", "tct", "trt")
@@ -735,38 +746,37 @@ object Crafting : IonServerComponent() {
 			setIngredient('r', REDSTONE_BLOCK)
 		}
 		shaped("extended_bar_modifier", EXTENDED_BAR.constructItemStack()) {
-			shape("st ", "tct", " ts")
+			shape("st ", "tst", " ts")
 
-			setIngredient('s', STEEL_PLATE.constructItemStack())
+			setIngredient('s', STEEL_INGOT.constructItemStack())
 			setIngredient('t', TITANIUM_INGOT.constructItemStack())
-			setIngredient('c', STEEL_CHASSIS.constructItemStack())
 		}
 		shaped("aoe_1_modifier", RANGE_1.constructItemStack()) {
 			shape("ipi", "prp", "ipi")
 
-			setIngredient('i', IRON_BLOCK)
+			setIngredient('i', IRON_INGOT)
 			setIngredient('p', PISTON)
 			setIngredient('r', REDSTONE_BLOCK)
 		}
 		shaped("aoe_2_modifier", RANGE_2.constructItemStack()) {
-			shape("ipi", "prp", "ipi")
+			shape("iii", "prp", "iii")
 
-			setIngredient('i', ExactChoice(STEEL_BLOCK.constructItemStack()))
+			setIngredient('i', IRON_BLOCK)
 			setIngredient('p', PISTON)
 			setIngredient('r', ExactChoice(RANGE_1.constructItemStack()))
 		}
 
 		shaped("aoe_3_modifier", RANGE_3.constructItemStack()) {
-			shape("ipi", "prp", "ipi")
+			shape("iii", "prp", "iii")
 
-			setIngredient('i', ExactChoice(STEEL_BLOCK.constructItemStack()))
-			setIngredient('p', ExactChoice(STEEL_PLATE.constructItemStack()))
+			setIngredient('i', ExactChoice(STEEL_INGOT.constructItemStack()))
+			setIngredient('p', PISTON)
 			setIngredient('r', ExactChoice(RANGE_2.constructItemStack()))
 		}
 		shaped("vein_miner_modifier", VEIN_MINER_25.constructItemStack()) {
 			shape("ipi", "prp", "ipi")
 
-			setIngredient('i', ExactChoice(ALUMINUM_BLOCK.constructItemStack()))
+			setIngredient('i', ALUMINUM_INGOT)
 			setIngredient('p', OBSERVER)
 			setIngredient('r', RANGE_1.constructItemStack())
 		}
@@ -799,11 +809,11 @@ object Crafting : IonServerComponent() {
 		}
 
 		registerPowerArmorModule(ARMOR_MODIFICATION_SHOCK_ABSORBING, ExactChoice(TITANIUM_INGOT.constructItemStack()))
-		registerPowerArmorModule(ARMOR_MODIFICATION_SPEED_BOOSTING, RecipeChoice.MaterialChoice(FEATHER))
-		registerPowerArmorModule(ARMOR_MODIFICATION_ROCKET_BOOSTING, RecipeChoice.MaterialChoice(FIREWORK_ROCKET))
-		registerPowerArmorModule(ARMOR_MODIFICATION_NIGHT_VISION, RecipeChoice.MaterialChoice(SPIDER_EYE))
-		registerPowerArmorModule(ARMOR_MODIFICATION_ENVIRONMENT, RecipeChoice.MaterialChoice(CHAINMAIL_HELMET))
-		registerPowerArmorModule(ARMOR_MODIFICATION_PRESSURE_FIELD, RecipeChoice.ExactChoice(GAS_CANISTER_EMPTY.constructItemStack()))
+		registerPowerArmorModule(ARMOR_MODIFICATION_SPEED_BOOSTING, MaterialChoice(FEATHER))
+		registerPowerArmorModule(ARMOR_MODIFICATION_ROCKET_BOOSTING, MaterialChoice(FIREWORK_ROCKET))
+		registerPowerArmorModule(ARMOR_MODIFICATION_NIGHT_VISION, MaterialChoice(SPIDER_EYE))
+		registerPowerArmorModule(ARMOR_MODIFICATION_ENVIRONMENT, MaterialChoice(CHAINMAIL_HELMET))
+		registerPowerArmorModule(ARMOR_MODIFICATION_PRESSURE_FIELD, ExactChoice(GAS_CANISTER_EMPTY.constructItemStack()))
 
 		fun registerSwordRecipes(sword: CustomItem, choice: RecipeChoice) = shaped(sword.identifier.lowercase(), sword) {
 			shape("aga", "a*a", "ata")
@@ -813,13 +823,13 @@ object Crafting : IonServerComponent() {
 			setIngredient('t', TITANIUM_INGOT)
 		}
 
-		registerSwordRecipes(ENERGY_SWORD_BLUE, RecipeChoice.MaterialChoice(DIAMOND))
-		registerSwordRecipes(ENERGY_SWORD_RED, RecipeChoice.MaterialChoice(REDSTONE))
-		registerSwordRecipes(ENERGY_SWORD_YELLOW, RecipeChoice.MaterialChoice(COAL))
-		registerSwordRecipes(ENERGY_SWORD_GREEN, RecipeChoice.MaterialChoice(EMERALD))
+		registerSwordRecipes(ENERGY_SWORD_BLUE, MaterialChoice(DIAMOND))
+		registerSwordRecipes(ENERGY_SWORD_RED, MaterialChoice(REDSTONE))
+		registerSwordRecipes(ENERGY_SWORD_YELLOW, MaterialChoice(COAL))
+		registerSwordRecipes(ENERGY_SWORD_GREEN, MaterialChoice(EMERALD))
 		registerSwordRecipes(ENERGY_SWORD_PURPLE, ExactChoice(CHETHERITE.constructItemStack()))
-		registerSwordRecipes(ENERGY_SWORD_ORANGE, RecipeChoice.MaterialChoice(COPPER_INGOT))
-		registerSwordRecipes(ENERGY_SWORD_PINK, RecipeChoice.MaterialChoice(PINK_TULIP))
+		registerSwordRecipes(ENERGY_SWORD_ORANGE, MaterialChoice(COPPER_INGOT))
+		registerSwordRecipes(ENERGY_SWORD_PINK, MaterialChoice(PINK_TULIP))
 	}
 
 	private fun registerOreFurnaceRecipes() {
@@ -872,6 +882,13 @@ object Crafting : IonServerComponent() {
 			setIngredient('g', MaterialChoice(*ALL_GLASS_TYPES.toTypedArray()))
 			setIngredient('r', REDSTONE)
 		}
+		Bukkit.addRecipe(FurnaceRecipe(
+			NamespacedKey(IonServer, "black_dye_smelting"),
+			ItemStack(BLACK_DYE),
+			MaterialChoice(CHARCOAL),
+			0.5f,
+			200
+		))
 	}
 
 	// Different names due to signature problems from type erasure
@@ -929,7 +946,7 @@ object Crafting : IonServerComponent() {
 	private fun shapeless(name: String, result: ItemStack, vararg ingredients: Material) {
 		val recipe = ShapelessRecipe(NamespacedKeys.key(name), result)
 		for (ingreidient in ingredients) {
-			recipe.addIngredient(RecipeChoice.MaterialChoice(ingreidient))
+			recipe.addIngredient(MaterialChoice(ingreidient))
 		}
 		Bukkit.addRecipe(recipe)
 	}

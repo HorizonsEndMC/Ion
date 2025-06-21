@@ -9,7 +9,7 @@ import org.bukkit.entity.Player
 import xyz.xenondevs.invui.gui.PagedGui
 import java.util.function.Consumer
 
-abstract class SettingsMenuButton<T: Any>(
+abstract class SettingsMenuButton<T: Any?>(
 	val name: Component,
 	val buttonDescription: String,
 	val icon: GuiItem,
@@ -30,7 +30,7 @@ abstract class SettingsMenuButton<T: Any>(
 
 			val newValueHandler = Consumer<T> {
 				setState(player, it)
-				page.refreshPageText(player, gui)
+				page.refreshTitle()
 			}
 
 			handleClick(player, value, gui, page, newValueHandler)

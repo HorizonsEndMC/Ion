@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
@@ -44,7 +45,7 @@ object AchievementsCommand : SLCommand() {
 			sender.userError("Player not found or not online")
 			return
 		}
-		openAchievementWindow(sender, targetPlayer)
+		openAchievementWindow(sender)
 	}
 
 	@Subcommand("grant")
@@ -165,23 +166,15 @@ object AchievementsCommand : SLCommand() {
 	}
 	 */
 
-	private fun openAchievementWindow(viewer: Player, player: Player = viewer) {
+	private fun openAchievementWindow(viewer: Player) {
 		val achievementObject = Achievements(viewer)
 		val gui = achievementObject.createGui()
 
 		val window = Window.single()
 			.setViewer(viewer)
-			.setTitle(AdventureComponentWrapper(achievementObject.createText(player, 0)))
+			.setTitle(achievementObject.buildTitle())
 			.setGui(gui)
 			.build()
-
-		fun updateTitle(): (Int, Int) -> Unit {
-			return { _, currentPage ->
-				window.changeTitle(AdventureComponentWrapper(achievementObject.createText(player, currentPage)))
-			}
-		}
-
-		gui.addPageChangeHandler(updateTitle())
 
 		window.open()
 	}
