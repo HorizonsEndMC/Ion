@@ -21,9 +21,9 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.IndividualBrowseGui
+import net.horizonsend.ion.server.gui.invui.bazaar.getFilterButton
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.BazaarPurchaseMenuParent
-import net.horizonsend.ion.server.gui.invui.bazaar.purchase.SearchGui
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
@@ -52,6 +52,7 @@ abstract class ItemListingMenu(viewer: Player, protected val itemString: String)
 	override fun generateEntries(): List<BazaarItem> = BazaarItem.find(searchBson)
 		.apply { sortingMethod.sortSellOrders(this) }
 		.filter { TradeCities.isCity(Regions[it.cityTerritory]) }
+		.filter { filterData.matches(it) }
 
 	override fun createItem(entry: BazaarItem): Item = formatItem(entry)
 
@@ -74,12 +75,13 @@ abstract class ItemListingMenu(viewer: Player, protected val itemString: String)
 			"# # # # # # # # #",
 			"# # # # # # # # #",
 			"# # # # # # # # #",
-			"< . s . . . S . >"
+			"< . s . . . f S >"
 		)
 		.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 		.addIngredient('<', GuiItems.PageLeftItem())
 		.addIngredient('>', GuiItems.PageRightItem())
 		.addIngredient('s', searchButton)
+		.addIngredient('f', filterButton)
 		.addIngredient('S', sortButton)
 		.setContent(items)
 		.addPageChangeHandler { _, new ->
@@ -131,14 +133,6 @@ abstract class ItemListingMenu(viewer: Player, protected val itemString: String)
 		return terms
 	}
 
-	private fun openSearchMenu() = SearchGui(
-		player = viewer,
-		contextName = contextName,
-		rawItemBson = searchBson,
-		backButtonHandler = ::openGui,
-		resultStringConsumer = ::openSearchResults
-	).openGui()
-
 	abstract fun openSearchResults(string: String)
 
 	override fun goToCitySelection(viewer: Player) {
@@ -148,4 +142,9 @@ abstract class ItemListingMenu(viewer: Player, protected val itemString: String)
 	override fun goToGlobalBrowse(viewer: Player) {
 		BazaarGUIs.openGlobalBrowse(viewer, this)
 	}
+
+	@Suppress("LeakingThis") // Viewer won't be overriden, just need a reference otherwise
+	private val filterInfo = getFilterButton(this, PlayerSettings::bazaarSellBrowseFilters)
+	private val filterData get() = filterInfo.first
+	protected val filterButton get() = filterInfo.second
 }

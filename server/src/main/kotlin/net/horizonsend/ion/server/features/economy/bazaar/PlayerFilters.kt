@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.economy.bazaar
 
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
@@ -20,6 +21,9 @@ data class PlayerFilters(var filters: List<BazaarFilter> = listOf()) {
 
 	fun matches(item: BazaarItem): Boolean {
 		return filters.all { it.matches(item) }
+	}
+	fun matches(order: BazaarOrder): Boolean {
+		return filters.all { it.matches(order) }
 	}
 
 	companion object {

@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.getBazaarSettingsButton
+import net.horizonsend.ion.server.gui.invui.bazaar.getFilterButton
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -41,6 +42,7 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 		return BazaarOrder.find(findBson)
 			.apply { SORTING_METHODS[sortingMethod].sortBuyOrders(this) }
 			.filter { TradeCities.isCity(Regions[it.cityTerritory]) }
+			.filter { filterData.matches(it) }
 			.filterNot { BazaarOrder.isFulfilled(it._id) }
 	}
 
@@ -69,8 +71,8 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 			.addIngredient('>', GuiItems.PageRightItem())
 
 			.addIngredient('s', searchButton)
-			.addIngredient('S', sortButton) //TODO
-			.addIngredient('f', GuiItem.FILTER) //TODO
+			.addIngredient('S', sortButton)
+			.addIngredient('f', filterButton)
 
 			.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 			.setContent(items)
@@ -147,4 +149,9 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 			openGui()
 		}
 	)
+
+	@Suppress("LeakingThis") // Viewer won't be overriden, just need a reference otherwise
+	private val filterInfo = getFilterButton(this, PlayerSettings::bazaarOrderBrowseFilters)
+	private val filterData get() = filterInfo.first
+	private val filterButton get() = filterInfo.second
 }

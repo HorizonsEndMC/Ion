@@ -56,7 +56,7 @@ fun getFilterButton(gui: InvUIWindowWrapper, property: KMutableProperty1<PlayerS
 		},
 	) { clickType, _ ->
 		if (clickType.isShiftClick) {
-			filterData.save(gui.viewer, PlayerSettings::bazaarSellManageFilters)
+			filterData.save(gui.viewer, property)
 			updateWith(InputResult.SuccessReason(listOf(template(text("Saved {0} filters.", GREEN), filterData.filters.size))))
 			return@withHandler
 		}
