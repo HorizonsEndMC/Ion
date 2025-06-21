@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
+import net.horizonsend.ion.server.gui.invui.bazaar.getFilterButton
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
@@ -34,10 +35,10 @@ import xyz.xenondevs.invui.item.Item
 
 abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>(viewer, async = true) {
 	override fun generateEntries(): List<BazaarOrder> {
-		// TODO filtering
 		return BazaarOrder
 			.find(BazaarOrder::player eq viewer.slPlayerId)
 			.apply { SORTING_METHODS[sortingMethod].sortBuyOrders(this) }
+			.filter { filterData.matches(it) }
 			.toList()
 	}
 
@@ -97,8 +98,10 @@ abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<Baz
 		)
 	}
 
-
-	protected val filterButton: Item = TODO()
+	@Suppress("LeakingThis") // Viewer won't be overriden, just need a reference otherwise
+	private val filterInfo = getFilterButton(this, PlayerSettings::bazaarOrderManageFilters)
+	private val filterData get() = filterInfo.first
+	protected val filterButton get() = filterInfo.second
 
 	protected val createBuyOrderMenu = GuiItem.PLUS.makeItem(text("Create Bazaar Order")).makeGuiButton { _, _ ->
 		BazaarGUIs.openBuyOrderCreationMenu(viewer, this)
