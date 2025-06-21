@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.GroupedBrowseGui
+import net.horizonsend.ion.server.gui.invui.bazaar.getFilterButton
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.BazaarPurchaseMenuParent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -54,12 +55,13 @@ abstract class BazaarBrowseMenu(viewer: Player) : BazaarPurchaseMenuParent<Map.E
 			"# # # # # # # # #",
 			"# # # # # # # # #",
 			"# # # # # # # # #",
-			"< . s . . . S . >"
+			"< . s . . . f S >"
 		)
 		.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 		.addIngredient('<', GuiItems.PageLeftItem())
 		.addIngredient('>', GuiItems.PageRightItem())
 		.addIngredient('s', searchButton)
+		.addIngredient('f', filterButton)
 		.addIngredient('S', sortButton)
 		.setContent(items)
 		.handlePageChange()
@@ -137,4 +139,9 @@ abstract class BazaarBrowseMenu(viewer: Player) : BazaarPurchaseMenuParent<Map.E
 	)
 
 	abstract val contextName: String
+
+	@Suppress("LeakingThis") // Viewer won't be overriden, just need a reference otherwise
+	private val filterInfo = getFilterButton(this, PlayerSettings::bazaarSellBrowseFilters)
+	private val filterData get() = filterInfo.first
+	protected val filterButton get() = filterInfo.second
 }

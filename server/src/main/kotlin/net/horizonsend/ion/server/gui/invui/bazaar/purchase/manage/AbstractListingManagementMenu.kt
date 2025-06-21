@@ -116,8 +116,9 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
 		)
 	}
 
+	@Suppress("LeakingThis") // Viewer won't be overriden, just need a reference otherwise
 	private val filterInfo = getFilterButton(this, PlayerSettings::bazaarSellManageFilters)
-	protected val filterData get() = filterInfo.first
+	private val filterData get() = filterInfo.first
 	protected val filterButton get() = filterInfo.second
 
     protected val sortButton = CollectionScrollButton(
