@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractMagazine
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.particleshield.BubbleShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.SphereShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
@@ -41,6 +42,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsys
 import net.horizonsend.ion.server.features.starship.subsystem.misc.PlanetDrillSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.BoxShieldSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.shield.BubbleShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.EventShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.SphereShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterSubsystem
@@ -181,6 +183,10 @@ object SubsystemDetector {
 
 			is BoxShieldMultiblock -> {
 				starship.subsystems += BoxShieldSubsystem(starship, sign, multiblock)
+			}
+
+			is BubbleShieldMultiblock -> {
+				starship.subsystems += BubbleShieldSubsystem(starship, sign, multiblock)
 			}
 
 			is BattleCruiserReactorMultiblock -> {
