@@ -476,7 +476,7 @@ object AISpawners : IonServerComponent(true) {
 				),
 				WorldSettings(
 					worldName = "Horizon",
-					probability = 0.15,
+					probability = 0.25,
 					minDistanceFromPlayer = 2000.0,
 					maxDistanceFromPlayer = 4000.0,
 					templates = listOf(
@@ -772,7 +772,7 @@ object AISpawners : IonServerComponent(true) {
 				),
 				WorldSettings(
 					worldName = "Horizon",
-					probability = 0.1,
+					probability = 0.2,
 					minDistanceFromPlayer = 1000.0,
 					maxDistanceFromPlayer = 2500.0,
 					templates = listOf(
@@ -817,7 +817,7 @@ object AISpawners : IonServerComponent(true) {
 			)
 		))
 
-		registerSingleWorldSpawner("Trench", "AU-0821") {
+		registerSingleWorldSpawner("Trench", "AU-0821","Horizon") {
 			SingleWorldSpawner(
 				"DAGGER_SWARM",
 				it,
@@ -870,7 +870,7 @@ object AISpawners : IonServerComponent(true) {
             )
 		))
 
-		registerSingleWorldSpawner("Trench", "AU-0821") {
+		registerSingleWorldSpawner("Trench", "AU-0821", "Horizon") {
 			SingleWorldSpawner(
 				"PRIVATEER_ASSAULT_FORCE",
 				it,
@@ -950,7 +950,7 @@ object AISpawners : IonServerComponent(true) {
 			"BAIT_SHIP",
 			AISpawnerTicker(
 				pointChance = 0.5,
-				pointThreshold = 20 * 60 * 7 * 20
+				pointThreshold = 20 * 60 * 7 * 5
 			),
 			SingleSpawn(
                 RandomShipSupplier(

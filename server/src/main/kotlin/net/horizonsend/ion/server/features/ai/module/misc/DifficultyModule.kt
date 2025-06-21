@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.ai.module.misc
 import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.minecraft.util.valueproviders.IntProvider
 import java.util.function.Supplier
 
 class DifficultyModule(
@@ -67,6 +66,17 @@ class DifficultyModule(
 
 	val powerModeSwitch get() = internalDifficulty >= 2
 	val useSpecialPowerModes  get() = internalDifficulty >= 4
+
+	val rewardMultiplier : Double get() {
+		return when (internalDifficulty) {
+			0 -> 0.7
+			1 -> 0.9
+			2 -> 1.0
+			3 -> 1.15
+			4 -> 1.3
+			else -> 1.0
+		}
+	}
 
 
 	companion object {
