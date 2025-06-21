@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.economy.bazaar
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.slPlayerId
@@ -30,6 +31,7 @@ import java.util.UUID
 @Serializable
 sealed interface BazaarFilter {
 	fun matches(item: BazaarItem): Boolean
+	fun matches(order: BazaarOrder): Boolean
 
 	fun getSettingsMenu(player: Player, parent: PlayerFilters): InvUIWindowWrapper
 
@@ -43,6 +45,9 @@ sealed interface BazaarFilter {
 
 		override fun matches(item: BazaarItem): Boolean {
 			return !cities.contains(item.cityTerritory.id.toHexString())
+		}
+		override fun matches(order: BazaarOrder): Boolean {
+			return !cities.contains(order.cityTerritory.id.toHexString())
 		}
 
 		override fun getSettingsMenu(player: Player, parent: PlayerFilters): InvUIWindowWrapper {
@@ -78,6 +83,9 @@ sealed interface BazaarFilter {
 		override fun matches(item: BazaarItem): Boolean {
 			return cities.contains(item.cityTerritory.id.toHexString())
 		}
+		override fun matches(order: BazaarOrder): Boolean {
+			return cities.contains(order.cityTerritory.id.toHexString())
+		}
 
 		override fun getSettingsMenu(player: Player, parent: PlayerFilters): InvUIWindowWrapper {
 			return CollectionModificationButton(
@@ -90,7 +98,7 @@ sealed interface BazaarFilter {
 				itemTransformer = { TradeCities.getIfCity(Regions[WrappedObjectId<Territory>(ObjectId(it))])?.planetIcon ?: GuiItem.CANCEL.makeItem(Component.text("Region is no longer a trade city.")) },
 				getItemLines = {
 					val name = Bazaars.cityName(Regions[WrappedObjectId<Territory>(ObjectId(it))])
-					getMenuTitleName(Component.text(name, WHITE)) to Component.text("Blacklisted") },
+					getMenuTitleName(Component.text(name, WHITE)) to Component.text("Hidden") },
 				playerModifier = { _, _ -> },
 				entryCreator = { consumer ->
 					searchTradeCities(
@@ -112,6 +120,9 @@ sealed interface BazaarFilter {
 		override fun matches(item: BazaarItem): Boolean {
 			return !players.contains(item.seller.uuid)
 		}
+		override fun matches(order: BazaarOrder): Boolean {
+			return !players.contains(order.player.uuid)
+		}
 
 		override fun getSettingsMenu(player: Player, parent: PlayerFilters): InvUIWindowWrapper {
 			return CollectionModificationButton(
@@ -124,7 +135,7 @@ sealed interface BazaarFilter {
 				itemTransformer = { skullItem(it, SLPlayer.getName(it.slPlayerId)!!) },
 				getItemLines = {
 					val name = SLPlayer.getName(it.slPlayerId)!!
-					getMenuTitleName(Component.text(name, WHITE)) to Component.text("Whitelisted") },
+					getMenuTitleName(Component.text(name, WHITE)) to Component.text("Hidden") },
 				playerModifier = { _, _ -> },
 				entryCreator = { consumer ->
 					searchSLPlayers(viewer) { consumer.accept(it.uuid) }
@@ -140,6 +151,9 @@ sealed interface BazaarFilter {
 
 		override fun matches(item: BazaarItem): Boolean {
 			return players.contains(item.seller.uuid)
+		}
+		override fun matches(order: BazaarOrder): Boolean {
+			return players.contains(order.player.uuid)
 		}
 
 		override fun getSettingsMenu(player: Player, parent: PlayerFilters): InvUIWindowWrapper {
