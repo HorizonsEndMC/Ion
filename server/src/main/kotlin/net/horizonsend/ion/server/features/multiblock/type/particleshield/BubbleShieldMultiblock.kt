@@ -18,6 +18,7 @@ object BubbleShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 	private const val MAX_DIMENSION = 27
 	private const val MIN_VOLUME = 256
 	private const val MAX_VOLUME = 15645
+	private const val SHELL_THICKNESS = 1.5
 
 	override val displayName: Component get() = text("Bubble Shield")
 	override val description: Component get() = text("Protects a starship from explosion damage within a user-specified ellipsoid region, between $MIN_DIMENSION and $MAX_DIMENSION blocks long for each axis.")
@@ -137,10 +138,17 @@ object BubbleShieldMultiblock : ShieldMultiblock(), DisplayNameMultilblock {
 		for (x in (-dx.toInt())..(dx.toInt())) {
 			for (y in (-dy.toInt())..(dy.toInt())) {
 				for (z in (-dz.toInt())..(dz.toInt())) {
-          				val ellipsoidExpression = (x/dx).pow(2) + (y/dy).pow(2) + (z/dz).pow(2)
-          				if( abs(ellipsoidExpression - 0.8125) > 0.1875) {
-            					continue
-          				}
+          				val outerShellExpression = (x/dx).pow(2) + 
+								   (y/dy).pow(2) + 
+								   (z/dz).pow(2)
+
+					val innerShellExpression = (x/(dx-SHELL_THICKNESS)).pow(2) + 
+								   (y/(dy-SHELL_THICKNESS)).pow(2) + 
+								   (z/(dz-SHELL_THICKNESS)).pow(2)
+
+					if (outerShellExpression > 1 || innerShellExpression < 1) {
+						continue
+					}
 					blocks.add(Vec3i(x, y, z))
 				}
 			}
