@@ -120,12 +120,8 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		return newFace
 	}
 
-	override fun tick() {
-//		return
-		rotateBlocks(90.0)
-	}
-
 	private fun rotateBlocks(thetaDegrees: Double) {
+		if (starship.isMoving) return
 		val cosTheta: Double = cos(Math.toRadians(thetaDegrees))
 		val sinTheta: Double = sin(Math.toRadians(thetaDegrees))
 
@@ -150,7 +146,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		}
 
 		OptimizedMovement.moveStarship(
-			executionCheck = { ActiveStarships.isActive(starship) },
+			executionCheck = { ActiveStarships.isActive(starship) && !starship.isMoving },
 			world1 = starship.world,
 			world2 = starship.world,
 			oldPositionArray = blocks.toLegacyBlockKey(),

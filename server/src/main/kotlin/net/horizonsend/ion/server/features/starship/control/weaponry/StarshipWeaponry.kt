@@ -102,7 +102,7 @@ object StarshipWeaponry : IonServerComponent() {
 		}
 	}
 
-	fun queueShots(
+	private fun queueShots(
         shooter: Damager,
         weapons: List<WeaponSubsystem>,
         leftClick: Boolean,
