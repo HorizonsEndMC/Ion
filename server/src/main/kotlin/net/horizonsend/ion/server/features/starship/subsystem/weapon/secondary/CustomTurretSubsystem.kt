@@ -6,11 +6,13 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretBaseMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory
 import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
@@ -33,6 +35,10 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 
 class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace) : StarshipSubsystem(starship, pos), DirectionalSubsystem {
+	companion object {
+		val disallowedSubsystems = setOf(CustomTurretSubsystem::class, TurretWeaponSubsystem::class)
+	}
+
 	override fun isIntact(): Boolean {
 		// Only check the base
 		val block = getBlockIfLoaded(starship.world, pos.x, pos.y, pos.z) ?: return false
@@ -81,7 +87,9 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 				if (visitedBlocks.contains(newBlock)) continue
 
 				toVisit.addLast(newBlock)
-				subsystemsByPos[toBlockKey(newBlock.x, newBlock.y, newBlock.z)]?.let(captiveSubsystems::add)
+				val subsystem = subsystemsByPos[toBlockKey(newBlock.x, newBlock.y, newBlock.z)]
+				if (disallowedSubsystems.contains(subsystem::class)) throw ActiveStarshipFactory.StarshipActivationException("${subsystem.javaClass.simpleName}s cannot be part of custom turrets!")
+				subsystem?.let(captiveSubsystems::add)
 			}
 		}
 
