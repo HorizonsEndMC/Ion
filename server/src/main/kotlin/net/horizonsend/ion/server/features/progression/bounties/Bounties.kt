@@ -27,6 +27,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.DARK_RED
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -105,9 +106,15 @@ object Bounties : IonServerComponent() {
 		val killer = event.entity.killer ?: return@async
 
 		// Check names because of combat NPCs
+		// (was this added when you could kill your own combat npc?)
 		if (killer.name == victim.name) return@async
 
-		if (hasActive(killer.slPlayerId, victim.slPlayerId)) {
+		// gets the victim's slPlayerId, even if they are offline (in the case of combat NPCs)
+		val victimSlPlayerId = if (Bukkit.getPlayer(victim.name) != null) victim.slPlayerId
+		// Combat NPC entities are the "Player" class, but attempting to resolve their slPlayerId directly won't work
+		else Bukkit.getOfflinePlayerIfCached(victim.name)?.let { PlayerCache[it.uniqueId].id } ?: return@async
+
+		if (hasActive(killer.slPlayerId, victimSlPlayerId)) {
 			collectBounty(killer, victim)
 		} else {
 			val amount = 2500.0
