@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModif
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.general.AutoReplantModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.chainsaw.ExtendedBar
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isFence
@@ -150,9 +151,8 @@ class PowerChainsaw(
 					continue
 				}
 
-				val key1 = BlockPos.asLong(adjacentX, adjacentY, adjacentZ)
-
-				if (key1 == BlockPos.asLong(x, y, z)) continue
+				val key1 = toBlockKey(adjacentX, adjacentY, adjacentZ)
+				if (key1 == toBlockKey(x, y, z)) continue
 
 				if (visited.containsKey(key1)) continue
 

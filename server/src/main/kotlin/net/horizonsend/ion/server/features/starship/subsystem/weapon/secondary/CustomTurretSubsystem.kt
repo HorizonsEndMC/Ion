@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretBaseMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
@@ -13,7 +14,9 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovementExc
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
@@ -21,6 +24,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateBlockFac
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toLegacyBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
@@ -56,49 +60,67 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 	}
 
 	fun detectTurret() {
+		val starshipBlocks = starship.blocks
 		val subsystemsByPos = starship.subsystems.associateByTo(Long2ObjectOpenHashMap()) { toBlockKey(it.pos) }
-
-		if (!starship.contains(pos.x, pos.y + 1, pos.z)) return
-
-		val visitedBlocks = ObjectOpenHashSet<Block>()
-		val vistedSubsystems = ObjectOpenHashSet<StarshipSubsystem>()
+		if (!starship.contains(pos.x, pos.y + 1, pos.z)) return // Turret base is empty
 
 		// Add the center of the turret base, it rotates with the turret to control direction.
-		visitedBlocks.add(starship.world.getBlockAt(pos.x, pos.y, pos.z))
+		val foundBlocks = LongOpenHashSet.of()
+		val foundSubsystems = ObjectOpenHashSet<StarshipSubsystem>()
 
-		val toVisit = ArrayDeque<Block>()
+		// Queue of blocks that need to be visited
+		val visitQueue = ArrayDeque<Vec3i>()
+		// Set of all blocks that have been visited
+		val visitSet = LongOpenHashSet()
 
-		toVisit.add(starship.world.getBlockAt(pos.x, pos.y + 1, pos.z))
+		// Jump to start with the origin
+		visitQueue.add(Vec3i(pos.x, pos.y + 1, pos.z))
+
+		var iterations = 0L
 
 		// Perform a flood fill to find turret blocks
-		while (toVisit.isNotEmpty()) {
-			val block = toVisit.removeFirst()
+		while (visitQueue.isNotEmpty()) {
+			iterations++
+			val currentVec3i = visitQueue.removeFirst()
+			val currentKey = toBlockKey(currentVec3i.x, currentVec3i.y, currentVec3i.z)
 
-			if (!canDetect(block)) continue
+			if (!starshipBlocks.contains(blockKey(currentVec3i.x, currentVec3i.y, currentVec3i.z))) continue
 
-			visitedBlocks.add(block)
+			// Block can be a part of the turret
+			foundBlocks.add(currentKey)
+
+			val subsystem = subsystemsByPos[currentKey]
+			subsystem?.let {
+				if (disallowedSubsystems.contains(it::class)) throw ActiveStarshipFactory.StarshipActivationException("${subsystem.javaClass.simpleName}s cannot be part of custom turrets!")
+				foundSubsystems.add(it)
+			}
 
 			for (offsetX in -1..1) for (offsetY in -1..1) for (offsetZ in -1..1) {
-				val newBlock = block.getRelative(offsetX, offsetY, offsetZ)
+				iterations++
+				val newVec = currentVec3i.plus(Vec3i(offsetX, offsetY, offsetZ))
+				val newKey = toBlockKey(newVec.x, newVec.y, newVec.z)
 
-				if (block == newBlock) continue
+				// Center of the grid is already visited
+				if (currentKey == newKey) continue
 
-				if (!starship.contains(newBlock.x, newBlock.y, newBlock.z)) continue
+				val newBlock = starship.world.getBlockAt(newVec.x, newVec.y, newVec.z)
 
-				if (visitedBlocks.contains(newBlock)) continue
+				// Already visited
+				if (visitSet.contains(newKey)) continue
 
-				toVisit.addLast(newBlock)
-
-				val subsystem = subsystemsByPos[toBlockKey(newBlock.x, newBlock.y, newBlock.z)]
-				subsystem?.let {
-					if (disallowedSubsystems.contains(it::class)) throw ActiveStarshipFactory.StarshipActivationException("${subsystem.javaClass.simpleName}s cannot be part of custom turrets!")
-					vistedSubsystems.add(it)
+				if (!canDetect(newBlock)) {
+					continue
 				}
+
+				visitSet.add(newKey)
+				visitQueue.addLast(newVec)
+
+				Tasks.asyncDelay(iterations) { debugAudience.highlightBlock(Vec3i(newVec.x, newVec.y, newVec.z), 30L) }
 			}
 		}
 
-		captiveSubsystems = LinkedList(vistedSubsystems)
-		blocks = visitedBlocks.map { toBlockKey(it.x, it.y, it.z) }.toLongArray()
+		captiveSubsystems = LinkedList(foundSubsystems)
+		blocks = foundBlocks.toLongArray()
 	}
 
 	private fun canDetect(block: Block): Boolean {
