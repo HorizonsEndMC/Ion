@@ -39,6 +39,7 @@ import net.minecraft.world.level.chunk.LevelChunk
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
+import org.bukkit.World
 import org.bukkit.util.Vector
 import java.util.LinkedList
 import kotlin.math.PI
@@ -145,8 +146,8 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 			return
 		}
 
-		val oldChunkMap = getChunkMap(sinkPositions)
-		val newChunkMap = getChunkMap(newPositions)
+		val oldChunkMap = getChunkMap(sinkPositions, starship.world)
+		val newChunkMap = getChunkMap(newPositions, starship.world)
 
 		val n = sinkPositions.size
 		val capturedStates = Array(n) { AIR }
@@ -455,30 +456,34 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		}
 	}
 
-	/**
-	 * Formnats the provided position array into the chunk map
-	 **/
-	private fun getChunkMap(positionArray: LongArray): SinkChunkMap {
-		val chunkMap = mutableMapOf<Long, MutableMap<Int, MutableMap<Long, Int>>>()
+	companion object {
 
-		for (index in positionArray.indices) {
-			val blockKey = positionArray[index]
 
-			val x = getX(blockKey)
-			val y = getY(blockKey)
-			val z = getZ(blockKey)
+		/**
+		 * Formnats the provided position array into the chunk map
+		 **/
+		fun getChunkMap(positionArray: LongArray, world: World): SinkChunkMap {
+			val chunkMap = mutableMapOf<Long, MutableMap<Int, MutableMap<Long, Int>>>()
 
-			val chunkKey = chunkKey(x shr 4, z shr 4)
+			for (index in positionArray.indices) {
+				val blockKey = positionArray[index]
 
-			val sectionKey = starship.world.minecraft.getSectionIndexFromSectionY(SectionPos.blockToSectionCoord(y))
+				val x = getX(blockKey)
+				val y = getY(blockKey)
+				val z = getZ(blockKey)
 
-			val sectionMap = chunkMap.getOrPut(chunkKey) { mutableMapOf() }
-			val positionMap = sectionMap.getOrPut(sectionKey) { mutableMapOf() }
+				val chunkKey = chunkKey(x shr 4, z shr 4)
 
-			positionMap[blockKey] = index
+				val sectionKey = world.minecraft.getSectionIndexFromSectionY(SectionPos.blockToSectionCoord(y))
+
+				val sectionMap = chunkMap.getOrPut(chunkKey) { mutableMapOf() }
+				val positionMap = sectionMap.getOrPut(sectionKey) { mutableMapOf() }
+
+				positionMap[blockKey] = index
+			}
+
+			return chunkMap
 		}
-
-		return chunkMap
 	}
 }
 

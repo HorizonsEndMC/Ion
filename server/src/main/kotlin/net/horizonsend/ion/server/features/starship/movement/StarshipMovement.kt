@@ -121,12 +121,12 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		}
 
 		OptimizedMovement.moveStarship(
-			starship,
-			world1,
-			world2,
-			oldLocationArray,
-			newLocationArray,
-			this::blockDataTransform
+			executionCheck = { ActiveStarships.isActive(starship) },
+			world1 = world1,
+			world2 = world2,
+			oldPositionArray = oldLocationArray,
+			newPositionArray = newLocationArray,
+			blockDataTransform = this::blockDataTransform
 		) {
 			// this part will run on the main thread
 			movePassengers(findPassengers(world1))

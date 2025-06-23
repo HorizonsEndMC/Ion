@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.starship.movement
 
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustData
@@ -141,13 +140,11 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 		starship.forward = rotateBlockFace(starship.forward)
 		starship.rotation += theta
 
-		if (starship is ActiveControlledStarship) {
-			val dir = starship.cruiseData.targetDir
-			if (dir != null) {
-				val newX = dir.x * cosTheta - dir.z * sinTheta
-				val newZ = dir.x * sinTheta + dir.z * cosTheta
-				starship.cruiseData.targetDir = Vector(newX, dir.y, newZ)
-			}
+		val dir = starship.cruiseData.targetDir
+		if (dir != null) {
+			val newX = dir.x * cosTheta - dir.z * sinTheta
+			val newZ = dir.x * sinTheta + dir.z * cosTheta
+			starship.cruiseData.targetDir = Vector(newX, dir.y, newZ)
 		}
 	}
 }

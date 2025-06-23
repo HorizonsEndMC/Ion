@@ -36,6 +36,8 @@ object StarshipWeaponry : IonServerComponent() {
 	) {
 		starship.debug("Common manual firing")
 
+		starship.customTurrets.forEach { it.ensureOriented(dir) }
+
 		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet]).shuffled(ThreadLocalRandom.current())
 
 		starship.debug("Weapons: ${weapons.joinToString { it.name }}")
