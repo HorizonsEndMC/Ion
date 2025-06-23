@@ -437,7 +437,7 @@ object MultiblockRegistration : IonServerComponent() {
 		multiblocks[storageAlias] = multiblock
 	}
 
-	fun getAllMultiblocks() = multiblocks.values.toSet()
+	fun getAllMultiblocks() = multiblocks.values
 
 	fun getByDetectionName(name: String): List<Multiblock> {
 		return byDetectionName[name].toList()

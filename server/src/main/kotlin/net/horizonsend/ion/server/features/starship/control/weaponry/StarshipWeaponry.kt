@@ -36,7 +36,10 @@ object StarshipWeaponry : IonServerComponent() {
 	) {
 		starship.debug("Common manual firing")
 
-		starship.customTurrets.forEach { it.ensureOriented(dir) }
+		starship.customTurrets.forEach {
+			if (!it.isIntact()) return@forEach
+			it.orientToTarget(dir)
+		}
 
 		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet]).shuffled(ThreadLocalRandom.current())
 

@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.active
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.plainText
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
@@ -54,6 +55,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isFroglight
+import net.horizonsend.ion.server.miscellaneous.utils.isSign
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.kyori.adventure.audience.Audience
 import org.bukkit.Material
@@ -286,7 +288,9 @@ object SubsystemDetector {
 		starship.subsystems += LandingGearMultiblock.createSubsystem(starship, Vec3i(block.location), NORTH)
 	}
 
-	fun detectCustomTurretBase(starship: ActiveControlledStarship, block: Block) {
+	private fun detectCustomTurretBase(starship: ActiveControlledStarship, block: Block) {
+		if (!ConfigurationFiles.featureFlags().customTurrets) return
+
 		val matches = EnumSet.of(NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST).map { block.getRelative(it) }.all {
 			it.customBlock == CustomBlocks.TITANIUM_BLOCK
 		}
@@ -308,7 +312,8 @@ object SubsystemDetector {
 
 	private fun getWeaponMultiblock(block: Block, face: BlockFace): SubsystemMultiblock<*>? {
 		return when {
-			block.state is Sign && block.state !is HangingSign -> getSignWeaponMultiblock(block, face)
+			// Don't check the state unless necessary
+			block.type.isSign && block.state is Sign && block.state !is HangingSign -> getSignWeaponMultiblock(block, face)
 			else -> getSignlessStarshipWeaponMultiblock(block, face)
 		}
 	}

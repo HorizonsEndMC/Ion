@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
@@ -33,6 +34,7 @@ import kotlin.math.sin
 
 class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace) : StarshipSubsystem(starship, pos), DirectionalSubsystem {
 	override fun isIntact(): Boolean {
+		// Only check the base
 		val block = getBlockIfLoaded(starship.world, pos.x, pos.y, pos.z) ?: return false
 		return TurretBaseMultiblock.shape.checkRequirements(block, face, loadChunks = false, particles = false)
 	}
@@ -40,18 +42,16 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 	private var blocks = LongArray(0)
 	private val captiveSubsystems = LinkedList<StarshipSubsystem>()
 
-	fun ensureOriented(targetedDir: Vector): Boolean {
+	fun orientToTarget(targetedDir: Vector): Boolean {
 		val newFace = vectorToBlockFace(targetedDir)
+		if (this.face == newFace) return true
 
-		if (this.face == newFace) {
-			return true
-		}
-
-		this.face = rotate(newFace)
-		return this.face == newFace
+		return rotate(newFace)
 	}
 
 	fun detectTurret() {
+		val subsystemsByPos = starship.subsystems.associateByTo(Long2ObjectOpenHashMap()) { toBlockKey(it.pos) }
+
 		if (!starship.contains(pos.x, pos.y + 1, pos.z)) return
 
 		val visitedBlocks = ObjectOpenHashSet<Block>()
@@ -63,6 +63,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 
 		toVisit.add(starship.world.getBlockAt(pos.x, pos.y + 1, pos.z))
 
+		// Perform a flood fill to find turret blocks
 		while (toVisit.isNotEmpty()) {
 			val block = toVisit.removeFirst()
 
@@ -80,28 +81,30 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 				if (visitedBlocks.contains(newBlock)) continue
 
 				toVisit.addLast(newBlock)
+				subsystemsByPos[toBlockKey(newBlock.x, newBlock.y, newBlock.z)]?.let(captiveSubsystems::add)
 			}
 		}
 
 		blocks = visitedBlocks.map { toBlockKey(it.x, it.y, it.z) }.toLongArray()
-		starship.subsystems.filterTo(captiveSubsystems) { blocks.contains(toBlockKey(it.pos)) }
 	}
 
 	private fun canDetect(block: Block): Boolean {
+		// Detect all blocks above the turret base
 		return block.y > pos.y
 	}
 
 	override fun onMovement(movement: StarshipMovement, success: Boolean) {
 		if (!success) return
+		// Offset the blocks when the ship moves
 		blocks = LongArray(blocks.size) { movement.displaceKey(blocks[it]) }
 	}
 
-	fun rotate(newFace: BlockFace): BlockFace {
-		if (starship.isTeleporting) return face
+	fun rotate(newFace: BlockFace): Boolean {
+		if (starship.isTeleporting) return false
 		val oldFace = face
 
 		val i = when (newFace) {
-			oldFace -> return oldFace
+			oldFace -> return true
 			oldFace.rightFace -> 1
 			oldFace.oppositeFace -> 2
 			oldFace.leftFace -> 3
@@ -111,23 +114,32 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		val theta: Double = 90.0 * i
 
 		try {
-			rotateBlocks(theta)
+			moveBlocks(theta)
+			face = newFace
 		} catch (e: StarshipMovementException) {
-			return oldFace
+			return false
 		}
 
-		return newFace
+		return true
 	}
 
-	private fun rotateBlocks(thetaDegrees: Double) {
-		if (starship.isMoving) return
+	private fun moveBlocks(thetaDegrees: Double): Boolean {
+		if (starship.isMoving) return false
+
 		val cosTheta: Double = cos(Math.toRadians(thetaDegrees))
 		val sinTheta: Double = sin(Math.toRadians(thetaDegrees))
 
 		val newPositionArray = LongArray(blocks.size)
 		val newPositionSet = LongOpenHashSet(blocks.size)
 
-		val nmsRotation = getNMSRotation(thetaDegrees)
+		val nmsRotation =  when (thetaDegrees % 360.0) {
+			in -45.0..< 45.0 -> Rotation.NONE
+			in 45.0..< 135.0 -> Rotation.CLOCKWISE_90
+			in 135.0..< 225.0 -> Rotation.CLOCKWISE_180
+			in 225.0..< 315.0 -> Rotation.COUNTERCLOCKWISE_90
+			in 315.0.. 360.0 -> Rotation.NONE
+			else -> throw IllegalArgumentException("something mod 360 returned more than 360?")
+		}
 
 		for (i in blocks.indices) {
 			val blockKey = blocks[i]
@@ -165,13 +177,8 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 			totalRotation += thetaDegrees
 			rotateCapturedSubsystems(sinTheta, cosTheta, nmsRotation)
 		}
-	}
 
-	private var totalRotation = 0.0
-
-	override fun onDestroy() {
-		// Rotate back to home position
-		rotateBlocks(360 - (totalRotation % 360))
+		return true
 	}
 
 	private fun rotateCapturedSubsystems(sinTheta: Double, cosTheta: Double, nmsRotation: Rotation) {
@@ -198,16 +205,11 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		return (offsetX.toDouble() * sinTheta + offsetZ.toDouble() * cosTheta).roundToInt() + pos.z
 	}
 
-	companion object {
-		private fun getNMSRotation(thetaDegrees: Double): Rotation {
-			return when (thetaDegrees % 360.0) {
-				in -45.0..< 45.0 -> Rotation.NONE
-				in 45.0..< 135.0 -> Rotation.CLOCKWISE_90
-				in 135.0..< 225.0 -> Rotation.CLOCKWISE_180
-				in 225.0..< 315.0 -> Rotation.COUNTERCLOCKWISE_90
-				in 315.0.. 360.0 -> Rotation.NONE
-				else -> throw IllegalArgumentException("something mod 360 returned more than 360?")
-			}
-		}
+	/** Total rotation that the turret has performed */
+	private var totalRotation = 0.0
+
+	override fun onDestroy() {
+		// Rotate back to home position
+		moveBlocks(360 - (totalRotation % 360))
 	}
 }
