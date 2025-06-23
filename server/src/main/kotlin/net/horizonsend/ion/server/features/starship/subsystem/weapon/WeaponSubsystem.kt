@@ -33,7 +33,8 @@ abstract class WeaponSubsystem(
 	abstract fun canFire(dir: Vector, target: Vector): Boolean
 
 	fun canCreateSubsystem(): Boolean {
-		if (!balancing.canFire && !starship.type.eventShip) return false
+		if (starship.type.eventShip) return true
+		if (!balancing.canFire) return false
 		return starship.initialBlockCount in balancing.minBlockCount..balancing.maxBlockCount
 	}
 

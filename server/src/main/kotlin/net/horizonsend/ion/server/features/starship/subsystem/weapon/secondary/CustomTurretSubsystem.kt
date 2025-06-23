@@ -46,7 +46,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 	}
 
 	private var blocks = LongArray(0)
-	private val captiveSubsystems = LinkedList<StarshipSubsystem>()
+	private var captiveSubsystems = LinkedList<StarshipSubsystem>()
 
 	fun orientToTarget(targetedDir: Vector): Boolean {
 		val newFace = vectorToBlockFace(targetedDir)
@@ -61,6 +61,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		if (!starship.contains(pos.x, pos.y + 1, pos.z)) return
 
 		val visitedBlocks = ObjectOpenHashSet<Block>()
+		val vistedSubsystems = ObjectOpenHashSet<StarshipSubsystem>()
 
 		// Add the center of the turret base, it rotates with the turret to control direction.
 		visitedBlocks.add(starship.world.getBlockAt(pos.x, pos.y, pos.z))
@@ -87,12 +88,16 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 				if (visitedBlocks.contains(newBlock)) continue
 
 				toVisit.addLast(newBlock)
+
 				val subsystem = subsystemsByPos[toBlockKey(newBlock.x, newBlock.y, newBlock.z)]
-				if (disallowedSubsystems.contains(subsystem::class)) throw ActiveStarshipFactory.StarshipActivationException("${subsystem.javaClass.simpleName}s cannot be part of custom turrets!")
-				subsystem?.let(captiveSubsystems::add)
+				subsystem?.let {
+					if (disallowedSubsystems.contains(it::class)) throw ActiveStarshipFactory.StarshipActivationException("${subsystem.javaClass.simpleName}s cannot be part of custom turrets!")
+					vistedSubsystems.add(it)
+				}
 			}
 		}
 
+		captiveSubsystems = LinkedList(vistedSubsystems)
 		blocks = visitedBlocks.map { toBlockKey(it.x, it.y, it.z) }.toLongArray()
 	}
 
