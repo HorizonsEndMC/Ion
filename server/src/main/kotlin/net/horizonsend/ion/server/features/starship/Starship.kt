@@ -321,6 +321,7 @@ class Starship(
 	 * Used for target lead / speed estimations
 	 */
 	var velocity: Vector = Vector(0.0, 0.0, 0.0)
+	var isMoving: Boolean = false; private set
 
 	fun moveAsync(movement: StarshipMovement): CompletableFuture<Boolean> {
 		if (!ActiveStarships.isActive(this)) {
@@ -353,6 +354,7 @@ class Starship(
 	@Synchronized
 	private fun executeMovement(movement: StarshipMovement, controller: Controller): Boolean {
 		try {
+			isMoving = true
 			movement.execute()
 		} catch (e: StarshipMovementException) {
 			val location = if (e is StarshipBlockedException) e.location else null
@@ -371,6 +373,8 @@ class Starship(
 			e.printStackTrace()
 
 			return false
+		} finally {
+		    isMoving = false
 		}
 
 		return true
