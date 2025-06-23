@@ -161,6 +161,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 			blocks = newPositionArray
 			starship.blocks.removeAll(LongOpenHashSet(blocks.toLegacyBlockKey()))
 			starship.blocks.addAll(LongOpenHashSet(newPositionArray.toLegacyBlockKey()))
+			starship.calculateHitbox()
 
 			rotateCapturedSubsystems(sinTheta, cosTheta, nmsRotation)
 		}
