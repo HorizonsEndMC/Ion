@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretBaseMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
@@ -146,7 +145,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		}
 
 		OptimizedMovement.moveStarship(
-			executionCheck = { ActiveStarships.isActive(starship) && !starship.isMoving },
+			executionCheck = {  !starship.isMoving },
 			world1 = starship.world,
 			world2 = starship.world,
 			oldPositionArray = blocks.toLegacyBlockKey(),
@@ -163,8 +162,16 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 			starship.blocks.addAll(LongOpenHashSet(newPositionArray.toLegacyBlockKey()))
 			starship.calculateHitbox()
 
+			totalRotation += thetaDegrees
 			rotateCapturedSubsystems(sinTheta, cosTheta, nmsRotation)
 		}
+	}
+
+	private var totalRotation = 0.0
+
+	override fun onDestroy() {
+		// Rotate back to home position
+		rotateBlocks(360 - (totalRotation % 360))
 	}
 
 	private fun rotateCapturedSubsystems(sinTheta: Double, cosTheta: Double, nmsRotation: Rotation) {
@@ -194,7 +201,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 	companion object {
 		private fun getNMSRotation(thetaDegrees: Double): Rotation {
 			return when (thetaDegrees % 360.0) {
-				in 0.0..< 45.0 -> Rotation.NONE
+				in -45.0..< 45.0 -> Rotation.NONE
 				in 45.0..< 135.0 -> Rotation.CLOCKWISE_90
 				in 135.0..< 225.0 -> Rotation.CLOCKWISE_180
 				in 225.0..< 315.0 -> Rotation.COUNTERCLOCKWISE_90
