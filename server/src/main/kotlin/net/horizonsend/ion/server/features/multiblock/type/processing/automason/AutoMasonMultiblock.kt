@@ -323,7 +323,7 @@ sealed class AutoMasonMultiblock(val mergeEnabled: Boolean, left: Boolean) : Mul
 					x(0).type(Material.STONECUTTER)
 					x(1).ironBlock()
 					x(2).ironBlock()
-					x(3).netheriteCasing()
+					x(3).netheriteBlock()
 				}
 				y(0) {
 					x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
@@ -332,7 +332,7 @@ sealed class AutoMasonMultiblock(val mergeEnabled: Boolean, left: Boolean) : Mul
 					x(0).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.END_ROD.createBlockData()))
 					x(1).ironBlock()
 					x(2).ironBlock()
-					x(3).netheriteCasing()
+					x(3).netheriteBlock()
 				}
 			}
 			z(3) {
@@ -362,7 +362,7 @@ sealed class AutoMasonMultiblock(val mergeEnabled: Boolean, left: Boolean) : Mul
 					x(0).type(Material.STONECUTTER)
 					x(1).ironBlock()
 					x(2).ironBlock()
-					x(3).netheriteCasing()
+					x(3).netheriteBlock()
 				}
 				y(0) {
 					x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
@@ -371,7 +371,7 @@ sealed class AutoMasonMultiblock(val mergeEnabled: Boolean, left: Boolean) : Mul
 					x(0).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.END_ROD.createBlockData()))
 					x(1).ironBlock()
 					x(2).ironBlock()
-					x(3).netheriteCasing()
+					x(3).netheriteBlock()
 				}
 			}
 			z(6) {
@@ -448,7 +448,7 @@ sealed class AutoMasonMultiblock(val mergeEnabled: Boolean, left: Boolean) : Mul
 		override fun MultiblockShape.buildStructure() {
 			z(4) {
 				y(-1) {
-					x(-3).netheriteCasing()
+					x(-3).netheriteBlock()
 					x(-2).ironBlock()
 					x(-1).ironBlock()
 					x(0).type(Material.STONECUTTER)
@@ -457,7 +457,7 @@ sealed class AutoMasonMultiblock(val mergeEnabled: Boolean, left: Boolean) : Mul
 					x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 				}
 				y(0) {
-					x(-3).netheriteCasing()
+					x(-3).netheriteBlock()
 					x(-2).ironBlock()
 					x(-1).ironBlock()
 					x(0).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.END_ROD.createBlockData()))
@@ -487,7 +487,7 @@ sealed class AutoMasonMultiblock(val mergeEnabled: Boolean, left: Boolean) : Mul
 			}
 			z(2) {
 				y(-1) {
-					x(-3).netheriteCasing()
+					x(-3).netheriteBlock()
 					x(-2).ironBlock()
 					x(-1).ironBlock()
 					x(0).type(Material.STONECUTTER)
@@ -496,7 +496,7 @@ sealed class AutoMasonMultiblock(val mergeEnabled: Boolean, left: Boolean) : Mul
 					x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 				}
 				y(0) {
-					x(-3).netheriteCasing()
+					x(-3).netheriteBlock()
 					x(-2).ironBlock()
 					x(-1).ironBlock()
 					x(0).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.END_ROD.createBlockData()))
