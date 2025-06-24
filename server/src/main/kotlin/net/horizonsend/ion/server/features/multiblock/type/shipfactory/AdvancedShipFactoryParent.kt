@@ -129,14 +129,14 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 		override fun MultiblockShape.buildStructure() {
 			z(2) {
 				y(-1) {
-					x(2).netheriteCasing()
+					x(2).netheriteBlock()
 					x(1).ironBlock()
 					x(0).anyGlass()
 					x(-1).ironBlock()
 					x(-2).anyStairs(PrepackagedPreset.stairs(BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 				}
 				y(0) {
-					x(2).netheriteCasing()
+					x(2).netheriteBlock()
 					x(1).ironBlock()
 					x(0).anyGlass()
 					x(-1).ironBlock()
@@ -161,14 +161,14 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 			}
 			z(0) {
 				y(-1) {
-					x(2).netheriteCasing()
+					x(2).netheriteBlock()
 					x(1).ironBlock()
 					x(0).powerInput()
 					x(-1).ironBlock()
 					x(-2).anyStairs(PrepackagedPreset.stairs(FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 				}
 				y(0) {
-					x(2).netheriteCasing()
+					x(2).netheriteBlock()
 					x(1).ironBlock()
 					x(0).anyGlass()
 					x(-1).ironBlock()
@@ -189,14 +189,14 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 					x(1).ironBlock()
 					x(0).powerInput()
 					x(-1).ironBlock()
-					x(-2).netheriteCasing()
+					x(-2).netheriteBlock()
 				}
 				y(0) {
 					x(2).anyStairs(PrepackagedPreset.stairs(FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 					x(1).ironBlock()
 					x(0).anyGlass()
 					x(-1).ironBlock()
-					x(-2).netheriteCasing()
+					x(-2).netheriteBlock()
 				}
 			}
 			z(1) {
@@ -221,14 +221,14 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 					x(1).ironBlock()
 					x(0).anyGlass()
 					x(-1).ironBlock()
-					x(-2).netheriteCasing()
+					x(-2).netheriteBlock()
 				}
 				y(0) {
 					x(2).anyStairs(PrepackagedPreset.stairs(BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 					x(1).ironBlock()
 					x(0).anyGlass()
 					x(-1).ironBlock()
-					x(-2).netheriteCasing()
+					x(-2).netheriteBlock()
 				}
 			}
 		}
@@ -241,18 +241,18 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 		override fun MultiblockShape.buildStructure() {
 			z(0) {
 				y(-1) {
-					x(2).netheriteCasing()
+					x(2).netheriteBlock()
 					x(1).ironBlock()
 					x(0).powerInput()
 					x(-1).ironBlock()
-					x(-2).netheriteCasing()
+					x(-2).netheriteBlock()
 				}
 				y(0) {
-					x(2).netheriteCasing()
+					x(2).netheriteBlock()
 					x(1).ironBlock()
 					x(0).anyGlass()
 					x(-1).ironBlock()
-					x(-2).netheriteCasing()
+					x(-2).netheriteBlock()
 				}
 			}
 			z(1) {
@@ -273,18 +273,18 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 			}
 			z(2) {
 				y(-1) {
-					x(2).netheriteCasing()
+					x(2).netheriteBlock()
 					x(1).ironBlock()
 					x(0).anyGlass()
 					x(-1).ironBlock()
-					x(-2).netheriteCasing()
+					x(-2).netheriteBlock()
 				}
 				y(0) {
-					x(2).netheriteCasing()
+					x(2).netheriteBlock()
 					x(1).ironBlock()
 					x(0).anyGlass()
 					x(-1).ironBlock()
-					x(-2).netheriteCasing()
+					x(-2).netheriteBlock()
 				}
 			}
 		}

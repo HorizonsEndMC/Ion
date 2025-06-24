@@ -120,14 +120,14 @@ sealed class BazaarTerminalMultiblock(private val mergeEnabled: Boolean) : Multi
 				y(-1) {
 					x(2).anyGlass()
 					x(1).sponge()
-					x(0).netheriteCasing()
+					x(0).netheriteBlock()
 					x(-1).sponge()
 					x(-2).extractor()
 				}
 				y(0) {
 					x(2).anyPipedInventory()
 					x(1).sponge()
-					x(0).netheriteCasing()
+					x(0).netheriteBlock()
 					x(-1).sponge()
 					x(-2).anyPipedInventory()
 				}
@@ -176,28 +176,28 @@ sealed class BazaarTerminalMultiblock(private val mergeEnabled: Boolean) : Multi
 					x(1).steelBlock()
 					x(0).ironBlock()
 					x(-1).steelBlock()
-					x(-2).netheriteCasing()
+					x(-2).netheriteBlock()
 				}
 				y(0) {
 					x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 					x(1).steelBlock()
 					x(0).ironBlock()
 					x(-1).steelBlock()
-					x(-2).netheriteCasing()
+					x(-2).netheriteBlock()
 				}
 			}
 			z(2) {
 				y(-1) {
 					x(2).anyGlass()
 					x(1).sponge()
-					x(0).netheriteCasing()
+					x(0).netheriteBlock()
 					x(-1).sponge()
 					x(-2).type(Material.LODESTONE)
 				}
 				y(0) {
 					x(2).anyPipedInventory()
 					x(1).sponge()
-					x(0).netheriteCasing()
+					x(0).netheriteBlock()
 					x(-1).sponge()
 					x(-2).type(Material.LODESTONE)
 				}
@@ -208,14 +208,14 @@ sealed class BazaarTerminalMultiblock(private val mergeEnabled: Boolean) : Multi
 					x(1).steelBlock()
 					x(0).ironBlock()
 					x(-1).steelBlock()
-					x(-2).netheriteCasing()
+					x(-2).netheriteBlock()
 				}
 				y(0) {
 					x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 					x(1).steelBlock()
 					x(0).ironBlock()
 					x(-1).steelBlock()
-					x(-2).netheriteCasing()
+					x(-2).netheriteBlock()
 				}
 			}
 			z(0) {
@@ -242,14 +242,14 @@ sealed class BazaarTerminalMultiblock(private val mergeEnabled: Boolean) : Multi
 		override fun MultiblockShape.buildStructure() {
 			z(1) {
 				y(-1) {
-					x(2).netheriteCasing()
+					x(2).netheriteBlock()
 					x(1).steelBlock()
 					x(0).ironBlock()
 					x(-1).steelBlock()
 					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 				}
 				y(0) {
-					x(2).netheriteCasing()
+					x(2).netheriteBlock()
 					x(1).steelBlock()
 					x(0).ironBlock()
 					x(-1).steelBlock()
@@ -260,28 +260,28 @@ sealed class BazaarTerminalMultiblock(private val mergeEnabled: Boolean) : Multi
 				y(-1) {
 					x(2).type(Material.LODESTONE)
 					x(1).sponge()
-					x(0).netheriteCasing()
+					x(0).netheriteBlock()
 					x(-1).sponge()
 					x(-2).extractor()
 				}
 				y(0) {
 					x(2).type(Material.LODESTONE)
 					x(1).sponge()
-					x(0).netheriteCasing()
+					x(0).netheriteBlock()
 					x(-1).sponge()
 					x(-2).anyPipedInventory()
 				}
 			}
 			z(3) {
 				y(-1) {
-					x(2).netheriteCasing()
+					x(2).netheriteBlock()
 					x(1).steelBlock()
 					x(0).ironBlock()
 					x(-1).steelBlock()
 					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 				}
 				y(0) {
-					x(2).netheriteCasing()
+					x(2).netheriteBlock()
 					x(1).steelBlock()
 					x(0).ironBlock()
 					x(-1).steelBlock()
