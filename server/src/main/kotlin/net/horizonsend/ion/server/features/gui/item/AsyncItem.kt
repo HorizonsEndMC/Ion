@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.gui.item
 
 import net.horizonsend.ion.server.features.gui.GuiItem
-import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
@@ -14,8 +13,6 @@ import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
-import java.util.UUID
-import java.util.function.Consumer
 import java.util.function.Supplier
 
 class AsyncItem(
@@ -74,11 +71,5 @@ class AsyncItem(
 				Component.text("Message: ${exception.message ?: "NULL"}", NamedTextColor.RED),
 				*exception.stackTrace.map { element -> Component.text(element.toString(), NamedTextColor.RED) }.toTypedArray()
 			))
-		
-		fun getHeadItem(uuid: UUID, playerName: String, headEditor: Consumer<ItemStack>, handleClick: (InventoryClickEvent) -> Unit): AsyncItem =
-			AsyncItem(
-				{ skullItem(uuid, playerName).apply { headEditor.accept(this) } },
-				handleClick
-			)
 	}
 }

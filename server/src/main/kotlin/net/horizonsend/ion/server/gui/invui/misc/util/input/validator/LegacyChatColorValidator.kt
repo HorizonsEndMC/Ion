@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.input.validator
+package net.horizonsend.ion.server.gui.invui.misc.util.input.validator
 
 import net.kyori.adventure.text.Component.text
 import net.md_5.bungee.api.ChatColor

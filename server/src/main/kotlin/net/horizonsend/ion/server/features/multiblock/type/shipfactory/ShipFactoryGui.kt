@@ -30,10 +30,10 @@ import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTermina
 import net.horizonsend.ion.server.features.multiblock.type.processing.automason.AutoMasonMultiblockEntity
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
-import net.horizonsend.ion.server.gui.invui.input.ItemMenu
-import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.anvilInputText
-import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.searchEntires
-import net.horizonsend.ion.server.gui.invui.input.validator.RangeDoubleValidator
+import net.horizonsend.ion.server.gui.invui.misc.util.input.ItemMenu
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchEntires
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeDoubleValidator
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
