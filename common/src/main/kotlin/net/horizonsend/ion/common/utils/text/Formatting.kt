@@ -37,6 +37,22 @@ fun lineBreakWithCenterText(value: ComponentLike, width: Int = 15) = bracketed(
 )
 
 /**
+ * @return A line break of '=' characters on both sides of the provided component
+ **/
+fun lineBreakWithCenterTextSpecificWidth(value: ComponentLike, width: Int = 15): ComponentLike {
+	val withSpacers = bracketed(value = value, leftBracket = "« ".toComponent(HE_DARK_GRAY), rightBracket = " »".toComponent(HE_DARK_GRAY))
+
+	val middleTextLength = withSpacers.plainText().minecraftLength
+	if (middleTextLength > width) return value
+
+	val remaining = (width - middleTextLength) / 2
+	val charLength = '='.minecraftLength
+	val chars = remaining / charLength
+
+	return bracketed(value = withSpacers, leftBracket = lineBreak(chars), rightBracket = lineBreak(chars))
+}
+
+/**
  * @return A line break of '=' characters the specified width.
  **/
 fun lineBreak(width: Int, color: TextColor = HE_DARK_GRAY, vararg decorations: TextDecoration) =
