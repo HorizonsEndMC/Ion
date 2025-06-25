@@ -21,10 +21,10 @@ import net.horizonsend.ion.server.gui.invui.bazaar.DEPOSIT_COLOR
 import net.horizonsend.ion.server.gui.invui.bazaar.WITHDRAW_COLOR
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.bazaar.stripAttributes
-import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.anvilInputText
-import net.horizonsend.ion.server.gui.invui.input.validator.RangeDoubleValidator
-import net.horizonsend.ion.server.gui.invui.input.validator.RangeIntegerValidator
-import net.horizonsend.ion.server.gui.invui.misc.ConfirmationMenu
+import net.horizonsend.ion.server.gui.invui.misc.util.ConfirmationMenu
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeDoubleValidator
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeIntegerValidator
 import net.horizonsend.ion.server.gui.invui.utils.asItemProvider
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeInformationButton
