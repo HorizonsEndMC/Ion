@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.gui.custom.settings.button.general
 
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui
-import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.anvilInputText
-import net.horizonsend.ion.server.gui.invui.input.validator.RangeDoubleValidator
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.anvilInputText
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeDoubleValidator
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE

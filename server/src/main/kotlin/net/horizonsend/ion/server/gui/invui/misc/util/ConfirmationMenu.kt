@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.misc
+package net.horizonsend.ion.server.gui.invui.misc.util
 
 import net.horizonsend.ion.common.utils.text.gui.icons.GuiIcon
 import net.horizonsend.ion.common.utils.text.ofChildren

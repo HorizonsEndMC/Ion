@@ -29,8 +29,8 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
-import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.searchEntires
-import net.horizonsend.ion.server.gui.invui.input.validator.ValidatorResult
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchEntires
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.depositMoney

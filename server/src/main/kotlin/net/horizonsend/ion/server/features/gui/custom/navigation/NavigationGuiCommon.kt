@@ -23,7 +23,7 @@ import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
-import net.horizonsend.ion.server.gui.invui.input.TextInputMenu.Companion.searchEntires
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchEntires
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
