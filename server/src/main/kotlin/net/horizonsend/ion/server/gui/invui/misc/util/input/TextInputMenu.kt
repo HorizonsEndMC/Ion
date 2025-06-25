@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.gui.invui.input
+package net.horizonsend.ion.server.gui.invui.misc.util.input
 
 import net.horizonsend.ion.common.utils.text.ANVIL_BACKGROUND
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
@@ -9,9 +9,9 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
-import net.horizonsend.ion.server.gui.invui.input.validator.CollectionSearchValidator
-import net.horizonsend.ion.server.gui.invui.input.validator.InputValidator
-import net.horizonsend.ion.server.gui.invui.input.validator.ValidatorResult
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.CollectionSearchValidator
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.InputValidator
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
 import net.horizonsend.ion.server.gui.invui.utils.changeTitle
 import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
@@ -31,13 +31,13 @@ import xyz.xenondevs.invui.window.Window
 import java.util.function.Supplier
 
 class TextInputMenu<T : Any>(
-	val player: Player,
-	val titleSupplier: Supplier<Component>,
-	val descriptionSupplier: Supplier<Component> = Supplier { Component.empty() },
-	val backButtonHandler: ((Player) -> Unit)?,
-	val inputValidator: InputValidator<T>,
-	val componentTransformer: (T) -> Component = { it.toComponent() },
-	val successfulInputHandler: ConfirmationButton<T>.(ClickType, Pair<String, ValidatorResult.ValidatorSuccess<T>>) -> Unit
+    val player: Player,
+    val titleSupplier: Supplier<Component>,
+    val descriptionSupplier: Supplier<Component> = Supplier { Component.empty() },
+    val backButtonHandler: ((Player) -> Unit)?,
+    val inputValidator: InputValidator<T>,
+    val componentTransformer: (T) -> Component = { it.toComponent() },
+    val successfulInputHandler: ConfirmationButton<T>.(ClickType, Pair<String, ValidatorResult.ValidatorSuccess<T>>) -> Unit
 ) : CommonGuiWrapper {
 	var currentInput = ""
 
@@ -187,12 +187,12 @@ class TextInputMenu<T : Any>(
 
 	companion object {
 		fun <T : Any> Player.anvilInputText(
-			prompt: Component,
-			description: Component = Component.empty(),
-			backButtonHandler: ((Player) -> Unit)? = null,
-			componentTransformer: (T) -> Component = { it.toComponent() },
-			inputValidator: InputValidator<T>,
-			handler: ConfirmationButton<T>.(ClickType, Pair<String, ValidatorResult.ValidatorSuccess<T>>) -> Unit
+            prompt: Component,
+            description: Component = Component.empty(),
+            backButtonHandler: ((Player) -> Unit)? = null,
+            componentTransformer: (T) -> Component = { it.toComponent() },
+            inputValidator: InputValidator<T>,
+            handler: ConfirmationButton<T>.(ClickType, Pair<String, ValidatorResult.ValidatorSuccess<T>>) -> Unit
 		) = anvilInputText(
 			prompt = { prompt },
 			description = { description },
@@ -203,12 +203,12 @@ class TextInputMenu<T : Any>(
 		)
 
 		fun <T : Any> Player.anvilInputText(
-			prompt: Supplier<Component>,
-			description: Supplier<Component> = Supplier { Component.empty() },
-			backButtonHandler: ((Player) -> Unit)? = null,
-			componentTransformer: (T) -> Component = { it.toComponent() },
-			inputValidator: InputValidator<T>,
-			handler: ConfirmationButton<T>.(ClickType, Pair<String, ValidatorResult.ValidatorSuccess<T>>) -> Unit,
+            prompt: Supplier<Component>,
+            description: Supplier<Component> = Supplier { Component.empty() },
+            backButtonHandler: ((Player) -> Unit)? = null,
+            componentTransformer: (T) -> Component = { it.toComponent() },
+            inputValidator: InputValidator<T>,
+            handler: ConfirmationButton<T>.(ClickType, Pair<String, ValidatorResult.ValidatorSuccess<T>>) -> Unit,
 		) {
 			TextInputMenu(
                 player = this,
