@@ -635,7 +635,6 @@ enum class StarshipType(
 		maxMiningLasers = 4,
 		miningLaserTier = 3,
 		dynmapIcon = "medium_freighter",
-		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.medium_freighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing()::mediumFreighter
