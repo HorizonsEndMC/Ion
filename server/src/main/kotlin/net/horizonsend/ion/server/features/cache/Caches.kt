@@ -17,7 +17,6 @@ object Caches : IonServerComponent() {
 		SettlementCache,
 		NationCache,
 		RelationCache,
-		BountyCache,
 
 		CargoCrates,
 		EcoStations,
