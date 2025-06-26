@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
+import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -18,8 +19,10 @@ import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTermina
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.features.transport.items.util.getRemovableItems
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.SellOrderCreationMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.toMap
@@ -81,7 +84,11 @@ class BazaarBulkDepositMenu(viewer: Player, val multiblock: BazaarTerminalMultib
 					))
 
 				if (!selling) {
-					updated.updateLore(listOf<Component>(text("You are not selling this item in this territory.", RED)).plus(updated.lore() ?: listOf()))
+					updated.updateLore(listOf<Component>(
+						text("You are not selling this item in this territory.", RED),
+						text("Shift-right-click to create a listing.", RED),
+						empty()
+					).plus(updated.lore() ?: listOf()))
 				}
 
 				if (excludeItems.contains(asOne)) updated.updateDisplayName(ofChildren(updated.displayNameComponent, space(), bracketed(text("Excluded", RED))))
@@ -92,8 +99,21 @@ class BazaarBulkDepositMenu(viewer: Player, val multiblock: BazaarTerminalMultib
 	}
 
 	private fun handleItemInteract(clickType: ClickType, itemType: ItemStack) {
-		if (clickType == ClickType.RIGHT) {
-			excludeItem(itemType)
+		Tasks.async {
+			val itemString = toItemString(itemType)
+			val selling = multiblock.territory?.let { BazaarItem.any(BazaarItem.matchQuery(it.id, viewer.slPlayerId, itemString)) } ?: false
+
+			if (!selling && clickType == ClickType.SHIFT_RIGHT) {
+				val menu = SellOrderCreationMenu(viewer)
+				menu.itemString = itemString
+				multiblock.territory?.let(TradeCities::getIfCity)?.let { menu.cityInfo = it }
+
+				menu.openGui(this)
+			}
+
+			if (clickType == ClickType.RIGHT) {
+				excludeItem(itemType)
+			}
 		}
 	}
 
