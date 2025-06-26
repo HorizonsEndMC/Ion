@@ -142,7 +142,7 @@ sealed interface PowerNode : Node {
 
         override fun displace(movement: StarshipMovement) {
             this.face = movement.displaceFace(this.face)
-			location = movement.displaceKey(location)
+			location = movement.displaceModernKey(location)
 			movement.newWorld?.let { world = it }
 
             displayHandler.displace(movement)

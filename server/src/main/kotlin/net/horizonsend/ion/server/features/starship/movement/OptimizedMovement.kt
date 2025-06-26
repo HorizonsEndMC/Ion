@@ -52,7 +52,7 @@ object OptimizedMovement {
 		world2: World,
 		oldPositionArray: LongArray,
 		newPositionArray: LongArray,
-		blockDataTransform: (BlockState) -> BlockState,
+		blockStateTransform: (BlockState) -> BlockState,
 		callback: () -> Unit
 	) {
 		val oldChunkMap = getChunkMap(oldPositionArray)
@@ -89,7 +89,7 @@ object OptimizedMovement {
 					world2,
 					capturedStates,
 					capturedTiles,
-					blockDataTransform
+					blockStateTransform
 				)
 
 				callback()

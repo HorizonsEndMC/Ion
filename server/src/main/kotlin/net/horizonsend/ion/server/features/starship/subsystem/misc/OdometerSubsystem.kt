@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceMovement
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.starship.movement.TranslationAccessor
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -34,7 +34,7 @@ class OdometerSubsystem(
 
 	private fun getSign() = getBlockIfLoaded(starship.world, pos.x, pos.y, pos.z)?.state as? Sign
 
-	override fun onMovement(movement: StarshipMovement, success: Boolean) = Tasks.sync {
+	override fun onMovement(movement: TranslationAccessor, success: Boolean) = Tasks.sync {
 		if (!success) return@sync
 		if (movement.newWorld != null) return@sync
 		if (movement is RotationMovement) return@sync

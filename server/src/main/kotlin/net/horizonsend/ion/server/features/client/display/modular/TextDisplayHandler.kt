@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.client.display.modular
 
 import net.horizonsend.ion.server.features.client.display.modular.display.DisplayModule
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
+import net.horizonsend.ion.server.features.starship.movement.TranslationAccessor
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.Axis
@@ -77,7 +77,7 @@ class TextDisplayHandler private constructor(
 		return location
 	}
 
-	fun displace(movement: StarshipMovement) {
+	fun displace(movement: TranslationAccessor) {
 		facing = movement.displaceFace(facing)
 
 		val newX = movement.displaceX(anchorBlockX, anchorBlockZ)

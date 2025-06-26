@@ -47,8 +47,8 @@ import org.bukkit.Material.COAL_BLOCK
 import org.bukkit.Material.COMPARATOR
 import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COPPER_BLOCK
-import org.bukkit.Material.COPPER_GRATE
 import org.bukkit.Material.COPPER_BULB
+import org.bukkit.Material.COPPER_GRATE
 import org.bukkit.Material.CRAFTING_TABLE
 import org.bukkit.Material.CREEPER_HEAD
 import org.bukkit.Material.CREEPER_WALL_HEAD
@@ -66,8 +66,8 @@ import org.bukkit.Material.ENDER_CHEST
 import org.bukkit.Material.END_PORTAL_FRAME
 import org.bukkit.Material.END_ROD
 import org.bukkit.Material.EXPOSED_COPPER
-import org.bukkit.Material.EXPOSED_COPPER_GRATE
 import org.bukkit.Material.EXPOSED_COPPER_BULB
+import org.bukkit.Material.EXPOSED_COPPER_GRATE
 import org.bukkit.Material.FARMLAND
 import org.bukkit.Material.FLETCHING_TABLE
 import org.bukkit.Material.FLOWER_POT
@@ -167,20 +167,20 @@ import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.WALL_TORCH
 import org.bukkit.Material.WATER_CAULDRON
 import org.bukkit.Material.WAXED_COPPER_BLOCK
-import org.bukkit.Material.WAXED_COPPER_GRATE
 import org.bukkit.Material.WAXED_COPPER_BULB
+import org.bukkit.Material.WAXED_COPPER_GRATE
 import org.bukkit.Material.WAXED_EXPOSED_COPPER
-import org.bukkit.Material.WAXED_EXPOSED_COPPER_GRATE
 import org.bukkit.Material.WAXED_EXPOSED_COPPER_BULB
+import org.bukkit.Material.WAXED_EXPOSED_COPPER_GRATE
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER
-import org.bukkit.Material.WAXED_OXIDIZED_COPPER_GRATE
 import org.bukkit.Material.WAXED_OXIDIZED_COPPER_BULB
+import org.bukkit.Material.WAXED_OXIDIZED_COPPER_GRATE
 import org.bukkit.Material.WAXED_WEATHERED_COPPER
-import org.bukkit.Material.WAXED_WEATHERED_COPPER_GRATE
 import org.bukkit.Material.WAXED_WEATHERED_COPPER_BULB
+import org.bukkit.Material.WAXED_WEATHERED_COPPER_GRATE
 import org.bukkit.Material.WEATHERED_COPPER
-import org.bukkit.Material.WEATHERED_COPPER_GRATE
 import org.bukkit.Material.WEATHERED_COPPER_BULB
+import org.bukkit.Material.WEATHERED_COPPER_GRATE
 import org.bukkit.Material.WET_SPONGE
 import org.bukkit.Material.WHEAT
 import org.bukkit.Material.WITHER_SKELETON_SKULL
@@ -405,10 +405,8 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 }.filter { it.isBlock }.toCollection(EnumSet.noneOf(Material::class.java))
 
 private val FLYABLE_BLOCK_DATA_CACHE = CacheBuilder.newBuilder()
-	.build<BlockState, Boolean>(
-		CacheLoader.from { blockData ->
-			return@from blockData != null && FLYABLE_BLOCKS.contains(blockData.bukkitMaterial)
-		}
-	)
+	.build(CacheLoader.from { blockData: BlockState? ->
+		return@from blockData != null && FLYABLE_BLOCKS.contains(blockData.bukkitMaterial)
+	})
 
-fun isFlyable(blockData: BlockState) = FLYABLE_BLOCK_DATA_CACHE[blockData]
+fun isFlyable(blockData: BlockState): Boolean = FLYABLE_BLOCK_DATA_CACHE[blockData]
