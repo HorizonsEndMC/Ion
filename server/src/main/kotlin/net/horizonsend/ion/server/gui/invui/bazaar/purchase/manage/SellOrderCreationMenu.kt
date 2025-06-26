@@ -48,8 +48,8 @@ import xyz.xenondevs.invui.window.Window
 import java.util.UUID
 
 class SellOrderCreationMenu(viewer: Player) : InvUIWindowWrapper(viewer, async = true) {
-	private var itemString = "DIRT"
-	private var cityInfo: TradeCityData? = null
+	var itemString = "DIRT"
+	var cityInfo: TradeCityData? = null
 	private var price: Double = 0.0
 
 	override fun buildWindow(): Window {
