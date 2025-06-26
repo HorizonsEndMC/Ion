@@ -3,9 +3,10 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretBaseMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.CustomTurretBaseMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
@@ -13,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.movement.TranslationAccessor
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -28,13 +30,42 @@ import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.kyori.adventure.text.Component
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import java.util.ArrayDeque
 import java.util.LinkedList
 
-class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace) : StarshipSubsystem(starship, pos), DirectionalSubsystem {
+class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace, val multiblock: CustomTurretBaseMultiblock) : WeaponSubsystem(starship, pos), DirectionalSubsystem {
+	override val balancing: StarshipWeapons.StarshipWeapon = StarshipWeapons.StarshipWeapon(
+		range = 0.0,
+		speed = 0.0,
+		areaShieldDamageMultiplier = 0.0,
+		starshipShieldDamageMultiplier = 0.0,
+		particleThickness = 0.0,
+		explosionPower = 0.0f,
+		volume = 0,
+		pitch = 0.0f,
+		soundName = "",
+		powerUsage = 0,
+		length = 0 ,
+		angleRadiansHorizontal = 0.0,
+		angleRadiansVertical = 0.0,
+		convergeDistance = 0.0,
+		extraDistance = 0,
+		fireCooldownMillis = 0,
+		boostChargeSeconds = 0,
+		aimDistance = 0,
+		applyCooldownToAll = false
+	)
+
+	override val powerUsage: Int = 0
+	override fun getName(): Component = Component.text("Custom Turret")
+
+	override fun canFire(dir: Vector, target: Vector): Boolean = true
+	override fun getAdjustedDir(dir: Vector, target: Vector): Vector = dir
+
 	companion object {
 		val disallowedSubsystems = setOf(CustomTurretSubsystem::class, TurretWeaponSubsystem::class)
 	}
@@ -42,7 +73,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 	override fun isIntact(): Boolean {
 		// Only check the base
 		val block = getBlockIfLoaded(starship.world, pos.x, pos.y, pos.z) ?: return false
-		return TurretBaseMultiblock.shape.checkRequirements(block, face, loadChunks = false, particles = false)
+		return multiblock.shape.checkRequirements(block, face, loadChunks = false, particles = false)
 	}
 
 	var blocks = LongArray(0); private set
@@ -62,7 +93,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		if (!starship.contains(pos.x, pos.y + 1, pos.z)) return // Turret base is empty
 
 		// Add the center of the turret base, it rotates with the turret to control direction.
-		val foundBlocks = LongOpenHashSet.of()
+		val foundBlocks = LongOpenHashSet.of(pos.plus(multiblock.furnaceOffset).toBlockKey())
 		val foundSubsystems = ObjectOpenHashSet<StarshipSubsystem>()
 		val foundMultiblocks = ObjectOpenHashSet<MultiblockEntity>()
 
@@ -72,7 +103,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		val visitSet = LongOpenHashSet()
 
 		// Jump to start with the origin
-		visitQueue.add(Vec3i(pos.x, pos.y + 1, pos.z))
+		visitQueue.add(Vec3i(pos.x, pos.y, pos.z).plus(multiblock.detectionOrigin))
 
 		var iterations = 0L
 
@@ -128,7 +159,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 
 	private fun canDetect(block: Block): Boolean {
 		// Detect all blocks above the turret base
-		return block.y > pos.y
+		return block.y > multiblock.detectionOrigin.y + pos.y
 	}
 
 	override fun onMovement(movement: TranslationAccessor, success: Boolean) {

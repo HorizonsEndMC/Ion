@@ -88,7 +88,7 @@ object StarshipDebugCommand : SLCommand() {
 	fun onDumpSubsystems(sender: Player) {
 		val starship = getStarshipRiding(sender)
 
-		sender.information(starship.subsystems.joinToString { it.javaClass.simpleName })
+		sender.information(starship.subsystems.map { it.javaClass.simpleName }.sorted().joinToString())
 	}
 
 	@Subcommand("testVector")

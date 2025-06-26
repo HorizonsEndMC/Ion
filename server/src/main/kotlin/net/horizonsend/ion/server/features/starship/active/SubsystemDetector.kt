@@ -4,9 +4,6 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield
@@ -28,7 +25,6 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.H
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretBaseMultiblock
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
@@ -62,18 +58,9 @@ import net.kyori.adventure.audience.Audience
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
-import org.bukkit.block.BlockFace.EAST
 import org.bukkit.block.BlockFace.NORTH
-import org.bukkit.block.BlockFace.NORTH_EAST
-import org.bukkit.block.BlockFace.NORTH_WEST
-import org.bukkit.block.BlockFace.SOUTH
-import org.bukkit.block.BlockFace.SOUTH_EAST
-import org.bukkit.block.BlockFace.SOUTH_WEST
-import org.bukkit.block.BlockFace.WEST
 import org.bukkit.block.HangingSign
 import org.bukkit.block.Sign
-import org.bukkit.block.data.Directional
-import java.util.EnumSet
 import java.util.LinkedList
 import java.util.Locale
 
@@ -106,8 +93,6 @@ object SubsystemDetector {
 			}
 
 			if (type == Material.OBSERVER) potentialLandingGearBlocks.add(block)
-
-			if (type == Material.LOOM) potentialTurretBases.add(block)
 		}
 
 		val oversizeModifier = if (starship.initialBlockCount > starship.type.maxSize) ReactorSubsystem.OVERSIZE_POWER_PENALTY else 1.0
@@ -122,9 +107,6 @@ object SubsystemDetector {
 		}
 		for (block in potentialLandingGearBlocks) {
 			detectLandingGear(starship, block)
-		}
-		for (block in potentialTurretBases) {
-			detectCustomTurretBase(starship, block)
 		}
 
 		// Create entities for the subsystems before the nodes are checked
@@ -292,20 +274,6 @@ object SubsystemDetector {
 		if (!matches) return
 
 		starship.subsystems += LandingGearMultiblock.createSubsystem(starship, Vec3i(block.location), NORTH)
-	}
-
-	private fun detectCustomTurretBase(starship: ActiveControlledStarship, block: Block) {
-		if (!ConfigurationFiles.featureFlags().customTurrets) return
-
-		val matches = EnumSet.of(NORTH, NORTH_EAST, EAST, SOUTH_EAST, SOUTH, SOUTH_WEST, WEST, NORTH_WEST).map { block.getRelative(it) }.all {
-			it.customBlock == CustomBlocks.TITANIUM_BLOCK
-		}
-
-		if (!matches) return
-
-		val facing = (block.blockData as Directional).facing
-
-		starship.subsystems += TurretBaseMultiblock.createSubsystem(starship, Vec3i(block.x, block.y, block.z), facing)
 	}
 
 	private fun isDuplicate(starship: ActiveControlledStarship, subsystem: StarshipSubsystem): Boolean {
