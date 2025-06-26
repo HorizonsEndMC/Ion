@@ -4,16 +4,16 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretBaseMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory
-import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
+import net.horizonsend.ion.server.features.starship.movement.TranslationAccessor
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
+import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
@@ -22,21 +22,17 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toLegacyBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toModernBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
-import net.minecraft.world.level.block.Rotation
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import java.util.ArrayDeque
 import java.util.LinkedList
-import kotlin.math.cos
-import kotlin.math.roundToInt
-import kotlin.math.sin
 
 class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace) : StarshipSubsystem(starship, pos), DirectionalSubsystem {
 	companion object {
@@ -49,8 +45,9 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		return TurretBaseMultiblock.shape.checkRequirements(block, face, loadChunks = false, particles = false)
 	}
 
-	private var blocks = LongArray(0)
+	var blocks = LongArray(0); private set
 	private var captiveSubsystems = LinkedList<StarshipSubsystem>()
+	private var capturedMultiblockEntities = LinkedList<MultiblockEntity>()
 
 	fun orientToTarget(targetedDir: Vector): Boolean {
 		val newFace = vectorToBlockFace(targetedDir)
@@ -67,6 +64,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		// Add the center of the turret base, it rotates with the turret to control direction.
 		val foundBlocks = LongOpenHashSet.of()
 		val foundSubsystems = ObjectOpenHashSet<StarshipSubsystem>()
+		val foundMultiblocks = ObjectOpenHashSet<MultiblockEntity>()
 
 		// Queue of blocks that need to be visited
 		val visitQueue = ArrayDeque<Vec3i>()
@@ -83,16 +81,20 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 			iterations++
 			val currentVec3i = visitQueue.removeFirst()
 			val currentKey = toBlockKey(currentVec3i.x, currentVec3i.y, currentVec3i.z)
+			val legacyKey = blockKey(currentVec3i.x, currentVec3i.y, currentVec3i.z)
 
-			if (!starshipBlocks.contains(blockKey(currentVec3i.x, currentVec3i.y, currentVec3i.z))) continue
+			if (!starshipBlocks.contains(legacyKey)) continue
 
 			// Block can be a part of the turret
-			foundBlocks.add(currentKey)
+			foundBlocks.add(legacyKey)
 
 			val subsystem = subsystemsByPos[currentKey]
 			subsystem?.let {
 				if (disallowedSubsystems.contains(it::class)) throw ActiveStarshipFactory.StarshipActivationException("${subsystem.javaClass.simpleName}s cannot be part of custom turrets!")
 				foundSubsystems.add(it)
+			}
+			starship.multiblockManager.getFromGlobalKey(currentKey)?.let {
+				foundMultiblocks.add(it)
 			}
 
 			for (offsetX in -1..1) for (offsetY in -1..1) for (offsetZ in -1..1) {
@@ -120,6 +122,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		}
 
 		captiveSubsystems = LinkedList(foundSubsystems)
+		capturedMultiblockEntities = LinkedList(foundMultiblocks)
 		blocks = foundBlocks.toLongArray()
 	}
 
@@ -128,10 +131,10 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		return block.y > pos.y
 	}
 
-	override fun onMovement(movement: StarshipMovement, success: Boolean) {
+	override fun onMovement(movement: TranslationAccessor, success: Boolean) {
 		if (!success) return
 		// Offset the blocks when the ship moves
-		blocks = LongArray(blocks.size) { movement.displaceKey(blocks[it]) }
+		blocks = LongArray(blocks.size) { movement.displaceLegacyKey(blocks[it]) }
 	}
 
 	fun rotate(newFace: BlockFace): Boolean {
@@ -148,9 +151,37 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 
 		val theta: Double = 90.0 * i
 
-		try {
-			moveBlocks(theta)
+		return if (moveBlocks(theta)) {
 			face = newFace
+			true
+		}
+		else false
+	}
+
+	private fun moveBlocks(thetaDegrees: Double): Boolean {
+		if (starship.isMoving) return false
+
+		try {
+			val oldPositions = blocks
+
+			val translationAccessor = TranslationAccessor.RotationTranslation(null, thetaDegrees, pos)
+			translationAccessor.execute(blocks, starship.world, { !starship.isMoving }) { newPositionArray ->
+				blocks = newPositionArray
+
+				starship.blocks.removeAll(LongOpenHashSet(blocks))
+				starship.blocks.addAll(LongOpenHashSet(newPositionArray))
+
+				starship.calculateHitbox()
+
+				totalRotation += thetaDegrees
+				rotateCapturedSubsystems(translationAccessor)
+
+				Tasks.async {
+					for (key in oldPositions.toModernBlockKey().union(LongOpenHashSet(newPositionArray.toModernBlockKey()))) {
+						NewTransport.invalidateCache(starship.world, getX(key), getY(key), getZ(key))
+					}
+				}
+			}
 		} catch (e: StarshipMovementException) {
 			return false
 		}
@@ -158,86 +189,35 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		return true
 	}
 
-	private fun moveBlocks(thetaDegrees: Double): Boolean {
-		if (starship.isMoving) return false
-
-		val cosTheta: Double = cos(Math.toRadians(thetaDegrees))
-		val sinTheta: Double = sin(Math.toRadians(thetaDegrees))
-
-		val newPositionArray = LongArray(blocks.size)
-		val newPositionSet = LongOpenHashSet(blocks.size)
-
-		val nmsRotation =  when (thetaDegrees % 360.0) {
-			in -45.0..< 45.0 -> Rotation.NONE
-			in 45.0..< 135.0 -> Rotation.CLOCKWISE_90
-			in 135.0..< 225.0 -> Rotation.CLOCKWISE_180
-			in 225.0..< 315.0 -> Rotation.COUNTERCLOCKWISE_90
-			in 315.0.. 360.0 -> Rotation.NONE
-			else -> throw IllegalArgumentException("something mod 360 returned more than 360?")
-		}
-
-		for (i in blocks.indices) {
-			val blockKey = blocks[i]
-			val x0 = getX(blockKey)
-			val y0 = getY(blockKey)
-			val z0 = getZ(blockKey)
-
-			val x = displaceX(x0, z0, sinTheta, cosTheta)
-			val z = displaceZ(z0, x0, sinTheta, cosTheta)
-
-			val newBlockKey = toBlockKey(x, y0, z)
-			newPositionArray[i] = newBlockKey
-
-			newPositionSet.add(newBlockKey)
-		}
-
-		OptimizedMovement.moveStarship(
-			executionCheck = {  !starship.isMoving },
-			world1 = starship.world,
-			world2 = starship.world,
-			oldPositionArray = blocks.toLegacyBlockKey(),
-			newPositionArray = newPositionArray.toLegacyBlockKey(),
-			blockDataTransform = { blockState ->
-				val customBlock = CustomBlocks.getByBlockState(blockState)
-
-				if (customBlock == null) blockState.rotate(nmsRotation)
-				else CustomBlocks.getRotated(customBlock, blockState, nmsRotation)
-			}
-		) {
-			blocks = newPositionArray
-			starship.blocks.removeAll(LongOpenHashSet(blocks.toLegacyBlockKey()))
-			starship.blocks.addAll(LongOpenHashSet(newPositionArray.toLegacyBlockKey()))
-			starship.calculateHitbox()
-
-			totalRotation += thetaDegrees
-			rotateCapturedSubsystems(sinTheta, cosTheta, nmsRotation)
-		}
-
-		return true
-	}
-
-	private fun rotateCapturedSubsystems(sinTheta: Double, cosTheta: Double, nmsRotation: Rotation) {
+	private fun rotateCapturedSubsystems(translation: TranslationAccessor.RotationTranslation) {
 		for (subsystem in captiveSubsystems) {
 			val oldX = subsystem.pos.x
 			val oldZ = subsystem.pos.z
-			subsystem.pos = Vec3i(displaceX(oldX, oldZ, sinTheta, cosTheta), subsystem.pos.y, displaceZ(oldZ, oldX, sinTheta, cosTheta))
+
+			subsystem.pos = Vec3i(
+				translation.displaceX(oldX, oldZ),
+				subsystem.pos.y,
+				translation.displaceZ(oldZ, oldX)
+			)
+
+			subsystem.onMovement(translation, true)
 
 			if (subsystem is DirectionalSubsystem) {
-				subsystem.face = rotateBlockFace(subsystem.face, nmsRotation)
+				subsystem.face = rotateBlockFace(subsystem.face, translation.nmsRotation)
 			}
 		}
-	}
 
-	private fun displaceX(oldX: Int, oldZ: Int, sinTheta: Double, cosTheta: Double): Int {
-		val offsetX = oldX - pos.x
-		val offsetZ = oldZ - pos.z
-		return (offsetX.toDouble() * cosTheta - offsetZ.toDouble() * sinTheta).roundToInt() + pos.x
-	}
+		for (entity in capturedMultiblockEntities) {
+			val localVec3i = starship.getLocalCoordinate(translation.displaceVec3i(entity.globalVec3i))
 
-	private fun displaceZ(oldZ: Int, oldX: Int, sinTheta: Double, cosTheta: Double): Int {
-		val offsetX = oldX - pos.x
-		val offsetZ = oldZ - pos.z
-		return (offsetX.toDouble() * sinTheta + offsetZ.toDouble() * cosTheta).roundToInt() + pos.z
+			entity.localOffsetX = localVec3i.x
+			entity.localOffsetY = localVec3i.y
+			entity.localOffsetZ = localVec3i.z
+
+			entity.manager
+
+			entity.displace(translation)
+		}
 	}
 
 	/** Total rotation that the turret has performed */

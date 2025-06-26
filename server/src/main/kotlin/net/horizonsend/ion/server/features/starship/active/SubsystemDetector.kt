@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.active
 
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.plainText
@@ -142,6 +143,11 @@ object SubsystemDetector {
 
 		// Do this after all subsystems are detected so that they can be captured
 		starship.customTurrets.forEach { it.detectTurret() }
+
+		// Detect if any turrets share blocks
+		if (starship.customTurrets.any { turret1 -> starship.customTurrets.minus(turret1).any { turret2 -> turret1.blocks.intersect(LongOpenHashSet(turret2.blocks)).isNotEmpty() } }) {
+			throw ActiveStarshipFactory.StarshipActivationException("Custom turrets share blocks!")
+		}
 	}
 
 	private fun detectSign(starship: ActiveControlledStarship, block: Block) {
