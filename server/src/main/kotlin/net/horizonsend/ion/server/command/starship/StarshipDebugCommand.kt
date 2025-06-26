@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -89,6 +90,7 @@ object StarshipDebugCommand : SLCommand() {
 		val starship = getStarshipRiding(sender)
 
 		sender.information(starship.subsystems.map { it.javaClass.simpleName }.sorted().joinToString())
+		starship.subsystems.forEach { sender.highlightBlock(it.pos, 50L) }
 	}
 
 	@Subcommand("testVector")

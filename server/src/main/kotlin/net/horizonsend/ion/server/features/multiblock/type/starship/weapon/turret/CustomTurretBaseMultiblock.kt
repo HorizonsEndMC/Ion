@@ -57,7 +57,7 @@ sealed class CustomTurretBaseMultiblock : Multiblock(), SubsystemMultiblock<Cust
 
 	object CustomTurretBaseMultiblockBottom : CustomTurretBaseMultiblock() {
 		override val detectionOrigin: Vec3i = Vec3i(0, -2, 0)
-		override val furnaceOffset: Vec3i = Vec3i(0, 1, 0)
+		override val furnaceOffset: Vec3i = Vec3i(0, -1, 0)
 
 		override fun MultiblockShape.buildStructure() {
 			z(1) {

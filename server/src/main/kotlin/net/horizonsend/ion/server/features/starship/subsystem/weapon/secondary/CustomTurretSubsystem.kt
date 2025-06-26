@@ -33,11 +33,18 @@ import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.block.data.Directional
 import org.bukkit.util.Vector
 import java.util.ArrayDeque
 import java.util.LinkedList
 
 class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace, val multiblock: CustomTurretBaseMultiblock) : WeaponSubsystem(starship, pos), DirectionalSubsystem {
+	init {
+		val furnacePos = pos.plus(multiblock.furnaceOffset)
+	    val furnaceBlock = starship.world.getBlockAtKey(furnacePos.toBlockKey()).blockData as? Directional
+		if (furnaceBlock != null) face = furnaceBlock.facing
+	}
+
 	override val balancing: StarshipWeapons.StarshipWeapon = StarshipWeapons.StarshipWeapon(
 		range = 0.0,
 		speed = 0.0,
