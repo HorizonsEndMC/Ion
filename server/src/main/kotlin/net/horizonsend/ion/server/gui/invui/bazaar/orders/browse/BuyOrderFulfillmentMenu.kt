@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.input.InputResult
+import net.horizonsend.ion.common.utils.input.PotentiallyFutureResult
 import net.horizonsend.ion.common.utils.text.BAZAAR_ORDER_HEADER_ICON
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -18,6 +19,7 @@ import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
@@ -41,10 +43,15 @@ import xyz.xenondevs.invui.window.Window
 import java.text.SimpleDateFormat
 import kotlin.properties.Delegates
 
-class BuyOrderFulfillmentMenu(viewer: Player, val item: Oid<BazaarOrder>) : InvUIWindowWrapper(viewer, async = true) {
+class BuyOrderFulfillmentMenu(
+	viewer: Player,
+	val item: Oid<BazaarOrder>,
+	private val availableItemProvider: () -> Collection<ItemReference>,
+	val fulfillmentFunction: (Int) -> PotentiallyFutureResult,
+) : InvUIWindowWrapper(viewer, async = true) {
 	private var fulfillmentAmount = 0
 	private var remainingAmount = 0
-	private var playerAmount = 0
+	private var availableAmount = 0
 
 	private lateinit var itemStack: ItemStack
 	private var requestedQuantity by Delegates.notNull<Int>()
@@ -66,7 +73,7 @@ class BuyOrderFulfillmentMenu(viewer: Player, val item: Oid<BazaarOrder>) : InvU
 		val itemString = props[BazaarOrder::itemString]
 		itemStack = fromItemString(itemString)
 
-		calculateMatchingPlayerMaterials(itemStack, remainingAmount)
+		calculateAvailableMaterials(itemStack, remainingAmount)
 	}
 
 	override fun buildWindow(): Window? {
@@ -154,7 +161,7 @@ class BuyOrderFulfillmentMenu(viewer: Player, val item: Oid<BazaarOrder>) : InvU
 	private val confirmButton = FeedbackLike.withHandler(GuiItem.EMPTY.makeItem(text("Confirm"))) { _, _ -> confirmFulfillment() }
 
 	private fun confirmFulfillment() {
-		val asyncResult = Bazaars.fulfillOrder(viewer, item, fulfillmentAmount)
+		val asyncResult = fulfillmentFunction.invoke(fulfillmentAmount)
 
 		asyncResult.withResult { result ->
 			confirmButton.updateWith(result)
@@ -167,14 +174,14 @@ class BuyOrderFulfillmentMenu(viewer: Player, val item: Oid<BazaarOrder>) : InvU
 		}
 	}
 
-	private fun calculateMatchingPlayerMaterials(itemStack: ItemStack, orderQuantity: Int) = Tasks.sync {
-		val playerAmount = viewer.inventory
-			.filterNotNull()
+	private fun calculateAvailableMaterials(itemStack: ItemStack, orderQuantity: Int) = Tasks.sync {
+		val availableAmolunt = availableItemProvider.invoke()
+			.mapNotNull { it.get() }
 			.filter { it.isSimilar(itemStack) }
 			.sumOf { it.amount }
 
-		this.playerAmount = playerAmount
-		fulfillmentAmount = minOf(playerAmount, orderQuantity)
+		this.availableAmount = availableAmolunt
+		fulfillmentAmount = minOf(availableAmount, orderQuantity)
 
 		refreshTitle()
 	}
