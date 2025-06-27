@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.item.CollectionScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
@@ -33,7 +32,10 @@ import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.eq
 import xyz.xenondevs.invui.item.Item
 
-abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>(viewer, async = true) {
+abstract class AbstractOrderManagementMenu(
+	viewer: Player,
+	protected val handleListingClick: AbstractOrderManagementMenu.(Oid<BazaarOrder>) -> Unit
+) : ListInvUIWindow<BazaarOrder>(viewer, async = true) {
 	override fun generateEntries(): List<BazaarOrder> {
 		return BazaarOrder
 			.find(BazaarOrder::player eq viewer.slPlayerId)
@@ -47,7 +49,7 @@ abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<Baz
 			.stripAttributes()
 			.applyItemFormatting(entry)
 			.asItemProvider()
-			.makeGuiButton { _, _ -> openManageOrderMenu(entry, this) }
+			.makeGuiButton { _, _ -> handleListingClick.invoke(this, entry._id) }
 	}
 
 	protected fun ItemStack.applyItemFormatting(orderItem: BazaarOrder): ItemStack {
@@ -59,10 +61,6 @@ abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<Baz
 			template(text("Fulfilled Quantity: {0}", HE_MEDIUM_GRAY), orderItem.fulfilledQuantity),
 			template(text("Unfulfilled Quantity: {0}", HE_MEDIUM_GRAY), orderItem.requestedQuantity - orderItem.fulfilledQuantity),
 		))
-	}
-
-	protected fun openManageOrderMenu(order: BazaarOrder, parent: CommonGuiWrapper?) {
-		BazaarGUIs.openBuyOrderEditorMenu(viewer, order._id, parent)
 	}
 
 	protected val infoButton = makeInformationButton(
@@ -94,7 +92,7 @@ abstract class AbstractOrderManagementMenu(viewer: Player) : ListInvUIWindow<Baz
 					.applyItemFormatting(item)
 			},
 			backButtonHandler = { this.openGui() },
-			handler = { _, item: BazaarOrder -> openManageOrderMenu(item, this@AbstractOrderManagementMenu) }
+			handler = { _, item: BazaarOrder -> handleListingClick.invoke(this@AbstractOrderManagementMenu, item._id) }
 		)
 	}
 
