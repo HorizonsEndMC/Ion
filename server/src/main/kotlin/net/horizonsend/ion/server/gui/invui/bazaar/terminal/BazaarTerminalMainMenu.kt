@@ -20,7 +20,6 @@ import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTermina
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
-import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.bazaar.terminal.browse.TerminalCitySelection
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
@@ -36,7 +35,6 @@ import net.kyori.adventure.text.format.TextColor
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
-import org.litote.kmongo.gt
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.window.Window
@@ -68,8 +66,8 @@ class BazaarTerminalMainMenu(
 				"s . . r r r f f f "
 			)
 
-			.addIngredient('b', buyButton)
-			.addIngredient('d', depositButton)
+			.addIngredient('b', purchaseButton)
+			.addIngredient('d', restockButton)
 
 			.addIngredient('r', recieveButton)
 			.addIngredient('f', fulfillButton)
@@ -131,15 +129,15 @@ class BazaarTerminalMainMenu(
 
 		val textBody = GuiText("", guiWidth = 48)
 			.add(text("City:"), line = 0)
-			.add(getMenuTitleName(text(territoryName, WHITE)).clip(48, true), line = 1)
+			.add(getMenuTitleName(text(territoryName, WHITE)).clip(48, true), line = 1, horizontalShift = 1)
 			.add(text("Orders:"), line = 2)
-			.add(getOrderText(), line = 3)
+			.add(getOrderText(), line = 3, horizontalShift = 1)
 			.add(text("Sale Items:"), line = 4)
-			.add(getSaleText(), line = 5)
+			.add(getSaleText(), line = 5, horizontalShift = 1)
 			.add(text("Status:"), line = 6)
-			.add(getStatusText(), line = 7)
+			.add(getStatusText(), line = 7, horizontalShift = 1)
 			.add(text("Owner:"), line = 8)
-			.add(getOwnerName(), line = 9)
+			.add(getOwnerName(), line = 9, horizontalShift = 1)
 			.build()
 
 		return ofChildren(text.build(), buttonLabels1, buttonLabels2, textBody)
@@ -164,7 +162,7 @@ class BazaarTerminalMainMenu(
 		))
 
 	private fun getStatusText(): Component {
-		val string = if (terminalMultiblockEntity.mergeEnd?.get() != null) "Merged" else "Single"
+		val string = if (terminalMultiblockEntity.mergeEnd?.get() != null) "Merged" else "Unmerged"
 		return getMenuTitleName(text(string, WHITE))
 	}
 
@@ -187,7 +185,7 @@ class BazaarTerminalMainMenu(
 
 	private val territoryButtons = GuiItem.EMPTY.makeItem(text("Current Trade City"))
 		.updateLore(listOf(
-			text(territoryName, HE_MEDIUM_GRAY),
+			text(territoryName, WHITE),
 			template(text("Status: {0}", HE_MEDIUM_GRAY), if (cityData?.type == TradeCityType.SETTLEMENT) Settlement.findOnePropById(cityData.settlementId, Settlement::cityState)?.name ?: "Unregistered" else if (cityData != null) "Active" else "Unregistered")
 		))
 
@@ -210,44 +208,44 @@ class BazaarTerminalMainMenu(
 		println("Fulfill") //TODO
 	}
 
-	private val depositDescription = listOf(
-		text("", HE_MEDIUM_GRAY) //TODO
+	private val restockDescription = listOf(
+		text("Items stored in the built in inventory, or connected", HE_MEDIUM_GRAY),
+		text(" via pipes may be added to your bazaar listings here.", HE_MEDIUM_GRAY)
 	)
 
-	private val depositButton = FeedbackLike.withHandler({
+	private val restockButton = FeedbackLike.withHandler({
 		if (terminalMultiblockEntity.isDepositAvailable()) GuiItem.EMPTY.makeItem(text("Deposit Items To Your Sell Orders"))
 		else GuiItem.EMPTY.makeItem(text("Item deposit Not Available")).updateLore(listOf(text("Items may only be deposited in trade cities, and if the merge port is not occupied!", RED)))
 
-	}, fallbackLoreProvider = ::depositDescription) { _, _ -> handleDeposit() }
+	}, fallbackLoreProvider = ::restockDescription) { _, _ -> handleRestock() }
 
-	private fun handleDeposit() {
+	private fun handleRestock() {
 		val cityCheck = Bazaars.checkInValidCity(viewer)
-		if (!cityCheck.isSuccess()) return depositButton.updateWith(cityCheck)
+		if (!cityCheck.isSuccess()) return restockButton.updateWith(cityCheck)
 		BazaarBulkDepositMenu(viewer, terminalMultiblockEntity).openGui(this)
 	}
 
-	private val buyDescription = listOf(
-		text("", HE_MEDIUM_GRAY) //TODO
+	private val purchaseDescription = listOf(
+		text("Items may be purchased from the bazaar, and deposited into the connected", HE_MEDIUM_GRAY), //TODO
+		text("inventories, if there is room.", HE_MEDIUM_GRAY)
 	)
 
-	private val buyButton = FeedbackLike.withHandler(
+	private val purchaseButton = FeedbackLike.withHandler(
 		providedItem = {
-			if (terminalMultiblockEntity.isWithdrawAvailable()) GuiItem.EMPTY.makeItem(text("Purchase Items")).updateLore(buyDescription)
-			else GuiItem.EMPTY.makeItem(text("Item Purchase not available")).updateLore(listOf(text("The left merge port is occupying the withdraw capabilities.", HE_MEDIUM_GRAY)))
+			if (terminalMultiblockEntity.isWithdrawAvailable()) GuiItem.EMPTY.makeItem(text("Purchase Items"))
+			else GuiItem.EMPTY.makeItem(text("Item Purchase not available"))
 		},
+		fallbackLoreProvider = { if (terminalMultiblockEntity.isWithdrawAvailable()) purchaseDescription else listOf(text("The left merge port is occupying the withdraw capabilities.", HE_MEDIUM_GRAY)) },
 		clickHandler = { _, _ -> handlePurchase() }
 	)
 
 	private fun handlePurchase() {
 		TerminalCitySelection(viewer, terminalMultiblockEntity).openGui(this)
-
-		val listedItems = BazaarItem.find(and(BazaarItem::cityTerritory eq terminalMultiblockEntity.territory?.id, BazaarItem::stock gt 0))
-		val item = listedItems.toList().random()
-		BazaarGUIs.openTerminalPurchaseMenu(viewer, item, buyButton, terminalMultiblockEntity, { openGui() }) //TODO
 	}
 
 	private val recieveOrdersDescription = listOf(
-		text("", HE_MEDIUM_GRAY) //TODO
+		text("Items that players have fulfilled to your placed orders may", HE_MEDIUM_GRAY),
+		text("be withdrawn here into connected inventories.", HE_MEDIUM_GRAY)
 	)
 
 	private val recieveButton = ItemProvider {
@@ -259,5 +257,7 @@ class BazaarTerminalMainMenu(
 		println("Withdraw") //TODO
 	}
 
-	private val settingsButton = GuiItem.GEAR //TODO
+	private val settingsButton = GuiItem.GEAR.makeItem(text("View settings")).makeGuiButton { _, _ ->
+		// TODO
+	}
 }
