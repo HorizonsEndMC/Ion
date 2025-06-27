@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTermina
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.BuyOrderMainMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.browse.BuyOrderFulfillmentMenu
+import net.horizonsend.ion.server.gui.invui.bazaar.orders.manage.AbstractOrderManagementMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.manage.CreateBuyOrderMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.manage.GridOrderManagementWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.manage.ListOrderManagementMenu
@@ -142,20 +143,11 @@ object BazaarGUIs {
 		menu.openGui()
 	}
 
-	fun openBuyOrderManageMenu(player: Player, previous: CommonGuiWrapper?) {
+	fun openBuyOrderManageMenu(player: Player, previous: CommonGuiWrapper?, handleListingClick: AbstractOrderManagementMenu.(Oid<BazaarOrder>) -> Unit = { openBuyOrderEditorMenu(viewer, it, this) }) {
 		val defaultList = player.getSetting(PlayerSettings::orderManageDefaultListView)
-		if (defaultList) openBuyOrderManageListMenu(player, previous)
-		else openBuyOrderManageGridMenu(player, previous)
-	}
 
-	fun openBuyOrderManageListMenu(player: Player, previous: CommonGuiWrapper?) {
-		val menu = ListOrderManagementMenu(player)
-		menu.openGui(previous)
-	}
-
-	fun openBuyOrderManageGridMenu(player: Player, previous: CommonGuiWrapper?) {
-		val menu = GridOrderManagementWindow(player)
-		menu.openGui(previous)
+		if (defaultList) ListOrderManagementMenu(player, handleListingClick).openGui(previous)
+		else GridOrderManagementWindow(player, handleListingClick).openGui(previous)
 	}
 
 	fun openBuyOrderFulfillmentMenu(player: Player, orderId: Oid<BazaarOrder>, previous: CommonGuiWrapper?) {
