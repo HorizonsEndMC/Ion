@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.features.transport.items.util.getTransferSpace
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
+import net.horizonsend.ion.server.gui.invui.bazaar.orders.browse.OrderCityBrowseMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.terminal.browse.TerminalCitySelection
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
@@ -210,9 +211,9 @@ class BazaarTerminalMainMenu(
 
 	private fun handleFulfill() {
 		val cityCheck = Bazaars.checkInValidCity(viewer)
-		if (!cityCheck.isSuccess()) return fulfillButton.updateWith(cityCheck)
+		val cityData = cityCheck.result ?: return fulfillButton.updateWith(cityCheck)
 
-		println("Fulfill") //TODO
+		OrderCityBrowseMenu(viewer, cityData) { BazaarGUIs.openBulkBuyOrderFulfillmentMenu(viewer, it._id, this, terminalMultiblockEntity) }.openGui(this)
 	}
 
 	private val restockDescription = listOf(
