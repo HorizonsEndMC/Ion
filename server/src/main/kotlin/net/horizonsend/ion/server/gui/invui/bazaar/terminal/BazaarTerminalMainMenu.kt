@@ -5,11 +5,13 @@ import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.slPlayerId
+import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.clip
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.gui.icons.GuiIcon
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
@@ -19,17 +21,21 @@ import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilbloc
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.transport.items.util.getTransferSpaceFor
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.bazaar.terminal.browse.TerminalCitySelection
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.TextColor
@@ -256,9 +262,38 @@ class BazaarTerminalMainMenu(
 
 	private fun handleWithdrawOrder() {
 		BazaarGUIs.openBuyOrderManageMenu(viewer, this) { itemId ->
-			Bazaars.withdrawOrderStock(viewer, itemId, Int.MAX_VALUE) { stack, _, amount ->
-				terminalMultiblockEntity.intakeItems(stack, amount, 0.0, 0)
-			}.sendReason(viewer) //TODO polish
+			Tasks.async {
+				val itemString = BazaarOrder.findOnePropById(itemId, BazaarOrder::itemString) ?: return@async
+				val itemExample = fromItemString(itemString)
+				val room = getTransferSpaceFor(terminalMultiblockEntity.getOutputInventories().map { it.inventory }, itemExample)
+
+				Bazaars.withdrawOrderStock(player = viewer, order = itemId, limit = room) { stack, _, amount ->
+					terminalMultiblockEntity.intakeItems(stack, amount) { fullStacks, remainder, droppedStacks, droppedItems ->
+						val quantityMessage = if (stack.maxStackSize == 1) "{0}" else "{0} stack${if (fullStacks == 1) "" else "s"} and {1} item${if (remainder == 1) "" else "s"}"
+
+						val fullMessage = template(
+							text("Withdrew $quantityMessage of {2}.", GREEN),
+							fullStacks,
+							remainder,
+							stack.displayNameComponent
+						)
+
+						val lore = mutableListOf(fullMessage)
+
+						if (droppedItems > 0 || droppedStacks > 0) {
+							val droppedItemsMessage = template(
+								text("${if (stack.maxStackSize == 1) "{0}" else "{0} stack${if (fullStacks == 1) "" else "s"} and {1} item${if (remainder == 1) "" else "s"}"} {2} was dropped due to insufficent storage space.", RED),
+								droppedStacks,
+								droppedItems,
+								stack.displayNameComponent
+							)
+							lore.add(droppedItemsMessage)
+						}
+
+						InputResult.SuccessReason(lore)
+					}
+				}.sendReason(viewer)
+			}
 		}
 	}
 

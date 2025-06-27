@@ -38,8 +38,10 @@ import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 
 object BazaarGUIs {
 	fun openBazaarListingHome(player: Player, parentWindow: CommonGuiWrapper?) {
@@ -102,7 +104,40 @@ object BazaarGUIs {
 	}
 
 	fun openTerminalPurchaseMenu(player: Player, item: BazaarItem, clickedButton: FeedbackLike? = null, terminal: BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity, backButtonHandler: () -> Unit) {
-		val menu = PurchaseItemMenu(player, item, terminal::intakeItems, clickedButton, backButtonHandler)
+		val intake: (ItemStack, Int, Double, Int) -> (() -> InputResult) = { itemStack: ItemStack, amount: Int, cost: Double, priceMult: Int ->
+			terminal.intakeItems(itemStack, amount) { fullStacks, remainder, droppedStacks, droppedItems ->
+				val quantityMessage = if (itemStack.maxStackSize == 1) "{0}" else "{0} stack${if (fullStacks == 1) "" else "s"} and {1} item${if (remainder == 1) "" else "s"}"
+
+				val fullMessage = template(
+					text("Bought $quantityMessage of {2} for {3}.", GREEN),
+					fullStacks,
+					remainder,
+					itemStack.displayNameComponent,
+					cost.toCreditComponent()
+				)
+
+				val lore = mutableListOf(fullMessage)
+
+				if (droppedItems > 0 || droppedStacks > 0) {
+					val droppedItemsMessage = template(
+						text("${if (itemStack.maxStackSize == 1) "{0}" else "{0} stack${if (fullStacks == 1) "" else "s"} and {1} item${if (remainder == 1) "" else "s"}"} {2} was dropped due to insufficent storage space.", RED),
+						droppedStacks,
+						droppedItems,
+						itemStack.displayNameComponent
+					)
+					lore.add(droppedItemsMessage)
+				}
+
+				if (priceMult > 1) {
+					val priceMultiplicationMessage = template(text("(Price multiplied by {0} due to browsing remotely)", YELLOW), priceMult)
+					lore.add(priceMultiplicationMessage)
+				}
+
+				InputResult.SuccessReason(lore)
+			}
+		}
+
+		val menu = PurchaseItemMenu(player, item, intake, clickedButton, backButtonHandler)
 		menu.openGui()
 	}
 

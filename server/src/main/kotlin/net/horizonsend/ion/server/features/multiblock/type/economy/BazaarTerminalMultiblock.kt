@@ -7,8 +7,6 @@ import com.manya.util.MapCollectors
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
@@ -33,7 +31,6 @@ import net.horizonsend.ion.server.gui.invui.bazaar.terminal.BazaarTerminalMainMe
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.persistence.SettingsContainer
 import net.horizonsend.ion.server.miscellaneous.utils.persistence.SettingsContainer.SettingsProperty
@@ -43,9 +40,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.AQUA
 import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
-import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -426,7 +421,7 @@ sealed class BazaarTerminalMultiblock(private val mergeEnabled: Boolean) : Multi
 			return withdrawInventoryReferences
 		}
 
-		fun intakeItems(itemStack: ItemStack, amount: Int, cost: Double, priceMult: Int): () -> InputResult {
+		fun intakeItems(itemStack: ItemStack, amount: Int, resultHandler: (Int, Int, Int, Int) -> InputResult): () -> InputResult {
 			// This part is run async
 			val destinations = getOutputInventories()
 				.filter { getTransferSpaceFor(it.inventory, itemStack) > 0 }
@@ -475,38 +470,10 @@ sealed class BazaarTerminalMultiblock(private val mergeEnabled: Boolean) : Multi
 
 					droppedItems += remainingStacksremainder
 					world.dropItem(dropLocation, itemStack.asQuantity(remainingStacksremainder))
+
 				}
 
-				val quantityMessage = if (itemStack.maxStackSize == 1) "{0}" else "{0} stack${if (fullStacks == 1) "" else "s"} and {1} item${if (remainder == 1) "" else "s"}"
-
-				val fullMessage = template(
-					text("Bought $quantityMessage of {2} for {3}.", GREEN),
-					fullStacks,
-					remainder,
-					itemStack.displayNameComponent,
-					cost.toCreditComponent()
-				)
-
-				val lore = mutableListOf(fullMessage)
-
-				if (droppedItems > 0 || droppedStacks > 0) {
-					val droppedItemsMessage = template(
-						text("${if (itemStack.maxStackSize == 1) "{0}" else "{0} stack${if (fullStacks == 1) "" else "s"} and {1} item${if (remainder == 1) "" else "s"}"} {2} was dropped due to insufficent storage space.", RED),
-						droppedStacks,
-						droppedItems,
-						itemStack.displayNameComponent
-					)
-					lore.add(droppedItemsMessage)
-				}
-
-				if (priceMult > 1) {
-					val priceMultiplicationMessage = template(text("(Price multiplied by {0} due to browsing remotely)", YELLOW), priceMult)
-					lore.add(priceMultiplicationMessage)
-				}
-
-				InputResult.SuccessReason(lore)
-
-				return@syncBlock InputResult.SuccessReason(lore)
+				resultHandler.invoke(fullStacks, remainder, droppedStacks, droppedItems)
 			}
 		}
 	}
