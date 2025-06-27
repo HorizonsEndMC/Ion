@@ -385,6 +385,6 @@ object BazaarCommand : SLCommand() {
 		val orderCheck = Bazaars.checkHasOrder(owner._id, Regions[city.territoryId], orderString)
 		val order = orderCheck.result ?: return@asyncCommand orderCheck.sendReason(sender)
 
-		Bazaars.fulfillOrder(sender, order._id, limit ?: Int.MAX_VALUE).sendReason(sender)
+		Bazaars.fulfillOrder(sender, sender.inventory, order._id, limit ?: Int.MAX_VALUE).sendReason(sender)
 	}
 }
