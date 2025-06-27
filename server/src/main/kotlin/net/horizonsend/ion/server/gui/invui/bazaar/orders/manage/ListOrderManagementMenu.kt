@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.orders.manage
 
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.BAZAAR_ORDER_HEADER_ICON
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
@@ -33,7 +35,10 @@ import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
 
-class ListOrderManagementMenu(viewer: Player) : AbstractOrderManagementMenu(viewer) {
+class ListOrderManagementMenu(
+	viewer: Player,
+	handleListingClick: AbstractOrderManagementMenu.(Oid<BazaarOrder>) -> Unit = { BazaarGUIs.openBuyOrderEditorMenu(viewer, it, this) }
+) : AbstractOrderManagementMenu(viewer, handleListingClick) {
 	override val listingsPerPage: Int = 4
 
 	override fun buildWindow(): Window {
@@ -96,9 +101,9 @@ class ListOrderManagementMenu(viewer: Player) : AbstractOrderManagementMenu(view
 		return withPageNumber(text)
 	}
 
-	override val switchLayoutButton: Item = GuiItem.GRID_VIEW.makeItem(Component.text("Switch to Grid Layout")).makeGuiButton { _, _ ->
+	override val switchLayoutButton: Item = GuiItem.GRID_VIEW.makeItem(text("Switch to Grid Layout")).makeGuiButton { _, _ ->
 		viewer.setSetting(PlayerSettings::orderManageDefaultListView, false)
-		BazaarGUIs.openBuyOrderManageGridMenu(viewer, parentWindow)
+		GridOrderManagementWindow(viewer, handleListingClick).openGui(parentWindow)
 	}
 
 	private fun backingButton(index: Int): AbstractItem {
@@ -115,8 +120,8 @@ class ListOrderManagementMenu(viewer: Player) : AbstractOrderManagementMenu(view
 			override fun getItemProvider(): ItemProvider = provider
 
 			override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
-				val bazaarItem = getDisplayedEntries().getOrNull(index) ?: return
-				openManageOrderMenu(bazaarItem, this@ListOrderManagementMenu)
+				val order = getDisplayedEntries().getOrNull(index) ?: return
+				handleListingClick.invoke(this@ListOrderManagementMenu, order._id)
 			}
 		}
 
