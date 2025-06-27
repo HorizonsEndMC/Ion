@@ -2,6 +2,7 @@ package net.horizonsend.ion.proxy.commands.velocity
 
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
+import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import com.velocitypowered.api.proxy.Player
@@ -39,6 +40,7 @@ import org.litote.kmongo.ne
 
 @CommandAlias("mail|inbox|messages")
 object VelocityMailCommand : ProxyCommand() {
+	@Default
 	@Subcommand("inbox")
 	fun viewInbox(sender: Player, @Optional specifiedState: MessageState?, @Optional pageNumber: Int?) = asyncCommand(sender) {
 		val state = specifiedState ?: MessageState.UNREAD
