@@ -543,19 +543,25 @@ object Bazaars : IonServerComponent() {
 		))
 	}
 
-//	fun editOrderQuantity(player: Player, order: Oid<BazaarOrder>): InputResult {
-//		val ownershipCheck = checkOrderOwnership(player, order)
-//		if (!ownershipCheck.isSuccess()) return ownershipCheck
-//
-//
-//	}
-//
-//	fun editOrderPrice(player: Player, order: Oid<BazaarOrder>): InputResult {
-//		val ownershipCheck = checkOrderOwnership(player, order)
-//		if (!ownershipCheck.isSuccess()) return ownershipCheck
-//	}
-
 	fun withdrawOrderStock(player: Player, order: Oid<BazaarOrder>, limit: Int): PotentiallyFutureResult {
+		return withdrawOrderStock(player, order, limit) { item, orderDocument, toRemove ->
+			{
+				val (fullStacks, remainder) = giveOrDropItems(item, toRemove, player)
+
+				InputResult.SuccessReason(listOf(template(
+					text("Withdrew {0} of {1} at {2} ({3} stack(s) and {4} item(s) items from the balance. {5} remain.", GREEN),
+					toRemove,
+					orderDocument.itemString,
+					cityName(Regions[orderDocument.cityTerritory]),
+					fullStacks,
+					remainder,
+					orderDocument.stock
+				)))
+			}
+		}
+	}
+
+	fun withdrawOrderStock(player: Player, order: Oid<BazaarOrder>, limit: Int, itemConsumer: (ItemStack, BazaarOrder, Int) -> (() -> InputResult)): PotentiallyFutureResult {
 		val ownershipCheck = checkOrderOwnership(player, order)
 		if (!ownershipCheck.isSuccess()) return ownershipCheck
 
@@ -576,19 +582,12 @@ object Bazaars : IonServerComponent() {
 
 		val future = FutureInputResult()
 
-		Tasks.sync {
-			val (fullStacks, remainder) = giveOrDropItems(item, toRemove, player)
+		val resultFunction = itemConsumer.invoke(item, orderDocument, toRemove)
 
-			future.complete(
-				InputResult.SuccessReason(listOf(template(
-				text("Withdrew {0} of {1} at {2} ({3} stack(s) and {4} item(s) items from the balance. {5} remain.", GREEN),
-				toRemove,
-				orderDocument.itemString,
-				cityName(Regions[orderDocument.cityTerritory]),
-				fullStacks,
-				remainder,
-				orderDocument.stock
-			))))
+		Tasks.sync {
+			val result = resultFunction.invoke()
+
+			future.complete(result)
 		}
 
 		return future
@@ -632,8 +631,6 @@ object Bazaars : IonServerComponent() {
 					InputResult.SuccessReason(listOf(
 					template(text("Fulfilled {0} of {1}'s order of {2} for a profit of {3}", GREEN), count, ordererName, itemReference.displayNameComponent, profit.toCreditComponent())
 				)))
-
-				//TODO logic for removing the order
 			}
 		}
 

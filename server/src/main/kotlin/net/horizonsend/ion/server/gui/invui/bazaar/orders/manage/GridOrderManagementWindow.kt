@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.gui.invui.bazaar.orders.manage
 
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.BAZAAR_ORDER_HEADER_ICON
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
@@ -18,7 +20,9 @@ import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
 
-class GridOrderManagementWindow(viewer: Player) : AbstractOrderManagementMenu(viewer) {
+class GridOrderManagementWindow(
+	viewer: Player,
+	handleListingClick: AbstractOrderManagementMenu.(Oid<BazaarOrder>) -> Unit = { BazaarGUIs.openBuyOrderEditorMenu(viewer, it, this) }) : AbstractOrderManagementMenu(viewer, handleListingClick) {
 	override val listingsPerPage: Int = 36
 
 	override fun buildWindow(): Window {
@@ -68,8 +72,8 @@ class GridOrderManagementWindow(viewer: Player) : AbstractOrderManagementMenu(vi
 		return withPageNumber(text)
 	}
 
-	override val switchLayoutButton: Item = GuiItem.LIST_VIEW.makeItem(Component.text("Switch to List Layout")).makeGuiButton { _, _ ->
+	override val switchLayoutButton: Item = GuiItem.LIST_VIEW.makeItem(text("Switch to List Layout")).makeGuiButton { _, _ ->
 		viewer.setSetting(PlayerSettings::orderManageDefaultListView, true)
-		BazaarGUIs.openBuyOrderManageListMenu(viewer, parentWindow)
+		ListOrderManagementMenu(viewer, handleListingClick).openGui(parentWindow)
 	}
 }
