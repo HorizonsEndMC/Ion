@@ -19,7 +19,6 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.CollectionScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
-import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.getBazaarSettingsButton
 import net.horizonsend.ion.server.gui.invui.bazaar.getFilterButton
@@ -33,7 +32,7 @@ import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
 
-abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>(viewer, async = true), OrderWindow {
+abstract class AbstractBrowseMenu(viewer: Player, private val fullfillmentHandler: AbstractBrowseMenu.(BazaarOrder) -> Unit) : ListInvUIWindow<BazaarOrder>(viewer, async = true), OrderWindow {
 	override val listingsPerPage: Int = 36
 
 	abstract val findBson: Bson
@@ -41,9 +40,7 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 	override fun generateEntries(): List<BazaarOrder> {
 		return BazaarOrder.find(findBson)
 			.apply { SORTING_METHODS[sortingMethod].sortBuyOrders(this) }
-			.filter { TradeCities.isCity(Regions[it.cityTerritory]) }
-			.filter { filterData.matches(it) }
-			.filterNot { BazaarOrder.isFulfilled(it._id) }
+			.filter { !BazaarOrder.isFulfilled(it._id) && TradeCities.isCity(Regions[it.cityTerritory]) && filterData.matches(it) }
 	}
 
 	override fun createItem(entry: BazaarOrder): Item = formatItem(entry)
@@ -112,7 +109,7 @@ abstract class AbstractBrowseMenu(viewer: Player) : ListInvUIWindow<BazaarOrder>
 	}
 
 	override fun onClickDisplayedItem(entry: BazaarOrder) {
-		BazaarGUIs.openBuyOrderFulfillmentMenu(viewer, entry._id, this)
+		fullfillmentHandler.invoke(this, entry)
 	}
 
 	override fun getSearchEntries(): Collection<BazaarOrder> {

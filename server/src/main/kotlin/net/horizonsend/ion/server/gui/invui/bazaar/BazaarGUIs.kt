@@ -7,7 +7,9 @@ import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
+import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.giveOrDropItems
 import net.horizonsend.ion.server.features.economy.bazaar.PlayerFilters
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
@@ -16,6 +18,8 @@ import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.C
 import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedBooleanToggle
 import net.horizonsend.ion.server.features.gui.custom.settings.button.general.collection.CollectionModificationButton
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
+import net.horizonsend.ion.server.features.transport.items.util.ItemReference
+import net.horizonsend.ion.server.features.transport.items.util.getRemovableItems
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.BuyOrderMainMenu
 import net.horizonsend.ion.server.gui.invui.bazaar.orders.browse.BuyOrderFulfillmentMenu
@@ -35,11 +39,13 @@ import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.ListingEditor
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.SellOrderCreationMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GREEN
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
+import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
@@ -186,7 +192,40 @@ object BazaarGUIs {
 	}
 
 	fun openBuyOrderFulfillmentMenu(player: Player, orderId: Oid<BazaarOrder>, previous: CommonGuiWrapper?) {
-		BuyOrderFulfillmentMenu(player, orderId).openGui(previous)
+		BuyOrderFulfillmentMenu(
+			viewer = player,
+			item = orderId,
+			availableItemProvider = { player.inventory.withIndex().mapNotNull { (index, item: ItemStack?) ->
+				if (item == null) return@mapNotNull null
+				ItemReference(player.inventory as CraftInventory, index)
+			} },
+			fulfillmentFunction = { fulfillmentAmount -> Bazaars.fulfillOrder(player, player.inventory, orderId, fulfillmentAmount) }
+		).openGui(previous)
+	}
+
+	fun openBulkBuyOrderFulfillmentMenu(player: Player, orderId: Oid<BazaarOrder>, previous: CommonGuiWrapper?, terminal: BazaarTerminalMultiblock.BazaarTerminalMultiblockEntity) {
+		val inventoryReferences = terminal.getInputInventories()
+		val references = mutableListOf<ItemReference>()
+
+		Tasks.async {
+			val itemString = BazaarOrder.findOnePropById(orderId, BazaarOrder::itemString) ?: return@async
+			val exampleItem = fromItemString(itemString)
+
+			for (reference in inventoryReferences) {
+				for ((index, item: ItemStack) in getRemovableItems(reference.inventory)) {
+					if (!item.isSimilar(exampleItem)) continue
+
+					references.add(ItemReference(reference.inventory, index))
+				}
+			}
+
+			BuyOrderFulfillmentMenu(
+				viewer = player,
+				item = orderId,
+				availableItemProvider = { references },
+				fulfillmentFunction = { limit -> Bazaars.bulkFulfillOrder(player, orderId, references, /* limit TODO */) }
+			).openGui(previous)
+		}
 	}
 
 	fun openBuyOrderEditorMenu(player: Player, orderId: Oid<BazaarOrder>, previous: CommonGuiWrapper?) {
