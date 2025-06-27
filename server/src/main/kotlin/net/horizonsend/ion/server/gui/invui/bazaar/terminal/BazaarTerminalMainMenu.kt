@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTermina
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
 import net.horizonsend.ion.server.gui.invui.bazaar.terminal.browse.TerminalCitySelection
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
@@ -254,7 +255,11 @@ class BazaarTerminalMainMenu(
 	}.makeGuiButton { _, _ -> handleWithdrawOrder() }
 
 	private fun handleWithdrawOrder() {
-		println("Withdraw") //TODO
+		BazaarGUIs.openBuyOrderManageMenu(viewer, this) { itemId ->
+			Bazaars.withdrawOrderStock(viewer, itemId, Int.MAX_VALUE) { stack, _, amount ->
+				terminalMultiblockEntity.intakeItems(stack, amount, 0.0, 0)
+			}.sendReason(viewer) //TODO polish
+		}
 	}
 
 	private val settingsButton = GuiItem.GEAR.makeItem(text("View settings")).makeGuiButton { _, _ ->
