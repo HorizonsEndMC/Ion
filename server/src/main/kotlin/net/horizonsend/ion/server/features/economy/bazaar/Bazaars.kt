@@ -593,7 +593,7 @@ object Bazaars : IonServerComponent() {
 		return future
 	}
 
-	fun fulfillOrder(fulfiller: Player, order: Oid<BazaarOrder>, limit: Int): PotentiallyFutureResult {
+	fun fulfillOrder(fulfiller: Player, inventory: Inventory, order: Oid<BazaarOrder>, limit: Int): PotentiallyFutureResult {
 		if (limit < 1) return InputResult.FailureReason(listOf(text("Limit must be greater than 0!", RED)))
 
 		val combatResult = checkCombatTag(fulfiller)
@@ -610,7 +610,7 @@ object Bazaars : IonServerComponent() {
 		val result = FutureInputResult()
 
 		Tasks.sync {
-			val count = takePlayerItemsOfType(fulfiller.inventory, itemReference, limit)
+			val count = takePlayerItemsOfType(inventory, itemReference, limit)
 
 			if (count == 0) {
 				result.complete(
@@ -727,6 +727,40 @@ object Bazaars : IonServerComponent() {
 					// db write in this function is async
 					futureResults.add(depositListingStock(player, inventory, Regions[territory.territoryId], itemString, Integer.MAX_VALUE).get())
 				}
+			}
+
+			val fullLore = bareResults + futureResults.mapNotNull { it.getReason() }.flatten()
+
+			if (futureResults.any { it.isSuccess() }) futureResult.complete(InputResult.SuccessReason(fullLore))
+			else futureResult.complete(InputResult.FailureReason(fullLore))
+		}
+
+		return futureResult
+	}
+
+	//TODO limit
+	fun bulkFulfillOrder(player: Player, order: Oid<BazaarOrder>, references: Collection<ItemReference>): PotentiallyFutureResult {
+		val territoryResult = checkInValidCity(player)
+		if (!territoryResult.isSuccess()) return territoryResult
+
+		if (references.isEmpty()) {
+			return InputResult.FailureReason(listOf(
+				template(text("You do not have any items to fulfill the order with!", RED))
+			))
+		}
+
+		val futureResult = FutureInputResult()
+
+		Tasks.async {
+			val bareResults = mutableListOf<Component>()
+			val futureResults = mutableListOf<InputResult>()
+
+			for ((inventory, items) in references.groupBy { it.inventory }) {
+				if (items.isEmpty()) continue
+
+				// Need to run get to halt the thread until the transaction is completed. Otherwise, there will be write conflicts since the
+				// db write in this function is async
+				futureResults.add(fulfillOrder(player, inventory, order, Int.MAX_VALUE).get())
 			}
 
 			val fullLore = bareResults + futureResults.mapNotNull { it.getReason() }.flatten()
