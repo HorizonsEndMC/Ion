@@ -117,7 +117,7 @@ fun template(
 	val replacement = TextReplacementConfig.builder()
 		.match(Pattern.compile("\\{([0-9]*?)}"))
 		.replacement { matched: MatchResult, _ ->
-			val index = matched.group().subStringBetween('{', '}').toInt()
+			val index = matched.group().subStringBetween('{', '}').toIntOrNull() ?: return@replacement text(matched.group())
 
 			return@replacement when (val param = parameters[index]) {
 				is ComponentLike -> param
