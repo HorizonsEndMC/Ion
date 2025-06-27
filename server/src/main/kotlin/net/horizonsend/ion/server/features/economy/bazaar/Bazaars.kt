@@ -593,7 +593,7 @@ object Bazaars : IonServerComponent() {
 		return future
 	}
 
-	fun fulfillOrder(fulfiller: Player, inventory: Inventory, order: Oid<BazaarOrder>, limit: Int): PotentiallyFutureResult {
+	fun fulfillOrder(fulfiller: Player, inventory: Inventory, order: Oid<BazaarOrder>, limit: Int, consumedAmountConsumer: Consumer<Int> = Consumer {  }): PotentiallyFutureResult {
 		if (limit < 1) return InputResult.FailureReason(listOf(text("Limit must be greater than 0!", RED)))
 
 		val combatResult = checkCombatTag(fulfiller)
@@ -627,6 +627,7 @@ object Bazaars : IonServerComponent() {
 
 				fulfiller.depositMoney(profit)
 
+				consumedAmountConsumer.accept(count)
 				result.complete(
 					InputResult.SuccessReason(listOf(
 					template(text("Fulfilled {0} of {1}'s order of {2} for a profit of {3}", GREEN), count, ordererName, itemReference.displayNameComponent, profit.toCreditComponent())
@@ -738,8 +739,7 @@ object Bazaars : IonServerComponent() {
 		return futureResult
 	}
 
-	//TODO limit
-	fun bulkFulfillOrder(player: Player, order: Oid<BazaarOrder>, references: Collection<ItemReference>): PotentiallyFutureResult {
+	fun bulkFulfillOrder(player: Player, order: Oid<BazaarOrder>, references: Collection<ItemReference>, limit: Int): PotentiallyFutureResult {
 		val territoryResult = checkInValidCity(player)
 		if (!territoryResult.isSuccess()) return territoryResult
 
@@ -755,12 +755,15 @@ object Bazaars : IonServerComponent() {
 			val bareResults = mutableListOf<Component>()
 			val futureResults = mutableListOf<InputResult>()
 
+			var remaining = limit
+
 			for ((inventory, items) in references.groupBy { it.inventory }) {
+				if (remaining <= 0) break
 				if (items.isEmpty()) continue
 
 				// Need to run get to halt the thread until the transaction is completed. Otherwise, there will be write conflicts since the
 				// db write in this function is async
-				futureResults.add(fulfillOrder(player, inventory, order, Int.MAX_VALUE).get())
+				futureResults.add(fulfillOrder(player, inventory, order, remaining) { remaining -= it }.get())
 			}
 
 			val fullLore = bareResults + futureResults.mapNotNull { it.getReason() }.flatten()
