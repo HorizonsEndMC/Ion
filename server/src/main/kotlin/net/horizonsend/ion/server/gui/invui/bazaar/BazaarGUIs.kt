@@ -223,7 +223,7 @@ object BazaarGUIs {
 				viewer = player,
 				item = orderId,
 				availableItemProvider = { references },
-				fulfillmentFunction = { limit -> Bazaars.bulkFulfillOrder(player, orderId, references, /* limit TODO */) }
+				fulfillmentFunction = { limit -> Bazaars.bulkFulfillOrder(player, orderId, references, limit) }
 			).openGui(previous)
 		}
 	}
