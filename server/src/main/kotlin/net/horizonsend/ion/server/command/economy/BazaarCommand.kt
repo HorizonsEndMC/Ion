@@ -34,16 +34,17 @@ import net.horizonsend.ion.server.features.economy.city.CityNPCs.BAZAAR_CITY_TER
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
-import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.ListListingManagementMenu
-import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
+import net.horizonsend.ion.server.gui.invui.misc.util.input.ItemMenu
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -318,14 +319,15 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("merchant prices")
 	@Description("View merchant prices")
 	fun onMerchantPrices(sender: Player) {
-		MenuHelper.apply {
-			val items = Merchants.getPriceMap().entries
-				.asSequence()
+		ItemMenu(
+			title = text("Merchant Prices"),
+			viewer = sender,
+			guiItems = Merchants.getPriceMap().entries
+				.toList()
 				.sortedBy {
 					val key = it.key
 
-					val colorPattern = """(${DyeColor.values().joinToString("|")})_"""
-						.toRegex(RegexOption.DOT_MATCHES_ALL)
+					val colorPattern = """(${DyeColor.entries.joinToString("|")})_""".toRegex(RegexOption.DOT_MATCHES_ALL)
 					val colorMatch = colorPattern.find(key)
 					if (colorMatch != null) {
 						return@sortedBy key.removePrefix(colorMatch.value) + colorMatch.value
@@ -334,14 +336,12 @@ object BazaarCommand : SLCommand() {
 					return@sortedBy key
 				}
 				.map { (itemString, price) ->
-					val item = fromItemString(itemString)
-					return@map guiButton(item) { playerClicker.closeInventory() }
-						.setName(item.displayNameComponent)
-						.setLore("Price: ${price.toCreditsString()}")
-				}.toList()
-
-			sender.openPaginatedMenu("Merchant Prices", items)
-		}
+					fromItemString(itemString)
+						.updateLore(listOf(template(text("Price: {0}", HE_MEDIUM_GRAY), price.toCreditComponent())))
+						.makeGuiButton { _, _ -> sender.closeInventory() }
+				},
+			backButtonHandler = { sender.closeInventory() }
+		).openGui()
 	}
 
 	@Subcommand("order create")
