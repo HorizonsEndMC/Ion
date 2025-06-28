@@ -40,6 +40,8 @@ class BazaarOrder(
 		ensureIndex(BazaarOrder::player)
 		ensureIndex(BazaarOrder::itemString)
 	}) {
+		val BazaarOrder.potentialProfit get() = pricePerItem * (requestedQuantity - fulfilledQuantity)
+
 		fun create(
 			player: SLPlayerId,
 			cityTerritory: Oid<Territory>,
