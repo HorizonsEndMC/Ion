@@ -4,12 +4,14 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
+import net.horizonsend.ion.common.database.schema.economy.BazaarOrder.Companion.potentialProfit
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.redis.kserializers.UUIDSerializer
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.features.economy.city.CityNPCs.BAZAAR_CITY_TERRITORIES
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.gui.GuiItem
@@ -18,8 +20,10 @@ import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.getMenuTitleName
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchSLPlayers
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.searchTradeCities
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeDoubleValidator
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
@@ -173,6 +177,62 @@ sealed interface BazaarFilter {
 					searchSLPlayers(viewer) { consumer.accept(it.uuid) }
 				}
 			)
+		}
+	}
+
+	@Serializable
+	data class MinPrice(var threshold: Double) : BazaarFilter {
+		@Transient
+		override val description: Component = template(Component.text("Entries worth more than {0} will be shown.", RED), threshold.toCreditComponent())
+
+		override fun matches(item: BazaarItem): Boolean {
+			return item.price >= threshold
+		}
+		override fun matches(order: BazaarOrder): Boolean {
+			return order.potentialProfit >= threshold
+		}
+
+		override fun getSettingsMenu(player: Player, parent: PlayerFilters): InvUIWindowWrapper {
+			lateinit var menu: TextInputMenu<Double>
+
+			menu = TextInputMenu(
+				viewer = player,
+				title = Component.text("Enter new minimum price"),
+				description = description,
+				backButtonHandler = { menu.openParent() },
+				inputValidator = RangeDoubleValidator(0.0..Double.MAX_VALUE),
+				successfulInputHandler = { _, result -> threshold = result.result }
+			)
+
+			return menu
+		}
+	}
+
+	@Serializable
+	data class MaxPrice(var threshold: Double) : BazaarFilter {
+		@Transient
+		override val description: Component = template(Component.text("Entries worth less than {0} will be shown.", RED), threshold.toCreditComponent())
+
+		override fun matches(item: BazaarItem): Boolean {
+			return item.price <= threshold
+		}
+		override fun matches(order: BazaarOrder): Boolean {
+			return order.potentialProfit >= threshold
+		}
+
+		override fun getSettingsMenu(player: Player, parent: PlayerFilters): InvUIWindowWrapper {
+			lateinit var menu: TextInputMenu<Double>
+
+			menu = TextInputMenu(
+				viewer = player,
+				title = Component.text("Enter new minimum price"),
+				description = description,
+				backButtonHandler = { menu.openParent() },
+				inputValidator = RangeDoubleValidator(0.0..Double.MAX_VALUE),
+				successfulInputHandler = { _, result -> threshold = result.result }
+			)
+
+			return menu
 		}
 	}
 }
