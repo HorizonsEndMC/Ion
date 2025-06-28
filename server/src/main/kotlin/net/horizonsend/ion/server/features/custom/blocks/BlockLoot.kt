@@ -11,17 +11,17 @@ import java.util.function.Supplier
 
 data class BlockLoot(
     val requiredTool: Supplier<Tool>? = Supplier { Tool.PICKAXE },
-    val drops: Supplier<Collection<ItemStack>>,
-    val silkTouchDrops: Supplier<Collection<ItemStack>> = drops,
+    val drops: (ItemStack?) -> Collection<ItemStack>,
+    val silkTouchDrops: (ItemStack?) -> Collection<ItemStack> = drops,
 ) {
 	fun getDrops(tool: ItemStack?, silkTouch: Boolean): Collection<ItemStack> {
 		if (tool != null && requiredTool != null) {
 			if (!requiredTool.get().matches(tool)) return listOf()
 		}
 
-		if (silkTouch) return silkTouchDrops.get().map { it.clone() }
+		if (silkTouch) return silkTouchDrops.invoke(tool).map { it.clone() }
 
-		return drops.get().map { it.clone() }
+		return drops.invoke(tool).map { it.clone() }
 	}
 
 	companion object ToolPredicate {
