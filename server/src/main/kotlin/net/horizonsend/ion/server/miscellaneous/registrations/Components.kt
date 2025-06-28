@@ -94,6 +94,7 @@ import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.data.DataFixers
 import net.horizonsend.ion.server.listener.misc.WorldEditListener
+import net.horizonsend.ion.server.listener.packets.PacketListeners
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 
@@ -109,6 +110,7 @@ val components: List<IonComponent> = listOf(
 	Shuttles,
 	ProxyMessaging,
 	IonWorld,
+	PacketListeners,
 
 	PlayerXPLevelCache,
 	Levels,
