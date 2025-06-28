@@ -181,9 +181,8 @@ sealed interface BazaarFilter {
 	}
 
 	@Serializable
-	data class MinPrice(var threshold: Double) : BazaarFilter {
-		@Transient
-		override val description: Component = template(Component.text("Entries worth more than {0} will be shown.", RED), threshold.toCreditComponent())
+	data class MinPrice(var threshold: Double = 100.0) : BazaarFilter {
+		override val description: Component  get() = template(Component.text("Floor: {0}.", RED), threshold.toCreditComponent())
 
 		override fun matches(item: BazaarItem): Boolean {
 			return item.price >= threshold
@@ -201,7 +200,10 @@ sealed interface BazaarFilter {
 				description = description,
 				backButtonHandler = { menu.openParent() },
 				inputValidator = RangeDoubleValidator(0.0..Double.MAX_VALUE),
-				successfulInputHandler = { _, result -> threshold = result.result }
+				successfulInputHandler = { _, result ->
+					threshold = result.result
+					menu.openParent()
+				}
 			)
 
 			return menu
@@ -209,9 +211,8 @@ sealed interface BazaarFilter {
 	}
 
 	@Serializable
-	data class MaxPrice(var threshold: Double) : BazaarFilter {
-		@Transient
-		override val description: Component = template(Component.text("Entries worth less than {0} will be shown.", RED), threshold.toCreditComponent())
+	data class MaxPrice(var threshold: Double = 100.0) : BazaarFilter {
+		override val description: Component get() = template(Component.text("Ceiling: {0}.", RED), threshold.toCreditComponent())
 
 		override fun matches(item: BazaarItem): Boolean {
 			return item.price <= threshold
@@ -229,7 +230,10 @@ sealed interface BazaarFilter {
 				description = description,
 				backButtonHandler = { menu.openParent() },
 				inputValidator = RangeDoubleValidator(0.0..Double.MAX_VALUE),
-				successfulInputHandler = { _, result -> threshold = result.result }
+				successfulInputHandler = { _, result ->
+					threshold = result.result
+					menu.openParent()
+				}
 			)
 
 			return menu
