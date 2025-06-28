@@ -6,8 +6,9 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.space.encounters.Encounters.createLootChest
 import net.horizonsend.ion.server.features.space.encounters.Encounters.setChestFlag
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.INACTIVE
-import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
+import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.kyori.adventure.text.minimessage.MiniMessage.miniMessage
 import net.minecraft.nbt.CompoundTag
 import org.bukkit.Sound.BLOCK_NOTE_BLOCK_BASS
@@ -16,6 +17,8 @@ import org.bukkit.Sound.BLOCK_NOTE_BLOCK_SNARE
 import org.bukkit.block.Chest
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
+import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.window.Window
 import java.util.Random
 import java.util.UUID
 
@@ -103,21 +106,31 @@ object Passcode : Encounter(identifier = "passcode") {
 
 		event.player.information("Enter this passcode: $passcode")
 
-		MenuHelper.apply {
-			val pane = staticPane(3, 0, 3, 4)
+		val gui = Gui.normal()
+			.setStructure(
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .",
+			)
+			.build()
 
-			for (i in 0..9) {
-				pane.addItem(
-					guiButton(skullItem(i.toString(), headID[i]!!, skinID[i]!!)) {
-						currentCode += i.toString()
-						paneInteractCheck(event.player, chest, passcode, currentCode)
-					}.setName(miniMessage().deserialize(i.toString())),
-					coordinates[i]!!.first, coordinates[i]!!.second
-				)
-			}
+		for (i in 0..9) {
+			val item = skullItem(i.toString(), headID[i]!!, skinID[i]!!)
+				.updateDisplayName(miniMessage().deserialize(i.toString()))
+				.makeGuiButton { _, _ ->
+					currentCode += i.toString()
+					paneInteractCheck(event.player, chest, passcode, currentCode)
+				}
 
-			gui(4, "Enter passcode:").withPane(pane).show(event.player)
+			gui.setItem(coordinates[i]!!.first, coordinates[i]!!.second, item)
 		}
+
+		Window.single()
+			.setViewer(event.player)
+			.setGui(gui)
+			.build()
+			.open()
 	}
 
 	override fun constructChestNBT(): CompoundTag {
