@@ -59,8 +59,6 @@ object MenuHelper {
 		return this
 	}
 
-	fun GuiItem.setLore(vararg lines: String): GuiItem = this@setLore.setLore(lines.toList())
-
 	fun GuiItem.setLore(lines: List<String>): GuiItem = apply {
 		item.itemMeta = item.itemMeta?.apply {
 			lore = lines.map(String::colorize)
