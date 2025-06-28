@@ -1,15 +1,18 @@
 package net.horizonsend.ion.server.features.economy.bazaar
 
-import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
-import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.sharedDataFolder
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
-import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
+import net.horizonsend.ion.server.gui.invui.misc.util.input.ItemMenu
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
 import java.io.File
@@ -105,22 +108,20 @@ object Merchants : IonServerComponent() {
 	}
 
 	fun onClickMerchantNPC(player: Player, city: TradeCityData) {
-		MenuHelper.run {
-			val items: List<GuiItem> = merchantMap.mapNotNull { (itemString, price) ->
-				val itemStack = fromItemString(itemString)
-				val priceString = price.toCreditsString()
-				return@mapNotNull guiButton(itemStack)
-					.setName(itemStack.displayNameComponent)
-					.setLore(
-						"$priceString per item",
-						"/bazaar merchant buy $itemString <amount>"
-					)
-			}.toList()
-
-			Tasks.sync {
-				player.openPaginatedMenu(city.displayName + " Merchant Items", items)
-			}
-		}
+		ItemMenu(
+			title = text(city.displayName + " Merchant Items"),
+			viewer = player,
+			guiItems = merchantMap
+				.map { (itemString, price) ->
+					fromItemString(itemString)
+						.updateLore(listOf(
+							template(text("Price: {0} per item", HE_MEDIUM_GRAY), price.toCreditComponent()),
+							text("/bazaar merchant buy $itemString <amount>", HE_MEDIUM_GRAY)
+						))
+						.makeGuiButton { _, _ -> player.closeInventory() }
+				},
+			backButtonHandler = { player.closeInventory() }
+		).openGui()
 	}
 
 	fun getPrice(itemString: String): Double? = merchantMap[itemString]
