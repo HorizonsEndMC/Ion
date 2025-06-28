@@ -59,8 +59,6 @@ object MenuHelper {
 		return this
 	}
 
-	fun GuiItem.setLore(text: String): GuiItem = this@setLore.setLore(text.split("\n"))
-
 	fun GuiItem.setLore(vararg lines: String): GuiItem = this@setLore.setLore(lines.toList())
 
 	fun GuiItem.setLore(lines: List<String>): GuiItem = apply {

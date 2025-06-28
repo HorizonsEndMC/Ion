@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.gui.invui.misc.util.input
 
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
+import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
@@ -49,7 +51,22 @@ class ItemMenu(
     }
 
 	override fun buildTitle(): Component {
-		return withPageNumber(title)
+		val overlay = GuiText("")
+			.setSlotOverlay(
+				"# # # # # # # # #",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				"# # # # # # # # #",
+			)
+			.build()
+
+		val titleText = GuiText("")
+			.add(title, line = -1)
+			.build()
+
+		return ofChildren(overlay, getPageNumberText(), titleText)
 	}
 
 	override fun buildWindow(): Window = normalWindow(createGui())
