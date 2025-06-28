@@ -37,7 +37,11 @@ import net.horizonsend.ion.server.features.nations.utils.isSemiActive
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.Notify
+import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
+import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
+import net.horizonsend.ion.server.miscellaneous.utils.depositMoney
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
@@ -54,6 +58,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
+import org.litote.kmongo.id.StringId
 import org.litote.kmongo.ne
 import org.litote.kmongo.updateOneById
 import java.util.Date
@@ -191,9 +196,13 @@ internal object SettlementCommand : SLCommand() {
 		val settlementId = requireSettlementIn(sender)
 		requireSettlementPermission(sender, settlementId, SettlementRole.Permission.INVITE)
 
-		val invitedPlayers = Settlement.findPropById(settlementId, Settlement::invites)
+		@Suppress("UNCHECKED_CAST")
+		val raw: MutableSet<String>? = Settlement.findPropById(settlementId, Settlement::invites) as MutableSet<String>?
+		val invitedPlayers = raw?.mapTo(mutableListOf()) { getPlayerName(StringId(it)) }
 
-		sender.sendMessage(settlementMessageFormat("Invited Settlements: ", invitedPlayers?.joinToString { getPlayerName(it) }))
+		if (invitedPlayers.isNullOrEmpty()) fail { "No players have been invited to your settlement." }
+
+		sender.sendMessage(settlementMessageFormat("Invited Players: {0}", invitedPlayers.joinToString()))
 	}
 
 	@Subcommand("join")

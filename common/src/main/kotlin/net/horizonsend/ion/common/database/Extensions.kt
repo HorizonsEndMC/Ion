@@ -183,7 +183,9 @@ class ProjectedResults(document: Document, vararg properties: KProperty<*>) {
 			return IdTransformer.wrapId(value) as R
 		}
 
-		try {
+		//TODO handle collections of IDs
+
+		try {f
 			return when (value) {
 				is Document -> DBManager.decode(value)
 				else -> Gson().fromJson(value?.json, R::class.java)
