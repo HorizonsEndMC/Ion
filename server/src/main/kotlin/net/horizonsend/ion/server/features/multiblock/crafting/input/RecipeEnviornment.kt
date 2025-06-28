@@ -7,6 +7,8 @@ import org.bukkit.inventory.ItemStack
 interface RecipeEnviornment {
 	val multiblock: MultiblockEntity
 
+	fun getInputItems(): List<ItemStack?>
+
 	fun getItemSize(): Int
 	fun getItem(index: Int): ItemStack?
 

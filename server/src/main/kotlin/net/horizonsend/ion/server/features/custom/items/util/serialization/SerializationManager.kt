@@ -16,7 +16,7 @@ class SerializationManager {
 		}
 
 		fun deSerialize(customItem: CustomItem, itemStack: ItemStack, data: String) {
-			application.invoke(customItem, itemStack, token.deserialize(data.removePrefix("${name}=")))
+			application.invoke(customItem, itemStack, token.deserialize(data))
 		}
 
 		override fun toString(): String {
@@ -47,34 +47,28 @@ class SerializationManager {
 	}
 
 	fun deserialize(customItem: CustomItem, data: String): ItemStack {
-		val preFormat = data.filterNot { it == ' ' }
-		val serializedTokens = preFormat.removePrefix("[").removeSuffix("]")
-
-		val keys = parameters.keys
-		val maxKeyLength = keys.maxOf { it.length }
-		val firstChars = keys.groupBy { it.first() }
-
-		val splitPoints = mutableListOf<Pair<Int, StoredData<*>>>()
-
-		for (index in serializedTokens.indices) {
-			val char = serializedTokens[index]
-
-			if (!firstChars.containsKey(char)) continue
-
-			val startingWith = firstChars[char]!!
-			val subString = serializedTokens.substring(index, index + maxKeyLength + 1)
-
-			val key = startingWith.firstOrNull { subString.contains(it) } ?: continue
-			splitPoints.add(index to parameters[key]!!)
-		}
+		var remaining = data.filterNot { it == ' ' }.removePrefix("[").removeSuffix("]")
 
 		val tokenData = mutableMapOf<StoredData<*>, String>()
 
-		for ((entryIndex, value) in splitPoints.withIndex()) {
-			val (charIndex, stored) = value
+		while (remaining.isNotEmpty()) {
+			val endIndex = remaining.indexOfFirst { it == '=' }
+			val paramKey = remaining.substring(0..< endIndex) // Exclude the '='
+			val param = parameters[paramKey] ?: throw IllegalArgumentException("Param $paramKey not found!")
 
-			val nextIndex = splitPoints.getOrNull(entryIndex + 1)?.first?.minus(2) ?: serializedTokens.lastIndex
-			tokenData[stored] = serializedTokens.substring(charIndex, nextIndex + 1)
+			val startOfData = (endIndex + 1) // Skip to the next char
+
+			remaining = remaining.substring(startOfData.. remaining.lastIndex)
+			val paramRange = param.token.getValueRange(remaining)
+			val serializedTokenData = remaining.substring(paramRange)
+			tokenData[param] = serializedTokenData
+
+			remaining = remaining.substring(paramRange.last + paramRange.first..remaining.lastIndex)
+
+			val nextParamStart = remaining.indexOfFirst { it == ',' }
+			if (nextParamStart == -1) break
+
+			remaining = remaining.substring(nextParamStart + 1..remaining.lastIndex)
 		}
 
 		val item = customItem.constructItemStack()
