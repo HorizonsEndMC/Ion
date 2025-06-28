@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.core.registration.registries
 
 import com.google.common.collect.HashBasedTable
+import io.papermc.paper.datacomponent.DataComponentTypes
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
@@ -15,8 +16,8 @@ import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.MultiblockWorkbench
 import net.horizonsend.ion.server.features.custom.items.CustomItem
+import net.horizonsend.ion.server.features.space.encounters.SecondaryChest.Companion.random
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateBlockFace
-import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
@@ -25,8 +26,8 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.MultipleFacing
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
-import java.util.function.Supplier
 
 class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 	override fun getKeySet(): KeyRegistry<CustomBlock> = CustomBlockKeys
@@ -40,7 +41,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.UP)),
                 drops = BlockLoot(
                     requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = customItemDrop(CustomItemKeys.RAW_ALUMINUM)
+                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_ALUMINUM)
                 ),
                 CustomItemKeys.ALUMINUM_ORE
             )
@@ -74,7 +75,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.NORTH, BlockFace.UP)),
                 drops = BlockLoot(
                     requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = customItemDrop(CustomItemKeys.CHETHERITE)
+                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.CHETHERITE)
                 ),
                 CustomItemKeys.CHETHERITE_ORE
             )
@@ -97,7 +98,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.WEST)),
                 drops = BlockLoot(
                     requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = customItemDrop(CustomItemKeys.RAW_TITANIUM)
+                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_TITANIUM)
                 ),
                 CustomItemKeys.TITANIUM_ORE
             )
@@ -131,7 +132,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 blockData = mushroomBlockData(setOf(BlockFace.UP)),
                 drops = BlockLoot(
                     requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = customItemDrop(CustomItemKeys.RAW_URANIUM)
+                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_URANIUM)
                 ),
                 CustomItemKeys.URANIUM_ORE
             )
@@ -275,16 +276,36 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 			}
 		}
 
-		fun customItemDrop(customItem: Supplier<CustomItem>, amount: Int = 1): Supplier<Collection<ItemStack>> {
-			return customItem.map { item -> listOf(item.constructItemStack(amount)) }
-		}
-
-		fun customItemDrop(key: IonRegistryKey<CustomItem, out CustomItem>, amount: Int = 1): Supplier<Collection<ItemStack>> {
-			return Supplier {
+		fun customItemDrop(key: IonRegistryKey<CustomItem, out CustomItem>, amount: Int = 1): (ItemStack?) -> Collection<ItemStack> {
+			return {
                 val itemStack = key.getValue().constructItemStack()
                 itemStack.amount = amount
                 listOf(itemStack)
             }
+		}
+
+		fun fortuneEnabledCustomItemDrop(key: IonRegistryKey<CustomItem, out CustomItem>, amount: Int = 1): (ItemStack?) -> Collection<ItemStack> {
+			return resultSupplier@{ usedTool ->
+				val fallback = listOf(key.getValue().constructItemStack(amount))
+				if (usedTool == null) return@resultSupplier fallback
+				val enchantments = usedTool.getDataOrDefault(DataComponentTypes.ENCHANTMENTS, null) ?: return@resultSupplier fallback
+
+				val fortuneLevel = enchantments.enchantments()[Enchantment.FORTUNE] ?: return@resultSupplier fallback
+				if (fortuneLevel == 0) return@resultSupplier fallback
+
+				val newAmount = if (fortuneLevel > 0) {
+					var i: Int = random.nextInt(fortuneLevel + 2) - 1
+					if (i < 0) {
+						i = 0
+					}
+
+					amount * (i + 1)
+				} else {
+					amount
+				}
+
+				listOf(key.getValue().constructItemStack(newAmount))
+			}
 		}
 
 		fun getRotated(customBlock: CustomBlock, blockState: BlockState, rotation: Rotation): BlockState {
