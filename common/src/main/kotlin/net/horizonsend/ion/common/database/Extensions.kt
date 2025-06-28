@@ -185,7 +185,7 @@ class ProjectedResults(document: Document, vararg properties: KProperty<*>) {
 
 		//TODO handle collections of IDs
 
-		try {f
+		try {
 			return when (value) {
 				is Document -> DBManager.decode(value)
 				else -> Gson().fromJson(value?.json, R::class.java)
