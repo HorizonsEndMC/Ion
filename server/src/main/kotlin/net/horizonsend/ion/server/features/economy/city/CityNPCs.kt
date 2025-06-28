@@ -128,10 +128,10 @@ object CityNPCs : IonServerComponent(true) {
 					preCheck@{
 						if (!spawned.add(info.id)) {
 							log.warn("Spawn task called more than once for city NPC $info")
-							return@preCheck true
+							return@preCheck false
 						}
 
-						false
+						true
 					}
 				) { npc ->
 					npc.getOrAddTrait(SkinTrait::class.java).apply {
