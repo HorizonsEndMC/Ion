@@ -11,8 +11,8 @@ import github.scarsz.discordsrv.dependencies.jda.api.entities.MessageEmbed
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.misc.GToggleCommand
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.KeybindComponent
 import net.kyori.adventure.translation.GlobalTranslator

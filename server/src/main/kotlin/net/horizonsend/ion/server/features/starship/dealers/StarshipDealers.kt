@@ -7,8 +7,8 @@ import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.restrictedMiniMessageSerializer
 import net.horizonsend.ion.common.utils.text.serialize
 import net.horizonsend.ion.common.utils.text.toCreditComponent
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
