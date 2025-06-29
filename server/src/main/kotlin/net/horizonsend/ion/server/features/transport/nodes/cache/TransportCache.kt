@@ -14,8 +14,8 @@ import net.horizonsend.ion.server.features.transport.nodes.types.ComplexNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
+import net.horizonsend.ion.server.features.transport.nodes.util.BlockBasedCacheFactory
 import net.horizonsend.ion.server.features.transport.nodes.util.CacheState
-import net.horizonsend.ion.server.features.transport.nodes.util.NodeCacheFactory
 import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -48,7 +48,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	private val nodeCache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap(16, 0.5f, 16)
 
 	abstract val type: CacheType
-	private val nodeFactory: NodeCacheFactory get() = type.nodeCacheFactory
+	private val nodeFactory: BlockBasedCacheFactory<Node> get() = type.nodeCacheFactory
 
 	abstract fun tickExtractor(
 		location: BlockKey,
