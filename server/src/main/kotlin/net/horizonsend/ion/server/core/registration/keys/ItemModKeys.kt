@@ -17,6 +17,7 @@ object ItemModKeys : KeyRegistry<ItemModification>(RegistryKeys.ITEM_MODIFICATIO
 	val AUTO_COMPOST = registerKey("AUTO_COMPOST")
 	val AOE_3 = registerKey("AOE_3")
 	val EXTENDED_BAR = registerKey("EXTENDED_BAR")
+	val COLLECTOR = registerKey("COLLECTOR")
 	val FERTILIZER_DISPENSER = registerKey("FERTILIZER_DISPENSER")
 	val ENVIRONMENT = registerKey("ENVIRONMENT")
 	val NIGHT_VISION = registerKey("NIGHT_VISION")

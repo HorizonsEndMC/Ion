@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.core.registration.registries
 import com.google.common.collect.HashBasedTable
 import io.papermc.paper.datacomponent.DataComponentTypes
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import net.horizonsend.ion.common.utils.set
 import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
@@ -19,7 +20,6 @@ import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.space.encounters.SecondaryChest.Companion.random
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.nms
-import net.horizonsend.ion.server.miscellaneous.utils.set
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Material

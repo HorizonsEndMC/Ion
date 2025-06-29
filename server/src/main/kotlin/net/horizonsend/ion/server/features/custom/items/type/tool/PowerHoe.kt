@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.type.tool
 
 import net.horizonsend.ion.common.extensions.alertAction
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys.AUTO_REPLANT
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.items.CustomItem
@@ -9,13 +10,11 @@ import net.horizonsend.ion.server.features.custom.items.component.CustomComponen
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.rightClickListener
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry.AUTO_REPLANT
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropSource
-import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.hoe.FertilizerDispenser.fertilizeCrop
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toLocation
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
@@ -110,7 +109,7 @@ class PowerHoe(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Com
 			}
 		}
 
-		val collectorPresent = mods.contains(ItemModRegistry.COLLECTOR)
+		val collectorPresent = mods.contains(ItemModKeys.COLLECTOR.getValue())
 
 		for ((dropLocation, items) in drops) {
 			val location = BlockPos.of(dropLocation).toLocation(origin.world)
