@@ -128,7 +128,6 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_ROD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.WRENCH
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_INGOT
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.ALL_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
@@ -534,7 +533,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('d', GREEN_DYE)
 			setIngredient('r', REDSTONE)
 		}
-		shaped("circuitry_3", CIRCUITRY.constructItemStack()) {
+		shaped("circuitry_3", CIRCUITRY) {
 			shape("grg", "qqq", "ccc")
 
 			setIngredient('c', COPPER_INGOT)
@@ -705,10 +704,10 @@ object Crafting : IonServerComponent() {
 
 			setIngredient('s', IRON_INGOT)
 			setIngredient('b', BATTERY_G.getValue().constructItemStack())
-			setIngredient('r', POWER_CAPACITY_25.getValue().constructItemStack())
+			setIngredient('r', TOOL_MODIFICATION_POWER_CAPACITY_25)
 			setIngredient('c', END_ROD)
 		}
-		shaped("auto_smelt_modifier", AUTO_SMELT.constructItemStack()) {
+		shaped("auto_smelt_modifier", TOOL_MODIFICATION_AUTO_SMELT.getValue().constructItemStack()) {
 			shape("iri", "bfb", "ici")
 
 			setIngredient('i', IRON_INGOT)
@@ -743,7 +742,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('c', DISPENSER)
 			setIngredient('r', REDSTONE_BLOCK)
 		}
-		shaped("extended_bar_modifier", EXTENDED_BAR.constructItemStack()) {
+		shaped("extended_bar_modifier", TOOL_MODIFICATION_EXTENDED_BAR.getValue().constructItemStack()) {
 			shape("st ", "tst", " ts")
 
 			setIngredient('s', STEEL_INGOT.getValue().constructItemStack())
@@ -774,9 +773,9 @@ object Crafting : IonServerComponent() {
 		shaped("vein_miner_modifier", TOOL_MODIFICATION_VEIN_MINER_25.getValue().constructItemStack()) {
 			shape("ipi", "prp", "ipi")
 
-			setIngredient('i', ExactChoice(ALUMINUM_INGOT.constructItemStack()))
+			setIngredient('i', ALUMINUM_INGOT)
 			setIngredient('p', OBSERVER)
-			setIngredient('r', TOOL_MODIFICATION_RANGE_1.getValue().constructItemStack())
+			setIngredient('r', TOOL_MODIFICATION_RANGE_1)
 		}
 
 
