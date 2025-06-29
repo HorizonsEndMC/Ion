@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.multiblock.entity.linkages.Multiblock
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
 import net.horizonsend.ion.server.features.transport.manager.graph.GraphManager
-import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeGraph
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidGraph
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
 import net.horizonsend.ion.server.features.transport.nodes.cache.DestinationCacheHolder
@@ -409,20 +408,7 @@ object TransportDebugCommand : SLCommand() {
 				return@syncRepeatTask
 			}
 
-			manager.add(object : FluidNode {
-				override val volume: Double = 1.0
-				override val location: BlockKey = toBlockKey(Vec3i(sender.location))
-
-				override fun isIntact() {}
-
-				override fun setGraph(graph: TransportNodeGraph<*>) {
-
-				}
-
-				override fun getGraph(): TransportNodeGraph<*> {
-					TODO()
-				}
-			})
+			manager.graphs.firstOrNull()?.onNewPosition(toBlockKey(Vec3i(sender.location)))
 
 			sender.information("volume: ${manager.graphs.firstOrNull()?.getVolume()}")
 
