@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import org.bukkit.Material
 
 class AutoMasonRecipe(
-	key: IonRegistryKey<MultiblockRecipe<*>, out AutoMasonRecipe>,
+	key: IonRegistryKey<MultiblockRecipe<*>, AutoMasonRecipe>,
 	inputItem: ItemRequirement,
 	centerCheck: (Material?) -> Boolean,
 	power: PowerRequirement<AutoMasonRecipeEnviornment>,
