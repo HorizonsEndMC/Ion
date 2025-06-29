@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.tutorial
 
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.tutorial.tutorials.FlightTutorial
 import net.horizonsend.ion.server.features.tutorial.tutorials.Tutorial
 import net.horizonsend.ion.server.miscellaneous.utils.listen

@@ -16,8 +16,8 @@ import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
@@ -189,7 +189,7 @@ object NationsMasterTasks : IonServerComponent() {
 
 			val money = settlementResults[Settlement::balance]
 			val tax = NATIONS_BALANCE.settlement.cityHourlyTax
-			
+
 			val activeMembers: Long = SLPlayer.count(
 					and(SLPlayer::settlement eq settlementId, SLPlayer::lastSeen gte ACTIVE_AFTER_TIME)
 			)

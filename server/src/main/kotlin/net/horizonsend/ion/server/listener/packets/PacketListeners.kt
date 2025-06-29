@@ -6,7 +6,7 @@ import com.comphenix.protocol.ProtocolManager
 import com.comphenix.protocol.events.PacketAdapter
 import com.comphenix.protocol.events.PacketEvent
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.type.armor.AscendingMode
 import net.horizonsend.ion.server.features.custom.items.type.armor.StrafingMode
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod
