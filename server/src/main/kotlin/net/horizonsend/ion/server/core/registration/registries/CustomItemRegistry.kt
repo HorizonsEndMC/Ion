@@ -740,6 +740,15 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
                 Component.text("Applies bonemeal to crops in the effected area, if available in the user's inventory", NamedTextColor.GRAY)
             )
 		)
+		register(
+			CustomItemKeys.TOOL_MODIFICATION_COLLECTOR, ModificationItem(
+                CustomItemKeys.TOOL_MODIFICATION_COLLECTOR,
+                ItemModKeys.COLLECTOR,
+				"tool/modification/collector",
+				Component.text("Collector Modifier"),
+				Component.text("Sends dropped items directly to your inventory if there is room.", NamedTextColor.GRAY)
+            )
+		)
 	}
 
 	// Tools end
