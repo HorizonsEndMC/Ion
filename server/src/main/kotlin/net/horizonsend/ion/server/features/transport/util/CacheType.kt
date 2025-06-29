@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.util
 
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
@@ -57,7 +58,7 @@ import org.bukkit.craftbukkit.block.impl.CraftGrindstone
 
 enum class CacheType(val namespacedKey: NamespacedKey) {
 	POWER(NamespacedKeys.POWER_TRANSPORT) {
-		override val nodeCacheFactory: BlockBasedCacheFactory<Node> = BlockBasedCacheFactory.builder<Node>()
+		override val nodeCacheFactory: BlockBasedCacheFactory<Node, CacheHolder<*>> = BlockBasedCacheFactory.builder<Node, CacheHolder<*>>()
 			.addSimpleNode(CRAFTING_TABLE, PowerNode.PowerExtractorNode)
 			.addSimpleNode(SPONGE, PowerNode.SpongeNode)
 			.addDataHandler<CraftEndRod>(END_ROD) { data, _, _ -> PowerNode.EndRodNode(data.facing.axis) }
@@ -77,7 +78,7 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 		}
 	},
 	SOLAR_PANELS(NamespacedKeys.POWER_TRANSPORT) {
-		override val nodeCacheFactory: BlockBasedCacheFactory<Node> = BlockBasedCacheFactory.builder<Node>()
+		override val nodeCacheFactory: BlockBasedCacheFactory<Node, CacheHolder<*>> = BlockBasedCacheFactory.builder<Node, CacheHolder<*>>()
 			.addSimpleNode(CRAFTING_TABLE, SolarPanelComponent.CraftingTable)
 			.addSimpleNode(DIAMOND_BLOCK, SolarPanelComponent.DiamondBlock)
 			.addSimpleNode(DAYLIGHT_DETECTOR, SolarPanelComponent.DaylightDetector)
@@ -117,7 +118,7 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 //		}
 //	},
 	ITEMS(NamespacedKeys.ITEM_TRANSPORT) {
-		override val nodeCacheFactory: BlockBasedCacheFactory<Node> = BlockBasedCacheFactory.builder<Node>()
+		override val nodeCacheFactory: BlockBasedCacheFactory<Node, CacheHolder<*>> = BlockBasedCacheFactory.builder<Node, CacheHolder<*>>()
 			.addSimpleNode(CRAFTING_TABLE, ItemNode.ItemExtractorNode)
 			.addDataHandler<Vault>(CustomBlockKeys.ADVANCED_ITEM_EXTRACTOR) { _, _, _ -> ItemNode.ItemExtractorNode }
 			.addSimpleNode(STAINED_GLASS_TYPES) { _, material, _ -> SolidGlassNode(ItemNode.PipeChannel[material]!!) }
@@ -166,7 +167,7 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 		}
 	};
 
-	abstract val nodeCacheFactory: BlockBasedCacheFactory<Node>
+	abstract val nodeCacheFactory: BlockBasedCacheFactory<Node, CacheHolder<*>>
 
 	abstract fun get(chunk: IonChunk): TransportCache
 	abstract fun get(ship: ActiveStarship): TransportCache
