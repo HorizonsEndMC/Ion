@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.crafting
 
 import io.papermc.paper.util.Tick
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
@@ -306,14 +307,14 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			val centerType = CenterType[result.type]
 
 			if (centerType == null) {
-				log.warn("recipe ${recipe.key} doesn't have a registered center type for $inputMaterial to ${result.type}")
+				IonServer.slF4JLogger.warn("recipe ${recipe.key} doesn't have a registered center type for $inputMaterial to ${result.type}")
 				continue
 			}
 
 			val tableResult = recipeTable.get(inputMaterial, centerType)
 
 			if (tableResult == null) {
-				log.warn("recipe ${recipe.key} doesn't have a registered result type for $inputMaterial $centerType ${result.type}")
+				IonServer.slF4JLogger.warn("recipe ${recipe.key} doesn't have a registered result type for $inputMaterial $centerType ${result.type}")
 				continue
 			}
 
@@ -330,8 +331,10 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 	}
 
 	private fun registerAutoMasonRecipe(input: ItemRequirement, category: CenterType, result: ItemStack) {
-		register(AutoMasonRecipe(
-			identifier = "STONECUTTING_${input}_$category",
+		val key = MultiblockRecipeKeys.STEEL_PRODUCTION
+
+		register(key, AutoMasonRecipe(
+			key = key,
 			inputItem = input,
 			centerCheck = category::matches,
 			power = PowerRequirement(10),
