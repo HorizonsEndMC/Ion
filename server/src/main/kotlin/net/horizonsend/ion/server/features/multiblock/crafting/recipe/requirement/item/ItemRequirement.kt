@@ -26,7 +26,7 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 			return item?.customItem == customItem && item.amount >= 1
 		}
 
-		override fun asItemStack(): ItemStack = customItem.constructItemStack()
+		override fun asItemStack(): ItemStack = customItem.getValue().constructItemStack()
 	}
 
 	class MaterialRequirement(val material: Material, val count: Int = 1) : ItemRequirement {
