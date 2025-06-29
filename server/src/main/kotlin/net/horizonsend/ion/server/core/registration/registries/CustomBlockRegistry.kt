@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.core.registration.registries
 import com.google.common.collect.HashBasedTable
 import io.papermc.paper.datacomponent.DataComponentTypes
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import net.horizonsend.ion.common.utils.set
 import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys

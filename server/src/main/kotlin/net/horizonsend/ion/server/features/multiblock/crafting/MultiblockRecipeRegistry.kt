@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.AutoMasonRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.FurnaceMultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.PowerRequirement

@@ -191,6 +191,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val TOOL_MODIFICATION_RANGE_3 = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_RANGE_3")
 	val TOOL_MODIFICATION_EXTENDED_BAR = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_EXTENDED_BAR")
 	val TOOL_MODIFICATION_FERTILIZER_DISPENSER = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_FERTILIZER_DISPENSER")
+	val TOOL_MODIFICATION_COLLECTOR = registerTypedKey<ModificationItem>("TOOL_MODIFICATION_FERTILIZER_DISPENSER")
 
 	val PERSONAL_TRANSPORTER = registerTypedKey<PersonalTransporter>("PERSONAL_TRANSPORTER")
 
