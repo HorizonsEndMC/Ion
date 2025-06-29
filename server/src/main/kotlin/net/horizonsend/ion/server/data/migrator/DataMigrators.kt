@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.data.migrator
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.data.migrator.types.item.MigratorResult
 import net.horizonsend.ion.server.data.migrator.types.item.legacy.LegacyCustomItemMigrator
 import net.horizonsend.ion.server.data.migrator.types.item.modern.migrator.AspectMigrator

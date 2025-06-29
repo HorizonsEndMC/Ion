@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.starship.control.weaponry
 
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugBanner
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager

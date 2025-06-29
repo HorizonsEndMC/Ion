@@ -4,7 +4,7 @@ import net.citizensnpcs.api.CitizensAPI
 import net.citizensnpcs.api.persistence.PersistenceLoader
 import net.citizensnpcs.api.persistence.Persister
 import net.citizensnpcs.api.trait.TraitInfo
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.npcs.isCitizensLoaded
 import org.bukkit.inventory.ItemStack
 

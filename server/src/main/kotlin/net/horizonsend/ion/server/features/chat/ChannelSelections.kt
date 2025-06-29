@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.utils.Mutes.muteCache
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.enumValueOfOrNull
 import net.horizonsend.ion.server.miscellaneous.utils.listen

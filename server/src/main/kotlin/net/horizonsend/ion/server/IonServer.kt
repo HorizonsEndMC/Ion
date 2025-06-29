@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.configurationFolder
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registries.IonRegistries
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
@@ -147,6 +148,3 @@ object IonServer : JavaPlugin() {
 	}
 }
 
-abstract class IonServerComponent(
-	val runAfterTick: Boolean = false
-) : Listener, IonComponent()

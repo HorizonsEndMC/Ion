@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.miscellaneous.registrations
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemEnchantments
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ADVANCED_ITEM_EXTRACTOR
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ALUMINUM_BLOCK

@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -8,7 +8,6 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import java.util.UUID
-import kotlin.math.roundToInt
 
 object PlayerStarshipControl : IonServerComponent() {
 	fun isHoldingController(player: Player): Boolean {
