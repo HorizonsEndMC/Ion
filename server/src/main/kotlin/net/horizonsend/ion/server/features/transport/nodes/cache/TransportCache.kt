@@ -48,7 +48,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	private val nodeCache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap(16, 0.5f, 16)
 
 	abstract val type: CacheType
-	private val nodeFactory: BlockBasedCacheFactory<Node> get() = type.nodeCacheFactory
+	private val nodeFactory: BlockBasedCacheFactory<Node, CacheHolder<*>> get() = type.nodeCacheFactory
 
 	abstract fun tickExtractor(
 		location: BlockKey,
