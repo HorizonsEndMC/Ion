@@ -29,7 +29,7 @@ object IonRegistries : IonComponent() {
 	val ITEM_MODIFICATIONS = register(ItemModRegistry())
 	val MULTIBLOCK_RECIPE = register(MultiblockRecipeRegistry())
 
-	fun <T : Registry<*>> register(registry: T): T {
+	private fun <T : Registry<*>> register(registry: T): T {
 		byId[registry.id] = registry
 		allRegistries.add(registry)
 		return registry
