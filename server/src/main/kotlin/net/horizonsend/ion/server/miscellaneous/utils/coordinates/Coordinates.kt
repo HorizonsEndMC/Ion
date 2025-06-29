@@ -166,6 +166,20 @@ fun getSphereBlocks(radius: Int, lowerBoundOffset: Double = 0.0): List<Vec3i> =
 		return@getOrPut circleBlocks
 	}
 
+fun getPointsBetween(one: Vector, two: Vector, points: Int): List<Vector> {
+	val connecting = two.clone().subtract(one)
+
+	val locationList = mutableListOf<Vector>()
+
+	for (count in 0..points) {
+		val progression = one.clone().add(connecting.clone().multiply(count.toDouble() / points.toDouble()))
+
+		locationList.add(progression)
+	}
+
+	return locationList
+}
+
 /**
  * Returns a list of equally spaced locations along a vector
  *
