@@ -28,6 +28,7 @@ import net.horizonsend.ion.server.features.multiblock.type.farming.planter.Plant
 import net.horizonsend.ion.server.features.multiblock.type.fluid.CanisterVentMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.TestFluidTank
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
@@ -410,6 +411,8 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableLeft)
 
 		registerMultiblock(AntiAirCannonBaseMultiblock)
+
+		registerMultiblock(TestFluidTank)
 	}
 
 	private fun sortMultiblocks() {

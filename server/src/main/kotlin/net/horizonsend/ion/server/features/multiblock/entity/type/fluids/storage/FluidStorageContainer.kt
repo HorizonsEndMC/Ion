@@ -1,0 +1,104 @@
+package net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
+
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
+import net.horizonsend.ion.server.features.transport.fluids.FluidType
+import net.kyori.adventure.text.Component
+import org.bukkit.NamespacedKey
+
+/**
+ * A wrapper around the internal storage that contains information for displaying and saving the resources.
+ **/
+class FluidStorageContainer private constructor(
+	val name: String,
+	val displayName: Component,
+	val namespacedKey: NamespacedKey,
+	val capacity: Double,
+	val restriction: FluidRestriction,
+) {
+	private var contentsUnsafe = FluidStack.empty()
+		@Synchronized
+		get
+		@Synchronized
+		set
+
+	constructor(
+		data: PersistentMultiblockData,
+		name: String,
+		displayName: Component,
+		namespacedKey: NamespacedKey,
+		capacity: Double,
+		restriction: FluidRestriction,
+	) : this(name, displayName, namespacedKey, capacity, restriction) {
+		load(data)
+	}
+
+	fun load(data: PersistentMultiblockData): FluidStorageContainer {
+		contentsUnsafe = data.getAdditionalData(namespacedKey, FluidStack) ?: return this
+		return this
+	}
+
+	fun save(destination: PersistentMultiblockData) {
+		destination.addAdditionalData(namespacedKey, FluidStack, contentsUnsafe)
+	}
+
+	fun canAdd(fluidStack: FluidStack): Boolean {
+		if (contentsUnsafe.isEmpty()) return true
+
+		if (!restriction.canAdd(fluidStack)) return false
+
+		return fluidStack.amount + contentsUnsafe.amount <= capacity
+	}
+
+	fun canRemove(fluidStack: FluidStack): Boolean {
+		if (contentsUnsafe.isEmpty()) return false
+
+		if (!restriction.canRemove(fluidStack)) return false
+
+		return fluidStack.amount - contentsUnsafe.amount >= 0.0
+	}
+
+	fun setContents(fluidStack: FluidStack) {
+		contentsUnsafe = fluidStack
+	}
+
+	fun getContents(): FluidStack {
+		return contentsUnsafe
+	}
+
+	fun setAmount(amount: Double) {
+		contentsUnsafe.amount = amount
+	}
+
+	fun setFluidType(type: FluidType) {
+		contentsUnsafe.type = type
+	}
+
+	fun clear() {
+		contentsUnsafe = FluidStack.empty()
+	}
+
+	override fun toString(): String {
+		return "Container[name= $name, key= $namespacedKey, storage= $contentsUnsafe]"
+	}
+
+	private val updateListeners: MutableList<(FluidStorageContainer) -> Unit> = mutableListOf()
+
+	fun registerUpdateListener(listener: (FluidStorageContainer) -> Unit) {
+		updateListeners.add(listener)
+	}
+
+	fun runUpdates() {
+		updateListeners.forEach { t -> t.invoke(this) }
+	}
+
+	companion object {
+		fun createEmpty(
+			name: String,
+			displayName: Component,
+			namespacedKey: NamespacedKey,
+			capacity: Double,
+			restriction: FluidRestriction
+		) = FluidStorageContainer(name, displayName, namespacedKey, capacity, restriction)
+	}
+}
