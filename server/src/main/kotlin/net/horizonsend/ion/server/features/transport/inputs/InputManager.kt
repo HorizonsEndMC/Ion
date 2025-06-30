@@ -12,15 +12,15 @@ abstract class InputManager {
 		return typeManagers.getOrPut(type) { TypeManager(this, type) }
 	}
 
-	fun registerInput(type: InputType, location: BlockKey, holder: MultiblockEntity) {
-		getTypeManager(type).add(location, holder)
+	fun registerInput(type: InputType, location: BlockKey, input: RegisteredInput) {
+		getTypeManager(type).add(location, input)
 	}
 
 	fun deRegisterInput(type: InputType, location: BlockKey, holder: MultiblockEntity) {
 		getTypeManager(type).remove(location, holder)
 	}
 
-	fun getHolders(type: InputType, location: BlockKey): ObjectOpenHashSet<MultiblockEntity> {
+	fun getInputs(type: InputType, location: BlockKey): ObjectOpenHashSet<RegisteredInput> {
 		return getTypeManager(type).getAllHolders(location)
 	}
 
@@ -36,23 +36,31 @@ abstract class InputManager {
 
 		fun getRaw(location: BlockKey): InputData? = inputLocations[location]
 
-		fun add(location: BlockKey, holder: MultiblockEntity) {
+		fun add(location: BlockKey, data: RegisteredInput) {
 			when (val present: InputData? = inputLocations[location]) {
-				is SingleMultiblockInput -> inputLocations[location] = SharedMultiblockInput.of(present.holder, holder)
-				is SharedMultiblockInput -> present.add(holder)
-				null -> inputLocations[location] = SingleMultiblockInput(holder)
+				is SingleMultiblockInput -> inputLocations[location] = SharedMultiblockInput.of(present.input, data)
+				is SharedMultiblockInput -> present.add(data)
+				null -> inputLocations[location] = SingleMultiblockInput(data)
+			}
+		}
+
+		fun remove(location: BlockKey, input: RegisteredInput) {
+			when (val present: InputData? = inputLocations.get(location)) {
+				is SingleMultiblockInput -> if (present.input == input) inputLocations.remove(location)
+				is SharedMultiblockInput -> present.remove(input)
+				null -> return
 			}
 		}
 
 		fun remove(location: BlockKey, holder: MultiblockEntity) {
 			when (val present: InputData? = inputLocations.get(location)) {
-				is SingleMultiblockInput -> if (present.holder == holder) inputLocations.remove(location)
+				is SingleMultiblockInput -> if (present.input.holder == holder) inputLocations.remove(location)
 				is SharedMultiblockInput -> present.remove(holder)
 				null -> return
 			}
 		}
 
-		fun getAllHolders(location: BlockKey): ObjectOpenHashSet<MultiblockEntity> {
+		fun getAllHolders(location: BlockKey): ObjectOpenHashSet<RegisteredInput> {
 			return inputLocations.get(location)?.getHolders() ?: ObjectOpenHashSet()
 		}
 
@@ -66,44 +74,48 @@ abstract class InputManager {
 
 		sealed interface InputData {
 			fun contains(holder: MultiblockEntity): Boolean
-			fun getHolders(): ObjectOpenHashSet<MultiblockEntity>
+			fun getHolders(): ObjectOpenHashSet<RegisteredInput>
 		}
 
-		data class SingleMultiblockInput(val holder: MultiblockEntity) : InputData {
+		data class SingleMultiblockInput(val input: RegisteredInput) : InputData {
 			override fun contains(holder: MultiblockEntity): Boolean {
-				return this.holder == holder
+				return this.input == holder
 			}
 
-			override fun getHolders(): ObjectOpenHashSet<MultiblockEntity> {
-				return ObjectOpenHashSet.of(holder)
+			override fun getHolders(): ObjectOpenHashSet<RegisteredInput> {
+				return ObjectOpenHashSet.of(input)
 			}
 		}
 
 		class SharedMultiblockInput : InputData {
-			private val holders: ObjectOpenHashSet<MultiblockEntity> = ObjectOpenHashSet()
+			private val holders: ObjectOpenHashSet<RegisteredInput> = ObjectOpenHashSet()
 
 			override fun contains(holder: MultiblockEntity): Boolean {
-				return holders.contains(holder)
+				return holders.any { input -> input.holder == holder }
 			}
 
-			override fun getHolders(): ObjectOpenHashSet<MultiblockEntity> {
+			override fun getHolders(): ObjectOpenHashSet<RegisteredInput> {
 				return ObjectOpenHashSet(holders)
 			}
 
-			fun add(multiblockEntity: MultiblockEntity) {
-				holders.add(multiblockEntity)
+			fun add(input: RegisteredInput) {
+				holders.add(input)
 			}
 
-			fun remove(multiblockEntity: MultiblockEntity) {
-				holders.remove(multiblockEntity)
+			fun remove(input: RegisteredInput) {
+				holders.remove(input)
+			}
+
+			fun remove(entity: MultiblockEntity) {
+				holders.removeAll { it.holder == entity }
 			}
 
 			fun getAllHolders() = holders.clone()
 
 			companion object {
-				fun of(vararg entities: MultiblockEntity): SharedMultiblockInput {
+				fun of(vararg inputs: RegisteredInput): SharedMultiblockInput {
 					val new = SharedMultiblockInput()
-					entities.forEach(new::add)
+					inputs.forEach(new::add)
 					return new
 				}
 			}
