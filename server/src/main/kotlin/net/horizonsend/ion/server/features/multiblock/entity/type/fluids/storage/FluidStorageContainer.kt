@@ -35,6 +35,7 @@ class FluidStorageContainer private constructor(
 
 	fun load(data: PersistentMultiblockData): FluidStorageContainer {
 		contentsUnsafe = data.getAdditionalData(namespacedKey, FluidStack) ?: return this
+		runUpdates()
 		return this
 	}
 
@@ -60,6 +61,7 @@ class FluidStorageContainer private constructor(
 
 	fun setContents(fluidStack: FluidStack) {
 		contentsUnsafe = fluidStack
+		runUpdates()
 	}
 
 	fun getContents(): FluidStack {
@@ -68,14 +70,29 @@ class FluidStorageContainer private constructor(
 
 	fun setAmount(amount: Double) {
 		contentsUnsafe.amount = amount
+		runUpdates()
+	}
+
+	/** Returns amount not removed */
+	fun removeAmount(amount: Double): Double {
+		val toRemove = minOf(amount, contentsUnsafe.amount)
+
+		val notRemoved = amount - toRemove
+
+		contentsUnsafe.amount -= toRemove
+		runUpdates()
+
+		return notRemoved
 	}
 
 	fun setFluidType(type: FluidType) {
 		contentsUnsafe.type = type
+		runUpdates()
 	}
 
 	fun clear() {
 		contentsUnsafe = FluidStack.empty()
+		runUpdates()
 	}
 
 	override fun toString(): String {
