@@ -221,7 +221,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	 * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
 	 **/
 	fun getInputEntities(location: BlockKey): Set<MultiblockEntity> {
-		return holder.getInputManager().getHolders(InputType.POWER, location)
+		return holder.getInputManager().getInputs(InputType.POWER, location).mapTo(mutableSetOf()) { it.holder }
 	}
 
 	/**
@@ -229,7 +229,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	 * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
 	 **/
 	inline fun <reified T> getInputEntitiesTyped(location: BlockKey): Set<T> {
-		return holder.getInputManager().getHolders(InputType.POWER, location).filterIsInstanceTo(mutableSetOf())
+		return holder.getInputManager().getInputs(InputType.POWER, location).filterIsInstanceTo(mutableSetOf())
 	}
 
 	inline fun <reified T> getExtractorSourceEntities(extractorLocation: BlockKey, filterNot: (T) -> Boolean): List<T> {
