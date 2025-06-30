@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid.storage
 
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
-import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SimpleFluidDisplayModule
+import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SplitFluidDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -506,10 +506,10 @@ object TestFluidTank : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
-			{ SimpleFluidDisplayModule(handler = it, storage = input1, offsetLeft = 4.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 1.0f, relativeFace = RIGHT) },
-			{ SimpleFluidDisplayModule(handler = it, storage = input2, offsetLeft = 4.5, offsetUp = 1.15, offsetBack = -6.0 + 0.39, scale = 1.0f, relativeFace = RIGHT) },
-			{ SimpleFluidDisplayModule(handler = it, storage = output1, offsetLeft = -4.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 1.0f, relativeFace = LEFT) },
-			{ SimpleFluidDisplayModule(handler = it, storage = output2, offsetLeft = -4.5, offsetUp = 1.15, offsetBack = -6.0 + 0.39, scale = 1.0f, relativeFace = LEFT) }
+			{ SplitFluidDisplayModule(handler = it, storage = input1, offsetLeft = 4.5, offsetUp = 1.25, offsetBack = -4.0 + 0.39, scale = 1.0f, relativeFace = RIGHT) },
+			{ SplitFluidDisplayModule(handler = it, storage = input2, offsetLeft = 4.5, offsetUp = 1.25, offsetBack = -6.0 + 0.39, scale = 1.0f, relativeFace = RIGHT) },
+			{ SplitFluidDisplayModule(handler = it, storage = output1, offsetLeft = -4.5, offsetUp = 1.25, offsetBack = -4.0 + 0.39, scale = 1.0f, relativeFace = LEFT) },
+			{ SplitFluidDisplayModule(handler = it, storage = output2, offsetLeft = -4.5, offsetUp = 1.25, offsetBack = -6.0 + 0.39, scale = 1.0f, relativeFace = LEFT) }
 		)
 
 		override fun getStores(): List<FluidStorageContainer> {
