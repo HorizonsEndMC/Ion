@@ -1,19 +1,17 @@
 package net.horizonsend.ion.server.features.transport.nodes.util
 
-import net.horizonsend.ion.server.features.transport.nodes.types.Node
-
-abstract class CacheState {
-	data object Empty: CacheState() {
-		override fun get(): Node? {
+abstract class CacheState<T : Any> {
+	class Empty<T : Any> : CacheState<T>() {
+		override fun get(): T? {
 			return null
 		}
 	}
 
-	data class Present(val node: Node): CacheState() {
-		override fun get(): Node {
+	data class Present<T : Any>(val node: T): CacheState<T>() {
+		override fun get(): T {
 			return node
 		}
 	}
 
-	abstract fun get(): Node?
+	abstract fun get(): T?
 }

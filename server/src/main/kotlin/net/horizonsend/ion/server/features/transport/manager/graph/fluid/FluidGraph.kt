@@ -1,32 +1,23 @@
 package net.horizonsend.ion.server.features.transport.manager.graph.fluid
 
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
+import net.horizonsend.ion.server.features.transport.inputs.InputType
 import net.horizonsend.ion.server.features.transport.manager.graph.GraphManager
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeGraph
+import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.Input
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphNode
 import net.horizonsend.ion.server.features.transport.nodes.util.BlockBasedCacheFactory
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.Material
 import java.util.UUID
 
 @Suppress("UnstableApiUsage")
 class FluidGraph(uuid: UUID, override val manager: GraphManager<*, *>) : TransportNodeGraph<FluidNode>(uuid, manager) {
 	override val cacheFactory: BlockBasedCacheFactory<FluidNode, TransportNodeGraph<FluidNode>> = BlockBasedCacheFactory.builder<FluidNode, TransportNodeGraph<FluidNode>>()
-		.addSimpleNode(Material.BLACK_STAINED_GLASS) { pos, _, holder ->
-			object : FluidNode {
-				override val volume: Double = 1.0
-				override val location: BlockKey = toBlockKey(holder.manager.transportManager.getLocalCoordinate(toVec3i(pos)))
-
-				override fun isIntact() {}
-
-				override fun setGraph(graph: TransportNodeGraph<*>) {}
-
-				override fun getGraph(): TransportNodeGraph<*> { TODO() }
-			}
-		}
+		.addSimpleNode(Material.COPPER_GRATE) { pos, _, holder -> FluidNode.RegularPipe(pos) }
+		.addSimpleNode(Material.FLETCHING_TABLE) { pos, _, holder -> FluidNode.Input(pos) }
 		.build()
 
 	override fun getEdge(
@@ -39,29 +30,53 @@ class FluidGraph(uuid: UUID, override val manager: GraphManager<*, *>) : Transpo
 		}
 	}
 
-	val ports = mutableSetOf<FluidPort>()
+	val ports = mutableSetOf<Input>()
 
 	var contents: FluidStack = FluidStack.empty()
 	var cachedVolume: Double? = null
 
 	fun getVolume(): Double {
+		if (cachedVolume != null) return cachedVolume!!
+
 		val new = networkGraph.nodes().sumOf { it.volume }
 		cachedVolume = new
 		return new
 	}
 
 	override fun onNodeAdded(new: FluidNode) {
-		if (new is FluidPort) ports.add(new)
+		if (new is Input) ports.add(new)
 
 		cachedVolume = null
 	}
 
-	fun withdrawFluids() {
+	fun depositToNetwork(inputLocation: BlockKey, multiblock: FluidStoringMultiblock) {
+		var remainingRoom = maxOf(0.0, getVolume() - contents.amount)
+		if (remainingRoom <= 0.0) return
 
+		val atLocation = getOrCache(inputLocation)
+		if (atLocation !is Input) return
+
+		for (store in multiblock) {
+			val toRemove = minOf(remainingRoom, store.getContents().amount, MAX_REMOVE_AMOUNT_PER_TICK)
+			val notRemoved = store.removeAmount(toRemove)
+			contents.amount += (toRemove - notRemoved)
+		}
+
+//		println("contents: ${multiblock}")
 	}
 
-	fun depositFluids() {
+	companion object {
+		private const val MAX_REMOVE_AMOUNT_PER_TICK = 100.0
+	}
 
+	fun addToMultiblocks() {
+		fun depositToEntities(input: Input) {
+			val holders = manager.transportManager.getInputProvider().getHolders(InputType.FLUID, input.location)
+		}
+
+		for (input in ports) {
+			depositToEntities(input)
+		}
 	}
 
 	override fun tick() {
@@ -71,7 +86,6 @@ class FluidGraph(uuid: UUID, override val manager: GraphManager<*, *>) : Transpo
 			contents.amount = volume
 		}
 
-		withdrawFluids()
-		depositFluids()
+		addToMultiblocks()
 	}
 }
