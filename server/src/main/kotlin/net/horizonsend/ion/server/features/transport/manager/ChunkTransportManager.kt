@@ -3,12 +3,12 @@ package net.horizonsend.ion.server.features.transport.manager
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.manager.ChunkFilterCache
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
+import net.horizonsend.ion.server.features.transport.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ChunkExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ChunkCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey

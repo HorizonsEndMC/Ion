@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.command.misc
 
+import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
@@ -12,6 +13,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.transport.NewTransport
+import net.horizonsend.ion.server.features.transport.inputs.InputType
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
 import net.horizonsend.ion.server.features.transport.manager.graph.GraphManager
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidGraph
@@ -49,6 +51,12 @@ import java.util.UUID
 @CommandPermission("starlegacy.transportdebug")
 @CommandAlias("transportdebug|transportbug")
 object TransportDebugCommand : SLCommand() {
+	override fun onEnable(manager: PaperCommandManager) {
+		manager.commandCompletions.registerCompletion("inputType") { InputType.byName.keys.map(String::lowercase) }
+		manager.commandContexts.registerContext(InputType::class.java) { InputType[it.popFirstArg()] }
+		manager.commandCompletions.setDefaultCompletion("inputType", InputType::class.java)
+	}
+
 	@Subcommand("threaddump")
 	fun forceDump(sender: Player) {
 		log.error("Entire Thread Dump:")
@@ -83,7 +91,7 @@ object TransportDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("dump inputs chunk")
-	fun dumpInputsChunk(sender: Player, type: CacheType) {
+	fun dumpInputsChunk(sender: Player, type: InputType) {
 		val inputManager = sender.world.ion.inputManager
 		val loc = Vec3i(sender.location)
 		val inputs = inputManager.getLocations(type)
@@ -95,7 +103,7 @@ object TransportDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("dump inputs starship")
-	fun dumpInputsShip(sender: Player, type: CacheType) {
+	fun dumpInputsShip(sender: Player, type: InputType) {
 		val ship = getStarshipRiding(sender)
 		val inputManager = ship.transportManager.inputManager
 
@@ -378,7 +386,6 @@ object TransportDebugCommand : SLCommand() {
 			manager.graphs.firstOrNull()?.onNewPosition(toBlockKey(Vec3i(sender.location)))
 
 			sender.information("volume: ${manager.graphs.firstOrNull()?.getVolume()}")
-
 			manager.graphs.firstOrNull()?.networkGraph?.edges()?.forEach {
 				it.getDisplayPoints().forEach { point ->
 					sender.spawnParticle(Particle.SOUL_FIRE_FLAME, point.x, point.y, point.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)

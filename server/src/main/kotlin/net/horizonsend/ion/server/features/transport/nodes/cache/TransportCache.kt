@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.TransportTask
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
@@ -13,7 +12,6 @@ import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.horizonsend.ion.server.features.transport.nodes.types.ComplexNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
-import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.util.BlockBasedCacheFactory
 import net.horizonsend.ion.server.features.transport.nodes.util.CacheState
 import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
@@ -119,40 +117,6 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 
 			node.displace(movement)
 		}
-	}
-
-	/**
-	 * Gets the powered entities accessible from this location, assuming it is an input
-	 * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
-	 **/
-	fun getInputEntities(location: BlockKey): Set<MultiblockEntity> {
-		return holder.getInputManager().getHolders(type, location)
-	}
-
-	/**
-	 * Gets the powered entities accessible from this location, assuming it is an input
-	 * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
-	 **/
-	inline fun <reified T> getInputEntitiesTyped(location: BlockKey): Set<T> {
-		return holder.getInputManager().getHolders(type, location).filterIsInstanceTo(mutableSetOf())
-	}
-
-	inline fun <reified T> getExtractorSourceEntities(extractorLocation: BlockKey, filterNot: (T) -> Boolean): List<T> {
-		val sources = mutableListOf<T>()
-
-		for (face in ADJACENT_BLOCK_FACES) {
-			val inputLocation = getRelative(extractorLocation, face)
-			if (holder.getOrCacheGlobalNode(inputLocation) !is PowerNode.PowerInputNode) continue
-			val entities = getInputEntities(inputLocation)
-
-			for (entity in entities) {
-				if (entity !is T) continue
-				if (filterNot.invoke(entity)) continue
-				sources.add(entity)
-			}
-		}
-
-		return sources
 	}
 
 	inline fun <reified T: Node> getOrCacheNetworkDestinations(
