@@ -85,7 +85,7 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 		if (contents.isEmpty()) return
 
 		fun depositToEntities(input: BlockKey) {
-			val holders = manager.transportManager.getInputProvider().getHolders(InputType.FLUID, input).filterIsInstance<FluidStoringMultiblock>()
+			val holders = manager.transportManager.getInputProvider().getInputs(InputType.FLUID, input).filterIsInstance<FluidStoringMultiblock>()
 			for (storageEntity in holders) {
 				if (!storageEntity.canAdd(contents)) continue
 				for (store in storageEntity) {

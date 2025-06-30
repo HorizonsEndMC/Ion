@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 class InputsData private constructor (val holder: MultiblockEntity, val inputs: List<BuiltInputData>){
 	fun registerInputs() {
 		for (input in inputs) {
-			input.register(holder.manager.getInputManager(), holder)
+			input.register(holder.manager.getInputManager(), input.inputCreator.invoke(holder))
 		}
 	}
 
@@ -27,6 +27,7 @@ class InputsData private constructor (val holder: MultiblockEntity, val inputs: 
 		val offsetRight: Int,
 		val offsetUp: Int,
 		val offsetForward: Int,
+		val inputCreator: (MultiblockEntity) -> RegisteredInput
 	) {
 		private fun getRealPos(holder: MultiblockEntity): BlockKey {
 			val newPos = getRelative(
@@ -39,30 +40,30 @@ class InputsData private constructor (val holder: MultiblockEntity, val inputs: 
 			return toBlockKey(newPos)
 		}
 
-		fun register(manager: InputManager, holder: MultiblockEntity) {
-			manager.registerInput(type, getRealPos(holder), holder)
+		fun register(manager: InputManager, input: RegisteredInput) {
+			manager.registerInput(type, getRealPos(input.holder), input)
 		}
 
-		fun release(manager: InputManager, holder: MultiblockEntity) {
-			manager.deRegisterInput(type, getRealPos(holder), holder)
+		fun release(manager: InputManager, entity: MultiblockEntity) {
+			manager.deRegisterInput(type, getRealPos(entity), entity)
 		}
 	}
 
 	class Builder(val holder: MultiblockEntity) {
 		private val data: MutableList<BuiltInputData> = mutableListOf()
 
-		private fun addInput(type: InputType, offsetRight: Int, offsetUp: Int, offsetForward: Int): Builder {
-			data.add(BuiltInputData(type, offsetRight, offsetUp, offsetForward))
+		private fun addInput(type: InputType, offsetRight: Int, offsetUp: Int, offsetForward: Int, inputCreator: (MultiblockEntity) -> RegisteredInput): Builder {
+			data.add(BuiltInputData(type, offsetRight, offsetUp, offsetForward, inputCreator))
 
 			return this
 		}
 
 		fun addPowerInput(offsetRight: Int, offsetUp: Int, offsetForward: Int): Builder {
-			return addInput(InputType.POWER, offsetRight, offsetUp, offsetForward)
+			return addInput(InputType.POWER, offsetRight, offsetUp, offsetForward) { RegisteredInput.Simple(it) }
 		}
 
 		fun addFluidInput(offsetRight: Int, offsetUp: Int, offsetForward: Int): Builder {
-			return addInput(InputType.FLUID, offsetRight, offsetUp, offsetForward)
+			return addInput(InputType.FLUID, offsetRight, offsetUp, offsetForward) { RegisteredInput.Simple(it) }
 		}
 
 		fun build(): InputsData {
