@@ -10,6 +10,8 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultibl
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
@@ -82,9 +84,11 @@ object TestFluidTank : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
 
 	class TestFluidTankEntity(data: PersistentMultiblockData, manager: MultiblockManager, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace) : MultiblockEntity(
 		manager, TestFluidTank, world, x, y, z, structureDirection
-	), DisplayMultiblockEntity, FluidStoringMultiblock {
+	), DisplayMultiblockEntity, FluidStoringMultiblock, SyncTickingMultiblockEntity {
+		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(1)
+
 		override val inputsData: InputsData = InputsData.builder(this)
-			.addPowerInput(0, -1, 0)
+			.addFluidInput(0, -1, 0)
 			.build()
 
 		val storage = FluidStorageContainer(data, "main", Component.text("Main"), NamespacedKeys.MAIN_STORAGE, 100_000.0, FluidRestriction.Unlimited)
@@ -100,6 +104,10 @@ object TestFluidTank : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
 
 		override fun saveStorageData(destination: PersistentMultiblockData) {
 			saveStorageData(destination)
+		}
+
+		override fun tick() {
+			pushFluids()
 		}
 	}
 }
