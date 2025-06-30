@@ -1,7 +1,6 @@
-package net.horizonsend.ion.server.features.transport.nodes.inputs
+package net.horizonsend.ion.server.features.transport.inputs
 
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
-import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -24,7 +23,7 @@ class InputsData private constructor (val holder: MultiblockEntity, private val 
 	}
 
 	data class BuiltInputData(
-		private val type: CacheType,
+		private val type: InputType,
 		private val offsetRight: Int,
 		private val offsetUp: Int,
 		private val offsetForward: Int,
@@ -52,18 +51,18 @@ class InputsData private constructor (val holder: MultiblockEntity, private val 
 	class Builder(val holder: MultiblockEntity) {
 		private val data: MutableList<BuiltInputData> = mutableListOf()
 
-		private fun addInput(type: CacheType, offsetRight: Int, offsetUp: Int, offsetForward: Int): Builder {
+		private fun addInput(type: InputType, offsetRight: Int, offsetUp: Int, offsetForward: Int): Builder {
 			data.add(BuiltInputData(type, offsetRight, offsetUp, offsetForward))
 
 			return this
 		}
 
 		fun addPowerInput(offsetRight: Int, offsetUp: Int, offsetForward: Int): Builder {
-			return addInput(CacheType.POWER, offsetRight, offsetUp, offsetForward)
+			return addInput(InputType.POWER, offsetRight, offsetUp, offsetForward)
 		}
 
 //		fun addFluidInput(offsetRight: Int, offsetUp: Int, offsetForward: Int): Builder {
-//			return addInput(CacheType.FLUID, offsetRight, offsetUp, offsetForward)
+//			return addInput(InputType.FLUID, offsetRight, offsetUp, offsetForward)
 //		}
 
 		fun build(): InputsData {

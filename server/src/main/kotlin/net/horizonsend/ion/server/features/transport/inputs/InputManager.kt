@@ -1,36 +1,35 @@
-package net.horizonsend.ion.server.features.transport.nodes.inputs
+package net.horizonsend.ion.server.features.transport.inputs
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
-import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class InputManager {
-	private val typeManagers = ConcurrentHashMap<CacheType, TypeManager>()
+	private val typeManagers = ConcurrentHashMap<InputType, TypeManager>()
 
-	private fun getTypeManager(type: CacheType): TypeManager {
+	private fun getTypeManager(type: InputType): TypeManager {
 		return typeManagers.getOrPut(type) { TypeManager(this, type) }
 	}
 
-	fun registerInput(type: CacheType, location: BlockKey, holder: MultiblockEntity) {
+	fun registerInput(type: InputType, location: BlockKey, holder: MultiblockEntity) {
 		getTypeManager(type).add(location, holder)
 	}
 
-	fun deRegisterInput(type: CacheType, location: BlockKey, holder: MultiblockEntity) {
+	fun deRegisterInput(type: InputType, location: BlockKey, holder: MultiblockEntity) {
 		getTypeManager(type).remove(location, holder)
 	}
 
-	fun getHolders(type: CacheType, location: BlockKey): ObjectOpenHashSet<MultiblockEntity> {
+	fun getHolders(type: InputType, location: BlockKey): ObjectOpenHashSet<MultiblockEntity> {
 		return getTypeManager(type).getAllHolders(location)
 	}
 
-	fun getInputData(type: CacheType, location: BlockKey): TypeManager.InputData? =
+	fun getInputData(type: InputType, location: BlockKey): TypeManager.InputData? =
 		getTypeManager(type).getRaw(location)
 
-	fun getLocations(type: CacheType) = getTypeManager(type).getAllLocations()
+	fun getLocations(type: InputType) = getTypeManager(type).getAllLocations()
 
-	class TypeManager(val manager: InputManager, val type: CacheType) {
+	class TypeManager(val manager: InputManager, val type: InputType) {
 		private val inputLocations = ConcurrentHashMap<BlockKey, InputData>()
 
 		fun getAllLocations() = inputLocations.keys

@@ -25,7 +25,7 @@ abstract class TransportNodeGraph<T: GraphNode>(val uuid: UUID, open val manager
 	val nodes = Long2ObjectOpenHashMap<T>()
 
 	val networkGraph: MutableNetwork<T, GraphEdge> = NetworkBuilder.directed()
-		.allowsParallelEdges(true)
+		.allowsParallelEdges(false)
 		.allowsSelfLoops(false)
 		.build()
 
@@ -76,4 +76,6 @@ abstract class TransportNodeGraph<T: GraphNode>(val uuid: UUID, open val manager
 
 		return found
 	}
+
+	abstract fun tick()
 }
