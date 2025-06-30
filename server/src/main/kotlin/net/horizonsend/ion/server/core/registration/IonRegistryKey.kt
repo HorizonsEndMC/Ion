@@ -10,9 +10,12 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.encoding.encodeStructure
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.registries.Registry
 import org.bukkit.NamespacedKey
+import org.bukkit.persistence.PersistentDataAdapterContext
+import org.bukkit.persistence.PersistentDataType
 import kotlin.reflect.KClass
 
 class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClass<out Z>, key: String) : IonResourceKey<Z>(key) {
@@ -71,6 +74,26 @@ class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClas
 
 				RegistryKeys[registryId]!!.getValue().getKeySet().getOrTrow(registryKey)
 			}
+		}
+	}
+
+	class Serializer<T : Any>(val keyRegistry: KeyRegistry<T>) : PersistentDataType<String, IonRegistryKey<T, out T>> {
+		override fun getPrimitiveType(): Class<String> = String::class.java
+		@Suppress("UNCHECKED_CAST")
+		override fun getComplexType(): Class<IonRegistryKey<T, out T>> = IonRegistryKey::class.java as Class<IonRegistryKey<T, out T>>
+
+		override fun toPrimitive(
+			complex: IonRegistryKey<T, out T>,
+			context: PersistentDataAdapterContext,
+		): String {
+			return complex.key
+		}
+
+		override fun fromPrimitive(
+			primitive: String,
+			context: PersistentDataAdapterContext,
+		): IonRegistryKey<T, out T> {
+			return keyRegistry.get(primitive)!!
 		}
 	}
 }

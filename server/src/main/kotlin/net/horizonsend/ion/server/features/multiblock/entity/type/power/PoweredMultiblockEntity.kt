@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.power
 
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.InputsData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.persistence.PersistentDataType
 

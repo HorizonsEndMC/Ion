@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.transport.nodes.inputs
+package net.horizonsend.ion.server.features.transport.inputs
 
 import net.horizonsend.ion.server.features.world.IonWorld
 

@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.manager.WorldMultiblockManager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.transport.nodes.inputs.WorldInputManager
+import net.horizonsend.ion.server.features.transport.inputs.WorldInputManager
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
 import net.horizonsend.ion.server.features.world.data.DataFixers

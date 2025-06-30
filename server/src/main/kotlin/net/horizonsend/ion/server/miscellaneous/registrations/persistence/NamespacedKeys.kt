@@ -113,7 +113,7 @@ object NamespacedKeys {
 	val NODE_TYPE = key("node_type")
 
 	// Fluid storage
-	val FLUID = key("fluid")
+	val FLUID_TYPE = key("fluid_type")
 	val FLUID_AMOUNT = key("fluid_amount")
 
 	val STORAGES = key("storages")

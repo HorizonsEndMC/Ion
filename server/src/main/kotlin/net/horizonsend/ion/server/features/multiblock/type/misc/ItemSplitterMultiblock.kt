@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.InputsData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SPLITTER_DIRECTION
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.kyori.adventure.text.Component
