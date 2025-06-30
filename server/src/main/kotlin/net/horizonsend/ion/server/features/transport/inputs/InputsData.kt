@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 
-class InputsData private constructor (val holder: MultiblockEntity, private val inputs: List<BuiltInputData>){
+class InputsData private constructor (val holder: MultiblockEntity, val inputs: List<BuiltInputData>){
 	fun registerInputs() {
 		for (input in inputs) {
 			input.register(holder.manager.getInputManager(), holder)
@@ -24,9 +24,9 @@ class InputsData private constructor (val holder: MultiblockEntity, private val 
 
 	data class BuiltInputData(
 		private val type: InputType,
-		private val offsetRight: Int,
-		private val offsetUp: Int,
-		private val offsetForward: Int,
+		val offsetRight: Int,
+		val offsetUp: Int,
+		val offsetForward: Int,
 	) {
 		private fun getRealPos(holder: MultiblockEntity): BlockKey {
 			val newPos = getRelative(
@@ -61,9 +61,9 @@ class InputsData private constructor (val holder: MultiblockEntity, private val 
 			return addInput(InputType.POWER, offsetRight, offsetUp, offsetForward)
 		}
 
-//		fun addFluidInput(offsetRight: Int, offsetUp: Int, offsetForward: Int): Builder {
-//			return addInput(InputType.FLUID, offsetRight, offsetUp, offsetForward)
-//		}
+		fun addFluidInput(offsetRight: Int, offsetUp: Int, offsetForward: Int): Builder {
+			return addInput(InputType.FLUID, offsetRight, offsetUp, offsetForward)
+		}
 
 		fun build(): InputsData {
 			return InputsData(holder, data)

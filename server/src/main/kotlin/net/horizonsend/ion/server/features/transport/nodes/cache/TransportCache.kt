@@ -43,7 +43,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	 * Cache containing a cache state at their corresponding block position.
 	 * The state can either be empty, or present. Empty key / value pairs have not been cached.
 	 **/
-	private val nodeCache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap(16, 0.5f, 16)
+	private val nodeCache: ConcurrentHashMap<BlockKey, CacheState<Node>> = ConcurrentHashMap(16, 0.5f, 16)
 
 	abstract val type: CacheType
 	private val nodeFactory: BlockBasedCacheFactory<Node, CacheHolder<*>> get() = type.nodeCacheFactory
@@ -76,7 +76,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 
 		return nodeCache.computeIfAbsent(location) { _ ->
 			val type = nodeFactory.cache(block, this.holder)
-			return@computeIfAbsent if (type == null) CacheState.Empty else CacheState.Present(type)
+			return@computeIfAbsent if (type == null) CacheState.Empty() else CacheState.Present(type)
 		}.get()
 	}
 

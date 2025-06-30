@@ -1,13 +1,16 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.fluids
 
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
+import net.horizonsend.ion.server.features.transport.inputs.InputsData
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 
-interface FluidStoringMultiblock : Iterable<FluidStack> {
-	override fun iterator(): Iterator<FluidStack> {
-		return getStores().map { it -> it.getContents() }.iterator()
+interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
+	override fun iterator(): Iterator<FluidStorageContainer> {
+		return getStores().iterator()
 	}
 
 	fun getStores(): List<FluidStorageContainer>
@@ -24,6 +27,10 @@ interface FluidStoringMultiblock : Iterable<FluidStack> {
 		return getStores().any { container -> container.canRemove(stack) }
 	}
 
+	fun canRemove(type: FluidType): Boolean {
+		return getStores().any { container -> !container.getContents().isEmpty() && container.getContents().type == type }
+	}
+
 	fun contains(type: FluidType): Boolean {
 		return getStores().any { container -> container.getContents().type == type }
 	}
@@ -35,4 +42,18 @@ interface FluidStoringMultiblock : Iterable<FluidStack> {
 	fun getRemovable(): List<FluidStorageContainer> {
 		return getStores().filter { container -> !container.getContents().isEmpty() }
 	}
+
+	fun pushFluids() {
+		this as MultiblockEntity
+		val fluidGraph = manager.getTransportManager().fluidGraphs
+
+		inputsData.inputs.forEach { t: InputsData.BuiltInputData ->
+			// Global coordinate
+			val inputLocation = toBlockKey(getPosRelative(t.offsetRight, t.offsetUp, t.offsetForward))
+			fluidGraph.add(inputLocation)
+			fluidGraph.graphPositions[inputLocation]?.depositToNetwork(inputLocation, this)
+		}
+	}
+
+	fun getNamedStorage(name: String) = getStores().find { container -> container.name == name }
 }

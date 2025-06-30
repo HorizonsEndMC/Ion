@@ -208,6 +208,7 @@ abstract class MultiblockEntity(
 		return world.getBlockAt(x, y, z)
 	}
 
+	/** Returns a global coordinate offset from the origin with the provided transform */
 	fun getPosRelative(right: Int, up: Int, forward: Int): Vec3i {
 		return getRelative(globalVec3i, structureDirection, right = right, up = up, forward = forward)
 	}

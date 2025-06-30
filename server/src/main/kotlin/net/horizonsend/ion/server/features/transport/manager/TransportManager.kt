@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
 import net.horizonsend.ion.server.features.transport.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
+import net.horizonsend.ion.server.features.transport.manager.graph.FluidGraphManager
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
@@ -19,6 +20,9 @@ abstract class TransportManager<T: CacheHolder<*>> {
 	abstract val powerNodeManager: CacheHolder<PowerTransportCache>
 	abstract val solarPanelManager: CacheHolder<SolarPanelCache>
 	abstract val itemPipeManager: CacheHolder<ItemTransportCache>
+
+	val fluidGraphs = FluidGraphManager(this)
+
 //	abstract val fluidNodeManager: CacheHolder<FluidTransportCache>
 
 	abstract val cacheHolders: Array<T>
@@ -35,6 +39,8 @@ abstract class TransportManager<T: CacheHolder<*>> {
 	var tickNumber = 0; protected set
 
 	open fun tick() {
+		tryTickGraphs()
+
 		tickNumber++
 
 		val invalid = LongOpenHashSet()
@@ -58,6 +64,14 @@ abstract class TransportManager<T: CacheHolder<*>> {
 		solarPanelManager.cache.tickSolarPanels()
 
 		invalid.forEach(extractorManager::removeExtractor)
+	}
+
+	fun tryTickGraphs() {
+		try {
+			fluidGraphs.tick()
+		} catch (e: Throwable) {
+			e.printStackTrace()
+		}
 	}
 
 	abstract fun getWorld(): World

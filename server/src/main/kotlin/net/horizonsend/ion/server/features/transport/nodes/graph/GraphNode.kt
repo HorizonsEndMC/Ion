@@ -9,7 +9,7 @@ interface GraphNode {
 
 	fun getCenter() = toVec3i(location).toCenterVector()
 
-	fun isIntact()
+	fun isIntact(): Boolean
 
 	fun setGraph(graph: TransportNodeGraph<*>)
 	fun getGraph(): TransportNodeGraph<*>
