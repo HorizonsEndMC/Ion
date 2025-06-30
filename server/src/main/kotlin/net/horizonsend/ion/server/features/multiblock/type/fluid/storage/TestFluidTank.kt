@@ -23,8 +23,11 @@ import org.bukkit.block.BlockFace
 
 object TestFluidTank : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
 	override val name: String = "fluidtank"
-	override val signText: Array<Component?> = arrayOf(
-		Component.text("Fluid Smank")
+	override val signText: Array<Component?> = createSignText(
+		Component.text("Fluid Smank"),
+		null,
+		null,
+		null
 	)
 
 	override fun MultiblockShape.buildStructure() {
