@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.miscellaneous.utils.axis
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import net.kyori.adventure.text.Component
@@ -31,6 +32,7 @@ abstract class DisplayModule(
 	private val offsetForward: Double,
 
 	val scale: Float,
+	val relativeFace: RelativeFace = RelativeFace.FORWARD,
 	val id: Int = Random.nextInt()
 ) {
 	val entity: TextDisplay = createEntity()
@@ -58,7 +60,7 @@ abstract class DisplayModule(
 
 		craftEntity.transformation = Transformation(
 			Vector3f(0f),
-			ClientDisplayEntities.rotateToFaceVector2d(handler.facing.direction.toVector3f()),
+			ClientDisplayEntities.rotateToFaceVector2d(relativeFace[handler.facing].direction.toVector3f()),
 			Vector3f(scale),
 			Quaternionf()
 		)
