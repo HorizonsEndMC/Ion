@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.transport
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.blocks.filter.CustomFilterBlock
 import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlockEvent
@@ -169,6 +169,8 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 	fun handleBlockEvent(world: World, x: Int, y: Int, z: Int, previousData: BlockData, newData: BlockData) = Tasks.async {
 		invalidateCache(world, x, y, z)
+
+		IonChunk.getFromWorldCoordinates(world, x, z)?.transportNetwork?.fluidGraphs?.cachePoint(toBlockKey(x, y, z))
 
 		if (isExtractorData(previousData) && !isExtractorData(newData)) {
 			removeExtractor(world, x, y, z)
