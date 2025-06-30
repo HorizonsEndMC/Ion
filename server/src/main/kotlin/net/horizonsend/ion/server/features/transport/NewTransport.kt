@@ -170,6 +170,8 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	fun handleBlockEvent(world: World, x: Int, y: Int, z: Int, previousData: BlockData, newData: BlockData) = Tasks.async {
 		invalidateCache(world, x, y, z)
 
+		IonChunk.getFromWorldCoordinates(world, x, z)?.transportNetwork?.fluidGraphs?.cachePoint(toBlockKey(x, y, z))
+
 		if (isExtractorData(previousData) && !isExtractorData(newData)) {
 			removeExtractor(world, x, y, z)
 			return@async

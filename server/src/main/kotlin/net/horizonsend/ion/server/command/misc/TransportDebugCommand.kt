@@ -16,9 +16,6 @@ import net.horizonsend.ion.server.features.multiblock.entity.linkages.Multiblock
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.inputs.InputType
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
-import net.horizonsend.ion.server.features.transport.manager.graph.GraphManager
-import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidGraph
-import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
 import net.horizonsend.ion.server.features.transport.nodes.cache.DestinationCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
@@ -32,7 +29,6 @@ import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
@@ -40,14 +36,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.kyori.adventure.text.event.ClickEvent.callback
-import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.slf4j.Logger
 import java.lang.management.ManagementFactory
 import java.lang.management.ThreadInfo
-import java.util.UUID
 
 @CommandPermission("starlegacy.transportdebug")
 @CommandAlias("transportdebug|transportbug")
@@ -390,40 +384,6 @@ object TransportDebugCommand : SLCommand() {
 		sender.information("${cache.combinedSolarPanelPositions[location]?.getPositions()?.size} covered position(s).")
 		cache.combinedSolarPanelPositions[location]?.getPositions()?.forEach {
 			sender.highlightBlock(toVec3i(it), 50L)
-		}
-	}
-
-	@Subcommand("test graph")
-	fun testGraphs(sender: Player) {
-		val manager = object : GraphManager<FluidNode, FluidGraph>(sender.chunk.ion().transportNetwork) {
-			override fun createGraph(): FluidGraph {
-				return FluidGraph(UUID.randomUUID(), this)
-			}
-		}
-
-		Tasks.syncRepeatTask(40L ,40L) {
-			if (sender.isSneaking) {
-				manager.graphs.firstOrNull()?.removePosition(toBlockKey(Vec3i(sender.location)))
-
-				sender.information("volume: ${manager.graphs.firstOrNull()?.getVolume()}")
-
-				manager.graphs.firstOrNull()?.networkGraph?.edges()?.forEach {
-					it.getDisplayPoints().forEach { point ->
-						sender.spawnParticle(Particle.SOUL_FIRE_FLAME, point.x, point.y, point.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
-					}
-				}
-
-				return@syncRepeatTask
-			}
-
-			manager.graphs.firstOrNull()?.onNewPosition(toBlockKey(Vec3i(sender.location)))
-
-			sender.information("volume: ${manager.graphs.firstOrNull()?.getVolume()}")
-			manager.graphs.firstOrNull()?.networkGraph?.edges()?.forEach {
-				it.getDisplayPoints().forEach { point ->
-					sender.spawnParticle(Particle.SOUL_FIRE_FLAME, point.x, point.y, point.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
-				}
-			}
 		}
 	}
 }

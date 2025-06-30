@@ -60,4 +60,8 @@ class FluidStack(
 			)
 		}
 	}
+
+	override fun toString(): String {
+		return "FluidStack[type=${type.key},amount=$amount]"
+	}
 }
