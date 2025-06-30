@@ -50,8 +50,8 @@ interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
 		inputsData.inputs.forEach { t: InputsData.BuiltInputData ->
 			// Global coordinate
 			val inputLocation = toBlockKey(getPosRelative(t.offsetRight, t.offsetUp, t.offsetForward))
-			fluidGraph.add(inputLocation)
-			fluidGraph.graphPositions[inputLocation]?.depositToNetwork(inputLocation, this)
+			fluidGraph.cachePoint(inputLocation)
+			fluidGraph.getGraphAt(inputLocation)?.depositToNetwork(inputLocation, this)
 		}
 	}
 
