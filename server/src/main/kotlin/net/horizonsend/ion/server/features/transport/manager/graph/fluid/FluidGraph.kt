@@ -92,7 +92,7 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 		val notRemoved = storage.removeAmount(toRemove)
 
 		networkContents.amount += (toRemove - notRemoved)
-		networkContents.type = storageContents.type
+		if (!storageContents.isEmpty()) networkContents.type = storageContents.type
 	}
 
 	companion object {
