@@ -2,10 +2,10 @@ package net.horizonsend.ion.server.features.transport.manager.graph.fluid
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
+import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
 import net.horizonsend.ion.server.features.transport.inputs.InputType
 import net.horizonsend.ion.server.features.transport.inputs.RegisteredInput
 import net.horizonsend.ion.server.features.transport.manager.graph.FluidGraphManager
@@ -18,6 +18,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
+import org.bukkit.Color
+import org.bukkit.Particle
 import java.util.UUID
 
 class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : TransportNodeGraph<FluidNode>(uuid, manager) {
@@ -165,8 +167,14 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 			return
 		}
 
-		val nodePositions = getGraphNodes().map { toVec3i(it.location) }
-		manager.transportManager.getWorld().highlightBlocks(nodePositions, 10L)
-		//TODO
+		val edges = getGraphEdges().flatMap { it.getDisplayPoints() }
+
+		val world = manager.transportManager.getWorld()
+
+		val dustOptions = Particle.DustOptions((contents.type as? GasFluid)?.color ?: Color.BLUE, 2.0f)
+
+		edges.forEach { vec ->
+			world.spawnParticle(Particle.DUST, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
+		}
 	}
 }
