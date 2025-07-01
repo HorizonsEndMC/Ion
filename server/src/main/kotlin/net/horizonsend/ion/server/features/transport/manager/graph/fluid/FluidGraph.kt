@@ -50,7 +50,7 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 		cachedVolume = null
 	}
 
-	override fun tick() {
+	override fun handleTick() {
 		discoverNetwork()
 		displayFluid()
 
