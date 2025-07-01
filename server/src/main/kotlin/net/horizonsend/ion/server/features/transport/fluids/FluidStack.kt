@@ -15,7 +15,12 @@ class FluidStack(
 		get
 		@Synchronized
 		set(value) {
-			if (value < 0) throw IllegalArgumentException("Fluid stacks cannot have amounts less than 0!")
+			if (value < 0.0) throw IllegalArgumentException("Fluid stacks cannot have amounts less than 0!")
+
+			if (value == 0.0) {
+				type = FluidTypeKeys.EMPTY.getValue()
+			}
+
 			field = value
 		}
 
