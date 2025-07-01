@@ -20,7 +20,7 @@ import kotlin.reflect.KClass
 
 class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClass<out Z>, key: String) : IonResourceKey<Z>(key) {
 	override fun toString(): String {
-		return "RegistryKey[${registry.id}:$key]"
+		return "RegistryKey[${registry.id.key}:$key]"
 	}
 
 	override fun getValue(): Z {
