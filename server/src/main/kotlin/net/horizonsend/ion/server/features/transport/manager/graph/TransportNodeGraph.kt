@@ -78,6 +78,8 @@ abstract class TransportNodeGraph<T: GraphNode>(val uuid: UUID, open val manager
 		if (nodeMirror.contains(localPosition)) return
 		if (getGraphNodes().any { node -> node.location == new.location }) return
 
+		new.setGraph(this)
+
 		addNode(new)
 
 		onModified()
@@ -107,7 +109,20 @@ abstract class TransportNodeGraph<T: GraphNode>(val uuid: UUID, open val manager
 		return found
 	}
 
-	abstract fun tick()
+	private var isTicking: Boolean = false
+
+	fun tick() {
+		isTicking = true
+
+		try {
+			ensureNodeIntegrity()
+			handleTick()
+		} finally {
+		    isTicking = false
+		}
+	}
+
+	protected abstract fun handleTick()
 
 	fun intakeNodes(other : TransportNodeGraph<T>) {
         // Loop all edges in other grid.
@@ -138,5 +153,14 @@ abstract class TransportNodeGraph<T: GraphNode>(val uuid: UUID, open val manager
 
 	fun addNodes(nodes: Set<T>) {
 		nodes.forEach(::addNode)
+	}
+
+	fun ensureNodeIntegrity() {
+		for (node in getGraphNodes()) {
+			val intact = node.isIntact() ?: continue
+			if (intact) continue
+
+			removeNode(node)
+		}
 	}
 }
