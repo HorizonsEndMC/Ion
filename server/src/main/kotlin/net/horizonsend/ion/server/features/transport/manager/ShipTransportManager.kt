@@ -76,8 +76,6 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 	}
 
 	override fun tick() {
-		tryTickGraphs()
-
 		tickNumber++
 
 		val extractors = extractorManager.getExtractors()
