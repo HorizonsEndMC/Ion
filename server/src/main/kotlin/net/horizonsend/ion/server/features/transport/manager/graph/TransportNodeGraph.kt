@@ -44,15 +44,19 @@ abstract class TransportNodeGraph<T: GraphNode>(val uuid: UUID, open val manager
 	fun addNode(node: T) = networkLock.writeLock().withLock {
 		networkGraph.addNode(node)
 		nodeMirror[node.location] = node
+		manager.setGraphLookup(node.location, this)
 	}
 
 	fun removeNode(node: T) = networkLock.writeLock().withLock {
 		networkGraph.removeNode(node)
 		nodeMirror.remove(node.location)
+		manager.removeGraphLookup(node.location)
 	}
 
 	fun addEdge(nodeOne: T, nodeTwo: T, edge: GraphEdge) = networkLock.writeLock().withLock {
 		networkGraph.addEdge(nodeOne, nodeTwo, edge)
+		manager.setGraphLookup(nodeOne.location, this)
+		manager.setGraphLookup(nodeTwo.location, this)
 	}
 
 	abstract fun createEdge(nodeOne: T, nodeTwo: T): GraphEdge
@@ -124,7 +128,7 @@ abstract class TransportNodeGraph<T: GraphNode>(val uuid: UUID, open val manager
         other.getGraphNodes().forEach { node ->  newPositions.add(node.location)}
 
         // Iterate all in-world nodes and update the tracked grid.
-		manager.setGraphLookup(newPositions, this)
+		manager.setGraphLookups(newPositions, this)
 
         // Insert all nodes into the Grid's lookup maps and update the node about the grid change.
         for (node in other.getGraphNodes()) {
