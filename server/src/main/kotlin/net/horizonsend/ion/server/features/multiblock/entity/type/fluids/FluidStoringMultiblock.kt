@@ -1,15 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.fluids
 
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
-import net.horizonsend.ion.server.features.transport.inputs.InputType
-import net.horizonsend.ion.server.features.transport.inputs.InputsData
-import net.horizonsend.ion.server.features.transport.inputs.RegisteredInput
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 
 interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
 	override fun iterator(): Iterator<FluidStorageContainer> {
@@ -44,20 +38,6 @@ interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
 
 	fun getRemovable(): List<FluidStorageContainer> {
 		return getStores().filter { container -> !container.getContents().isEmpty() }
-	}
-
-	fun pushFluids() {
-		this as MultiblockEntity
-		val fluidGraphManager = world.ion.transportManager.fluidGraphManager
-
-		inputsData.getOfType(InputType.FLUID).forEach<InputsData.BuiltInputData<RegisteredInput.RegisteredMetaDataInput<FluidInputMetadata>>> { placementData ->
-			val worldInput = placementData.get(this) ?: return@forEach
-
-			// Global coordinate
-			val inputLocation = toBlockKey(getPosRelative(placementData.offsetRight, placementData.offsetUp, placementData.offsetForward))
-			fluidGraphManager.cachePoint(inputLocation)
-			fluidGraphManager.getGraphAt(inputLocation)?.depositToNetwork(worldInput)
-		}
 	}
 
 	fun getNamedStorage(name: String) = getStores().find { container -> container.name == name }
