@@ -6,38 +6,39 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class InputManager {
-	private val typeManagers = ConcurrentHashMap<InputType, TypeManager>()
+	private val typeManagers = ConcurrentHashMap<InputType<*>, TypeManager<*>>()
 
-	private fun getTypeManager(type: InputType): TypeManager {
-		return typeManagers.getOrPut(type) { TypeManager(this, type) }
+	private fun <T : RegisteredInput> getTypeManager(type: InputType<T>): TypeManager<T> {
+		@Suppress("UNCHECKED_CAST")
+		return typeManagers.getOrPut(type) { TypeManager(this, type) } as TypeManager<T>
 	}
 
-	fun registerInput(type: InputType, location: BlockKey, input: RegisteredInput) {
+	fun <T : RegisteredInput> registerInput(type: InputType<T>, location: BlockKey, input: T) {
 		getTypeManager(type).add(location, input)
 	}
 
-	fun deRegisterInput(type: InputType, location: BlockKey, holder: MultiblockEntity) {
+	fun deRegisterInput(type: InputType<*>, location: BlockKey, holder: MultiblockEntity) {
 		getTypeManager(type).remove(location, holder)
 	}
 
-	fun getInputs(type: InputType, location: BlockKey): ObjectOpenHashSet<RegisteredInput> {
+	fun <T : RegisteredInput> getInputs(type: InputType<T>, location: BlockKey): ObjectOpenHashSet<T> {
 		return getTypeManager(type).getAllHolders(location)
 	}
 
-	fun getInputData(type: InputType, location: BlockKey): TypeManager.InputData? =
+	fun <T : RegisteredInput> getInputData(type: InputType<T>, location: BlockKey): TypeManager.InputData<T>? =
 		getTypeManager(type).getRaw(location)
 
-	fun getLocations(type: InputType) = getTypeManager(type).getAllLocations()
+	fun getLocations(type: InputType<*>) = getTypeManager(type).getAllLocations()
 
-	class TypeManager(val manager: InputManager, val type: InputType) {
-		private val inputLocations = ConcurrentHashMap<BlockKey, InputData>()
+	class TypeManager<T : RegisteredInput>(val manager: InputManager, val type: InputType<T>) {
+		private val inputLocations = ConcurrentHashMap<BlockKey, InputData<T>>()
 
 		fun getAllLocations() = inputLocations.keys
 
-		fun getRaw(location: BlockKey): InputData? = inputLocations[location]
+		fun getRaw(location: BlockKey): InputData<T>? = inputLocations[location]
 
-		fun add(location: BlockKey, data: RegisteredInput) {
-			when (val present: InputData? = inputLocations[location]) {
+		fun add(location: BlockKey, data: T) {
+			when (val present: InputData<T>? = inputLocations[location]) {
 				is SingleMultiblockInput -> inputLocations[location] = SharedMultiblockInput.of(present.input, data)
 				is SharedMultiblockInput -> present.add(data)
 				null -> inputLocations[location] = SingleMultiblockInput(data)
@@ -45,7 +46,7 @@ abstract class InputManager {
 		}
 
 		fun remove(location: BlockKey, input: RegisteredInput) {
-			when (val present: InputData? = inputLocations.get(location)) {
+			when (val present: InputData<T>? = inputLocations.get(location)) {
 				is SingleMultiblockInput -> if (present.input == input) inputLocations.remove(location)
 				is SharedMultiblockInput -> present.remove(input)
 				null -> return
@@ -53,15 +54,15 @@ abstract class InputManager {
 		}
 
 		fun remove(location: BlockKey, holder: MultiblockEntity) {
-			when (val present: InputData? = inputLocations.get(location)) {
+			when (val present: InputData<T>? = inputLocations.get(location)) {
 				is SingleMultiblockInput -> if (present.input.holder == holder) inputLocations.remove(location)
 				is SharedMultiblockInput -> present.remove(holder)
 				null -> return
 			}
 		}
 
-		fun getAllHolders(location: BlockKey): ObjectOpenHashSet<RegisteredInput> {
-			return inputLocations.get(location)?.getHolders() ?: ObjectOpenHashSet()
+		fun getAllHolders(location: BlockKey): ObjectOpenHashSet<T> {
+			return inputLocations.get(location)?.getInputs() ?: ObjectOpenHashSet()
 		}
 
 		fun removeAll(location: BlockKey) {
@@ -72,33 +73,33 @@ abstract class InputManager {
 			return inputLocations.contains(location)
 		}
 
-		sealed interface InputData {
+		sealed interface InputData<T : RegisteredInput> {
 			fun contains(holder: MultiblockEntity): Boolean
-			fun getHolders(): ObjectOpenHashSet<RegisteredInput>
+			fun getInputs(): ObjectOpenHashSet<T>
 		}
 
-		data class SingleMultiblockInput(val input: RegisteredInput) : InputData {
+		data class SingleMultiblockInput<T : RegisteredInput>(val input: T) : InputData<T> {
 			override fun contains(holder: MultiblockEntity): Boolean {
 				return this.input == holder
 			}
 
-			override fun getHolders(): ObjectOpenHashSet<RegisteredInput> {
+			override fun getInputs(): ObjectOpenHashSet<T> {
 				return ObjectOpenHashSet.of(input)
 			}
 		}
 
-		class SharedMultiblockInput : InputData {
-			private val holders: ObjectOpenHashSet<RegisteredInput> = ObjectOpenHashSet()
+		class SharedMultiblockInput<T : RegisteredInput> : InputData<T> {
+			private val holders: ObjectOpenHashSet<T> = ObjectOpenHashSet()
 
 			override fun contains(holder: MultiblockEntity): Boolean {
 				return holders.any { input -> input.holder == holder }
 			}
 
-			override fun getHolders(): ObjectOpenHashSet<RegisteredInput> {
+			override fun getInputs(): ObjectOpenHashSet<T> {
 				return ObjectOpenHashSet(holders)
 			}
 
-			fun add(input: RegisteredInput) {
+			fun add(input: T) {
 				holders.add(input)
 			}
 
@@ -113,8 +114,8 @@ abstract class InputManager {
 			fun getAllHolders() = holders.clone()
 
 			companion object {
-				fun of(vararg inputs: RegisteredInput): SharedMultiblockInput {
-					val new = SharedMultiblockInput()
+				fun <T : RegisteredInput> of(vararg inputs: T): SharedMultiblockInput<T> {
+					val new = SharedMultiblockInput<T>()
 					inputs.forEach(new::add)
 					return new
 				}
