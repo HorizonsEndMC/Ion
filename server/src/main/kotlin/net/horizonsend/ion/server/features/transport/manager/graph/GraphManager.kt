@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.manager.graph
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
@@ -12,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.Particle
@@ -27,39 +27,41 @@ abstract class GraphManager<N : GraphNode, T: TransportNodeGraph<N>>(val transpo
 
 	private val graphs = ConcurrentHashMap.newKeySet<T>()
 
-	private val graphLookup = Long2ObjectOpenHashMap<T>()
-	private val graphPositions = Object2ObjectOpenHashMap<T, LongOpenHashSet>()
+	private val graphLookup = ConcurrentHashMap<BlockKey, TransportNodeGraph<N>>()
+	private val graphPositions = Object2ObjectOpenHashMap<TransportNodeGraph<N>, LongOpenHashSet>()
 
-	fun removeGraph(graph: T) {
+	fun removeGraph(graph: TransportNodeGraph<N>) {
 		graphs.remove(graph)
 		removeGraphLookups(graph)
 	}
 
-	fun removeGraphLookups(graph: T) {
+	fun removeGraphLookups(graph: TransportNodeGraph<N>) {
 		val positions: LongOpenHashSet? = graphPositions.remove(graph)
 		if (positions.isNullOrEmpty()) return
 
 		positions.forEach(graphLookup::remove)
 	}
 
-//	fun removeGraphLookup(graph: T, position: BlockKey) {
-//
-//	}
+	fun removeGraphLookup(position: BlockKey) {
+		val graph = graphLookup.remove(position) ?: return
+		graphPositions.getOrPut(graph, ::LongOpenHashSet).remove(position)
+	}
 
-	fun setGraphLookup(position: BlockKey, graph: T) {
+	fun setGraphLookup(position: BlockKey, graph: TransportNodeGraph<N>) {
 		graphLookup[position] = graph
 		graphPositions.getOrPut(graph, ::LongOpenHashSet).add(position)
 	}
 
-	fun setGraphLookup(positions: Collection<BlockKey>, graph: TransportNodeGraph<N>) {
+	fun setGraphLookups(positions: Collection<BlockKey>, graph: TransportNodeGraph<N>) {
 		for (position in positions) {
-			graphLookup[position] = graph as T
+			graphLookup[position] = graph
 			graphPositions.getOrPut(graph, ::LongOpenHashSet).add(position)
 		}
 	}
 
 	fun getGraphAt(location: BlockKey): T? {
-		val atLocation = graphLookup[location]
+		val locationVec3i = toVec3i(location)
+		val atLocation = cast(graphLookup[location])
 		if (atLocation != null) return atLocation
 
 		val block = getBlockIfLoaded(transportManager.getWorld(), getX(location), getY(location), getZ(location)) ?: return null
@@ -68,16 +70,21 @@ abstract class GraphManager<N : GraphNode, T: TransportNodeGraph<N>>(val transpo
 		// Cannot create a graph without an origin node
 		if (node == null) return null
 
-		registerNewGraph(location)
+		val adjacentGraphs = ADJACENT_BLOCK_FACES.mapNotNullTo(mutableSetOf()) { cast(graphLookup[getRelative(location, it)]) }
 
-		return graphLookup[location]
+		if (adjacentGraphs.isNotEmpty()) {
+			return combineGraphs(adjacentGraphs)
+		}
+
+		registerNewGraph(location)
+		return cast(graphLookup[location])
 	}
 
 	private fun registerNewGraph(location: BlockKey): Boolean {
 		val new = createGraph()
 
 		graphs.add(new)
-		graphLookup[location] = new
+		setGraphLookup(location, new)
 
 		return new.onNewPosition(location)
 	}
@@ -85,26 +92,14 @@ abstract class GraphManager<N : GraphNode, T: TransportNodeGraph<N>>(val transpo
 	abstract fun createGraph(): T
 
 	fun cachePoint(location: BlockKey): Boolean {
-		val graph = getGraphAt(location)
-
-		if (graph != null) {
-			return graph.onNewPosition(location)
-		}
-
-		val adjacentGraphs = ADJACENT_BLOCK_FACES.mapNotNullTo(mutableSetOf()) { getGraphAt(getRelative(location, it)) }
-
-		if (adjacentGraphs.size == 1) {
-			return adjacentGraphs.first().onNewPosition(location)
-		}
-
-		return combineGraphs(adjacentGraphs).onNewPosition(location)
+		return getGraphAt(location)?.onNewPosition(location) == true
 	}
 
 	fun combineGraphs(graphs: Iterable<T>): T {
-
 		val sorted = graphs.sortedBy { it.getGraphNodes().size }
 
 		val iterator = sorted.iterator()
+
 		val mergeTraget = iterator.next()
 
 		if (!iterator.hasNext()) return mergeTraget
@@ -194,5 +189,8 @@ abstract class GraphManager<N : GraphNode, T: TransportNodeGraph<N>>(val transpo
 
 		return separated
 	}
+
+	@Suppress("UNCHECKED_CAST")
+	fun cast(graph: TransportNodeGraph<N>?): T? = graph as T?
 }
 

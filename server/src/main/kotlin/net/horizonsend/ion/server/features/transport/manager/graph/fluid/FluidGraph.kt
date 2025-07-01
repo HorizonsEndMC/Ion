@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.manager.graph.fluid
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
@@ -113,8 +114,6 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 		for (node in getGraphNodes()) {
 			depositToEntities(node.location)
 		}
-
-		println(deposits)
 	}
 
 	override fun tick() {
@@ -162,8 +161,10 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 	}
 
 	fun displayFluid() {
-		if (contents.isEmpty()) return
+//		if (contents.isEmpty()) return
 
+		val nodePositions = getGraphNodes().map { toVec3i(it.location) }
+		manager.transportManager.getWorld().highlightBlocks(nodePositions, 10L)
 		//TODO
 	}
 }
