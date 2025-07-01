@@ -2,11 +2,12 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid.storage
 
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
-import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SplitFluidDisplayModule
+import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
@@ -17,7 +18,9 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.TestFluidTank.TestFluidTankEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
+import net.horizonsend.ion.server.features.transport.inputs.InputType
 import net.horizonsend.ion.server.features.transport.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.RegisteredInput.RegisteredMetaDataInput
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.LEFT
@@ -29,6 +32,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs.Shape.STRAIGHT
+import org.bukkit.persistence.PersistentDataAdapterContext
 
 object TestFluidTank : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
 	override val name: String = "fluidtank"
@@ -493,31 +497,33 @@ object TestFluidTank : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(1)
 
 		override val inputsData: InputsData = InputsData.builder(this)
-			.addFluidInput(4, 0, 3)
-			.addFluidInput(4, 0, 5)
-			.addFluidInput(-4, 0, 3)
-			.addFluidInput(-4, 0, 5)
+			// Inputs
+			.addInput(InputType.FLUID, 4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = input1, inputAllowed = true, outputAllowed = false)) }
+			.addInput(InputType.FLUID, 4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = input2, inputAllowed = true, outputAllowed = false)) }
+			// Outputs
+			.addInput(InputType.FLUID, -4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = output1, inputAllowed = false, outputAllowed = true)) }
+			.addInput(InputType.FLUID, -4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = output2, inputAllowed = false, outputAllowed = true)) }
 			.build()
 
-		val input1 = FluidStorageContainer(data, "input1", Component.text("Main"), NamespacedKeys.MAIN_STORAGE, 100_000.0, FluidRestriction.Unlimited)
-		val input2 = FluidStorageContainer(data, "input2", Component.text("Main"), NamespacedKeys.MAIN_STORAGE, 100_000.0, FluidRestriction.Unlimited)
-		val output1 = FluidStorageContainer(data, "output1", Component.text("Main"), NamespacedKeys.MAIN_STORAGE, 100_000.0, FluidRestriction.Unlimited)
-		val output2 = FluidStorageContainer(data, "output2", Component.text("Main"), NamespacedKeys.MAIN_STORAGE, 100_000.0, FluidRestriction.Unlimited)
+		val input1 = FluidStorageContainer(data, "input1", Component.text("input1"), NamespacedKeys.key("input1"), 100_000.0, FluidRestriction.Unlimited)
+		val input2 = FluidStorageContainer(data, "input2", Component.text("input2"), NamespacedKeys.key("input2"), 100_000.0, FluidRestriction.Unlimited)
+		val output1 = FluidStorageContainer(data, "output1", Component.text("output1"), NamespacedKeys.key("output1"), 100_000.0, FluidRestriction.Unlimited)
+		val output2 = FluidStorageContainer(data, "output2", Component.text("output2"), NamespacedKeys.key("output2"), 100_000.0, FluidRestriction.Unlimited)
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
-			{ SplitFluidDisplayModule(handler = it, storage = input1, offsetLeft = 4.5, offsetUp = 1.25, offsetBack = -4.0 + 0.39, scale = 1.0f, relativeFace = RIGHT) },
-			{ SplitFluidDisplayModule(handler = it, storage = input2, offsetLeft = 4.5, offsetUp = 1.25, offsetBack = -6.0 + 0.39, scale = 1.0f, relativeFace = RIGHT) },
-			{ SplitFluidDisplayModule(handler = it, storage = output1, offsetLeft = -4.5, offsetUp = 1.25, offsetBack = -4.0 + 0.39, scale = 1.0f, relativeFace = LEFT) },
-			{ SplitFluidDisplayModule(handler = it, storage = output2, offsetLeft = -4.5, offsetUp = 1.25, offsetBack = -6.0 + 0.39, scale = 1.0f, relativeFace = LEFT) }
+			{ ComplexFluidDisplayModule(handler = it, container = input1, title = input1.displayName, offsetLeft = 4.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, relativeFace = RIGHT) },
+			{ ComplexFluidDisplayModule(handler = it, container = input2, title = input2.displayName, offsetLeft = 4.5, offsetUp = 1.15, offsetBack = -6.0 + 0.39, scale = 0.7f, relativeFace = RIGHT) },
+			{ ComplexFluidDisplayModule(handler = it, container = output1, title = output1.displayName, offsetLeft = -4.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, relativeFace = LEFT) },
+			{ ComplexFluidDisplayModule(handler = it, container = output2, title = output2.displayName, offsetLeft = -4.5, offsetUp = 1.15, offsetBack = -6.0 + 0.39, scale = 0.7f, relativeFace = LEFT) }
 		)
 
 		override fun getStores(): List<FluidStorageContainer> {
 			return listOf(input1, input2, output1, output2)
 		}
 
-		override fun saveStorageData(destination: PersistentMultiblockData) {
-			saveStorageData(destination)
+		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
+			saveStorageData(store)
 		}
 
 		override fun tick() {

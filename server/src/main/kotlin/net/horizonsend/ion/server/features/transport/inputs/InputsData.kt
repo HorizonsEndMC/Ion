@@ -47,12 +47,17 @@ class InputsData private constructor (val holder: MultiblockEntity, val inputs: 
 		fun release(manager: InputManager, entity: MultiblockEntity) {
 			manager.deRegisterInput(type, getRealPos(entity), entity)
 		}
+
+		fun get(entity: MultiblockEntity): RegisteredInput? {
+			val realPos = getRealPos(entity)
+			return entity.manager.getInputManager().getInputs(type, realPos).firstOrNull { input -> input.holder == entity }
+		}
 	}
 
 	class Builder(val holder: MultiblockEntity) {
 		private val data: MutableList<BuiltInputData> = mutableListOf()
 
-		private fun addInput(type: InputType, offsetRight: Int, offsetUp: Int, offsetForward: Int, inputCreator: (MultiblockEntity) -> RegisteredInput): Builder {
+		fun addInput(type: InputType, offsetRight: Int, offsetUp: Int, offsetForward: Int, inputCreator: (MultiblockEntity) -> RegisteredInput): Builder {
 			data.add(BuiltInputData(type, offsetRight, offsetUp, offsetForward, inputCreator))
 
 			return this
