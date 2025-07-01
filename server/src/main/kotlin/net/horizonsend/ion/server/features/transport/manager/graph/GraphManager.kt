@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.transport.manager.graph
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
-import net.horizonsend.ion.server.features.transport.manager.TransportManager
+import net.horizonsend.ion.server.features.transport.manager.TransportHolder
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphNode
 import net.horizonsend.ion.server.features.transport.nodes.util.BlockBasedCacheFactory
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -20,7 +20,7 @@ import org.bukkit.entity.Player
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentHashMap
 
-abstract class GraphManager<N : GraphNode, T: TransportNodeGraph<N>>(val transportManager: TransportManager<*>) {
+abstract class GraphManager<N : GraphNode, T: TransportNodeGraph<N>>(val transportManager: TransportHolder) {
 	protected abstract val cacheFactory: BlockBasedCacheFactory<N, GraphManager<N, T>>
 
 	fun getNode(block: Block): N? = cacheFactory.cache(block, this)
