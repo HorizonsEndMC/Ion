@@ -127,7 +127,7 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 
 		var tick = 0
 
-		while (visitQueue.isNotEmpty() && tick < 100 && alive) {
+		while (visitQueue.isNotEmpty() && tick < 1000 && alive) {
 			tick++
 			val key = visitQueue.removeFirst()
 
@@ -135,7 +135,7 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 
 			visited.add(key)
 
-			debugAudience.highlightBlock(toVec3i(key), 1L)
+			debugAudience.highlightBlock(toVec3i(key), 3L)
 
 			for (face in ADJACENT_BLOCK_FACES) {
 				val adjacent = getRelative(key, face)
