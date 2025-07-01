@@ -2,28 +2,20 @@ package net.horizonsend.ion.server.features.transport.manager
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
-import net.horizonsend.ion.server.features.transport.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
-import net.horizonsend.ion.server.features.transport.manager.graph.FluidGraphManager
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import org.bukkit.World
 
-abstract class TransportManager<T: CacheHolder<*>> {
+abstract class TransportManager<T: CacheHolder<*>> : TransportHolder {
 	abstract val extractorManager: ExtractorManager
 	abstract val filterCache: FilterCache
 
 	abstract val powerNodeManager: CacheHolder<PowerTransportCache>
 	abstract val solarPanelManager: CacheHolder<SolarPanelCache>
 	abstract val itemPipeManager: CacheHolder<ItemTransportCache>
-
-	val fluidGraphs = FluidGraphManager(this)
-
-//	abstract val fluidNodeManager: CacheHolder<FluidTransportCache>
 
 	abstract val cacheHolders: Array<T>
 	abstract val tickedHolders: Array<T>
@@ -34,13 +26,9 @@ abstract class TransportManager<T: CacheHolder<*>> {
 		}
 	}
 
-	abstract fun getInputProvider(): InputManager
-
 	var tickNumber = 0; protected set
 
-	open fun tick() {
-		tryTickGraphs()
-
+	override fun tick() {
 		tickNumber++
 
 		val invalid = LongOpenHashSet()
@@ -65,17 +53,4 @@ abstract class TransportManager<T: CacheHolder<*>> {
 
 		invalid.forEach(extractorManager::removeExtractor)
 	}
-
-	fun tryTickGraphs() {
-		try {
-			fluidGraphs.tick()
-		} catch (e: Throwable) {
-			e.printStackTrace()
-		}
-	}
-
-	abstract fun getWorld(): World
-
-	open fun getGlobalCoordinate(localVec3i: Vec3i): Vec3i = localVec3i
-	open fun getLocalCoordinate(globalVec3i: Vec3i): Vec3i = globalVec3i
 }
