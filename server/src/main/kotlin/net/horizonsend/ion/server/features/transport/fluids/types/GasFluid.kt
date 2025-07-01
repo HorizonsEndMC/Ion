@@ -8,10 +8,12 @@ import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCate
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import org.bukkit.Color
 
 class GasFluid(
 	key: IonRegistryKey<FluidType, out FluidType>,
 	private val gasKey: IonRegistryKey<Gas, out Gas>,
+	val color: Color
 ) : FluidType(key) {
 	override val categories: Array<FluidCategory> = arrayOf(FluidCategory.GAS)
 
