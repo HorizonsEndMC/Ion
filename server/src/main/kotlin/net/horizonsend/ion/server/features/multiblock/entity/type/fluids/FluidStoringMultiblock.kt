@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
+import net.horizonsend.ion.server.features.transport.inputs.InputType
 import net.horizonsend.ion.server.features.transport.inputs.InputsData
 import net.horizonsend.ion.server.features.transport.inputs.RegisteredInput
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -49,11 +50,8 @@ interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
 		this as MultiblockEntity
 		val fluidGraphManager = world.ion.transportManager.fluidGraphManager
 
-		inputsData.inputs.forEach { placementData: InputsData.BuiltInputData ->
-			val worldInput = placementData.get(this)
-			if (worldInput !is RegisteredInput.RegisteredMetaDataInput<*>) return@forEach
-
-			worldInput as RegisteredInput.RegisteredMetaDataInput<FluidInputMetadata>
+		inputsData.getOfType(InputType.FLUID).forEach<InputsData.BuiltInputData<RegisteredInput.RegisteredMetaDataInput<FluidInputMetadata>>> { placementData ->
+			val worldInput = placementData.get(this) ?: return@forEach
 
 			// Global coordinate
 			val inputLocation = toBlockKey(getPosRelative(placementData.offsetRight, placementData.offsetUp, placementData.offsetForward))

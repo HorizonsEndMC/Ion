@@ -5,10 +5,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 
-class InputsData private constructor (val holder: MultiblockEntity, val inputs: List<BuiltInputData>){
+class InputsData private constructor (val holder: MultiblockEntity, val inputs: List<BuiltInputData<*>>){
 	fun registerInputs() {
 		for (input in inputs) {
-			input.register(holder.manager.getInputManager(), input.inputCreator.invoke(holder))
+			input.register(holder.manager.getInputManager(), holder)
 		}
 	}
 
@@ -22,12 +22,16 @@ class InputsData private constructor (val holder: MultiblockEntity, val inputs: 
 		fun builder(holder: MultiblockEntity): Builder = Builder(holder)
 	}
 
-	data class BuiltInputData(
-		private val type: InputType,
+	fun <T : RegisteredInput> getOfType(type: InputType<T>): List<BuiltInputData<T>> {
+		return inputs.filter { data -> data.type == type }.filterIsInstance<BuiltInputData<T>>()
+	}
+
+	data class BuiltInputData<T : RegisteredInput>(
+		val type: InputType<T>,
 		val offsetRight: Int,
 		val offsetUp: Int,
 		val offsetForward: Int,
-		val inputCreator: (MultiblockEntity) -> RegisteredInput
+		val inputCreator: (MultiblockEntity) -> T
 	) {
 		private fun getRealPos(holder: MultiblockEntity): BlockKey {
 			val newPos = getRelative(
@@ -40,24 +44,25 @@ class InputsData private constructor (val holder: MultiblockEntity, val inputs: 
 			return toBlockKey(newPos)
 		}
 
-		fun register(manager: InputManager, input: RegisteredInput) {
-			manager.registerInput(type, getRealPos(input.holder), input)
+		fun register(manager: InputManager, holder: MultiblockEntity) {
+			manager.registerInput(type, getRealPos(holder), inputCreator.invoke(holder))
 		}
 
 		fun release(manager: InputManager, entity: MultiblockEntity) {
 			manager.deRegisterInput(type, getRealPos(entity), entity)
 		}
 
-		fun get(entity: MultiblockEntity): RegisteredInput? {
+		fun get(entity: MultiblockEntity): T? {
 			val realPos = getRealPos(entity)
-			return entity.manager.getInputManager().getInputs(type, realPos).firstOrNull { input -> input.holder == entity }
+			// If the
+			return entity.manager.getInputManager().getInputs(type, realPos).firstOrNull { input -> input.holder == entity && type.clazz.isInstance(input) } as? T
 		}
 	}
 
 	class Builder(val holder: MultiblockEntity) {
-		private val data: MutableList<BuiltInputData> = mutableListOf()
+		private val data: MutableList<BuiltInputData<*>> = mutableListOf()
 
-		fun addInput(type: InputType, offsetRight: Int, offsetUp: Int, offsetForward: Int, inputCreator: (MultiblockEntity) -> RegisteredInput): Builder {
+		fun <T : RegisteredInput> addInput(type: InputType<T>, offsetRight: Int, offsetUp: Int, offsetForward: Int, inputCreator: (MultiblockEntity) -> T): Builder {
 			data.add(BuiltInputData(type, offsetRight, offsetUp, offsetForward, inputCreator))
 
 			return this
@@ -65,10 +70,6 @@ class InputsData private constructor (val holder: MultiblockEntity, val inputs: 
 
 		fun addPowerInput(offsetRight: Int, offsetUp: Int, offsetForward: Int): Builder {
 			return addInput(InputType.POWER, offsetRight, offsetUp, offsetForward) { RegisteredInput.Simple(it) }
-		}
-
-		fun addFluidInput(offsetRight: Int, offsetUp: Int, offsetForward: Int): Builder {
-			return addInput(InputType.FLUID, offsetRight, offsetUp, offsetForward) { RegisteredInput.Simple(it) }
 		}
 
 		fun build(): InputsData {

@@ -86,7 +86,7 @@ object TransportDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("dump inputs chunk")
-	fun dumpInputsChunk(sender: Player, type: InputType) {
+	fun dumpInputsChunk(sender: Player, type: InputType<*>) {
 		val inputManager = sender.world.ion.inputManager
 		val loc = Vec3i(sender.location)
 		val inputs = inputManager.getLocations(type)
@@ -98,7 +98,7 @@ object TransportDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("dump inputs starship")
-	fun dumpInputsShip(sender: Player, type: InputType) {
+	fun dumpInputsShip(sender: Player, type: InputType<*>) {
 		val ship = getStarshipRiding(sender)
 		val inputManager = ship.transportManager.inputManager
 
