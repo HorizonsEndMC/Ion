@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.inputs.InputsData
 import net.horizonsend.ion.server.features.transport.inputs.RegisteredInput
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 
 interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
@@ -46,7 +47,7 @@ interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
 
 	fun pushFluids() {
 		this as MultiblockEntity
-		val fluidGraph = manager.getTransportManager().fluidGraphs
+		val fluidGraphManager = world.ion.transportManager.fluidGraphManager
 
 		inputsData.inputs.forEach { placementData: InputsData.BuiltInputData ->
 			val worldInput = placementData.get(this)
@@ -56,8 +57,8 @@ interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
 
 			// Global coordinate
 			val inputLocation = toBlockKey(getPosRelative(placementData.offsetRight, placementData.offsetUp, placementData.offsetForward))
-			fluidGraph.cachePoint(inputLocation)
-			fluidGraph.getGraphAt(inputLocation)?.depositToNetwork(worldInput)
+			fluidGraphManager.cachePoint(inputLocation)
+			fluidGraphManager.getGraphAt(inputLocation)?.depositToNetwork(worldInput)
 		}
 	}
 

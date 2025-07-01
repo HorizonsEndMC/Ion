@@ -498,11 +498,11 @@ object TestFluidTank : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
 
 		override val inputsData: InputsData = InputsData.builder(this)
 			// Inputs
-			.addInput(InputType.FLUID, 4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = input1, inputAllowed = true, outputAllowed = false)) }
-			.addInput(InputType.FLUID, 4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = input2, inputAllowed = true, outputAllowed = false)) }
+			.addInput(InputType.FLUID, -4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = input1, inputAllowed = true, outputAllowed = false)) }
+			.addInput(InputType.FLUID, -4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = input2, inputAllowed = true, outputAllowed = false)) }
 			// Outputs
-			.addInput(InputType.FLUID, -4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = output1, inputAllowed = false, outputAllowed = true)) }
-			.addInput(InputType.FLUID, -4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = output2, inputAllowed = false, outputAllowed = true)) }
+			.addInput(InputType.FLUID, 4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = output1, inputAllowed = false, outputAllowed = true)) }
+			.addInput(InputType.FLUID, 4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = output2, inputAllowed = false, outputAllowed = true)) }
 			.build()
 
 		val input1 = FluidStorageContainer(data, "input1", Component.text("input1"), NamespacedKeys.key("input1"), 100_000.0, FluidRestriction.Unlimited)

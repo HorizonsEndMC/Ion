@@ -8,9 +8,11 @@ import net.horizonsend.ion.server.features.custom.blocks.filter.CustomFilterBloc
 import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlockEvent
 import net.horizonsend.ion.server.features.starship.event.build.StarshipPlaceBlockEvent
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
-import net.horizonsend.ion.server.features.transport.manager.TransportManager
+import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManager
+import net.horizonsend.ion.server.features.transport.manager.TransportHolder
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.isExtractorData
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -35,7 +37,7 @@ import kotlin.concurrent.fixedRateTimer
 
 object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick to wait on the full server startup. */) {
 	var enabled: Boolean = false; private set
-	private val transportManagers = ConcurrentHashMap.newKeySet<TransportManager<*>>()
+	private val transportManagers = ConcurrentHashMap.newKeySet<TransportHolder>()
 
 	private lateinit var timer: Timer
 	private lateinit var executor: ExecutorService
@@ -101,11 +103,11 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		}
 	}
 
-	fun registerTransportManager(manager: TransportManager<*>) {
+	fun registerTransportManager(manager: TransportHolder) {
 		transportManagers.add(manager)
 	}
 
-	fun removeTransportManager(manager: TransportManager<*>) {
+	fun removeTransportManager(manager: TransportHolder) {
 		transportManagers.remove(manager)
 	}
 
@@ -170,7 +172,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	fun handleBlockEvent(world: World, x: Int, y: Int, z: Int, previousData: BlockData, newData: BlockData) = Tasks.async {
 		invalidateCache(world, x, y, z)
 
-		IonChunk.getFromWorldCoordinates(world, x, z)?.transportNetwork?.fluidGraphs?.cachePoint(toBlockKey(x, y, z))
+		world.ion.transportManager.fluidGraphManager.cachePoint(toBlockKey(x, y, z))
 
 		if (isExtractorData(previousData) && !isExtractorData(newData)) {
 			removeExtractor(world, x, y, z)
@@ -253,6 +255,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 	fun saveExtractors() {
 		transportManagers.forEach {
+			if (it !is ChunkTransportManager) return@forEach
 			it.extractorManager.save()
 		}
 	}

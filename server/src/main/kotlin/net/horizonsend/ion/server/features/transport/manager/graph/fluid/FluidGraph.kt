@@ -161,7 +161,9 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 	}
 
 	fun displayFluid() {
-//		if (contents.isEmpty()) return
+		if (contents.isEmpty()) {
+			return
+		}
 
 		val nodePositions = getGraphNodes().map { toVec3i(it.location) }
 		manager.transportManager.getWorld().highlightBlocks(nodePositions, 10L)
