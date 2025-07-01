@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.RegisteredInput
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 
 interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
@@ -47,11 +48,16 @@ interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
 		this as MultiblockEntity
 		val fluidGraph = manager.getTransportManager().fluidGraphs
 
-		inputsData.inputs.forEach { t: InputsData.BuiltInputData ->
+		inputsData.inputs.forEach { placementData: InputsData.BuiltInputData ->
+			val worldInput = placementData.get(this)
+			if (worldInput !is RegisteredInput.RegisteredMetaDataInput<*>) return@forEach
+
+			worldInput as RegisteredInput.RegisteredMetaDataInput<FluidInputMetadata>
+
 			// Global coordinate
-			val inputLocation = toBlockKey(getPosRelative(t.offsetRight, t.offsetUp, t.offsetForward))
+			val inputLocation = toBlockKey(getPosRelative(placementData.offsetRight, placementData.offsetUp, placementData.offsetForward))
 			fluidGraph.cachePoint(inputLocation)
-			fluidGraph.getGraphAt(inputLocation)?.depositToNetwork(inputLocation, this)
+			fluidGraph.getGraphAt(inputLocation)?.depositToNetwork(worldInput)
 		}
 	}
 
