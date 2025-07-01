@@ -527,7 +527,7 @@ object TestFluidTank : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
 		}
 
 		override fun tick() {
-			pushFluids()
+
 		}
 	}
 }
