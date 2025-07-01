@@ -2,9 +2,11 @@ package net.horizonsend.ion.server.features.transport.manager.graph.fluid
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.inputs.InputType
+import net.horizonsend.ion.server.features.transport.inputs.RegisteredInput
 import net.horizonsend.ion.server.features.transport.manager.graph.FluidGraphManager
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeGraph
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.Input
@@ -46,31 +48,31 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 		cachedVolume = null
 	}
 
-	fun depositToNetwork(inputLocation: BlockKey, multiblock: FluidStoringMultiblock) {
+	fun depositToNetwork(input: RegisteredInput.RegisteredMetaDataInput<FluidInputMetadata>) {
+		if (!input.metaData.outputAllowed) return
+
 		var remainingRoom = maxOf(0.0, getVolume() - contents.amount)
 		if (remainingRoom <= 0.0) return
 
-		val removable = multiblock.getRemovable()
-		if (removable.isEmpty()) return
-
 		var type = contents.type
 
-		for (storage in removable) {
-			if (storage.getContents().isEmpty()) continue
+		val storage = input.metaData.connectedStore
 
-			// Storage not empty, but pipe network is
-			if (contents.isEmpty()) {
-				type = storage.getContents().type
-				contents.type = type
-			}
+		if (storage.getContents().isEmpty()) return
 
-			if (storage.getContents().type != type) continue
-
-			val toRemove = minOf((getVolume() - contents.amount), storage.getContents().amount, 5.0)
-			val notRemoved = storage.removeAmount(toRemove)
-
-			contents.amount += (toRemove - notRemoved)
+		// Storage not empty, but pipe network is
+		if (contents.isEmpty()) {
+			type = storage.getContents().type
+			contents.type = type
 		}
+
+		if (storage.getContents().type != type) return
+
+		val toRemove = minOf((getVolume() - contents.amount), storage.getContents().amount, 5.0)
+		val notRemoved = storage.removeAmount(toRemove)
+
+		contents.amount += (toRemove - notRemoved)
+
 
 //		println("contents: ${multiblock}")
 	}
@@ -85,20 +87,26 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 		if (contents.isEmpty()) return
 
 		fun depositToEntities(input: BlockKey) {
-			val holders = manager.transportManager.getInputProvider().getInputs(InputType.FLUID, input).filterIsInstance<FluidStoringMultiblock>()
-			for (storageEntity in holders) {
+			val holders = manager.transportManager.getInputProvider().getInputs(InputType.FLUID, input).filterIsInstance<RegisteredInput.RegisteredMetaDataInput<FluidInputMetadata>>()
+
+			for (registeredInput in holders) {
+				if (!registeredInput.metaData.inputAllowed) continue
+
+				val storageEntity = registeredInput.holder as? FluidStoringMultiblock ?: continue
+
 				if (!storageEntity.canAdd(contents)) continue
-				for (store in storageEntity) {
-					if (!store.canAdd(contents)) continue
 
-					val toAdd = minOf((store.capacity - store.getContents().amount), MAX_REMOVE_AMOUNT_PER_TICK, contents.amount)
+				val store = registeredInput.metaData.connectedStore
 
-					store.setAmount(store.getContents().amount + toAdd)
-					store.setFluidType(contents.type)
-					contents.amount -= toAdd
+				if (!store.canAdd(contents)) continue
 
-					deposits++
-				}
+				val toAdd = minOf((store.capacity - store.getContents().amount), MAX_REMOVE_AMOUNT_PER_TICK, contents.amount)
+
+				store.setAmount(store.getContents().amount + toAdd)
+				store.setFluidType(contents.type)
+				contents.amount -= toAdd
+
+				deposits++
 			}
 		}
 
@@ -111,8 +119,9 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 
 	override fun tick() {
 		discoverNetwork()
+		displayFluid()
 
-		val volume = cachedVolume ?: getVolume()
+		val volume = getVolume()
 
 		if (contents.amount > volume) {
 			contents.amount = volume
@@ -150,5 +159,11 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 				visitQueue.add(adjacent)
 			}
 		}
+	}
+
+	fun displayFluid() {
+		if (contents.isEmpty()) return
+
+		//TODO
 	}
 }

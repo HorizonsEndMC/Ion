@@ -7,9 +7,7 @@ interface RegisteredInput {
 
 	class Simple(override val holder: MultiblockEntity) : RegisteredInput
 
-	interface RegisteredMetaDataInput<T: InputMetaData> : RegisteredInput {
-		val metaData: T
-	}
+	class RegisteredMetaDataInput<T: InputMetaData>(override val holder: MultiblockEntity, val metaData: T) : RegisteredInput {}
 
-	sealed interface InputMetaData
+	interface InputMetaData
 }
