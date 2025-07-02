@@ -107,7 +107,7 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 
 		if (!store.canAdd(networkContents)) return
 
-		if (store.getContents().type != networkContents.type) return
+		if (!store.getContents().isEmpty() && store.getContents().type != networkContents.type) return
 
 		val toAdd = minOf((store.capacity - store.getContents().amount), MAX_REMOVE_AMOUNT_PER_TICK, networkContents.amount)
 
