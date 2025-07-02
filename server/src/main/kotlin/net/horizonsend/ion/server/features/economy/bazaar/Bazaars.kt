@@ -256,6 +256,9 @@ object Bazaars : IonServerComponent() {
 	 * Returns a success, or failure result with a reason.
 	 **/
 	fun createListing(player: Player, territory: RegionTerritory, itemString: String, pricePerItem: Double): InputResult {
+		val economyCheck = checkEconomyEnabled()
+		if (!economyCheck.isSuccess()) return economyCheck
+
 		val combatResult = checkCombatTag(player)
 		if (!combatResult.isSuccess()) return combatResult
 
@@ -287,6 +290,9 @@ object Bazaars : IonServerComponent() {
 	 * Returns a success, or failure result with a reason.
 	 **/
 	fun depositListingStock(player: Player, inventory: Inventory, territory: RegionTerritory, itemString: String, limit: Int): PotentiallyFutureResult {
+		val economyCheck = checkEconomyEnabled()
+		if (!economyCheck.isSuccess()) return economyCheck
+
 		val cityName = cityName(territory)
 
 		val combatResult = checkCombatTag(player)
@@ -320,6 +326,9 @@ object Bazaars : IonServerComponent() {
 	}
 
 	fun withdrawListingBalance(player: Player, territory: RegionTerritory, itemString: String, amount: Int): InputResult {
+		val economyCheck = checkEconomyEnabled()
+		if (!economyCheck.isSuccess()) return economyCheck
+
 		val cityName = cityName(territory)
 
 		val combatResult = checkCombatTag(player)
@@ -352,6 +361,9 @@ object Bazaars : IonServerComponent() {
 	}
 
 	fun removeListing(player: Player, territory: RegionTerritory, itemString: String): InputResult {
+		val economyCheck = checkEconomyEnabled()
+		if (!economyCheck.isSuccess()) return economyCheck
+
 		val itemResult = checkIsSelling(player, territory, itemString)
 		val resultItem = itemResult.result ?: return itemResult
 
@@ -359,6 +371,9 @@ object Bazaars : IonServerComponent() {
 	}
 
 	fun removeListing(player: Player, order: BazaarItem): InputResult {
+		val economyCheck = checkEconomyEnabled()
+		if (!economyCheck.isSuccess()) return economyCheck
+
 		val territory = Regions.get<RegionTerritory>(order.cityTerritory)
 		val itemString = order.itemString
 
@@ -384,6 +399,9 @@ object Bazaars : IonServerComponent() {
 	}
 
 	fun setListingPrice(player: Player, territory: RegionTerritory, itemString: String, newPrice: Double): InputResult {
+		val economyCheck = checkEconomyEnabled()
+		if (!economyCheck.isSuccess()) return economyCheck
+
 		val combatResult = checkCombatTag(player)
 		if (!combatResult.isSuccess()) return combatResult
 
@@ -425,6 +443,9 @@ object Bazaars : IonServerComponent() {
 	 * @param itemConsumer is a function that returns a function. It is run async, then the returned function is run sync. This allows async setup then a sync execution.
 	 **/
 	fun tryBuyFromSellOrder(player: Player, item: BazaarItem, amount: Int, remote: Boolean, itemConsumer: (ItemStack, Int, Double, Int) -> (() -> InputResult)): PotentiallyFutureResult {
+		val economyCheck = checkEconomyEnabled()
+		if (!economyCheck.isSuccess()) return economyCheck
+
 		val price: Double = item.price
 		val revenue: Double = amount * price
 		val priceMult = priceMult(remote)
@@ -520,6 +541,9 @@ object Bazaars : IonServerComponent() {
 	}
 
 	fun deleteOrder(player: Player, order: Oid<BazaarOrder>): InputResult {
+		val economyCheck = checkEconomyEnabled()
+		if (!economyCheck.isSuccess()) return economyCheck
+
 		val ownershipCheck = checkOrderOwnership(player, order)
 		if (!ownershipCheck.isSuccess()) return ownershipCheck
 
@@ -562,6 +586,9 @@ object Bazaars : IonServerComponent() {
 	}
 
 	fun withdrawOrderStock(player: Player, order: Oid<BazaarOrder>, limit: Int, itemConsumer: (ItemStack, BazaarOrder, Int) -> (() -> InputResult)): PotentiallyFutureResult {
+		val economyCheck = checkEconomyEnabled()
+		if (!economyCheck.isSuccess()) return economyCheck
+
 		val ownershipCheck = checkOrderOwnership(player, order)
 		if (!ownershipCheck.isSuccess()) return ownershipCheck
 
@@ -594,6 +621,9 @@ object Bazaars : IonServerComponent() {
 	}
 
 	fun fulfillOrder(fulfiller: Player, inventory: Inventory, order: Oid<BazaarOrder>, limit: Int, consumedAmountConsumer: Consumer<Int> = Consumer {  }): PotentiallyFutureResult {
+		val economyCheck = checkEconomyEnabled()
+		if (!economyCheck.isSuccess()) return economyCheck
+
 		if (limit < 1) return InputResult.FailureReason(listOf(text("Limit must be greater than 0!", RED)))
 
 		val combatResult = checkCombatTag(fulfiller)
