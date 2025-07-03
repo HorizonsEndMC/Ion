@@ -1,20 +1,21 @@
 package net.horizonsend.ion.server.features.transport.manager.graph.fluid
 
-import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeGraph
-import net.horizonsend.ion.server.features.transport.nodes.graph.GraphNode
+import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
+import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.Material
 import kotlin.properties.Delegates
 
-interface FluidNode : GraphNode {
+interface FluidNode : TransportNode {
 	val volume: Double
-	val graph: FluidGraph
+
+	val graph: FluidNetwork
 
 	class RegularPipe(override val location: BlockKey) : FluidNode {
-		override var graph: FluidGraph by Delegates.notNull<FluidGraph>(); private set
-		override val volume: Double = 100.0
+		override var graph: FluidNetwork by Delegates.notNull<FluidNetwork>(); private set
+		override val volume: Double = 10.0
 
 		override fun isIntact(): Boolean? {
 			val world = graph.manager.transportManager.getWorld()
@@ -24,18 +25,21 @@ interface FluidNode : GraphNode {
 			return block.type == Material.COPPER_GRATE
 		}
 
-		override fun setGraph(graph: TransportNodeGraph<*>) {
-			this.graph = graph as FluidGraph
+		override fun setNetworkOwner(graph: TransportNetwork<*>) {
+			this.graph = graph as FluidNetwork
 		}
 
-		override fun getGraph(): TransportNodeGraph<*> {
+		override fun getGraph(): TransportNetwork<*> {
 			return graph
 		}
+
+		override fun getPersistentDataType(): TransportNode.NodePersistentDataType<*> = persistentDataType
+		private companion object { val persistentDataType = TransportNode.NodePersistentDataType.simple<RegularPipe>() }
 	}
 
 	class Input(override val location: BlockKey) : FluidNode {
-		override var graph: FluidGraph by Delegates.notNull<FluidGraph>(); private set
-		override val volume: Double = 100.0
+		override var graph: FluidNetwork by Delegates.notNull<FluidNetwork>(); private set
+		override val volume: Double = 10.0
 
 		override fun isIntact(): Boolean? {
 			val world = graph.manager.transportManager.getWorld()
@@ -45,12 +49,15 @@ interface FluidNode : GraphNode {
 			return block.type == Material.FLETCHING_TABLE
 		}
 
-		override fun setGraph(graph: TransportNodeGraph<*>) {
-			this.graph = graph as FluidGraph
+		override fun setNetworkOwner(graph: TransportNetwork<*>) {
+			this.graph = graph as FluidNetwork
 		}
 
-		override fun getGraph(): TransportNodeGraph<*> {
+		override fun getGraph(): TransportNetwork<*> {
 			return graph
 		}
+
+		override fun getPersistentDataType(): TransportNode.NodePersistentDataType<*> = persistentDataType
+		private companion object { val persistentDataType = TransportNode.NodePersistentDataType.simple<Input>() }
 	}
 }
