@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetw
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
@@ -172,5 +173,44 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		val pdc = adapterContext.newPersistentDataContainer()
 
 		return pdc
+	}
+
+	override fun onMergedInto(other: TransportNetwork<FluidNode>) {
+		if (networkContents.isEmpty()) return
+
+		other as FluidNetwork
+
+		val otherContents = other.networkContents
+		if (!otherContents.isEmpty() && otherContents.type != networkContents.type) return
+
+		// Merge amounts if same type
+		otherContents.amount += networkContents.amount
+		otherContents.type = networkContents.type
+	}
+
+	override fun onSplit(children: Collection<TransportNetwork<FluidNode>>) {
+		val availableAmount = networkContents.amount
+
+		// associate with share of remaining
+		val remainingChildRoom = children.associateWithNotNull { child: TransportNetwork<FluidNode> ->
+			if (child !is FluidNetwork) return@associateWithNotNull null
+
+			val childContents = child.networkContents
+			if (!childContents.isEmpty() && networkContents.type != childContents.type) return@associateWithNotNull null
+
+			availableAmount / (child.getVolume() - childContents.amount)
+		}
+
+		if (remainingChildRoom.isEmpty()) return
+
+		var remaining = availableAmount
+
+		for ((child, share) in remainingChildRoom) {
+			child as FluidNetwork
+			val childDue = remaining * share
+
+			child.networkContents.amount += childDue
+			child.networkContents.type = networkContents.type
+		}
 	}
 }
