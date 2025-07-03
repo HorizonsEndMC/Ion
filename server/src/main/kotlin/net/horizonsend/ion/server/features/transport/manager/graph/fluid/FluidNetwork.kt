@@ -146,7 +146,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 				if (visitSet.contains(adjacent) || visited.contains(adjacent)) continue
 
 				// Check the node here
-				if (!manager.registerNewPosition(adjacent)) continue
+				if (!manager.discoverPosition(adjacent, this)) continue
 
 				visitQueue.add(adjacent)
 			}
