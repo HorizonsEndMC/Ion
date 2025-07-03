@@ -12,6 +12,7 @@ class FluidNetworkManager(manager: TransportHolder) : NetworkManager<FluidNode, 
 
 	override val cacheFactory: BlockBasedCacheFactory<FluidNode, NetworkManager<FluidNode, TransportNetwork<FluidNode>>> = BlockBasedCacheFactory.builder<FluidNode, NetworkManager<FluidNode, TransportNetwork<FluidNode>>>()
 		.addSimpleNode(Material.COPPER_GRATE) { pos, _, holder -> FluidNode.RegularPipe(pos) }
+		.addSimpleNode(Material.LIGHTNING_ROD) { pos, _, holder -> FluidNode.SraightPipe(pos) }
 		.addSimpleNode(Material.FLETCHING_TABLE) { pos, _, holder -> Input(pos) }
 		.build()
 

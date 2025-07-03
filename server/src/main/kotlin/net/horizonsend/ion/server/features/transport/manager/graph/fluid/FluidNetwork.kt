@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.transport.manager.graph.fluid
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
@@ -17,11 +19,15 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
+import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import org.bukkit.Color
 import org.bukkit.Particle
+import org.bukkit.Particle.Trail
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
+import org.bukkit.util.Vector
 import java.util.UUID
+import kotlin.random.Random
 
 class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, TransportNetwork<FluidNode>>) : TransportNetwork<FluidNode>(uuid, manager) {
 	override fun createEdge(
@@ -52,7 +58,6 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 	override fun handleTick() {
 		discoverNetwork()
-		displayFluid()
 
 		val volume = getVolume()
 
@@ -60,19 +65,38 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			networkContents.amount = volume
 		}
 
-		tickInputs()
+		val (inputs, outputs) = trackIO()
+
+		tickMultiblockOutputs(outputs)
+
+		displayFluid()
+
+		tickMultiblockInputs(inputs)
 	}
 
-	fun tickInputs() {
-		for (node in getGraphNodes()) {
-			val inputs = manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location)
+	fun trackIO(): Pair<ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>, ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>> {
+		val inputs = ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>()
+		val outputs = ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>()
 
-			for (input in inputs) {
-				val metaData = input.metaData
-				if (metaData.inputAllowed) addToMultiblocks(input)
-				if (metaData.outputAllowed) depositToNetwork(input)
+		for (node in getGraphNodes()) {
+			val ports: ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidInputMetadata>> = manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location)
+
+			for (port in ports) {
+				val metaData = port.metaData
+				if (metaData.inputAllowed) inputs.add(port)
+				if (metaData.outputAllowed) outputs.add(port)
 			}
 		}
+
+		return inputs to outputs
+	}
+
+	fun tickMultiblockInputs(inputs: ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>) {
+		inputs.forEach(::addToMultiblocks)
+	}
+
+	fun tickMultiblockOutputs(outputs: ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>) {
+		outputs.forEach(::depositToNetwork)
 	}
 
 	fun depositToNetwork(input: IOPort.RegisteredMetaDataInput<FluidInputMetadata>) {
@@ -166,19 +190,36 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 	}
 
 	fun displayFluid() {
-		if (networkContents.isEmpty()) {
-			return
-		}
+		var count = 0
 
-		val edges = getGraphEdges().flatMap { it.getDisplayPoints() }
+		runnable {
+			if (count == 10) cancel()
+			count++
 
-		val world = manager.transportManager.getWorld()
+			if (networkContents.isEmpty()) {
+				return@runnable
+			}
 
-		val dustOptions = Particle.DustOptions((networkContents.type as? GasFluid)?.color ?: Color.BLUE, 2.0f)
+			val edges = getGraphEdges().flatMap { it.getDisplayPoints() }
 
-		edges.forEach { vec ->
-			world.spawnParticle(Particle.DUST, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
-		}
+			val world = manager.transportManager.getWorld()
+
+			edges.forEach { vec ->
+				vec.add(Vector(
+					Random.nextDouble(-0.215, 0.215),
+					Random.nextDouble(-0.215, 0.215),
+					Random.nextDouble(-0.215, 0.215)
+				))
+
+				val trial = Trail(
+					vec.toLocation(world).add(0.0, 0.0, 1.0),
+					(networkContents.type as? GasFluid)?.color ?: Color.BLUE,
+					10
+				)
+
+				world.spawnParticle(Particle.TRAIL, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, trial, false)
+			}
+		}.runTaskTimer(IonServer, 0L, 2L)
 	}
 
 	override fun save(adapterContext: PersistentDataAdapterContext): PersistentDataContainer {

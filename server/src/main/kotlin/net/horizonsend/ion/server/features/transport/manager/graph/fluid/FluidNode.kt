@@ -37,6 +37,30 @@ interface FluidNode : TransportNode {
 		private companion object { val persistentDataType = TransportNode.NodePersistentDataType.simple<RegularPipe>() }
 	}
 
+	class SraightPipe(override val location: BlockKey) : FluidNode {
+		override var graph: FluidNetwork by Delegates.notNull<FluidNetwork>(); private set
+		override val volume: Double = 10.0
+
+		override fun isIntact(): Boolean? {
+			val world = graph.manager.transportManager.getWorld()
+			val globalVec3i = graph.manager.transportManager.getGlobalCoordinate(toVec3i(location))
+			val block = getBlockIfLoaded(world, globalVec3i.x, globalVec3i.y, globalVec3i.z) ?: return null
+
+			return block.type == Material.LIGHTNING_ROD
+		}
+
+		override fun setNetworkOwner(graph: TransportNetwork<*>) {
+			this.graph = graph as FluidNetwork
+		}
+
+		override fun getGraph(): TransportNetwork<*> {
+			return graph
+		}
+
+		override fun getPersistentDataType(): TransportNode.NodePersistentDataType<*> = persistentDataType
+		private companion object { val persistentDataType = TransportNode.NodePersistentDataType.simple<RegularPipe>() }
+	}
+
 	class Input(override val location: BlockKey) : FluidNode {
 		override var graph: FluidNetwork by Delegates.notNull<FluidNetwork>(); private set
 		override val volume: Double = 10.0
