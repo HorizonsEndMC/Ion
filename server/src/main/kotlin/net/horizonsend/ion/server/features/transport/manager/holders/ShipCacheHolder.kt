@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
-import net.horizonsend.ion.server.features.transport.inputs.InputManager
+import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
@@ -89,8 +89,8 @@ class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTran
 	override val globalNodeLookup: CacheProvider = { _, _, pos -> cache to getInternalNode(pos) }
 	override val globalNodeCacher: CacheProvider = globalNodeLookup
 
-	override fun getInputManager(): InputManager {
-		return transportManager.inputManager
+	override fun getInputManager(): IOManager {
+		return transportManager.ioManager
 	}
 
 	override fun getCacheHolderAt(key: BlockKey): CacheHolder<T> {

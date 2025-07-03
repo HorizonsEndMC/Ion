@@ -1,9 +1,15 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.fluids
 
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
+import net.horizonsend.ion.server.features.transport.inputs.IOData.BuiltInputData
+import net.horizonsend.ion.server.features.transport.inputs.IOPort.RegisteredMetaDataInput
+import net.horizonsend.ion.server.features.transport.inputs.IOType
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 
 interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
 	override fun iterator(): Iterator<FluidStorageContainer> {
@@ -41,4 +47,20 @@ interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
 	}
 
 	fun getNamedStorage(name: String) = getStores().find { container -> container.name == name }
+
+	fun bootstrapNetwork() {
+		this as MultiblockEntity
+
+		val fluidManager = manager.getTransportManager().getGraphTransportManager()
+
+		for (portLocation: BuiltInputData<RegisteredMetaDataInput<FluidInputMetadata>> in ioData.getOfType(IOType.FLUID)) {
+			val localPosition = toBlockKey(fluidManager.transportManager.getLocalCoordinate(toVec3i(portLocation.getRealPos(this))))
+
+			val network = fluidManager.getByLocation(localPosition)
+
+			if (network != null) return
+
+			fluidManager.registerNewPosition(localPosition)
+		}
+	}
 }

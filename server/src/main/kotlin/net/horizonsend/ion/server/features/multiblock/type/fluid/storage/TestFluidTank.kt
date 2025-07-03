@@ -18,9 +18,9 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.TestFluidTank.TestFluidTankEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
-import net.horizonsend.ion.server.features.transport.inputs.InputType
-import net.horizonsend.ion.server.features.transport.inputs.InputsData
-import net.horizonsend.ion.server.features.transport.inputs.RegisteredInput.RegisteredMetaDataInput
+import net.horizonsend.ion.server.features.transport.inputs.IOData
+import net.horizonsend.ion.server.features.transport.inputs.IOPort.RegisteredMetaDataInput
+import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.LEFT
@@ -496,13 +496,15 @@ object TestFluidTank : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
 	), DisplayMultiblockEntity, FluidStoringMultiblock, SyncTickingMultiblockEntity {
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(1)
 
-		override val inputsData: InputsData = InputsData.builder(this)
+		override val ioData: IOData = IOData.builder(this)
 			// Inputs
-			.addInput(InputType.FLUID, -4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = input1, inputAllowed = true, outputAllowed = false)) }
-			.addInput(InputType.FLUID, -4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = input2, inputAllowed = true, outputAllowed = false)) }
+			.addPort(IOType.FLUID, -4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = input1, inputAllowed = true, outputAllowed = false)) }
+			.addPort(IOType.FLUID, -4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = input2, inputAllowed = true, outputAllowed = false)) }
+
 			// Outputs
-			.addInput(InputType.FLUID, 4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = output1, inputAllowed = false, outputAllowed = true)) }
-			.addInput(InputType.FLUID, 4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = output2, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = output1, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = output2, inputAllowed = false, outputAllowed = true)) }
+
 			.build()
 
 		val input1 = FluidStorageContainer(data, "input1", Component.text("input1"), NamespacedKeys.key("input1"), 100_000.0, FluidRestriction.Unlimited)
@@ -527,7 +529,7 @@ object TestFluidTank : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
 		}
 
 		override fun tick() {
-
+			bootstrapNetwork()
 		}
 	}
 }

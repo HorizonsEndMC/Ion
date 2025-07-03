@@ -5,8 +5,8 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
-import net.horizonsend.ion.server.features.transport.inputs.InputType
-import net.horizonsend.ion.server.features.transport.inputs.RegisteredInput
+import net.horizonsend.ion.server.features.transport.inputs.IOPort
+import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.graph.NetworkManager
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
@@ -65,7 +65,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 	fun tickInputs() {
 		for (node in getGraphNodes()) {
-			val inputs = manager.transportManager.getInputProvider().getInputs(InputType.FLUID, node.location)
+			val inputs = manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location)
 
 			for (input in inputs) {
 				val metaData = input.metaData
@@ -75,7 +75,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		}
 	}
 
-	fun depositToNetwork(input: RegisteredInput.RegisteredMetaDataInput<FluidInputMetadata>) {
+	fun depositToNetwork(input: IOPort.RegisteredMetaDataInput<FluidInputMetadata>) {
 		if (!input.metaData.outputAllowed) return
 
 		var remainingRoom = maxOf(0.0, getVolume() - networkContents.amount)
@@ -99,11 +99,11 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		private const val MAX_REMOVE_AMOUNT_PER_TICK = 100.0
 	}
 
-	fun addToMultiblocks(registeredInput: RegisteredInput.RegisteredMetaDataInput<FluidInputMetadata>) {
+	fun addToMultiblocks(ioPort: IOPort.RegisteredMetaDataInput<FluidInputMetadata>) {
 		if (networkContents.isEmpty()) return
-		if (!registeredInput.metaData.inputAllowed) return
+		if (!ioPort.metaData.inputAllowed) return
 
-		val store = registeredInput.metaData.connectedStore
+		val store = ioPort.metaData.connectedStore
 
 		if (!store.canAdd(networkContents)) return
 
@@ -130,7 +130,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		var tick = 0
 
-		while (visitQueue.isNotEmpty() && tick < 10000 && alive) {
+		while (visitQueue.isNotEmpty() && tick < 10000 && alive) whileLoop@{
 			tick++
 			val key = visitQueue.removeFirst()
 			visitSet.remove(key)
@@ -139,16 +139,28 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 			debugAudience.highlightBlock(toVec3i(key), 3L)
 
+			var toBreak = false
+
 			for (face in ADJACENT_BLOCK_FACES) {
 				val adjacent = getRelative(key, face)
 
 				if (nodeMirror.containsKey(adjacent)) continue
 				if (visitSet.contains(adjacent) || visited.contains(adjacent)) continue
 
+				val discoveryResult = manager.discoverPosition(adjacent, this)
+
 				// Check the node here
-				if (!manager.discoverPosition(adjacent, this)) continue
+				if (discoveryResult is NetworkManager.NodeRegistrationResult.Nothing) continue
+				if (discoveryResult is NetworkManager.NodeRegistrationResult.CombinedGraphs) {
+					toBreak = true
+					break
+				}
 
 				visitQueue.add(adjacent)
+			}
+
+			if (toBreak) {
+				break
 			}
 		}
 	}

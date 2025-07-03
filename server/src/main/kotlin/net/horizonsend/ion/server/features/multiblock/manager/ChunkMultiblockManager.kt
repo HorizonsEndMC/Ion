@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkageManager
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.transport.inputs.InputManager
+import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.util.CacheType
@@ -24,7 +24,7 @@ import org.slf4j.Logger
 
 class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManager(log) {
 	override val world: World = chunk.world
-	override fun getInputManager(): InputManager = chunk.world.ion.inputManager
+	override fun getInputManager(): IOManager = chunk.world.ion.inputManager
 	override fun getLinkageManager(): MultiblockLinkageManager = chunk.world.ion.multiblockManager.linkageManager
 	override fun getTransportManager(): TransportManager<*> = chunk.transportNetwork
 

@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.transport.manager
 
-import net.horizonsend.ion.server.features.transport.inputs.InputManager
+import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.World
 import org.bukkit.persistence.PersistentDataContainer
 import java.util.function.Consumer
 
 interface TransportHolder {
-	fun getInputProvider(): InputManager
+	fun getInputProvider(): IOManager
 
 	fun getWorld(): World
 

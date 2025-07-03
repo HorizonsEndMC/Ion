@@ -24,7 +24,7 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.transport.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.listener.misc.ProtectionListener.isRegionDenied
 import net.horizonsend.ion.server.miscellaneous.utils.CHISELED_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
@@ -87,7 +87,7 @@ object DecomposerMultiblock : Multiblock(), EntityMultiblock<DecomposerMultibloc
 		override val userManager: UserManager = UserManager(data, false)
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 
-		override val inputsData: InputsData = InputsData.Builder(this)
+		override val ioData: IOData = IOData.Builder(this)
 			.addPowerInput(0, -1, 0)
 			.addPowerInput(0, 1, 0)
 			.addPowerInput(1, 1, 0)

@@ -22,7 +22,7 @@ import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilbloc
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
-import net.horizonsend.ion.server.features.transport.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
@@ -136,7 +136,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 		override val userManager: UserManager = UserManager(data, persistent = true)
 		override val displayHandler: TextDisplayHandler = standardPowerDisplay(this)
 
-		override val inputsData: InputsData = InputsData.builder(this)
+		override val ioData: IOData = IOData.builder(this)
 			.registerSignInputs()
 			.addPowerInput(if (multiblock.mirrored) -1 else 1, 0, 0)
 			.build()

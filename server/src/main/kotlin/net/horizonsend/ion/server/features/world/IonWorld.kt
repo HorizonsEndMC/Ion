@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.manager.WorldMultiblockManager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.transport.inputs.WorldInputManager
+import net.horizonsend.ion.server.features.transport.inputs.WorldIOManager
 import net.horizonsend.ion.server.features.transport.manager.WorldTransportManager
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
@@ -43,7 +43,7 @@ class IonWorld private constructor(
 		}
 
 	val multiblockManager = WorldMultiblockManager(this)
-	val inputManager = WorldInputManager(this)
+	val inputManager = WorldIOManager(this)
 	val transportManager = WorldTransportManager(this).apply { load() }
 
 	/**

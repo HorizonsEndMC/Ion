@@ -3,8 +3,9 @@ package net.horizonsend.ion.server.features.transport.manager
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.manager.ChunkFilterCache
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
-import net.horizonsend.ion.server.features.transport.inputs.InputManager
+import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ChunkExtractorManager
+import net.horizonsend.ion.server.features.transport.manager.graph.FluidNetworkManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ChunkCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
@@ -44,7 +45,7 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHo
 		return chunk.world
 	}
 
-	override fun getInputProvider(): InputManager {
+	override fun getInputProvider(): IOManager {
 		return chunk.world.ion.inputManager
 	}
 
@@ -81,5 +82,9 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHo
 
 	override fun storePersistentData(storeConsumer: Consumer<PersistentDataContainer>) {
 		storeConsumer.accept(chunk.inner.persistentDataContainer)
+	}
+
+	override fun getGraphTransportManager(): FluidNetworkManager {
+		return getWorld().ion.transportManager.fluidGraphManager
 	}
 }

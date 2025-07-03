@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.transport.manager
 
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.NewTransport.registerTransportManager
-import net.horizonsend.ion.server.features.transport.inputs.InputManager
+import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.features.transport.manager.graph.FluidNetworkManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import org.bukkit.World
@@ -12,7 +12,7 @@ import java.util.function.Consumer
 class WorldTransportManager(val world: IonWorld) : TransportHolder {
 	val fluidGraphManager = FluidNetworkManager(this)
 
-	override fun getInputProvider(): InputManager {
+	override fun getInputProvider(): IOManager {
 		return world.inputManager
 	}
 
