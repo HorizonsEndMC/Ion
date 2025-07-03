@@ -116,7 +116,7 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 	fun registerNewPosition(location: BlockKey): Boolean {
 		val graph = getByLocation(location)
 		if (graph != null) {
-//			throw IllegalStateException("Attempted to cache point inside registered graph. Concurrent modification? ${toVec3i(location)}")
+			throw IllegalStateException("Attempted to cache point inside registered graph. Concurrent modification? ${toVec3i(location)}")
 			return false
 		}
 

@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import java.text.DecimalFormat
 
 abstract class FluidDisplayModule(
     handler: TextDisplayHandler,
@@ -30,8 +31,12 @@ abstract class FluidDisplayModule(
 		container.registerUpdateListener(updateHandler)
 	}
 
+	private companion object {
+		val format = DecimalFormat("##.##")
+	}
+
 	protected fun formatFluid(): Component {
 		val amount = container.getContents().amount
-		return ofChildren(text(amount, NamedTextColor.GOLD), text("L", NamedTextColor.DARK_GRAY))
+		return ofChildren(text(format.format(amount), NamedTextColor.GOLD), text("L", NamedTextColor.DARK_GRAY))
 	}
 }
