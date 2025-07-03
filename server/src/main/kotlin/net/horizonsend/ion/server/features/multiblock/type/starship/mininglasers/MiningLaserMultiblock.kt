@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePo
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.transport.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -47,7 +47,7 @@ abstract class MiningLaserMultiblock : Multiblock(), EntityMultiblock<MiningLase
 		world: World,
 		structureDirection: BlockFace,
 	) : SimplePoweredEntity(data, multiblock, manager, x ,y ,z, world, structureDirection, multiblock.maxPower), LegacyMultiblockEntity {
-		override val inputsData: InputsData = InputsData.Builder(this)
+		override val ioData: IOData = IOData.Builder(this)
 			.addPowerInput(0, if (multiblock.isBottom) 1 else -1, 0)
 			.registerSignInputs()
 			.build()

@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.transport.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.kyori.adventure.text.Component
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -65,7 +65,7 @@ object PowerCellMultiblock : Multiblock(), EntityMultiblock<PowerCellMultiblock.
 			migrateLegacyPower(sign)
 		}
 
-		override val inputsData: InputsData = InputsData.builder(this)
+		override val ioData: IOData = IOData.builder(this)
 			.addPowerInput(0, 0, 0)
 			.registerSignInputs()
 			.build()
