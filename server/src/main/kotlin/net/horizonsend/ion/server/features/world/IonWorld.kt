@@ -169,7 +169,7 @@ class IonWorld private constructor(
 			while (iterator.hasNext()) {
 				val (_, ionWorld) = iterator.next()
 
-				saveAllChunks(ionWorld)
+				saveAll(ionWorld)
 				iterator.remove()
 			}
 		}
@@ -190,7 +190,7 @@ class IonWorld private constructor(
 			val bukkitWorld = event.world
 			val ionWorld = ionWorlds[bukkitWorld]!!
 
-			saveAllChunks(ionWorld)
+			saveAll(ionWorld)
 			ionWorld.transportManager.unload()
 			ionWorlds.remove(bukkitWorld)
 		}
@@ -215,16 +215,19 @@ class IonWorld private constructor(
 
 		@EventHandler
 		fun onWorldSave(event: WorldSaveEvent) {
-			saveAllChunks(event.world.ion)
+			saveAll(event.world.ion)
+
 		}
 
 		override fun onDisable() {
 			for (world in ionWorlds.values) {
-				saveAllChunks(world)
+				saveAll(world)
 			}
 		}
 
-		private fun saveAllChunks(world: IonWorld) {
+		private fun saveAll(world: IonWorld) {
+			world.transportManager.save()
+
 			for ((_, chunk) in world.chunks) {
 				chunk.save()
 			}

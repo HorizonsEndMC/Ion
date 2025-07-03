@@ -7,7 +7,9 @@ import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import io.papermc.paper.util.StacktraceDeobfuscator
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.utils.text.button
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
@@ -31,10 +33,12 @@ import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent.callback
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
@@ -385,5 +389,39 @@ object TransportDebugCommand : SLCommand() {
 		cache.combinedSolarPanelPositions[location]?.getPositions()?.forEach {
 			sender.highlightBlock(toVec3i(it), 50L)
 		}
+	}
+
+	@Subcommand("get chunk grids")
+	fun getChunkGrids(sender: Player, @Optional pageNumber: Int?) {
+		val transportManager = sender.world.ion.transportManager
+		val fluidManager = transportManager.fluidGraphManager
+
+//		sender.information("Grid ID at ${toVec3i(key)}: ${fluidManager.getGraphAtLocation(key)?.uuid}")
+
+		val grids = fluidManager.getAllGraphs().filter { network -> network.positions.any { nodeLocation -> chunkKey(getX(nodeLocation).shr(4), getZ(nodeLocation).shr(4)) == sender.chunk.chunkKey } }
+		sender.information("Grids: ${grids.size}")
+
+		fluidManager.allLocations().forEach { t -> sender.highlightBlock(toVec3i(t), 50L) }
+
+		val menu = formatPaginatedMenu(
+			grids,
+			"/transportdebug get chunk grids",
+			pageNumber ?: 1,
+			10
+		) { grid, _ ->
+
+			val uuid = button(Component.text("show uuid")) { it.sendMessage(grid.uuid.toComponent()) }
+			val highlight = button(Component.text("highlight")) { grid.getGraphNodes().forEach { t -> it.highlightBlock(toVec3i(t.location), 30L) } }
+
+			ofChildren(
+				Component.text("Grid [${grid.getGraphNodes().size}] "),
+				uuid,
+				highlight
+			)
+		}
+
+		sender.sendMessage(menu)
+
+//		fluidManager.clear()
 	}
 }
