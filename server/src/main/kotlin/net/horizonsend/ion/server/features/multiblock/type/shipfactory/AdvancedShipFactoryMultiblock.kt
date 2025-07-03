@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.transport.TransportTask
-import net.horizonsend.ion.server.features.transport.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -132,7 +132,7 @@ object AdvancedShipFactoryMultiblock : AbstractShipFactoryMultiblock<AdvancedShi
 			{ StatusDisplayModule(it, statusManager) }
 		).register()
 
-		override val inputsData: InputsData = InputsData.Builder(this)
+		override val ioData: IOData = IOData.Builder(this)
 			.addPowerInput(0, -1, 0)
 			.registerSignInputs()
 			.build()

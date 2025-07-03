@@ -62,6 +62,7 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 	fun createNewNetwork(node: N): T {
 		val network = createNewNetwork()
 		network.addNode(node)
+		network.setReady()
 		return network
 	}
 
@@ -95,7 +96,13 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 		graphLocationLookup.remove(node.location)
 	}
 
-	fun discoverPosition(location: BlockKey, discoveringNetwork: T): Boolean {
+	sealed interface NodeRegistrationResult {
+		data object Nothing : NodeRegistrationResult
+		data class CreatedNew(val new: TransportNode) : NodeRegistrationResult
+		data class CombinedGraphs(val graphs: Collection<TransportNetwork<*>>) : NodeRegistrationResult
+	}
+
+	fun discoverPosition(location: BlockKey, discoveringNetwork: T): NodeRegistrationResult {
 		val graph = getByLocation(location)
 
 		// This should be checked ahead of time
@@ -108,31 +115,41 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 		}
 
 		// If this point is occupied by another graph, and they have not merged yet, merge them.
-		combineGraphs(listOf(graph, discoveringNetwork))
+		val toCombine = listOf(graph, discoveringNetwork)
 
-		return true
+		combineGraphs(toCombine)
+		return NodeRegistrationResult.CombinedGraphs(toCombine)
 	}
 
-	fun registerNewPosition(location: BlockKey): Boolean {
+	/**
+	 * WARNING: Limited Use Only!
+	 **/
+	fun registerNewPosition(location: BlockKey): NodeRegistrationResult {
 		val graph = getByLocation(location)
 		if (graph != null) {
 			throw IllegalStateException("Attempted to cache point inside registered graph. Concurrent modification? ${toVec3i(location)}")
-			return false
 		}
 
 		val node = createNode(location)
-		if (node == null) return false
+		if (node == null) return NodeRegistrationResult.Nothing
 
 		// Check adjacent graphs to see if any are connected when this one is placed.
 		val adjacentGraphs = ADJACENT_BLOCK_FACES.mapNotNullTo(mutableSetOf()) { getByLocation(getRelative(location, it)) }
 
-		when {
-			adjacentGraphs.isEmpty() -> createNewNetwork(node)
-			adjacentGraphs.size == 1 -> adjacentGraphs.first().addNode(node)
-			else -> combineGraphs(adjacentGraphs).addNode(node)
+		return when {
+			adjacentGraphs.isEmpty() -> {
+				createNewNetwork(node)
+				NodeRegistrationResult.CreatedNew(node)
+			}
+			adjacentGraphs.size == 1 -> {
+				adjacentGraphs.first().addNode(node)
+				NodeRegistrationResult.CreatedNew(node)
+			}
+			else -> {
+				combineGraphs(adjacentGraphs)
+				NodeRegistrationResult.CombinedGraphs(adjacentGraphs)
+			}
 		}
-
-		return true
 	}
 
 	fun combineGraphs(graphs: Iterable<T>): T {
@@ -175,6 +192,7 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 		val newNetworks = splitGraphs.map { nodeSet ->
 			val network = createNewNetwork()
 			network.addNodes(nodeSet)
+			network.setReady()
 			network
 		}
 

@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.transport.NewTransport
-import net.horizonsend.ion.server.features.transport.inputs.InputType
+import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
 import net.horizonsend.ion.server.features.transport.nodes.cache.DestinationCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
@@ -50,9 +50,9 @@ import java.lang.management.ThreadInfo
 @CommandAlias("transportdebug|transportbug")
 object TransportDebugCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
-		manager.commandCompletions.registerCompletion("inputType") { InputType.byName.keys.map(String::lowercase) }
-		manager.commandContexts.registerContext(InputType::class.java) { InputType[it.popFirstArg()] }
-		manager.commandCompletions.setDefaultCompletion("inputType", InputType::class.java)
+		manager.commandCompletions.registerCompletion("inputType") { IOType.byName.keys.map(String::lowercase) }
+		manager.commandContexts.registerContext(IOType::class.java) { IOType[it.popFirstArg()] }
+		manager.commandCompletions.setDefaultCompletion("inputType", IOType::class.java)
 	}
 
 	@Subcommand("threaddump")
@@ -89,7 +89,7 @@ object TransportDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("dump inputs chunk")
-	fun dumpInputsChunk(sender: Player, type: InputType<*>) {
+	fun dumpInputsChunk(sender: Player, type: IOType<*>) {
 		val inputManager = sender.world.ion.inputManager
 		val loc = Vec3i(sender.location)
 		val inputs = inputManager.getLocations(type)
@@ -101,9 +101,9 @@ object TransportDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("dump inputs starship")
-	fun dumpInputsShip(sender: Player, type: InputType<*>) {
+	fun dumpInputsShip(sender: Player, type: IOType<*>) {
 		val ship = getStarshipRiding(sender)
-		val inputManager = ship.transportManager.inputManager
+		val inputManager = ship.transportManager.ioManager
 
 		val inputs = inputManager
 			.getLocations(type)
@@ -389,6 +389,6 @@ object TransportDebugCommand : SLCommand() {
 
 		sender.sendMessage(menu)
 
-//		fluidManager.clear()
+		fluidManager.clear()
 	}
 }
