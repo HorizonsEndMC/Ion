@@ -21,6 +21,10 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 
 	fun setRemoved() { removed = true }
 
+	private var ready: Boolean = false
+
+	fun setReady() { ready = true }
+
 	/**
 	 * Readwritelock for reading / modifying node configuration
 	 **/
@@ -114,7 +118,7 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 	var isTicking: Boolean = false; private set
 
 	fun tick() {
-		if (removed) return
+		if (removed || !ready) return
 
 		if (isTicking) return
 		isTicking = true

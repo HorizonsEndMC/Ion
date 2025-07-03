@@ -4,10 +4,11 @@ import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.manager.ShipFilterCache
-import net.horizonsend.ion.server.features.transport.inputs.InputManager
-import net.horizonsend.ion.server.features.transport.inputs.ShipInputManager
+import net.horizonsend.ion.server.features.transport.inputs.IOManager
+import net.horizonsend.ion.server.features.transport.inputs.ShipIOManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ShipExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
+import net.horizonsend.ion.server.features.transport.manager.graph.FluidNetworkManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ShipCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
@@ -18,7 +19,7 @@ import org.bukkit.World
 class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheHolder<*>>() {
 	override val extractorManager: ShipExtractorManager = ShipExtractorManager(this)
 	override val filterCache: ShipFilterCache = ShipFilterCache(this)
-	val inputManager = ShipInputManager(this)
+	val ioManager = ShipIOManager(this)
 
 	override fun getWorld(): World = starship.world
 
@@ -58,8 +59,8 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 		cacheHolders.forEach { it.displace(movement) }
 	}
 
-	override fun getInputProvider(): InputManager {
-		return inputManager
+	override fun getInputProvider(): IOManager {
+		return ioManager
 	}
 
 	override fun getGlobalCoordinate(localVec3i: Vec3i): Vec3i {
@@ -94,5 +95,10 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 		}
 
 		solarPanelManager.cache.tickSolarPanels()
+	}
+
+	override fun getGraphTransportManager(): FluidNetworkManager {
+		TODO()
+//		return getWorld().ion.transportManager.fluidGraphManager
 	}
 }

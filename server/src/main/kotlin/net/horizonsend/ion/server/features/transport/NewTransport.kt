@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManag
 import net.horizonsend.ion.server.features.transport.manager.TransportHolder
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.isExtractorData
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -171,8 +170,6 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 	fun handleBlockEvent(world: World, x: Int, y: Int, z: Int, previousData: BlockData, newData: BlockData) = Tasks.async {
 		invalidateCache(world, x, y, z)
-
-		world.ion.transportManager.fluidGraphManager.registerNewPosition(toBlockKey(x, y, z))
 
 		if (isExtractorData(previousData) && !isExtractorData(newData)) {
 			removeExtractor(world, x, y, z)

@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerSto
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.TransportTask
-import net.horizonsend.ion.server.features.transport.inputs.InputType
+import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
@@ -221,7 +221,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	 * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
 	 **/
 	fun getInputEntities(location: BlockKey): Set<MultiblockEntity> {
-		return holder.getInputManager().getInputs(InputType.POWER, location).mapTo(mutableSetOf()) { it.holder }
+		return holder.getInputManager().getPorts(IOType.POWER, location).mapTo(mutableSetOf()) { it.holder }
 	}
 
 	/**
@@ -229,7 +229,7 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	 * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
 	 **/
 	inline fun <reified T> getInputEntitiesTyped(location: BlockKey): Set<T> {
-		return holder.getInputManager().getInputs(InputType.POWER, location).filterIsInstanceTo(mutableSetOf())
+		return holder.getInputManager().getPorts(IOType.POWER, location).filterIsInstanceTo(mutableSetOf())
 	}
 
 	inline fun <reified T> getExtractorSourceEntities(extractorLocation: BlockKey, filterNot: (T) -> Boolean): List<T> {

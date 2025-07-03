@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.transport.manager.holders
 
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
-import net.horizonsend.ion.server.features.transport.inputs.InputManager
+import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.nodes.cache.DestinationCacheHolder
@@ -87,7 +87,7 @@ class ChunkCacheHolder<T: TransportCache> private constructor (override val tran
 		return@nodeProvider cache to cache.getCached(pos)
 	}
 
-	override fun getInputManager(): InputManager {
+	override fun getInputManager(): IOManager {
 		return transportManager.getInputProvider()
 	}
 
