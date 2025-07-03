@@ -131,6 +131,8 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 
 	open fun onModified() {}
 	open fun onEdgeConnected(edge: GraphEdge) {}
+	open fun onSplit(children: Collection<TransportNetwork<N>>) {}
+	open fun onMergedInto(other: TransportNetwork<N>) {}
 
 	/**
 	 * Takes in the nodes from another graph, and adds them to this one.

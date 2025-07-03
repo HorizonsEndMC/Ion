@@ -154,6 +154,7 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 			graphUUIDLookup.remove(toMerge.uuid)
 
 			mergeTraget.intakeNodes(toMerge);
+			toMerge.onMergedInto(mergeTraget)
 		}
 
 		mergeTraget.onModified()
@@ -167,12 +168,17 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 
 		if (splitGraphs.size <= 1) return false
 
+		removeNetwork(cast(oldGraph))
+
 		// Create new nodes
-		for (nodes in splitGraphs) {
-			createNewNetwork().addNodes(nodes)
+
+		val newNetworks = splitGraphs.map { nodeSet ->
+			val network = createNewNetwork()
+			network.addNodes(nodeSet)
+			network
 		}
 
-		removeNetwork(cast(oldGraph))
+		oldGraph.onSplit(newNetworks)
 
 		return true
 	}
