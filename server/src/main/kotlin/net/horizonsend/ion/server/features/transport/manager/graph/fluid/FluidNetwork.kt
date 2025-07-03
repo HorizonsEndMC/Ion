@@ -7,11 +7,10 @@ import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
 import net.horizonsend.ion.server.features.transport.inputs.InputType
 import net.horizonsend.ion.server.features.transport.inputs.RegisteredInput
-import net.horizonsend.ion.server.features.transport.manager.graph.FluidGraphManager
-import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeGraph
-import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.Input
+import net.horizonsend.ion.server.features.transport.manager.graph.NetworkManager
+import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
-import net.horizonsend.ion.server.features.transport.nodes.graph.GraphNode
+import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -19,20 +18,20 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.Color
 import org.bukkit.Particle
+import org.bukkit.persistence.PersistentDataAdapterContext
+import org.bukkit.persistence.PersistentDataContainer
 import java.util.UUID
 
-class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : TransportNodeGraph<FluidNode>(uuid, manager) {
+class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, TransportNetwork<FluidNode>>) : TransportNetwork<FluidNode>(uuid, manager) {
 	override fun createEdge(
 		nodeOne: FluidNode,
 		nodeTwo: FluidNode,
 	): GraphEdge {
 		return object : GraphEdge {
-			override val nodeOne: GraphNode = nodeOne
-			override val nodeTwo: GraphNode = nodeTwo
+			override val nodeOne: TransportNode = nodeOne
+			override val nodeTwo: TransportNode = nodeTwo
 		}
 	}
-
-	val ports = mutableSetOf<Input>()
 
 	var networkContents: FluidStack = FluidStack.empty()
 	var cachedVolume: Double? = null
@@ -120,18 +119,20 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 
 	fun discoverNetwork() {
 		val visitQueue = ArrayDeque<BlockKey>()
+		// A set is maintained to allow faster checks of
+		val visitSet = LongOpenHashSet()
 
 		visitQueue.addAll(nodeMirror.keys)
+		visitSet.addAll(nodeMirror.keys)
 
 		val visited = LongOpenHashSet()
 
 		var tick = 0
 
-		while (visitQueue.isNotEmpty() && tick < 1000 && alive) {
+		while (visitQueue.isNotEmpty() && tick < 10000 && alive) {
 			tick++
 			val key = visitQueue.removeFirst()
-
-			if (!manager.cachePoint(key)) continue
+			visitSet.remove(key)
 
 			visited.add(key)
 
@@ -140,7 +141,11 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 			for (face in ADJACENT_BLOCK_FACES) {
 				val adjacent = getRelative(key, face)
 
-				if (visitQueue.contains(adjacent) || visited.contains(adjacent)) continue
+				if (nodeMirror.containsKey(adjacent)) continue
+				if (visitSet.contains(adjacent) || visited.contains(adjacent)) continue
+
+				// Check the node here
+				if (!manager.registerNewPosition(adjacent)) continue
 
 				visitQueue.add(adjacent)
 			}
@@ -161,5 +166,11 @@ class FluidGraph(uuid: UUID, override val manager: FluidGraphManager) : Transpor
 		edges.forEach { vec ->
 			world.spawnParticle(Particle.DUST, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
 		}
+	}
+
+	override fun save(adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+		val pdc = adapterContext.newPersistentDataContainer()
+
+		return pdc
 	}
 }

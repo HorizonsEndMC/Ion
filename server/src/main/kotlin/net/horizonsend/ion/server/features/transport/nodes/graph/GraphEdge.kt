@@ -6,8 +6,8 @@ import org.bukkit.util.Vector
 import kotlin.math.roundToInt
 
 interface GraphEdge {
-	val nodeOne: GraphNode
-	val nodeTwo: GraphNode
+	val nodeOne: TransportNode
+	val nodeTwo: TransportNode
 
 	fun getDisplayPoints(): List<Vector> {
 		val distance = maxOf(1, distance(nodeOne.getCenter(), nodeTwo.getCenter()).roundToInt()) * 3
