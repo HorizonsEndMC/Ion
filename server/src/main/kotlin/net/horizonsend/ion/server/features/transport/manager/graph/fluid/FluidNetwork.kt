@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.manager.graph.fluid
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
@@ -12,33 +13,33 @@ import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.graph.NetworkManager
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
-import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import org.bukkit.Color
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
+import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.util.Vector
 import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
+import kotlin.math.abs
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, TransportNetwork<FluidNode>>) : TransportNetwork<FluidNode>(uuid, manager) {
-	override fun createEdge(
-		nodeOne: FluidNode,
-		nodeTwo: FluidNode,
-	): GraphEdge {
-		return object : GraphEdge {
-			override val nodeOne: TransportNode = nodeOne
-			override val nodeTwo: TransportNode = nodeTwo
-		}
-	}
+	override fun createEdge(nodeOne: FluidNode, nodeTwo: FluidNode): GraphEdge = FluidGraphEdge(nodeOne, nodeTwo)
 
 	var networkContents: FluidStack = FluidStack.empty()
 	var cachedVolume: Double? = null
@@ -68,6 +69,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		val (inputs, outputs) = trackIO()
 
 		tickMultiblockOutputs(outputs)
+
+		endmondsKarp()
 
 		displayFluid()
 
@@ -161,8 +164,6 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 			visited.add(key)
 
-			debugAudience.highlightBlock(toVec3i(key), 3L)
-
 			var toBreak = false
 
 			for (face in ADJACENT_BLOCK_FACES) {
@@ -200,24 +201,59 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 				return@runnable
 			}
 
-			val edges = getGraphEdges().flatMap { it.getDisplayPoints() }
-
 			val world = manager.transportManager.getWorld()
 
-			edges.forEach { vec ->
-				vec.add(Vector(
-					Random.nextDouble(-0.215, 0.215),
-					Random.nextDouble(-0.215, 0.215),
-					Random.nextDouble(-0.215, 0.215)
-				))
+			for (edge in getGraphEdges()) {
+				edge as FluidGraphEdge
 
-				val trial = Trail(
-					vec.toLocation(world).add(0.0, 0.0, 1.0),
-					(networkContents.type as? GasFluid)?.color ?: Color.BLUE,
-					10
-				)
+				val netFlow = edge.netFlow
 
-				world.spawnParticle(Particle.TRAIL, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, trial, false)
+				val node = edge.nodeTwo as FluidNode
+
+				val thisPosition = toVec3i(edge.nodeOne.location)
+				val previousPosition = toVec3i(node.location)
+
+				val difference = previousPosition.minus(thisPosition)
+				val facesByMod = ADJACENT_BLOCK_FACES.plus(BlockFace.SELF).associateBy { face -> Vec3i(face.modX, face.modY, face.modZ) }
+
+				var offsetFace = facesByMod[difference]!!
+
+				if (netFlow < 0) {
+					offsetFace = offsetFace.oppositeFace
+				}
+
+				val flowDirection = offsetFace
+
+				val points = edge.getDisplayPoints()
+
+				val MAX_FLOW_MAGNITUDE = 2000.0
+				val portionOfMax = minOf(abs(edge.netFlow), MAX_FLOW_MAGNITUDE) / MAX_FLOW_MAGNITUDE
+
+				val time = maxOf(20 - (portionOfMax.roundToInt() * 20), 2)
+
+				val padding = 0.215
+
+				points.forEach { vec ->
+					vec.add(Vector(
+						Random.nextDouble(-padding, padding),
+						Random.nextDouble(-padding, padding),
+						Random.nextDouble(-padding, padding)
+					))
+
+					val destination = Vector(
+						(vec.x + flowDirection.direction.x).coerceIn(getX(node.location) + padding..getX(node.location) + 1.0 - padding),
+						(vec.y + flowDirection.direction.y).coerceIn(getY(node.location) + padding..getY(node.location) + 1.0 - padding),
+						(vec.z + flowDirection.direction.z).coerceIn(getZ(node.location) + padding..getZ(node.location) + 1.0 - padding),
+					).toLocation(manager.transportManager.getWorld())
+
+					val trial = Trail(
+						destination,
+						(networkContents.type as? GasFluid)?.color ?: Color.BLUE,
+						5
+					)
+
+					world.spawnParticle(Particle.TRAIL, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, trial, false)
+				}
 			}
 		}.runTaskTimer(IonServer, 0L, 2L)
 	}
@@ -265,5 +301,61 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			child.networkContents.amount += childDue
 			child.networkContents.type = networkContents.type
 		}
+	}
+
+	private data class TraversalNode(val parent: FluidNode, val node: FluidNode)
+
+	fun addFlowMagnitudes(startLoc: FluidNode) {
+		val visited = LongOpenHashSet()
+		val toVisit = ArrayDeque<TraversalNode>()
+
+//		var previous = startLoc
+//		Traverser.forGraph(getGraph()).depthFirstPreOrder(startLoc).forEach {
+//			it.calculateFlowMagnitude(10.0, previous)
+//			previous = it
+//		}
+	}
+
+	private fun bfs(sources: Collection<FluidNode>, sinks: ObjectOpenHashSet<FluidNode>, parents: MutableMap<FluidNode, FluidNode>) {
+		val visited = ObjectOpenHashSet<FluidNode>()
+		val queue = ArrayDeque<FluidNode>()
+
+		queue.addAll(sources)
+		visited.addAll(sources)
+
+		var iteration = 0L
+
+		while (queue.isNotEmpty()) {
+			iteration++
+			val parent = queue.removeFirstOrNull() ?: break
+
+			Tasks.asyncDelay(iteration) { debugAudience.highlightBlock(toVec3i(parent.location), 10L) }
+
+			for (successor in getGraph().adjacentNodes(parent)) {
+				if (visited.contains(successor)) continue
+
+				visited.add(successor)
+				queue.add(successor)
+				parents[successor] = parent
+			}
+		}
+	}
+
+	fun endmondsKarp() {
+		val parentRelationMap = Object2ObjectOpenHashMap<FluidNode, FluidNode>()
+
+		val sources = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.outputAllowed } }
+		val sinks = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.inputAllowed } }
+
+		bfs(sources, sinks, parentRelationMap)
+
+		for ((child, parent) in parentRelationMap) {
+			println(getGraph().edgesConnecting(parent, child).size)
+
+			val edge = getGraph().edgeConnecting(parent, child).getOrNull() as? FluidGraphEdge ?: continue
+			edge.netFlow += 1.0
+		}
+
+
 	}
 }
