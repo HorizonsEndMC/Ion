@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.transport.manager.graph
 
 import com.google.common.graph.MutableNetwork
 import com.google.common.graph.NetworkBuilder
- import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
+import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -90,11 +90,17 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 		networkGraph.addEdge(nodeOne, nodeTwo, edge)
 	}
 
+	sealed interface NodeRemovalResult {
+		data object RemovedSingle : NodeRemovalResult
+		data object RemovedNetwork : NodeRemovalResult
+		data object Split : NodeRemovalResult
+	}
+
 	/**
 	 * Removes this node from the network
 	 * May split the graph
 	 **/
-	fun removeNode(node: N) = localLock.writeLock().withLock {
+	fun removeNode(node: N): NodeRemovalResult = localLock.writeLock().withLock {
 		networkGraph.removeNode(node)
 
 		manager.deRegisterNode(node)
@@ -103,13 +109,16 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 
 		if (networkGraph.nodes().isEmpty()) {
 			manager.removeNetwork(this)
-			return@withLock
+			return@withLock NodeRemovalResult.RemovedNetwork
 		}
 
 		if (!manager.trySplitGraph(this)) {
 			// If the graph was not split, it was only modified
 			onModified()
+			return@withLock NodeRemovalResult.RemovedSingle
 		}
+
+		NodeRemovalResult.Split
 	}
 
 	/**
@@ -159,7 +168,9 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 			missing.add(node)
 		}
 
-		missing.forEach(::removeNode)
+		for (node in missing) {
+			if (removeNode(node) is NodeRemovalResult.Split) break
+		}
 	}
 
 	abstract fun save(adapterContext: PersistentDataAdapterContext): PersistentDataContainer
