@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.manager.graph
 
+import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.transport.manager.TransportHolder
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
 import net.horizonsend.ion.server.features.transport.nodes.util.BlockBasedCacheFactory
@@ -13,6 +14,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -21,6 +23,8 @@ import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val transportManager: TransportHolder) {
+	val referenceDirection = if (transportManager is ShipTransportManager) transportManager.starship.forward else BlockFace.NORTH
+
 	protected abstract val cacheFactory: BlockBasedCacheFactory<N, NetworkManager<N, T>>
 
 	fun clear() {
@@ -71,7 +75,10 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 
 		allNetworks.remove(network)
 		graphUUIDLookup.remove(network.uuid)
-		network.positions.forEach { if (graphLocationLookup.remove(it) != network) throw IllegalStateException("Removed network was not at position ${toVec3i(it)}") }
+		network.positions.forEach {
+			val found = graphLocationLookup.remove(it)
+			if (found != network) throw IllegalStateException("Removed network was not at position ${toVec3i(it)}! Expected ${network.uuid}, Found ${found?.uuid}")
+		}
 	}
 
 

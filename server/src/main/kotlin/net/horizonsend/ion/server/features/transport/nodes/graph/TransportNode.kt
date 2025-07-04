@@ -21,7 +21,7 @@ interface TransportNode {
 	fun isIntact(): Boolean?
 
 	fun setNetworkOwner(graph: TransportNetwork<*>)
-	fun getGraph(): TransportNetwork<*>
+	fun getNetwork(): TransportNetwork<*>
 
 	fun getPersistentDataType(): NodePersistentDataType<*>
 
