@@ -303,19 +303,6 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		}
 	}
 
-	private data class TraversalNode(val parent: FluidNode, val node: FluidNode)
-
-	fun addFlowMagnitudes(startLoc: FluidNode) {
-		val visited = LongOpenHashSet()
-		val toVisit = ArrayDeque<TraversalNode>()
-
-//		var previous = startLoc
-//		Traverser.forGraph(getGraph()).depthFirstPreOrder(startLoc).forEach {
-//			it.calculateFlowMagnitude(10.0, previous)
-//			previous = it
-//		}
-	}
-
 	private fun bfs(sources: Collection<FluidNode>, sinks: ObjectOpenHashSet<FluidNode>, parents: MutableMap<FluidNode, FluidNode>) {
 		val visited = ObjectOpenHashSet<FluidNode>()
 		val queue = ArrayDeque<FluidNode>()
