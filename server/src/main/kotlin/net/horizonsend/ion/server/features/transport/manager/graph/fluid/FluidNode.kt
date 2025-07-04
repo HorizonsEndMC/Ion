@@ -2,14 +2,10 @@ package net.horizonsend.ion.server.features.transport.manager.graph.fluid
 
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
-import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.Material
-import org.bukkit.block.BlockFace
 
 abstract class FluidNode(val volume: Double) : TransportNode {
 	private lateinit var graph: FluidNetwork
@@ -17,33 +13,6 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 	override fun getNetwork(): TransportNetwork<*> = graph
 	override fun setNetworkOwner(graph: TransportNetwork<*>) {
 		this.graph = graph as FluidNetwork
-	}
-
-	val flowMagnitudes = mutableMapOf<RelativeFace, MutableList<Double>>()
-
-	fun getNetFlow(): Pair<BlockFace, Double> {
-		val max = flowMagnitudes.maxByOrNull { entry -> entry.value.sum() } ?: return BlockFace.SELF to 0.0
-		val actualDirection = max.key[getNetwork().manager.referenceDirection]
-		return actualDirection to max.value.sum()
-	}
-
-	// TODO timestamped
-
-	fun addFlowMagnitude(relativeFace: RelativeFace, amount: Double) {
-		flowMagnitudes.getOrPut(relativeFace) { mutableListOf() }.add(amount)
-	}
-
-	fun calculateFlowMagnitude(amount: Double, previousNode: FluidNode) {
-		val thisPosition = toVec3i(location)
-		val previousPosition = toVec3i(previousNode.location)
-
-		val difference = previousPosition.minus(thisPosition)
-		val facesByMod = ADJACENT_BLOCK_FACES.plus(BlockFace.SELF).associateBy { face -> Vec3i(face.modX, face.modY, face.modZ) }
-
-		val offsetFace = facesByMod[difference]!!
-		val storageFace = RelativeFace[offsetFace, getNetwork().manager.referenceDirection]
-
-		addFlowMagnitude(storageFace, amount)
 	}
 
 	class RegularPipe(override val location: BlockKey) : FluidNode(10.0) {
