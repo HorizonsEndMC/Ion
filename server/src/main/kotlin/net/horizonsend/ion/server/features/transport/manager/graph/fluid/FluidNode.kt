@@ -10,6 +10,8 @@ import org.bukkit.Material
 abstract class FluidNode(val volume: Double) : TransportNode {
 	private lateinit var graph: FluidNetwork
 
+	val flowCapacity get() = volume
+
 	override fun getNetwork(): TransportNetwork<*> = graph
 	override fun setNetworkOwner(graph: TransportNetwork<*>) {
 		this.graph = graph as FluidNetwork
@@ -41,7 +43,7 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 		private companion object { val persistentDataType = TransportNode.NodePersistentDataType.simple<RegularPipe>() }
 	}
 
-	class Input(override val location: BlockKey) : FluidNode(0.0) {
+	class Input(override val location: BlockKey) : FluidNode(Double.MAX_VALUE) {
 		override fun isIntact(): Boolean? {
 			val world = getNetwork().manager.transportManager.getWorld()
 			val globalVec3i = getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))

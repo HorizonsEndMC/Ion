@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.transport.manager.graph.fluid
 
+import com.google.common.util.concurrent.AtomicDouble
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
@@ -14,7 +14,6 @@ import net.horizonsend.ion.server.features.transport.manager.graph.NetworkManage
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -23,7 +22,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import org.bukkit.Color
 import org.bukkit.Particle
@@ -70,7 +68,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		tickMultiblockOutputs(outputs)
 
-		endmondsKarp()
+		edmundKarp()
 
 		displayFluid()
 
@@ -249,7 +247,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 					val trial = Trail(
 						destination,
 						(networkContents.type as? GasFluid)?.color ?: Color.BLUE,
-						5
+						20
 					)
 
 					world.spawnParticle(Particle.TRAIL, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, trial, false)
@@ -303,46 +301,72 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		}
 	}
 
-	private fun bfs(sources: Collection<FluidNode>, sinks: ObjectOpenHashSet<FluidNode>, parents: MutableMap<FluidNode, FluidNode>) {
+	private fun bfs(sources: Collection<FluidNode>, sinks: ObjectOpenHashSet<FluidNode>, parents: Object2ObjectOpenHashMap<FluidNode, FluidNode>, remainingFlowCapacity: Object2ObjectOpenHashMap<FluidNode, AtomicDouble>): Boolean {
 		val visited = ObjectOpenHashSet<FluidNode>()
 		val queue = ArrayDeque<FluidNode>()
 
 		queue.addAll(sources)
 		visited.addAll(sources)
 
-		var iteration = 0L
-
 		while (queue.isNotEmpty()) {
-			iteration++
 			val parent = queue.removeFirstOrNull() ?: break
-
-			Tasks.asyncDelay(iteration) { debugAudience.highlightBlock(toVec3i(parent.location), 10L) }
 
 			for (successor in getGraph().adjacentNodes(parent)) {
 				if (visited.contains(successor)) continue
+				val capacity = remainingFlowCapacity[successor]!!.get()
+				if (capacity <= 0) continue
 
 				visited.add(successor)
-				queue.add(successor)
-				parents[successor] = parent
+				queue.addLast(successor)
+
+				parents[successor] = (parent)
 			}
 		}
+
+		return sinks.intersect(visited).isNotEmpty()
 	}
 
-	fun endmondsKarp() {
+	fun edmundKarp() {
+		// Multimap of nodes to all nodes that connect to them
 		val parentRelationMap = Object2ObjectOpenHashMap<FluidNode, FluidNode>()
 
 		val sources = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.outputAllowed } }
-		val sinks = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.inputAllowed } }
+		val sinks: ObjectOpenHashSet<FluidNode> = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.inputAllowed } }
 
-		bfs(sources, sinks, parentRelationMap)
+		val remainingFlowCapacities = Object2ObjectOpenHashMap<FluidNode, AtomicDouble>()
+		val maxFlows = sinks.associateWithTo(Object2ObjectOpenHashMap<FluidNode, AtomicDouble>()) { AtomicDouble() }
 
-		for ((child, parent) in parentRelationMap) {
-			println(getGraph().edgesConnecting(parent, child).size)
-
-			val edge = getGraph().edgeConnecting(parent, child).getOrNull() as? FluidGraphEdge ?: continue
-			edge.netFlow += 1.0
+		for (node in getGraphNodes()) {
+			remainingFlowCapacities[node] = AtomicDouble(node.flowCapacity)
 		}
 
+		while (bfs(sources, sinks, parentRelationMap, remainingFlowCapacities))	{
+			for (sink in sinks) {
+				var pathFlow = Double.MAX_VALUE
 
+				var node: FluidNode? = sink
+
+				while (node != null && node !in sources) {
+					pathFlow = minOf(pathFlow, remainingFlowCapacities[node]!!.get())
+					val parentOfNode = parentRelationMap[node]
+					node = parentOfNode
+				}
+
+				maxFlows[sink]?.getAndAdd(pathFlow)
+
+				var v: FluidNode? = sink
+
+				while (v != null && v !in sources) {
+					remainingFlowCapacities[v]!!.getAndAdd(-pathFlow)
+
+					val parent = parentRelationMap[v]
+					((getGraph().edgeConnecting(v, parent).getOrNull()) as? FluidGraphEdge)?.netFlow += 10
+					v = parent
+				}
+			}
+		}
+
+		//TODO do something with max flows
+		println(maxFlows)
 	}
 }
