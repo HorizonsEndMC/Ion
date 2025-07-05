@@ -33,4 +33,9 @@ object CustomBlockKeys : KeyRegistry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS, Cu
 	val MULTIBLOCK_WORKBENCH = registerTypedKey<MultiblockWorkbench>("MULTIBLOCK_WORKBENCH")
 	val ADVANCED_ITEM_EXTRACTOR = registerTypedKey<AdvancedItemExtractorBlock>("ADVANCED_ITEM_EXTRACTOR")
 	val ITEM_FILTER = registerTypedKey<ItemFilterBlock>("ITEM_FILTER")
+
+	val FLUID_PIPE = registerTypedKey<ItemFilterBlock>("FLUID_PIPE")
+	val FLUID_PIPE_JUNCTION = registerTypedKey<ItemFilterBlock>("FLUID_PIPE_JUNCTION")
+	val REINFORCED_FLUID_PIPE = registerTypedKey<ItemFilterBlock>("REINFORCED_FLUID_PIPE")
+	val REINFORCED_FLUID_PIPE_JUNCTION = registerTypedKey<ItemFilterBlock>("REINFORCED_FLUID_PIPE_JUNCTION")
 }
