@@ -16,12 +16,14 @@ import net.horizonsend.ion.server.features.custom.blocks.extractor.AdvancedItemE
 import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.MultiblockWorkbench
+import net.horizonsend.ion.server.features.custom.blocks.misc.OrientableCustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.space.encounters.SecondaryChest.Companion.random
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
+import org.bukkit.Axis
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -33,6 +35,7 @@ import org.bukkit.inventory.ItemStack
 class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 	override fun getKeySet(): KeyRegistry<CustomBlock> = CustomBlockKeys
 	private val directionalCustomBlocksData = HashBasedTable.create<BlockState, CustomBlock, BlockFace>()
+	private val orientableCustomBlocksData = HashBasedTable.create<BlockState, CustomBlock, Axis>()
 	private val customBlocksData = Object2ObjectOpenHashMap<BlockState, CustomBlock>()
 
 	override fun boostrap() {
@@ -251,6 +254,13 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		if (value is DirectionalCustomBlock) {
 			for ((data, face) in value.bukkitFaceLookup) {
 				directionalCustomBlocksData[data.nms, value] = face
+				customBlocksData[data.nms] = value
+			}
+		}
+
+		if (value is OrientableCustomBlock) {
+			for ((data, axis) in value.bukkitAxisLookup) {
+				orientableCustomBlocksData[data.nms, value] = axis
 				customBlocksData[data.nms] = value
 			}
 		}
