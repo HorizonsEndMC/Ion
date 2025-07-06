@@ -144,7 +144,14 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 		if (!check(node)) return NodeRegistrationResult.Nothing
 
 		// Check adjacent graphs to see if any are connected when this one is placed.
-		val adjacentGraphs = node.getPipableDirections().mapNotNullTo(mutableSetOf()) { getByLocation(getRelative(location, it)) }
+		val adjacentGraphs = node.getPipableDirections().mapNotNullTo(mutableSetOf()) { offset ->
+			val position = getRelative(location, offset)
+
+			getByLocation(position)?.takeIf { adjacent ->
+				val node = adjacent.nodeMirror[position] ?: return@takeIf false
+				node.getPipableDirections().contains(offset.oppositeFace)
+			}
+		}
 
 		return when {
 			adjacentGraphs.isEmpty() -> {
