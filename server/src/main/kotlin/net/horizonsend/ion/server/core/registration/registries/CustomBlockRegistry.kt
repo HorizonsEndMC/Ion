@@ -17,6 +17,8 @@ import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.MultiblockWorkbench
 import net.horizonsend.ion.server.features.custom.blocks.misc.OrientableCustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeBlock
+import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeJunctionBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.space.encounters.SecondaryChest.Companion.random
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateBlockFace
@@ -246,6 +248,9 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		register(CustomBlockKeys.MULTIBLOCK_WORKBENCH, MultiblockWorkbench)
 		register(CustomBlockKeys.ADVANCED_ITEM_EXTRACTOR, AdvancedItemExtractorBlock)
 		register(CustomBlockKeys.ITEM_FILTER, ItemFilterBlock)
+
+		register(CustomBlockKeys.FLUID_PIPE, FluidPipeBlock)
+		register(CustomBlockKeys.FLUID_PIPE_JUNCTION, FluidPipeJunctionBlock)
 	}
 
 	override fun registerAdditional(key: IonRegistryKey<CustomBlock, *>, value: CustomBlock) {
@@ -281,6 +286,14 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 
 		fun mushroomBlockData(faces: Set<BlockFace>) : BlockData {
 			return Material.BROWN_MUSHROOM_BLOCK.createBlockData { data ->
+				for (face in (data as MultipleFacing).allowedFaces) {
+					data.setFace(face, faces.contains(face))
+				}
+			}
+		}
+
+		fun chorusPlantData(faces: Set<BlockFace>) : BlockData {
+			return Material.CHORUS_PLANT.createBlockData { data ->
 				for (face in (data as MultipleFacing).allowedFaces) {
 					data.setFace(face, faces.contains(face))
 				}

@@ -225,4 +225,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val DEBUG_LINE_GREEN = registerKey("DEBUG_LINE_GREEN")
 	val DEBUG_LINE_BLUE = registerKey("DEBUG_LINE_BLUE")
 	val DEBUG_LINE = registerKey("DEBUG_LINE")
+
+	val FLUID_PIPE = registerKey("FLUID_PIPE")
+	val FLUID_PIPE_JUNCTION = registerKey("FLUID_PIPE_JUNCTION")
 }

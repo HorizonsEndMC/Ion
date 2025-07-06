@@ -65,6 +65,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerMinerals()
 		registerIndustry()
 		registerShipCores()
+		registerPipes()
 		registerGasCanisters()
 		registerTools()
 		registerModificationItems()
@@ -333,6 +334,11 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
             NamedTextColor.WHITE,
             TextDecoration.BOLD
         ), customBlock = CustomBlockKeys.CRUISER_REACTOR_CORE)
+	}
+
+	fun registerPipes() {
+		customBlockItem(CustomItemKeys.FLUID_PIPE, "pipe/fluid_pipe", Component.text("Fluid Pipe").itemName, CustomBlockKeys.FLUID_PIPE)
+		customBlockItem(CustomItemKeys.FLUID_PIPE_JUNCTION, "pipe/fluid_pipe_junction", Component.text("Fluid Pipe Junction").itemName, CustomBlockKeys.FLUID_PIPE_JUNCTION)
 	}
 
 	private fun registerGasCanisters() {
