@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.transport.manager.graph
 
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeBlock
 import net.horizonsend.ion.server.features.transport.manager.TransportHolder
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
@@ -12,11 +14,12 @@ import java.util.UUID
 
 class FluidNetworkManager(manager: TransportHolder) : NetworkManager<FluidNode, TransportNetwork<FluidNode>>(manager) {
 	override val cacheFactory: BlockBasedCacheFactory<FluidNode, NetworkManager<FluidNode, TransportNetwork<FluidNode>>> = BlockBasedCacheFactory.builder<FluidNode, NetworkManager<FluidNode, TransportNetwork<FluidNode>>>()
-		.addSimpleNode(Material.COPPER_GRATE, Material.WAXED_COPPER_GRATE) { pos, _, holder ->
-			FluidNode.RegularPipe(pos)
+		.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_PIPE_JUNCTION, Material.CHORUS_PLANT) { _, pos, holder ->
+			FluidNode.RegularJunctionPipe(pos)
 		}
-		.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_PIPE, Material.CHORUS_PLANT) { _, pos, holder ->
-			FluidNode.SraightPipe(pos)
+		.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_PIPE, Material.CHORUS_PLANT) { data, pos, holder ->
+			val axis = (data.customBlock as FluidPipeBlock).getFace(data)
+			FluidNode.RegularLinearPipe(pos, axis)
 		}
 		.addSimpleNode(Material.FLETCHING_TABLE) { pos, _, holder -> Input(pos) }
 		.build()

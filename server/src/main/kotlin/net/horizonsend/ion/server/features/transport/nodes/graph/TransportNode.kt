@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetw
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -24,6 +25,8 @@ interface TransportNode {
 	fun getNetwork(): TransportNetwork<*>
 
 	fun getPersistentDataType(): NodePersistentDataType<*>
+
+	fun getPipableDirections(): Set<BlockFace>
 
 	companion object {
 		val NODE_POSITION = NamespacedKeys.key("node_position")

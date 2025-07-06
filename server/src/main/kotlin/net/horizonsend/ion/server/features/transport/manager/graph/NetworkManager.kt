@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.transport.manager.TransportHolder
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
 import net.horizonsend.ion.server.features.transport.nodes.util.BlockBasedCacheFactory
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
@@ -109,7 +108,7 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 		data class CombinedGraphs(val graphs: Collection<TransportNetwork<*>>) : NodeRegistrationResult
 	}
 
-	fun discoverPosition(location: BlockKey, discoveringNetwork: T): NodeRegistrationResult {
+	fun discoverPosition(location: BlockKey, offset: BlockFace, discoveringNetwork: T): NodeRegistrationResult {
 		val graph = getByLocation(location)
 
 		// This should be checked ahead of time
@@ -118,8 +117,11 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 		}
 
 		if (graph == null) {
-			return registerNewPosition(location)
+			return registerNewPosition(location) { it.getPipableDirections().contains(offset.oppositeFace) }
 		}
+
+		val nodeAtPosition = graph.nodeMirror[location] ?: return NodeRegistrationResult.Nothing
+		if (!nodeAtPosition.getPipableDirections().contains(offset)) return NodeRegistrationResult.Nothing
 
 		// If this point is occupied by another graph, and they have not merged yet, merge them.
 		val toCombine = listOf(graph, discoveringNetwork)
@@ -131,7 +133,7 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 	/**
 	 * WARNING: Limited Use Only!
 	 **/
-	fun registerNewPosition(location: BlockKey): NodeRegistrationResult {
+	fun registerNewPosition(location: BlockKey, check: (N) -> Boolean = { true }): NodeRegistrationResult {
 		val graph = getByLocation(location)
 		if (graph != null) {
 			throw IllegalStateException("Attempted to cache point inside registered graph. Concurrent modification? ${toVec3i(location)}")
@@ -139,9 +141,10 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 
 		val node = createNode(location)
 		if (node == null) return NodeRegistrationResult.Nothing
+		if (!check(node)) return NodeRegistrationResult.Nothing
 
 		// Check adjacent graphs to see if any are connected when this one is placed.
-		val adjacentGraphs = ADJACENT_BLOCK_FACES.mapNotNullTo(mutableSetOf()) { getByLocation(getRelative(location, it)) }
+		val adjacentGraphs = node.getPipableDirections().mapNotNullTo(mutableSetOf()) { getByLocation(getRelative(location, it)) }
 
 		return when {
 			adjacentGraphs.isEmpty() -> {
@@ -160,7 +163,7 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 	}
 
 	fun combineGraphs(graphs: Iterable<T>): T {
-		val sorted = graphs.sortedBy { it.getGraphNodes().size }
+ 		val sorted = graphs.sortedBy { it.getGraphNodes().size }
 
 		val iterator = sorted.iterator()
 

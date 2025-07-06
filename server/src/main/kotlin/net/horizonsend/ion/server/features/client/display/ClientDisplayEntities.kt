@@ -17,7 +17,9 @@ import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.entity.Display.BlockDisplay
 import net.minecraft.world.entity.Display.DATA_POS_ROT_INTERPOLATION_DURATION_ID
+import net.minecraft.world.entity.Display.ItemDisplay
 import net.minecraft.world.entity.Display.TextDisplay
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.PositionMoveRotation
@@ -218,7 +220,7 @@ object ClientDisplayEntities : IonServerComponent() {
 		pos: Vector,
 		scale: Float = 1.0f,
 		glowColor: Color? = null,
-	): net.minecraft.world.entity.Display.BlockDisplay {
+	): BlockDisplay {
 
         val block = createBlockDisplay(level)
         val offset = (-scale / 2) + 0.5
@@ -244,7 +246,7 @@ object ClientDisplayEntities : IonServerComponent() {
 		level: ServerLevel,
 		pos: Vector,
 		scale: Float = 0.75f,
-	): net.minecraft.world.entity.Display.BlockDisplay {
+	): BlockDisplay {
 
 		val block = createBlockDisplay(level)
 		val offset = (-scale / 2) + 0.5
@@ -274,7 +276,7 @@ object ClientDisplayEntities : IonServerComponent() {
 		item: ItemStack,
 		pos: Vector,
 		scale: Float = 0.75f,
-	): net.minecraft.world.entity.Display.ItemDisplay {
+	): ItemDisplay {
 		val block = createItemDisplay(player)
 		block.setItemStack(item)
 		block.isGlowing = true
