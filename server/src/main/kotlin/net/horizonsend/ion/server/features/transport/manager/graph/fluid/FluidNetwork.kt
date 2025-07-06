@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.manager.graph.fluid
 
 import com.google.common.util.concurrent.AtomicDouble
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.text.toComponent
@@ -23,7 +24,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
-import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Color
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
@@ -33,11 +35,12 @@ import org.bukkit.util.Vector
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 import kotlin.math.abs
-import kotlin.math.roundToInt
 import kotlin.random.Random
 
 class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, TransportNetwork<FluidNode>>) : TransportNetwork<FluidNode>(uuid, manager) {
 	override fun createEdge(nodeOne: FluidNode, nodeTwo: FluidNode): GraphEdge = FluidGraphEdge(nodeOne, nodeTwo)
+
+	private var flowMap = Object2DoubleOpenHashMap<FluidNode>()
 
 	var networkContents: FluidStack = FluidStack.empty()
 	var cachedVolume: Double? = null
@@ -200,41 +203,36 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		val color = (contents.type as? GasFluid)?.color ?: Color.BLUE
 
+//		getGraphNodes().forEach { t ->
+//			debugAudience.sendText(t.getCenter().add(Vector(0.0, 0.7, 0.0)).toLocation(manager.transportManager.getWorld()), networkContents.amount.toComponent(color = TextColor.color(color.asRGB())), 40)
+//			debugAudience.sendText(t.getCenter().add(Vector(0.0, 1.0, 0.0)).toLocation(manager.transportManager.getWorld()), networkContents.type.displayName, 40)
+//		}
+
 		getGraphNodes().forEach { t ->
-			debugAudience.sendText(t.getCenter().add(Vector(0.0, 0.7, 0.0)).toLocation(manager.transportManager.getWorld()), networkContents.amount.toComponent(color = TextColor.color(color.asRGB())), 40)
-			debugAudience.sendText(t.getCenter().add(Vector(0.0, 1.0, 0.0)).toLocation(manager.transportManager.getWorld()), networkContents.type.displayName, 40)
+			debugAudience.sendText(t.getCenter().add(Vector(0.0, 0.7, 0.0)).toLocation(manager.transportManager.getWorld()), flowMap.getDouble(t)?.toComponent(color = NamedTextColor.WHITE) ?: Component.text("No flow"), 40)
+		}
+
+		getGraphEdges().forEach { t ->
+			val midPoint = t.nodeOne.getCenter().add(t.nodeTwo.getCenter()).divide(Vector(2.0f, 2.0f, 2.0f))
+			debugAudience.sendText(midPoint.add(Vector(0.0, 2.0, 0.0)).toLocation(manager.transportManager.getWorld()), (t as FluidGraphEdge).direction.toComponent(), 40)
 		}
 
 		val iterations = 4L
 		val separation = 20 / iterations
 
-		runnable {
-			if (count == iterations) cancel()
-			count++
+		val world = manager.transportManager.getWorld()
 
-			val world = manager.transportManager.getWorld()
-
-			for (edge in getGraphEdges()) {
-				edge as FluidGraphEdge
-
-				val netFlow = edge.netFlow
+		fun runDisplay() {
+			for (node in getGraphNodes()) {
+				val edge = getGraph().outEdges(node).maxByOrNull { edge -> (edge as FluidGraphEdge).netFlow } as? FluidGraphEdge ?: continue
+				val flowDirection = edge.direction
 
 				val node = edge.nodeTwo as FluidNode
-
-				var offset = edge.direction
-
-				if (netFlow < 0) {
-					offset = offset.oppositeFace
-				}
-
-				val flowDirection = offset
 
 				val points = edge.getDisplayPoints()
 
 				val MAX_FLOW_MAGNITUDE = 2000.0
 				val portionOfMax = minOf(abs(edge.netFlow), MAX_FLOW_MAGNITUDE) / MAX_FLOW_MAGNITUDE
-
-				val time = maxOf(20 - (portionOfMax.roundToInt() * 20), 2)
 
 				val padding = 0.215
 
@@ -260,6 +258,13 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 					world.spawnParticle(Particle.TRAIL, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, trial, false)
 				}
 			}
+		}
+
+		runnable {
+			if (count == iterations) cancel()
+			count++
+
+			runDisplay()
 		}.runTaskTimer(IonServer, 0L, separation)
 	}
 
@@ -371,6 +376,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 					val parent = parentRelationMap[v]
 					runCatching { ((getGraph().edgeConnecting(v, parent).getOrNull()) as? FluidGraphEdge)?.netFlow += 10 }
 
+					flowMap[v] = pathFlow
 
 					v = parent
 				}
