@@ -4,7 +4,9 @@ import com.google.common.util.concurrent.AtomicDouble
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
@@ -22,7 +24,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Color
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
@@ -158,19 +162,20 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		while (visitQueue.isNotEmpty() && tick < 10000 && alive) whileLoop@{
 			tick++
 			val key = visitQueue.removeFirst()
+			val node = nodeMirror[key] ?: continue
 			visitSet.remove(key)
 
 			visited.add(key)
 
 			var toBreak = false
 
-			for (face in ADJACENT_BLOCK_FACES) {
+			for (face in node.getPipableDirections()) {
 				val adjacent = getRelative(key, face)
 
 				if (nodeMirror.containsKey(adjacent)) continue
 				if (visitSet.contains(adjacent) || visited.contains(adjacent)) continue
 
-				val discoveryResult = manager.discoverPosition(adjacent, this)
+				val discoveryResult = manager.discoverPosition(adjacent, face, this)
 
 				// Check the node here
 				if (discoveryResult is NetworkManager.NodeRegistrationResult.Nothing) continue
@@ -195,6 +200,13 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		if (contents.isEmpty()) {
 			return
+		}
+
+		val color = (contents.type as? GasFluid)?.color ?: Color.BLUE
+
+		getGraphNodes().forEach { t ->
+			debugAudience.sendText(t.getCenter().add(Vector(0.0, 0.7, 0.0)).toLocation(manager.transportManager.getWorld()), networkContents.amount.toComponent(color = TextColor.color(color.asRGB())), 40)
+			debugAudience.sendText(t.getCenter().add(Vector(0.0, 1.0, 0.0)).toLocation(manager.transportManager.getWorld()), networkContents.type.displayName, 40)
 		}
 
 		val iterations = 4L
@@ -251,7 +263,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 					val trial = Trail(
 						destination,
-						(contents.type as? GasFluid)?.color ?: Color.BLUE,
+						color,
 						20
 					)
 
@@ -353,6 +365,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 				while (node != null && node !in sources) {
 					pathFlow = minOf(pathFlow, remainingFlowCapacities[node]!!.get())
+//					if (pathFlow != 0.0) debugAudience.sendText(node.getCenter().add(Vector(0.0, 0.7, 0.0)).toLocation(manager.transportManager.getWorld()), Component.text(pathFlow), 40)
+
 					val parentOfNode = parentRelationMap[node]
 					node = parentOfNode
 				}
@@ -366,6 +380,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 					val parent = parentRelationMap[v]
 					((getGraph().edgeConnecting(v, parent).getOrNull()) as? FluidGraphEdge)?.netFlow += 10
+
 
 					v = parent
 				}
