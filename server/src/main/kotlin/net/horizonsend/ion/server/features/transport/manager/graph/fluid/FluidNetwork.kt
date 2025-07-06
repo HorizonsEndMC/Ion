@@ -15,22 +15,18 @@ import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.graph.NetworkManager
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
-import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Color
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
-import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.util.Vector
@@ -225,19 +221,13 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 				val node = edge.nodeTwo as FluidNode
 
-				val thisPosition = toVec3i(edge.nodeOne.location)
-				val previousPosition = toVec3i(node.location)
-
-				val difference = previousPosition.minus(thisPosition)
-				val facesByMod = ADJACENT_BLOCK_FACES.plus(BlockFace.SELF).associateBy { face -> Vec3i(face.modX, face.modY, face.modZ) }
-
-				var offsetFace = facesByMod[difference]!!
+				var offset = edge.direction
 
 				if (netFlow < 0) {
-					offsetFace = offsetFace.oppositeFace
+					offset = offset.oppositeFace
 				}
 
-				val flowDirection = offsetFace
+				val flowDirection = offset
 
 				val points = edge.getDisplayPoints()
 
@@ -379,7 +369,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 					remainingFlowCapacities[v]!!.getAndAdd(-pathFlow)
 
 					val parent = parentRelationMap[v]
-					((getGraph().edgeConnecting(v, parent).getOrNull()) as? FluidGraphEdge)?.netFlow += 10
+					runCatching { ((getGraph().edgeConnecting(v, parent).getOrNull()) as? FluidGraphEdge)?.netFlow += 10 }
 
 
 					v = parent
