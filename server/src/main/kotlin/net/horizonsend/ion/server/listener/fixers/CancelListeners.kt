@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.isBed
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.block.Blocks
@@ -271,7 +272,7 @@ class CancelListeners : SLEventListener() {
 	}
 
 	private val disabledVaultConfig = VaultConfig(
-		net.minecraft.world.entity.EntityType.BAT.defaultLootTable.get(),
+		EntityType.BAT.defaultLootTable.get(),
 		0.0,
 		0.0001,
 		net.minecraft.world.item.ItemStack(Blocks.BEDROCK),

@@ -4,6 +4,8 @@ import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.extractor.AdvancedItemExtractorBlock
 import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.MultiblockWorkbench
+import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeBlock
+import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeJunctionBlock
 
 object CustomBlockKeys : KeyRegistry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS, CustomBlock::class) {
 	val ALUMINUM_ORE = registerKey("ALUMINUM_ORE")
@@ -34,8 +36,8 @@ object CustomBlockKeys : KeyRegistry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS, Cu
 	val ADVANCED_ITEM_EXTRACTOR = registerTypedKey<AdvancedItemExtractorBlock>("ADVANCED_ITEM_EXTRACTOR")
 	val ITEM_FILTER = registerTypedKey<ItemFilterBlock>("ITEM_FILTER")
 
-	val FLUID_PIPE = registerTypedKey<ItemFilterBlock>("FLUID_PIPE")
-	val FLUID_PIPE_JUNCTION = registerTypedKey<ItemFilterBlock>("FLUID_PIPE_JUNCTION")
-	val REINFORCED_FLUID_PIPE = registerTypedKey<ItemFilterBlock>("REINFORCED_FLUID_PIPE")
-	val REINFORCED_FLUID_PIPE_JUNCTION = registerTypedKey<ItemFilterBlock>("REINFORCED_FLUID_PIPE_JUNCTION")
+	val FLUID_PIPE = registerTypedKey<FluidPipeBlock>("FLUID_PIPE")
+	val FLUID_PIPE_JUNCTION = registerTypedKey<FluidPipeJunctionBlock>("FLUID_PIPE_JUNCTION")
+//	val REINFORCED_FLUID_PIPE = registerTypedKey<ItemFilterBlock>("REINFORCED_FLUID_PIPE")
+//	val REINFORCED_FLUID_PIPE_JUNCTION = registerTypedKey<ItemFilterBlock>("REINFORCED_FLUID_PIPE_JUNCTION")
 }

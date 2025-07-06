@@ -34,12 +34,10 @@ class BlockBasedCacheFactory<T : Any, H: Any> private constructor(private val ma
 			return this
 		}
 
-		inline fun <reified B: BlockData> addDataHandler(customBlock: IonRegistryKey<CustomBlock, out CustomBlock>, noinline constructor: (B, BlockKey, H) -> T?): Builder<T, H> {
-			val blockData = customBlock.getValue().blockData
-			require(blockData is B)
-
-			return addDataHandler<B>(material = blockData.material) { data, lng, holder ->
-				if (data.customBlock != customBlock) return@addDataHandler null
+		inline fun <reified B: BlockData> addDataHandler(customBlock: IonRegistryKey<CustomBlock, out CustomBlock>, material: Material, crossinline constructor: (B, BlockKey, H) -> T?): Builder<T, H> {
+			return addDataHandler<B>(material = material) { data, lng, holder ->
+				val key = data.customBlock?.key
+				if (key != customBlock) return@addDataHandler null
 				constructor.invoke(data, lng, holder)
 			}
 		}

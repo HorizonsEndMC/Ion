@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import org.bukkit.Material
 import org.bukkit.Material.BARREL
 import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.CHEST
@@ -120,7 +121,7 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 	ITEMS(NamespacedKeys.ITEM_TRANSPORT) {
 		override val nodeCacheFactory: BlockBasedCacheFactory<Node, CacheHolder<*>> = BlockBasedCacheFactory.builder<Node, CacheHolder<*>>()
 			.addSimpleNode(CRAFTING_TABLE, ItemNode.ItemExtractorNode)
-			.addDataHandler<Vault>(CustomBlockKeys.ADVANCED_ITEM_EXTRACTOR) { _, _, _ -> ItemNode.ItemExtractorNode }
+			.addDataHandler<Vault>(CustomBlockKeys.ADVANCED_ITEM_EXTRACTOR, Material.VAULT) { _, _, _ -> ItemNode.ItemExtractorNode }
 			.addSimpleNode(STAINED_GLASS_TYPES) { _, material, _ -> SolidGlassNode(ItemNode.PipeChannel[material]!!) }
 			.addSimpleNode(STAINED_GLASS_PANE_TYPES) { _, material, _ -> ItemNode.PaneGlassNode(ItemNode.PipeChannel[material]!!) }
 			.addSimpleNode(GLASS, SolidGlassNode(ItemNode.PipeChannel.CLEAR))
@@ -135,7 +136,7 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 
 				ItemNode.ItemMergeNode(outFace)
 			}
-			.addDataHandler<Vault>(CustomBlockKeys.ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(
+			.addDataHandler<Vault>(CustomBlockKeys.ITEM_FILTER, Material.VAULT) { data, key, holder -> ItemNode.AdvancedFilterNode(
 				toBlockKey(holder.transportManager.getLocalCoordinate(toVec3i(key))),
 				holder.cache as ItemTransportCache,
 				CustomBlockKeys.ITEM_FILTER.getValue().getFace(data)

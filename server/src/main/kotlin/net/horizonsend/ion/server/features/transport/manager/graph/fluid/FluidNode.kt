@@ -36,7 +36,7 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 			val globalVec3i = getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))
 			val block = getBlockIfLoaded(world, globalVec3i.x, globalVec3i.y, globalVec3i.z) ?: return null
 
-			return block.type == Material.LIGHTNING_ROD
+			return block.type == Material.CHORUS_PLANT
 		}
 
 		override fun getPersistentDataType(): TransportNode.NodePersistentDataType<*> = persistentDataType

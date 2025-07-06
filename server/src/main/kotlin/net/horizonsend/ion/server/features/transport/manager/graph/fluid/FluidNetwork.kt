@@ -367,6 +367,5 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		}
 
 		//TODO do something with max flows
-		println(maxFlows)
 	}
 }
