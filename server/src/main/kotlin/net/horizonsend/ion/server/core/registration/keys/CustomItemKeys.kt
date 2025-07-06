@@ -219,4 +219,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val REGULUS = registerKey("REGULUS")
 	val SIRIUS = registerKey("SIRIUS")
 	val PLANET_SELECTOR = registerKey("PLANET_SELECTOR")
+
+	val FLUID_PIPE = registerKey("FLUID_PIPE")
+	val FLUID_PIPE_JUNCTION = registerKey("FLUID_PIPE_JUNCTION")
 }

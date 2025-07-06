@@ -17,12 +17,19 @@ object BlockListener : SLEventListener() {
 	// Disable block physics for portals to prevent airlocks from breaking
 	@EventHandler
 	fun onBlockPhysicsEvent(event: BlockPhysicsEvent) {
-		if (event.changedType == Material.END_PORTAL) {
+		val changedType = event.changedType
+
+		if (changedType == Material.END_PORTAL) {
 			event.isCancelled = true
 			return
 		}
 
-		if (event.changedType.isGlassPane) {
+		if (changedType == Material.CHORUS_PLANT) {
+			event.isCancelled = true
+			return
+		}
+
+		if (changedType.isGlassPane) {
 			for(face in CARDINAL_BLOCK_FACES) {
 				val relative = event.block.getRelativeIfLoaded(face) ?: continue
 				if (relative.type != Material.GRINDSTONE) continue
