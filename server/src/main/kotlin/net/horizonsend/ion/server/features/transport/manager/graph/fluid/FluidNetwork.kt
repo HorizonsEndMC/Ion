@@ -189,15 +189,20 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 	}
 
 	fun displayFluid() {
-		var count = 0
+		var count = 0L
+
+		val contents = networkContents
+
+		if (contents.isEmpty()) {
+			return
+		}
+
+		val iterations = 4L
+		val separation = 20 / iterations
 
 		runnable {
-			if (count == 10) cancel()
+			if (count == iterations) cancel()
 			count++
-
-			if (networkContents.isEmpty()) {
-				return@runnable
-			}
 
 			val world = manager.transportManager.getWorld()
 
@@ -246,14 +251,14 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 					val trial = Trail(
 						destination,
-						(networkContents.type as? GasFluid)?.color ?: Color.BLUE,
+						(contents.type as? GasFluid)?.color ?: Color.BLUE,
 						20
 					)
 
 					world.spawnParticle(Particle.TRAIL, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, trial, false)
 				}
 			}
-		}.runTaskTimer(IonServer, 0L, 2L)
+		}.runTaskTimer(IonServer, 0L, separation)
 	}
 
 	override fun save(adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
@@ -361,6 +366,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 					val parent = parentRelationMap[v]
 					((getGraph().edgeConnecting(v, parent).getOrNull()) as? FluidGraphEdge)?.netFlow += 10
+
 					v = parent
 				}
 			}
