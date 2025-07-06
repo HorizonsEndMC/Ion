@@ -64,10 +64,15 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 
 		val adjacentNodes = getAdjacent(node)
 		for (connected in adjacentNodes) {
-			val edge = createEdge(connected, node)
+			val edgeOne = createEdge(connected, node)
 
-			addEdge(node, connected, edge)
-			onEdgeConnected(edge)
+			addEdge(node, connected, edgeOne)
+			onEdgeConnected(edgeOne)
+
+			val edgeTwo = createEdge(node, connected)
+
+			addEdge(connected, node, edgeTwo)
+			onEdgeConnected(edgeTwo)
 		}
 
 		onModified()
