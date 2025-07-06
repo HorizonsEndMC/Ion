@@ -16,6 +16,7 @@ class FluidStack(
 		@Synchronized
 		set(value) {
 			if (value < 0.0) throw IllegalArgumentException("Fluid stacks cannot have amounts less than 0!")
+			if (!value.isFinite()) throw IllegalArgumentException("Fluid stacks must have a rational amount!")
 
 			if (value == 0.0) {
 				type = FluidTypeKeys.EMPTY.getValue()
