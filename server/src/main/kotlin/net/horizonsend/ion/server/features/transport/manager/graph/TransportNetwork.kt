@@ -4,7 +4,6 @@ import com.google.common.graph.MutableNetwork
 import com.google.common.graph.NetworkBuilder
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
-import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
@@ -79,7 +78,7 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 	}
 
 	/** Gets all nodes adjacent to the provided node */
-	fun getAdjacent(from: N): Set<N> = ADJACENT_BLOCK_FACES.mapNotNullTo(mutableSetOf<N>()) { face -> nodeMirror[getRelative(from.location, face)] }
+	fun getAdjacent(from: N): Set<N> = from.getPipableDirections().mapNotNullTo(mutableSetOf<N>()) { face -> nodeMirror[getRelative(from.location, face)]?.takeIf { node -> node.getPipableDirections().contains(face.oppositeFace) } }
 
 	abstract fun createEdge(nodeOne: N, nodeTwo: N): GraphEdge
 
