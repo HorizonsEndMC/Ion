@@ -55,6 +55,7 @@ interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
 
 		for (portLocation: BuiltInputData<RegisteredMetaDataInput<FluidInputMetadata>> in ioData.getOfType(IOType.FLUID)) {
 			val localPosition = toBlockKey(fluidManager.transportManager.getLocalCoordinate(toVec3i(portLocation.getRealPos(this))))
+			if (portLocation.get(this)?.metaData?.outputAllowed != true) continue
 
 			val network = fluidManager.getByLocation(localPosition)
 
