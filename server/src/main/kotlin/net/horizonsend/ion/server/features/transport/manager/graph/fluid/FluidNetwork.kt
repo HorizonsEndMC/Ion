@@ -29,6 +29,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
@@ -61,6 +62,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 	override fun onModified() {
 		cachedVolume = null
 	}
+
+	val windDirection: Vector get() = Bukkit.getPlayer("GutinGongoozler")?.location?.direction ?: Vector.getRandom()
 
 	private var lastStructureTick: Long = System.currentTimeMillis()
 	private var lastDisplayTick: Long = System.currentTimeMillis()
@@ -133,12 +136,12 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 				val start = smokeLocation.clone().add(offset)
 
-				val destination = start.clone().add(offset).add(direction.direction.multiply(2))
+				val destination = start.clone().add(offset).add(direction.direction.multiply(5)).add(windDirection.multiply(2))
 
 				val trial = Trail(
 					/* target = */ destination,
 					/* color = */ color,
-					/* duration = */ 20
+					/* duration = */ 40
 				)
 
 				manager.transportManager.getWorld().spawnParticle(Particle.TRAIL, start, 1, 0.0, 0.0, 0.0, 2.125, trial, true)
