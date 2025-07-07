@@ -14,7 +14,9 @@ interface TransportHolder {
 	fun getGlobalCoordinate(localVec3i: Vec3i): Vec3i = localVec3i
 	fun getLocalCoordinate(globalVec3i: Vec3i): Vec3i = globalVec3i
 
-	fun tick()
+	fun tickExtractors()
+
+	fun tickGraphs()
 
 	fun storePersistentData(storeConsumer: Consumer<PersistentDataContainer>) {}
 }

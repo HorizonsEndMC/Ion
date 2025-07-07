@@ -8,7 +8,6 @@ import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
@@ -17,13 +16,13 @@ import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.graph.NetworkManager
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
-import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import org.bukkit.Color
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
@@ -57,8 +56,19 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		cachedVolume = null
 	}
 
+	private var lastStructureTick: Long = System.currentTimeMillis()
+	private var lastDisplayTick: Long = System.currentTimeMillis()
+	private var lastTransferTick: Long = System.currentTimeMillis()
+
 	override fun handleTick() {
-		discoverNetwork()
+		val now = System.currentTimeMillis()
+
+		if (now - lastStructureTick > STRUCTURE_INTERVAL) {
+			lastStructureTick = now
+
+			discoverNetwork()
+			edmondsKarp()
+		}
 
 		val volume = getVolume()
 
@@ -68,13 +78,18 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		val (inputs, outputs) = trackIO()
 
-		edmondsKarp()
+		val delta = (now - lastTransferTick) / 1000.0
+		lastTransferTick = now
 
-		tickMultiblockOutputs(outputs)
+		tickMultiblockOutputs(outputs, delta)
 
-		displayFluid(outputs)
+		if (now - lastDisplayTick > DISPLAY_INTERVAL) {
+			lastDisplayTick = now
 
-		tickMultiblockInputs(inputs)
+			displayFluid(outputs)
+		}
+
+		tickMultiblockInputs(inputs, delta)
 	}
 
 	fun trackIO(): Pair<Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>, Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>> {
@@ -94,15 +109,15 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		return inputs to outputs
 	}
 
-	fun tickMultiblockInputs(inputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>) {
-		inputs.forEach(::addToMultiblocks)
+	fun tickMultiblockInputs(inputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>, delta: Double) {
+		inputs.forEach { entry -> addToMultiblocks(entry.key, entry.value, delta) }
 	}
 
-	fun tickMultiblockOutputs(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>) {
-		outputs.forEach(::depositToNetwork)
+	fun tickMultiblockOutputs(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>, delta: Double) {
+		outputs.forEach { entry -> depositToNetwork(entry.key, entry.value, delta) }
 	}
 
-	fun depositToNetwork(location: BlockKey, input: IOPort.RegisteredMetaDataInput<FluidInputMetadata>) {
+	fun depositToNetwork(location: BlockKey, input: IOPort.RegisteredMetaDataInput<FluidInputMetadata>, delta: Double) {
 		if (!input.metaData.outputAllowed) return
 
 		var remainingRoom = maxOf(0.0, getVolume() - networkContents.amount)
@@ -115,14 +130,14 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		if (!networkContents.isEmpty() && storageContents.type != networkContents.type) return
 
-		val toRemove = minOf((getVolume() - networkContents.amount), storage.getContents().amount, flowMap.getOrDefault(location, 5.0))
+		val toRemove = minOf((getVolume() - networkContents.amount), storage.getContents().amount, flowMap.getOrDefault(location, 5.0) * delta)
 		val notRemoved = storage.removeAmount(toRemove)
 
 		networkContents.amount += (toRemove - notRemoved)
 		if (!storageContents.isEmpty()) networkContents.type = storageContents.type
 	}
 
-	fun addToMultiblocks(location: BlockKey, ioPort: IOPort.RegisteredMetaDataInput<FluidInputMetadata>) {
+	fun addToMultiblocks(location: BlockKey, ioPort: IOPort.RegisteredMetaDataInput<FluidInputMetadata>, delta: Double) {
 		if (networkContents.isEmpty()) return
 		if (!ioPort.metaData.inputAllowed) return
 
@@ -132,7 +147,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		if (!store.getContents().isEmpty() && store.getContents().type != networkContents.type) return
 
-		val toAdd = minOf((store.capacity - store.getContents().amount), networkContents.amount, flowMap.getOrDefault(location, 5.0))
+		val toAdd = minOf((store.capacity - store.getContents().amount), networkContents.amount, flowMap.getOrDefault(location, 5.0) * delta)
 
 		store.setAmount(store.getContents().amount + toAdd)
 		store.setFluidType(networkContents.type)
@@ -187,65 +202,51 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		}
 	}
 
-	fun displayFluid(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>) {
-		var count = 0L
-
+	fun displayFluid(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>) = Tasks.async {
 		val contents = networkContents
 
 		if (contents.isEmpty()) {
-			return
+			return@async
 		}
 
 		val color = (contents.type as? GasFluid)?.color ?: Color.BLUE
 
-		val iterations = 4L
-		val separation = 20 / iterations
-
 		val world = manager.transportManager.getWorld()
 
-		fun runDisplay() {
-			for (node in getGraphNodes()) {
-				if (node.location in outputs.keys) continue
+		for (node in getGraphNodes()) {
+			if (node.location in outputs.keys) continue
 
-				val edge = getGraph().outEdges(node).maxByOrNull { edge -> (edge as FluidGraphEdge).netFlow } as? FluidGraphEdge ?: continue
-				val flowDirection = edge.direction
+			val edge = getGraph().outEdges(node).maxByOrNull { edge -> (edge as FluidGraphEdge).netFlow } as? FluidGraphEdge ?: continue
+			val flowDirection = edge.direction
 
-				val node = edge.nodeTwo as FluidNode
+			val node = edge.nodeTwo as FluidNode
 
-				val points = edge.getDisplayPoints()
+			val points = edge.getDisplayPoints()
 
-				val padding = 0.215
+			val padding = 0.215
 
-				points.forEach { vec ->
-					vec.add(Vector(
-						Random.nextDouble(-padding, padding),
-						Random.nextDouble(-padding, padding),
-						Random.nextDouble(-padding, padding)
-					))
+			points.forEach { vec ->
+				vec.add(Vector(
+					Random.nextDouble(-padding, padding),
+					Random.nextDouble(-padding, padding),
+					Random.nextDouble(-padding, padding)
+				))
 
-					val destination = Vector(
-						(vec.x + flowDirection.direction.x).coerceIn(getX(node.location) + padding..getX(node.location) + 1.0 - padding),
-						(vec.y + flowDirection.direction.y).coerceIn(getY(node.location) + padding..getY(node.location) + 1.0 - padding),
-						(vec.z + flowDirection.direction.z).coerceIn(getZ(node.location) + padding..getZ(node.location) + 1.0 - padding),
-					).toLocation(manager.transportManager.getWorld())
+				val destination = Vector(
+					(vec.x + flowDirection.direction.x).coerceIn(getX(node.location) + padding..getX(node.location) + 1.0 - padding),
+					(vec.y + flowDirection.direction.y).coerceIn(getY(node.location) + padding..getY(node.location) + 1.0 - padding),
+					(vec.z + flowDirection.direction.z).coerceIn(getZ(node.location) + padding..getZ(node.location) + 1.0 - padding),
+				).toLocation(manager.transportManager.getWorld())
 
-					val trial = Trail(
-						destination,
-						color,
-						20
-					)
+				val trial = Trail(
+					/* target = */ destination,
+					/* color = */ color,
+					/* duration = */ 20
+				)
 
-					world.spawnParticle(Particle.TRAIL, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, trial, false)
-				}
+				world.spawnParticle(Particle.TRAIL, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, trial, false)
 			}
 		}
-
-		runnable {
-			if (count == iterations) cancel()
-			count++
-
-			runDisplay()
-		}.runTaskTimer(IonServer, 0L, separation)
 	}
 
 	override fun save(adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
@@ -294,6 +295,9 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 	}
 
 	companion object {
+		private const val STRUCTURE_INTERVAL = 1000L
+		private const val DISPLAY_INTERVAL = 250L
+
 		private const val SUPER_SOURCE = Long.MAX_VALUE
 		private const val SUPER_SINK = Long.MIN_VALUE
 	}

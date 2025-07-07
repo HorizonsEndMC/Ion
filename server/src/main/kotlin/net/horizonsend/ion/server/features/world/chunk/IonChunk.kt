@@ -81,7 +81,7 @@ class IonChunk(val inner: Chunk) {
 	 **/
 	fun tick() {
 		transportNetwork.markReady()
-		transportNetwork.tick()
+		transportNetwork.tickExtractors()
 	}
 
 	/**

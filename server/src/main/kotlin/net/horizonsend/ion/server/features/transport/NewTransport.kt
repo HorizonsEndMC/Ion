@@ -38,7 +38,9 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	var enabled: Boolean = false; private set
 	private val transportManagers = ConcurrentHashMap.newKeySet<TransportHolder>()
 
-	private lateinit var timer: Timer
+	private lateinit var extractorTickTimer: Timer
+	private lateinit var fluidTickTimer: Timer
+
 	private lateinit var executor: ExecutorService
 	private lateinit var monitor: TransportMonitorThread
 
@@ -57,9 +59,13 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		}
 		executor = Executors.newFixedThreadPool(configuration.transportThreadCount, Tasks.namedThreadFactory("wire-transport"))
 
-		if (::timer.isInitialized) timer.cancel()
-		val interval: Long = configuration.extractorConfiguration.extractorTickIntervalMS
-		timer = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = interval, period = interval) { tickExtractors() }
+		if (::extractorTickTimer.isInitialized) extractorTickTimer.cancel()
+		val extractorInterval: Long = configuration.extractorConfiguration.extractorTickIntervalMS
+		extractorTickTimer = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = extractorInterval, period = extractorInterval) { tickExtractors() }
+
+		if (::fluidTickTimer.isInitialized) fluidTickTimer.cancel()
+		val graphInterval: Long = configuration.graphBasedConfiguration.tickIntervalMS
+		fluidTickTimer = fixedRateTimer(name = "Graph Tick", daemon = true, initialDelay = graphInterval, period = graphInterval) { tickGraphNetworks() }
 
 		if (::monitor.isInitialized) monitor.interrupt()
 		monitor = TransportMonitorThread()
@@ -75,7 +81,8 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 	override fun onDisable() {
 		enabled = false
-		if (::timer.isInitialized) timer.cancel()
+		if (::extractorTickTimer.isInitialized) extractorTickTimer.cancel()
+		if (::fluidTickTimer.isInitialized) fluidTickTimer.cancel()
 		if (::executor.isInitialized) executor.shutdown()
 		if (::monitor.isInitialized) monitor.interrupt()
 
@@ -95,7 +102,18 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		if (!enabled) return
 		transportManagers.forEach {
 			try {
-				it.tick()
+				it.tickExtractors()
+			} catch (exception: Exception) {
+				exception.printStackTrace()
+			}
+		}
+	}
+
+	private fun tickGraphNetworks() {
+		if (!enabled) return
+		transportManagers.forEach {
+			try {
+				it.tickGraphs()
 			} catch (exception: Exception) {
 				exception.printStackTrace()
 			}
