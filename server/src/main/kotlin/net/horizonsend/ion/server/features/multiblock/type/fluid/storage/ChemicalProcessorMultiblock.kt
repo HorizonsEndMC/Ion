@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.storage
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
@@ -52,240 +53,77 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<TestFluidTan
 	)
 
 	override fun MultiblockShape.buildStructure() {
-		z(6) {
+		z(0) {
 			y(-1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.TOP, shape = STRAIGHT))
-				x(-3).ironBlock()
-				x(0).type(Material.PALE_OAK_WOOD)
-				x(3).ironBlock()
-				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.TOP, shape = STRAIGHT))
+				x(-1).ironBlock()
+				x(0).powerInput()
+				x(1).ironBlock()
 			}
 			y(0) {
-				x(-4).ironBlock()
-				x(-3).ironBlock()
-				x(0).type(Material.PALE_OAK_WOOD)
-				x(3).ironBlock()
-				x(4).ironBlock()
+				x(-1).anyGlass()
+				x(0).ironBlock()
+				x(1).anyGlass()
 			}
 			y(1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.BOTTOM, shape = STRAIGHT))
-				x(-3).ironBlock()
-				x(-2).ironBlock()
-				x(-1).ironBlock()
-				x(0).type(Material.PALE_OAK_WOOD)
-				x(1).ironBlock()
-				x(2).ironBlock()
-				x(3).ironBlock()
-				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(0).ironBlock()
+				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = STRAIGHT))
 			}
-			y(2) {
-				x(-2).titaniumBlock()
-				x(0).type(Material.PALE_OAK_WOOD)
-				x(2).titaniumBlock()
-			}
-			y(3) {
-				x(-2).type(Material.WAXED_COPPER_GRATE)
-				x(2).type(Material.WAXED_COPPER_GRATE)
-			}
-			y(4) {
-				x(-2).type(Material.WAXED_COPPER_GRATE)
-				x(2).type(Material.WAXED_COPPER_GRATE)
-			}
-			y(5) {
-				x(-2).titaniumBlock()
-				x(2).titaniumBlock()
-			}
-			y(6) {
+		}
+		z(1) {
+			y(-1) {
+				x(-3).steelBlock()
 				x(-2).steelBlock()
 				x(2).steelBlock()
-			}
-			y(7) {
-				x(-2).titaniumBlock()
-				x(2).titaniumBlock()
-			}
-			y(8) {
-				x(-2).titaniumBlock()
-				x(2).titaniumBlock()
-			}
-			y(9) {
-				x(-1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-				x(0).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-			}
-		}
-		z(5) {
-			y(-1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.TOP, shape = STRAIGHT))
-				x(4).extractor()
+				x(3).steelBlock()
 			}
 			y(0) {
-				x(-4).fluidInput()
-				x(4).fluidInput()
+				x(-3).steelBlock()
+				x(-2).steelBlock()
+				x(-1).steelBlock()
+				x(1).steelBlock()
+				x(2).steelBlock()
+				x(3).steelBlock()
 			}
 			y(1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.BOTTOM, shape = STRAIGHT))
-				x(-3).ironBlock()
-				x(-2).ironBlock()
 				x(-1).ironBlock()
 				x(0).ironBlock()
 				x(1).ironBlock()
-				x(2).ironBlock()
-				x(3).ironBlock()
-				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.BOTTOM, shape = STRAIGHT))
 			}
 			y(2) {
-				x(-3).titaniumBlock()
-				x(3).titaniumBlock()
-			}
-			y(3) {
-				x(-3).titaniumBlock()
-				x(3).titaniumBlock()
-			}
-			y(4) {
-				x(-3).titaniumBlock()
-				x(3).titaniumBlock()
-			}
-			y(5) {
-				x(-3).titaniumBlock()
-				x(3).titaniumBlock()
-			}
-			y(6) {
-				x(-3).steelBlock()
-				x(3).steelBlock()
-			}
-			y(7) {
-				x(-3).titaniumBlock()
-				x(3).titaniumBlock()
-			}
-			y(8) {
-				x(-3).titaniumBlock()
-				x(3).titaniumBlock()
-			}
-			y(9) {
-				x(-2).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-				x(-1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-				x(0).titaniumBlock()
-				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-				x(2).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-			}
-		}
-		z(4) {
-			y(-1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.TOP, shape = STRAIGHT))
-				x(-2).type(Material.PALE_OAK_WOOD)
-				x(2).type(Material.PALE_OAK_WOOD)
-				x(4).extractor()
-			}
-			y(0) {
-				x(-4).anyPipedInventory()
-				x(-2).type(Material.PALE_OAK_WOOD)
-				x(2).type(Material.PALE_OAK_WOOD)
-				x(4).anyPipedInventory()
-			}
-			y(1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.BOTTOM, shape = STRAIGHT))
-				x(-3).ironBlock()
-				x(-2).type(Material.PALE_OAK_WOOD)
-				x(-1).ironBlock()
-				x(0).ironBlock()
-				x(1).ironBlock()
-				x(2).type(Material.PALE_OAK_WOOD)
-				x(3).ironBlock()
-				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.BOTTOM, shape = STRAIGHT))
-			}
-			y(2) {
-				x(-3).titaniumBlock()
-				x(-2).type(Material.PALE_OAK_WOOD)
-				x(2).type(Material.PALE_OAK_WOOD)
-				x(3).titaniumBlock()
-			}
-			y(3) {
-				x(-3).type(Material.WAXED_COPPER_GRATE)
-				x(3).type(Material.WAXED_COPPER_GRATE)
-			}
-			y(4) {
-				x(-3).type(Material.WAXED_COPPER_GRATE)
-				x(3).type(Material.WAXED_COPPER_GRATE)
-			}
-			y(5) {
-				x(-3).titaniumBlock()
-				x(3).titaniumBlock()
-			}
-			y(6) {
-				x(-3).steelBlock()
-				x(3).steelBlock()
-			}
-			y(7) {
-				x(-3).titaniumBlock()
-				x(3).titaniumBlock()
-			}
-			y(8) {
-				x(-3).titaniumBlock()
-				x(0).steelBlock()
-				x(3).titaniumBlock()
-			}
-			y(9) {
-				x(-2).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 				x(-1).titaniumBlock()
-				x(0).steelBlock()
+				x(0).titaniumBlock()
 				x(1).titaniumBlock()
-				x(2).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-			}
-		}
-		z(3) {
-			y(-1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.TOP, shape = STRAIGHT))
-				x(4).extractor()
-			}
-			y(0) {
-				x(-4).fluidInput()
-				x(4).fluidInput()
-			}
-			y(1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.BOTTOM, shape = STRAIGHT))
-				x(-3).ironBlock()
-				x(-2).ironBlock()
-				x(-1).ironBlock()
-				x(0).ironBlock()
-				x(1).ironBlock()
-				x(2).ironBlock()
-				x(3).ironBlock()
-				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.BOTTOM, shape = STRAIGHT))
-			}
-			y(2) {
-				x(-3).titaniumBlock()
-				x(3).titaniumBlock()
 			}
 			y(3) {
-				x(-3).titaniumBlock()
-				x(3).titaniumBlock()
+				x(-1).titaniumBlock()
+				x(0).type(Material.WAXED_COPPER_GRATE)
+				x(1).titaniumBlock()
 			}
 			y(4) {
-				x(-3).titaniumBlock()
-				x(3).titaniumBlock()
+				x(-1).titaniumBlock()
+				x(0).type(Material.WAXED_COPPER_GRATE)
+				x(1).titaniumBlock()
 			}
 			y(5) {
-				x(-3).titaniumBlock()
-				x(3).titaniumBlock()
+				x(-1).titaniumBlock()
+				x(0).titaniumBlock()
+				x(1).titaniumBlock()
 			}
 			y(6) {
-				x(-3).steelBlock()
-				x(3).steelBlock()
+				x(-1).steelBlock()
+				x(0).steelBlock()
+				x(1).steelBlock()
 			}
 			y(7) {
-				x(-3).titaniumBlock()
-				x(3).titaniumBlock()
+				x(-1).titaniumBlock()
+				x(0).titaniumBlock()
+				x(1).titaniumBlock()
 			}
 			y(8) {
-				x(-3).titaniumBlock()
-				x(3).titaniumBlock()
-			}
-			y(9) {
-				x(-2).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-				x(-1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+				x(-1).titaniumBlock()
 				x(0).titaniumBlock()
-				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-				x(2).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+				x(1).titaniumBlock()
 			}
 		}
 		z(2) {
@@ -349,6 +187,245 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<TestFluidTan
 				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 			}
 		}
+		z(3) {
+			y(-1) {
+				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.TOP, shape = STRAIGHT))
+				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.TOP, shape = STRAIGHT))
+			}
+			y(0) {
+				x(-4).fluidInput()
+				x(4).fluidInput()
+			}
+			y(1) {
+				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(-3).ironBlock()
+				x(-2).ironBlock()
+				x(-1).ironBlock()
+				x(0).ironBlock()
+				x(1).ironBlock()
+				x(2).ironBlock()
+				x(3).ironBlock()
+				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+			}
+			y(2) {
+				x(-3).titaniumBlock()
+				x(3).titaniumBlock()
+			}
+			y(3) {
+				x(-3).titaniumBlock()
+				x(3).titaniumBlock()
+			}
+			y(4) {
+				x(-3).titaniumBlock()
+				x(3).titaniumBlock()
+			}
+			y(5) {
+				x(-3).titaniumBlock()
+				x(3).titaniumBlock()
+			}
+			y(6) {
+				x(-3).steelBlock()
+				x(3).steelBlock()
+			}
+			y(7) {
+				x(-3).titaniumBlock()
+				x(3).titaniumBlock()
+			}
+			y(8) {
+				x(-3).titaniumBlock()
+				x(3).titaniumBlock()
+			}
+			y(9) {
+				x(-2).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+				x(-1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+				x(0).titaniumBlock()
+				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+				x(2).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+			}
+		}
+		z(4) {
+			y(-1) {
+				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.TOP, shape = STRAIGHT))
+				x(-2).type(Material.PALE_OAK_WOOD)
+				x(2).type(Material.PALE_OAK_WOOD)
+				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.TOP, shape = STRAIGHT))
+			}
+			y(0) {
+				x(-4).anyPipedInventory()
+				x(-2).type(Material.PALE_OAK_WOOD)
+				x(2).type(Material.PALE_OAK_WOOD)
+				x(4).anyPipedInventory()
+			}
+			y(1) {
+				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(-3).ironBlock()
+				x(-2).type(Material.PALE_OAK_WOOD)
+				x(-1).ironBlock()
+				x(0).ironBlock()
+				x(1).ironBlock()
+				x(2).type(Material.PALE_OAK_WOOD)
+				x(3).ironBlock()
+				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+			}
+			y(2) {
+				x(-3).titaniumBlock()
+				x(-2).type(Material.PALE_OAK_WOOD)
+				x(2).type(Material.PALE_OAK_WOOD)
+				x(3).titaniumBlock()
+			}
+			y(3) {
+				x(-3).type(Material.WAXED_COPPER_GRATE)
+				x(3).type(Material.WAXED_COPPER_GRATE)
+			}
+			y(4) {
+				x(-3).type(Material.WAXED_COPPER_GRATE)
+				x(3).type(Material.WAXED_COPPER_GRATE)
+			}
+			y(5) {
+				x(-3).titaniumBlock()
+				x(3).titaniumBlock()
+			}
+			y(6) {
+				x(-3).steelBlock()
+				x(3).steelBlock()
+			}
+			y(7) {
+				x(-3).titaniumBlock()
+				x(3).titaniumBlock()
+			}
+			y(8) {
+				x(-3).titaniumBlock()
+				x(0).steelBlock()
+				x(3).titaniumBlock()
+			}
+			y(9) {
+				x(-2).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+				x(-1).titaniumBlock()
+				x(0).steelBlock()
+				x(1).titaniumBlock()
+				x(2).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+			}
+		}
+		z(5) {
+			y(-1) {
+				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.TOP, shape = STRAIGHT))
+				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.TOP, shape = STRAIGHT))
+			}
+			y(0) {
+				x(-4).fluidInput()
+				x(4).fluidInput()
+			}
+			y(1) {
+				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(-3).ironBlock()
+				x(-2).ironBlock()
+				x(-1).ironBlock()
+				x(0).ironBlock()
+				x(1).ironBlock()
+				x(2).ironBlock()
+				x(3).ironBlock()
+				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+			}
+			y(2) {
+				x(-3).titaniumBlock()
+				x(3).titaniumBlock()
+			}
+			y(3) {
+				x(-3).titaniumBlock()
+				x(3).titaniumBlock()
+			}
+			y(4) {
+				x(-3).titaniumBlock()
+				x(3).titaniumBlock()
+			}
+			y(5) {
+				x(-3).titaniumBlock()
+				x(3).titaniumBlock()
+			}
+			y(6) {
+				x(-3).steelBlock()
+				x(3).steelBlock()
+			}
+			y(7) {
+				x(-3).titaniumBlock()
+				x(3).titaniumBlock()
+			}
+			y(8) {
+				x(-3).titaniumBlock()
+				x(3).titaniumBlock()
+			}
+			y(9) {
+				x(-2).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+				x(-1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+				x(0).titaniumBlock()
+				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+				x(2).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+			}
+		}
+		z(6) {
+			y(-1) {
+				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.TOP, shape = STRAIGHT))
+				x(-3).ironBlock()
+				x(0).type(Material.PALE_OAK_WOOD)
+				x(3).ironBlock()
+				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.TOP, shape = STRAIGHT))
+			}
+			y(0) {
+				x(-4).ironBlock()
+				x(-3).ironBlock()
+				x(0).type(Material.PALE_OAK_WOOD)
+				x(3).ironBlock()
+				x(4).ironBlock()
+			}
+			y(1) {
+				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(-3).ironBlock()
+				x(-2).ironBlock()
+				x(-1).ironBlock()
+				x(0).type(Material.PALE_OAK_WOOD)
+				x(1).ironBlock()
+				x(2).ironBlock()
+				x(3).ironBlock()
+				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+			}
+			y(2) {
+				x(-2).titaniumBlock()
+				x(0).type(Material.PALE_OAK_WOOD)
+				x(2).titaniumBlock()
+			}
+			y(3) {
+				x(-2).type(Material.WAXED_COPPER_GRATE)
+				x(2).type(Material.WAXED_COPPER_GRATE)
+			}
+			y(4) {
+				x(-2).type(Material.WAXED_COPPER_GRATE)
+				x(2).type(Material.WAXED_COPPER_GRATE)
+			}
+			y(5) {
+				x(-2).titaniumBlock()
+				x(2).titaniumBlock()
+			}
+			y(6) {
+				x(-2).steelBlock()
+				x(2).steelBlock()
+			}
+			y(7) {
+				x(-2).titaniumBlock()
+				x(2).titaniumBlock()
+			}
+			y(8) {
+				x(-2).titaniumBlock()
+				x(2).titaniumBlock()
+			}
+			y(9) {
+				x(-1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+				x(0).fluidInput()
+				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+			}
+			y(10) {
+				x(0).customBlock(CustomBlockKeys.FLUID_PIPE.getValue())
+			}
+		}
 		z(7) {
 			y(-1) {
 				x(-3).steelBlock()
@@ -359,62 +436,6 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<TestFluidTan
 			y(0) {
 				x(-3).steelBlock()
 				x(-2).steelBlock()
-				x(2).steelBlock()
-				x(3).steelBlock()
-			}
-			y(1) {
-				x(-1).ironBlock()
-				x(0).ironBlock()
-				x(1).ironBlock()
-			}
-			y(2) {
-				x(-1).titaniumBlock()
-				x(0).titaniumBlock()
-				x(1).titaniumBlock()
-			}
-			y(3) {
-				x(-1).titaniumBlock()
-				x(0).type(Material.WAXED_COPPER_GRATE)
-				x(1).titaniumBlock()
-			}
-			y(4) {
-				x(-1).titaniumBlock()
-				x(0).type(Material.WAXED_COPPER_GRATE)
-				x(1).titaniumBlock()
-			}
-			y(5) {
-				x(-1).titaniumBlock()
-				x(0).titaniumBlock()
-				x(1).titaniumBlock()
-			}
-			y(6) {
-				x(-1).steelBlock()
-				x(0).steelBlock()
-				x(1).steelBlock()
-			}
-			y(7) {
-				x(-1).titaniumBlock()
-				x(0).titaniumBlock()
-				x(1).titaniumBlock()
-			}
-			y(8) {
-				x(-1).titaniumBlock()
-				x(0).titaniumBlock()
-				x(1).titaniumBlock()
-			}
-		}
-		z(1) {
-			y(-1) {
-				x(-3).steelBlock()
-				x(-2).steelBlock()
-				x(2).steelBlock()
-				x(3).steelBlock()
-			}
-			y(0) {
-				x(-3).steelBlock()
-				x(-2).steelBlock()
-				x(-1).steelBlock()
-				x(1).steelBlock()
 				x(2).steelBlock()
 				x(3).steelBlock()
 			}
@@ -476,23 +497,6 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<TestFluidTan
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = STRAIGHT))
 			}
 		}
-		z(0) {
-			y(-1) {
-				x(-1).ironBlock()
-				x(0).powerInput()
-				x(1).ironBlock()
-			}
-			y(0) {
-				x(-1).anyGlass()
-				x(0).ironBlock()
-				x(1).anyGlass()
-			}
-			y(1) {
-				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = STRAIGHT))
-				x(0).ironBlock()
-				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = STRAIGHT))
-			}
-		}
 	}
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): TestFluidTankEntity {
@@ -521,6 +525,8 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<TestFluidTan
 			// Outputs
 			.addPort(IOType.FLUID, 4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = output1, inputAllowed = false, outputAllowed = true)) }
 			.addPort(IOType.FLUID, 4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = output2, inputAllowed = false, outputAllowed = true)) }
+
+			.addPort(IOType.FLUID, 0, 9, 6) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = pollutionContainer, inputAllowed = false, outputAllowed = true)) }
 
 			.build()
 

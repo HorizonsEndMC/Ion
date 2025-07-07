@@ -10,7 +10,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.faces
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.Axis
-import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 abstract class FluidNode(val volume: Double) : TransportNode {
@@ -71,7 +70,7 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 			val globalVec3i = getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))
 			val block = getBlockIfLoaded(world, globalVec3i.x, globalVec3i.y, globalVec3i.z) ?: return null
 
-			return block.type == Material.FLETCHING_TABLE
+			return block.blockData.customBlock?.key == CustomBlockKeys.FLUID_INPUT
 		}
 
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
