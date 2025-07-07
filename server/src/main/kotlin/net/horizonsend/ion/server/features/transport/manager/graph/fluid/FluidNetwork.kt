@@ -8,7 +8,9 @@ import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
@@ -26,6 +28,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
+import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
@@ -79,6 +82,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			networkContents.amount = volume
 		}
 
+		if (networkContents.amount.roundToHundredth() == 0.0) networkContents.amount = 0.0
+
 		val (inputs, outputs) = trackIO()
 
 		val delta = (now - lastTransferTick) / 1000.0
@@ -92,14 +97,16 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			displayFluid(outputs)
 		}
 
-		tickUnpairedPipes()
+		tickUnpairedPipes(delta)
 
 		tickMultiblockInputs(inputs, delta)
 	}
 
-	fun tickUnpairedPipes() {
+	fun tickUnpairedPipes(delta: Double) {
+		if (networkContents.isEmpty()) return
+
 		for (node in getGraphNodes()) {
-			if (node !is FluidNode.RegularLinearPipe) continue
+			if (node !is FluidNode.LeakablePipe) continue
 
 			val edges = getGraph().outEdges(node)
 
@@ -135,9 +142,12 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 				)
 
 				manager.transportManager.getWorld().spawnParticle(Particle.TRAIL, start, 1, 0.0, 0.0, 0.0, 2.125, trial, true)
-
-				//TODO remove from network
 			}
+
+			val removeAmount = (minOf(flowMap.getOrDefault(node.location, 5.0), node.leakRate, networkContents.amount) * delta)
+			networkContents.amount -= removeAmount
+
+			debugAudience.sendText(toVec3i(openLocation).toCenterVector().toLocation(manager.transportManager.getWorld()), Component.text(networkContents.amount), 2L)
 		}
 	}
 
