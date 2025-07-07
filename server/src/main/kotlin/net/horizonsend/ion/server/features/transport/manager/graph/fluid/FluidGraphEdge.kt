@@ -15,7 +15,7 @@ class FluidGraphEdge(
 	var netFlow: Double = 0.0
 
 	val direction: BlockFace by lazy {
-		val direction = toVec3i(nodeTwo.location).minus(toVec3i(nodeOne.location))
+		val direction = toVec3i(nodeOne.location).minus(toVec3i(nodeTwo.location))
 		val facesByMod = ADJACENT_BLOCK_FACES.plus(BlockFace.SELF).associateBy { face -> Vec3i(face.modX, face.modY, face.modZ) }
 		facesByMod[direction]!!
 	}
