@@ -69,7 +69,7 @@ interface TranslationAccessor {
 		private val cosTheta: Double = cos(Math.toRadians(thetaDegrees))
 		private val sinTheta: Double = sin(Math.toRadians(thetaDegrees))
 
-		val nmsRotation =  when (thetaDegrees % 360.0) {
+		val nmsRotation =  when (if (thetaDegrees < 0) thetaDegrees + 90 else thetaDegrees % 360.0) {
 			in -45.0..< 45.0 -> Rotation.NONE
 			in 45.0..< 135.0 -> Rotation.CLOCKWISE_90
 			in 135.0..< 225.0 -> Rotation.CLOCKWISE_180
