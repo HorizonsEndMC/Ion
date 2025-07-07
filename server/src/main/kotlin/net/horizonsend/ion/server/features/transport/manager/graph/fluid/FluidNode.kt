@@ -16,7 +16,7 @@ import org.bukkit.block.BlockFace
 abstract class FluidNode(val volume: Double) : TransportNode {
 	private lateinit var graph: FluidNetwork
 
-	val flowCapacity get() = volume
+	abstract val flowCapacity: Double
 
 	override fun getNetwork(): TransportNetwork<*> = graph
 	override fun setNetworkOwner(graph: TransportNetwork<*>) {
@@ -24,6 +24,8 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 	}
 
 	class RegularJunctionPipe(override val location: BlockKey) : FluidNode(10.0) {
+		override val flowCapacity: Double = 10.0
+
 		override fun isIntact(): Boolean? {
 			val world = getNetwork().manager.transportManager.getWorld()
 			val globalVec3i = getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))
@@ -43,6 +45,8 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 	}
 
 	class RegularLinearPipe(override val location: BlockKey, val axis: Axis) : FluidNode(5.0), LeakablePipe {
+		override val flowCapacity: Double = 5.0
+
 		override val leakRate: Double = 1.0
 
 		override fun isIntact(): Boolean? {
@@ -59,7 +63,9 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 		private companion object { val persistentDataType = TransportNode.NodePersistentDataType.simple<RegularLinearPipe>() }
 	}
 
-	class Input(override val location: BlockKey) : FluidNode(Double.MAX_VALUE) {
+	class Input(override val location: BlockKey) : FluidNode(0.0) {
+		override val flowCapacity = 50.0
+
 		override fun isIntact(): Boolean? {
 			val world = getNetwork().manager.transportManager.getWorld()
 			val globalVec3i = getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))
