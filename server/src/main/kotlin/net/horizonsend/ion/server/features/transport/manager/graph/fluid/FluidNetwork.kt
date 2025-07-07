@@ -68,9 +68,9 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		val (inputs, outputs) = trackIO()
 
-		tickMultiblockOutputs(outputs)
-
 		edmondsKarp()
+
+		tickMultiblockOutputs(outputs)
 
 		displayFluid()
 
