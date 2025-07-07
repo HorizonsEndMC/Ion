@@ -204,7 +204,7 @@ data class StarshipTypeBalancing(
 			),
 			protonTorpedo = StarshipWeapons.StarshipWeapon(
 				canFire = false,
-				range = 135.0,
+				range = 300.0,
 				speed = 70.0,
 				areaShieldDamageMultiplier = 2.0,
 				starshipShieldDamageMultiplier = 2.0,
@@ -1195,7 +1195,7 @@ class StarshipWeapons(
 		),
 
 		val protonTorpedo: StarshipWeapon = StarshipWeapon(
-				range = 135.0,
+				range = 300.0,
 				speed = 70.0,
 				areaShieldDamageMultiplier = 2.0,
 				starshipShieldDamageMultiplier = 2.0,
