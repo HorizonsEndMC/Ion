@@ -33,10 +33,11 @@ abstract class DisplayModule(
 
 	val scale: Float,
 	val relativeFace: RelativeFace = RelativeFace.FORWARD,
-	val id: Int = Random.nextInt()
+	val id: Int = Random.nextInt(),
+	val updateRateProvider: DisplayPlayerManager.(Location) -> Long = { 1000L }
 ) {
 	val entity: TextDisplay = createEntity()
-	private val playerManager: DisplayPlayerManager = DisplayPlayerManager(entity) {
+	private val playerManager: DisplayPlayerManager = DisplayPlayerManager(entity, updateRateProvider) {
 		val location = getLocation()
 		val vec3 = Vec3(location.x, location.y, location.z)
 
@@ -118,7 +119,7 @@ abstract class DisplayModule(
 	private var lastTextUpdate: Long = System.currentTimeMillis()
 
 	open fun runUpdates() {
-		if (System.currentTimeMillis() - lastTextUpdate > 1000L) {
+		if (System.currentTimeMillis() - lastTextUpdate > updateRateProvider.invoke(playerManager, getLocation())) {
 			updateText(buildText())
 			lastTextUpdate = System.currentTimeMillis()
 		}

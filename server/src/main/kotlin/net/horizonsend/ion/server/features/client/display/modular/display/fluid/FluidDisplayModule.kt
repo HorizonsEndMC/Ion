@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Bukkit.getPlayer
 import java.text.DecimalFormat
 
 abstract class FluidDisplayModule(
@@ -18,7 +19,10 @@ abstract class FluidDisplayModule(
     offsetBack: Double,
     scale: Float,
 	relativeFace: RelativeFace = RelativeFace.FORWARD,
-) : DisplayModule(handler, offsetLeft, offsetUp, offsetBack, scale, relativeFace) {
+) : DisplayModule(handler, offsetLeft, offsetUp, offsetBack, scale, relativeFace, updateRateProvider = provider@{
+	val nearbyViewers = (getPossibleViewers(true) ?: return@provider 1000L).mapNotNull(::getPlayer).any { player -> player.location.distance(it) < 10 }
+	if (nearbyViewers) 100L else 1000L
+}) {
 	private val updateHandler: (FluidStorageContainer) -> Unit = {
 		runUpdates()
 	}
