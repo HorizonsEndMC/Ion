@@ -1,12 +1,18 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.storage
 
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.crafting.input.ChemicalProcessorEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock
+import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.ProgressManager
+import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
@@ -16,7 +22,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedM
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.TestFluidTank.TestFluidTankEntity
+import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.ChemicalProcessorMultiblock.TestFluidTankEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort.RegisteredMetaDataInput
@@ -25,7 +31,9 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.LEFT
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.RIGHT
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -34,11 +42,11 @@ import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs.Shape.STRAIGHT
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-object TestFluidTank : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
-	override val name: String = "fluidtank"
+object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
+	override val name: String = "chemprocessor"
 	override val signText: Array<Component?> = createSignText(
-		Component.text("Fluid Smank"),
-		null,
+		Component.text("Chemical", NamedTextColor.GOLD),
+		Component.text("Processor", HE_MEDIUM_GRAY),
 		null,
 		null
 	)
@@ -492,9 +500,18 @@ object TestFluidTank : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
 	}
 
 	class TestFluidTankEntity(data: PersistentMultiblockData, manager: MultiblockManager, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace) : MultiblockEntity(
-		manager, TestFluidTank, world, x, y, z, structureDirection
-	), DisplayMultiblockEntity, FluidStoringMultiblock, SyncTickingMultiblockEntity {
-		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(1)
+		manager, ChemicalProcessorMultiblock, world, x, y, z, structureDirection
+	), DisplayMultiblockEntity,
+		FluidStoringMultiblock,
+		SyncTickingMultiblockEntity,
+		ProgressMultiblock,
+		RecipeProcessingMultiblockEntity<ChemicalProcessorEnviornment>
+	{
+		override var lastRecipe: MultiblockRecipe<ChemicalProcessorEnviornment>? = null
+		override var hasTicked: Boolean = false
+
+		override val progressManager: ProgressManager = ProgressManager(data)
+		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 
 		override val ioData: IOData = IOData.builder(this)
 			// Inputs
@@ -511,6 +528,7 @@ object TestFluidTank : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
 		val input2 = FluidStorageContainer(data, "input2", Component.text("input2"), NamespacedKeys.key("input2"), 100_000.0, FluidRestriction.Unlimited)
 		val output1 = FluidStorageContainer(data, "output1", Component.text("output1"), NamespacedKeys.key("output1"), 100_000.0, FluidRestriction.Unlimited)
 		val output2 = FluidStorageContainer(data, "output2", Component.text("output2"), NamespacedKeys.key("output2"), 100_000.0, FluidRestriction.Unlimited)
+		val pollutionContainer = FluidStorageContainer(data, "pollution", Component.text("pollution"), NamespacedKeys.key("pollution"), 100_000.0, FluidRestriction.Unlimited)
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
@@ -521,15 +539,41 @@ object TestFluidTank : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
 		)
 
 		override fun getStores(): List<FluidStorageContainer> {
-			return listOf(input1, input2, output1, output2)
+			return listOf(input1, input2, output1, output2, pollutionContainer)
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
+			progressManager.saveProgressData(store)
 			saveStorageData(store)
 		}
 
+
 		override fun tick() {
 			bootstrapNetwork()
+
+			if (!tryProcessRecipe()) {
+				progressManager.reset()
+				return
+			}
+		}
+
+		override fun buildRecipeEnviornment(): ChemicalProcessorEnviornment = ChemicalProcessorEnviornment(
+			this,
+			leftInventory!!,
+			rightInventory!!,
+			input1,
+			input2,
+			output1,
+			output2,
+			pollutionContainer
+		)
+
+		val leftInventory get() = getInventory(INVENTORY_OFFSET_LEFT.x, INVENTORY_OFFSET_LEFT.y, INVENTORY_OFFSET_LEFT.z)
+		val rightInventory get() = getInventory(INVENTORY_OFFSET_RIGHT.x, INVENTORY_OFFSET_RIGHT.y, INVENTORY_OFFSET_RIGHT.z)
+
+		companion object {
+			private val INVENTORY_OFFSET_LEFT = Vec3i(-4, 0, 4)
+			private val INVENTORY_OFFSET_RIGHT = Vec3i(4, 0, 4)
 		}
 	}
 }

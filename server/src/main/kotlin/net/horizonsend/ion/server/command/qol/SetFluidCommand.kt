@@ -7,14 +7,15 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.miscellaneous.utils.getSelection
+import org.bukkit.block.data.type.WallSign
 import org.bukkit.entity.Player
 
 @CommandAlias("setfluid")
@@ -39,24 +40,32 @@ object SetFluidCommand : SLCommand() {
 
 		if (sender.world.name != selection.world?.name) return
 
-		var hits = 0
+		val entities = mutableSetOf<FluidStoringMultiblock>()
 
 		for (blockPosition in selection) {
 			val x = blockPosition.x()
 			val y = blockPosition.y()
 			val z = blockPosition.z()
 
-			sender.debug("checking block at $x $y $z")
+			val data = sender.world.getBlockData(x, y, z)
+			if (data is WallSign) {
+				val entity = MultiblockEntities.getMultiblockEntity(x, y, z, sender.world, data)
+
+				if (entity is FluidStoringMultiblock) {
+					entities.add(entity)
+				}
+			}
 
 			val entity = MultiblockEntities.getMultiblockEntity(sender.world, x, y ,z)
 			if (entity !is FluidStoringMultiblock) continue
 
-			entity.getNamedStorage(storeName)?.setContents(FluidStack(fluid, amount))
-			hits++
-
-			sender.debug("power sent")
+			entities.add(entity)
 		}
 
-		sender.success("Set $hits multiblocks' $storeName's ${fluid.key.key} to $amount.")
+		val success = entities.count { entity -> entity.getNamedStorage(storeName)?.setContents(FluidStack(fluid, amount)) != null }
+
+		if (success == 0) return sender.userError("No multiblocks set.")
+
+		sender.success("Set $success multiblocks' $storeName's ${fluid.key.key} to $amount.")
 	}
 }

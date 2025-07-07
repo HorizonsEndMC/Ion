@@ -12,7 +12,5 @@ interface RecipeEnviornment {
 	fun getItemSize(): Int
 	fun getItem(index: Int): ItemStack?
 
-	fun isEmpty(): Boolean
-
 	fun playSound(sound: Sound)
 }
