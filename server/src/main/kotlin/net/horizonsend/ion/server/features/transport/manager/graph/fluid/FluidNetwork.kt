@@ -72,7 +72,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		tickMultiblockOutputs(outputs)
 
-		displayFluid()
+		displayFluid(outputs)
 
 		tickMultiblockInputs(inputs)
 	}
@@ -187,7 +187,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		}
 	}
 
-	fun displayFluid() {
+	fun displayFluid(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>) {
 		var count = 0L
 
 		val contents = networkContents
@@ -205,6 +205,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		fun runDisplay() {
 			for (node in getGraphNodes()) {
+				if (node.location in outputs.keys) continue
+
 				val edge = getGraph().outEdges(node).maxByOrNull { edge -> (edge as FluidGraphEdge).netFlow } as? FluidGraphEdge ?: continue
 				val flowDirection = edge.direction
 
