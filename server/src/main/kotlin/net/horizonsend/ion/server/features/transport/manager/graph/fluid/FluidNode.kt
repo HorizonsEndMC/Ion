@@ -38,7 +38,13 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 		private companion object { val persistentDataType = TransportNode.NodePersistentDataType.simple<RegularJunctionPipe>() }
 	}
 
-	class RegularLinearPipe(override val location: BlockKey, val axis: Axis) : FluidNode(5.0) {
+	sealed interface LeakablePipe {
+		val leakRate: Double
+	}
+
+	class RegularLinearPipe(override val location: BlockKey, val axis: Axis) : FluidNode(5.0), LeakablePipe {
+		override val leakRate: Double = 1.0
+
 		override fun isIntact(): Boolean? {
 			val world = getNetwork().manager.transportManager.getWorld()
 			val globalVec3i = getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))
