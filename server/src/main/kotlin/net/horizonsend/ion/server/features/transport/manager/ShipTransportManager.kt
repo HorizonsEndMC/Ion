@@ -76,7 +76,7 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 		filterCache.filters.clear()
 	}
 
-	override fun tick() {
+	override fun tickExtractors() {
 		tickNumber++
 
 		val extractors = extractorManager.getExtractors()
@@ -96,6 +96,8 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 
 		solarPanelManager.cache.tickSolarPanels()
 	}
+
+	override fun tickGraphs() {}
 
 	override fun getGraphTransportManager(): FluidNetworkManager {
 		TODO()

@@ -30,11 +30,9 @@ class WorldTransportManager(val world: IonWorld) : TransportHolder {
 		save()
 	}
 
-	override fun tick() {
-		tryTickGraphs()
-	}
+	override fun tickExtractors() {}
 
-	fun tryTickGraphs() {
+	override fun tickGraphs() {
 		try {
 			fluidGraphManager.tick()
 		} catch (e: Throwable) {
