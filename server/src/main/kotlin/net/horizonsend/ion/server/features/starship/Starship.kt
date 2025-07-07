@@ -700,7 +700,7 @@ class Starship(
 
 	/** Must be called after shield subsystems are detected*/
 	fun initMaxReserveShieldPower() {
-		maxReserveShieldPower = shields.sumOf { shield -> shield.power } * 3
+		maxReserveShieldPower = shields.sumOf { shield -> shield.power } * 1
 	}
 	fun rechargeReserveShieldPower() {
 		reserveShieldPower = maxReserveShieldPower
