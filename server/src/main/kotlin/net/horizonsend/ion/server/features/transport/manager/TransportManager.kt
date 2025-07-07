@@ -31,7 +31,7 @@ abstract class TransportManager<T: CacheHolder<*>> : TransportHolder {
 
 	var tickNumber = 0; protected set
 
-	override fun tick() {
+	override fun tickExtractors() {
 		tickNumber++
 
 		val invalid = LongOpenHashSet()
@@ -57,4 +57,5 @@ abstract class TransportManager<T: CacheHolder<*>> : TransportHolder {
 		invalid.forEach(extractorManager::removeExtractor)
 	}
 
+	override fun tickGraphs() {}
 }
