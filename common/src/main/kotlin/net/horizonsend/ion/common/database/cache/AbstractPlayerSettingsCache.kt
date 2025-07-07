@@ -72,8 +72,11 @@ abstract class AbstractPlayerSettingsCache : Cache {
 	operator fun <T : Any> get(player: SLPlayerId, settingProperty: KMutableProperty1<PlayerSettings, T>): T = getSettingOrThrow(player, settingProperty)
 
 	fun <T : Any> getSettingOrThrow(player: SLPlayerId, settingProperty: KMutableProperty1<PlayerSettings, T>) : T {
+		val data = settingsTable[player, settingProperty]
+		if (data == null) throw IllegalStateException("Settings not cached for $player")
+
 		@Suppress("UNCHECKED_CAST")
-		return settingsTable[player, settingProperty] as T
+		return data as T
 	}
 
 	fun isCached(player: SLPlayerId): Boolean = settingsTable.rowKeySet().contains(player)
@@ -82,11 +85,17 @@ abstract class AbstractPlayerSettingsCache : Cache {
 		val future = CompletableFuture<Boolean>()
 
 		runAsync {
-			val settings = PlayerSettings.findById(player as StringId<PlayerSettings>)
+			@Suppress("UNCHECKED_CAST") val settingsId = player as StringId<PlayerSettings>
+
+			var settings = PlayerSettings.findById(settingsId)
 
 			if (settings == null) {
-				future.complete(false)
-				return@runAsync
+				PlayerSettings.create(settingsId)
+				settings = PlayerSettings.findById(settingsId)
+
+				if (settings == null) {
+					throw IllegalStateException("Player $player does not have settings stored!")
+				}
 			}
 
 			for (setting in settingProperties) {
