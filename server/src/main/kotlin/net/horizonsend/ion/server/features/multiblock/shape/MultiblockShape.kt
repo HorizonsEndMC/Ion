@@ -475,7 +475,7 @@ class MultiblockShape {
 			alias = "any unwaxed copper bulb"
 		)
 
-		fun fluidInput() = type(Material.FLETCHING_TABLE)
+		fun fluidInput() = customBlock(CustomBlockKeys.FLUID_INPUT.getValue())
 		fun powerInput() = type(Material.NOTE_BLOCK)
 		fun extractor() = type(STANDARD_EXTRACTOR_TYPE)
 

@@ -249,6 +249,16 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		register(CustomBlockKeys.ADVANCED_ITEM_EXTRACTOR, AdvancedItemExtractorBlock)
 		register(CustomBlockKeys.ITEM_FILTER, ItemFilterBlock)
 
+		register(CustomBlockKeys.FLUID_INPUT, CustomBlock(
+			key = CustomBlockKeys.FLUID_INPUT,
+			blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.DOWN, BlockFace.WEST, BlockFace.EAST)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.FLUID_INPUT)
+			),
+			CustomItemKeys.FLUID_INPUT
+		))
+
 		register(CustomBlockKeys.FLUID_PIPE, FluidPipeBlock)
 		register(CustomBlockKeys.FLUID_PIPE_JUNCTION, FluidPipeJunctionBlock)
 	}

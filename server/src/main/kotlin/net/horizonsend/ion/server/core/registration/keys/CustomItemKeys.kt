@@ -221,6 +221,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val SIRIUS = registerKey("SIRIUS")
 	val PLANET_SELECTOR = registerKey("PLANET_SELECTOR")
 
-	val FLUID_PIPE = registerKey("FLUID_PIPE")
-	val FLUID_PIPE_JUNCTION = registerKey("FLUID_PIPE_JUNCTION")
+	val FLUID_INPUT = registerTypedKey<CustomBlockItem>("FLUID_INPUT")
+	val FLUID_PIPE = registerTypedKey<CustomBlockItem>("FLUID_PIPE")
+	val FLUID_PIPE_JUNCTION = registerTypedKey<CustomBlockItem>("FLUID_PIPE_JUNCTION")
 }
