@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
+import java.time.Duration
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -49,6 +50,8 @@ class ReactorSubsystem(
 		}
 
 		for (shield in starship.shields) {
+			// skip this shield if the time between now and when this shield was last hit is less than a minute
+			if (Duration.ofMillis(System.currentTimeMillis() - shield.lastTimeThisShieldWasDamaged) < Duration.ofMinutes(1)) continue
 			val missing = shield.maxPower - shield.power
 			shield.recentDamage = ((shield.pastPower - shield.power).toDouble() / shield.maxPower)
 			shield.pastPower = shield.power
