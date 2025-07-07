@@ -21,7 +21,7 @@ class FluidNetworkManager(manager: TransportHolder) : NetworkManager<FluidNode, 
 			val axis = (data.customBlock as FluidPipeBlock).getFace(data)
 			FluidNode.RegularLinearPipe(pos, axis)
 		}
-		.addSimpleNode(Material.FLETCHING_TABLE) { pos, _, holder -> Input(pos) }
+		.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_INPUT, Material.BROWN_MUSHROOM_BLOCK) { _, pos, holder -> Input(pos) }
 		.build()
 
 	override fun networkProvider(): FluidNetwork {

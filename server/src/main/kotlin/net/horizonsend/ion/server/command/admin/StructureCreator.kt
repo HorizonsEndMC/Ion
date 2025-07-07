@@ -107,7 +107,8 @@ object StructureCreator : SLCommand() {
 			CustomBlockKeys.STEEL_BLOCK -> ".steelBlock()"
 			CustomBlockKeys.ENRICHED_URANIUM_BLOCK -> ".enrichedUraniumBlock()"
 			CustomBlockKeys.NETHERITE_CASING -> ".netheriteCasing()"
-			else -> ".customBlock(CustomBlocks.${registryKey.key})"
+			CustomBlockKeys.FLUID_INPUT -> ".fluidInput()"
+			else -> ".customBlock(CustomBlocksKeys.${registryKey.key}.getValue())"
 		}
 
 		return when {
@@ -152,7 +153,6 @@ object StructureCreator : SLCommand() {
 			data.material == Material.REDSTONE_BLOCK -> ".redstoneBlock()"
 			data.material == Material.LAPIS_BLOCK -> ".lapisBlock()"
 
-			data.material == Material.FLETCHING_TABLE -> ".fluidInput()"
 			data.material == Material.NOTE_BLOCK -> ".powerInput()"
 			data.material == STANDARD_EXTRACTOR_TYPE -> ".extractor()"
 			data.material == Material.HOPPER -> ".hopper()"
