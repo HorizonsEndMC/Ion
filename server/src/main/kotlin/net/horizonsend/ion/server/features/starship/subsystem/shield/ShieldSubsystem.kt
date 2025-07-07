@@ -53,4 +53,6 @@ abstract class ShieldSubsystem(
 
 	fun containsBlock(block: Block): Boolean = containsPosition(block.world, Vec3i(block.x, block.y, block.z))
 	abstract fun containsPosition(world: World, blockPos: Vec3i): Boolean
+
+	var lastTimeThisShieldWasDamaged: Long = 0
 }
