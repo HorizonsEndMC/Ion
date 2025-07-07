@@ -1,7 +1,11 @@
 package net.horizonsend.ion.common.database.schema.misc
 
+import com.mongodb.client.result.InsertOneResult
 import net.horizonsend.ion.common.database.DbObject
 import net.horizonsend.ion.common.database.DbObjectCompanion
+import net.horizonsend.ion.common.database.none
+import net.horizonsend.ion.common.database.trx
+import org.litote.kmongo.eq
 import org.litote.kmongo.id.StringId
 
 data class PlayerSettings(
@@ -77,5 +81,11 @@ data class PlayerSettings(
 	var bazaarOrderBrowseFilters: String = "{}",
 	var bazaarOrderManageFilters: String = "{}",
 ) : DbObject {
-	companion object : DbObjectCompanion<PlayerSettings, StringId<PlayerSettings>>(PlayerSettings::class, setup = {})
+	companion object : DbObjectCompanion<PlayerSettings, StringId<PlayerSettings>>(PlayerSettings::class, setup = {}) {
+		fun create(id: StringId<PlayerSettings>): InsertOneResult = trx { session ->
+			require(col.none(session, PlayerSettings::_id eq id))
+
+			col.insertOne(session, PlayerSettings(id))
+		}
+	}
 }
