@@ -356,7 +356,7 @@ class ShipFactoryPrintTask(
 	 * Disables the process and updates the status if the check does not pass
 	 **/
 	private fun checkAvailablecredits(availableCredits: Double, price: Double): Boolean {
-		if (ConfigurationFiles.featureFlags().economy) return true
+		if (!ConfigurationFiles.featureFlags().economy) return true
 
 		if (availableCredits >= price) return true
 
