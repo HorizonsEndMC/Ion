@@ -1,13 +1,14 @@
 package net.horizonsend.ion.server.features.transport.manager.graph.fluid
 
-import com.google.common.util.concurrent.AtomicDouble
+import com.google.common.graph.MutableValueGraph
+import com.google.common.graph.ValueGraph
+import com.google.common.graph.ValueGraphBuilder
+import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap
+import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
@@ -22,10 +23,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Color
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
@@ -33,14 +31,15 @@ import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.util.Vector
 import java.util.UUID
+import kotlin.jvm.optionals.getOrDefault
 import kotlin.jvm.optionals.getOrNull
-import kotlin.math.abs
 import kotlin.random.Random
 
+@Suppress("UnstableApiUsage")
 class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, TransportNetwork<FluidNode>>) : TransportNetwork<FluidNode>(uuid, manager) {
 	override fun createEdge(nodeOne: FluidNode, nodeTwo: FluidNode): GraphEdge = FluidGraphEdge(nodeOne, nodeTwo)
 
-	private var flowMap = Object2DoubleOpenHashMap<FluidNode>()
+	private var flowMap = Long2DoubleOpenHashMap()
 
 	var networkContents: FluidStack = FluidStack.empty()
 	var cachedVolume: Double? = null
@@ -71,39 +70,39 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		tickMultiblockOutputs(outputs)
 
-		edmundKarp()
+		edmondsKarp()
 
 		displayFluid()
 
 		tickMultiblockInputs(inputs)
 	}
 
-	fun trackIO(): Pair<ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>, ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>> {
-		val inputs = ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>()
-		val outputs = ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>()
+	fun trackIO(): Pair<Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>, Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>> {
+		val inputs = Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>()
+		val outputs = Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>()
 
 		for (node in getGraphNodes()) {
 			val ports: ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidInputMetadata>> = manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location)
 
 			for (port in ports) {
 				val metaData = port.metaData
-				if (metaData.inputAllowed) inputs.add(port)
-				if (metaData.outputAllowed) outputs.add(port)
+				if (metaData.inputAllowed) inputs[node.location] = port
+				if (metaData.outputAllowed) outputs[node.location] = port
 			}
 		}
 
 		return inputs to outputs
 	}
 
-	fun tickMultiblockInputs(inputs: ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>) {
+	fun tickMultiblockInputs(inputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>) {
 		inputs.forEach(::addToMultiblocks)
 	}
 
-	fun tickMultiblockOutputs(outputs: ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>) {
+	fun tickMultiblockOutputs(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>) {
 		outputs.forEach(::depositToNetwork)
 	}
 
-	fun depositToNetwork(input: IOPort.RegisteredMetaDataInput<FluidInputMetadata>) {
+	fun depositToNetwork(location: BlockKey, input: IOPort.RegisteredMetaDataInput<FluidInputMetadata>) {
 		if (!input.metaData.outputAllowed) return
 
 		var remainingRoom = maxOf(0.0, getVolume() - networkContents.amount)
@@ -116,18 +115,14 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		if (!networkContents.isEmpty() && storageContents.type != networkContents.type) return
 
-		val toRemove = minOf((getVolume() - networkContents.amount), storage.getContents().amount, 5.0)
+		val toRemove = minOf((getVolume() - networkContents.amount), storage.getContents().amount, flowMap.getOrDefault(location, 5.0))
 		val notRemoved = storage.removeAmount(toRemove)
 
 		networkContents.amount += (toRemove - notRemoved)
 		if (!storageContents.isEmpty()) networkContents.type = storageContents.type
 	}
 
-	companion object {
-		private const val MAX_REMOVE_AMOUNT_PER_TICK = 100.0
-	}
-
-	fun addToMultiblocks(ioPort: IOPort.RegisteredMetaDataInput<FluidInputMetadata>) {
+	fun addToMultiblocks(location: BlockKey, ioPort: IOPort.RegisteredMetaDataInput<FluidInputMetadata>) {
 		if (networkContents.isEmpty()) return
 		if (!ioPort.metaData.inputAllowed) return
 
@@ -137,7 +132,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		if (!store.getContents().isEmpty() && store.getContents().type != networkContents.type) return
 
-		val toAdd = minOf((store.capacity - store.getContents().amount), MAX_REMOVE_AMOUNT_PER_TICK, networkContents.amount)
+		val toAdd = minOf((store.capacity - store.getContents().amount), networkContents.amount, flowMap.getOrDefault(location, 5.0))
 
 		store.setAmount(store.getContents().amount + toAdd)
 		store.setFluidType(networkContents.type)
@@ -203,20 +198,6 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		val color = (contents.type as? GasFluid)?.color ?: Color.BLUE
 
-//		getGraphNodes().forEach { t ->
-//			debugAudience.sendText(t.getCenter().add(Vector(0.0, 0.7, 0.0)).toLocation(manager.transportManager.getWorld()), networkContents.amount.toComponent(color = TextColor.color(color.asRGB())), 40)
-//			debugAudience.sendText(t.getCenter().add(Vector(0.0, 1.0, 0.0)).toLocation(manager.transportManager.getWorld()), networkContents.type.displayName, 40)
-//		}
-
-		getGraphNodes().forEach { t ->
-			debugAudience.sendText(t.getCenter().add(Vector(0.0, 0.7, 0.0)).toLocation(manager.transportManager.getWorld()), flowMap.getDouble(t)?.toComponent(color = NamedTextColor.WHITE) ?: Component.text("No flow"), 40)
-		}
-
-		getGraphEdges().forEach { t ->
-			val midPoint = t.nodeOne.getCenter().add(t.nodeTwo.getCenter()).divide(Vector(2.0f, 2.0f, 2.0f))
-			debugAudience.sendText(midPoint.add(Vector(0.0, 2.0, 0.0)).toLocation(manager.transportManager.getWorld()), (t as FluidGraphEdge).direction.toComponent(), 40)
-		}
-
 		val iterations = 4L
 		val separation = 20 / iterations
 
@@ -230,9 +211,6 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 				val node = edge.nodeTwo as FluidNode
 
 				val points = edge.getDisplayPoints()
-
-				val MAX_FLOW_MAGNITUDE = 2000.0
-				val portionOfMax = minOf(abs(edge.netFlow), MAX_FLOW_MAGNITUDE) / MAX_FLOW_MAGNITUDE
 
 				val padding = 0.215
 
@@ -313,20 +291,134 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		}
 	}
 
-	private fun bfs(sources: Collection<FluidNode>, sinks: ObjectOpenHashSet<FluidNode>, parents: Object2ObjectOpenHashMap<FluidNode, FluidNode>, remainingFlowCapacity: Object2ObjectOpenHashMap<FluidNode, AtomicDouble>): Boolean {
-		val visited = ObjectOpenHashSet<FluidNode>()
-		val queue = ArrayDeque<FluidNode>()
+	companion object {
+		private const val SUPER_SOURCE = Long.MAX_VALUE
+		private const val SUPER_SINK = Long.MIN_VALUE
+	}
 
-		queue.addAll(sources)
-		visited.addAll(sources)
+	fun edmondsKarp() {
+		// Multimap of nodes to all nodes that connect to them
+		val parentRelationMap = Long2LongOpenHashMap()
+
+		val sources = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.outputAllowed } }
+		val sinks: ObjectOpenHashSet<FluidNode> = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.inputAllowed } }
+
+		val valueGraph = getValueGraphRepresentation()
+
+		for (source in sources) {
+			valueGraph.putEdgeValue(SUPER_SOURCE, source.location, Double.MAX_VALUE)
+		}
+
+		for (sink in sinks) {
+			valueGraph.putEdgeValue(sink.location, SUPER_SINK, Double.MAX_VALUE)
+		}
+
+		var maxFlow = 0.0
+
+		val endpointFlows = Long2DoubleOpenHashMap()
+
+		var iterations = 0
+		while (bfs(valueGraph, parentRelationMap))	{
+			iterations++
+
+			if (iterations > 7) break
+
+			var pathFlow = Double.MAX_VALUE
+
+			var node: BlockKey = SUPER_SINK
+
+			var iterations = 0L
+
+			while (node != SUPER_SOURCE) {
+				iterations++
+				var parentOfNode: Long = parentRelationMap.getOrDefault(node, null) ?: break
+
+				pathFlow = minOf(pathFlow, valueGraph.edgeValue(parentOfNode, node).get())
+				node = parentOfNode
+			}
+
+			maxFlow += pathFlow
+
+			var v: BlockKey = SUPER_SINK
+			while (v != SUPER_SOURCE) {
+				val parentOfNode: Long = parentRelationMap.getOrDefault(v, null) ?: break
+
+				if (v == parentOfNode) break
+
+				val u = parentOfNode
+				valueGraph.putEdgeValue(u, v, valueGraph.edgeValue(u, v).get() - pathFlow)
+				valueGraph.putEdgeValue(v, u, valueGraph.edgeValue(v, u).getOrDefault(0.0) + pathFlow)
+
+				v = parentOfNode
+			}
+
+			v = SUPER_SINK
+
+			while (v != SUPER_SOURCE) {
+				endpointFlows[v] = maxOf(endpointFlows.getOrDefault(v, 0.0), maxFlow)
+
+				val parentOfNode: Long = parentRelationMap.getOrDefault(v, null) ?: break
+
+				if (v == parentOfNode) break
+
+				val parentNode = nodeMirror[parentOfNode]
+				val node = nodeMirror[v]
+
+				if (parentNode != null && node != null) {
+					val edgeConnecting = getGraph().edgeConnecting(node, parentNode).getOrNull()
+
+					edgeConnecting?.let { edge ->
+						edge as FluidGraphEdge
+
+						edge.netFlow = maxOf(edge.netFlow, maxFlow)
+					}
+				}
+
+				v = parentOfNode
+			}
+		}
+
+		flowMap = endpointFlows
+	}
+
+	fun getValueGraphRepresentation(resetFlow: Boolean = true): MutableValueGraph<BlockKey, Double> {
+		val copied = ValueGraphBuilder
+			.directed()
+			.allowsSelfLoops(false)
+			.expectedNodeCount(getGraphNodes().size)
+			.build<BlockKey, Double>()
+
+		for (node in getGraphNodes()) {
+			copied.addNode(node.location)
+		}
+
+		for (edge in getGraphEdges()) {
+			if (resetFlow) (edge as FluidGraphEdge).netFlow = 0.0
+			copied.putEdgeValue(edge.nodeOne.location, edge.nodeTwo.location, (edge.nodeOne as FluidNode).flowCapacity)
+		}
+
+		return copied
+	}
+
+	private fun bfs(valueGraphReprestation: ValueGraph<BlockKey, Double>, parents: Long2LongOpenHashMap): Boolean {
+		val visited = LongOpenHashSet()
+		val queue = ArrayDeque<BlockKey>()
+
+		queue.add(SUPER_SOURCE)
+		visited.add(SUPER_SOURCE)
+
+		var iterations = 0L
 
 		while (queue.isNotEmpty()) {
 			val parent = queue.removeFirstOrNull() ?: break
 
-			for (successor in getGraph().adjacentNodes(parent)) {
+			iterations++
+
+			for (successor in valueGraphReprestation.successors(parent)) {
 				if (visited.contains(successor)) continue
-				val capacity = remainingFlowCapacity[successor]!!.get()
-				if (capacity <= 0) continue
+
+				val capacity = valueGraphReprestation.edgeValue(parent, successor).getOrNull() ?: continue
+				if (capacity <= 0.0) continue
 
 				visited.add(successor)
 				queue.addLast(successor)
@@ -335,54 +427,6 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			}
 		}
 
-		return sinks.intersect(visited).isNotEmpty()
-	}
-
-	fun edmundKarp() {
-		// Multimap of nodes to all nodes that connect to them
-		val parentRelationMap = Object2ObjectOpenHashMap<FluidNode, FluidNode>()
-
-		val sources = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.outputAllowed } }
-		val sinks: ObjectOpenHashSet<FluidNode> = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.inputAllowed } }
-
-		val remainingFlowCapacities = Object2ObjectOpenHashMap<FluidNode, AtomicDouble>()
-		val maxFlows = sinks.associateWithTo(Object2ObjectOpenHashMap<FluidNode, AtomicDouble>()) { AtomicDouble() }
-
-		for (node in getGraphNodes()) {
-			remainingFlowCapacities[node] = AtomicDouble(node.flowCapacity)
-		}
-
-		while (bfs(sources, sinks, parentRelationMap, remainingFlowCapacities))	{
-			for (sink in sinks) {
-				var pathFlow = Double.MAX_VALUE
-
-				var node: FluidNode? = sink
-
-				while (node != null && node !in sources) {
-					pathFlow = minOf(pathFlow, remainingFlowCapacities[node]!!.get())
-//					if (pathFlow != 0.0) debugAudience.sendText(node.getCenter().add(Vector(0.0, 0.7, 0.0)).toLocation(manager.transportManager.getWorld()), Component.text(pathFlow), 40)
-
-					val parentOfNode = parentRelationMap[node]
-					node = parentOfNode
-				}
-
-				maxFlows[sink]?.getAndAdd(pathFlow)
-
-				var v: FluidNode? = sink
-
-				while (v != null && v !in sources) {
-					remainingFlowCapacities[v]!!.getAndAdd(-pathFlow)
-
-					val parent = parentRelationMap[v]
-					runCatching { ((getGraph().edgeConnecting(v, parent).getOrNull()) as? FluidGraphEdge)?.netFlow += 10 }
-
-					flowMap[v] = pathFlow
-
-					v = parent
-				}
-			}
-		}
-
-		//TODO do something with max flows
+		return visited.contains(SUPER_SINK)
 	}
 }
