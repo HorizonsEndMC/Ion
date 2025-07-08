@@ -38,10 +38,6 @@ class AutoMasonRecipeEnviornment(
 		return inputInventory.getItem(index)
 	}
 
-	override fun isEmpty(): Boolean {
-		return inputInventory.all { stack -> stack == null || stack.isEmpty }
-	}
-
 	override fun playSound(sound: Sound) {
 		val location = multiblock.location.toCenterLocation()
 		location.world.playSound(sound, location.x, location.y, location.z)

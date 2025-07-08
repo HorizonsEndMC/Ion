@@ -27,6 +27,10 @@ class ChemicalProcessorEnviornment(
 		return inputInventory.contents.getOrNull(index)
 	}
 
+	override fun getInputItems(): List<ItemStack?> {
+		return inputInventory.contents.toList()
+	}
+
 	override fun playSound(sound: Sound) {
 		val originLocation = multiblock.location.toCenterLocation()
 		originLocation.world.playSound(sound, originLocation.x, originLocation.y, originLocation.z)

@@ -32,10 +32,6 @@ open class FurnaceEnviornment(
 		return getInputItems()[index]
 	}
 
-	override fun isEmpty(): Boolean {
-		return getInputItems().all { stack -> stack == null || stack.isEmpty }
-	}
-
 	override fun getResultItem(): ItemStack? {
 		return furnaceInventory.result
 	}
