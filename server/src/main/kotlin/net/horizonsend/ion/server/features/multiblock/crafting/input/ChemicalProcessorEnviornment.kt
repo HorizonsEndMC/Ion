@@ -1,13 +1,13 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.input
 
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
+import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.ChemicalProcessorMultiblock
 import net.kyori.adventure.sound.Sound
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
 class ChemicalProcessorEnviornment(
-	override val multiblock: MultiblockEntity,
+	override val multiblock: ChemicalProcessorMultiblock.ChemicalProcessorEntity,
 	val inputInventory: Inventory,
 	val outputInventory: Inventory,
 
@@ -18,12 +18,12 @@ class ChemicalProcessorEnviornment(
 	val fluidOutputTwo: FluidStorageContainer,
 
 	val pollutionContainer: FluidStorageContainer
-) : RecipeEnviornment {
-	override fun getItemSize(): Int {
+) : RecipeEnviornment, InventoryResultEnviornment, FluidMultiblockEnviornment {
+	override fun getInputItemSize(): Int {
 		return 0
 	}
 
-	override fun getItem(index: Int): ItemStack? {
+	override fun getInputItem(index: Int): ItemStack? {
 		return inputInventory.contents.getOrNull(index)
 	}
 
@@ -34,5 +34,9 @@ class ChemicalProcessorEnviornment(
 	override fun playSound(sound: Sound) {
 		val originLocation = multiblock.location.toCenterLocation()
 		originLocation.world.playSound(sound, originLocation.x, originLocation.y, originLocation.z)
+	}
+
+	override fun getResultInventory(): Inventory {
+		return outputInventory
 	}
 }
