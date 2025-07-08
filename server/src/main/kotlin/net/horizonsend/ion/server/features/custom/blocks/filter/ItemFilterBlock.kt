@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistr
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
 import net.horizonsend.ion.server.features.custom.blocks.filter.CustomFilterBlock.Companion.filterInteractCooldown
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.gui.custom.filter.ItemFilterGui
 import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta.ItemFilterMeta
