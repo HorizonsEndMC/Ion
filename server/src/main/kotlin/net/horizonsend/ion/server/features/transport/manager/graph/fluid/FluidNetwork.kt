@@ -287,30 +287,28 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 				// Flow from parent
 				val parent = edge.nodeOne as FluidNode
 
-				val points = edge.getDisplayPoints()
+				edge.getDisplayPoints().forEach { vec ->
+					vec.add(Vector(
+						Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
+						Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
+						Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING)
+					))
 
-				points.forEach { vec ->
-					vec.add(
-						Vector(
-							Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
-							Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
-							Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING)
-						)
-					)
+					val destination =
+						if (childDirection == BlockFace.SELF) vec.toLocation(world)
+						else Vector(
+							(vec.x + childDirection.direction.x).coerceIn(getX(parent.location) + PIPE_INTERIOR_PADDING..getX(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
+							(vec.y + childDirection.direction.y).coerceIn(getY(parent.location) + PIPE_INTERIOR_PADDING..getY(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
+							(vec.z + childDirection.direction.z).coerceIn(getZ(parent.location) + PIPE_INTERIOR_PADDING..getZ(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
+						).toLocation(world)
 
-					val destination = if (childDirection == BlockFace.SELF) vec.toLocation(manager.transportManager.getWorld()) else Vector(
-						(vec.x + childDirection.direction.x).coerceIn(getX(parent.location) + PIPE_INTERIOR_PADDING..getX(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
-						(vec.y + childDirection.direction.y).coerceIn(getY(parent.location) + PIPE_INTERIOR_PADDING..getY(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
-						(vec.z + childDirection.direction.z).coerceIn(getZ(parent.location) + PIPE_INTERIOR_PADDING..getZ(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
-					).toLocation(manager.transportManager.getWorld())
-
-					val trial = Trail(
+					val trailOptions = Trail(
 						/* target = */ destination,
 						/* color = */ color,
 						/* duration = */ 20
 					)
 
-					world.spawnParticle(Particle.TRAIL, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, trial, false)
+					world.spawnParticle(Particle.TRAIL, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, trailOptions, false)
 				}
 			}
 		}
