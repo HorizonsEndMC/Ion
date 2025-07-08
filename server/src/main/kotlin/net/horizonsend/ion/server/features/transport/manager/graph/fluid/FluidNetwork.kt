@@ -10,10 +10,8 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
-import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.graph.NetworkManager
@@ -28,11 +26,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
-import net.kyori.adventure.text.Component
-import org.bukkit.Bukkit
-import org.bukkit.Color
-import org.bukkit.Particle
-import org.bukkit.Particle.Trail
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -63,8 +56,6 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 	override fun onModified() {
 		cachedVolume = null
 	}
-
-	val windDirection: Vector get() = Bukkit.getPlayer("GutinGongoozler")?.location?.direction ?: Vector.getRandom()
 
 	private var lastStructureTick: Long = System.currentTimeMillis()
 	private var lastDisplayTick: Long = System.currentTimeMillis()
@@ -109,6 +100,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 	fun tickUnpairedPipes(delta: Double) {
 		if (networkContents.isEmpty()) return
 
+		val type = networkContents.type
+
 		for (node in getGraphNodes()) {
 			if (node !is FluidNode.LeakablePipe) continue
 
@@ -120,38 +113,14 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 			val connectedEdge = edges.first()
 			val direction = (connectedEdge as FluidGraphEdge).direction.oppositeFace
-			val openLocation = getRelative(node.location, direction)
 
-			debugAudience.highlightBlock(toVec3i(openLocation), 20L)
-
-			val smokeLocation = toVec3i(openLocation).toCenterVector().toLocation(manager.transportManager.getWorld()).add(direction.direction.multiply(-0.5))
-
-			val color = (networkContents.type as? GasFluid)?.color ?: Color.BLUE
-
-			repeat(1) {
-				val offset = Vector(
-					Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
-					Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
-					Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING)
-				)
-
-				val start = smokeLocation.clone().add(offset)
-
-				val destination = start.clone().add(offset).add(direction.direction.multiply(5)).add(windDirection.multiply(2))
-
-				val trial = Trail(
-					/* target = */ destination,
-					/* color = */ color,
-					/* duration = */ 40
-				)
-
-				manager.transportManager.getWorld().spawnParticle(Particle.TRAIL, start, 1, 0.0, 0.0, 0.0, 2.125, trial, true)
-			}
+			runCatching {
+				debugAudience.highlightBlock(toVec3i(getRelative(node.location, direction)), 20L)
+				type.playLeakEffects(manager.transportManager.getWorld(), node, direction)
+			}.onFailure { exception -> exception.printStackTrace() }
 
 			val removeAmount = (minOf(flowMap.getOrDefault(node.location, 5.0), node.leakRate, networkContents.amount) * delta)
 			networkContents.amount -= removeAmount
-
-			debugAudience.sendText(toVec3i(openLocation).toCenterVector().toLocation(manager.transportManager.getWorld()), Component.text(networkContents.amount), 2L)
 		}
 	}
 
@@ -272,7 +241,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			return
 		}
 
-		val color = (contents.type as? GasFluid)?.color ?: Color.BLUE
+		val type = contents.type
 
 		Tasks.async {
 			val world = manager.transportManager.getWorld()
@@ -287,28 +256,22 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 				// Flow from parent
 				val parent = edge.nodeOne as FluidNode
 
-				edge.getDisplayPoints().forEach { vec ->
-					vec.add(Vector(
+				edge.getDisplayPoints().forEach { origin ->
+					origin.add(Vector(
 						Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
 						Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
 						Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING)
 					))
 
 					val destination =
-						if (childDirection == BlockFace.SELF) vec.toLocation(world)
+						if (childDirection == BlockFace.SELF) origin
 						else Vector(
-							(vec.x + childDirection.direction.x).coerceIn(getX(parent.location) + PIPE_INTERIOR_PADDING..getX(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
-							(vec.y + childDirection.direction.y).coerceIn(getY(parent.location) + PIPE_INTERIOR_PADDING..getY(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
-							(vec.z + childDirection.direction.z).coerceIn(getZ(parent.location) + PIPE_INTERIOR_PADDING..getZ(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
-						).toLocation(world)
+							(origin.x + childDirection.direction.x).coerceIn(getX(parent.location) + PIPE_INTERIOR_PADDING..getX(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
+							(origin.y + childDirection.direction.y).coerceIn(getY(parent.location) + PIPE_INTERIOR_PADDING..getY(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
+							(origin.z + childDirection.direction.z).coerceIn(getZ(parent.location) + PIPE_INTERIOR_PADDING..getZ(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
+						)
 
-					val trailOptions = Trail(
-						/* target = */ destination,
-						/* color = */ color,
-						/* duration = */ 20
-					)
-
-					world.spawnParticle(Particle.TRAIL, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, trailOptions, false)
+					type.displayInPipe(world, origin, destination)
 				}
 			}
 		}
@@ -360,7 +323,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 	}
 
 	companion object {
-		private const val PIPE_INTERIOR_PADDING = 0.215
+		const val PIPE_INTERIOR_PADDING = 0.215
 
 		private const val STRUCTURE_INTERVAL = 1000L
 		private const val DISPLAY_INTERVAL = 250L

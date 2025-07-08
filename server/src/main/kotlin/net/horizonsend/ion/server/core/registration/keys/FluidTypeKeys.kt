@@ -16,4 +16,5 @@ object FluidTypeKeys : KeyRegistry<FluidType>(RegistryKeys.FLUID_TYPE, FluidType
 	val CARBON_DIOXIDE = registerTypedKey<GasFluid>("CARBON_DIOXIDE")
 
 	val WATER = registerKey("WATER")
+	val LAVA = registerKey("LAVA")
 }
