@@ -23,7 +23,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedM
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.ChemicalProcessorMultiblock.TestFluidTankEntity
+import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.ChemicalProcessorMultiblock.ChemicalProcessorEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort.RegisteredMetaDataInput
@@ -43,7 +43,7 @@ import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs.Shape.STRAIGHT
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<TestFluidTankEntity> {
+object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProcessorEntity> {
 	override val name: String = "chemprocessor"
 	override val signText: Array<Component?> = createSignText(
 		Component.text("Chemical", NamedTextColor.GOLD),
@@ -499,11 +499,11 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<TestFluidTan
 		}
 	}
 
-	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): TestFluidTankEntity {
-		return TestFluidTankEntity(data, manager, world, x, y, z, structureDirection)
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): ChemicalProcessorEntity {
+		return ChemicalProcessorEntity(data, manager, world, x, y, z, structureDirection)
 	}
 
-	class TestFluidTankEntity(data: PersistentMultiblockData, manager: MultiblockManager, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace) : MultiblockEntity(
+	class ChemicalProcessorEntity(data: PersistentMultiblockData, manager: MultiblockManager, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace) : MultiblockEntity(
 		manager, ChemicalProcessorMultiblock, world, x, y, z, structureDirection
 	), DisplayMultiblockEntity,
 		FluidStoringMultiblock,

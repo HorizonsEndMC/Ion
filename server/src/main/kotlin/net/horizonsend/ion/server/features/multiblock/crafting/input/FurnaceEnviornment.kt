@@ -27,8 +27,8 @@ open class FurnaceEnviornment(
 
 	override fun getInputItems(): List<ItemStack?> = listOf(furnaceInventory.smelting, furnaceInventory.fuel)
 
-	override fun getItemSize(): Int = 2
-	override fun getItem(index: Int): ItemStack? {
+	override fun getInputItemSize(): Int = 2
+	override fun getInputItem(index: Int): ItemStack? {
 		return getInputItems()[index]
 	}
 

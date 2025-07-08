@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.core.registration.keys
 
 import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.AutoMasonRecipe
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.ChemicalProcessorRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 
 object MultiblockRecipeKeys : KeyRegistry<MultiblockRecipe<*>>(RegistryKeys.MULTIBLOCK_RECIPE, MultiblockRecipe::class) {
@@ -354,4 +355,6 @@ object MultiblockRecipeKeys : KeyRegistry<MultiblockRecipe<*>>(RegistryKeys.MULT
 	val STONECUTTING_PALE_OAK_WOOD_STRIPPED_PALE_OAK_WOOD_STRIPPED = registerTypedKey<AutoMasonRecipe>("STONECUTTING_PALE_OAK_WOOD_STRIPPED_PALE_OAK_WOOD_STRIPPED")
 	val STONECUTTING_DARK_OAK_WOOD_STRIPPED_DARK_OAK_WOOD_STRIPPED = registerTypedKey<AutoMasonRecipe>("STONECUTTING_DARK_OAK_WOOD_STRIPPED_DARK_OAK_WOOD_STRIPPED")
 	val STONECUTTING_MANGROVE_WOOD_STRIPPED_MANGROVE_WOOD_STRIPPED = registerTypedKey<AutoMasonRecipe>("STONECUTTING_MANGROVE_WOOD_STRIPPED_MANGROVE_WOOD_STRIPPED")
+
+	val TEST_CHEMICAL_PROCESSOR = registerTypedKey<ChemicalProcessorRecipe>("TEST_CHEMICAL_PROCESSOR")
 }

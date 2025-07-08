@@ -4,6 +4,7 @@ import io.papermc.paper.util.Tick
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.MultiblockRecipeKeys
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
@@ -11,12 +12,15 @@ import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.AutoMasonRecipe
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.ChemicalProcessorRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.FurnaceMultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.FluidRecipeRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.PowerRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.GasCanisterRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement.MaterialRequirement
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.FluidResult
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ItemResult
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultHolder
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.WarmupResult
@@ -48,8 +52,6 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 	}
 
 	override fun boostrap() {
-		registerAutoMasonRecipes()
-
 		register(MultiblockRecipeKeys.URANIUM_ENRICHMENT, FurnaceMultiblockRecipe(
 			key = MultiblockRecipeKeys.URANIUM_ENRICHMENT,
 			clazz = CentrifugeMultiblock.CentrifugeMultiblockEntity::class,
@@ -214,13 +216,15 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 		))
 
 		registerGasFurnaceRecipes()
+		registerAutoMasonRecipes()
+		registerChemicalProcessorRecipes()
 	}
 
 	private fun registerGasFurnaceRecipes() {
 		register(MultiblockRecipeKeys.STEEL_PRODUCTION, FurnaceMultiblockRecipe(
 			key = MultiblockRecipeKeys.STEEL_PRODUCTION,
 			clazz = GasFurnaceMultiblock.GasFurnaceMultiblockEntity::class,
-			smeltingItem = ItemRequirement.MaterialRequirement(Material.IRON_INGOT),
+			smeltingItem = MaterialRequirement(Material.IRON_INGOT),
 			fuelItem = GasCanisterRequirement(AtmosphericGasKeys.OXYGEN.getValue(), 5),
 			power = PowerRequirement(10),
 			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
@@ -601,6 +605,19 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 		)
 
 		recipeMap.forEach { it.boostrap(this) }
+	}
+
+	fun registerChemicalProcessorRecipes() {
+		register(MultiblockRecipeKeys.TEST_CHEMICAL_PROCESSOR, ChemicalProcessorRecipe(
+			key = MultiblockRecipeKeys.TEST_CHEMICAL_PROCESSOR,
+			itemRequirement = MaterialRequirement(Material.IRON_INGOT),
+			fluidRequirementOne = FluidRecipeRequirement("input1", FluidTypeKeys.OXYGEN, 10.0),
+			fluidRequirementTwo = FluidRecipeRequirement("input2", FluidTypeKeys.METHANE, 10.0),
+			fluidResultOne = FluidResult("output1", FluidTypeKeys.WATER, 10.0),
+			fluidResultTwo = FluidResult("output2", FluidTypeKeys.CARBON_DIOXIDE, 10.0),
+			fluidResultPollutionResult = FluidResult("pollution", FluidTypeKeys.CARBON_DIOXIDE, 1.0),
+			itemResult = ResultHolder.of(ItemResult.simpleResult(CustomItemKeys.CIRCUITRY.getValue().constructItemStack())),
+		))
 	}
 
 	fun <E: RecipeEnviornment> getRecipesFor(entity: RecipeProcessingMultiblockEntity<E>): Collection<MultiblockRecipe<E>> {
