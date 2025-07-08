@@ -272,9 +272,9 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			return
 		}
 
-		Tasks.async {
-			val color = (contents.type as? GasFluid)?.color ?: Color.BLUE
+		val color = (contents.type as? GasFluid)?.color ?: Color.BLUE
 
+		Tasks.async {
 			val world = manager.transportManager.getWorld()
 
 			for (node in getGraphNodes()) {
