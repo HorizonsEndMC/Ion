@@ -68,6 +68,10 @@ class FluidStorageContainer private constructor(
 		return contentsUnsafe
 	}
 
+	fun getRemainingRoom(): Double {
+		return capacity - contentsUnsafe.amount
+	}
+
 	fun setAmount(amount: Double) {
 		contentsUnsafe.amount = amount
 		runUpdates()
@@ -83,6 +87,17 @@ class FluidStorageContainer private constructor(
 		runUpdates()
 
 		return notRemoved
+	}
+
+	/** Returns amount not removed */
+	fun addAmount(amount: Double): Double {
+		val toAdd = minOf(amount, getRemainingRoom())
+		val notAdded = amount - toAdd
+
+		contentsUnsafe.amount += (toAdd - notAdded)
+		runUpdates()
+
+		return notAdded
 	}
 
 	fun setFluidType(type: FluidType) {
