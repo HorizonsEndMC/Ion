@@ -12,11 +12,11 @@ import java.util.function.Supplier
 open class GasFuel(
 	identifier: String,
 	displayName: Component,
-	containerIdentifier: IonRegistryKey<CustomItem, GasCanister>,
+	containerItemKey: IonRegistryKey<CustomItem, GasCanister>,
 	configurationSupplier: Supplier<Gasses.GasConfiguration>,
-	transportedFluidSupplier: IonRegistryKey<FluidType, GasFluid>,
+	fluidKey: IonRegistryKey<FluidType, GasFluid>,
 
 	val powerPerUnit: Int,
 	val cooldown: Int
-) : Gas(identifier, displayName, containerIdentifier, configurationSupplier, transportedFluidSupplier)
+) : Gas(identifier, displayName, containerItemKey, configurationSupplier, fluidKey)
 
