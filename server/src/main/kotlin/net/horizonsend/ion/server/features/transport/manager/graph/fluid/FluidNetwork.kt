@@ -33,6 +33,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
+import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.util.Vector
@@ -264,47 +265,53 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		}
 	}
 
-	fun displayFluid(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>) = Tasks.async {
+	fun displayFluid(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>) {
 		val contents = networkContents
 
 		if (contents.isEmpty()) {
-			return@async
+			return
 		}
 
-		val color = (contents.type as? GasFluid)?.color ?: Color.BLUE
+		Tasks.async {
+			val color = (contents.type as? GasFluid)?.color ?: Color.BLUE
 
-		val world = manager.transportManager.getWorld()
+			val world = manager.transportManager.getWorld()
 
-		for (node in getGraphNodes()) {
-			if (node.location in outputs.keys) continue
+			for (node in getGraphNodes()) {
+				if (node.location in outputs.keys) continue
 
-			val edge = getGraph().outEdges(node).maxByOrNull { edge -> (edge as FluidGraphEdge).netFlow } as? FluidGraphEdge ?: continue
-			val flowDirection = edge.direction
+				val edge = getGraph().outEdges(node).maxByOrNull { edge -> (edge as FluidGraphEdge).netFlow } as? FluidGraphEdge ?: continue
+				var childDirection = edge.direction
+				if (edge.netFlow == 0.0) childDirection = BlockFace.SELF
 
-			val node = edge.nodeTwo as FluidNode
+				// Flow from parent
+				val parent = edge.nodeOne as FluidNode
 
-			val points = edge.getDisplayPoints()
+				val points = edge.getDisplayPoints()
 
-			points.forEach { vec ->
-				vec.add(Vector(
-					Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
-					Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
-					Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING)
-				))
+				points.forEach { vec ->
+					vec.add(
+						Vector(
+							Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
+							Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
+							Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING)
+						)
+					)
 
-				val destination = Vector(
-					(vec.x + flowDirection.direction.x).coerceIn(getX(node.location) + PIPE_INTERIOR_PADDING..getX(node.location) + 1.0 - PIPE_INTERIOR_PADDING),
-					(vec.y + flowDirection.direction.y).coerceIn(getY(node.location) + PIPE_INTERIOR_PADDING..getY(node.location) + 1.0 - PIPE_INTERIOR_PADDING),
-					(vec.z + flowDirection.direction.z).coerceIn(getZ(node.location) + PIPE_INTERIOR_PADDING..getZ(node.location) + 1.0 - PIPE_INTERIOR_PADDING),
-				).toLocation(manager.transportManager.getWorld())
+					val destination = if (childDirection == BlockFace.SELF) vec.toLocation(manager.transportManager.getWorld()) else Vector(
+						(vec.x + childDirection.direction.x).coerceIn(getX(parent.location) + PIPE_INTERIOR_PADDING..getX(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
+						(vec.y + childDirection.direction.y).coerceIn(getY(parent.location) + PIPE_INTERIOR_PADDING..getY(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
+						(vec.z + childDirection.direction.z).coerceIn(getZ(parent.location) + PIPE_INTERIOR_PADDING..getZ(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
+					).toLocation(manager.transportManager.getWorld())
 
-				val trial = Trail(
-					/* target = */ destination,
-					/* color = */ color,
-					/* duration = */ 20
-				)
+					val trial = Trail(
+						/* target = */ destination,
+						/* color = */ color,
+						/* duration = */ 20
+					)
 
-				world.spawnParticle(Particle.TRAIL, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, trial, false)
+					world.spawnParticle(Particle.TRAIL, vec.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, trial, false)
+				}
 			}
 		}
 	}
@@ -438,7 +445,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 					edgeConnecting?.let { edge ->
 						edge as FluidGraphEdge
 
-						edge.netFlow = maxOf(edge.netFlow, maxFlow)
+						val newFlow = maxOf(edge.netFlow, maxFlow)
+						edge.netFlow = newFlow
 					}
 				}
 
