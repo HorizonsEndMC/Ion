@@ -25,33 +25,33 @@ class AtmosphericGasRegistry : Registry<Gas>(RegistryKeys.ATMOSPHERIC_GAS) {
             AtmosphericGasKeys.HYDROGEN, GasFuel(
                 identifier = "HYDROGEN",
                 displayName = Component.text("Hydrogen", NamedTextColor.RED),
-                containerIdentifier = CustomItemKeys.GAS_CANISTER_HYDROGEN,
+                containerItemKey = CustomItemKeys.GAS_CANISTER_HYDROGEN,
                 powerPerUnit = ConfigurationFiles.globalGassesConfiguration().gasses.hydrogen.powerPerUnit,
                 cooldown = ConfigurationFiles.globalGassesConfiguration().gasses.hydrogen.cooldown,
                 configurationSupplier = ConfigurationFiles.globalGassesConfiguration().gasses::hydrogen,
-                transportedFluidSupplier = FluidTypeKeys.HYDROGEN
+                fluidKey = FluidTypeKeys.HYDROGEN
             )
         )
 		register(
             AtmosphericGasKeys.NITROGEN, GasFuel(
                 identifier = "NITROGEN",
                 displayName = Component.text("Nitrogen", NamedTextColor.RED),
-                containerIdentifier = CustomItemKeys.GAS_CANISTER_NITROGEN,
+                containerItemKey = CustomItemKeys.GAS_CANISTER_NITROGEN,
                 powerPerUnit = ConfigurationFiles.globalGassesConfiguration().gasses.nitrogen.powerPerUnit,
                 cooldown = ConfigurationFiles.globalGassesConfiguration().gasses.nitrogen.cooldown,
                 configurationSupplier = ConfigurationFiles.globalGassesConfiguration().gasses::nitrogen,
-                transportedFluidSupplier = FluidTypeKeys.NITROGEN
+                fluidKey = FluidTypeKeys.NITROGEN
             )
         )
 		register(
             AtmosphericGasKeys.METHANE, GasFuel(
                 identifier = "METHANE",
                 displayName = Component.text("Methane", NamedTextColor.RED),
-                containerIdentifier = CustomItemKeys.GAS_CANISTER_METHANE,
+                containerItemKey = CustomItemKeys.GAS_CANISTER_METHANE,
                 powerPerUnit = ConfigurationFiles.globalGassesConfiguration().gasses.methane.powerPerUnit,
                 cooldown = ConfigurationFiles.globalGassesConfiguration().gasses.methane.cooldown,
                 configurationSupplier = ConfigurationFiles.globalGassesConfiguration().gasses::methane,
-                transportedFluidSupplier = FluidTypeKeys.METHANE
+                fluidKey = FluidTypeKeys.METHANE
             )
         )
 		register(
