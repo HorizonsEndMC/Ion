@@ -1,10 +1,6 @@
 package net.horizonsend.ion.server.features.starship.movement
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.extensions.information
@@ -23,8 +19,10 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.P
 import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.server.features.starship.isFlyable
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
@@ -268,22 +266,22 @@ abstract class StarshipMovement(val starship: ActiveStarship) : TranslationAcces
 	}
 
 	private fun updateSubsystems(world2: World) {
-		CoroutineScope(Dispatchers.Default + SupervisorJob()).launch {
-			for (subsystem in starship.subsystems) {
-				launch {
-					val newPos = displaceVec3i(subsystem.pos)
-					subsystem.pos = newPos
+		for (subsystem in starship.subsystems) {
+			val newPos = displaceVec3i(subsystem.pos)
+			subsystem.pos = newPos
 
-					if (subsystem is CryopodSubsystem) {
-						Cryopod.updateById(
-							subsystem.pod._id,
-							setValue(Cryopod::x, newPos.x),
-							setValue(Cryopod::y, newPos.y),
-							setValue(Cryopod::z, newPos.z),
-							setValue(Cryopod::worldName, world2.name)
-						)
-					}
-				}
+			if (subsystem is ShieldSubsystem && !subsystem.isIntact()) {
+				println("Failure!!")
+			}
+
+			if (subsystem is CryopodSubsystem) Tasks.async {
+				Cryopod.updateById(
+					subsystem.pod._id,
+					setValue(Cryopod::x, newPos.x),
+					setValue(Cryopod::y, newPos.y),
+					setValue(Cryopod::z, newPos.z),
+					setValue(Cryopod::worldName, world2.name)
+				)
 			}
 		}
 	}
