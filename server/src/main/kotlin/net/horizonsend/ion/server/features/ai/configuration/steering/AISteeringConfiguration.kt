@@ -56,7 +56,8 @@ data class AISteeringConfiguration(
 		val fleeDist: Double = 1000.0, //set this to just beyond the standoff position
 		val optimalDist: Double = 300.0,
 		val startFleeing: Double = 0.3,
-		val stopFleeing: Double = 0.8
+		val stopFleeing: Double = 0.8,
+		val agressionTolerance: Double = 0.5
 	)
 
 }

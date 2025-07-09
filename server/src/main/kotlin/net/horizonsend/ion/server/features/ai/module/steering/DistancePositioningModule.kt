@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import java.util.function.Supplier
 import kotlin.math.ln
+import kotlin.math.max
 
 class DistancePositioningModule(
 	controller: AIController,
@@ -46,7 +47,16 @@ class DistancePositioningModule(
 		if (target is GoalTarget) return 0.1
 		if (target !is StarshipTarget) return optimalDist
 		val blockRatio = target.ship.initialBlockCount.toDouble() / starship.initialBlockCount.toDouble()
-		return distanceFromRatio(blockRatio,minDist,optimalDist,maxDist)
+		val optimalDist =  distanceFromRatio(blockRatio,minDist,optimalDist,maxDist)
+		//renegotiate the distance if the opponent is playing very aggressively
+		// Compute vector from center to ship (flattened)
+		val toShip = target.ship.centerOfMass.toVector().subtract(getCenter().toVector())
+		toShip.y = 0.0
+		val length = toShip.length()
+		if (length >= optimalDist) return optimalDist
+		val adjustedRatio = (blockRatio * config.agressionTolerance).coerceIn(0.0,1.0)
+		val minTolerableDist = optimalDist * adjustedRatio
+		return max(minTolerableDist, length)
 	}
 
 	private fun distanceFromRatio(r: Double, dMin: Double, dOpt: Double, dMax: Double): Double {
