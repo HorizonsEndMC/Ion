@@ -202,7 +202,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		try {
 			val oldPositions = blocks
 
-			val translationAccessor = TranslationAccessor.RotationTranslation(null, thetaDegrees, pos)
+			val translationAccessor = TranslationAccessor.RotationTranslation(null, thetaDegrees, this::pos)
 			translationAccessor.execute(blocks, starship.world, { !starship.isMoving }) { newPositionArray ->
 				blocks = newPositionArray
 
