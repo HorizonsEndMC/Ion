@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.Unbreakable
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
@@ -19,6 +21,7 @@ abstract class PowerTool(identifier: String, displayName: Component, private val
 		.builder()
 		.setMaterial(Material.DIAMOND_PICKAXE)
 		.setCustomModel(model)
+		.addData(DataComponentTypes.UNBREAKABLE, Unbreakable.unbreakable(false))
 		.build()
 ) {
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
