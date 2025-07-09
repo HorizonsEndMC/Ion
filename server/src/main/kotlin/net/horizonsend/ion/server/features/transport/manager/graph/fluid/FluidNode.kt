@@ -1,9 +1,14 @@
 package net.horizonsend.ion.server.features.transport.manager.graph.fluid
 
+import com.manya.pdc.base.EnumDataType
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
+import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode.Companion.NODE_POSITION
+import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode.NodePersistentDataType
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
@@ -11,6 +16,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.faces
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.Axis
 import org.bukkit.block.BlockFace
+import org.bukkit.persistence.PersistentDataContainer
+import org.bukkit.persistence.PersistentDataType
 
 abstract class FluidNode(val volume: Double) : TransportNode {
 	private lateinit var graph: FluidNetwork
@@ -21,6 +28,14 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 	override fun setNetworkOwner(graph: TransportNetwork<*>) {
 		this.graph = graph as FluidNetwork
 	}
+
+	val contents = FluidStack.empty()
+
+	fun loadContents(saved: PersistentDataContainer) {
+
+	}
+
+
 
 	class RegularJunctionPipe(override val location: BlockKey) : FluidNode(10.0) {
 		override val flowCapacity: Double = 10.0
@@ -36,7 +51,7 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
 
 		override fun getPersistentDataType(): TransportNode.NodePersistentDataType<*> = persistentDataType
-		private companion object { val persistentDataType = TransportNode.NodePersistentDataType.simple<RegularJunctionPipe>() }
+		private companion object { val persistentDataType = TransportNode.NodePersistentDataType.simpleFluid<RegularJunctionPipe>() }
 	}
 
 	sealed interface LeakablePipe {
@@ -58,8 +73,19 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 
 		override fun getPipableDirections(): Set<BlockFace> = setOf(axis.faces.first, axis.faces.second)
 
-		override fun getPersistentDataType(): TransportNode.NodePersistentDataType<*> = persistentDataType
-		private companion object { val persistentDataType = TransportNode.NodePersistentDataType.simple<RegularLinearPipe>() }
+		override fun getPersistentDataType(): NodePersistentDataType<*> = persistentDataType
+		private companion object {
+			val axisType = EnumDataType(Axis::class.java)
+
+			val persistentDataType = NodePersistentDataType(
+				RegularLinearPipe::class,
+				{
+					set(NamespacedKeys.CONTENTS, FluidStack, it.contents)
+					set(NamespacedKeys.AXIS, axisType, it.axis)
+				},
+				{ RegularLinearPipe(it.get(NODE_POSITION, PersistentDataType.LONG)!!, it.get(NamespacedKeys.AXIS, axisType)!!).apply { loadContents(it) } }
+			)
+		}
 	}
 
 	class Input(override val location: BlockKey) : FluidNode(0.0) {
@@ -76,6 +102,6 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
 
 		override fun getPersistentDataType(): TransportNode.NodePersistentDataType<*> = persistentDataType
-		private companion object { val persistentDataType = TransportNode.NodePersistentDataType.simple<Input>() }
+		private companion object { val persistentDataType = TransportNode.NodePersistentDataType.simpleFluid<Input>() }
 	}
 }

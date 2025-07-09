@@ -42,6 +42,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 	private var flowMap = Long2DoubleOpenHashMap()
 
 	var networkContents: FluidStack = FluidStack.empty()
+
 	var cachedVolume: Double? = null
 
 	@Synchronized
