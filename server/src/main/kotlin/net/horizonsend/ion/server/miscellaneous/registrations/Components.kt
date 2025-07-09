@@ -60,6 +60,7 @@ import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.progression.ShipKillXP
+import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsJammingSidebar
 import net.horizonsend.ion.server.features.space.Orbits
@@ -224,4 +225,5 @@ val components: List<IonComponent> = listOf(
 	StationRentalZones,
 	ServerInboxes,
 	ServerMutesHook,
+    SequenceManager,
 )
