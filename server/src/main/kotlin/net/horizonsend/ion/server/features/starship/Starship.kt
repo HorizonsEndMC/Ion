@@ -767,12 +767,12 @@ class Starship(
 
 	fun logStatistics(starship: Starship) {
 		if (!shiftKinematicEstimator.needsUpdate) return
-		println("---Stats for ${starship.getDisplayNamePlain()}---")
-		println("Current CoM : ${starship.centerOfMass}")
-		println("Estimated CoM : ${starship.forecast(System.currentTimeMillis(), 0)}")
-		println("Estimated velocity : ${starship.velocity}")
-		println("Estimated accel : ${starship.accel}")
-		println("Estimated Pos in 2 seconds : ${starship.forecast(System.currentTimeMillis() + 2000, 0)}")
+		debug("---Stats for ${starship.getDisplayNamePlain()}---")
+		debug("Current CoM : ${starship.centerOfMass}")
+		debug("Estimated CoM : ${starship.forecast(System.currentTimeMillis(), 0)}")
+		debug("Estimated velocity : ${starship.velocity}")
+		debug("Estimated accel : ${starship.accel}")
+		debug("Estimated Pos in 2 seconds : ${starship.forecast(System.currentTimeMillis() + 2000, 0)}")
 	}
 
 	//end Debug

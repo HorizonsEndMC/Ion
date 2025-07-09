@@ -95,7 +95,7 @@ open class BasicSteeringModule(
 			contexts["borderDanger"]!!,
 			contexts["shipDanger"]!!,
 			contexts["worldBlockDanger"]!!,
-			ContextMap.scaled(contexts["shieldAwareness"]!!, 0.5)
+			ContextMap.scaled(contexts["shieldAwareness"]!!, 0.2)
 		)
 
         //There are no resources that talk about steering where the heading of a ship is
