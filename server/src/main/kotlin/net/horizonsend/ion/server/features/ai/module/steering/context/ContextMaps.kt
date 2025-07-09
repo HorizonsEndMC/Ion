@@ -66,7 +66,7 @@ class WanderContext(
 	override fun populateContext() {
 		clearContext()
 
-		val finalRate = config.jitterRate * (ship.currentBlockCount.toDouble().pow(1/3.0) / config.sizeFactor)
+		val finalRate = config.jitterRate * (ship.initialBlockCount.toDouble()/ config.sizeFactor).pow(1/3.0)
 		val timeoffset = offset * finalRate
 
 		// --- Altitude Wander Component ---
@@ -429,6 +429,9 @@ class AvoidIlliusContext(val ship : Starship) : ContextMap() {
  *  minimal below the critical point, and higher above the critical point
  *  * **`histDecay`** controls how much memory incoming fire has (between 0 and 1). Higher values will cause higher
  *  memory of past incoming damage, while lower values would make it more responsive to rapid changes.
+ *  * **`verticalDamp`** damps the response to vertical directions, no damping may result in ships moving up or down
+ *  when low on shields, and high values may make it insensitive to off-plane shields.
+ *	* **`damageSensitivity`** controls how sensitive recent damage is to incoming fire memory
  *
  */
 class ShieldAwarenessContext(
@@ -555,7 +558,7 @@ class ShipDangerContext(
 				module.dangerTarget = target
 			}
 			targetOffset.normalize()
-			val dangerWeight = (((otherShip.currentBlockCount.toDouble()).pow(1.0/3.0) / config.shipWeightSize)
+			val dangerWeight = (((otherShip.initialBlockCount.toDouble()).pow(1.0/3.0) / config.shipWeightSize)
 				* (maxSpeed /config.shipWeightSpeed))
 			dotContext(targetOffset,config.dotShift,(config.falloff*dangerWeight)/targetDist, power = 1.0, true)
 			checkContext()
@@ -621,6 +624,7 @@ private var particleDanger: ContextMap = object : ContextMap() {
  *
  *  * **`falloff`** controls how this behavior scales with distance, higher
  * values will cause higher danger and agents will react faster
+ *  * **`verticalFalloff`**  same thing, for y axis
  *  * **`dotShift`** shifts the dot product, giving danger to orthogonal
  * directions
  *
@@ -637,7 +641,7 @@ class BorderDangerContext(
 		val borderCenter = worldborder.center.toVector()
 		val radius = worldborder.size / 2
 		for (i in 0 until NUMBINS) {
-			val horizontalFalloff = config.falloff * ship.currentBlockCount.toDouble().pow(1/3.0)
+			val horizontalFalloff = config.falloff * ship.initialBlockCount.toDouble().pow(1/3.0)
 			//north border
 			var dir = Vector(0.0,0.0, -1.0)
 			bins[i] += calcDanger(bindir[i], dir, ship.centerOfMass.z.toDouble(), borderCenter.z - radius, horizontalFalloff)
@@ -678,6 +682,7 @@ class BorderDangerContext(
  * values will cause higher danger and agents will react faster
  *  * **`dotShift`** shifts the dot product, giving danger to orthogonal
  * directions
+ *  * **`maxDist`** how far are rayCasts
  */
 class WorldBlockDangerContext(
 	val ship : Starship,
@@ -693,7 +698,15 @@ class WorldBlockDangerContext(
 			val result = world.rayTraceBlocks(shipPos,dir, config.maxDist, FluidCollisionMode.ALWAYS, false) {
 					block -> !ship.contains(block.x, block.y, block.z)} ?: continue
 			val dist = result.hitPosition.add(shipPos.toVector().multiply(-1.0)).length()
-			val velocityWeight = ship.velocity.dot(dir).coerceAtLeast(0.0).pow(0.5)
+			val shipVelocity = ship.velocity.clone()
+			val velocityWeight : Double
+			if (shipVelocity.lengthSquared() < 1e-3) {
+				velocityWeight = 1.0
+			} else {
+				val velocityMag = shipVelocity.length() + 1.0
+				shipVelocity.normalize()
+				velocityWeight = (shipVelocity.dot(dir).coerceAtLeast(0.0) * velocityMag).pow(0.5)
+			}
 			val falloff = config.falloff * ship.currentBlockCount.toDouble().pow(1/3.0)
 			val weight = falloff * velocityWeight / dist
 			dotContext(dir, 0.0, weight, config.dotPower)
@@ -710,6 +723,7 @@ class WorldBlockDangerContext(
  * values will cause higher danger and agents will react faster
  *  * **`dotShift`** shifts the dot product, giving danger to orthogonal
  * directions
+ *  * **`expireTime`** how long to remember an obstruction in miliseconds
  */
 class ObstructionDangerContext(
 	val ship : Starship,
@@ -730,7 +744,7 @@ class ObstructionDangerContext(
 			val offset = obstruction.toVector().add(shipPos.clone().multiply(-1.0))
 			val dist = offset.length()
 			offset.normalize()
-			val falloff = config.falloff * ship.currentBlockCount.toDouble().pow(1/3.0)
+			val falloff = config.falloff * ship.initialBlockCount.toDouble().pow(1/3.0)
 			dotContext(offset, config.dotShift, falloff/ dist, config.dotPower)
 		}
 	}
