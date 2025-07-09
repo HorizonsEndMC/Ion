@@ -18,6 +18,7 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
+import java.util.function.Supplier
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -65,7 +66,9 @@ interface TranslationAccessor {
 		)
 	}
 
-	class RotationTranslation(override val newWorld: World?, private val thetaDegrees: Double, val axis: Vec3i) : TranslationAccessor {
+	class RotationTranslation(override val newWorld: World?, private val thetaDegrees: Double, val axisSupplier: Supplier<Vec3i>) : TranslationAccessor {
+		val axis get() = axisSupplier.get()
+
 		private val cosTheta: Double = cos(Math.toRadians(thetaDegrees))
 		private val sinTheta: Double = sin(Math.toRadians(thetaDegrees))
 
