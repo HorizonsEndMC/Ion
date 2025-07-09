@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.transport.nodes.graph
 
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
+import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
@@ -55,6 +57,12 @@ interface TransportNode {
 		}
 
 		companion object {
+			inline fun <reified T : FluidNode> simpleFluid() : NodePersistentDataType<T> = NodePersistentDataType(
+					T::class,
+					{ set(NamespacedKeys.CONTENTS, FluidStack, it.contents) },
+					{ T::class.primaryConstructor!!.call(it.get(NODE_POSITION, PersistentDataType.LONG)).apply { loadContents(it) } }
+				)
+
 			inline fun <reified T : TransportNode> simple() : NodePersistentDataType<T> = NodePersistentDataType(T::class, {}, { T::class.primaryConstructor!!.call(it.get(NODE_POSITION, PersistentDataType.LONG)) })
 		}
 	}
