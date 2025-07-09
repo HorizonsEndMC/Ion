@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
+import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -258,5 +259,10 @@ object StarshipDebugCommand : SLCommand() {
 
 		ship.forecastEnabled = !ship.forecastEnabled
 		sender.information("Toggled forecast for $shipIdentifier to ${ship.forecastEnabled}")
+	}
+
+	@Subcommand("tutorialTest")
+	fun startTutorial(sender: Player) {
+		SequenceManager.startPhase(sender, SequenceManager.TUTORIAL)
 	}
 }
