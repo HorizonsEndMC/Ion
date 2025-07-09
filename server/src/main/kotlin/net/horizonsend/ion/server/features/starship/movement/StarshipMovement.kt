@@ -19,7 +19,6 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.P
 import net.horizonsend.ion.server.features.starship.event.EnterPlanetEvent
 import net.horizonsend.ion.server.features.starship.isFlyable
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -269,10 +268,6 @@ abstract class StarshipMovement(val starship: ActiveStarship) : TranslationAcces
 		for (subsystem in starship.subsystems) {
 			val newPos = displaceVec3i(subsystem.pos)
 			subsystem.pos = newPos
-
-			if (subsystem is ShieldSubsystem && !subsystem.isIntact()) {
-				println("Failure!!")
-			}
 
 			if (subsystem is CryopodSubsystem) Tasks.async {
 				Cryopod.updateById(
