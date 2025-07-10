@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.sequences.trigger
 import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerInteractTrigger.InteractTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerMovementTrigger.MovementTriggerSettings
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.nearestPointToVector
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
@@ -36,9 +38,41 @@ abstract class SequenceTriggerType<T : SequenceTriggerType.TriggerSettings> {
 			listen<PlayerMoveEvent> { triggerPhases(it.player) }
 		}
 
-		class MovementTriggerSettings() : TriggerSettings() {
+		class MovementTriggerSettings(
+			val predicates: List<PlayerLocationPredicate>
+		) : TriggerSettings() {
 			override fun shouldProceed(player: Player): Boolean {
-				return true
+				return predicates.all { predicate -> predicate.check(player) }
+			}
+		}
+
+		fun interface PlayerLocationPredicate {
+			fun check(player: Player): Boolean
+
+			companion object {
+				fun inBoundingBox(minPoint: Vec3i, maxPoint: Vec3i) = PlayerLocationPredicate {
+					val (x, y, z) = Vec3i(it.location)
+
+					return@PlayerLocationPredicate x >= minPoint.x && x < maxPoint.x
+						&& y >= minPoint.y && y < maxPoint.y
+						&& z >= minPoint.z && z < maxPoint.z
+				}
+
+				fun lookingAtBoundingBox(minPoint: Vec3i, maxPoint: Vec3i) = PlayerLocationPredicate {
+					val eyeDirection = it.location.direction
+
+					val nearestPoint = nearestPointToVector(
+						origin = it.eyeLocation.toVector(),
+						direction = eyeDirection,
+						point = minPoint.toVector()
+					)
+
+					val (x, y, z) = Vec3i(nearestPoint)
+
+					return@PlayerLocationPredicate x >= minPoint.x && x < maxPoint.x
+						&& y >= minPoint.y && y < maxPoint.y
+						&& z >= minPoint.z && z < maxPoint.z
+				}
 			}
 		}
 	}
@@ -48,7 +82,8 @@ abstract class SequenceTriggerType<T : SequenceTriggerType.TriggerSettings> {
 			listen<PlayerInteractEvent> { triggerPhases(it.player) }
 		}
 
-		class InteractTriggerSettings() : TriggerSettings() {
+		class InteractTriggerSettings(
+		) : TriggerSettings() {
 			override fun shouldProceed(player: Player): Boolean {
 				return true
 			}
