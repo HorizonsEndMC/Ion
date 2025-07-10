@@ -112,7 +112,8 @@ object SequenceManager : IonServerComponent() {
 				children = listOf(bootstrapPhase(
 					SequencePhase.endSequence(
 						key = TUTORIAL_END,
-						trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_INTERACT, InteractTriggerSettings())
+						trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_INTERACT, InteractTriggerSettings()),
+						SequencePhaseEffect.SendMessage(Component.text("Tutorial Completed"), listOf(EffectTiming.START))
 					)))
 			)),
 			bootstrapPhase(SequencePhase(
