@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.sequences
 
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys.SequencePhaseKey
+import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys.TUTORIAL_BRANCH
 import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys.TUTORIAL_END
 import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys.TUTORIAL_START
 import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys.TUTORIAL_TWO
@@ -10,7 +11,7 @@ import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerInteractTrigger.InteractTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerMovementTrigger.MovementTriggerSettings
-import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerMovementTrigger.PlayerLocationPredicate.Companion.inBoundingBox
+import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerMovementTrigger.PlayerLocationPredicate.Companion.lookingAtBoundingBox
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -96,15 +97,28 @@ object SequenceManager : IonServerComponent() {
 			bootstrapPhase(SequencePhase(
 				key = TUTORIAL_TWO,
 				trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_MOVEMENT, MovementTriggerSettings(listOf(
-					inBoundingBox(Vec3i(193, 359, -121), Vec3i(200, 365, -111), )
+					lookingAtBoundingBox(Vec3i(193, 359, -121), Vec3i(200, 365, -111), )
 				))),
 				effects = mutableListOf(
 					SequencePhaseEffect.SendMessage(Component.text("phase 2 start"), listOf(EffectTiming.START)),
 					SequencePhaseEffect.SendMessage(Component.text("phase 2 ticked"), listOf(EffectTiming.TICKED)),
 					SequencePhaseEffect.SendMessage(Component.text("phase 2 end"), listOf(EffectTiming.END))
 				),
-				children = listOf(bootstrapPhase(SequencePhase.endSequence(TUTORIAL_END, SequenceTrigger(SequenceTriggerTypes.PLAYER_INTERACT, InteractTriggerSettings()))))
-			))
+				children = listOf(bootstrapPhase(SequencePhase.endSequence(TUTORIAL_END, trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_MOVEMENT, MovementTriggerSettings(listOf(
+					lookingAtBoundingBox(Vec3i(193, 359, -121), Vec3i(200, 365, -111))
+				))))))
+			)),
+			bootstrapPhase(SequencePhase(
+				key = TUTORIAL_BRANCH,
+				trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_INTERACT, InteractTriggerSettings()),
+				effects = mutableListOf(
+					SequencePhaseEffect.SendMessage(Component.text("phase branch start"), listOf(EffectTiming.START)),
+					SequencePhaseEffect.SendMessage(Component.text("phase branch ticked"), listOf(EffectTiming.TICKED)),
+					SequencePhaseEffect.SendMessage(Component.text("phase branch end"), listOf(EffectTiming.END)),
+					SequencePhaseEffect.GoToPhase(TUTORIAL_TWO, listOf(EffectTiming.START))
+				),
+				children = listOf()
+			)),
 		)
 	))
 }
