@@ -263,6 +263,6 @@ object StarshipDebugCommand : SLCommand() {
 
 	@Subcommand("tutorialTest")
 	fun startTutorial(sender: Player) {
-		SequenceManager.startPhase(sender, SequenceManager.TUTORIAL)
+		SequenceManager.startPhase(sender, SequenceManager.TUTORIAL.getValue())
 	}
 }
