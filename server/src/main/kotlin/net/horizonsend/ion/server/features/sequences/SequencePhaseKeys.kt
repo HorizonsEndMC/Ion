@@ -12,7 +12,7 @@ object SequencePhaseKeys {
 
 	val TUTORIAL_START = register("TUTORIAL_START")
 	val TUTORIAL_TWO = register("TUTORIAL_TWO")
-	val TUTORIAL_BRANCH = register("TUTORIAL_BRANCH")
+	val CHERRY_TEST_BRANCH = register("TUTORIAL_BRANCH")
 	val TUTORIAL_END = register("TUTORIAL_END")
 
 	fun register(key: String): SequencePhaseKey {
