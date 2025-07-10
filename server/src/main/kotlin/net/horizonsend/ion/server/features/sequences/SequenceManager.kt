@@ -20,6 +20,7 @@ import org.bukkit.Bukkit.getPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.util.BoundingBox
 import java.util.UUID
 
 object SequenceManager : IonServerComponent() {
@@ -90,35 +91,34 @@ object SequenceManager : IonServerComponent() {
 		trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_INTERACT, InteractTriggerSettings()),
 		effects = mutableListOf(
 			SequencePhaseEffect.SendMessage(Component.text("phase 1 start"), listOf(EffectTiming.START)),
-			SequencePhaseEffect.SendMessage(Component.text("phase 1 ticked"), listOf(EffectTiming.TICKED)),
+			SequencePhaseEffect.SendMessage(Component.text("Go look at the door to progresss"), listOf(EffectTiming.START)),
 			SequencePhaseEffect.SendMessage(Component.text("phase 1 end"), listOf(EffectTiming.END))
 		),
 		children = listOf(
 			bootstrapPhase(SequencePhase(
 				key = TUTORIAL_TWO,
 				trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_MOVEMENT, MovementTriggerSettings(listOf(
-					lookingAtBoundingBox(Vec3i(193, 359, -121), Vec3i(200, 365, -111), )
+					lookingAtBoundingBox(BoundingBox.of(Vec3i(193, 359, -121).toVector(), Vec3i(200, 365, -111).plus(Vec3i(1, 1, 1)).toVector()))
 				))),
 				effects = mutableListOf(
 					SequencePhaseEffect.SendMessage(Component.text("phase 2 start"), listOf(EffectTiming.START)),
-					SequencePhaseEffect.SendMessage(Component.text("phase 2 ticked"), listOf(EffectTiming.TICKED)),
+					SequencePhaseEffect.SendMessage(Component.text("Punch to progress"), listOf(EffectTiming.START)),
 					SequencePhaseEffect.SendMessage(Component.text("phase 2 end"), listOf(EffectTiming.END))
 				),
-				children = listOf(bootstrapPhase(SequencePhase.endSequence(TUTORIAL_END, trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_MOVEMENT, MovementTriggerSettings(listOf(
-					lookingAtBoundingBox(Vec3i(193, 359, -121), Vec3i(200, 365, -111))
-				))))))
+				children = listOf(bootstrapPhase(SequencePhase.endSequence(TUTORIAL_END, trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_INTERACT, InteractTriggerSettings()))))
 			)),
 			bootstrapPhase(SequencePhase(
 				key = TUTORIAL_BRANCH,
-				trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_INTERACT, InteractTriggerSettings()),
+				trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_MOVEMENT, MovementTriggerSettings(listOf(
+					lookingAtBoundingBox(BoundingBox.of(Vec3i(203, 360, -126).toVector(), Vec3i(203, 360, -124).plus(Vec3i(1, 1, 1)).toVector()))
+				))),
 				effects = mutableListOf(
-					SequencePhaseEffect.SendMessage(Component.text("phase branch start"), listOf(EffectTiming.START)),
-					SequencePhaseEffect.SendMessage(Component.text("phase branch ticked"), listOf(EffectTiming.TICKED)),
-					SequencePhaseEffect.SendMessage(Component.text("phase branch end"), listOf(EffectTiming.END)),
+					SequencePhaseEffect.SendMessage(Component.text("That is some cherry wood"), listOf(EffectTiming.START)),
+					SequencePhaseEffect.SendMessage(Component.text("Back to our regularly scheduled programming"), listOf(EffectTiming.END)),
 					SequencePhaseEffect.GoToPhase(TUTORIAL_TWO, listOf(EffectTiming.START))
 				),
 				children = listOf()
-			)),
+			))
 		)
 	))
 }
