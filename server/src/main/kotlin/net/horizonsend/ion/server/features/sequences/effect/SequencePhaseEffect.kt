@@ -25,6 +25,14 @@ abstract class SequencePhaseEffect(val playPhases: List<EffectTiming>) {
 		override fun playEffect(player: Player) { SequenceManager.startPhase(player, phase.getValue()) }
 	}
 
+	class ClearSequenceData(playPhases: List<EffectTiming>) : SequencePhaseEffect(playPhases) {
+		override fun playEffect(player: Player) { SequenceManager.clearSequenceData(player) }
+	}
+
+	class SetSequenceData(val key: String, val value: Any, playPhases: List<EffectTiming>) : SequencePhaseEffect(playPhases) {
+		override fun playEffect(player: Player) { SequenceManager.getSequenceData(player)[key] = value }
+	}
+
 	class Chance(val effect: SequencePhaseEffect, val chance: Double) : SequencePhaseEffect(effect.playPhases) {
 		override fun playEffect(player: Player) { if (testRandom(chance)) effect.playEffect(player) }
 	}
