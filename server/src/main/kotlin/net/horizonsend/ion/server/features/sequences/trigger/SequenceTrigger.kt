@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.sequences.trigger
 
 import org.bukkit.entity.Player
 
-class SequenceTrigger<T : SequenceTriggerType.TriggerSettings>(val type: SequenceTriggerType<T>, val settings: T) {
+class SequenceTrigger<T : SequenceTriggerType.TriggerSettings>(val type: SequenceTriggerType<T>, private val settings: T) {
 	private var onTriggered: SequenceTrigger<T>.(Player) -> Unit = {}
 
 	fun setTriggerResult(result: SequenceTrigger<T>.(Player) -> Unit) {
@@ -11,5 +11,9 @@ class SequenceTrigger<T : SequenceTriggerType.TriggerSettings>(val type: Sequenc
 
 	fun trigger(player: Player) {
 		onTriggered.invoke(this, player)
+	}
+
+	fun shouldProceed(player: Player): Boolean {
+		return settings.shouldProceed(player)
 	}
 }
