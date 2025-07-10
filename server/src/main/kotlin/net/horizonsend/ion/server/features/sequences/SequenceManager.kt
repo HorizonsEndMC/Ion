@@ -8,11 +8,12 @@ import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys.TUTORIAL_
 import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys.TUTORIAL_TWO
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
+import net.horizonsend.ion.server.features.sequences.trigger.CombinedAndTrigger
+import net.horizonsend.ion.server.features.sequences.trigger.DataPredicate
+import net.horizonsend.ion.server.features.sequences.trigger.PlayerInteractTrigger.InteractTriggerSettings
+import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.MovementTriggerSettings
+import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.lookingAtBoundingBox
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
-import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType
-import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerInteractTrigger.InteractTriggerSettings
-import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerMovementTrigger.MovementTriggerSettings
-import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerMovementTrigger.PlayerLocationPredicate.Companion.lookingAtBoundingBox
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -37,7 +38,7 @@ object SequenceManager : IonServerComponent() {
 	}
 
 	fun getSequenceData(player: Player): SequenceDataStore {
-		return sequenceData.getOrPut(player.uniqueId) { SequenceDataStore(player.uniqueId) }
+		return sequenceData.getOrPut(player.uniqueId) { SequenceDataStore() }
 	}
 
 	fun clearSequenceData(player: Player) {
@@ -116,11 +117,11 @@ object SequenceManager : IonServerComponent() {
 			)),
 			bootstrapPhase(SequencePhase(
 				key = CHERRY_TEST_BRANCH,
-				trigger = SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, SequenceTriggerType.CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
+				trigger = SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
 					SequenceTrigger(SequenceTriggerTypes.PLAYER_MOVEMENT, MovementTriggerSettings(listOf(
 						lookingAtBoundingBox(BoundingBox.of(Vec3i(203, 360, -126).toVector(), Vec3i(203, 360, -124).plus(Vec3i(1, 1, 1)).toVector()))
 					))),
-					SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, SequenceTriggerType.DataPredicate.DataPredicateSettings<Boolean>("seen_cherry_wood") { it != true })
+					SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_cherry_wood") { it != true })
 				))),
 				effects = mutableListOf(
 					SequencePhaseEffect.SendMessage(Component.text("That is some cherry wood"), listOf(EffectTiming.START)),
