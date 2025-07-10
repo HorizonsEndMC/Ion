@@ -10,8 +10,10 @@ import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerInteractTrigger.InteractTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerMovementTrigger.MovementTriggerSettings
+import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerMovementTrigger.PlayerLocationPredicate.Companion.inBoundingBox
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.entity.Player
@@ -93,7 +95,9 @@ object SequenceManager : IonServerComponent() {
 		children = listOf(
 			bootstrapPhase(SequencePhase(
 				key = TUTORIAL_TWO,
-				trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_MOVEMENT, MovementTriggerSettings()),
+				trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_MOVEMENT, MovementTriggerSettings(listOf(
+					inBoundingBox(Vec3i(193, 359, -121), Vec3i(200, 365, -111), )
+				))),
 				effects = mutableListOf(
 					SequencePhaseEffect.SendMessage(Component.text("phase 2 start"), listOf(EffectTiming.START)),
 					SequencePhaseEffect.SendMessage(Component.text("phase 2 ticked"), listOf(EffectTiming.TICKED)),
