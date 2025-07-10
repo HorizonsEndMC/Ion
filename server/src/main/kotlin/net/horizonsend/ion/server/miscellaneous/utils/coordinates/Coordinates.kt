@@ -166,6 +166,20 @@ fun getSphereBlocks(radius: Int, lowerBoundOffset: Double = 0.0): List<Vec3i> =
 		return@getOrPut circleBlocks
 	}
 
+fun Location.alongVector(vector: Vector, points: Int): List<Location> {
+	val locationList = mutableListOf<Location>()
+
+	for (count in 0..points) {
+		val progression = this.clone().add(
+			vector.clone().multiply(count.toDouble() / points.toDouble())
+		)
+
+		locationList.add(progression)
+	}
+
+	return locationList
+}
+
 /**
  * Returns a list of equally spaced locations along a vector
  *
@@ -173,8 +187,8 @@ fun getSphereBlocks(radius: Int, lowerBoundOffset: Double = 0.0): List<Vec3i> =
  * @param points: number of locations
  **/
 
-fun Location.alongVector(vector: Vector, points: Int): List<Location> {
-	val locationList = mutableListOf<Location>()
+fun Vector.alongVector(vector: Vector, points: Int): List<Vector> {
+	val locationList = mutableListOf<Vector>()
 
 	for (count in 0..points) {
 		val progression = this.clone().add(
@@ -212,6 +226,29 @@ fun rectangle(minLoc: Location, maxLoc: Location): List<Location> {
 	return (northList + eastList + southList + westList).distinct()
 }
 
+/**
+ * Returns a list of Locations forming a 2D rectangle bounded by two corner Locations
+ *
+ * @param minLoc: The northwestern corner of the rectangle
+ * @param maxLoc: The southeastern corner of the rectangle
+ */
+fun rectangle(minLoc: Vector, maxLoc: Vector): List<Vector> {
+	val zAxisLength = (maxLoc.z - minLoc.z)
+	val xAxisLength = (maxLoc.x - minLoc.x)
+
+	val northVector = Vector(0.0, 0.0, -zAxisLength)
+	val eastVector = Vector(xAxisLength, 0.0, 0.0)
+	val southVector = Vector(0.0, 0.0, zAxisLength)
+	val westVector = Vector(-xAxisLength, 0.0, 0.0)
+
+	val northList = minLoc.alongVector(southVector, zAxisLength.toInt())
+	val eastList = maxLoc.alongVector(westVector, xAxisLength.toInt())
+	val southList = maxLoc.alongVector(northVector, zAxisLength.toInt())
+	val westList = minLoc.alongVector(eastVector, xAxisLength.toInt())
+
+	return (northList + eastList + southList + westList).distinct()
+}
+
 fun cube(minLoc: Location, maxLoc: Location): List<Location> {
 	val bottom = rectangle(minLoc, Location(maxLoc.world, maxLoc.x, minLoc.y, maxLoc.z))
 	val top = rectangle(Location(minLoc.world, minLoc.x, maxLoc.y, minLoc.z), maxLoc)
@@ -223,6 +260,21 @@ fun cube(minLoc: Location, maxLoc: Location): List<Location> {
 	val minMaxList = Location(maxLoc.world, minLoc.x, minLoc.y, maxLoc.z).alongVector(verticalVector, height.toInt())
 	val maxMinList = Location(maxLoc.world, maxLoc.x, minLoc.y, minLoc.z).alongVector(verticalVector, height.toInt())
 	val maxList = Location(maxLoc.world, maxLoc.x, minLoc.y, maxLoc.z).alongVector(verticalVector, height.toInt())
+
+	return (top + bottom + minList + minMaxList + maxMinList + maxList).distinct()
+}
+
+fun cube(minLoc: Vector, maxLoc: Vector): List<Vector> {
+	val bottom = rectangle(minLoc, maxLoc)
+	val top = rectangle(minLoc, maxLoc)
+
+	val height = maxLoc.y - minLoc.y
+	val verticalVector = Vector(0.0, height, 0.0)
+
+	val minList = Vector(minLoc.x, minLoc.y, minLoc.z).alongVector(verticalVector, height.toInt())
+	val minMaxList = Vector(minLoc.x, minLoc.y, maxLoc.z).alongVector(verticalVector, height.toInt())
+	val maxMinList = Vector(maxLoc.x, minLoc.y, minLoc.z).alongVector(verticalVector, height.toInt())
+	val maxList = Vector(maxLoc.x, minLoc.y, maxLoc.z).alongVector(verticalVector, height.toInt())
 
 	return (top + bottom + minList + minMaxList + maxMinList + maxList).distinct()
 }
