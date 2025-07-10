@@ -3,7 +3,10 @@ package net.horizonsend.ion.server.features.sequences.trigger
 import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerInteractTrigger.InteractTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerMovementTrigger.MovementTriggerSettings
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.listen
+import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
@@ -50,10 +53,16 @@ abstract class SequenceTriggerType<T : SequenceTriggerType.TriggerSettings> {
 
 			companion object {
 				fun inBoundingBox(box: BoundingBox) = PlayerLocationPredicate {
+					val cube = cube(box.min, box.max)
+					debugAudience.audiences().filterIsInstance<Player>().forEach { player -> cube.forEach { cubePoint -> player.spawnParticle(Particle.SOUL_FIRE_FLAME, cubePoint.x, cubePoint.y, cubePoint.z, 1, 0.0, 0.0, 0.0, 0.0) } }
+
 					return@PlayerLocationPredicate box.contains(it.location.toVector())
 				}
 
 				fun lookingAtBoundingBox(box: BoundingBox) = PlayerLocationPredicate { player ->
+					val cube = cube(box.min, box.max)
+					debugAudience.audiences().filterIsInstance<Player>().forEach { player -> cube.forEach { cubePoint -> player.spawnParticle(Particle.SOUL_FIRE_FLAME, cubePoint.x, cubePoint.y, cubePoint.z, 1, 0.0, 0.0, 0.0, 0.0) } }
+
 					return@PlayerLocationPredicate box.rayTrace(player.eyeLocation.toVector(), player.location.direction, 10.0) != null
 				}
 			}
