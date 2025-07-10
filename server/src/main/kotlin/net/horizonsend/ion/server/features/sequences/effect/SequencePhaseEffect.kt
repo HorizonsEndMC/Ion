@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.sequences.effect
 
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.server.features.sequences.SequenceManager
+import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
@@ -18,6 +19,10 @@ abstract class SequencePhaseEffect(val playPhases: List<EffectTiming>) {
 
 	class EndSequence(playPhases: List<EffectTiming>) : SequencePhaseEffect(playPhases) {
 		override fun playEffect(player: Player) { SequenceManager.endPhase(player) }
+	}
+
+	class GoToPhase(val phase: SequencePhaseKeys.SequencePhaseKey, playPhases: List<EffectTiming>) : SequencePhaseEffect(playPhases) {
+		override fun playEffect(player: Player) { SequenceManager.startPhase(player, phase.getValue()) }
 	}
 
 	class Chance(val effect: SequencePhaseEffect, val chance: Double) : SequencePhaseEffect(effect.playPhases) {
