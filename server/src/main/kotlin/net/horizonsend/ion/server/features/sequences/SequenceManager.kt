@@ -25,6 +25,7 @@ import java.util.UUID
 
 object SequenceManager : IonServerComponent() {
 	private val phaseMap = mutableMapOf<UUID, SequencePhase>()
+	private val sequenceData = mutableMapOf<UUID, SequenceDataStore>()
 
 	override fun onEnable() {
 		SequenceTriggerTypes.runSetup()
@@ -34,9 +35,18 @@ object SequenceManager : IonServerComponent() {
 		}
 	}
 
+	fun getSequenceData(player: Player): SequenceDataStore {
+		return sequenceData.getOrPut(player.uniqueId) { SequenceDataStore(player.uniqueId) }
+	}
+
+	fun clearSequenceData(player: Player) {
+		sequenceData.remove(player.uniqueId)
+	}
+
 	@EventHandler
 	fun onPlayerLeave(event: PlayerQuitEvent) {
 		phaseMap.remove(event.player.uniqueId)?.endPrematurely(event.player)
+		sequenceData.remove(event.player.uniqueId)
 	}
 
 	fun getCurrentPhase(player: Player): SequencePhase? {
