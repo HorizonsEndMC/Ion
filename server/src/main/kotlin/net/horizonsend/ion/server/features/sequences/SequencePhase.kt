@@ -6,12 +6,12 @@ import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
 import org.bukkit.entity.Player
 
 class SequencePhase(
-    val name: String,
-    val trigger: SequenceTrigger<*>,
+	val key: SequencePhaseKeys.SequencePhaseKey,
+	val trigger: SequenceTrigger<*>,
 
 	effects: List<SequencePhaseEffect>,
 
-    val children: List<SequencePhase>
+	val children: List<SequencePhaseKeys.SequencePhaseKey>
 ) {
 	private val startEffects = effects.filter { effect -> effect.playPhases.contains(EffectTiming.START) }
 	private val tickedEffects = effects.filter { effect -> effect.playPhases.contains(EffectTiming.TICKED) }
@@ -21,7 +21,7 @@ class SequencePhase(
 	    trigger.setTriggerResult { player -> SequenceManager.startPhase(player, this@SequencePhase) }
 	}
 
-	val danglingTriggers get() = children.map { phase -> phase.trigger }
+	val danglingTriggers get() = children.map { phase -> phase.getValue().trigger }
 
 	fun start(player: Player) {
 		startEffects.forEach { it.playEffect(player) }
@@ -40,6 +40,6 @@ class SequencePhase(
 	}
 
 	companion object {
-		fun endSequence(trigger: SequenceTrigger<*>): SequencePhase = SequencePhase("END", trigger, listOf(SequencePhaseEffect.EndSequence(listOf(EffectTiming.START))), listOf())
+		fun endSequence(key: SequencePhaseKeys.SequencePhaseKey, trigger: SequenceTrigger<*>): SequencePhase = SequencePhase(key, trigger, listOf(SequencePhaseEffect.EndSequence(listOf(EffectTiming.START))), listOf())
 	}
 }
