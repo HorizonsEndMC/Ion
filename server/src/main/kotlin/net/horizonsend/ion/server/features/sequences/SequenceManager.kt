@@ -71,10 +71,6 @@ object SequenceManager : IonServerComponent() {
 		phaseMap[player.uniqueId] = phase
 	}
 
-	private fun registerStartPhase(phase: SequencePhase): SequencePhase {
-		return phase
-	}
-
 	fun getPhaseByKey(key: SequencePhaseKeys.SequencePhaseKey): SequencePhase {
 		return phasesByKey[key] ?: throw IllegalStateException("Unregistered phase key ${key.key}")
 	}
@@ -86,13 +82,11 @@ object SequenceManager : IonServerComponent() {
 		return phase.key
 	}
 
-	val TUTORIAL = registerStartPhase(SequencePhase(
+	val TUTORIAL get() = bootstrapPhase(SequencePhase(
 		key = TUTORIAL_START,
 		trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_INTERACT, InteractTriggerSettings()),
 		effects = mutableListOf(
-			SequencePhaseEffect.SendMessage(Component.text("phase 1 start"), listOf(EffectTiming.START)),
 			SequencePhaseEffect.SendMessage(Component.text("Go look at the door to progresss"), listOf(EffectTiming.START)),
-			SequencePhaseEffect.SendMessage(Component.text("phase 1 end"), listOf(EffectTiming.END))
 		),
 		children = listOf(
 			bootstrapPhase(SequencePhase(
@@ -101,11 +95,13 @@ object SequenceManager : IonServerComponent() {
 					lookingAtBoundingBox(BoundingBox.of(Vec3i(193, 359, -121).toVector(), Vec3i(200, 365, -111).plus(Vec3i(1, 1, 1)).toVector()))
 				))),
 				effects = mutableListOf(
-					SequencePhaseEffect.SendMessage(Component.text("phase 2 start"), listOf(EffectTiming.START)),
 					SequencePhaseEffect.SendMessage(Component.text("Punch to progress"), listOf(EffectTiming.START)),
-					SequencePhaseEffect.SendMessage(Component.text("phase 2 end"), listOf(EffectTiming.END))
 				),
-				children = listOf(bootstrapPhase(SequencePhase.endSequence(TUTORIAL_END, trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_INTERACT, InteractTriggerSettings()))))
+				children = listOf(bootstrapPhase(
+					SequencePhase.endSequence(
+						key = TUTORIAL_END,
+						trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_INTERACT, InteractTriggerSettings())
+					)))
 			)),
 			bootstrapPhase(SequencePhase(
 				key = TUTORIAL_BRANCH,
@@ -115,7 +111,7 @@ object SequenceManager : IonServerComponent() {
 				effects = mutableListOf(
 					SequencePhaseEffect.SendMessage(Component.text("That is some cherry wood"), listOf(EffectTiming.START)),
 					SequencePhaseEffect.SendMessage(Component.text("Back to our regularly scheduled programming"), listOf(EffectTiming.END)),
-					SequencePhaseEffect.GoToPhase(TUTORIAL_TWO, listOf(EffectTiming.START))
+					SequencePhaseEffect.GoToPhase(TUTORIAL_START, listOf(EffectTiming.START))
 				),
 				children = listOf()
 			))
