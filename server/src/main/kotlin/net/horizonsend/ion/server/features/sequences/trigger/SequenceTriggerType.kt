@@ -58,20 +58,24 @@ abstract class SequenceTriggerType<T : SequenceTriggerType.TriggerSettings> {
 						&& z >= minPoint.z && z < maxPoint.z
 				}
 
-				fun lookingAtBoundingBox(minPoint: Vec3i, maxPoint: Vec3i) = PlayerLocationPredicate {
-					val eyeDirection = it.location.direction
+				fun lookingAtBoundingBox(minPoint: Vec3i, maxPoint: Vec3i) = PlayerLocationPredicate { player ->
+					val eyeDirection = player.location.direction
 
-					val nearestPoint = nearestPointToVector(
-						origin = it.eyeLocation.toVector(),
-						direction = eyeDirection,
-						point = minPoint.toVector()
-					)
+					val points = setOf(minPoint, maxPoint)
 
-					val (x, y, z) = Vec3i(nearestPoint)
+					return@PlayerLocationPredicate points.any {
+						val nearestPoint = nearestPointToVector(
+							origin = player.eyeLocation.toVector(),
+							direction = eyeDirection,
+							point = minPoint.toVector()
+						)
 
-					return@PlayerLocationPredicate x >= minPoint.x && x < maxPoint.x
-						&& y >= minPoint.y && y < maxPoint.y
-						&& z >= minPoint.z && z < maxPoint.z
+						val (x, y, z) = Vec3i(nearestPoint)
+
+						x >= minPoint.x && x < maxPoint.x
+							&& y >= minPoint.y && y < maxPoint.y
+							&& z >= minPoint.z && z < maxPoint.z
+					}
 				}
 			}
 		}
