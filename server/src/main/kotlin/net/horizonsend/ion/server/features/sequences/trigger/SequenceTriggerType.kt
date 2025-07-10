@@ -3,12 +3,11 @@ package net.horizonsend.ion.server.features.sequences.trigger
 import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerInteractTrigger.InteractTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType.PlayerMovementTrigger.MovementTriggerSettings
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.nearestPointToVector
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.util.BoundingBox
 
 abstract class SequenceTriggerType<T : SequenceTriggerType.TriggerSettings> {
 	open fun setup() {}
@@ -50,32 +49,12 @@ abstract class SequenceTriggerType<T : SequenceTriggerType.TriggerSettings> {
 			fun check(player: Player): Boolean
 
 			companion object {
-				fun inBoundingBox(minPoint: Vec3i, maxPoint: Vec3i) = PlayerLocationPredicate {
-					val (x, y, z) = Vec3i(it.location)
-
-					return@PlayerLocationPredicate x >= minPoint.x && x < maxPoint.x
-						&& y >= minPoint.y && y < maxPoint.y
-						&& z >= minPoint.z && z < maxPoint.z
+				fun inBoundingBox(box: BoundingBox) = PlayerLocationPredicate {
+					return@PlayerLocationPredicate box.contains(it.location.toVector())
 				}
 
-				fun lookingAtBoundingBox(minPoint: Vec3i, maxPoint: Vec3i) = PlayerLocationPredicate { player ->
-					val eyeDirection = player.location.direction
-
-					val points = setOf(minPoint, maxPoint)
-
-					return@PlayerLocationPredicate points.any {
-						val nearestPoint = nearestPointToVector(
-							origin = player.eyeLocation.toVector(),
-							direction = eyeDirection,
-							point = minPoint.toVector()
-						)
-
-						val (x, y, z) = Vec3i(nearestPoint)
-
-						x >= minPoint.x && x < maxPoint.x
-							&& y >= minPoint.y && y < maxPoint.y
-							&& z >= minPoint.z && z < maxPoint.z
-					}
+				fun lookingAtBoundingBox(box: BoundingBox) = PlayerLocationPredicate { player ->
+					return@PlayerLocationPredicate box.rayTrace(player.eyeLocation.toVector(), player.location.direction, 10.0) != null
 				}
 			}
 		}
