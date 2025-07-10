@@ -1,6 +1,10 @@
 package net.horizonsend.ion.server.features.sequences
 
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys.SequencePhaseKey
+import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys.TUTORIAL_END
+import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys.TUTORIAL_START
+import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys.TUTORIAL_TWO
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
@@ -67,8 +71,19 @@ object SequenceManager : IonServerComponent() {
 		return phase
 	}
 
+	fun getPhaseByKey(key: SequencePhaseKeys.SequencePhaseKey): SequencePhase {
+		return phasesByKey[key] ?: throw IllegalStateException("Unregistered phase key ${key.key}")
+	}
+
+	private val phasesByKey = mutableMapOf<SequencePhaseKey, SequencePhase>()
+
+	private fun bootstrapPhase(phase: SequencePhase): SequencePhaseKey {
+		phasesByKey[phase.key] = phase
+		return phase.key
+	}
+
 	val TUTORIAL = registerStartPhase(SequencePhase(
-		name = "test",
+		key = TUTORIAL_START,
 		trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_INTERACT, InteractTriggerSettings()),
 		effects = mutableListOf(
 			SequencePhaseEffect.SendMessage(Component.text("phase 1 start"), listOf(EffectTiming.START)),
@@ -76,16 +91,16 @@ object SequenceManager : IonServerComponent() {
 			SequencePhaseEffect.SendMessage(Component.text("phase 1 end"), listOf(EffectTiming.END))
 		),
 		children = listOf(
-			SequencePhase(
-				name = "test",
+			bootstrapPhase(SequencePhase(
+				key = TUTORIAL_TWO,
 				trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_MOVEMENT, MovementTriggerSettings()),
 				effects = mutableListOf(
 					SequencePhaseEffect.SendMessage(Component.text("phase 2 start"), listOf(EffectTiming.START)),
 					SequencePhaseEffect.SendMessage(Component.text("phase 2 ticked"), listOf(EffectTiming.TICKED)),
 					SequencePhaseEffect.SendMessage(Component.text("phase 2 end"), listOf(EffectTiming.END))
 				),
-				children = listOf(SequencePhase.endSequence(SequenceTrigger(SequenceTriggerTypes.PLAYER_INTERACT, InteractTriggerSettings())))
-			)
+				children = listOf(bootstrapPhase(SequencePhase.endSequence(TUTORIAL_END, SequenceTrigger(SequenceTriggerTypes.PLAYER_INTERACT, InteractTriggerSettings()))))
+			))
 		)
 	))
 }
