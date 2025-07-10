@@ -40,6 +40,14 @@ class SequencePhase(
 	}
 
 	companion object {
-		fun endSequence(key: SequencePhaseKeys.SequencePhaseKey, trigger: SequenceTrigger<*>): SequencePhase = SequencePhase(key, trigger, listOf(SequencePhaseEffect.EndSequence(listOf(EffectTiming.START))), listOf())
+		fun endSequence(key: SequencePhaseKeys.SequencePhaseKey, trigger: SequenceTrigger<*>): SequencePhase = SequencePhase(
+			key = key,
+			trigger = trigger,
+			effects = listOf(
+				SequencePhaseEffect.EndSequence(listOf(EffectTiming.START)),
+				SequencePhaseEffect.ClearSequenceData(listOf(EffectTiming.START))
+			),
+			children = listOf()
+		)
 	}
 }
