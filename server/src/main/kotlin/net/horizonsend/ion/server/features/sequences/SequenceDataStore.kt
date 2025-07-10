@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.features.sequences
 
 import java.util.Optional
-import java.util.UUID
 
-class SequenceDataStore(player: UUID) {
+class SequenceDataStore() {
 	val keyedData = mutableMapOf<String, Any?>()
 
 	operator fun <T : Any> get(key: String): Optional<T> {

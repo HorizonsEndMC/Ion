@@ -3,11 +3,11 @@ package net.horizonsend.ion.server.features.sequences.trigger
 object SequenceTriggerTypes {
 	private val types: MutableList<SequenceTriggerType<*>> = mutableListOf()
 
-	val PLAYER_MOVEMENT = register(SequenceTriggerType.PlayerMovementTrigger)
-	val PLAYER_INTERACT = register(SequenceTriggerType.PlayerInteractTrigger)
-	val COMBINED_AND = register(SequenceTriggerType.CombinedAndTrigger)
-	val COMBINED_OR = register(SequenceTriggerType.CombinedOrTrigger)
-	val DATA_PREDICATE = register(SequenceTriggerType.DataPredicate)
+	val PLAYER_MOVEMENT = register(PlayerMovementTrigger)
+	val PLAYER_INTERACT = register(PlayerInteractTrigger)
+	val COMBINED_AND = register(CombinedAndTrigger)
+	val COMBINED_OR = register(CombinedOrTrigger)
+	val DATA_PREDICATE = register(DataPredicate)
 
 	fun <T : SequenceTriggerType<*>> register(type: T): T {
 		types.add(type)
@@ -15,6 +15,6 @@ object SequenceTriggerTypes {
 	}
 
 	fun runSetup() {
-		types.forEach { t -> t.setup() }
+		types.forEach { t -> t.setupChecks() }
 	}
 }
