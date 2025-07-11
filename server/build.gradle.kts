@@ -43,7 +43,7 @@ dependencies {
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
 	compileOnly("com.discordsrv:discordsrv:1.29.0")
 	compileOnly("net.luckperms:api:5.4")
-	compileOnly("xyz.xenondevs.invui:invui:1.43") // Downloaded via paper library manager for remapping
+	compileOnly("xyz.xenondevs.invui:invui:1.46") // Downloaded via paper library manager for remapping
 	compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
 
 	// Included Dependencies
