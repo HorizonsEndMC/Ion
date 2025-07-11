@@ -64,6 +64,7 @@ import org.bukkit.entity.Player
 import org.litote.kmongo.EMPTY_BSON
 import org.litote.kmongo.eq
 import org.litote.kmongo.ne
+import org.litote.kmongo.setValue
 import java.util.Date
 import kotlin.math.roundToInt
 
@@ -445,6 +446,32 @@ internal object NationCommand : SLCommand() {
 			territoryName,
 			territoryWorld,
 			nationName
+		))
+	}
+
+	@Subcommand("outpost set alias")
+	fun onTerritoryAlias(sender: Player, alias: String) = asyncCommand(sender) {
+		validateName(alias, null)
+
+		val nationId = requireNationIn(sender)
+		requireNationPermission(sender, nationId, NationRole.Permission.CLAIM_CREATE)
+
+		val regionTerritory = requireTerritoryIn(sender)
+		failIf(regionTerritory.nation != nationId) { "Your nation doesn't own that territory!" }
+
+		val territoryName = regionTerritory.name
+		val territoryWorld = regionTerritory.world
+
+		Territory.updateById(regionTerritory.id, setValue(Territory::alias, alias))
+
+		val nationName = getNationName(nationId)
+		Notify.chatAndGlobal(nationImportantMessageFormat(
+			"{0}, of {1} renamed their territory outpost {2} on {3} to {4}!",
+			sender.name,
+			nationName,
+			territoryName,
+			territoryWorld,
+			alias
 		))
 	}
 

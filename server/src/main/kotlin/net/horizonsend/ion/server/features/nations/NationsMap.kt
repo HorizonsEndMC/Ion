@@ -192,6 +192,12 @@ object NationsMap : IonServerComponent(true) {
 		}
 
 		if (nation != null) {
+			val alias = territory.alias
+			var name = territory.name
+			if (alias != null) {
+				name = alias + " (${territory.name})"
+			}
+
 			val rgb = nation.color
 			fillOpacity = 0.2
 			fillRGB = rgb
@@ -200,7 +206,7 @@ object NationsMap : IonServerComponent(true) {
 
 			// for nation outposts only
 			if (settlement == null) marker.setLabel(
-				"<h3 style=\"text-align: center;\">${territory.name}</h3>" +
+				"<h3 style=\"text-align: center;\">${name}</h3>" +
 				"\n<h3 style=\"text-align: center;\">Owner: ${nation.name}</h3>" +
 				"\n<p style=\"padding-top: 0;\">${territory.name} is an outpost of the nation ${nation.name}</p>",
 				true
