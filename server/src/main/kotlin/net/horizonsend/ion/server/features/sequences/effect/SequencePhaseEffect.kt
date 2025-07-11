@@ -1,9 +1,12 @@
 package net.horizonsend.ion.server.features.sequences.effect
 
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
+import net.horizonsend.ion.server.configuration.util.FloatAmount
 import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.title.Title
@@ -13,6 +16,7 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import java.util.Optional
 
 abstract class SequencePhaseEffect(val playPhases: List<EffectTiming>) {
 	abstract fun playEffect(player: Player)
@@ -33,6 +37,14 @@ abstract class SequencePhaseEffect(val playPhases: List<EffectTiming>) {
 		override fun playEffect(player: Player) { SequenceManager.getSequenceData(player)[key] = value }
 	}
 
+	class DataConditionalEffect<T : Any>(val key: String, val condition: (Optional<T>) -> Boolean, val effect: SequencePhaseEffect) : SequencePhaseEffect(effect.playPhases) {
+		override fun playEffect(player: Player) { if (condition(SequenceManager.getSequenceData(player).get<T>(key))) effect.playEffect(player) }
+	}
+
+	class DelayEffect<T : Any>(val delay: Long, val effect: SequencePhaseEffect) : SequencePhaseEffect(effect.playPhases) {
+		override fun playEffect(player: Player) { Tasks.syncDelay(delay) { effect.playEffect(player) } }
+	}
+
 	class Chance(val effect: SequencePhaseEffect, val chance: Double) : SequencePhaseEffect(effect.playPhases) {
 		override fun playEffect(player: Player) { if (testRandom(chance)) effect.playEffect(player) }
 	}
@@ -45,8 +57,12 @@ abstract class SequencePhaseEffect(val playPhases: List<EffectTiming>) {
 		override fun playEffect(player: Player) { player.showTitle(title) }
 	}
 
-	class PlaySound(val sound: Sound, playPhases: List<EffectTiming>) : SequencePhaseEffect(playPhases) {
+	class PlaySetSound(val sound: Sound, playPhases: List<EffectTiming>) : SequencePhaseEffect(playPhases) {
 		override fun playEffect(player: Player) { player.playSound(sound) }
+	}
+
+	class PlaySound(val key: Key, val volume: FloatAmount, val pitch: FloatAmount, playPhases: List<EffectTiming>) : SequencePhaseEffect(playPhases) {
+		override fun playEffect(player: Player) { player.playSound(Sound.sound(key, Sound.Source.AMBIENT, volume.get(), pitch.get())) }
 	}
 
 	class PlayVisualProjectile(val origin: Location, val direction: Vector, val color: Color, playPhases: List<EffectTiming>) : SequencePhaseEffect(playPhases) {
