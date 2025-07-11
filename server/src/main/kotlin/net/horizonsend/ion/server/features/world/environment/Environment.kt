@@ -122,6 +122,64 @@ enum class Environment {
 				event.block.setBlockData(event.blockData, false)
 			}
 		}
+	},
+
+	NO_GRAVITY_IGNORE_INTERIOR {
+		override fun tickPlayer(player: Player) {
+			if (player.gameMode != GameMode.SURVIVAL || player.isDead || !player.hasGravity()) return
+
+			player.allowFlight = true
+
+			if (!player.isFlying && !player.isOnGround) {
+				player.isFlying = true
+			}
+
+			player.flySpeed = 0.02f
+
+			if (player.isSprinting) {
+				player.isSprinting = false
+			}
+		}
+
+		override fun setup() {
+			listen<ItemSpawnEvent> { event ->
+				val entity = event.entity
+
+				if (!entity.world.hasEnvironment()) return@listen
+
+				entity.setGravity(false)
+				entity.velocity = entity.velocity.multiply(0.05)
+			}
+
+			listen<PlayerMoveEvent> { event ->
+				val player = event.player
+
+				if (!player.world.hasEnvironment()) return@listen
+
+				val isPositiveChange = event.to.y - event.from.y > event.player.world.minHeight
+
+				if (event.to.y < event.player.world.minHeight && !isPositiveChange || event.to.y > event.player.world.maxHeight && isPositiveChange) {
+					event.isCancelled = true
+				}
+			}
+
+			listen<EntityDamageEvent> { event ->
+				if (!event.entity.world.hasEnvironment()) return@listen
+				if (event.cause != EntityDamageEvent.DamageCause.FALL) return@listen
+
+				event.isCancelled = true
+			}
+
+			listen<EntityChangeBlockEvent> { event ->
+				val entity = event.entity
+
+				if (!entity.world.hasEnvironment()) return@listen
+				if (entity !is FallingBlock) return@listen
+
+				event.isCancelled = true
+				event.block.setBlockData(event.blockData, false)
+			}
+		}
 	}
 
 	;
