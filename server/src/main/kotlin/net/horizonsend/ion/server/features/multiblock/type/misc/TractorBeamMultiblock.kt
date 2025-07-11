@@ -23,10 +23,15 @@ import net.horizonsend.ion.server.miscellaneous.utils.isGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isSlab
 import net.horizonsend.ion.server.miscellaneous.utils.isStairs
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
+import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor.color
+import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
+import net.minecraft.world.phys.shapes.VoxelShape
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound as SoundType
@@ -111,7 +116,10 @@ abstract class AbstractTractorBeam : Multiblock(), InteractableMultiblock, Displ
 				if (type.isAir) continue
 				if (!type.isCollidable) continue
 
-				val newLocation = Location(player.world, player.location.x, block.y + 1.0, player.location.z)
+				val blockShape: VoxelShape = block.blockData.nms.getCollisionShape(world.minecraft, BlockPos(block.x, block.y, block.z))
+				val top = blockShape.max(Direction.Axis.Y)
+
+				val newLocation = Location(player.world, player.location.x, block.y + top, player.location.z)
 
 				finishTeleport(player, newLocation, event, SoundType.BLOCK_PISTON_CONTRACT, "Descending")
 				break
