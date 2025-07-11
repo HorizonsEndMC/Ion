@@ -1,12 +1,15 @@
 package net.horizonsend.ion.server.features.space
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.createHtmlLink
 import net.horizonsend.ion.common.utils.text.wrapStyle
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.space.body.OrbitingCelestialBody
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.Color
 import org.dynmap.bukkit.DynmapPlugin
@@ -144,6 +147,20 @@ object SpaceMap : IonServerComponent(true) {
 				384.0,
 				-100.0,
 				markerAPI.getMarkerIcon("world"),
+				false
+			)
+		}
+
+		for (player in Bukkit.getOnlinePlayers().filter { player -> player.getSetting(PlayerSettings::transponderEnabled) }) {
+			markerSet.createMarker(
+				"${player.uniqueId}_notransponder",
+				"Unidentified Entity",
+				false,
+				player.world.name,
+				player.location.x,
+				player.location.y,
+				player.location.z,
+				markerAPI.getMarkerIcon("anchor"),
 				false
 			)
 		}

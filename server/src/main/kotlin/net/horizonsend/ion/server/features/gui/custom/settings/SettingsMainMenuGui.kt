@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedBooleanToggle
 import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedEnumCycle
-import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedIntCycle
 import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedIntegerInput
 import net.horizonsend.ion.server.features.gui.custom.settings.button.permission.PermissionBooleanToggle
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSettingsCommand.CruiseIndicatorSounds
@@ -30,6 +29,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 		createSettingsPage(player, "Control Settings",
 			DBCachedBooleanToggle(text("DC Overrides Cruise"), "", GuiItem.GUNSHIP, false, PlayerSettings::useAlternateDCCruise),
 			//DBCachedIntCycle(5, 1, text("DC Speed Modifier"), "", GuiItem.GUNSHIP, 1, PlayerSettings::dcSpeedModifier)
+			DBCachedBooleanToggle(text("Transponder Enabled"), "Disabling your transponder hides your player and ship identity on Dynmap", GuiItem.GUNSHIP, true, PlayerSettings::transponderEnabled)
 		),
 		createSettingsPage(player, "Sidebar Settings",
 			createSettingsPage(player, "Combat Timer Settings",
