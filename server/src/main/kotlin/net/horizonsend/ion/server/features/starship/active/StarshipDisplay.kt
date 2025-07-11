@@ -2,10 +2,12 @@ package net.horizonsend.ion.server.features.starship.active
 
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -58,16 +60,18 @@ object StarshipDisplay : IonServerComponent(true) {
 
 	/** Stores the StarshipIcon for use in populating the map */
 	private fun createMarker(starship: ActiveStarship, marker: MarkerIcon? = null) {
+		val transponderEnabled = starship.playerPilot?.getSetting(PlayerSettings::transponderEnabled) ?: true
 		val charIdentifier = starship.charIdentifier
-		val displayName = starship.identifier
+		val displayName = if (transponderEnabled) starship.identifier else "Unidentified Entity"
 
-		val markerIcon = marker
+		val markerIcon = if (transponderEnabled) marker
 			?: markerAPI.getMarkerIcon(starship.type.dynmapIcon)
 			?: markerAPI.getMarkerIcon("anchor")
+		else markerAPI.getMarkerIcon("anchor")
 
 		val isInHyperspace = Hyperspace.isMoving(starship)
 
-		val description = createDynmapPopupHTML(starship, isInHyperspace)
+		val description = if (transponderEnabled) createDynmapPopupHTML(starship, isInHyperspace) else ""
 
 		val circles = mutableListOf<CircleInfo>()
 
