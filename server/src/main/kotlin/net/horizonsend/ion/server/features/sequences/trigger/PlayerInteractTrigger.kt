@@ -12,8 +12,8 @@ object PlayerInteractTrigger : SequenceTriggerType<InteractTriggerSettings>() {
 
 	class InteractTriggerSettings(
 	) : TriggerSettings() {
-		override fun shouldProceed(player: Player): Boolean {
-			return true
+		override fun shouldProceed(player: Player, callingTrigger: SequenceTriggerType<*>): Boolean {
+			return callingTrigger == PlayerInteractTrigger
 		}
 	}
 }
