@@ -7,7 +7,7 @@ import org.bukkit.entity.Player
 
 class SequencePhase(
 	val key: SequencePhaseKeys.SequencePhaseKey,
-	val trigger: SequenceTrigger<*>,
+	val trigger: SequenceTrigger<*>?,
 
 	effects: List<SequencePhaseEffect>,
 
@@ -18,10 +18,10 @@ class SequencePhase(
 	private val endEffects = effects.filter { effect -> effect.playPhases.contains(EffectTiming.END) }
 
 	init {
-	    trigger.setTriggerResult { player -> SequenceManager.startPhase(player, this@SequencePhase) }
+	    trigger?.setTriggerResult { player -> SequenceManager.startPhase(player, this@SequencePhase) }
 	}
 
-	val danglingTriggers get() = children.map { phase -> phase.getValue().trigger }
+	val danglingTriggers get() = children.mapNotNull { phase -> phase.getValue().trigger }
 
 	fun start(player: Player) {
 		startEffects.forEach { it.playEffect(player) }
