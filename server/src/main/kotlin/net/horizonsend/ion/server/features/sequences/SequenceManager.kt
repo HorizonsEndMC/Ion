@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigg
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.lookingAtBoundingBox
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
+import net.horizonsend.ion.server.features.sequences.trigger.UsedTractorBeamTrigger.TractorBeamTriggerSettings
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
@@ -227,7 +228,7 @@ object SequenceManager : IonServerComponent() {
 								children = listOf(
 									bootstrapPhase(
 										key = USED_TRACTOR_BEAM,
-										trigger = SequenceTrigger(SequenceTriggerTypes.USE_TRACTOR_BEAM, InteractTriggerSettings()),
+										trigger = SequenceTrigger(SequenceTriggerTypes.USE_TRACTOR_BEAM, TractorBeamTriggerSettings()),
 										effects = listOf(
 											RANDOM_EXPLOSION_SOUND,
 											SendMessage(Component.empty(), listOf(EffectTiming.START)),
