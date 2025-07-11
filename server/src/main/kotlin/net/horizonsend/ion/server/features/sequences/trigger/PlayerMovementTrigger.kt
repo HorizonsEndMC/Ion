@@ -34,11 +34,11 @@ object PlayerMovementTrigger : SequenceTriggerType<MovementTriggerSettings>() {
 		return@PlayerLocationPredicate box.contains(it.location.toVector())
 	}
 
-	fun lookingAtBoundingBox(box: BoundingBox) = PlayerLocationPredicate { player ->
+	fun lookingAtBoundingBox(box: BoundingBox, distance: Double) = PlayerLocationPredicate { player ->
 		val cube = cube(box.min, box.max)
 		@Suppress("OverrideOnly")
 		debugAudience.audiences().filterIsInstance<Player>().forEach { player -> cube.forEach { cubePoint -> player.spawnParticle(Particle.SOUL_FIRE_FLAME, cubePoint.x, cubePoint.y, cubePoint.z, 1, 0.0, 0.0, 0.0, 0.0) } }
 
-		return@PlayerLocationPredicate box.rayTrace(player.eyeLocation.toVector(), player.location.direction, 10.0) != null
+		return@PlayerLocationPredicate box.rayTrace(player.eyeLocation.toVector(), player.location.direction, distance) != null
 	}
 }
