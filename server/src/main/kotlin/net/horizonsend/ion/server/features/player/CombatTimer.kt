@@ -217,6 +217,12 @@ object CombatTimer : IonServerComponent() {
 
 		if (attacker.hasPermission("group.dutymode") || defender.hasPermission("group.dutymode")) return
 
+		// If the defender is an NPC, just give the attacker a combat NPC regardless
+		if (defender.hasMetadata("NPC") && tagAttacker) {
+			refreshPvpTimer(attacker, reason)
+			return
+		}
+
 		val attackerData = PlayerCache[attacker]
 		val attackerNation = attackerData.nationOid
 
