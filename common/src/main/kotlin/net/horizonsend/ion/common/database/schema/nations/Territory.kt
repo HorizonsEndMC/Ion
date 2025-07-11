@@ -37,6 +37,8 @@ data class Territory(
 	var settlement: Oid<Settlement>? = null,
     /** The nation with an outpost here. For outposts only, not member settlements! */
 	var nation: Oid<Nation>? = null,
+	/** The alias given by the nation owner*/
+	var alias: String? = null,
     /** The NPC territory owner residing here. */
 	var npcOwner: Oid<NPCTerritoryOwner>? = null,
     /** If the territory should be a safe-zone from PVP and explosions */
@@ -78,6 +80,11 @@ data class Territory(
 				require(matches(sess, id, unclaimedQuery))
 				require(Nation.exists(sess, nation))
 			}
+
+			if (nation == null) {
+				updateById(sess, id, org.litote.kmongo.setValue(Territory::alias, null))
+			}
+
 			updateById(sess, id, org.litote.kmongo.setValue(Territory::nation, nation))
 		}
 
