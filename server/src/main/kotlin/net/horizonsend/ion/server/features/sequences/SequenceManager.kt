@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.sequences
 
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.configuration.util.StaticFloatAmount
+import net.horizonsend.ion.server.configuration.util.VariableFloatAmount
 import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys.CHERRY_TEST_BRANCH
 import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys.SequencePhaseKey
 import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys.TUTORIAL_END
@@ -19,6 +21,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.Bukkit.getPlayer
+import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerQuitEvent
@@ -94,11 +97,15 @@ object SequenceManager : IonServerComponent() {
 		return phase.key
 	}
 
+	val RANDOM_EXPLOSION_SOUND = SequencePhaseEffect.Chance(SequencePhaseEffect.PlaySound(Sound.ENTITY_GENERIC_EXPLODE.key(), VariableFloatAmount(0.05f, 1.0f), StaticFloatAmount(1.0f), listOf(EffectTiming.TICKED)), 0.02)
+
 	val TUTORIAL get() = bootstrapPhase(SequencePhase(
 		key = TUTORIAL_START,
 		trigger = SequenceTrigger(SequenceTriggerTypes.PLAYER_INTERACT, InteractTriggerSettings()),
 		effects = mutableListOf(
-			SequencePhaseEffect.SendMessage(Component.text("Go look at the door to progresss"), listOf(EffectTiming.START)),
+			SequencePhaseEffect.DataConditionalEffect<Boolean>("seen_cherry_wood", { it.isEmpty || !it.get() }, SequencePhaseEffect.SendMessage(Component.text("Welcome to Horizon's End!"), listOf(EffectTiming.START))),
+			SequencePhaseEffect.DataConditionalEffect<Boolean>("seen_cherry_wood", { it.isEmpty || !it.get() }, SequencePhaseEffect.SendMessage(Component.text("This is the start of the intro sequence."), listOf(EffectTiming.START))),
+			RANDOM_EXPLOSION_SOUND
 		),
 		children = listOf(
 			bootstrapPhase(SequencePhase(
@@ -108,6 +115,7 @@ object SequenceManager : IonServerComponent() {
 				))),
 				effects = mutableListOf(
 					SequencePhaseEffect.SendMessage(Component.text("Punch to progress"), listOf(EffectTiming.START)),
+					RANDOM_EXPLOSION_SOUND
 				),
 				children = listOf(bootstrapPhase(
 					SequencePhase.endSequence(
@@ -120,7 +128,7 @@ object SequenceManager : IonServerComponent() {
 				key = CHERRY_TEST_BRANCH,
 				trigger = SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
 					SequenceTrigger(SequenceTriggerTypes.PLAYER_MOVEMENT, MovementTriggerSettings(listOf(
-						lookingAtBoundingBox(BoundingBox.of(Vec3i(203, 360, -126).toVector(), Vec3i(203, 360, -124).plus(Vec3i(1, 1, 1)).toVector()))
+						lookingAtBoundingBox(BoundingBox.of(Vec3i(203, 360, -126).toVector(), Vec3i(203, 360, -124).plus(Vec3i(1, 1, 1)).toVector())),
 					))),
 					SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_cherry_wood") { it != true })
 				))),
@@ -128,7 +136,8 @@ object SequenceManager : IonServerComponent() {
 					SequencePhaseEffect.SendMessage(Component.text("That is some cherry wood"), listOf(EffectTiming.START)),
 					SequencePhaseEffect.SendMessage(Component.text("Back to our regularly scheduled programming"), listOf(EffectTiming.END)),
 					SequencePhaseEffect.SetSequenceData("seen_cherry_wood", true, listOf(EffectTiming.END)),
-					SequencePhaseEffect.GoToPhase(TUTORIAL_START, listOf(EffectTiming.START))
+					SequencePhaseEffect.GoToPhase(TUTORIAL_START, listOf(EffectTiming.START)),
+					RANDOM_EXPLOSION_SOUND
 				),
 				children = listOf()
 			))
