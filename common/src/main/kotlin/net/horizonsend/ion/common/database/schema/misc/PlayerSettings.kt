@@ -61,6 +61,7 @@ data class PlayerSettings(
 	var soundCruiseIndicator: Int = 0,
 	var enableCombatTimerAlerts: Boolean = true,
 	var hitmarkerOnHull: Boolean = true,
+	var transponderEnabled: Boolean = true,
 
 	var shortenChatChannels: Boolean = false,
 

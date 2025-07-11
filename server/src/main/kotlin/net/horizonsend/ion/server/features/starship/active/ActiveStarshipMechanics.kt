@@ -1,10 +1,12 @@
 package net.horizonsend.ion.server.features.starship.active
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -273,7 +275,8 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 		val isNoStarship = starship == null
 		val isHoldingController = isHoldingController(player)
-		val isInvisible = isNoStarship && !isHoldingController
+		// Players with transponders off will be replaced by a marker
+		val isInvisible = if (player.getSetting(PlayerSettings::transponderEnabled)) isNoStarship && !isHoldingController else true
 		DynmapPlugin.plugin.assertPlayerInvisibility(player, isInvisible, IonServer)
 	}
 
