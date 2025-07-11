@@ -17,7 +17,7 @@ object PlayerMovementTrigger : SequenceTriggerType<MovementTriggerSettings>() {
 	class MovementTriggerSettings(
 		val predicates: List<PlayerLocationPredicate>
 	) : TriggerSettings() {
-		override fun shouldProceed(player: Player): Boolean {
+		override fun shouldProceed(player: Player, callingTrigger: SequenceTriggerType<*>): Boolean {
 			return predicates.all { predicate -> predicate.check(player) }
 		}
 	}
