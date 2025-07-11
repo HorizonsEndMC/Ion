@@ -14,7 +14,7 @@ object DataPredicate: SequenceTriggerType<DataPredicateSettings<*>>() {
 		val dataTypeKey: String,
 		val predicate: Predicate<T?>
 	) : TriggerSettings() {
-		override fun shouldProceed(player: Player): Boolean {
+		override fun shouldProceed(player: Player, callingTrigger: SequenceTriggerType<*>): Boolean {
 			val storedData = SequenceManager.getSequenceData(player).get<T>(dataTypeKey).getOrNull()
 			return predicate.test(storedData)
 		}

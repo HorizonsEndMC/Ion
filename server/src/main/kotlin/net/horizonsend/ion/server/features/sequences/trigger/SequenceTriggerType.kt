@@ -11,7 +11,7 @@ abstract class SequenceTriggerType<T : SequenceTriggerType.TriggerSettings> {
 
 		// Find all triggers for children on the current phase
 		for (trigger in currentPhase.danglingTriggers) {
-			if (!trigger.shouldProceed(player)) continue
+			if (!trigger.shouldProceed(player, this@SequenceTriggerType)) continue
 
 			trigger.trigger(player)
 			break
@@ -19,6 +19,6 @@ abstract class SequenceTriggerType<T : SequenceTriggerType.TriggerSettings> {
 	}
 
 	abstract class TriggerSettings() {
-		abstract fun shouldProceed(player: Player): Boolean
+		abstract fun shouldProceed(player: Player, callingTrigger: SequenceTriggerType<*>): Boolean
 	}
 }
