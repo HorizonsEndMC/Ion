@@ -151,7 +151,7 @@ object SpaceMap : IonServerComponent(true) {
 			)
 		}
 
-		for (player in Bukkit.getOnlinePlayers().filter { player -> player.getSetting(PlayerSettings::transponderEnabled) }) {
+		for (player in Bukkit.getOnlinePlayers().filter { player -> !player.getSetting(PlayerSettings::transponderEnabled) }) {
 			markerSet.createMarker(
 				"${player.uniqueId}_notransponder",
 				"Unidentified Entity",
