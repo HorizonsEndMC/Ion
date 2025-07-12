@@ -1,17 +1,18 @@
-package net.horizonsend.ion.server.features.sequences
+package net.horizonsend.ion.server.features.sequences.phases
 
+import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
 import org.bukkit.entity.Player
 
 class SequencePhase(
-	val key: SequencePhaseKeys.SequencePhaseKey,
-	val trigger: SequenceTrigger<*>?,
+    val key: SequencePhaseKeys.SequencePhaseKey,
+    val trigger: SequenceTrigger<*>?,
 
-	effects: List<SequencePhaseEffect>,
+    effects: List<SequencePhaseEffect>,
 
-	val children: List<SequencePhaseKeys.SequencePhaseKey>
+    val children: List<SequencePhaseKeys.SequencePhaseKey>
 ) {
 	private val startEffects = effects.filter { effect -> effect.playPhases.contains(EffectTiming.START) }
 	private val tickedEffects = effects.filter { effect -> effect.playPhases.contains(EffectTiming.TICKED) }
@@ -33,6 +34,7 @@ class SequencePhase(
 
 	fun end(player: Player) {
 		endEffects.forEach { it.playEffect(player) }
+		SequenceManager.getSequenceData(player)["last_phase"] = key
 	}
 
 	fun endPrematurely(player: Player) {
