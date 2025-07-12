@@ -28,6 +28,7 @@ import net.horizonsend.ion.server.features.starship.fleet.toFleetMember
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
+import org.bukkit.GameMode
 import org.bukkit.event.entity.PlayerDeathEvent
 import java.util.function.Supplier
 import kotlin.math.cbrt
@@ -52,6 +53,7 @@ open class EnmityModule(
 		ticks++
 		if (ticks % tickRate != 0) return
 		ticks = 0
+		removeOldEnmityTargets()
 		decayEnmity()
 		generateEnmity()
 		updateAggro()
@@ -141,6 +143,7 @@ open class EnmityModule(
 		}
 
 		for (player in starship.world.players) {
+			if (player.gameMode == GameMode.SPECTATOR) continue
 			if (ActiveStarships.findByPassenger(player) != null) continue
 			val tempTarget = AIOpponent(PlayerTarget(player))
 			if (!enmityFilter(starship,tempTarget.target,targetMode)) continue
@@ -249,6 +252,20 @@ open class EnmityModule(
 			+ config.sizeWeight * cbrt((it.target as? StarshipTarget)?.ship?.initialBlockCount?.toDouble() ?: 0.0)
 			+ config.distanceWeight * calcDistFactor(it.target)
 		)}
+	}
+
+	fun removeOldEnmityTargets() {
+		val markedForRemoval = mutableListOf<AIOpponent>()
+
+		for (target in enmityList) {
+			val aiTarget = target.target
+			when (aiTarget) {
+				is StarshipTarget -> if (aiTarget.ship !in ActiveStarships.all()) markedForRemoval.add(target)
+				is PlayerTarget -> if (!aiTarget.player.isOnline) markedForRemoval.add(target)
+			}
+		}
+
+		for (removed in markedForRemoval) enmityList.remove(removed)
 	}
 
 	private fun calcDistFactor(target : AITarget) : Double{
