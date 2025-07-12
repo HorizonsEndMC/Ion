@@ -18,6 +18,7 @@ import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.entity.Player
+import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.Optional
 import kotlin.jvm.optionals.getOrNull
@@ -51,6 +52,10 @@ abstract class SequencePhaseEffect(val playPhases: List<EffectTiming>) {
 
 	class DataConditionalEffects<T : Any>(val key: String, val condition: (Optional<T>) -> Boolean, playPhases: List<EffectTiming>, vararg val effects: SequencePhaseEffect) : SequencePhaseEffect(playPhases) {
 		override fun playEffect(player: Player) { if (condition(SequenceManager.getSequenceData(player).get<T>(key))) effects.forEach { it.playEffect(player) } }
+	}
+
+	class ConditionalEffects(val condition: (Player) -> Boolean, playPhases: List<EffectTiming>, vararg val effects: SequencePhaseEffect) : SequencePhaseEffect(playPhases) {
+		override fun playEffect(player: Player) { if (condition(player)) effects.forEach { it.playEffect(player) } }
 	}
 
 	class DelayEffect<T : Any>(val delay: Long, val effect: SequencePhaseEffect) : SequencePhaseEffect(effect.playPhases) {
@@ -98,6 +103,10 @@ abstract class SequencePhaseEffect(val playPhases: List<EffectTiming>) {
 	companion object {
 		fun ifPreviousPhase(phase: SequencePhaseKey, playPhases: List<EffectTiming>, vararg effects: SequencePhaseEffect): DataConditionalEffects<SequencePhaseKey> {
 			return DataConditionalEffects("last_phase", { it.getOrNull() == phase }, playPhases, *effects)
+		}
+
+		fun ifContainsItem(itemPredicate: (ItemStack?) -> Boolean, vararg effects: SequencePhaseEffect): ConditionalEffects {
+			return ConditionalEffects({ it.inventory.contents.any(itemPredicate) }, listOf(EffectTiming.TICKED), *effects)
 		}
 	}
 }
