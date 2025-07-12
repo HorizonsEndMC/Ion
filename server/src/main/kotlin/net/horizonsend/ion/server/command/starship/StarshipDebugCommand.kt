@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.sequences.SequenceManager
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -263,6 +264,6 @@ object StarshipDebugCommand : SLCommand() {
 
 	@Subcommand("tutorialTest")
 	fun startTutorial(sender: Player) {
-		SequenceManager.startPhase(sender, SequenceManager.REAL_TUTORIAL.getValue())
+		SequenceManager.startPhase(sender, SequencePhaseKeys.TUTORIAL_START.getValue())
 	}
 }
