@@ -2,6 +2,9 @@ package net.horizonsend.ion.server.features.sequences.phases
 
 import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.sequences.SequenceManager.NEXT_PHASE_SOUND
 import net.horizonsend.ion.server.features.sequences.SequenceManager.RANDOM_EXPLOSION_SOUND
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
@@ -21,6 +24,7 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.RE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.SequencePhaseKey
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TUTORIAL_START
 import net.horizonsend.ion.server.features.sequences.trigger.CombinedAndTrigger
+import net.horizonsend.ion.server.features.sequences.trigger.ContainsItemTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.DataPredicate
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.MovementTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.inBoundingBox
@@ -88,6 +92,7 @@ object SequencePhases {
 					effects = listOf(
 						RANDOM_EXPLOSION_SOUND,
 						ifPreviousPhase(TUTORIAL_START, listOf(EffectTiming.START),
+							NEXT_PHASE_SOUND,
 							SendMessage(Component.empty(), listOf()),
 							SendMessage(text("The ships's communication system crackles to life:", GRAY, ITALIC), listOf()),
 							SendMessage(text("This is your captain speaking, we're under attack by pirates"), listOf()),
@@ -114,6 +119,7 @@ object SequencePhases {
 								RANDOM_EXPLOSION_SOUND,
 
 								ifPreviousPhase(EXIT_CRYOPOD_ROOM, listOf(EffectTiming.START),
+									NEXT_PHASE_SOUND,
 									SendMessage(Component.empty(), listOf()),
 									SendMessage(text("Smoke bellows out of the smouldering remains of an elevator, the dorsal hull appears to have taken a direct hit from enemy fire.", GRAY, ITALIC), listOf(EffectTiming.START)),
 
@@ -141,19 +147,32 @@ object SequencePhases {
 									),
 									effects = listOf(
 										RANDOM_EXPLOSION_SOUND,
-										SendMessage(Component.empty(), listOf(EffectTiming.START)),
-										SendMessage(text("To use the elevator, hold your controller (clock), stand on the glass block, and courch.", GRAY, ITALIC), listOf(EffectTiming.START)),
-										SendMessage(Component.empty(), listOf(EffectTiming.START)),
+
+										ifPreviousPhase(BROKEN_ELEVATOR,
+											listOf(EffectTiming.START),
+											NEXT_PHASE_SOUND,
+											SendMessage(Component.empty(), listOf()),
+											SendMessage(text("To use the elevator, hold your controller (clock), stand on the glass block, and courch.", GRAY, ITALIC), listOf()),
+											SendMessage(Component.empty(), listOf()),
+										)
 									),
 									children = listOf(
+										BRANCH_DYNMAP,
+
+										BRANCH_SHIP_COMPUTER,
+
 										bootstrapPhase(
 											key = CREW_QUARTERS,
 											trigger = SequenceTrigger(SequenceTriggerTypes.USE_TRACTOR_BEAM, TractorBeamTriggerSettings()),
 											effects = listOf(
 												RANDOM_EXPLOSION_SOUND,
-												SendMessage(Component.empty(), listOf(EffectTiming.START)),
-												SendMessage(text("Quick, make your way through the crew quarters and maintainance bays to the hangar bay!", GRAY, ITALIC), listOf(EffectTiming.START)),
-												SendMessage(Component.empty(), listOf(EffectTiming.START)),
+												ifPreviousPhase(LOOK_AT_TRACTOR,
+													listOf(EffectTiming.START),
+													NEXT_PHASE_SOUND,
+													SendMessage(Component.empty(), listOf()),
+													SendMessage(text("Quick, make your way through the crew quarters and maintainance bays to the hangar bay!", GRAY, ITALIC), listOf()),
+													SendMessage(Component.empty(), listOf())
+												)
 											),
 											children = listOf(
 												bootstrapPhase(
@@ -169,6 +188,7 @@ object SequencePhases {
 													),
 													effects = listOf(
 														RANDOM_EXPLOSION_SOUND,
+														NEXT_PHASE_SOUND,
 														SendMessage(Component.empty(), listOf(EffectTiming.START)),
 														SendMessage(text("The ship's gravity generators have failed in the attack! Fly over the obstacle!", GRAY, ITALIC), listOf(EffectTiming.START)),
 														SendMessage(Component.empty(), listOf(EffectTiming.START)),
@@ -187,6 +207,8 @@ object SequencePhases {
 															),
 															effects = listOf(
 																RANDOM_EXPLOSION_SOUND,
+																NEXT_PHASE_SOUND,
+																SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, listOf(EffectTiming.TICKED)), 10),
 																SendMessage(Component.empty(), listOf(EffectTiming.START)),
 																SendMessage(text("Quick, you'll need to grab some fuel for the escape pod. You can find some in that gargo container.", GRAY, ITALIC), listOf(EffectTiming.START)),
 																SendMessage(Component.empty(), listOf(EffectTiming.START)),
@@ -195,13 +217,15 @@ object SequencePhases {
 																bootstrapPhase(
 																	key = RECEIVED_CHETHERITE,
 																	trigger = SequenceTrigger(
-																		SequenceTriggerTypes.RECEIVE_ITEM,
-																		TractorBeamTriggerSettings()
+																		SequenceTriggerTypes.CONTAINS_ITEM,
+																		ContainsItemTrigger.ContainsItemTriggerSettings { it?.customItem?.identifier == CustomItemRegistry.CHETHERITE.identifier }
 																	),
 																	effects = listOf(
 																		RANDOM_EXPLOSION_SOUND,
+																		NEXT_PHASE_SOUND,
+																		SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, listOf(EffectTiming.TICKED)), 10),
 																		SendMessage(Component.empty(), listOf(EffectTiming.START)),
-																		SendMessage(text("Quick, you'll need to grab some fuel for the escape pod. You can find some in that gargo container.", GRAY, ITALIC), listOf(EffectTiming.START)),
+																		SendMessage(text("Chetherite is hyperdrive fuel, you'll need it to travel faster than light.", GRAY, ITALIC), listOf(EffectTiming.START)),
 																		SendMessage(Component.empty(), listOf(EffectTiming.START)),
 																	),
 																	children = listOf(
@@ -296,16 +320,17 @@ object SequencePhases {
 					))
 				),
 				// Only trigger this branch if first time
-				SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_shp_computer") { it != true })
+				SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_ship_computer") { it != true })
 			))),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				SendMessage(Component.empty(), listOf(EffectTiming.START)),
-				SendMessage(text("This is a starship computer", GRAY, ITALIC), listOf(EffectTiming.START)),
+				SendMessage(text("This is a starship computer. It is the primary point of interface for ships. They allow piloting, detection, and manage settings.", GRAY, ITALIC), listOf(EffectTiming.START)),
+				SequencePhaseEffect.HighlightBlock(Vec3i(93, 359, 82), 60L, listOf(EffectTiming.START)),
 				SendMessage(Component.empty(), listOf(EffectTiming.START)),
 
 				GoToPreviousPhase(listOf(EffectTiming.START)),
-				SequencePhaseEffect.SetSequenceData("seen_shp_computer", true, listOf(EffectTiming.END)),
+				SequencePhaseEffect.SetSequenceData("seen_ship_computer", true, listOf(EffectTiming.END)),
 			),
 			children = listOf()
 		)

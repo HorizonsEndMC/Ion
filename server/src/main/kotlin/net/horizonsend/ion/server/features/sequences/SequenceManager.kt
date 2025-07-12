@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.sequences
 
+import io.papermc.paper.registry.RegistryAccess
+import io.papermc.paper.registry.RegistryKey
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.configuration.util.StaticFloatAmount
 import net.horizonsend.ion.server.configuration.util.VariableFloatAmount
@@ -75,5 +77,19 @@ object SequenceManager : IonServerComponent() {
 		phaseMap[player.uniqueId] = phase
 	}
 
-	val RANDOM_EXPLOSION_SOUND = SequencePhaseEffect.Chance(SequencePhaseEffect.PlaySound(Sound.ENTITY_GENERIC_EXPLODE.key(), VariableFloatAmount(0.05f, 1.0f), StaticFloatAmount(1.0f), listOf(EffectTiming.TICKED)), 0.02)
+	val RANDOM_EXPLOSION_SOUND = SequencePhaseEffect.Chance(
+		SequencePhaseEffect.PlaySound(
+			RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT).getKey(Sound.ENTITY_GENERIC_EXPLODE)!!,
+			VariableFloatAmount(0.05f, 1.0f),
+			StaticFloatAmount(1.0f),
+			listOf(EffectTiming.TICKED)
+		),
+		0.02
+	)
+	val NEXT_PHASE_SOUND = SequencePhaseEffect.PlaySound(
+		RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT).getKey(Sound.ENTITY_ARROW_HIT_PLAYER)!!,
+		StaticFloatAmount(1.0f),
+		StaticFloatAmount(2.0f),
+		listOf(EffectTiming.START)
+	)
 }
