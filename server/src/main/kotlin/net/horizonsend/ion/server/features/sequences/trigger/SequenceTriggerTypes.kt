@@ -9,7 +9,7 @@ object SequenceTriggerTypes {
 	val COMBINED_OR = register(CombinedOrTrigger)
 	val DATA_PREDICATE = register(DataPredicate)
 	val USE_TRACTOR_BEAM = register(UsedTractorBeamTrigger)
-	val RECEIVE_ITEM = register(UsedTractorBeamTrigger)
+	val CONTAINS_ITEM = register(ContainsItemTrigger)
 
 	fun <T : SequenceTriggerType<*>> register(type: T): T {
 		types.add(type)
