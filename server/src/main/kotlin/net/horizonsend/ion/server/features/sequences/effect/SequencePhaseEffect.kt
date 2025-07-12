@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.server.configuration.util.FloatAmount
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.sequences.SequenceManager
-import net.horizonsend.ion.server.features.sequences.SequencePhaseKeys
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.SequencePhaseKey
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -20,6 +20,7 @@ import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
 
 abstract class SequencePhaseEffect(val playPhases: List<EffectTiming>) {
 	abstract fun playEffect(player: Player)
@@ -28,8 +29,12 @@ abstract class SequencePhaseEffect(val playPhases: List<EffectTiming>) {
 		override fun playEffect(player: Player) { SequenceManager.endPhase(player) }
 	}
 
-	class GoToPhase(val phase: SequencePhaseKeys.SequencePhaseKey, playPhases: List<EffectTiming>) : SequencePhaseEffect(playPhases) {
+	class GoToPhase(val phase: SequencePhaseKey, playPhases: List<EffectTiming>) : SequencePhaseEffect(playPhases) {
 		override fun playEffect(player: Player) { SequenceManager.startPhase(player, phase.getValue()) }
+	}
+
+	class GoToPreviousPhase(playPhases: List<EffectTiming>) : SequencePhaseEffect(playPhases) {
+		override fun playEffect(player: Player) { SequenceManager.startPhase(player, SequenceManager.getSequenceData(player).get<SequencePhaseKey>("last_phase").get().getValue()) }
 	}
 
 	class ClearSequenceData(playPhases: List<EffectTiming>) : SequencePhaseEffect(playPhases) {
@@ -88,5 +93,11 @@ abstract class SequencePhaseEffect(val playPhases: List<EffectTiming>) {
 
 	class HighlightBlock(val position: Vec3i, val duration: Long, playPhases: List<EffectTiming>) : SequencePhaseEffect(playPhases) {
 		override fun playEffect(player: Player) { player.highlightBlock(position, duration) }
+	}
+
+	companion object {
+		fun ifPreviousPhase(phase: SequencePhaseKey, playPhases: List<EffectTiming>, vararg effects: SequencePhaseEffect): DataConditionalEffects<SequencePhaseKey> {
+			return DataConditionalEffects("last_phase", { it.getOrNull() == phase }, playPhases, *effects)
+		}
 	}
 }
