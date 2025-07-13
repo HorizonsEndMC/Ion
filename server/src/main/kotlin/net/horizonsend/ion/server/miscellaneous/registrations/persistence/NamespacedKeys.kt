@@ -126,6 +126,9 @@ object NamespacedKeys {
 	val BLUEPRINT_NAME = key("blueprint_name")
 	val BLUEPRINT_ID = key("blueprint_id")
 
+	val SEQUENCES = key("sequences")
+	val CONTENT = key("content")
+
 	fun key(key: String) = NamespacedKey(IonServer, key)
 
 	// Used for datapacks and resource packs

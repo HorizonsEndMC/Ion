@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.registrations.persistence
 
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.SequencePhaseKey
 import net.horizonsend.ion.server.features.transport.filters.FilterData.FilterDataSerializer
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
@@ -22,6 +24,35 @@ object PDCSerializers {
 	val FILTER_DATA = register(FilterDataSerializer)
 	val EMPTY_FILTER_META = register(FilterMeta.EmptyFilterMeta)
 	val ITEM_FILTER_META = register(FilterMeta.ItemFilterMeta)
+
+	val BYTE = register(delegatedType("BYTE", PersistentDataType.BYTE))
+	val SHORT = register(delegatedType("SHORT", PersistentDataType.SHORT))
+	val INTEGER = register(delegatedType("INTEGER", PersistentDataType.INTEGER))
+	val LONG = register(delegatedType("LONG", PersistentDataType.LONG))
+	val FLOAT = register(delegatedType("FLOAT", PersistentDataType.FLOAT))
+	val DOUBLE = register(delegatedType("DOUBLE", PersistentDataType.DOUBLE))
+	val BOOLEAN = register(delegatedType("BOOLEAN", PersistentDataType.BOOLEAN))
+	val STRING = register(delegatedType("STRING", PersistentDataType.STRING))
+	val BYTE_ARRAY = register(delegatedType("BYTE_ARRAY", PersistentDataType.BYTE_ARRAY))
+	val INTEGER_ARRAY = register(delegatedType("INTEGER_ARRAY", PersistentDataType.INTEGER_ARRAY))
+	val LONG_ARRAY = register(delegatedType("LONG_ARRAY", PersistentDataType.LONG_ARRAY))
+
+	val TAG_CONTAINER = register(delegatedType("TAG_CONTAINER", PersistentDataType.TAG_CONTAINER))
+
+	val BYTE_LIST = register(delegatedType("BYTE_LIST", PersistentDataType.LIST.bytes()))
+	val SHORT_LIST = register(delegatedType("SHORT_LIST", PersistentDataType.LIST.shorts()))
+	val INTEGER_LIST = register(delegatedType("INTEGER_LIST", PersistentDataType.LIST.integers()))
+	val LONG_LIST = register(delegatedType("LONG_LIST", PersistentDataType.LIST.longs()))
+	val FLOAT_LIST = register(delegatedType("FLOAT_LIST", PersistentDataType.LIST.floats()))
+	val DOUBLE_LIST = register(delegatedType("DOUBLE_LIST", PersistentDataType.LIST.doubles()))
+	val BOOLEAN_LIST = register(delegatedType("BOOLEAN_LIST", PersistentDataType.LIST.booleans()))
+	val STRING_LIST = register(delegatedType("STRING_LIST", PersistentDataType.LIST.strings()))
+	val BYTE_ARRAY_LIST = register(delegatedType("BYTE_ARRAY_LIST", PersistentDataType.LIST.byteArrays()))
+	val INTEGER_ARRAY_LIST = register(delegatedType("INTEGER_ARRAY_LIST", PersistentDataType.LIST.integerArrays()))
+	val LONG_ARRAY_LIST = register(delegatedType("LONG_ARRAY_LIST", PersistentDataType.LIST.longArrays()))
+	val TAG_CONTAINER_LIST = register(delegatedType("TAG_CONTAINER_LIST", PersistentDataType.LIST.dataContainers()))
+
+	val SEQUENCE_PHASE = register(mappedDelegate<String, String, SequencePhaseKey>("SEQUENCE_PHASE", PersistentDataType.STRING, { it.key }, { SequencePhaseKeys.byString[it]!! }))
 
 	operator fun get(identifier: String) : RegisteredSerializer<*> = registeredSerializers[identifier]!!
 
@@ -54,4 +85,35 @@ object PDCSerializers {
 		@Suppress("UNCHECKED_CAST")
 		return metaDataContainer.data as T
 	}
+
+	private inline fun <reified P : Any, reified C : Any> delegatedType(identifier: String, delegate: PersistentDataType<P, C>): RegisteredSerializer<C> =
+		object : RegisteredSerializer<C>(identifier, C::class) {
+			override fun toPrimitive(complex: C, context: PersistentDataAdapterContext): PersistentDataContainer {
+				val box = context.newPersistentDataContainer()
+				box.set(NamespacedKeys.CONTENT, delegate, complex)
+				return box
+			}
+
+			override fun fromPrimitive(primitive: PersistentDataContainer, context: PersistentDataAdapterContext): C {
+				return primitive.get(NamespacedKeys.CONTENT, delegate)!!
+			}
+		}
+
+	private inline fun <reified P : Any, reified C : Any, reified F : Any> mappedDelegate(
+		identifier: String,
+		delegate: PersistentDataType<P, C>,
+		crossinline toDelegate: (F) -> C,
+		crossinline fromDelegate: (C) -> F,
+	): RegisteredSerializer<F> =
+		object : RegisteredSerializer<F>(identifier, F::class) {
+			override fun toPrimitive(complex: F, context: PersistentDataAdapterContext): PersistentDataContainer {
+				val box = context.newPersistentDataContainer()
+				box.set(NamespacedKeys.CONTENT, delegate, toDelegate(complex))
+				return box
+			}
+
+			override fun fromPrimitive(primitive: PersistentDataContainer, context: PersistentDataAdapterContext): F {
+				return fromDelegate(primitive.get(NamespacedKeys.CONTENT, delegate)!!)
+			}
+		}
 }
