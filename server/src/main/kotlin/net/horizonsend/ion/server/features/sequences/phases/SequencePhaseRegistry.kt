@@ -6,8 +6,14 @@ import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.util.StaticFloatAmount
 import net.horizonsend.ion.server.configuration.util.VariableFloatAmount
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
+import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.core.registration.registries.Registry
+import net.horizonsend.ion.server.features.sequences.Sequence
+import net.horizonsend.ion.server.features.sequences.SequenceKeys
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.Companion.ifPreviousPhase
@@ -23,7 +29,6 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FI
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GET_CHETHERITE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.LOOK_AT_TRACTOR
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.RECEIVED_CHETHERITE
-import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.SequencePhaseKey
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TUTORIAL_START
 import net.horizonsend.ion.server.features.sequences.trigger.CombinedAndTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.ContainsItemTrigger
@@ -43,33 +48,22 @@ import org.bukkit.Sound
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
 
-object SequencePhases {
-	fun getPhaseByKey(key: SequencePhaseKey): SequencePhase {
-		return phasesByKey[key] ?: throw IllegalStateException("Unregistered phase key ${key.key}")
-	}
+class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHASE) {
+	override fun getKeySet(): KeyRegistry<SequencePhase> = SequencePhaseKeys
 
-	private val phasesByKey = mutableMapOf<SequencePhaseKey, SequencePhase>()
-
-	private fun bootstrapPhase(phase: SequencePhase) {
-		phasesByKey[phase.phaseKey] = phase
-	}
-
-	/** Builds and returns the phase key. Good utility for registering phases in the hierarchy */
-	private fun bootstrapPhase(
-		sequenceKey: String,
-		phaseKey: SequencePhaseKey,
-		trigger: SequenceTrigger<*>?,
-		effects: List<SequencePhaseEffect>,
-		children: List<SequencePhaseKey>
-	) {
-		bootstrapPhase(SequencePhase(sequenceKey, phaseKey, trigger, effects, children))
-	}
-
-	fun registerPhases() {
+	override fun boostrap() {
 		registerTutorial()
 	}
 
-	val RANDOM_EXPLOSION_SOUND = SequencePhaseEffect.Chance(
+	private fun bootstrapPhase(
+		sequenceKey: IonRegistryKey<Sequence, Sequence>,
+		phaseKey: IonRegistryKey<SequencePhase, SequencePhase>,
+		trigger: SequenceTrigger<*>?,
+		effects: List<SequencePhaseEffect>,
+		children: List<IonRegistryKey<SequencePhase, SequencePhase>>
+	) = register(phaseKey, SequencePhase(sequenceKey, phaseKey, trigger, effects, children))
+
+	private val RANDOM_EXPLOSION_SOUND = SequencePhaseEffect.Chance(
 		SequencePhaseEffect.PlaySound(
 			RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT).getKey(Sound.ENTITY_GENERIC_EXPLODE)!!,
 			VariableFloatAmount(0.05f, 1.0f),
@@ -78,7 +72,7 @@ object SequencePhases {
 		),
 		0.02
 	)
-	val NEXT_PHASE_SOUND = SequencePhaseEffect.PlaySound(
+	private val NEXT_PHASE_SOUND = SequencePhaseEffect.PlaySound(
 		RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT).getKey(Sound.ENTITY_ARROW_HIT_PLAYER)!!,
 		StaticFloatAmount(1.0f),
 		StaticFloatAmount(2.0f),

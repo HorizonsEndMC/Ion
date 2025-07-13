@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.sequences.trigger
 
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.SequenceManager.getCurrentSequences
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.MovementTriggerSettings
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
@@ -18,7 +20,7 @@ object PlayerMovementTrigger : SequenceTriggerType<MovementTriggerSettings>() {
 	class MovementTriggerSettings(
 		val predicates: List<PlayerLocationPredicate>
 	) : TriggerSettings() {
-		override fun shouldProceed(player: Player, sequenceKey: String, callingTrigger: SequenceTriggerType<*>): Boolean {
+		override fun shouldProceed(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>, callingTrigger: SequenceTriggerType<*>): Boolean {
 			return predicates.all { predicate -> predicate.check(player) }
 		}
 	}
