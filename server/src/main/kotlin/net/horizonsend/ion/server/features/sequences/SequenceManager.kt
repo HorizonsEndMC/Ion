@@ -1,18 +1,11 @@
 package net.horizonsend.ion.server.features.sequences
 
-import io.papermc.paper.registry.RegistryAccess
-import io.papermc.paper.registry.RegistryKey
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.configuration.util.StaticFloatAmount
-import net.horizonsend.ion.server.configuration.util.VariableFloatAmount
-import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
-import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhases
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit.getPlayer
-import org.bukkit.Sound
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerQuitEvent
@@ -76,20 +69,4 @@ object SequenceManager : IonServerComponent() {
 		endPhase(player)
 		phaseMap[player.uniqueId] = phase
 	}
-
-	val RANDOM_EXPLOSION_SOUND = SequencePhaseEffect.Chance(
-		SequencePhaseEffect.PlaySound(
-			RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT).getKey(Sound.ENTITY_GENERIC_EXPLODE)!!,
-			VariableFloatAmount(0.05f, 1.0f),
-			StaticFloatAmount(1.0f),
-			listOf(EffectTiming.TICKED)
-		),
-		0.02
-	)
-	val NEXT_PHASE_SOUND = SequencePhaseEffect.PlaySound(
-		RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT).getKey(Sound.ENTITY_ARROW_HIT_PLAYER)!!,
-		StaticFloatAmount(1.0f),
-		StaticFloatAmount(2.0f),
-		listOf(EffectTiming.START)
-	)
 }
