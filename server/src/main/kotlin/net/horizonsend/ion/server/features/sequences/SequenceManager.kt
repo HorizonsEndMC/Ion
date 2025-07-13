@@ -1,19 +1,29 @@
 package net.horizonsend.ion.server.features.sequences
 
+import com.google.common.collect.HashBasedTable
+import net.horizonsend.ion.common.utils.getOrPut
+import net.horizonsend.ion.common.utils.removeRow
+import net.horizonsend.ion.common.utils.set
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.SequencePhaseKey
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhases
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SEQUENCES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit.getPlayer
+import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.persistence.ListPersistentDataType
 import java.util.UUID
 
 object SequenceManager : IonServerComponent() {
-	private val phaseMap = mutableMapOf<UUID, SequencePhase>()
-	private val sequenceData = mutableMapOf<UUID, SequenceDataStore>()
+	private val phaseMap = HashBasedTable.create<UUID, String, SequencePhaseKey>()
+	private val sequenceData = HashBasedTable.create<UUID, String, SequenceDataStore>()
 
 	override fun onEnable() {
 		SequenceTriggerTypes.runSetup()
@@ -24,49 +34,92 @@ object SequenceManager : IonServerComponent() {
 		}
 	}
 
-	fun getSequenceData(player: Player): SequenceDataStore {
-		return sequenceData.getOrPut(player.uniqueId) { SequenceDataStore() }
+	fun getSequenceData(player: Player, sequenceKey: String): SequenceDataStore {
+		return sequenceData.getOrPut(player.uniqueId, sequenceKey) { SequenceDataStore() }
 	}
 
 	fun clearSequenceData(player: Player) {
-		sequenceData.remove(player.uniqueId)
+		sequenceData.removeRow(player.uniqueId)
 	}
 
 	@EventHandler
 	fun onPlayerLeave(event: PlayerQuitEvent) {
-		phaseMap.remove(event.player.uniqueId)?.endPrematurely(event.player)
-		sequenceData.remove(event.player.uniqueId)
+		val uuid = event.player.uniqueId
+
+		val sequenceKeys = mutableListOf<String>()
+
+		phaseMap.rowMap()[uuid]?.let { map ->
+			for ((sequenceKey, phase) in map) {
+				phase.getValue().endPrematurely(event.player)
+
+				event.player.persistentDataContainer.set(
+					NamespacedKey(IonServer, sequenceKey),
+					QuestData,
+					QuestData(phase.key, getSequenceData(event.player, sequenceKey).metaDataMirror)
+				)
+
+				sequenceKeys.add(sequenceKey)
+			}
+		}
+
+		event.player.persistentDataContainer.set(SEQUENCES, ListPersistentDataType.LIST.strings(), sequenceKeys)
+
+		phaseMap.removeRow(uuid)
+		sequenceData.removeRow(uuid)
 	}
 
-	fun getCurrentPhase(player: Player): SequencePhase? {
-		return phaseMap[player.uniqueId]
-	}
+	@EventHandler
+	fun onPlayerJoin(event: PlayerJoinEvent) {
+		val sequences = event.player.persistentDataContainer.get(SEQUENCES, ListPersistentDataType.LIST.strings()) ?: return
 
-	fun tickPhases() {
-		for ((playerId, phase) in phaseMap) {
-			val player = getPlayer(playerId) ?: continue
-			phase.tick(player)
+		for (sequenceKey in sequences) {
+			val namespacedKey = NamespacedKey(IonServer, sequenceKey)
+
+			val questData = event.player.persistentDataContainer.get(
+				namespacedKey,
+				QuestData
+			) ?: continue
+
+			phaseMap[event.player.uniqueId, sequenceKey] = SequencePhaseKeys.byString[questData.currentPhase]!!
+			sequenceData[event.player.uniqueId, sequenceKey] = questData.unpackDataStore()
 		}
 	}
 
-	fun startPhase(player: Player, phase: SequencePhase?) {
+	fun getCurrentPhase(player: Player, sequenceKey: String): SequencePhaseKey? {
+		return phaseMap[player.uniqueId, sequenceKey]
+	}
+
+	fun getCurrentSequences(player: Player): Collection<String> {
+		return phaseMap.rowMap()[player.uniqueId]?.keys ?: setOf()
+	}
+
+	fun tickPhases() {
+		for ((playerId, sequenceData) in phaseMap.rowMap()) {
+			for ((_, sequencePhaseKey) in sequenceData) {
+				val player = getPlayer(playerId) ?: continue
+				sequencePhaseKey.getValue().tick(player)
+			}
+		}
+	}
+
+	fun startPhase(player: Player, sequenceKey: String, phase: SequencePhaseKey?) {
 		if (phase == null) {
-			endPhase(player)
+			endPhase(player, sequenceKey)
 
 			return
 		}
 
-		setPhase(player, phase)
-		phase.start(player)
+		setPhase(player, sequenceKey, phase)
+		phase.getValue().start(player)
 	}
 
-	fun endPhase(player: Player) {
-		val existingPhase = phaseMap.remove(player.uniqueId)
-		existingPhase?.end(player)
+	fun endPhase(player: Player, sequenceKey: String) {
+		val existingPhase = phaseMap.remove(player.uniqueId, sequenceKey)
+		existingPhase?.getValue()?.end(player)
 	}
 
-	private fun setPhase(player: Player, phase: SequencePhase) {
-		endPhase(player)
-		phaseMap[player.uniqueId] = phase
+	private fun setPhase(player: Player, sequenceKey: String, phase: SequencePhaseKey) {
+		endPhase(player, sequenceKey)
+		phaseMap[player.uniqueId, sequenceKey] = phase
 	}
 }

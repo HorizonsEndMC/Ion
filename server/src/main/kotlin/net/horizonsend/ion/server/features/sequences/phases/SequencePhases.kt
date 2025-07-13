@@ -51,17 +51,18 @@ object SequencePhases {
 	private val phasesByKey = mutableMapOf<SequencePhaseKey, SequencePhase>()
 
 	private fun bootstrapPhase(phase: SequencePhase) {
-		phasesByKey[phase.key] = phase
+		phasesByKey[phase.phaseKey] = phase
 	}
 
 	/** Builds and returns the phase key. Good utility for registering phases in the hierarchy */
 	private fun bootstrapPhase(
-		key: SequencePhaseKey,
+		sequenceKey: String,
+		phaseKey: SequencePhaseKey,
 		trigger: SequenceTrigger<*>?,
 		effects: List<SequencePhaseEffect>,
 		children: List<SequencePhaseKey>
 	) {
-		bootstrapPhase(SequencePhase(key, trigger, effects, children))
+		bootstrapPhase(SequencePhase(sequenceKey, phaseKey, trigger, effects, children))
 	}
 
 	fun registerPhases() {
@@ -88,7 +89,8 @@ object SequencePhases {
 		registerTutorialBranches()
 
 		bootstrapPhase(
-			key = TUTORIAL_START,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			phaseKey = TUTORIAL_START,
 			trigger = null,
 			effects = listOf(
 				SendMessage(text("Welcome to Horizon's End!"), listOf(EffectTiming.START)),
@@ -100,7 +102,8 @@ object SequencePhases {
 		)
 
 		bootstrapPhase(
-			key = EXIT_CRYOPOD_ROOM,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			phaseKey = EXIT_CRYOPOD_ROOM,
 			trigger = SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
 				MovementTriggerSettings(listOf(
@@ -127,7 +130,8 @@ object SequencePhases {
 		)
 
 		bootstrapPhase(
-			key = BROKEN_ELEVATOR,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			phaseKey = BROKEN_ELEVATOR,
 			trigger = SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
 				MovementTriggerSettings(listOf(
@@ -155,7 +159,8 @@ object SequencePhases {
 		)
 
 		bootstrapPhase(
-			key = LOOK_AT_TRACTOR,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			phaseKey = LOOK_AT_TRACTOR,
 			trigger = SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
 				MovementTriggerSettings(listOf(
@@ -180,7 +185,8 @@ object SequencePhases {
 		)
 
 		bootstrapPhase(
-			key = CREW_QUARTERS,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			phaseKey = CREW_QUARTERS,
 			trigger = SequenceTrigger(SequenceTriggerTypes.USE_TRACTOR_BEAM, TractorBeamTriggerSettings()),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
@@ -196,7 +202,8 @@ object SequencePhases {
 		)
 
 		bootstrapPhase(
-			key = FIRE_OBSTACLE,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			phaseKey = FIRE_OBSTACLE,
 			trigger = SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
 				MovementTriggerSettings(listOf(
@@ -217,7 +224,8 @@ object SequencePhases {
 		)
 
 		bootstrapPhase(
-			key = GET_CHETHERITE,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			phaseKey = GET_CHETHERITE,
 			trigger = SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
 				MovementTriggerSettings(listOf(
@@ -239,7 +247,8 @@ object SequencePhases {
 		)
 
 		bootstrapPhase(
-			key = RECEIVED_CHETHERITE,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			phaseKey = RECEIVED_CHETHERITE,
 			trigger = SequenceTrigger(
 				SequenceTriggerTypes.CONTAINS_ITEM,
 				ContainsItemTrigger.ContainsItemTriggerSettings { it?.customItem?.identifier == CustomItemRegistry.CHETHERITE.identifier }
@@ -258,7 +267,8 @@ object SequencePhases {
 
 	private fun registerTutorialBranches() {
 		bootstrapPhase(
-			key = BRANCH_LOOK_OUTSIDE,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			phaseKey = BRANCH_LOOK_OUTSIDE,
 			trigger = SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
 				// If looking out window
 				SequenceTrigger(
@@ -281,13 +291,14 @@ object SequencePhases {
 
 				GoToPreviousPhase(listOf(EffectTiming.START)),
 
-				SequencePhaseEffect.SetSequenceData("seen_pirates", true, listOf(EffectTiming.END)),
+				SequencePhaseEffect.SetSequenceData("seen_pirates", true, Boolean::class, listOf(EffectTiming.END)),
 			),
 			children = listOf()
 		)
 
 		bootstrapPhase(
-			key = BRANCH_DYNMAP,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			phaseKey = BRANCH_DYNMAP,
 			trigger = SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
 				// If looking out window
 				SequenceTrigger(
@@ -309,13 +320,14 @@ object SequencePhases {
 				SendMessage(Component.empty(), listOf(EffectTiming.START)),
 
 				GoToPreviousPhase(listOf(EffectTiming.START)),
-				SequencePhaseEffect.SetSequenceData("seen_dynmap", true, listOf(EffectTiming.END)),
+				SequencePhaseEffect.SetSequenceData("seen_dynmap", true, Boolean::class, listOf(EffectTiming.END)),
 			),
 			children = listOf()
 		)
 
 		bootstrapPhase(
-			key = BRANCH_SHIP_COMPUTER,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			phaseKey = BRANCH_SHIP_COMPUTER,
 			trigger = SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
 				// If looking out window
 				SequenceTrigger(
@@ -338,7 +350,7 @@ object SequencePhases {
 				SendMessage(Component.empty(), listOf(EffectTiming.START)),
 
 				GoToPreviousPhase(listOf(EffectTiming.START)),
-				SequencePhaseEffect.SetSequenceData("seen_ship_computer", true, listOf(EffectTiming.END)),
+				SequencePhaseEffect.SetSequenceData("seen_ship_computer", true, Boolean::class, listOf(EffectTiming.END)),
 			),
 			children = listOf()
 		)
