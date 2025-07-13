@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.utils.getOrPut
 import net.horizonsend.ion.common.utils.removeRow
 import net.horizonsend.ion.common.utils.set
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.SequencePhaseKey
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhases
@@ -46,33 +46,37 @@ object SequenceManager : IonServerComponent() {
 	fun onPlayerLeave(event: PlayerQuitEvent) {
 		val uuid = event.player.uniqueId
 
+		saveSequenceData(event.player)
+
+		phaseMap.removeRow(uuid)
+		sequenceData.removeRow(uuid)
+	}
+
+	fun saveSequenceData(player: Player) {
 		val sequenceKeys = mutableListOf<String>()
 
-		phaseMap.rowMap()[uuid]?.let { map ->
+		phaseMap.rowMap()[player.uniqueId]?.let { map ->
 			for ((sequenceKey, phase) in map) {
-				phase.getValue().endPrematurely(event.player)
+				phase.getValue().endPrematurely(player)
 
-				event.player.persistentDataContainer.set(
+				player.persistentDataContainer.set(
 					NamespacedKey(IonServer, sequenceKey),
 					QuestData,
-					QuestData(phase.key, getSequenceData(event.player, sequenceKey).metaDataMirror)
+					QuestData(phase.key, getSequenceData(player, sequenceKey).metaDataMirror)
 				)
 
 				sequenceKeys.add(sequenceKey)
 			}
 		}
 
-		event.player.persistentDataContainer.set(SEQUENCES, ListPersistentDataType.LIST.strings(), sequenceKeys)
-
-		phaseMap.removeRow(uuid)
-		sequenceData.removeRow(uuid)
+		player.persistentDataContainer.set(SEQUENCES, ListPersistentDataType.LIST.strings(), sequenceKeys)
 	}
 
 	@EventHandler
 	fun onPlayerJoin(event: PlayerJoinEvent) {
-		val sequences = event.player.persistentDataContainer.get(SEQUENCES, ListPersistentDataType.LIST.strings()) ?: return
+		val activeSequences = event.player.persistentDataContainer.get(SEQUENCES, ListPersistentDataType.LIST.strings()) ?: return
 
-		for (sequenceKey in sequences) {
+		for (sequenceKey in activeSequences) {
 			val namespacedKey = NamespacedKey(IonServer, sequenceKey)
 
 			val questData = event.player.persistentDataContainer.get(
@@ -105,17 +109,20 @@ object SequenceManager : IonServerComponent() {
 	fun startPhase(player: Player, sequenceKey: String, phase: SequencePhaseKey?) {
 		if (phase == null) {
 			endPhase(player, sequenceKey)
+			saveSequenceData(player)
 
 			return
 		}
 
 		setPhase(player, sequenceKey, phase)
 		phase.getValue().start(player)
+		saveSequenceData(player)
 	}
 
 	fun endPhase(player: Player, sequenceKey: String) {
 		val existingPhase = phaseMap.remove(player.uniqueId, sequenceKey)
 		existingPhase?.getValue()?.end(player)
+		saveSequenceData(player)
 	}
 
 	private fun setPhase(player: Player, sequenceKey: String, phase: SequencePhaseKey) {
