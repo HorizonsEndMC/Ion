@@ -292,6 +292,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 		val recipeMap = listOf<MasonRecipe>(
 			MasonRecipe(key = MultiblockRecipeKeys.STONECUTTING_ANDESITE_ANDESITE_SLAB_SLAB, input = Material.ANDESITE, output = Material.ANDESITE_SLAB, category = CenterType.SLAB),
 			MasonRecipe(key = MultiblockRecipeKeys.STONECUTTING_ANDESITE_ANDESITE_WALL_WALL, input = Material.ANDESITE, output = Material.ANDESITE_WALL, category = CenterType.WALL),
+			MasonRecipe(key = MultiblockRecipeKeys.STONECUTTING_ANDESITE_ANDESITE_STAIRS_STAIR, input = Material.ANDESITE, output = Material.ANDESITE_STAIRS, category = CenterType.STAIR),
 			MasonRecipe(key = MultiblockRecipeKeys.STONECUTTING_BLACKSTONE_BLACKSTONE_SLAB_SLAB, input = Material.BLACKSTONE, output = Material.BLACKSTONE_SLAB, category = CenterType.SLAB),
 			MasonRecipe(key = MultiblockRecipeKeys.STONECUTTING_BLACKSTONE_BLACKSTONE_STAIRS_STAIR, input = Material.BLACKSTONE, output = Material.BLACKSTONE_STAIRS, category = CenterType.STAIR),
 			MasonRecipe(key = MultiblockRecipeKeys.STONECUTTING_BLACKSTONE_BLACKSTONE_WALL_WALL, input = Material.BLACKSTONE, output = Material.BLACKSTONE_WALL, category = CenterType.WALL),
