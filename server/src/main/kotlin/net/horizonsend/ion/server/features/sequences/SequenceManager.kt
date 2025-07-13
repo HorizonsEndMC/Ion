@@ -104,7 +104,7 @@ object SequenceManager : IonServerComponent() {
 		}
 	}
 
-	fun startPhase(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, phase: IonRegistryKey<SequencePhase, SequencePhase>?) {
+	fun startPhase(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>, phase: IonRegistryKey<SequencePhase, out SequencePhase>?) {
 		if (phase == null) {
 			endPhase(player, sequenceKey)
 			saveSequenceData(player)
@@ -117,13 +117,13 @@ object SequenceManager : IonServerComponent() {
 		saveSequenceData(player)
 	}
 
-	fun endPhase(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) {
+	fun endPhase(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>) {
 		val existingPhase = phaseMap.remove(player.uniqueId, sequenceKey)
 		existingPhase?.getValue()?.end(player)
 		saveSequenceData(player)
 	}
 
-	private fun setPhase(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, phase: IonRegistryKey<SequencePhase, SequencePhase>) {
+	private fun setPhase(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>, phase: IonRegistryKey<SequencePhase, out SequencePhase>) {
 		endPhase(player, sequenceKey)
 		phaseMap[player.uniqueId, sequenceKey] = phase
 	}
