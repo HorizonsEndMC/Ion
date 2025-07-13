@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.sequences.phases
 
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
@@ -7,13 +9,13 @@ import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
 import org.bukkit.entity.Player
 
 class SequencePhase(
-	val sequenceKey: String,
-	val phaseKey: SequencePhaseKeys.SequencePhaseKey,
+	val sequenceKey: IonRegistryKey<Sequence, Sequence>,
+	val phaseKey: IonRegistryKey<SequencePhase, SequencePhase>,
 	val trigger: SequenceTrigger<*>?,
 
 	effects: List<SequencePhaseEffect>,
 
-	val children: List<SequencePhaseKeys.SequencePhaseKey>
+	val children: List<IonRegistryKey<SequencePhase, SequencePhase>>
 ) {
 	private val startEffects = effects.filter { effect -> effect.playPhases.contains(EffectTiming.START) }
 	private val tickedEffects = effects.filter { effect -> effect.playPhases.contains(EffectTiming.TICKED) }
@@ -43,7 +45,7 @@ class SequencePhase(
 	}
 
 	companion object {
-		fun endSequence(sequenceKey: String, key: SequencePhaseKeys.SequencePhaseKey, trigger: SequenceTrigger<*>, vararg effect: SequencePhaseEffect): SequencePhase = SequencePhase(
+		fun endSequence(sequenceKey: IonRegistryKey<Sequence, Sequence>, key: IonRegistryKey<SequencePhase, SequencePhase>, trigger: SequenceTrigger<*>, vararg effect: SequencePhaseEffect): SequencePhase = SequencePhase(
 			sequenceKey = sequenceKey,
 			phaseKey = key,
 			trigger = trigger,

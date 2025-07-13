@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.sequences.trigger
 
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.features.sequences.Sequence
 import org.bukkit.entity.Player
 
 class SequenceTrigger<T : SequenceTriggerType.TriggerSettings>(val type: SequenceTriggerType<T>, private val settings: T) {
@@ -13,7 +15,7 @@ class SequenceTrigger<T : SequenceTriggerType.TriggerSettings>(val type: Sequenc
 		onTriggered.invoke(this, player)
 	}
 
-	fun shouldProceed(player: Player, sequenceKey: String, callingTrigger: SequenceTriggerType<*>): Boolean {
+	fun shouldProceed(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>, callingTrigger: SequenceTriggerType<*>): Boolean {
 		return settings.shouldProceed(player, sequenceKey, callingTrigger)
 	}
 }
