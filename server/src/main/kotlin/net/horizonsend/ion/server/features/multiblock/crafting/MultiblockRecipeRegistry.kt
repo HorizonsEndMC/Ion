@@ -45,10 +45,11 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 
 	override fun registerAdditional(key: IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<*>>, value: MultiblockRecipe<*>) {
 		byMultiblock[value.entityType].add(value)
-		registerAutoMasonRecipes()
 	}
 
 	override fun boostrap() {
+		registerAutoMasonRecipes()
+
 		register(MultiblockRecipeKeys.URANIUM_ENRICHMENT, FurnaceMultiblockRecipe(
 			key = MultiblockRecipeKeys.URANIUM_ENRICHMENT,
 			clazz = CentrifugeMultiblock.CentrifugeMultiblockEntity::class,
