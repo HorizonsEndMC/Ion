@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.movement
 
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.core.registration.IonRegistries
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.getRotated
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
@@ -98,11 +99,11 @@ interface TranslationAccessor {
 		}
 
 		override fun blockStateTransform(blockState: BlockState): BlockState {
-			val customBlock = CustomBlocks.getByBlockState(blockState)
+			val customBlock = IonRegistries.CUSTOM_BLOCKS[blockState]
 			return if (customBlock == null) {
 				blockState.rotate(nmsRotation)
 			} else {
-				CustomBlocks.getRotated(customBlock, blockState, nmsRotation)
+				getRotated(customBlock, blockState, nmsRotation)
 			}
 		}
 
