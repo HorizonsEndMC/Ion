@@ -1,11 +1,13 @@
 package net.horizonsend.ion.server.features.sequences.phases
 
+import io.papermc.paper.registry.RegistryAccess
+import io.papermc.paper.registry.RegistryKey
 import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.configuration.util.StaticFloatAmount
+import net.horizonsend.ion.server.configuration.util.VariableFloatAmount
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
-import net.horizonsend.ion.server.features.sequences.SequenceManager.NEXT_PHASE_SOUND
-import net.horizonsend.ion.server.features.sequences.SequenceManager.RANDOM_EXPLOSION_SOUND
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.Companion.ifPreviousPhase
@@ -37,6 +39,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
+import org.bukkit.Sound
 import org.bukkit.util.BoundingBox
 import org.bukkit.util.Vector
 
@@ -47,9 +50,8 @@ object SequencePhases {
 
 	private val phasesByKey = mutableMapOf<SequencePhaseKey, SequencePhase>()
 
-	private fun bootstrapPhase(phase: SequencePhase): SequencePhaseKey {
+	private fun bootstrapPhase(phase: SequencePhase) {
 		phasesByKey[phase.key] = phase
-		return phase.key
 	}
 
 	/** Builds and returns the phase key. Good utility for registering phases in the hierarchy */
@@ -58,16 +60,33 @@ object SequencePhases {
 		trigger: SequenceTrigger<*>?,
 		effects: List<SequencePhaseEffect>,
 		children: List<SequencePhaseKey>
-	): SequencePhaseKey {
-		return bootstrapPhase(SequencePhase(key, trigger, effects, children))
+	) {
+		bootstrapPhase(SequencePhase(key, trigger, effects, children))
 	}
 
 	fun registerPhases() {
 		registerTutorial()
 	}
 
+	val RANDOM_EXPLOSION_SOUND = SequencePhaseEffect.Chance(
+		SequencePhaseEffect.PlaySound(
+			RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT).getKey(Sound.ENTITY_GENERIC_EXPLODE)!!,
+			VariableFloatAmount(0.05f, 1.0f),
+			StaticFloatAmount(1.0f),
+			listOf(EffectTiming.TICKED)
+		),
+		0.02
+	)
+	val NEXT_PHASE_SOUND = SequencePhaseEffect.PlaySound(
+		RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT).getKey(Sound.ENTITY_ARROW_HIT_PLAYER)!!,
+		StaticFloatAmount(1.0f),
+		StaticFloatAmount(2.0f),
+		listOf(EffectTiming.START)
+	)
+
 	private fun registerTutorial() {
 		registerTutorialBranches()
+
 		bootstrapPhase(
 			key = TUTORIAL_START,
 			trigger = null,
@@ -77,174 +96,163 @@ object SequencePhases {
 				SendMessage(text("Exit the cryopod room to begin."), listOf(EffectTiming.START)),
 				SendMessage(Component.empty(), listOf(EffectTiming.START))
 			),
-			children = listOf(
-				bootstrapPhase(
-					key = EXIT_CRYOPOD_ROOM,
-					trigger = SequenceTrigger(
-						SequenceTriggerTypes.PLAYER_MOVEMENT,
-						MovementTriggerSettings(listOf(
-							inBoundingBox(BoundingBox.of(
-								Vector(84.0, 358.0, 26.0),
-								Vector(86.0, 360.0, 27.0),
-							))
-						))
-					),
-					effects = listOf(
-						RANDOM_EXPLOSION_SOUND,
-						ifPreviousPhase(TUTORIAL_START, listOf(EffectTiming.START),
-							NEXT_PHASE_SOUND,
-							SendMessage(Component.empty(), listOf()),
-							SendMessage(text("The ships's communication system crackles to life:", GRAY, ITALIC), listOf()),
-							SendMessage(text("This is your captain speaking, we're under attack by pirates"), listOf()),
-							SendMessage(text("We must abandon ship"), listOf()),
-							SendMessage(text("Proceed to the elevator down to the hangar bay!"), listOf()),
-							SendMessage(Component.empty(), listOf())
-						),
-						SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(93, 359, 11), 10L, listOf(EffectTiming.TICKED)), 10)
-					),
-					children = listOf(
-						BRANCH_LOOK_OUTSIDE,
-						bootstrapPhase(
-							key = BROKEN_ELEVATOR,
-							trigger = SequenceTrigger(
-								SequenceTriggerTypes.PLAYER_MOVEMENT,
-								MovementTriggerSettings(listOf(
-									lookingAtBoundingBox(BoundingBox.of(
-										Vector(92.0, 357.0, 13.0),
-										Vector(94.0, 362.0, 10.0),
-									), 4.5)
-								))
-							),
-							effects = listOf(
-								RANDOM_EXPLOSION_SOUND,
+			children = listOf(EXIT_CRYOPOD_ROOM)
+		)
 
-								ifPreviousPhase(EXIT_CRYOPOD_ROOM, listOf(EffectTiming.START),
-									NEXT_PHASE_SOUND,
-									SendMessage(Component.empty(), listOf()),
-									SendMessage(text("Smoke bellows out of the smouldering remains of an elevator, the dorsal hull appears to have taken a direct hit from enemy fire.", GRAY, ITALIC), listOf(EffectTiming.START)),
+		bootstrapPhase(
+			key = EXIT_CRYOPOD_ROOM,
+			trigger = SequenceTrigger(
+				SequenceTriggerTypes.PLAYER_MOVEMENT,
+				MovementTriggerSettings(listOf(
+					inBoundingBox(BoundingBox.of(
+						Vector(84.0, 358.0, 26.0),
+						Vector(86.0, 360.0, 27.0),
+					))
+				))
+			),
+			effects = listOf(
+				RANDOM_EXPLOSION_SOUND,
+				ifPreviousPhase(TUTORIAL_START, listOf(EffectTiming.START),
+					NEXT_PHASE_SOUND,
+					SendMessage(Component.empty(), listOf()),
+					SendMessage(text("The ships's communication system crackles to life:", GRAY, ITALIC), listOf()),
+					SendMessage(text("This is your captain speaking, we're under attack by pirates"), listOf()),
+					SendMessage(text("We must abandon ship"), listOf()),
+					SendMessage(text("Proceed to the elevator down to the hangar bay!"), listOf()),
+					SendMessage(Component.empty(), listOf())
+				),
+				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(93, 359, 11), 10L, listOf(EffectTiming.TICKED)), 10)
+			),
+			children = listOf(BRANCH_LOOK_OUTSIDE, BROKEN_ELEVATOR)
+		)
 
-									SendMessage(text("There is a backup crew elevator other side of the ship!"), listOf()),
-									SendMessage(Component.empty(), listOf()),
-								),
+		bootstrapPhase(
+			key = BROKEN_ELEVATOR,
+			trigger = SequenceTrigger(
+				SequenceTriggerTypes.PLAYER_MOVEMENT,
+				MovementTriggerSettings(listOf(
+					lookingAtBoundingBox(BoundingBox.of(
+						Vector(92.0, 357.0, 13.0),
+						Vector(94.0, 362.0, 10.0),
+					), 4.5)
+				))
+			),
+			effects = listOf(
+				RANDOM_EXPLOSION_SOUND,
 
-								SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 359, 63), 10L, listOf(EffectTiming.TICKED)), 10)
-							),
-							children = listOf(
-								BRANCH_DYNMAP,
+				ifPreviousPhase(EXIT_CRYOPOD_ROOM, listOf(EffectTiming.START),
+					NEXT_PHASE_SOUND,
+					SendMessage(Component.empty(), listOf()),
+					SendMessage(text("Smoke bellows out of the smouldering remains of an elevator, the dorsal hull appears to have taken a direct hit from enemy fire.", GRAY, ITALIC), listOf(EffectTiming.START)),
 
-								BRANCH_SHIP_COMPUTER,
+					SendMessage(text("There is a backup crew elevator other side of the ship!"), listOf()),
+					SendMessage(Component.empty(), listOf()),
+				),
 
-								bootstrapPhase(
-									key = LOOK_AT_TRACTOR,
-									trigger = SequenceTrigger(
-										SequenceTriggerTypes.PLAYER_MOVEMENT,
-										MovementTriggerSettings(listOf(
-											lookingAtBoundingBox(BoundingBox.of(
-												Vector(96.0, 357.0, 62.0),
-												Vector(98.0, 362.0, 64.0),
-											), 3.5)
-										))
-									),
-									effects = listOf(
-										RANDOM_EXPLOSION_SOUND,
+				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 359, 63), 10L, listOf(EffectTiming.TICKED)), 10)
+			),
+			children = listOf(LOOK_AT_TRACTOR, BRANCH_DYNMAP, BRANCH_SHIP_COMPUTER)
+		)
 
-										ifPreviousPhase(BROKEN_ELEVATOR,
-											listOf(EffectTiming.START),
-											NEXT_PHASE_SOUND,
-											SendMessage(Component.empty(), listOf()),
-											SendMessage(text("To use the elevator, hold your controller (clock), stand on the glass block, and courch.", GRAY, ITALIC), listOf()),
-											SendMessage(Component.empty(), listOf()),
-										)
-									),
-									children = listOf(
-										BRANCH_DYNMAP,
+		bootstrapPhase(
+			key = LOOK_AT_TRACTOR,
+			trigger = SequenceTrigger(
+				SequenceTriggerTypes.PLAYER_MOVEMENT,
+				MovementTriggerSettings(listOf(
+					lookingAtBoundingBox(BoundingBox.of(
+						Vector(96.0, 357.0, 62.0),
+						Vector(98.0, 362.0, 64.0),
+					), 3.5)
+				))
+			),
+			effects = listOf(
+				RANDOM_EXPLOSION_SOUND,
 
-										BRANCH_SHIP_COMPUTER,
-
-										bootstrapPhase(
-											key = CREW_QUARTERS,
-											trigger = SequenceTrigger(SequenceTriggerTypes.USE_TRACTOR_BEAM, TractorBeamTriggerSettings()),
-											effects = listOf(
-												RANDOM_EXPLOSION_SOUND,
-												ifPreviousPhase(LOOK_AT_TRACTOR,
-													listOf(EffectTiming.START),
-													NEXT_PHASE_SOUND,
-													SendMessage(Component.empty(), listOf()),
-													SendMessage(text("Quick, make your way through the crew quarters and maintainance bays to the hangar bay!", GRAY, ITALIC), listOf()),
-													SendMessage(Component.empty(), listOf())
-												)
-											),
-											children = listOf(
-												bootstrapPhase(
-													key = FIRE_OBSTACLE,
-													trigger = SequenceTrigger(
-														SequenceTriggerTypes.PLAYER_MOVEMENT,
-														MovementTriggerSettings(listOf(
-															inBoundingBox(BoundingBox.of(
-																Vector(91.0, 351.0, 52.0),
-																Vector(95.0, 355.0, 51.0),
-															))
-														))
-													),
-													effects = listOf(
-														RANDOM_EXPLOSION_SOUND,
-														NEXT_PHASE_SOUND,
-														SendMessage(Component.empty(), listOf(EffectTiming.START)),
-														SendMessage(text("The ship's gravity generators have failed in the attack! Fly over the obstacle!", GRAY, ITALIC), listOf(EffectTiming.START)),
-														SendMessage(Component.empty(), listOf(EffectTiming.START)),
-													),
-													children = listOf(
-														bootstrapPhase(
-															key = GET_CHETHERITE,
-															trigger = SequenceTrigger(
-																SequenceTriggerTypes.PLAYER_MOVEMENT,
-																MovementTriggerSettings(listOf(
-																	inBoundingBox(BoundingBox.of(
-																		Vector(91.0, 351.0, 25.0),
-																		Vector(95.0, 354.0, 23.0),
-																	))
-																))
-															),
-															effects = listOf(
-																RANDOM_EXPLOSION_SOUND,
-																NEXT_PHASE_SOUND,
-																SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, listOf(EffectTiming.TICKED)), 10),
-																SendMessage(Component.empty(), listOf(EffectTiming.START)),
-																SendMessage(text("Quick, you'll need to grab some fuel for the escape pod. You can find some in that gargo container.", GRAY, ITALIC), listOf(EffectTiming.START)),
-																SendMessage(Component.empty(), listOf(EffectTiming.START)),
-															),
-															children = listOf(
-																bootstrapPhase(
-																	key = RECEIVED_CHETHERITE,
-																	trigger = SequenceTrigger(
-																		SequenceTriggerTypes.CONTAINS_ITEM,
-																		ContainsItemTrigger.ContainsItemTriggerSettings { it?.customItem?.identifier == CustomItemRegistry.CHETHERITE.identifier }
-																	),
-																	effects = listOf(
-																		RANDOM_EXPLOSION_SOUND,
-																		NEXT_PHASE_SOUND,
-																		SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, listOf(EffectTiming.TICKED)), 10),
-																		SendMessage(Component.empty(), listOf(EffectTiming.START)),
-																		SendMessage(text("Chetherite is hyperdrive fuel, you'll need it to travel faster than light.", GRAY, ITALIC), listOf(EffectTiming.START)),
-																		SendMessage(Component.empty(), listOf(EffectTiming.START)),
-																	),
-																	children = listOf(
-
-																	)
-																)
-															)
-														)
-													)
-												)
-											)
-										)
-									)
-								)
-							)
-						)
-					)
+				ifPreviousPhase(BROKEN_ELEVATOR,
+					listOf(EffectTiming.START),
+					NEXT_PHASE_SOUND,
+					SendMessage(Component.empty(), listOf()),
+					SendMessage(text("To use the elevator, hold your controller (clock), stand on the glass block, and courch.", GRAY, ITALIC), listOf()),
+					SendMessage(Component.empty(), listOf()),
 				)
-			)
+			),
+			children = listOf(CREW_QUARTERS, BRANCH_DYNMAP, BRANCH_SHIP_COMPUTER)
+		)
+
+		bootstrapPhase(
+			key = CREW_QUARTERS,
+			trigger = SequenceTrigger(SequenceTriggerTypes.USE_TRACTOR_BEAM, TractorBeamTriggerSettings()),
+			effects = listOf(
+				RANDOM_EXPLOSION_SOUND,
+				ifPreviousPhase(LOOK_AT_TRACTOR,
+					listOf(EffectTiming.START),
+					NEXT_PHASE_SOUND,
+					SendMessage(Component.empty(), listOf()),
+					SendMessage(text("Quick, make your way through the crew quarters and maintainance bays to the hangar bay!", GRAY, ITALIC), listOf()),
+					SendMessage(Component.empty(), listOf())
+				)
+			),
+			children = listOf(FIRE_OBSTACLE)
+		)
+
+		bootstrapPhase(
+			key = FIRE_OBSTACLE,
+			trigger = SequenceTrigger(
+				SequenceTriggerTypes.PLAYER_MOVEMENT,
+				MovementTriggerSettings(listOf(
+					inBoundingBox(BoundingBox.of(
+						Vector(91.0, 351.0, 52.0),
+						Vector(95.0, 355.0, 51.0),
+					))
+				))
+			),
+			effects = listOf(
+				RANDOM_EXPLOSION_SOUND,
+				NEXT_PHASE_SOUND,
+				SendMessage(Component.empty(), listOf(EffectTiming.START)),
+				SendMessage(text("The ship's gravity generators have failed in the attack! Fly over the obstacle!", GRAY, ITALIC), listOf(EffectTiming.START)),
+				SendMessage(Component.empty(), listOf(EffectTiming.START)),
+			),
+			children = listOf(GET_CHETHERITE)
+		)
+
+		bootstrapPhase(
+			key = GET_CHETHERITE,
+			trigger = SequenceTrigger(
+				SequenceTriggerTypes.PLAYER_MOVEMENT,
+				MovementTriggerSettings(listOf(
+					inBoundingBox(BoundingBox.of(
+						Vector(91.0, 351.0, 25.0),
+						Vector(95.0, 354.0, 23.0),
+					))
+				))
+			),
+			effects = listOf(
+				RANDOM_EXPLOSION_SOUND,
+				NEXT_PHASE_SOUND,
+				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, listOf(EffectTiming.TICKED)), 10),
+				SendMessage(Component.empty(), listOf(EffectTiming.START)),
+				SendMessage(text("Quick, you'll need to grab some fuel for the escape pod. You can find some in that gargo container.", GRAY, ITALIC), listOf(EffectTiming.START)),
+				SendMessage(Component.empty(), listOf(EffectTiming.START)),
+			),
+			children = listOf(RECEIVED_CHETHERITE)
+		)
+
+		bootstrapPhase(
+			key = RECEIVED_CHETHERITE,
+			trigger = SequenceTrigger(
+				SequenceTriggerTypes.CONTAINS_ITEM,
+				ContainsItemTrigger.ContainsItemTriggerSettings { it?.customItem?.identifier == CustomItemRegistry.CHETHERITE.identifier }
+			),
+			effects = listOf(
+				RANDOM_EXPLOSION_SOUND,
+				NEXT_PHASE_SOUND,
+				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, listOf(EffectTiming.TICKED)), 10),
+				SendMessage(Component.empty(), listOf(EffectTiming.START)),
+				SendMessage(text("Chetherite is hyperdrive fuel, you'll need it to travel faster than light.", GRAY, ITALIC), listOf(EffectTiming.START)),
+				SendMessage(Component.empty(), listOf(EffectTiming.START)),
+			),
+			children = listOf(/*TODO*/)
 		)
 	}
 
