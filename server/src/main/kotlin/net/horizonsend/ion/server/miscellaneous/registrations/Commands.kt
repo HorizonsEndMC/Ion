@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.IonNPCCommand
 import net.horizonsend.ion.server.command.admin.ItemDebugCommand
 import net.horizonsend.ion.server.command.admin.RemoveGhostShipCommand
+import net.horizonsend.ion.server.command.admin.SequenceAdminCommand
 import net.horizonsend.ion.server.command.admin.StructureCreator
 import net.horizonsend.ion.server.command.admin.WorldCommand
 import net.horizonsend.ion.server.command.economy.BazaarCommand
@@ -208,5 +209,6 @@ val commands: List<SLCommand> = listOf(
 	DisplayDebug,
 	ChatCommand,
 	IonNPCCommand,
-	EnableOrbitBreakingCommand
+	EnableOrbitBreakingCommand,
+	SequenceAdminCommand
 )
