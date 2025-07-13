@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.sequences.trigger
 
+import net.horizonsend.ion.server.features.sequences.SequenceManager.getCurrentSequences
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.MovementTriggerSettings
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
@@ -11,13 +12,13 @@ import org.bukkit.util.BoundingBox
 
 object PlayerMovementTrigger : SequenceTriggerType<MovementTriggerSettings>() {
 	override fun setupChecks() {
-		listen<PlayerMoveEvent> { checkPhaseTriggers(it.player) }
+		listen<PlayerMoveEvent> { for (sequenceKey in getCurrentSequences(it.player)) { checkPhaseTriggers(it.player, sequenceKey) } }
 	}
 
 	class MovementTriggerSettings(
 		val predicates: List<PlayerLocationPredicate>
 	) : TriggerSettings() {
-		override fun shouldProceed(player: Player, callingTrigger: SequenceTriggerType<*>): Boolean {
+		override fun shouldProceed(player: Player, sequenceKey: String, callingTrigger: SequenceTriggerType<*>): Boolean {
 			return predicates.all { predicate -> predicate.check(player) }
 		}
 	}

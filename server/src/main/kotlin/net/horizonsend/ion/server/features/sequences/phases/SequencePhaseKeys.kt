@@ -1,12 +1,28 @@
 package net.horizonsend.ion.server.features.sequences.phases
 
+import kotlinx.serialization.Serializable
+
 object SequencePhaseKeys {
 	val keys: MutableList<SequencePhaseKey> = mutableListOf()
 	val byString: MutableMap<String, SequencePhaseKey> = mutableMapOf()
 
+	@Serializable
 	class SequencePhaseKey(val key: String) {
 		fun getValue(): SequencePhase {
 			return SequencePhases.getPhaseByKey(this)
+		}
+
+		override fun equals(other: Any?): Boolean {
+			if (this === other) return true
+			if (javaClass != other?.javaClass) return false
+
+			other as SequencePhaseKey
+
+			return key == other.key
+		}
+
+		override fun hashCode(): Int {
+			return key.hashCode()
 		}
 	}
 

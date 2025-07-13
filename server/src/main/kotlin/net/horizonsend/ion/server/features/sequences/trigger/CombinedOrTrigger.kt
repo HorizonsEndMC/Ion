@@ -9,8 +9,8 @@ object CombinedOrTrigger : SequenceTriggerType<CombinedOrTriggerSettings>() {
 	class CombinedOrTriggerSettings(
 		val children: Collection<SequenceTrigger<*>>
 	) : TriggerSettings() {
-		override fun shouldProceed(player: Player, callingTrigger: SequenceTriggerType<*>): Boolean {
-			return children.any { trigger -> trigger.shouldProceed(player, callingTrigger) }
+		override fun shouldProceed(player: Player, sequenceKey: String, callingTrigger: SequenceTriggerType<*>): Boolean {
+			return children.any { trigger -> trigger.shouldProceed(player, sequenceKey, callingTrigger) }
 		}
 	}
 }
