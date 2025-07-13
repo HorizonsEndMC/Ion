@@ -9,6 +9,8 @@ import net.horizonsend.ion.server.core.registration.registries.FluidTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.ItemModRegistry
 import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
+import net.horizonsend.ion.server.features.sequences.SequenceRegistry
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseRegistry
 
 object IonRegistries : IonComponent() {
 	private val allRegistries = mutableListOf<Registry<*>>()
@@ -28,6 +30,9 @@ object IonRegistries : IonComponent() {
 	val CUSTOM_BLOCKS = register(CustomBlockRegistry())
 	val ITEM_MODIFICATIONS = register(ItemModRegistry())
 	val MULTIBLOCK_RECIPE = register(MultiblockRecipeRegistry())
+
+	val SEQUENCE_PHASE = register(SequencePhaseRegistry())
+	val SEQUENCE = register(SequenceRegistry())
 
 	private fun <T : Registry<*>> register(registry: T): T {
 		byId[registry.id] = registry
