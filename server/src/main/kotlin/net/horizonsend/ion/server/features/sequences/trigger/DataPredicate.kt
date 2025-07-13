@@ -6,7 +6,6 @@ import org.bukkit.entity.Player
 import java.util.function.Predicate
 import kotlin.jvm.optionals.getOrNull
 
-
 object DataPredicate: SequenceTriggerType<DataPredicateSettings<*>>() {
 	override fun setupChecks() {}
 
@@ -14,8 +13,8 @@ object DataPredicate: SequenceTriggerType<DataPredicateSettings<*>>() {
 		val dataTypeKey: String,
 		val predicate: Predicate<T?>
 	) : TriggerSettings() {
-		override fun shouldProceed(player: Player, callingTrigger: SequenceTriggerType<*>): Boolean {
-			val storedData = SequenceManager.getSequenceData(player).get<T>(dataTypeKey).getOrNull()
+		override fun shouldProceed(player: Player, sequenceKey: String, callingTrigger: SequenceTriggerType<*>): Boolean {
+			val storedData = SequenceManager.getSequenceData(player, sequenceKey).get<T>(dataTypeKey).getOrNull()
 			return predicate.test(storedData)
 		}
 	}

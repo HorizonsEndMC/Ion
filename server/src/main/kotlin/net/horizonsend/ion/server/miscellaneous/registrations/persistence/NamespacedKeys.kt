@@ -133,6 +133,9 @@ object NamespacedKeys {
 	val FIRST_POINT = key("first_point")
 	val SECOND_POINT = key("second_point")
 
+	val SEQUENCES = key("sequences")
+	val CONTENT = key("content")
+
 	fun key(key: String) = NamespacedKey(IonServer, key)
 
 	// Used for datapacks and resource packs
