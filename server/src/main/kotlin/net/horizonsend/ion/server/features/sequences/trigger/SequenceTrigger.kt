@@ -13,7 +13,7 @@ class SequenceTrigger<T : SequenceTriggerType.TriggerSettings>(val type: Sequenc
 		onTriggered.invoke(this, player)
 	}
 
-	fun shouldProceed(player: Player, callingTrigger: SequenceTriggerType<*>): Boolean {
-		return settings.shouldProceed(player, callingTrigger)
+	fun shouldProceed(player: Player, sequenceKey: String, callingTrigger: SequenceTriggerType<*>): Boolean {
+		return settings.shouldProceed(player, sequenceKey, callingTrigger)
 	}
 }
