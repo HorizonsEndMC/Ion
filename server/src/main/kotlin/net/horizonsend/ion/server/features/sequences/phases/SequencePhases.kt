@@ -6,8 +6,8 @@ import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.util.StaticFloatAmount
 import net.horizonsend.ion.server.configuration.util.VariableFloatAmount
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.Companion.ifPreviousPhase
@@ -251,7 +251,7 @@ object SequencePhases {
 			phaseKey = RECEIVED_CHETHERITE,
 			trigger = SequenceTrigger(
 				SequenceTriggerTypes.CONTAINS_ITEM,
-				ContainsItemTrigger.ContainsItemTriggerSettings { it?.customItem?.identifier == CustomItemRegistry.CHETHERITE.identifier }
+				ContainsItemTrigger.ContainsItemTriggerSettings { it?.customItem?.key == CustomItemKeys.CHETHERITE }
 			),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
