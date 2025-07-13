@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.registrations.persistence
 
-import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys
-import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.SequencePhaseKey
+import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.features.transport.filters.FilterData.FilterDataSerializer
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
@@ -52,7 +51,14 @@ object PDCSerializers {
 	val LONG_ARRAY_LIST = register(delegatedType("LONG_ARRAY_LIST", PersistentDataType.LIST.longArrays()))
 	val TAG_CONTAINER_LIST = register(delegatedType("TAG_CONTAINER_LIST", PersistentDataType.LIST.dataContainers()))
 
-	val SEQUENCE_PHASE = register(mappedDelegate<String, String, SequencePhaseKey>("SEQUENCE_PHASE", PersistentDataType.STRING, { it.key }, { SequencePhaseKeys.byString[it]!! }))
+	val FLUID_TYPE = register(delegatedType("FLUID_TYPE", IonRegistries.FLUID_TYPE.getKeySet().serializer))
+	val ATMOSPHERIC_GAS = register(delegatedType("ATMOSPHERIC_GAS", IonRegistries.ATMOSPHERIC_GAS.getKeySet().serializer))
+	val CUSTOM_ITEMS = register(delegatedType("CUSTOM_ITEMS", IonRegistries.CUSTOM_ITEMS.getKeySet().serializer))
+	val CUSTOM_BLOCKS = register(delegatedType("CUSTOM_BLOCKS", IonRegistries.CUSTOM_BLOCKS.getKeySet().serializer))
+	val ITEM_MODIFICATIONS = register(delegatedType("ITEM_MODIFICATIONS", IonRegistries.ITEM_MODIFICATIONS.getKeySet().serializer))
+	val MULTIBLOCK_RECIPE = register(delegatedType("MULTIBLOCK_RECIPE", IonRegistries.MULTIBLOCK_RECIPE.getKeySet().serializer))
+	val SEQUENCE_PHASE = register(delegatedType("SEQUENCE_PHASE", IonRegistries.SEQUENCE_PHASE.getKeySet().serializer))
+	val SEQUENCE = register(delegatedType("SEQUENCE", IonRegistries.SEQUENCE.getKeySet().serializer))
 
 	operator fun get(identifier: String) : RegisteredSerializer<*> = registeredSerializers[identifier]!!
 

@@ -4,37 +4,33 @@ import com.google.common.collect.HashBasedTable
 import net.horizonsend.ion.common.utils.getOrPut
 import net.horizonsend.ion.common.utils.removeRow
 import net.horizonsend.ion.common.utils.set
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys
-import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.SequencePhaseKey
-import net.horizonsend.ion.server.features.sequences.phases.SequencePhases
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SEQUENCES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit.getPlayer
-import org.bukkit.NamespacedKey
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.persistence.ListPersistentDataType
 import java.util.UUID
 
 object SequenceManager : IonServerComponent() {
-	private val phaseMap = HashBasedTable.create<UUID, String, SequencePhaseKey>()
-	private val sequenceData = HashBasedTable.create<UUID, String, SequenceDataStore>()
+	private val phaseMap = HashBasedTable.create<UUID, IonRegistryKey<Sequence, out Sequence>, IonRegistryKey<SequencePhase, out SequencePhase>>()
+	private val sequenceData = HashBasedTable.create<UUID, IonRegistryKey<Sequence, out Sequence>, SequenceDataStore>()
 
 	override fun onEnable() {
 		SequenceTriggerTypes.runSetup()
-		SequencePhases.registerPhases()
 
 		Tasks.asyncRepeat(1L, 1L) {
 			tickPhases()
 		}
 	}
 
-	fun getSequenceData(player: Player, sequenceKey: String): SequenceDataStore {
+	fun getSequenceData(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>): SequenceDataStore {
 		return sequenceData.getOrPut(player.uniqueId, sequenceKey) { SequenceDataStore() }
 	}
 
@@ -53,14 +49,14 @@ object SequenceManager : IonServerComponent() {
 	}
 
 	fun saveSequenceData(player: Player) {
-		val sequenceKeys = mutableListOf<String>()
+		val sequenceKeys = mutableListOf<IonRegistryKey<Sequence, out Sequence>>()
 
 		phaseMap.rowMap()[player.uniqueId]?.let { map ->
 			for ((sequenceKey, phase) in map) {
 				phase.getValue().endPrematurely(player)
 
 				player.persistentDataContainer.set(
-					NamespacedKey(IonServer, sequenceKey),
+					sequenceKey.ionNapespacedKey,
 					QuestData,
 					QuestData(phase.key, getSequenceData(player, sequenceKey).metaDataMirror)
 				)
@@ -69,31 +65,33 @@ object SequenceManager : IonServerComponent() {
 			}
 		}
 
-		player.persistentDataContainer.set(SEQUENCES, ListPersistentDataType.LIST.strings(), sequenceKeys)
+		player.persistentDataContainer.set(SEQUENCES, SequenceKeys.listSerializer, sequenceKeys)
 	}
 
 	@EventHandler
 	fun onPlayerJoin(event: PlayerJoinEvent) {
-		val activeSequences = event.player.persistentDataContainer.get(SEQUENCES, ListPersistentDataType.LIST.strings()) ?: return
+		val activeSequences = event.player.persistentDataContainer.get(SEQUENCES, SequenceKeys.listSerializer) ?: return
 
 		for (sequenceKey in activeSequences) {
-			val namespacedKey = NamespacedKey(IonServer, sequenceKey)
+			val namespacedKey = sequenceKey.ionNapespacedKey
 
 			val questData = event.player.persistentDataContainer.get(
 				namespacedKey,
 				QuestData
 			) ?: continue
 
-			phaseMap[event.player.uniqueId, sequenceKey] = SequencePhaseKeys.byString[questData.currentPhase]!!
+
+			val b = SequencePhaseKeys[questData.currentPhase]!!
+			phaseMap[event.player.uniqueId, sequenceKey] = b
 			sequenceData[event.player.uniqueId, sequenceKey] = questData.unpackDataStore()
 		}
 	}
 
-	fun getCurrentPhase(player: Player, sequenceKey: String): SequencePhaseKey? {
+	fun getCurrentPhase(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>): IonRegistryKey<SequencePhase, out SequencePhase>? {
 		return phaseMap[player.uniqueId, sequenceKey]
 	}
 
-	fun getCurrentSequences(player: Player): Collection<String> {
+	fun getCurrentSequences(player: Player): Set<IonRegistryKey<Sequence, out Sequence>> {
 		return phaseMap.rowMap()[player.uniqueId]?.keys ?: setOf()
 	}
 
@@ -106,7 +104,7 @@ object SequenceManager : IonServerComponent() {
 		}
 	}
 
-	fun startPhase(player: Player, sequenceKey: String, phase: SequencePhaseKey?) {
+	fun startPhase(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, phase: IonRegistryKey<SequencePhase, SequencePhase>?) {
 		if (phase == null) {
 			endPhase(player, sequenceKey)
 			saveSequenceData(player)
@@ -119,13 +117,13 @@ object SequenceManager : IonServerComponent() {
 		saveSequenceData(player)
 	}
 
-	fun endPhase(player: Player, sequenceKey: String) {
+	fun endPhase(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) {
 		val existingPhase = phaseMap.remove(player.uniqueId, sequenceKey)
 		existingPhase?.getValue()?.end(player)
 		saveSequenceData(player)
 	}
 
-	private fun setPhase(player: Player, sequenceKey: String, phase: SequencePhaseKey) {
+	private fun setPhase(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, phase: IonRegistryKey<SequencePhase, SequencePhase>) {
 		endPhase(player, sequenceKey)
 		phaseMap[player.uniqueId, sequenceKey] = phase
 	}
