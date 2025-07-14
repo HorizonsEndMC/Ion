@@ -43,6 +43,12 @@ object SequenceManager : IonServerComponent() {
 
 		saveSequenceData(event.player)
 
+		phaseMap.rowMap()[event.player.uniqueId]?.let { map ->
+			for ((_, phase) in map) {
+				phase.getValue().endPrematurely(event.player)
+			}
+		}
+
 		phaseMap.removeRow(uuid)
 		sequenceData.removeRow(uuid)
 	}
@@ -52,8 +58,6 @@ object SequenceManager : IonServerComponent() {
 
 		phaseMap.rowMap()[player.uniqueId]?.let { map ->
 			for ((sequenceKey, phase) in map) {
-				phase.getValue().endPrematurely(player)
-
 				player.persistentDataContainer.set(
 					sequenceKey.ionNapespacedKey,
 					QuestData,
