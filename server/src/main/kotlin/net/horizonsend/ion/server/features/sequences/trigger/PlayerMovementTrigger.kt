@@ -18,7 +18,7 @@ object PlayerMovementTrigger : SequenceTriggerType<MovementTriggerSettings>() {
 	}
 
 	class MovementTriggerSettings(
-		val predicates: List<PlayerLocationPredicate>
+		vararg val predicates: PlayerLocationPredicate
 	) : TriggerSettings() {
 		override fun shouldProceed(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>, callingTrigger: SequenceTriggerType<*>): Boolean {
 			return predicates.all { predicate -> predicate.check(player) }
