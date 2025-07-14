@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.ai.spawning.ships
 
 import kotlinx.coroutines.currentCoroutineContext
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
-import net.horizonsend.ion.server.features.ai.module.misc.AIDifficulty
 import net.horizonsend.ion.server.features.ai.spawning.PostSpawnBehaviorContext
 import net.horizonsend.ion.server.features.ai.spawning.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.ai.util.AITarget
@@ -21,11 +20,11 @@ interface SpawnedShip {
 	var absoluteHeight: Double?
 	var pilotName : Component?
 
-	fun createController(logger: Logger, starship: ActiveStarship, difficulty: AIDifficulty, targetMode: AITarget.TargetMode): AIController
+	fun createController(logger: Logger, starship: ActiveStarship, difficulty: Int, targetMode: AITarget.TargetMode): AIController
 
-	fun getName(difficulty: AIDifficulty): Component
+	fun getName(difficulty: Int): Component
 
-	fun getSuffix(difficulty: AIDifficulty): String
+	fun getSuffix(difficulty: Int): String
 
 	fun withRandomRadialOffset(minDistance: Double, maxDistance: Double, y: Double, absoluteHeight: Double? = null): SpawnedShip {
 		this.absoluteHeight = absoluteHeight
@@ -52,7 +51,7 @@ interface SpawnedShip {
 suspend fun SpawnedShip.spawn(
 	logger: Logger,
 	location: Location,
-	difficulty: AIDifficulty,
+	difficulty: Int,
 	targetMode: AITarget.TargetMode,
 	modifyController: AIController.() -> Unit = {}
 ) {
@@ -62,7 +61,7 @@ suspend fun SpawnedShip.spawn(
 		template,
 		location,
 		{
-			val controller = createController(logger, it, difficulty, targetMode)
+			val controller = createController(logger, it, difficulty,targetMode)
 
 			modifyController.invoke(controller)
 			context[PostSpawnBehaviorContext]?.hook?.invoke(controller)

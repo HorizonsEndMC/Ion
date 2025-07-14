@@ -21,7 +21,6 @@ import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.features.ai.configuration.AIEmities
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
-import net.horizonsend.ion.server.features.ai.module.misc.AIDifficulty
 import net.horizonsend.ion.server.features.ai.module.misc.EnmityMessageModule.Companion.betrayalAggro
 import net.horizonsend.ion.server.features.ai.module.misc.EnmityMessageModule.Companion.escalatedFriendlyFire
 import net.horizonsend.ion.server.features.ai.module.misc.EnmityMessageModule.Companion.triggeredByFriendlyFire
@@ -48,8 +47,8 @@ import org.bukkit.Color
 class AIFaction private constructor(
 	val identifier: String,
 	val color: Int = Integer.parseInt("ff0000", 16),
-	val nameList: Map<AIDifficulty, List<Component>>,
-	val suffixes: Map<AIDifficulty, String>
+	val nameList: Map<Int,List<Component>>,
+	val suffixes: Map<Int,String>
 ) {
 	private var templateProcess: AITemplateRegistry.Builder.() -> Unit = {}
 
@@ -61,7 +60,7 @@ class AIFaction private constructor(
 		return@filter factionManager.faction == this
 	}
 
-	fun getAvailableName(difficulty : AIDifficulty): Component {
+	fun getAvailableName(difficulty : Int): Component {
 		val list = nameList[difficulty]!!
 		return list.shuffled().firstOrNull { name ->
 			getFactionStarships().none { (it.controller as AIController).pilotName == name }
@@ -82,11 +81,11 @@ class AIFaction private constructor(
 	}
 
 	class Builder(private val identifier: String, val color: Int) {
-		private val names: MutableMap<AIDifficulty, MutableList<Component>> = mutableMapOf()
+		private val names: MutableMap<Int,MutableList<Component>> = mutableMapOf()
 
 		private val templateProcessing: MutableList<AITemplateRegistry.Builder.() -> Unit> = mutableListOf()
 
-		private val suffixes: MutableMap<AIDifficulty, String> = mutableMapOf()
+		private val suffixes: MutableMap<Int,String> = mutableMapOf()
 
 		private val enmityMessages = mutableListOf<EnmityTriggerMessage>()
 
@@ -100,25 +99,25 @@ class AIFaction private constructor(
 			return this
 		}
 
-		fun addName(difficulty: AIDifficulty, name: Component): Builder {
+		fun addName(difficulty: Int,name: Component): Builder {
 			if (names[difficulty] == null) names[difficulty] = mutableListOf()
 			names[difficulty]!! += name
 			return this
 		}
 
-		fun addNames(difficulty: AIDifficulty, vararg names: Component): Builder {
+		fun addNames(difficulty: Int,vararg names: Component): Builder {
 			if (this.names[difficulty] == null) this.names[difficulty] = mutableListOf()
 			this.names[difficulty]!! += names
 			return this
 		}
 
-		fun addNames(difficulty: AIDifficulty, names: Collection<Component>): Builder {
+		fun addNames(difficulty: Int,names: Collection<Component>): Builder {
 			if (this.names[difficulty] == null) this.names[difficulty] = mutableListOf()
 			this.names[difficulty]!! += names
 			return this
 		}
 
-		fun addDifficultySuffix(difficulty: AIDifficulty, suffix : String): Builder {
+		fun addDifficultySuffix(difficulty: Int, suffix : String): Builder {
 			this.suffixes[difficulty] = suffix
 			return this
 		}
@@ -208,24 +207,24 @@ class AIFaction private constructor(
 		fun builder(identifier: String, color: String): Builder = Builder(identifier, Integer.parseInt(color.removePrefix("#"), 16))
 
 		val WATCHERS = builder("WATCHERS", WATCHER_ACCENT.value())
-			.addNames(AIDifficulty.EASY, listOf(
+			.addNames(0, listOf(
 				"Dimidium Hivecraft", "Harriot Hivecraft", "Dagon Hivecraft", "Tadmor Hivecraft", "Hypatia Hivecraft",
 				"Dulcinea Hivecraft", "Fortitudo Hivecraft", "Poltergeist Hivecraft", "Yvaga Hivecraft", "Naron Hivecraft",
 				"Levantes Hivecraft", "Tylos Hivecraft"
 			).map { it.toComponent(WATCHER_STANDARD) })
-			.addNames(AIDifficulty.NORMAL, listOf(
+			.addNames(1, listOf(
 				"Dimidium Swarm", "Harriot Swarm", "Dagon Swarm", "Tadmor Swarm","Hypatia Swarm", "Dulcinea Swarm", "Fortitudo Swarm",
 				"Poltergeist Swarm", "Yvaga Swarm", "Naron Swarm", "Levantes Swarm", "Tylos Swarm"
 			).map { it.toComponent(WATCHER_STANDARD) })
-			.addNames(AIDifficulty.HARD, listOf(
+			.addNames(2, listOf(
 				"Dimidium Cluster", "Harriot Cluster", "Dagon Cluster", "Tadmor Cluster", "Hypatia Cluster","Dulcinea Cluster",
 				"Fortitudo Cluster", "Poltergeist Cluster", "Yvaga Cluster", "Naron Cluster", "Levantes Cluster", "Tylos Cluster"
 			).map { it.toComponent(WATCHER_STANDARD) })
-			.addNames(AIDifficulty.HARDER, listOf(
+			.addNames(3, listOf(
 				"Dimidium Nest", "Harriot Nest", "Dagon Nest", "Tadmor Nest", "Hypatia Nest", "Dulcinea Nest", "Fortitudo Nest",
 				"Poltergeist Nest", "Yvaga Nest", "Naron Nest", "Levantes Nest", "Tylos Nest"
 			).map { it.toComponent(WATCHER_STANDARD) })
-			.addNames(AIDifficulty.INSANE, listOf(
+			.addNames(4, listOf(
 				"Dimidium Commune", "Dimidium Brood", "Harriot Commune", "Harriot Brood", "Dagon Commune", "Dagon Brood", "Tadmor Commune", "Tadmor Brood",
 				"Hypatia Commune", "Hypatia Brood", "Dulcinea Commune", "Dulcinea Brood", "Fortitudo Commune", "Fortitudo Brood",
 				"Poltergeist Commune", "Poltergeist Brood", "Yvaga Commune", "Yvaga Brood", "Naron Commune", "Naron Brood",
@@ -256,15 +255,15 @@ class AIFaction private constructor(
 				"anomaly" to "<gray>Unit violating observation protocols.",
 				"engage" to "<$WATCHER_STANDARD>Hostile signal confirmed. Locking subsystems."
 			)
-			.addDifficultySuffix(AIDifficulty.EASY, "✦")
-			.addDifficultySuffix(AIDifficulty.NORMAL, "✦✦")
-			.addDifficultySuffix(AIDifficulty.HARD, "👁")
-			.addDifficultySuffix(AIDifficulty.HARDER, "👁👁")
-			.addDifficultySuffix(AIDifficulty.INSANE, "🌀")
+			.addDifficultySuffix(0,"✦")
+			.addDifficultySuffix(1,"✦✦")
+			.addDifficultySuffix(2,"👁")
+			.addDifficultySuffix(3,"👁👁")
+			.addDifficultySuffix(4,"🌀")
 			.build()
 
 		val 吃饭人 = builder("吃饭人", 吃饭人_STANDARD.value())
-			.addNames(AIDifficulty.EASY,
+			.addNames(0,
 				text("✦飞行员✦", 吃饭人_STANDARD),
 				text("✦面包✦", 吃饭人_STANDARD),
 				text("✦蛋糕✦", 吃饭人_STANDARD),
@@ -274,7 +273,7 @@ class AIFaction private constructor(
 				text("✦马铃薯✦", 吃饭人_STANDARD),
 				text("✦薯叶✦", 吃饭人_STANDARD),
 			)
-			.addNames(AIDifficulty.NORMAL,
+			.addNames(1,
 				text("✦✦飞行员✦✦", 吃饭人_STANDARD),
 				text("✦✦面包✦✦", 吃饭人_STANDARD),
 				text("✦✦蛋糕✦✦", 吃饭人_STANDARD),
@@ -284,7 +283,7 @@ class AIFaction private constructor(
 				text("✦✦马铃薯✦✦", 吃饭人_STANDARD),
 				text("✦✦薯叶✦✦", 吃饭人_STANDARD),
 			)
-			.addNames(AIDifficulty.HARD,
+			.addNames(2,
 				text("✨飞行员✨", 吃饭人_STANDARD),
 				text("✨面包✨", 吃饭人_STANDARD),
 				text("✨蛋糕✨", 吃饭人_STANDARD),
@@ -294,7 +293,7 @@ class AIFaction private constructor(
 				text("✨马铃薯✨", 吃饭人_STANDARD),
 				text("✨薯叶✨", 吃饭人_STANDARD),
 			)
-			.addNames(AIDifficulty.HARDER,
+			.addNames(3,
 				text("✨✨飞行员✨✨", 吃饭人_STANDARD),
 				text("✨✨面包✨✨", 吃饭人_STANDARD),
 				text("✨✨蛋糕✨✨", 吃饭人_STANDARD),
@@ -304,7 +303,7 @@ class AIFaction private constructor(
 				text("✨✨马铃薯✨✨", 吃饭人_STANDARD),
 				text("✨✨薯叶✨✨", 吃饭人_STANDARD),
 			)
-			.addNames(AIDifficulty.INSANE,
+			.addNames(4,
 				text("\uD83C\uDF5E飞行员\uD83C\uDF5E", 吃饭人_STANDARD),
 				text("\uD83C\uDF5E 面包\uD83C\uDF5E", 吃饭人_STANDARD),
 				text("\uD83E\uDD50蛋糕\uD83E\uDD50", 吃饭人_STANDARD),
@@ -314,18 +313,18 @@ class AIFaction private constructor(
 				text("\uD83E\uDD68马铃薯\uD83E\uDD68", 吃饭人_STANDARD),
 				text("\uD83E\uDD68薯叶\uD83E\uDD68", 吃饭人_STANDARD),
 			)
-			.addDifficultySuffix(AIDifficulty.EASY,"✦")
-			.addDifficultySuffix(AIDifficulty.NORMAL,"✦✦")
-			.addDifficultySuffix(AIDifficulty.HARD,"🥖")
-			.addDifficultySuffix(AIDifficulty.HARDER,"🥖🥖")
-			.addDifficultySuffix(AIDifficulty.INSANE,"🥐")
+			.addDifficultySuffix(0,"✦")
+			.addDifficultySuffix(1,"✦✦")
+			.addDifficultySuffix(2,"🥖")
+			.addDifficultySuffix(3,"🥖🥖")
+			.addDifficultySuffix(4,"🥐")
 			.build()
 
 		val miningGuildMini = "<$MINING_CORP_LIGHT_ORANGE>Mining <$MINING_CORP_DARK_ORANGE>Guild"
 
 		val MINING_GUILD = builder("MINING_GUILD", MINING_CORP_LIGHT_ORANGE.value())
 			.setMessagePrefix("<${HEColorScheme.HE_MEDIUM_GRAY}>Receiving transmission from $miningGuildMini <${HEColorScheme.HE_MEDIUM_GRAY}>vessel")
-			.addNames(AIDifficulty.EASY,
+			.addNames(0,
 				text("Intern Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
 				text("Intern Alpi Artion", MINING_CORP_LIGHT_ORANGE),
 				text("Intern Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
@@ -338,7 +337,7 @@ class AIFaction private constructor(
 				text("Intern Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
 				text("Intern Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
 			)
-			.addNames(AIDifficulty.NORMAL,
+			.addNames(1,
 				text("Employee Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
 				text("Employee Alpi Artion", MINING_CORP_LIGHT_ORANGE),
 				text("Employee Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
@@ -351,7 +350,7 @@ class AIFaction private constructor(
 				text("Employee Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
 				text("Employee Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
 			)
-			.addNames(AIDifficulty.HARD,
+			.addNames(2,
 				text("Manager Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
 				text("Manager Alpi Artion", MINING_CORP_LIGHT_ORANGE),
 				text("Manager Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
@@ -364,7 +363,7 @@ class AIFaction private constructor(
 				text("Manager Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
 				text("Manager Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
 			)
-			.addNames(AIDifficulty.HARDER,
+			.addNames(3,
 				text("Director Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
 				text("Director Alpi Artion", MINING_CORP_LIGHT_ORANGE),
 				text("Director Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
@@ -377,7 +376,7 @@ class AIFaction private constructor(
 				text("Director Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
 				text("Director Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
 			)
-			.addNames(AIDifficulty.INSANE,
+			.addNames(4,
 				text("Executive Nil Noralgratin", MINING_CORP_LIGHT_ORANGE),
 				text("Executive Alpi Artion", MINING_CORP_LIGHT_ORANGE),
 				text("Executive Sisko Sargred", MINING_CORP_LIGHT_ORANGE),
@@ -400,40 +399,40 @@ class AIFaction private constructor(
 				"warn_friendly" to "<#FFA500>Manager is gonna tear me a new one if you keep this up.",
 				"betrayal" to "<red>That's it! For the trouble im selling your ship for scrap!"
 			)
-			.addDifficultySuffix(AIDifficulty.EASY,"✦")
-			.addDifficultySuffix(AIDifficulty.NORMAL,"✦✦")
-			.addDifficultySuffix(AIDifficulty.HARD,"⛏")
-			.addDifficultySuffix(AIDifficulty.HARDER,"⛏⛏")
-			.addDifficultySuffix(AIDifficulty.INSANE,"💰")
+			.addDifficultySuffix(0,"✦")
+			.addDifficultySuffix(1,"✦✦")
+			.addDifficultySuffix(2,"⛏")
+			.addDifficultySuffix(3,"⛏⛏")
+			.addDifficultySuffix(4,"💰")
 			.build()
 
 		val PERSEUS_EXPLORERS = builder("PERSEUS_EXPLORERS", EXPLORER_LIGHT_CYAN.value())
 			.setMessagePrefix("<$EXPLORER_LIGHT_CYAN>Receiving transmission from civilian vessel")
-			.addNames(AIDifficulty.EASY,
+			.addNames(0,
 				"<$EXPLORER_LIGHT_CYAN>Rookie <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Novice <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>New Explorer".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Rookie Captain".miniMessage(),
 			)
-			.addNames(AIDifficulty.NORMAL,
+			.addNames(1,
 				"<$EXPLORER_LIGHT_CYAN>Regular <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Trained <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Seasoned Explorer".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Regular Captain".miniMessage(),
 			)
-			.addNames(AIDifficulty.HARD,
+			.addNames(2,
 				"<$EXPLORER_LIGHT_CYAN>Veteran <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Keen <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Master Explorer".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Veteran Captain".miniMessage(),
 			)
-			.addNames(AIDifficulty.HARDER,
+			.addNames(3,
 				"<$EXPLORER_LIGHT_CYAN>Senior Veteran <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Eagle Eye <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Epic Explorer".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Senior Veteran Captain".miniMessage(),
 			)
-			.addNames(AIDifficulty.INSANE,
+			.addNames(4,
 				"<$EXPLORER_LIGHT_CYAN>Legendary <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Super Eye <$EXPLORER_MEDIUM_CYAN>Pilot".miniMessage(),
 				"<$EXPLORER_LIGHT_CYAN>Trailblazer".miniMessage(),
@@ -448,46 +447,46 @@ class AIFaction private constructor(
 				"<white>Please no, I've done nothing wrong!",
 				"<white>Spare me; this ship is all I have!",
 				"<white>My friends will avenge me!",
-				"<white>I'm calling the local system Defense Patrol! ",
+				"<white>I'm calling the [current system name] Defense Patrol! ",
 				"<white>Mayday, mayday, going down!",
 				"<white>Shields are down!",
 				"<white>Hull integrity critical!",
 				"<white>Engines compromised!"
 			)
-			.addDifficultySuffix(AIDifficulty.EASY,"✦")
-			.addDifficultySuffix(AIDifficulty.NORMAL,"✦✦")
-			.addDifficultySuffix(AIDifficulty.HARD,"🪶")
-			.addDifficultySuffix(AIDifficulty.HARDER,"🪶🪶")
-			.addDifficultySuffix(AIDifficulty.INSANE,"🌍")
+			.addDifficultySuffix(0,"✦")
+			.addDifficultySuffix(1,"✦✦")
+			.addDifficultySuffix(2,"🪶")
+			.addDifficultySuffix(3,"🪶🪶")
+			.addDifficultySuffix(4,"🌍")
 			.build()
 
 		val SYSTEM_DEFENSE_FORCES = builder("SYSTEM_DEFENSE_FORCES", PRIVATEER_LIGHT_TEAL.value())
 			.setMessagePrefix("<${HEColorScheme.HE_MEDIUM_GRAY}>Receiving transmission from <$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> vessel")
-			.addNames(AIDifficulty.EASY,
+			.addNames(0,
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Rookie Sanders".miniMessage(),
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Trainee Fed".miniMessage(),
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Rookie Smith".miniMessage(),
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Trainee Cop".miniMessage(),
 			)
-			.addNames(AIDifficulty.NORMAL,
+			.addNames(1,
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Pilot Wesley".miniMessage(),
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Private John".miniMessage(),
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Pilot Hale".miniMessage(),
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Private Haren".miniMessage(),
 			)
-			.addNames(AIDifficulty.HARD,
+			.addNames(2,
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Veteran Cotte".miniMessage(),
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Ace Russon".miniMessage(),
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Veteran Paine".miniMessage(),
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Ace Wilsimm".miniMessage(),
 			)
-			.addNames(AIDifficulty.HARDER,
+			.addNames(3,
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Master Cotte".miniMessage(),
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Super Ace Russon".miniMessage(),
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Master Paine".miniMessage(),
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Super Ace Wilsimm".miniMessage(),
 			)
-			.addNames(AIDifficulty.INSANE,
+			.addNames(4,
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Legendary Cotte".miniMessage(),
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Hero Russon".miniMessage(),
 				"<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL>Legendary Paine".miniMessage(),
@@ -511,37 +510,37 @@ class AIFaction private constructor(
 				"<white>Flanking right!",
 				"<white>Flanking left!"
 			)
-			.addDifficultySuffix(AIDifficulty.EASY,"✦")
-			.addDifficultySuffix(AIDifficulty.NORMAL,"✦✦")
-			.addDifficultySuffix(AIDifficulty.HARD,"@")
-			.addDifficultySuffix(AIDifficulty.HARDER,"@@")
-			.addDifficultySuffix(AIDifficulty.INSANE,"♠️")
+			.addDifficultySuffix(0,"✦")
+			.addDifficultySuffix(1,"✦✦")
+			.addDifficultySuffix(2,"@")
+			.addDifficultySuffix(3,"@@")
+			.addDifficultySuffix(4,"♠️")
 			.build()
 
 		val TSAII_RAIDERS = builder("TSAII_RAIDERS", TSAII_MEDIUM_ORANGE.value())
-			.addNames(AIDifficulty.EASY,
+			.addNames(0,
 				text("pup Dhagdagar", TSAII_DARK_ORANGE),
 				text("wimp Zazgrord", TSAII_DARK_ORANGE),
 				text("stooge Furriebruh", TSAII_DARK_ORANGE),
 			)
-			.addNames(AIDifficulty.NORMAL,
+			.addNames(1,
 				text("pup Dhagdagar", TSAII_DARK_ORANGE),
 				text("wimp Zazgrord", TSAII_DARK_ORANGE),
 				text("stooge Furriebruh", TSAII_DARK_ORANGE),
 			)
-			.addNames(AIDifficulty.HARD,
+			.addNames(2,
 				text("Hrorgrum", TSAII_DARK_ORANGE),
 				text("Rabidstompa", TSAII_DARK_ORANGE),
 				text("Godcooka", TSAII_DARK_ORANGE),
 				text("Skarcrushah", TSAII_DARK_ORANGE),
 			)
-			.addNames(AIDifficulty.HARDER,
+			.addNames(3,
 				text("Hrorgrum", TSAII_DARK_ORANGE),
 				text("Rabidstompa", TSAII_DARK_ORANGE),
 				text("Godcooka", TSAII_DARK_ORANGE),
 				text("Skarcrushah", TSAII_DARK_ORANGE),
 			)
-			.addNames(AIDifficulty.INSANE,
+			.addNames(4,
 				text("Big Bozz",TSAII_DARK_ORANGE, TextDecoration.BOLD),
 				text("Rizz Master",TSAII_DARK_ORANGE, TextDecoration.BOLD),
 				text("GOATaider",TSAII_DARK_ORANGE, TextDecoration.BOLD),
@@ -561,11 +560,11 @@ class AIFaction private constructor(
 				"growl" to "<#FFA500>Better shut it before the beat down.",
 				"rage" to "<red>Thanks for the knife backstabber!"
 			)
-			.addDifficultySuffix(AIDifficulty.EASY,"✦")
-			.addDifficultySuffix(AIDifficulty.NORMAL,"✦✦")
-			.addDifficultySuffix(AIDifficulty.HARD,"🐷")
-			.addDifficultySuffix(AIDifficulty.HARDER,"🐷🐷")
-			.addDifficultySuffix(AIDifficulty.INSANE,"😈")
+			.addDifficultySuffix(0,"✦")
+			.addDifficultySuffix(1,"✦✦")
+			.addDifficultySuffix(2,"🐷")
+			.addDifficultySuffix(3,"🐷🐷")
+			.addDifficultySuffix(4,"😈")
 			.build()
 
 		private val pirateNames = listOf(
@@ -587,16 +586,16 @@ class AIFaction private constructor(
 		)
 		val PIRATES = builder("PIRATES", PIRATE_SATURATED_RED.value())
 			.setMessagePrefix("<$PIRATE_SATURATED_RED>Receiving transmission from pirate vessel")
-			.addNames(AIDifficulty.EASY, pirateNames.map { ("Rowdy "+it).toComponent(PIRATE_LIGHT_RED) })
-			.addNames(AIDifficulty.EASY, pirateNames.map { ("Deliquent "+it).toComponent(PIRATE_LIGHT_RED) })
-			.addNames(AIDifficulty.NORMAL, pirateNames.map { ("Wanted "+it).toComponent(PIRATE_LIGHT_RED) })
-			.addNames(AIDifficulty.NORMAL, pirateNames.map { ("Criminal "+it).toComponent(PIRATE_LIGHT_RED) })
-			.addNames(AIDifficulty.HARD, pirateNames.map { ("Capo "+it).toComponent(PIRATE_LIGHT_RED) })
-			.addNames(AIDifficulty.HARD, pirateNames.map { ("Vicious "+it).toComponent(PIRATE_LIGHT_RED) })
-			.addNames(AIDifficulty.HARDER, pirateNames.map { ("Cutthorat "+it).toComponent(PIRATE_LIGHT_RED) })
-			.addNames(AIDifficulty.HARDER, pirateNames.map { ("Devil "+it).toComponent(PIRATE_LIGHT_RED) })
-			.addNames(AIDifficulty.INSANE, pirateNames.map { ("Calamity "+it).toComponent(PIRATE_LIGHT_RED) })
-			.addNames(AIDifficulty.INSANE, pirateNames.map { ("Woe "+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(0, pirateNames.map { ("Rowdy "+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(0, pirateNames.map { ("Deliquent "+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(1, pirateNames.map { ("Wanted "+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(1, pirateNames.map { ("Criminal "+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(2, pirateNames.map { ("Capo "+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(2, pirateNames.map { ("Vicious "+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(3, pirateNames.map { ("Cutthorat "+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(3, pirateNames.map { ("Devil "+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(4, pirateNames.map { ("Calamity "+it).toComponent(PIRATE_LIGHT_RED) })
+			.addNames(4, pirateNames.map { ("Woe "+it).toComponent(PIRATE_LIGHT_RED) })
 			.addSmackMessages(
 				"Nice day, Nice Ship. I think ill take it!",
 				"I'll plunder your booty!",
@@ -614,19 +613,19 @@ class AIFaction private constructor(
 				"growl" to "<#FFA500>You're asking for it.",
 				"rage" to "<red>You just bought yourself a death warrant!"
 			)
-			.addDifficultySuffix(AIDifficulty.EASY,"✦")
-			.addDifficultySuffix(AIDifficulty.NORMAL,"✦✦")
-			.addDifficultySuffix(AIDifficulty.HARD,"🔥")
-			.addDifficultySuffix(AIDifficulty.HARDER,"🔥🔥")
-			.addDifficultySuffix(AIDifficulty.INSANE,"💥")
+			.addDifficultySuffix(0,"✦")
+			.addDifficultySuffix(1,"✦✦")
+			.addDifficultySuffix(2,"🔥")
+			.addDifficultySuffix(3,"🔥🔥")
+			.addDifficultySuffix(4,"💥")
 			.build()
 
 		val ABYSSAL = builder("ABYSALL", ABYSSAL_LIGHT_RED.value())
-			.addNames(AIDifficulty.EASY, listOf("Spectre", "Nebuchadnezzar").map { it.toComponent(ABYSSAL_DARK_RED) })
-			.addNames(AIDifficulty.NORMAL, listOf("Balthazar", "Salmanazar").map { it.toComponent(ABYSSAL_DARK_RED) })
-			.addNames(AIDifficulty.HARD, listOf("Jeroboam", "The Pale One").map { it.toComponent(ABYSSAL_DARK_RED) })
-			.addNames(AIDifficulty.HARDER, listOf("Silent Screm", "Final Woe").map { it.toComponent(ABYSSAL_DARK_RED) })
-			.addNames(AIDifficulty.INSANE, listOf("Lucifer", "The Last Dusk").map { it.toComponent(ABYSSAL_DARK_RED) })
+			.addNames( 0, listOf("Spectre", "Nebuchadnezzar").map { it.toComponent(ABYSSAL_DARK_RED) })
+			.addNames( 1, listOf("Balthazar", "Salmanazar").map { it.toComponent(ABYSSAL_DARK_RED) })
+			.addNames( 2, listOf("Jeroboam", "The Pale One").map { it.toComponent(ABYSSAL_DARK_RED) })
+			.addNames( 3, listOf("Silent Screm", "Final Woe").map { it.toComponent(ABYSSAL_DARK_RED) })
+			.addNames( 4, listOf("Lucifer", "The Last Dusk").map { it.toComponent(ABYSSAL_DARK_RED) })
 			.setMessagePrefix("")
 			.addSmackMessages(
 				"<$ABYSSAL_DESATURATED_RED>Why do you hide your bones?",
@@ -643,33 +642,33 @@ class AIFaction private constructor(
 				"<$ABYSSAL_DESATURATED_RED>Purposeless.",
 				"<$ABYSSAL_DESATURATED_RED>Do you know what's really out there?.",
 			)
-			.addDifficultySuffix(AIDifficulty.EASY,"✦")
-			.addDifficultySuffix(AIDifficulty.NORMAL,"✦✦")
-			.addDifficultySuffix(AIDifficulty.HARD,"🖤")
-			.addDifficultySuffix(AIDifficulty.HARDER,"🖤🖤")
-			.addDifficultySuffix(AIDifficulty.INSANE,"🕳️")
+			.addDifficultySuffix(0,"✦")
+			.addDifficultySuffix(1,"✦✦")
+			.addDifficultySuffix(2,"🖤")
+			.addDifficultySuffix(3,"🖤🖤")
+			.addDifficultySuffix(4,"🕳️")
 			.build()
 
 		val PUMPKINS = builder("PUMPKINS", TextColor.fromHexString("#FFA500")!!.value())
-			.addNames(AIDifficulty.EASY,listOf("Kin!", "Matriarch!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
-			.addNames(AIDifficulty.NORMAL,listOf("Kin!!", "Matriarch!!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
-			.addNames(AIDifficulty.HARD,listOf("Kin!!!", "Matriarch!!!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
-			.addNames(AIDifficulty.HARDER,listOf("Kin!!!!", "Matriarch!!!!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
-			.addNames(AIDifficulty.INSANE,listOf("Kin!!!!!", "Matriarch!!!!!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
+			.addNames(0,listOf("Kin!", "Matriarch!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
+			.addNames(1,listOf("Kin!!", "Matriarch!!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
+			.addNames(2,listOf("Kin!!!", "Matriarch!!!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
+			.addNames(3,listOf("Kin!!!!", "Matriarch!!!!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
+			.addNames(4,listOf("Kin!!!!!", "Matriarch!!!!!").map { it.toComponent(TextColor.fromHexString("#FFA500")!!) })
 			.setMessagePrefix("<#FFA500>OY! Hey!")
-			.addDifficultySuffix(AIDifficulty.EASY,"✦")
-			.addDifficultySuffix(AIDifficulty.NORMAL,"✦✦")
-			.addDifficultySuffix(AIDifficulty.HARD,"🎃")
-			.addDifficultySuffix(AIDifficulty.HARDER,"🎃🎃")
-			.addDifficultySuffix(AIDifficulty.INSANE,"🎃🎃🎃")
+			.addDifficultySuffix(0,"✦")
+			.addDifficultySuffix(1,"✦✦")
+			.addDifficultySuffix(2,"🎃")
+			.addDifficultySuffix(3,"🎃🎃")
+			.addDifficultySuffix(4,"🎃🎃🎃")
 			.build()
 
 		val SKELETONS = builder("SKELETONS", DARK_RED.value())
-			.addNames(AIDifficulty.EASY,listOf("Lost Soul").map { it.toComponent(DARK_RED) })
-			.addNames(AIDifficulty.NORMAL,listOf("Hungry Ghoul").map { it.toComponent(DARK_RED) })
-			.addNames(AIDifficulty.HARD,listOf("Frenzied Wreath").map { it.toComponent(DARK_RED) })
-			.addNames(AIDifficulty.HARDER,listOf("Death").map { it.toComponent(DARK_RED) })
-			.addNames(AIDifficulty.INSANE,listOf("Old Bones").map { it.toComponent(DARK_RED) })
+			.addNames(0,listOf("Lost Soul").map { it.toComponent(DARK_RED) })
+			.addNames(1,listOf("Hungry Ghoul").map { it.toComponent(DARK_RED) })
+			.addNames(2,listOf("Frenzied Wreath").map { it.toComponent(DARK_RED) })
+			.addNames(3,listOf("Death").map { it.toComponent(DARK_RED) })
+			.addNames(4,listOf("Old Bones").map { it.toComponent(DARK_RED) })
 			.setMessagePrefix("")
 			.addSmackMessages(
 				"YOU WILL SOON JOIN THE DEAD, MORTAL!",
@@ -686,11 +685,11 @@ class AIFaction private constructor(
 				"BURN, MORTAL!",
 				"<i>incomprehensible gibberish"
 			)
-			.addDifficultySuffix(AIDifficulty.EASY,"✦")
-			.addDifficultySuffix(AIDifficulty.NORMAL,"✦✦")
-			.addDifficultySuffix(AIDifficulty.HARD,"💀")
-			.addDifficultySuffix(AIDifficulty.HARDER,"💀💀")
-			.addDifficultySuffix(AIDifficulty.INSANE,"☠️")
+			.addDifficultySuffix(0,"✦")
+			.addDifficultySuffix(1,"✦✦")
+			.addDifficultySuffix(2,"💀")
+			.addDifficultySuffix(3,"💀💀")
+			.addDifficultySuffix(4,"☠️")
 			.build()
 	}
 }

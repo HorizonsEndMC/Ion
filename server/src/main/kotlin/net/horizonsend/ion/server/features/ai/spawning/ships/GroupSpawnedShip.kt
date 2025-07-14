@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.ai.spawning.ships
 
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
-import net.horizonsend.ion.server.features.ai.module.misc.AIDifficulty
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -24,7 +23,7 @@ data class GroupSpawnedShip(
     override fun createController(
         logger: Logger,
         starship: ActiveStarship,
-        difficulty: AIDifficulty,
+        difficulty: Int,
         targetMode: AITarget.TargetMode
     ): AIController {
         val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
@@ -44,14 +43,14 @@ data class GroupSpawnedShip(
         return controller
     }
 
-    override fun getName(difficulty: AIDifficulty): Component {
+    override fun getName(difficulty: Int): Component {
         if (pilotName == null) {
 			pilotName = nameProvider.get()
 		}
 		return pilotName!!
     }
 
-	override fun getSuffix(difficulty: AIDifficulty): String {
+	override fun getSuffix(difficulty: Int): String {
 		return  suffixProvider.get()
 	}
 }

@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics
 
-import net.horizonsend.ion.server.features.ai.module.misc.AIDifficulty
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.ships.spawn
 import net.horizonsend.ion.server.features.ai.util.AITarget
@@ -24,7 +23,7 @@ class SingleSpawn(
 		val spawnPoint = locationProvider.get() ?: return
 		val difficulty = difficultySupplier(spawnPoint.world.name).get()
 
-		ship.spawn(logger, spawnPoint, AIDifficulty.fromInt(difficulty) ?: AIDifficulty.EASY,targetModeSupplier.get(), controllerModifier)
+		ship.spawn(logger, spawnPoint, difficulty,targetModeSupplier.get(), controllerModifier)
 
 		spawnMessage?.broadcast(spawnPoint, ship.template)
 	}

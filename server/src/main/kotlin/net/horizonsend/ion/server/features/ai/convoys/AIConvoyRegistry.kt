@@ -6,7 +6,6 @@ import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.configuration.util.VariableIntegerAmount
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEUS_EXPLORERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
-import net.horizonsend.ion.server.features.ai.module.misc.AIDifficulty
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.CaravanModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
@@ -40,7 +39,7 @@ object AIConvoyRegistry {
 	private val templates = mutableMapOf<String, AIConvoyTemplate<out ConvoyContext>>()
 
 
-	val SMALL_TC_CARAVAN = AIConvoyRegistry.caravan("SMALL_TC_CARAVAN", AIDifficulty.HARD) { ctx ->
+	val SMALL_TC_CARAVAN = AIConvoyRegistry.caravan("SMALL_TC_CARAVAN", 2) { ctx ->
 		val city  = ctx.city
 		val route = TraceCityCaravanRoute(
 			cites  = (city.allowedDestinations ?: TradeCities.getAll()).shuffled().toMutableList(),
@@ -100,7 +99,7 @@ object AIConvoyRegistry {
 		)
 	}
 
-	val DEBUG_CONVOY_LOCAL : AIConvoyTemplate<LocationContext> = AIConvoyRegistry.freeRoute("DEBUG_CONVOY_LOCAL", AIDifficulty.HARD.ordinal) { ctx ->
+	val DEBUG_CONVOY_LOCAL : AIConvoyTemplate<LocationContext> = AIConvoyRegistry.freeRoute("DEBUG_CONVOY_LOCAL", 2) { ctx ->
 		val route = RandomConvoyRoute.sameWorld(ctx.source.world.name)
 
 		CompositeSpawner(
@@ -109,12 +108,12 @@ object AIConvoyRegistry {
 			groupMessage         = "Debug convoy (local)".miniMessage(),
 			individualSpawnMessage = null,
 			onPostSpawn          = { c -> attachCaravanModule(c, route, "DEBUG_CONVOY_LOCAL") },
-			components           = makedebugComponents(route, fixedDifficulty(AIDifficulty.HARD.ordinal),fixedTargetMode(AITarget.TargetMode.MIXED)),
+			components           = makedebugComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
 			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED)
 		)
 	}
 
-	val DEBUG_CONVOY_GLOBAL = AIConvoyRegistry.freeRoute("DEBUG_CONVOY_GLOBAL", AIDifficulty.HARD.ordinal) { _ ->
+	val DEBUG_CONVOY_GLOBAL = AIConvoyRegistry.freeRoute("DEBUG_CONVOY_GLOBAL", 2) { _ ->
 		val route = RandomConvoyRoute.anyWorld()
 
 		CompositeSpawner(
@@ -123,7 +122,7 @@ object AIConvoyRegistry {
 			groupMessage         = "Debug convoy (global)".miniMessage(),
 			individualSpawnMessage = null,
 			onPostSpawn          = { c -> attachCaravanModule(c, route, "DEBUG_CONVOY_GLOBAL") },
-			components           = makedebugComponents(route, fixedDifficulty(AIDifficulty.HARD.ordinal),fixedTargetMode(AITarget.TargetMode.MIXED)),
+			components           = makedebugComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
 			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED)
 		)
 	}
@@ -157,13 +156,13 @@ object AIConvoyRegistry {
 	/* ---------- caravan (city‑to‑city) ----------------------------------- */
 	fun caravan(
 		id: String,
-		difficulty: AIDifficulty,
+		difficulty: Int,
 		spawner: (CityContext) -> SpawnerMechanic
 	) = register(
 		AIConvoyTemplate(
 			id,
 			spawner,
-			fixedDifficulty(difficulty.ordinal),
+			fixedDifficulty(difficulty),
 		)
 	)
 

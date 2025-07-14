@@ -5,8 +5,8 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
-import net.horizonsend.ion.server.features.ai.module.misc.AIDifficulty
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.ships.spawn
 import net.horizonsend.ion.server.features.ai.util.AITarget
@@ -54,7 +54,7 @@ abstract class MultiSpawner(
 
 			val spawnPoint = spawnOrigin.clone()
 
-			val difficulty = AIDifficulty.fromInt(shipDifficultySupplier.get()) ?: AIDifficulty.HARD
+			val difficulty = shipDifficultySupplier.get().coerceIn(DifficultyModule.minDifficulty,DifficultyModule.maxDifficulty)
 
 			val absoluteHeight = spawnedShip.absoluteHeight
 
