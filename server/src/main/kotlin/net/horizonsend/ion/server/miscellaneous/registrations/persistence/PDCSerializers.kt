@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.registrations.persistence
 
 import net.horizonsend.ion.server.core.registration.IonRegistries
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.transport.filters.FilterData.FilterDataSerializer
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
@@ -9,6 +10,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import kotlin.reflect.KClass
 
+@Suppress("unused")
 object PDCSerializers {
 	private val registeredSerializers = mutableMapOf<String, RegisteredSerializer<*>>()
 	private val typedSerialized = mutableMapOf<KClass<*>, RegisteredSerializer<*>>()
@@ -83,7 +85,11 @@ object PDCSerializers {
 
 	fun <C : Any> pack(data: C): MetaDataContainer<C, RegisteredSerializer<C>> {
 		@Suppress("UNCHECKED_CAST")
-		val serializer = (typedSerialized[data::class] as? RegisteredSerializer<C>) ?: throw NoSuchElementException("No serialier found for ${data::class.simpleName}")
+		val serializer = when (data) {
+			is IonRegistryKey<*, *> -> registeredSerializers[data.registry.id.key]!!
+			else -> typedSerialized[data::class] ?: throw NoSuchElementException("No serialier found for ${data::class.simpleName}")
+		}  as? RegisteredSerializer<C> ?: throw NoSuchElementException("No serialier found for ${data::class.simpleName}")
+
 		return MetaDataContainer(serializer, data)
 	}
 
