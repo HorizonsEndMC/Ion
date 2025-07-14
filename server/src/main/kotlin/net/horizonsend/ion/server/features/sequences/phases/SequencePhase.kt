@@ -16,9 +16,9 @@ class SequencePhase(
 
 	effects: List<SequencePhaseEffect>
 ) {
-	private val startEffects = effects.filter { effect -> effect.playPhases.contains(EffectTiming.START) }
-	private val tickedEffects = effects.filter { effect -> effect.playPhases.contains(EffectTiming.TICKED) }
-	private val endEffects = effects.filter { effect -> effect.playPhases.contains(EffectTiming.END) }
+	private val startEffects = effects.filter { effect -> effect.playPhase == EffectTiming.START }
+	private val tickedEffects = effects.filter { effect -> effect.playPhase == EffectTiming.TICKED }
+	private val endEffects = effects.filter { effect -> effect.playPhase == EffectTiming.END }
 
 	fun start(player: Player) {
 		startEffects.forEach { it.playEffect(player, sequenceKey) }
@@ -43,8 +43,8 @@ class SequencePhase(
 			sequenceKey = sequenceKey,
 			triggers = triggers,
 			effects = listOf(
-				SequencePhaseEffect.EndSequence(listOf(EffectTiming.START)),
-				SequencePhaseEffect.ClearSequenceData(listOf(EffectTiming.START)),
+				SequencePhaseEffect.EndSequence(EffectTiming.START),
+				SequencePhaseEffect.ClearSequenceData(EffectTiming.START),
 				*effect
 			)
 		)
