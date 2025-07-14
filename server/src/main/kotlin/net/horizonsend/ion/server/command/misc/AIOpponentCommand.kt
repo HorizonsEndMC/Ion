@@ -63,7 +63,7 @@ object AIOpponentCommand : SLCommand() {
 
 		sender.hint("Spawning ${template.starshipInfo.miniMessageName}")
 
-		summonShip(sender, template, null,difficulty,
+		summonShip(sender, template, null, difficulty,
 			targetMode?.let { AITarget.TargetMode.valueOf(it) } ?: AITarget.TargetMode.PLAYER_ONLY)
 	}
 
@@ -84,11 +84,48 @@ object AIOpponentCommand : SLCommand() {
 			targetMode?.let { AITarget.TargetMode.valueOf(it) } ?: AITarget.TargetMode.PLAYER_ONLY)
 	}
 
-	private fun summonShip(summoner: Player, template: AITemplate, vec: Vec3i?, difficulty: Int?, targetMode: AITarget.TargetMode) {
+	@Subcommand("summonunlimited")
+	@CommandCompletion("@allTemplates difficulty @targetMode")
+	@CommandPermission("ion.command.aiopponent.unlimited")
+	fun summonUnlimited(
+		sender: Player,
+		template: AITemplate,
+		@Optional difficulty : Int?,
+		@Optional targetMode : String?) {
+		val world = sender.world
+		failIf(!world.ion.hasFlag(WorldFlag.AI_ARENA)) { "AI Opponents may only be spawned in arena worlds!" }
+		//failIf((difficulty != null) && (difficulty > 5 || difficulty < 0)) {"Difficulty must be b/w 0 and 5"}
+
+		sender.hint("Spawning ${template.starshipInfo.miniMessageName}")
+
+		summonShip(sender, template, null, difficulty,
+			targetMode?.let { AITarget.TargetMode.valueOf(it) } ?: AITarget.TargetMode.PLAYER_ONLY, false)
+	}
+
+	@Subcommand("summonunlimited")
+	@CommandCompletion("@allTemplates x y z difficulty @targetMode")
+	@CommandPermission("ion.command.aiopponent.unlimited")
+	fun summonUnlimited(
+		sender: Player,
+		template: AITemplate,
+		x: Int, y: Int, z: Int,
+		@Optional difficulty : Int?,
+		@Optional targetMode : String?) {
+		val world = sender.world
+		failIf(!world.ion.hasFlag(WorldFlag.AI_ARENA)) { "AI Opponents may only be spawned in arena worlds!" }
+
+		sender.hint("Spawning ${template.starshipInfo.miniMessageName}")
+
+		summonShip(sender, template, Vec3i(x, y, z),difficulty,
+			targetMode?.let { AITarget.TargetMode.valueOf(it) } ?: AITarget.TargetMode.PLAYER_ONLY, false)
+	}
+
+
+	private fun summonShip(summoner: Player, template: AITemplate, vec: Vec3i?, difficulty: Int?, targetMode: AITarget.TargetMode, limitSpawns: Boolean = true) {
 		val location = vec?.toLocation(summoner.world) ?: summoner.location.add(summoner.location.direction.multiply(500.0))
 
 		Tasks.async {
-			if (getExisting(summoner).isNotEmpty()) return@async summoner.userError("You may only have one AI opponent active at once.")
+			if (limitSpawns && getExisting(summoner).isNotEmpty()) return@async summoner.userError("You may only have one AI opponent active at once.")
 
 			Tasks.sync {
 
