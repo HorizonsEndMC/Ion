@@ -14,15 +14,11 @@ class SequencePhase(
 
 	val triggers: Collection<SequenceTrigger<*>>,
 
-	effects: List<SequencePhaseEffect>,
-
-	val children: List<IonRegistryKey<SequencePhase, SequencePhase>>
+	effects: List<SequencePhaseEffect>
 ) {
 	private val startEffects = effects.filter { effect -> effect.playPhases.contains(EffectTiming.START) }
 	private val tickedEffects = effects.filter { effect -> effect.playPhases.contains(EffectTiming.TICKED) }
 	private val endEffects = effects.filter { effect -> effect.playPhases.contains(EffectTiming.END) }
-
-	val danglingTriggers get() = children.flatMap { phase -> phase.getValue().triggers }
 
 	fun start(player: Player) {
 		startEffects.forEach { it.playEffect(player, sequenceKey) }
@@ -50,8 +46,7 @@ class SequencePhase(
 				SequencePhaseEffect.EndSequence(listOf(EffectTiming.START)),
 				SequencePhaseEffect.ClearSequenceData(listOf(EffectTiming.START)),
 				*effect
-			),
-			children = listOf()
+			)
 		)
 	}
 }
