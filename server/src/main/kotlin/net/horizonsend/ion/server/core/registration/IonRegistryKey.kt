@@ -4,12 +4,13 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.descriptors.element
+import kotlinx.serialization.encoding.CompositeDecoder
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.encoding.encodeStructure
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.core.registration.keys.RegistryKeys.RegistryId
+import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.registries.Registry
 import org.bukkit.NamespacedKey
 import kotlin.reflect.KClass
@@ -42,7 +43,10 @@ class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClas
 	val ionNapespacedKey = NamespacedKey(IonServer, key)
 
 	companion object : KSerializer<IonRegistryKey<*, *>> {
-		override val descriptor: SerialDescriptor = buildClassSerialDescriptor("ion.server.core.registries.IonRegistryKey") { element<String>("registry"); element<String>("key") }
+		override val descriptor: SerialDescriptor = buildClassSerialDescriptor("ion.server.core.registries.IonRegistryKey") {
+			element<String>("registry")
+			element<String>("key")
+		}
 
 		override fun serialize(encoder: Encoder, value: IonRegistryKey<*, *>) {
 			encoder.encodeStructure(descriptor) {
@@ -53,10 +57,19 @@ class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClas
 
 		override fun deserialize(decoder: Decoder): IonRegistryKey<*, *> {
 			return decoder.decodeStructure(descriptor) {
-				val registryId = decodeStringElement(descriptor, 0)
-				val registryKey = decodeStringElement(descriptor, 1)
+				var registryId = ""
+				var registryKey = ""
 
-				IonRegistries[RegistryId<Any>(registryId)].getKeySet()[registryKey]!!
+				while (true) {
+					when (val index = decodeElementIndex(descriptor)) {
+						0 -> registryId = decodeStringElement(descriptor, 0)
+						1 -> registryKey = decodeStringElement(descriptor, 1)
+						CompositeDecoder.DECODE_DONE -> break
+						else -> error("Unexpected index: $index")
+					}
+				}
+
+				RegistryKeys[registryId]!!.getValue().getKeySet().getOrTrow(registryKey)
 			}
 		}
 	}

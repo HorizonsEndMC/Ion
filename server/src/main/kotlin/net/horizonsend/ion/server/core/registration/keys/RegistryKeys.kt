@@ -11,15 +11,25 @@ import net.horizonsend.ion.server.features.multiblock.crafting.recipe.Multiblock
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 
 object RegistryKeys {
-	val FLUID_TYPE = RegistryId<FluidType>("FLUID_TYPE")
-	val ATMOSPHERIC_GAS = RegistryId<Gas>("ATMOSPHERIC_GAS")
-	val CUSTOM_ITEMS = RegistryId<CustomItem>("CUSTOM_ITEMS")
-	val CUSTOM_BLOCKS = RegistryId<CustomBlock>("CUSTOM_BLOCKS")
-	val ITEM_MODIFICATIONS = RegistryId<ItemModification>("ITEM_MODIFICATIONS")
-	val MULTIBLOCK_RECIPE = RegistryId<MultiblockRecipe<*>>("MULTIBLOCK_RECIPE")
+	private val keys = mutableMapOf<String, RegistryId<*>>()
+
+	val FLUID_TYPE = registryId<FluidType>("FLUID_TYPE")
+	val ATMOSPHERIC_GAS = registryId<Gas>("ATMOSPHERIC_GAS")
+	val CUSTOM_ITEMS = registryId<CustomItem>("CUSTOM_ITEMS")
+	val CUSTOM_BLOCKS = registryId<CustomBlock>("CUSTOM_BLOCKS")
+	val ITEM_MODIFICATIONS = registryId<ItemModification>("ITEM_MODIFICATIONS")
+	val MULTIBLOCK_RECIPE = registryId<MultiblockRecipe<*>>("MULTIBLOCK_RECIPE")
+
+	fun <T: Any> registryId(key: String): RegistryId<T> {
+		val id = RegistryId<T>(key)
+		keys[key] = id
+		return id
+	}
 
 	class RegistryId<T: Any>(key: String) : IonResourceKey<Registry<T>>(key) {
 		@Suppress("UNCHECKED_CAST")
 		override fun getValue(): Registry<T> = IonRegistries[this] as Registry<T>
 	}
+
+	operator fun get(key: String): RegistryId<*>? = keys[key]
 }
