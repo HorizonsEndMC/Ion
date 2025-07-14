@@ -7,7 +7,6 @@ import net.horizonsend.ion.common.utils.set
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
-import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SEQUENCES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -58,7 +57,7 @@ object SequenceManager : IonServerComponent() {
 				player.persistentDataContainer.set(
 					sequenceKey.ionNapespacedKey,
 					QuestData,
-					QuestData(phase.key, getSequenceData(player, sequenceKey).metaDataMirror)
+					QuestData(phase, getSequenceData(player, sequenceKey).metaDataMirror)
 				)
 
 				sequenceKeys.add(sequenceKey)
@@ -80,9 +79,7 @@ object SequenceManager : IonServerComponent() {
 				QuestData
 			) ?: continue
 
-
-			val b = SequencePhaseKeys[questData.currentPhase]!!
-			phaseMap[event.player.uniqueId, sequenceKey] = b
+			phaseMap[event.player.uniqueId, sequenceKey] = questData.currentPhase
 			sequenceData[event.player.uniqueId, sequenceKey] = questData.unpackDataStore()
 		}
 	}
