@@ -59,7 +59,7 @@ abstract class KeyRegistry<T : Any>(private val registryId: IonBindableResourceK
 		}
 
 		override fun fromPrimitive(primitive: String, context: PersistentDataAdapterContext): IonRegistryKey<T, out T> {
-			return this@KeyRegistry[primitive]!!
+			return this@KeyRegistry[primitive] ?: throw IllegalArgumentException("$primitive key not found for key registry ${registryId.key}")
 		}
 	}
 }
