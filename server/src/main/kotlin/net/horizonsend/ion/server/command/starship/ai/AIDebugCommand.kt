@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
+import net.horizonsend.ion.server.features.ai.module.misc.AIDifficulty
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.ships.spawn
@@ -84,6 +85,9 @@ object AIDebugCommand : SLCommand() {
 			AIDebugModule.contextMapTypes
 		}
 
+		manager.commandCompletions.registerAsyncCompletion("AIDifficulty") { _ ->
+			AIDifficulty.entries.map { it.name }
+		}
 	}
 
 	@Suppress("Unused")
@@ -95,25 +99,25 @@ object AIDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("ai")
-	@CommandCompletion("@controllerFactories difficulty @targetMode manualSets autoSets")
+	@CommandCompletion("@controllerFactories @AIDifficulty @targetMode manualSets autoSets")
 	fun ai(
 		sender: Player,
 		controller: AIControllerFactory,
-		@Optional difficulty: Int?,
+		@Optional difficulty: AIDifficulty?,
 		@Optional targetMode: String?,
 		@Optional manualSets: String?,
 		@Optional autoSets: String?,
 	) {
 		val starship = getStarshipRiding(sender)
 
-		failIf(difficulty != null && difficulty < 0) { "ILLEGAL DIFFICULTY" }
+		//failIf(difficulty != null && difficulty < AIDifficulty.EASY) { "ILLEGAL DIFFICULTY" }
 
 		val newController = controller(
 			starship,
 			text("Player Created AI Ship"),
 			Configuration.parse<WeaponSetsCollection>(manualSets ?: "{}").sets,
 			Configuration.parse<WeaponSetsCollection>(autoSets ?: "{}").sets,
-			difficulty ?: 3,
+			difficulty ?: AIDifficulty.HARD,
 			targetMode?.let { AITarget.TargetMode.valueOf(it) } ?: AITarget.TargetMode.PLAYER_ONLY
 		)
 
@@ -223,13 +227,13 @@ object AIDebugCommand : SLCommand() {
 	data class WeaponSetsCollection(val sets: MutableSet<AIStarshipTemplate.WeaponSet> = mutableSetOf())
 
 	@Subcommand("spawn")
-	@CommandCompletion("@controllerFactories difficulty @targetMode") //TODO: fix command
+	@CommandCompletion("@controllerFactories @AIDifficulty @targetMode") //TODO: fix command
 	fun spawn(
 		sender: Player,
 		template: SpawnedShip,
-		difficulty: Int,
+		difficulty: AIDifficulty,
 		@Optional targetMode: String?) {
-		failIf(difficulty < 0) { "ILLEGAL DIFFICULTY" }
+		//failIf(difficulty < 0) { "ILLEGAL DIFFICULTY" }
 
 		AISpawningManager.context.launch {
 			template.spawn(log, sender.location, difficulty,

@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner
 
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
+import net.horizonsend.ion.server.features.ai.module.misc.AIDifficulty
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
@@ -30,7 +31,7 @@ class ReinforcementSpawner(
             WeightedShipSupplier(*reinforcementPool.toTypedArray()),
             formatLocationSupplier({ reinforced.getCenter().toLocation(reinforced.starship.world) }, 250.0, 500.0),
             null, // Calling module handles this
-            {_ -> Supplier { reinforced.getCoreModuleByType<DifficultyModule>()?.internalDifficulty ?: 2 }},
+            {_ -> Supplier { reinforced.getCoreModuleByType<DifficultyModule>()?.internalDifficulty?.ordinal ?: AIDifficulty.HARD.ordinal }},
 			{ reinforced.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY },
             ::setupReinforcementShip
         )

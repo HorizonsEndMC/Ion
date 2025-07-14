@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.ai
 
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.module.misc.AIDifficulty
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -11,7 +12,7 @@ import kotlin.reflect.KClass
 
 class AIControllerFactory private constructor(
 	val identifier: String,
-	private val coreModules: (AIController, Int, AITarget.TargetMode) -> Builder.ModuleBuilder,
+	private val coreModules: (AIController, AIDifficulty, AITarget.TargetMode) -> Builder.ModuleBuilder,
 	private var utilModules: (AIController) -> Set<AIModule>
 ) {
 	/** Build the controller */
@@ -20,7 +21,7 @@ class AIControllerFactory private constructor(
 		pilotName: Component,
 		autoSets: Set<WeaponSet>,
 		manualSets: Set<WeaponSet>,
-		difficulty: Int,
+		difficulty: AIDifficulty,
 		targetMode: AITarget.TargetMode = AITarget.TargetMode.PLAYER_ONLY
 	) : AIController {
 		return AIController(
@@ -35,10 +36,10 @@ class AIControllerFactory private constructor(
 	}
 
 	class Builder(val identifier: String) {
-		private var coreModules: (AIController, Int, AITarget.TargetMode) -> ModuleBuilder = { _, _, _ -> ModuleBuilder() }
+		private var coreModules: (AIController, AIDifficulty, AITarget.TargetMode) -> ModuleBuilder = { _, _, _ -> ModuleBuilder() }
 		private var utilModules: MutableSet<(AIController) -> AIModule> = mutableSetOf()
 
-		fun setCoreModuleBuilder(moduleBuilder: (AIController, Int, AITarget.TargetMode) -> ModuleBuilder) = apply { coreModules = moduleBuilder }
+		fun setCoreModuleBuilder(moduleBuilder: (AIController, AIDifficulty, AITarget.TargetMode) -> ModuleBuilder) = apply { coreModules = moduleBuilder }
 		fun addUtilModule(builder: (AIController) -> AIModule) = utilModules.add(builder)
 
 		fun build(): AIControllerFactory = AIControllerFactory(identifier, coreModules = coreModules) { controller -> this.utilModules.mapTo(mutableSetOf()) { it.invoke(controller) } }

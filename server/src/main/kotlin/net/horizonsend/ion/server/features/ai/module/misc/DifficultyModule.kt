@@ -7,82 +7,78 @@ import java.util.function.Supplier
 
 class DifficultyModule(
 	controller: AIController,
-	var internalDifficulty: Int = 2
+	var internalDifficulty: AIDifficulty = AIDifficulty.HARD
 ) : AIModule(controller){
-	val isShieldAware get() = internalDifficulty >= 2
+	val isShieldAware get() = internalDifficulty >= AIDifficulty.HARD
 
-	val doBackOff get() = internalDifficulty >= 2
+	val doBackOff get() = internalDifficulty >= AIDifficulty.HARD
 
-	val speedDebuff get () = internalDifficulty <= 0
+	val speedDebuff get () = internalDifficulty <= AIDifficulty.HARD
 
 	val outOfRangeAggro : Double get() {
 		return when (internalDifficulty) {
-			0 -> 0.0
-			1 -> 0.0
-			2 -> 0.5
-			3 -> 1.0
-			4 -> 2.0
-			else -> {0.0}
+			AIDifficulty.EASY -> 0.0
+			AIDifficulty.NORMAL -> 0.0
+			AIDifficulty.HARD -> 0.5
+			AIDifficulty.HARDER -> 1.0
+			AIDifficulty.INSANE -> 2.0
 		}
 	}
 
 	val decayEmityThreshold : Double get() {
 		return when (internalDifficulty) {
-			0 -> 0.0
-			1 -> 0.0
-			2 -> 0.0
-			3 -> 0.5
-			4 -> 1.5
-			else -> {0.0}
+			AIDifficulty.EASY -> 0.0
+			AIDifficulty.NORMAL -> 0.0
+			AIDifficulty.HARD -> 0.0
+			AIDifficulty.HARDER -> 0.5
+			AIDifficulty.INSANE -> 1.5
 		}
 	}
 
-	val doNavigation : Boolean get() = internalDifficulty >= 2
+	val doNavigation : Boolean get() = internalDifficulty >= AIDifficulty.HARD
 
 	val shotVariation : Double get() {
 		return when (internalDifficulty) {
-			0 -> 0.3
-			1 -> 0.15
+			AIDifficulty.EASY -> 0.3
+			AIDifficulty.NORMAL -> 0.15
 			else -> 0.0
 		}
 	}
 
-	val doubleEstimateAim get() = internalDifficulty >= 4
+	val doubleEstimateAim get() = internalDifficulty >= AIDifficulty.INSANE
 
-	val aimEverything get() = internalDifficulty >= 4
+	val aimEverything get() = internalDifficulty >= AIDifficulty.INSANE
 
-	val faceModifier get() = if (internalDifficulty <= 0) 0.5 else 1.0
+	val faceModifier get() = if (internalDifficulty <= AIDifficulty.EASY) 0.5 else 1.0
 
 	val aimAdjust : Double get() {
 		return when (internalDifficulty) {
-			0 -> 0.0
-			1 -> 0.0
-			2 -> 0.5
-			3 -> 1.0
-			4 -> 1.0
-			else -> {0.0}
+			AIDifficulty.EASY -> 0.0
+			AIDifficulty.NORMAL -> 0.0
+			AIDifficulty.HARD -> 0.5
+			AIDifficulty.HARDER -> 1.0
+			AIDifficulty.INSANE -> 1.0
 		}
 	}
 
-	val powerModeSwitch get() = internalDifficulty >= 2
-	val useSpecialPowerModes  get() = internalDifficulty >= 4
+	val powerModeSwitch get() = internalDifficulty >= AIDifficulty.HARD
+	val useSpecialPowerModes  get() = internalDifficulty >= AIDifficulty.INSANE
 
 	val rewardMultiplier : Double get() {
 		return when (internalDifficulty) {
-			0 -> 0.7
-			1 -> 0.9
-			2 -> 1.0
-			3 -> 1.15
-			4 -> 1.3
-			else -> 1.0
+			AIDifficulty.EASY -> 0.7
+			AIDifficulty.NORMAL -> 0.9
+			AIDifficulty.HARD -> 1.0
+			AIDifficulty.HARDER -> 1.15
+			AIDifficulty.INSANE -> 1.3
 		}
 	}
 
 
 	companion object {
 
-		val maxDifficulty = 4
-		val minDifficulty = 0
+		val maxDifficulty = AIDifficulty.entries.max()
+		val minDifficulty = AIDifficulty.entries.min()
 
 		fun regularSpawnDifficultySupplier(world: String) : Supplier<Int> {
 			//println(world)
@@ -129,5 +125,17 @@ class DifficultyModule(
 					Pair(2,0.4)))
 			}
 		}
+	}
+}
+
+enum class AIDifficulty {
+	EASY,
+	NORMAL,
+	HARD,
+	HARDER,
+	INSANE;
+
+	companion object {
+		fun fromInt(value: Int) = AIDifficulty.entries.firstOrNull { it.ordinal == value }
 	}
 }

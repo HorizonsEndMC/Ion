@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
+import net.horizonsend.ion.server.features.ai.module.misc.AIDifficulty
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
@@ -68,12 +69,12 @@ class CompositeSpawner(
 			ship.absoluteHeight?.let { spawnPoint.y = it }
 
 			val difficulty = shipDifficultySupplier.get()
-				.coerceIn(DifficultyModule.minDifficulty, DifficultyModule.maxDifficulty)
+				.coerceIn(DifficultyModule.minDifficulty.ordinal, DifficultyModule.maxDifficulty.ordinal)
 			println("difficulty: $difficulty")
 
 			debugAudience.debug("Spawning ${ship.template.identifier} at $spawnPoint")
 
-			ship.spawn(logger, spawnPoint, difficulty,targetModeSupplier.get()) {
+			ship.spawn(logger, spawnPoint, AIDifficulty.fromInt(difficulty) ?: AIDifficulty.EASY,targetModeSupplier.get()) {
 				addUtilModule(AIFleetManageModule(this, aiFleet))
 				onPostSpawn(this)
 			}
