@@ -11,7 +11,8 @@ import org.bukkit.entity.Player
 class SequencePhase(
 	val phaseKey: IonRegistryKey<SequencePhase, SequencePhase>,
 	val sequenceKey: IonRegistryKey<Sequence, Sequence>,
-	val trigger: SequenceTrigger<*>?,
+
+	val triggers: Collection<SequenceTrigger<*>>,
 
 	effects: List<SequencePhaseEffect>,
 
@@ -21,11 +22,7 @@ class SequencePhase(
 	private val tickedEffects = effects.filter { effect -> effect.playPhases.contains(EffectTiming.TICKED) }
 	private val endEffects = effects.filter { effect -> effect.playPhases.contains(EffectTiming.END) }
 
-	init {
-	    trigger?.setTriggerResult { player -> SequenceManager.startPhase(player, sequenceKey, phaseKey) }
-	}
-
-	val danglingTriggers get() = children.mapNotNull { phase -> phase.getValue().trigger }
+	val danglingTriggers get() = children.flatMap { phase -> phase.getValue().triggers }
 
 	fun start(player: Player) {
 		startEffects.forEach { it.playEffect(player, sequenceKey) }
@@ -41,14 +38,14 @@ class SequencePhase(
 	}
 
 	fun endPrematurely(player: Player) {
-
+		SequenceManager.saveSequenceData(player)
 	}
 
 	companion object {
-		fun endSequence(sequenceKey: IonRegistryKey<Sequence, Sequence>, key: IonRegistryKey<SequencePhase, SequencePhase>, trigger: SequenceTrigger<*>, vararg effect: SequencePhaseEffect): SequencePhase = SequencePhase(
+		fun endSequence(sequenceKey: IonRegistryKey<Sequence, Sequence>, key: IonRegistryKey<SequencePhase, SequencePhase>, triggers: Collection<SequenceTrigger<*>>, vararg effect: SequencePhaseEffect): SequencePhase = SequencePhase(
 			phaseKey = key,
 			sequenceKey = sequenceKey,
-			trigger = trigger,
+			triggers = triggers,
 			effects = listOf(
 				SequencePhaseEffect.EndSequence(listOf(EffectTiming.START)),
 				SequencePhaseEffect.ClearSequenceData(listOf(EffectTiming.START)),

@@ -58,10 +58,10 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 	private fun bootstrapPhase(
 		phaseKey: IonRegistryKey<SequencePhase, SequencePhase>,
 		sequenceKey: IonRegistryKey<Sequence, Sequence>,
-		trigger: SequenceTrigger<*>?,
+		triggers: Collection<SequenceTrigger<*>>,
 		effects: List<SequencePhaseEffect>,
 		children: List<IonRegistryKey<SequencePhase, SequencePhase>>
-	) = register(phaseKey, SequencePhase(phaseKey, sequenceKey, trigger, effects, children))
+	) = register(phaseKey, SequencePhase(phaseKey, sequenceKey, triggers, effects, children))
 
 	private val RANDOM_EXPLOSION_SOUND = SequencePhaseEffect.Chance(
 		SequencePhaseEffect.PlaySound(
@@ -85,7 +85,7 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		bootstrapPhase(
 			phaseKey = TUTORIAL_START,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			trigger = null,
+			triggers = listOf(),
 			effects = listOf(
 				SendMessage(text("Welcome to Horizon's End!"), listOf(EffectTiming.START)),
 				SendMessage(text("This is the start of the intro sequence."), listOf(EffectTiming.START)),
@@ -98,15 +98,16 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		bootstrapPhase(
 			phaseKey = EXIT_CRYOPOD_ROOM,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			trigger = SequenceTrigger(
-				SequenceTriggerTypes.PLAYER_MOVEMENT,
-				MovementTriggerSettings(listOf(
-					inBoundingBox(BoundingBox.of(
-						Vector(84.0, 358.0, 26.0),
-						Vector(86.0, 360.0, 27.0),
-					))
-				))
-			),
+			triggers = listOf(SequenceTrigger(
+                type = SequenceTriggerTypes.PLAYER_MOVEMENT,
+                settings = MovementTriggerSettings(listOf(
+                    inBoundingBox(BoundingBox.of(
+                        Vector(84.0, 358.0, 26.0),
+                        Vector(86.0, 360.0, 27.0),
+                    ))
+                )),
+                triggerResult = SequenceTrigger.startPhase(EXIT_CRYOPOD_ROOM)
+			)),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				ifPreviousPhase(TUTORIAL_START, listOf(EffectTiming.START),
@@ -126,15 +127,16 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		bootstrapPhase(
 			phaseKey = BROKEN_ELEVATOR,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			trigger = SequenceTrigger(
+			triggers = listOf(SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
 				MovementTriggerSettings(listOf(
 					lookingAtBoundingBox(BoundingBox.of(
 						Vector(92.0, 357.0, 13.0),
 						Vector(94.0, 362.0, 10.0),
 					), 4.5)
-				))
-			),
+				)),
+				triggerResult = SequenceTrigger.startPhase(BROKEN_ELEVATOR)
+			)),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 
@@ -155,15 +157,16 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		bootstrapPhase(
 			phaseKey = LOOK_AT_TRACTOR,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			trigger = SequenceTrigger(
+			triggers = listOf(SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
 				MovementTriggerSettings(listOf(
 					lookingAtBoundingBox(BoundingBox.of(
 						Vector(96.0, 357.0, 62.0),
 						Vector(98.0, 362.0, 64.0),
 					), 3.5)
-				))
-			),
+				)),
+				triggerResult = SequenceTrigger.startPhase(LOOK_AT_TRACTOR)
+			)),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 
@@ -181,7 +184,7 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		bootstrapPhase(
 			phaseKey = CREW_QUARTERS,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			trigger = SequenceTrigger(SequenceTriggerTypes.USE_TRACTOR_BEAM, TractorBeamTriggerSettings()),
+			triggers = listOf(SequenceTrigger(SequenceTriggerTypes.USE_TRACTOR_BEAM, TractorBeamTriggerSettings(), triggerResult = SequenceTrigger.startPhase(CREW_QUARTERS))),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				ifPreviousPhase(LOOK_AT_TRACTOR,
@@ -198,15 +201,16 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		bootstrapPhase(
 			phaseKey = FIRE_OBSTACLE,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			trigger = SequenceTrigger(
+			triggers = listOf(SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
 				MovementTriggerSettings(listOf(
 					inBoundingBox(BoundingBox.of(
 						Vector(91.0, 351.0, 52.0),
 						Vector(95.0, 355.0, 51.0),
 					))
-				))
-			),
+				)),
+				triggerResult = SequenceTrigger.startPhase(FIRE_OBSTACLE)
+			)),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				NEXT_PHASE_SOUND,
@@ -220,15 +224,16 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		bootstrapPhase(
 			phaseKey = GET_CHETHERITE,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			trigger = SequenceTrigger(
+			triggers = listOf(SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
 				MovementTriggerSettings(listOf(
 					inBoundingBox(BoundingBox.of(
 						Vector(91.0, 351.0, 25.0),
 						Vector(95.0, 354.0, 23.0),
 					))
-				))
-			),
+				)),
+				triggerResult = SequenceTrigger.startPhase(GET_CHETHERITE)
+			)),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				NEXT_PHASE_SOUND,
@@ -243,10 +248,11 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		bootstrapPhase(
 			phaseKey = RECEIVED_CHETHERITE,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			trigger = SequenceTrigger(
+			triggers = listOf(SequenceTrigger(
 				SequenceTriggerTypes.CONTAINS_ITEM,
-				ContainsItemTrigger.ContainsItemTriggerSettings { it?.customItem?.key == CustomItemKeys.CHETHERITE }
-			),
+				ContainsItemTrigger.ContainsItemTriggerSettings { it?.customItem?.key == CustomItemKeys.CHETHERITE },
+				triggerResult = SequenceTrigger.startPhase(RECEIVED_CHETHERITE)
+			)),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				NEXT_PHASE_SOUND,
@@ -263,7 +269,7 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		bootstrapPhase(
 			phaseKey = BRANCH_LOOK_OUTSIDE,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			trigger = SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
+			triggers = listOf(SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
 				// If looking out window
 				SequenceTrigger(
 					SequenceTriggerTypes.PLAYER_MOVEMENT,
@@ -272,11 +278,14 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 							Vec3i(-13, 358, -47).toVector(),
 							Vec3i(48, 383, 75).toVector()
 						), 100.0)
-					))
+					)),
+					triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE)
 				),
 				// Only trigger this branch if first time
-				SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_pirates") { it != true })
-			))),
+				SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_pirates") { it != true },
+					triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE))
+			)),
+				triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE))),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				SendMessage(Component.empty(), listOf(EffectTiming.START)),
@@ -293,7 +302,7 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		bootstrapPhase(
 			phaseKey = BRANCH_DYNMAP,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			trigger = SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
+			triggers = listOf(SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
 				// If looking out window
 				SequenceTrigger(
 					SequenceTriggerTypes.PLAYER_MOVEMENT,
@@ -302,11 +311,14 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 							Vec3i(96, 358, 69).toVector(),
 							Vec3i(96, 361, 72).toVector()
 						), 5.0)
-					))
+					)),
+					triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
 				),
 				// Only trigger this branch if first time
-				SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_dynmap") { it != true })
-			))),
+				SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_dynmap") { it != true },
+					triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP))
+			)),
+				triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP))),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				SendMessage(Component.empty(), listOf(EffectTiming.START)),
@@ -322,7 +334,7 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		bootstrapPhase(
 			phaseKey = BRANCH_SHIP_COMPUTER,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			trigger = SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
+			triggers = listOf(SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
 				// If looking out window
 				SequenceTrigger(
 					SequenceTriggerTypes.PLAYER_MOVEMENT,
@@ -331,11 +343,14 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 							Vec3i(96, 358, 78).toVector(),
 							Vec3i(88, 363, 87).toVector()
 						), 3.0)
-					))
+					)),
+					triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
 				),
 				// Only trigger this branch if first time
-				SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_ship_computer") { it != true })
-			))),
+				SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_ship_computer") { it != true },
+					triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER))
+			)),
+				triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER))),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				SendMessage(Component.empty(), listOf(EffectTiming.START)),
