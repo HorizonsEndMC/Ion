@@ -59,9 +59,8 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		phaseKey: IonRegistryKey<SequencePhase, SequencePhase>,
 		sequenceKey: IonRegistryKey<Sequence, Sequence>,
 		triggers: Collection<SequenceTrigger<*>>,
-		effects: List<SequencePhaseEffect>,
-		children: List<IonRegistryKey<SequencePhase, SequencePhase>>
-	) = register(phaseKey, SequencePhase(phaseKey, sequenceKey, triggers, effects, children))
+		effects: List<SequencePhaseEffect>
+	) = register(phaseKey, SequencePhase(phaseKey, sequenceKey, triggers, effects))
 
 	private val RANDOM_EXPLOSION_SOUND = SequencePhaseEffect.Chance(
 		SequencePhaseEffect.PlaySound(
@@ -85,29 +84,55 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		bootstrapPhase(
 			phaseKey = TUTORIAL_START,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(),
+			triggers = listOf(SequenceTrigger(
+				type = SequenceTriggerTypes.PLAYER_MOVEMENT,
+				settings = MovementTriggerSettings(listOf(
+					inBoundingBox(BoundingBox.of(
+						Vector(84.0, 358.0, 26.0),
+						Vector(86.0, 360.0, 27.0),
+					))
+				)),
+				triggerResult = SequenceTrigger.startPhase(EXIT_CRYOPOD_ROOM)
+			)),
 			effects = listOf(
 				SendMessage(text("Welcome to Horizon's End!"), listOf(EffectTiming.START)),
 				SendMessage(text("This is the start of the intro sequence."), listOf(EffectTiming.START)),
 				SendMessage(text("Exit the cryopod room to begin."), listOf(EffectTiming.START)),
 				SendMessage(Component.empty(), listOf(EffectTiming.START))
-			),
-			children = listOf(EXIT_CRYOPOD_ROOM)
+			)
 		)
 
 		bootstrapPhase(
 			phaseKey = EXIT_CRYOPOD_ROOM,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(SequenceTrigger(
-                type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-                settings = MovementTriggerSettings(listOf(
-                    inBoundingBox(BoundingBox.of(
-                        Vector(84.0, 358.0, 26.0),
-                        Vector(86.0, 360.0, 27.0),
-                    ))
-                )),
-                triggerResult = SequenceTrigger.startPhase(EXIT_CRYOPOD_ROOM)
-			)),
+			triggers = listOf(
+				SequenceTrigger(
+					SequenceTriggerTypes.PLAYER_MOVEMENT,
+					MovementTriggerSettings(listOf(
+						lookingAtBoundingBox(BoundingBox.of(
+							Vector(92.0, 357.0, 13.0),
+							Vector(94.0, 362.0, 10.0),
+						), 4.5)
+					)),
+					triggerResult = SequenceTrigger.startPhase(BROKEN_ELEVATOR)
+				),
+				SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
+					// If looking out window
+					SequenceTrigger(
+						SequenceTriggerTypes.PLAYER_MOVEMENT,
+						MovementTriggerSettings(listOf(
+							lookingAtBoundingBox(BoundingBox.of(
+								Vec3i(-13, 358, -47).toVector(),
+								Vec3i(48, 383, 75).toVector()
+							), 100.0)
+						)),
+						triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE)
+					),
+					// Only trigger this branch if first time
+					SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_pirates") { it != true },
+						triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE))
+				)), triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE))
+			),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				ifPreviousPhase(TUTORIAL_START, listOf(EffectTiming.START),
@@ -120,23 +145,58 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 					SendMessage(Component.empty(), listOf())
 				),
 				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(93, 359, 11), 10L, listOf(EffectTiming.TICKED)), 10)
-			),
-			children = listOf(BRANCH_LOOK_OUTSIDE, BROKEN_ELEVATOR)
+			)
 		)
 
 		bootstrapPhase(
 			phaseKey = BROKEN_ELEVATOR,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(SequenceTrigger(
-				SequenceTriggerTypes.PLAYER_MOVEMENT,
-				MovementTriggerSettings(listOf(
-					lookingAtBoundingBox(BoundingBox.of(
-						Vector(92.0, 357.0, 13.0),
-						Vector(94.0, 362.0, 10.0),
-					), 4.5)
+			triggers = listOf(
+				SequenceTrigger(
+					SequenceTriggerTypes.PLAYER_MOVEMENT,
+					MovementTriggerSettings(listOf(
+						lookingAtBoundingBox(BoundingBox.of(
+							Vector(96.0, 357.0, 62.0),
+							Vector(98.0, 362.0, 64.0),
+						), 3.5)
+					)),
+					triggerResult = SequenceTrigger.startPhase(LOOK_AT_TRACTOR)
+				),
+				SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
+					// If looking out window
+					SequenceTrigger(
+						SequenceTriggerTypes.PLAYER_MOVEMENT,
+						MovementTriggerSettings(listOf(
+							lookingAtBoundingBox(BoundingBox.of(
+								Vec3i(96, 358, 69).toVector(),
+								Vec3i(96, 361, 72).toVector()
+							), 5.0)
+						)),
+						triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
+					),
+					// Only trigger this branch if first time
+					SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_dynmap") { it != true },
+						triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP))
 				)),
-				triggerResult = SequenceTrigger.startPhase(BROKEN_ELEVATOR)
-			)),
+					triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)),
+				SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
+					// If looking out window
+					SequenceTrigger(
+						SequenceTriggerTypes.PLAYER_MOVEMENT,
+						MovementTriggerSettings(listOf(
+							lookingAtBoundingBox(BoundingBox.of(
+								Vec3i(96, 358, 78).toVector(),
+								Vec3i(88, 363, 87).toVector()
+							), 3.0)
+						)),
+						triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
+					),
+					// Only trigger this branch if first time
+					SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_ship_computer") { it != true },
+						triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER))
+				)),
+					triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER))
+			),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 
@@ -150,23 +210,49 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 				),
 
 				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 359, 63), 10L, listOf(EffectTiming.TICKED)), 10)
-			),
-			children = listOf(LOOK_AT_TRACTOR, BRANCH_DYNMAP, BRANCH_SHIP_COMPUTER)
+			)
 		)
 
 		bootstrapPhase(
 			phaseKey = LOOK_AT_TRACTOR,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(SequenceTrigger(
-				SequenceTriggerTypes.PLAYER_MOVEMENT,
-				MovementTriggerSettings(listOf(
-					lookingAtBoundingBox(BoundingBox.of(
-						Vector(96.0, 357.0, 62.0),
-						Vector(98.0, 362.0, 64.0),
-					), 3.5)
+			triggers = listOf(
+				SequenceTrigger(SequenceTriggerTypes.USE_TRACTOR_BEAM, TractorBeamTriggerSettings(), triggerResult = SequenceTrigger.startPhase(CREW_QUARTERS)),
+				SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
+					// If looking out window
+					SequenceTrigger(
+						SequenceTriggerTypes.PLAYER_MOVEMENT,
+						MovementTriggerSettings(listOf(
+							lookingAtBoundingBox(BoundingBox.of(
+								Vec3i(96, 358, 69).toVector(),
+								Vec3i(96, 361, 72).toVector()
+							), 5.0)
+						)),
+						triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
+					),
+					// Only trigger this branch if first time
+					SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_dynmap") { it != true },
+						triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP))
+				)), triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
+				),
+				SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
+					// If looking out window
+					SequenceTrigger(
+						SequenceTriggerTypes.PLAYER_MOVEMENT,
+						MovementTriggerSettings(listOf(
+							lookingAtBoundingBox(BoundingBox.of(
+								Vec3i(96, 358, 78).toVector(),
+								Vec3i(88, 363, 87).toVector()
+							), 3.0)
+						)),
+						triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
+					),
+					// Only trigger this branch if first time
+					SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_ship_computer") { it != true },
+						triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER))
 				)),
-				triggerResult = SequenceTrigger.startPhase(LOOK_AT_TRACTOR)
-			)),
+					triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER))
+			),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 
@@ -177,29 +263,11 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 					SendMessage(text("To use the elevator, hold your controller (clock), stand on the glass block, and courch.", GRAY, ITALIC), listOf()),
 					SendMessage(Component.empty(), listOf()),
 				)
-			),
-			children = listOf(CREW_QUARTERS, BRANCH_DYNMAP, BRANCH_SHIP_COMPUTER)
+			)
 		)
 
 		bootstrapPhase(
 			phaseKey = CREW_QUARTERS,
-			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(SequenceTrigger(SequenceTriggerTypes.USE_TRACTOR_BEAM, TractorBeamTriggerSettings(), triggerResult = SequenceTrigger.startPhase(CREW_QUARTERS))),
-			effects = listOf(
-				RANDOM_EXPLOSION_SOUND,
-				ifPreviousPhase(LOOK_AT_TRACTOR,
-					listOf(EffectTiming.START),
-					NEXT_PHASE_SOUND,
-					SendMessage(Component.empty(), listOf()),
-					SendMessage(text("Quick, make your way through the crew quarters and maintainance bays to the hangar bay!", GRAY, ITALIC), listOf()),
-					SendMessage(Component.empty(), listOf())
-				)
-			),
-			children = listOf(FIRE_OBSTACLE)
-		)
-
-		bootstrapPhase(
-			phaseKey = FIRE_OBSTACLE,
 			sequenceKey = SequenceKeys.TUTORIAL,
 			triggers = listOf(SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
@@ -213,16 +281,18 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 			)),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
-				NEXT_PHASE_SOUND,
-				SendMessage(Component.empty(), listOf(EffectTiming.START)),
-				SendMessage(text("The ship's gravity generators have failed in the attack! Fly over the obstacle!", GRAY, ITALIC), listOf(EffectTiming.START)),
-				SendMessage(Component.empty(), listOf(EffectTiming.START)),
-			),
-			children = listOf(GET_CHETHERITE)
+				ifPreviousPhase(LOOK_AT_TRACTOR,
+					listOf(EffectTiming.START),
+					NEXT_PHASE_SOUND,
+					SendMessage(Component.empty(), listOf()),
+					SendMessage(text("Quick, make your way through the crew quarters and maintainance bays to the hangar bay!", GRAY, ITALIC), listOf()),
+					SendMessage(Component.empty(), listOf())
+				)
+			)
 		)
 
 		bootstrapPhase(
-			phaseKey = GET_CHETHERITE,
+			phaseKey = FIRE_OBSTACLE,
 			sequenceKey = SequenceKeys.TUTORIAL,
 			triggers = listOf(SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
@@ -237,16 +307,14 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				NEXT_PHASE_SOUND,
-				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, listOf(EffectTiming.TICKED)), 10),
 				SendMessage(Component.empty(), listOf(EffectTiming.START)),
-				SendMessage(text("Quick, you'll need to grab some fuel for the escape pod. You can find some in that gargo container.", GRAY, ITALIC), listOf(EffectTiming.START)),
+				SendMessage(text("The ship's gravity generators have failed in the attack! Fly over the obstacle!", GRAY, ITALIC), listOf(EffectTiming.START)),
 				SendMessage(Component.empty(), listOf(EffectTiming.START)),
-			),
-			children = listOf(RECEIVED_CHETHERITE)
+			)
 		)
 
 		bootstrapPhase(
-			phaseKey = RECEIVED_CHETHERITE,
+			phaseKey = GET_CHETHERITE,
 			sequenceKey = SequenceKeys.TUTORIAL,
 			triggers = listOf(SequenceTrigger(
 				SequenceTriggerTypes.CONTAINS_ITEM,
@@ -258,10 +326,23 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 				NEXT_PHASE_SOUND,
 				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, listOf(EffectTiming.TICKED)), 10),
 				SendMessage(Component.empty(), listOf(EffectTiming.START)),
+				SendMessage(text("Quick, you'll need to grab some fuel for the escape pod. You can find some in that gargo container.", GRAY, ITALIC), listOf(EffectTiming.START)),
+				SendMessage(Component.empty(), listOf(EffectTiming.START)),
+			)
+		)
+
+		bootstrapPhase(
+			phaseKey = RECEIVED_CHETHERITE,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			triggers = listOf(/*TODO*/),
+			effects = listOf(
+				RANDOM_EXPLOSION_SOUND,
+				NEXT_PHASE_SOUND,
+				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, listOf(EffectTiming.TICKED)), 10),
+				SendMessage(Component.empty(), listOf(EffectTiming.START)),
 				SendMessage(text("Chetherite is hyperdrive fuel, you'll need it to travel faster than light.", GRAY, ITALIC), listOf(EffectTiming.START)),
 				SendMessage(Component.empty(), listOf(EffectTiming.START)),
-			),
-			children = listOf(/*TODO*/)
+			)
 		)
 	}
 
@@ -269,23 +350,7 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		bootstrapPhase(
 			phaseKey = BRANCH_LOOK_OUTSIDE,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
-				// If looking out window
-				SequenceTrigger(
-					SequenceTriggerTypes.PLAYER_MOVEMENT,
-					MovementTriggerSettings(listOf(
-						lookingAtBoundingBox(BoundingBox.of(
-							Vec3i(-13, 358, -47).toVector(),
-							Vec3i(48, 383, 75).toVector()
-						), 100.0)
-					)),
-					triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE)
-				),
-				// Only trigger this branch if first time
-				SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_pirates") { it != true },
-					triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE))
-			)),
-				triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE))),
+			triggers = listOf(),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				SendMessage(Component.empty(), listOf(EffectTiming.START)),
@@ -295,30 +360,13 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 				GoToPreviousPhase(listOf(EffectTiming.START)),
 
 				SequencePhaseEffect.SetSequenceData("seen_pirates", true, Boolean::class, listOf(EffectTiming.END)),
-			),
-			children = listOf()
+			)
 		)
 
 		bootstrapPhase(
 			phaseKey = BRANCH_DYNMAP,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
-				// If looking out window
-				SequenceTrigger(
-					SequenceTriggerTypes.PLAYER_MOVEMENT,
-					MovementTriggerSettings(listOf(
-						lookingAtBoundingBox(BoundingBox.of(
-							Vec3i(96, 358, 69).toVector(),
-							Vec3i(96, 361, 72).toVector()
-						), 5.0)
-					)),
-					triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
-				),
-				// Only trigger this branch if first time
-				SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_dynmap") { it != true },
-					triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP))
-			)),
-				triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP))),
+			triggers = listOf(),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				SendMessage(Component.empty(), listOf(EffectTiming.START)),
@@ -327,30 +375,13 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 
 				GoToPreviousPhase(listOf(EffectTiming.START)),
 				SequencePhaseEffect.SetSequenceData("seen_dynmap", true, Boolean::class, listOf(EffectTiming.END)),
-			),
-			children = listOf()
+			)
 		)
 
 		bootstrapPhase(
 			phaseKey = BRANCH_SHIP_COMPUTER,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
-				// If looking out window
-				SequenceTrigger(
-					SequenceTriggerTypes.PLAYER_MOVEMENT,
-					MovementTriggerSettings(listOf(
-						lookingAtBoundingBox(BoundingBox.of(
-							Vec3i(96, 358, 78).toVector(),
-							Vec3i(88, 363, 87).toVector()
-						), 3.0)
-					)),
-					triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
-				),
-				// Only trigger this branch if first time
-				SequenceTrigger(SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_ship_computer") { it != true },
-					triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER))
-			)),
-				triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER))),
+			triggers = listOf(),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				SendMessage(Component.empty(), listOf(EffectTiming.START)),
@@ -360,8 +391,7 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 
 				GoToPreviousPhase(listOf(EffectTiming.START)),
 				SequencePhaseEffect.SetSequenceData("seen_ship_computer", true, Boolean::class, listOf(EffectTiming.END)),
-			),
-			children = listOf()
+			)
 		)
 	}
 }
