@@ -67,7 +67,7 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 			RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT).getKey(Sound.ENTITY_GENERIC_EXPLODE)!!,
 			VariableFloatAmount(0.05f, 1.0f),
 			StaticFloatAmount(1.0f),
-			listOf(EffectTiming.TICKED)
+			EffectTiming.TICKED
 		),
 		0.02
 	)
@@ -75,7 +75,7 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		RegistryAccess.registryAccess().getRegistry(RegistryKey.SOUND_EVENT).getKey(Sound.ENTITY_ARROW_HIT_PLAYER)!!,
 		StaticFloatAmount(1.0f),
 		StaticFloatAmount(2.0f),
-		listOf(EffectTiming.START)
+		EffectTiming.START
 	)
 
 	private fun registerTutorial() {
@@ -95,10 +95,10 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 				triggerResult = SequenceTrigger.startPhase(EXIT_CRYOPOD_ROOM)
 			)),
 			effects = listOf(
-				SendMessage(text("Welcome to Horizon's End!"), listOf(EffectTiming.START)),
-				SendMessage(text("This is the start of the intro sequence."), listOf(EffectTiming.START)),
-				SendMessage(text("Exit the cryopod room to begin."), listOf(EffectTiming.START)),
-				SendMessage(Component.empty(), listOf(EffectTiming.START))
+				SendMessage(text("Welcome to Horizon's End!"), EffectTiming.START),
+				SendMessage(text("This is the start of the intro sequence."), EffectTiming.START),
+				SendMessage(text("Exit the cryopod room to begin."), EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START)
 			)
 		)
 
@@ -135,16 +135,16 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 			),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
-				ifPreviousPhase(TUTORIAL_START, listOf(EffectTiming.START),
+				ifPreviousPhase(TUTORIAL_START, EffectTiming.START,
 					NEXT_PHASE_SOUND,
-					SendMessage(Component.empty(), listOf()),
-					SendMessage(text("The ships's communication system crackles to life:", GRAY, ITALIC), listOf()),
-					SendMessage(text("This is your captain speaking, we're under attack by pirates"), listOf()),
-					SendMessage(text("We must abandon ship"), listOf()),
-					SendMessage(text("Proceed to the elevator down to the hangar bay!"), listOf()),
-					SendMessage(Component.empty(), listOf())
+					SendMessage(Component.empty(), null),
+					SendMessage(text("The ships's communication system crackles to life:", GRAY, ITALIC), null),
+					SendMessage(text("This is your captain speaking, we're under attack by pirates"), null),
+					SendMessage(text("We must abandon ship"), null),
+					SendMessage(text("Proceed to the elevator down to the hangar bay!"), null),
+					SendMessage(Component.empty(), null),
 				),
-				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(93, 359, 11), 10L, listOf(EffectTiming.TICKED)), 10)
+				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(93, 359, 11), 10L, EffectTiming.TICKED), 10)
 			)
 		)
 
@@ -200,16 +200,16 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 
-				ifPreviousPhase(EXIT_CRYOPOD_ROOM, listOf(EffectTiming.START),
+				ifPreviousPhase(EXIT_CRYOPOD_ROOM, EffectTiming.START,
 					NEXT_PHASE_SOUND,
-					SendMessage(Component.empty(), listOf()),
-					SendMessage(text("Smoke bellows out of the smouldering remains of an elevator, the dorsal hull appears to have taken a direct hit from enemy fire.", GRAY, ITALIC), listOf(EffectTiming.START)),
+					SendMessage(Component.empty(), null),
+					SendMessage(text("Smoke bellows out of the smouldering remains of an elevator, the dorsal hull appears to have taken a direct hit from enemy fire.", GRAY, ITALIC), null),
 
-					SendMessage(text("There is a backup crew elevator other side of the ship!"), listOf()),
-					SendMessage(Component.empty(), listOf()),
+					SendMessage(text("There is a backup crew elevator other side of the ship!"), null),
+					SendMessage(Component.empty(), null),
 				),
 
-				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 359, 63), 10L, listOf(EffectTiming.TICKED)), 10)
+				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 359, 63), 10L, EffectTiming.TICKED), 10)
 			)
 		)
 
@@ -257,11 +257,11 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 				RANDOM_EXPLOSION_SOUND,
 
 				ifPreviousPhase(BROKEN_ELEVATOR,
-					listOf(EffectTiming.START),
+					EffectTiming.START,
 					NEXT_PHASE_SOUND,
-					SendMessage(Component.empty(), listOf()),
-					SendMessage(text("To use the elevator, hold your controller (clock), stand on the glass block, and courch.", GRAY, ITALIC), listOf()),
-					SendMessage(Component.empty(), listOf()),
+					SendMessage(Component.empty(), null),
+					SendMessage(text("To use the elevator, hold your controller (clock), stand on the glass block, and courch.", GRAY, ITALIC), null),
+					SendMessage(Component.empty(), null),
 				)
 			)
 		)
@@ -282,11 +282,11 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				ifPreviousPhase(LOOK_AT_TRACTOR,
-					listOf(EffectTiming.START),
+					EffectTiming.START,
 					NEXT_PHASE_SOUND,
-					SendMessage(Component.empty(), listOf()),
-					SendMessage(text("Quick, make your way through the crew quarters and maintainance bays to the hangar bay!", GRAY, ITALIC), listOf()),
-					SendMessage(Component.empty(), listOf())
+					SendMessage(Component.empty(), null),
+					SendMessage(text("Quick, make your way through the crew quarters and maintainance bays to the hangar bay!", GRAY, ITALIC), null),
+					SendMessage(Component.empty(), null)
 				)
 			)
 		)
@@ -307,9 +307,9 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				NEXT_PHASE_SOUND,
-				SendMessage(Component.empty(), listOf(EffectTiming.START)),
-				SendMessage(text("The ship's gravity generators have failed in the attack! Fly over the obstacle!", GRAY, ITALIC), listOf(EffectTiming.START)),
-				SendMessage(Component.empty(), listOf(EffectTiming.START)),
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(text("The ship's gravity generators have failed in the attack! Fly over the obstacle!", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
 			)
 		)
 
@@ -324,10 +324,10 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				NEXT_PHASE_SOUND,
-				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, listOf(EffectTiming.TICKED)), 10),
-				SendMessage(Component.empty(), listOf(EffectTiming.START)),
-				SendMessage(text("Quick, you'll need to grab some fuel for the escape pod. You can find some in that gargo container.", GRAY, ITALIC), listOf(EffectTiming.START)),
-				SendMessage(Component.empty(), listOf(EffectTiming.START)),
+				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, EffectTiming.TICKED), 10),
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(text("Quick, you'll need to grab some fuel for the escape pod. You can find some in that gargo container.", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
 			)
 		)
 
@@ -338,10 +338,10 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				NEXT_PHASE_SOUND,
-				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, listOf(EffectTiming.TICKED)), 10),
-				SendMessage(Component.empty(), listOf(EffectTiming.START)),
-				SendMessage(text("Chetherite is hyperdrive fuel, you'll need it to travel faster than light.", GRAY, ITALIC), listOf(EffectTiming.START)),
-				SendMessage(Component.empty(), listOf(EffectTiming.START)),
+				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, EffectTiming.TICKED), 10),
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(text("Chetherite is hyperdrive fuel, you'll need it to travel faster than light.", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
 			)
 		)
 	}
@@ -353,13 +353,13 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 			triggers = listOf(),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
-				SendMessage(Component.empty(), listOf(EffectTiming.START)),
-				SendMessage(text("They look like the infamous Sky Dogs Pirates to you.", GRAY, ITALIC), listOf(EffectTiming.START)),
-				SendMessage(Component.empty(), listOf(EffectTiming.START)),
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(text("They look like the infamous Sky Dogs Pirates to you.", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
 
-				GoToPreviousPhase(listOf(EffectTiming.START)),
+				GoToPreviousPhase(EffectTiming.START),
 
-				SequencePhaseEffect.SetSequenceData("seen_pirates", true, Boolean::class, listOf(EffectTiming.END)),
+				SequencePhaseEffect.SetSequenceData("seen_pirates", true, Boolean::class, EffectTiming.END),
 			)
 		)
 
@@ -369,12 +369,12 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 			triggers = listOf(),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
-				SendMessage(Component.empty(), listOf(EffectTiming.START)),
-				SendMessage(ofChildren(text("This server has an interactive web map. You can access it "), formatLink("here", "https://survival.horizonsend.net/")), listOf(EffectTiming.START)),
-				SendMessage(Component.empty(), listOf(EffectTiming.START)),
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(ofChildren(text("This server has an interactive web map. You can access it "), formatLink("here", "https://survival.horizonsend.net/")), EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
 
-				GoToPreviousPhase(listOf(EffectTiming.START)),
-				SequencePhaseEffect.SetSequenceData("seen_dynmap", true, Boolean::class, listOf(EffectTiming.END)),
+				GoToPreviousPhase(EffectTiming.START),
+				SequencePhaseEffect.SetSequenceData("seen_dynmap", true, Boolean::class, EffectTiming.END),
 			)
 		)
 
@@ -384,13 +384,13 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 			triggers = listOf(),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
-				SendMessage(Component.empty(), listOf(EffectTiming.START)),
-				SendMessage(text("This is a starship computer. It is the primary point of interface for ships. They allow piloting, detection, and manage settings.", GRAY, ITALIC), listOf(EffectTiming.START)),
-				SequencePhaseEffect.HighlightBlock(Vec3i(93, 359, 82), 60L, listOf(EffectTiming.START)),
-				SendMessage(Component.empty(), listOf(EffectTiming.START)),
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(text("This is a starship computer. It is the primary point of interface for ships. They allow piloting, detection, and manage settings.", GRAY, ITALIC), EffectTiming.START),
+				SequencePhaseEffect.HighlightBlock(Vec3i(93, 359, 82), 60L, EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
 
-				GoToPreviousPhase(listOf(EffectTiming.START)),
-				SequencePhaseEffect.SetSequenceData("seen_ship_computer", true, Boolean::class, listOf(EffectTiming.END)),
+				GoToPreviousPhase(EffectTiming.START),
+				SequencePhaseEffect.SetSequenceData("seen_ship_computer", true, Boolean::class, EffectTiming.END),
 			)
 		)
 	}
