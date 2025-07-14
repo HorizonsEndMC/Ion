@@ -40,8 +40,6 @@ object SequenceAdminCommand : SLCommand() {
 	fun getSequencePhases(sender: Player, sequence: Sequence) {
 		val phase = SequenceManager.getCurrentPhase(sender, sequence.key) ?: fail { "You don't have ${sequence.key} active!" }
 		sender.information("Current phase: ${phase.key}")
-		sender.information("Children: ${phase.getValue().children.joinToString { it.key }}")
-		sender.information("Dangling triggers ${phase.getValue().danglingTriggers.joinToString { it.type.toString() }}")
 	}
 
 	@Subcommand("sequence info")
