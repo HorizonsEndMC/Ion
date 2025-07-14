@@ -9,7 +9,7 @@ object CombinedAndTrigger : SequenceTriggerType<CombinedAndTriggerSettings>() {
 	override fun setupChecks() {}
 
 	class CombinedAndTriggerSettings(
-		val children: Collection<SequenceTrigger<*>>
+		vararg val children: SequenceTrigger<*>
 	) : TriggerSettings() {
 		override fun shouldProceed(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>, callingTrigger: SequenceTriggerType<*>): Boolean {
 			return children.all { trigger -> trigger.shouldProceed(player, sequenceKey, callingTrigger) }

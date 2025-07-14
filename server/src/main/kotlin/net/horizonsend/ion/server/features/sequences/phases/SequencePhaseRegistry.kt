@@ -87,16 +87,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
                     type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-                    settings = MovementTriggerSettings(
-                        listOf(
-                            inBoundingBox(
-                                BoundingBox.of(
-                                    Vector(84.0, 358.0, 26.0),
-                                    Vector(86.0, 360.0, 27.0),
-                                )
-                            )
-                        )
-                    ),
+                    settings = MovementTriggerSettings(inBoundingBox(box = BoundingBox.of(Vector(84.0, 358.0, 26.0), Vector(86.0, 360.0, 27.0),))),
                     triggerResult = SequenceTrigger.startPhase(EXIT_CRYOPOD_ROOM)
                 )
             ),
@@ -114,41 +105,21 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
                     SequenceTriggerTypes.PLAYER_MOVEMENT,
-                    MovementTriggerSettings(
-                        listOf(
-                            lookingAtBoundingBox(
-                                BoundingBox.of(
-                                    Vector(92.0, 357.0, 13.0),
-                                    Vector(94.0, 362.0, 10.0),
-                                ), 4.5
-                            )
-                        )
-                    ),
+                    MovementTriggerSettings(lookingAtBoundingBox(box = BoundingBox.of(Vector(92.0, 357.0, 13.0), Vector(94.0, 362.0, 10.0),), distance = 4.5)),
                     triggerResult = SequenceTrigger.startPhase(BROKEN_ELEVATOR)
                 ),
                 SequenceTrigger(
                     SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(
-                        listOf(
-                            // If looking out window
-                            SequenceTrigger(
-                                SequenceTriggerTypes.PLAYER_MOVEMENT,
-                                MovementTriggerSettings(
-                                    listOf(
-                                        lookingAtBoundingBox(
-                                            BoundingBox.of(
-                                                Vec3i(-13, 358, -47).toVector(),
-                                                Vec3i(48, 383, 75).toVector()
-                                            ), 100.0
-                                        )
-                                    )
-                                ),
-                                triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE)
-                            ),
-                            // Only trigger this branch if first time
-                            SequenceTrigger(
-                                SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_pirates") { it != true },
-                                triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE)
-                            )
+                        // If looking out window
+                        SequenceTrigger(
+                            SequenceTriggerTypes.PLAYER_MOVEMENT,
+                            MovementTriggerSettings(lookingAtBoundingBox(box = BoundingBox.of(Vec3i(-13, 358, -47).toVector(), Vec3i(48, 383, 75).toVector()), distance = 100.0)),
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE)
+                        ),
+                        // Only trigger this branch if first time
+                        SequenceTrigger(
+                            SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_pirates") { it != true },
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE)
                         )
                     ), triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE)
                 )
@@ -175,69 +146,39 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
                     SequenceTriggerTypes.PLAYER_MOVEMENT,
-                    MovementTriggerSettings(
-                        listOf(
-                            lookingAtBoundingBox(
-                                BoundingBox.of(
-                                    Vector(96.0, 357.0, 62.0),
-                                    Vector(98.0, 362.0, 64.0),
-                                ), 3.5
-                            )
-                        )
-                    ),
+                    MovementTriggerSettings(lookingAtBoundingBox(box = BoundingBox.of(Vector(96.0, 357.0, 62.0), Vector(98.0, 362.0, 64.0),), distance = 3.5)),
                     triggerResult = SequenceTrigger.startPhase(LOOK_AT_TRACTOR)
                 ),
                 SequenceTrigger(
                     SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(
-                        listOf(
-                            // If looking out window
-                            SequenceTrigger(
-                                SequenceTriggerTypes.PLAYER_MOVEMENT,
-                                MovementTriggerSettings(
-                                    listOf(
-                                        lookingAtBoundingBox(
-                                            BoundingBox.of(
-                                                Vec3i(96, 358, 69).toVector(),
-                                                Vec3i(96, 361, 72).toVector()
-                                            ), 5.0
-                                        )
-                                    )
-                                ),
-                                triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
-                            ),
-                            // Only trigger this branch if first time
-                            SequenceTrigger(
-                                SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_dynmap") { it != true },
-                                triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
-                            )
+                        // If looking out window
+                        SequenceTrigger(
+                            SequenceTriggerTypes.PLAYER_MOVEMENT,
+                            MovementTriggerSettings(lookingAtBoundingBox(box = BoundingBox.of(Vec3i(96, 358, 69).toVector(), Vec3i(96, 361, 72).toVector()), distance = 5.0)),
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
+                        ),
+                        // Only trigger this branch if first time
+                        SequenceTrigger(
+                            SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_dynmap") { it != true },
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
                         )
                     ),
                     triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
                 ),
                 SequenceTrigger(
                     SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(
-                        listOf(
-                            // If looking out window
-                            SequenceTrigger(
-                                SequenceTriggerTypes.PLAYER_MOVEMENT,
-                                MovementTriggerSettings(
-                                    listOf(
-                                        lookingAtBoundingBox(
-                                            BoundingBox.of(
-                                                Vec3i(96, 358, 78).toVector(),
-                                                Vec3i(88, 363, 87).toVector()
-                                            ), 3.0
-                                        )
-                                    )
-                                ),
-                                triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
-                            ),
-                            // Only trigger this branch if first time
-                            SequenceTrigger(
-                                SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_ship_computer") { it != true },
-                                triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
-                            )
+                        // If looking out window
+                        SequenceTrigger(
+                            SequenceTriggerTypes.PLAYER_MOVEMENT,
+                            MovementTriggerSettings(lookingAtBoundingBox(box = BoundingBox.of(Vec3i(96, 358, 78).toVector(), Vec3i(88, 363, 87).toVector()), distance = 3.0)),
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
+                        ),
+                        // Only trigger this branch if first time
+                        SequenceTrigger(
+                            SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_ship_computer") { it != true },
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
                         )
+
                     ),
                     triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
                 )
@@ -264,55 +205,31 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 SequenceTrigger(SequenceTriggerTypes.USE_TRACTOR_BEAM, TractorBeamTriggerSettings(), triggerResult = SequenceTrigger.startPhase(CREW_QUARTERS)),
+                SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(
+                    // If looking out window
+                    SequenceTrigger(
+                        SequenceTriggerTypes.PLAYER_MOVEMENT,
+                        MovementTriggerSettings(lookingAtBoundingBox(box = BoundingBox.of(Vec3i(96, 358, 69).toVector(), Vec3i(96, 361, 72).toVector()), distance = 5.0)),
+                        triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
+                    ),
+                    // Only trigger this branch if first time
+                    SequenceTrigger(
+                        SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_dynmap") { it != true },
+                        triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
+                    )
+                ), triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)),
                 SequenceTrigger(
                     SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(
-                        listOf(
-                            // If looking out window
-                            SequenceTrigger(
-                                SequenceTriggerTypes.PLAYER_MOVEMENT,
-                                MovementTriggerSettings(
-                                    listOf(
-                                        lookingAtBoundingBox(
-                                            BoundingBox.of(
-                                                Vec3i(96, 358, 69).toVector(),
-                                                Vec3i(96, 361, 72).toVector()
-                                            ), 5.0
-                                        )
-                                    )
-                                ),
-                                triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
-                            ),
-                            // Only trigger this branch if first time
-                            SequenceTrigger(
-                                SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_dynmap") { it != true },
-                                triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
-                            )
-                        )
-                    ), triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
-                ),
-                SequenceTrigger(
-                    SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(
-                        listOf(
-                            // If looking out window
-                            SequenceTrigger(
-                                SequenceTriggerTypes.PLAYER_MOVEMENT,
-                                MovementTriggerSettings(
-                                    listOf(
-                                        lookingAtBoundingBox(
-                                            BoundingBox.of(
-                                                Vec3i(96, 358, 78).toVector(),
-                                                Vec3i(88, 363, 87).toVector()
-                                            ), 3.0
-                                        )
-                                    )
-                                ),
-                                triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
-                            ),
-                            // Only trigger this branch if first time
-                            SequenceTrigger(
-                                SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_ship_computer") { it != true },
-                                triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
-                            )
+                        // If looking out window
+                        SequenceTrigger(
+                            SequenceTriggerTypes.PLAYER_MOVEMENT,
+                            MovementTriggerSettings(lookingAtBoundingBox(box = BoundingBox.of(Vec3i(96, 358, 78).toVector(), Vec3i(88, 363, 87).toVector()), distance = 3.0)),
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
+                        ),
+                        // Only trigger this branch if first time
+                        SequenceTrigger(
+                            SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_ship_computer") { it != true },
+                            triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
                         )
                     ),
                     triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
@@ -338,16 +255,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
                     SequenceTriggerTypes.PLAYER_MOVEMENT,
-                    MovementTriggerSettings(
-                        listOf(
-                            inBoundingBox(
-                                BoundingBox.of(
-                                    Vector(91.0, 351.0, 52.0),
-                                    Vector(95.0, 355.0, 51.0),
-                                )
-                            )
-                        )
-                    ),
+                    MovementTriggerSettings(inBoundingBox(box = BoundingBox.of(Vector(91.0, 351.0, 52.0), Vector(95.0, 355.0, 51.0),))),
                     triggerResult = SequenceTrigger.startPhase(FIRE_OBSTACLE)
                 )
             ),
@@ -370,16 +278,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
                     SequenceTriggerTypes.PLAYER_MOVEMENT,
-                    MovementTriggerSettings(
-                        listOf(
-                            inBoundingBox(
-                                BoundingBox.of(
-                                    Vector(91.0, 351.0, 25.0),
-                                    Vector(95.0, 354.0, 23.0),
-                                )
-                            )
-                        )
-                    ),
+                    MovementTriggerSettings(inBoundingBox(box = BoundingBox.of(Vector(91.0, 351.0, 25.0), Vector(95.0, 354.0, 23.0),))),
                     triggerResult = SequenceTrigger.startPhase(GET_CHETHERITE)
                 )
             ),
