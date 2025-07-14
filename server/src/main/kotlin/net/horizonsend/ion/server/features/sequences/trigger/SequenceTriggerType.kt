@@ -12,7 +12,7 @@ abstract class SequenceTriggerType<T : SequenceTriggerType.TriggerSettings> {
 		val currentPhase = SequenceManager.getCurrentPhase(player, sequenceKey)?.getValue() ?: return
 
 		// Find all triggers for children on the current phase
-		for (trigger in currentPhase.danglingTriggers) {
+		for (trigger in currentPhase.triggers) {
 			if (!trigger.shouldProceed(player, sequenceKey, this@SequenceTriggerType)) continue
 
 			trigger.trigger(player)
