@@ -23,4 +23,8 @@ abstract class SequenceTriggerType<T : SequenceTriggerType.TriggerSettings> {
 	abstract class TriggerSettings() {
 		abstract fun shouldProceed(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>, callingTrigger: SequenceTriggerType<*>): Boolean
 	}
+
+	override fun toString(): String {
+		return javaClass.simpleName
+	}
 }

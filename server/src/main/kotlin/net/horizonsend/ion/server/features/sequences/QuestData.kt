@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.features.sequences
 
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDataContainer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializers
@@ -9,7 +12,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
 data class QuestData(
-	val currentPhase: String,
+	val currentPhase: IonRegistryKey<SequencePhase, out SequencePhase>,
 	val sequenceData: Map<String, MetaDataContainer<*, *>>
 ) {
 	fun unpackDataStore(): SequenceDataStore {
@@ -35,7 +38,7 @@ data class QuestData(
 		): PersistentDataContainer {
 			val pdc = context.newPersistentDataContainer()
 
-			pdc.set(PHASE, PersistentDataType.STRING, complex.currentPhase)
+			pdc.set(PHASE, SequencePhaseKeys.serializer, complex.currentPhase)
 			pdc.set(DATA, KEYED_CONTAINER_TYPE, complex.sequenceData.toList())
 
 			return pdc
@@ -46,7 +49,7 @@ data class QuestData(
 			context: PersistentDataAdapterContext,
 		): QuestData {
 			return QuestData(
-				primitive.get(PHASE, PersistentDataType.STRING)!!,
+				primitive.get(PHASE, SequencePhaseKeys.serializer)!!,
 				primitive.get(DATA, KEYED_CONTAINER_TYPE)!!.toMap()
 			)
 		}

@@ -56,12 +56,12 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 	}
 
 	private fun bootstrapPhase(
-		sequenceKey: IonRegistryKey<Sequence, Sequence>,
 		phaseKey: IonRegistryKey<SequencePhase, SequencePhase>,
+		sequenceKey: IonRegistryKey<Sequence, Sequence>,
 		trigger: SequenceTrigger<*>?,
 		effects: List<SequencePhaseEffect>,
 		children: List<IonRegistryKey<SequencePhase, SequencePhase>>
-	) = register(phaseKey, SequencePhase(sequenceKey, phaseKey, trigger, effects, children))
+	) = register(phaseKey, SequencePhase(phaseKey, sequenceKey, trigger, effects, children))
 
 	private val RANDOM_EXPLOSION_SOUND = SequencePhaseEffect.Chance(
 		SequencePhaseEffect.PlaySound(
@@ -83,8 +83,8 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		registerTutorialBranches()
 
 		bootstrapPhase(
-			sequenceKey = SequenceKeys.TUTORIAL,
 			phaseKey = TUTORIAL_START,
+			sequenceKey = SequenceKeys.TUTORIAL,
 			trigger = null,
 			effects = listOf(
 				SendMessage(text("Welcome to Horizon's End!"), listOf(EffectTiming.START)),
@@ -96,8 +96,8 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		)
 
 		bootstrapPhase(
-			sequenceKey = SequenceKeys.TUTORIAL,
 			phaseKey = EXIT_CRYOPOD_ROOM,
+			sequenceKey = SequenceKeys.TUTORIAL,
 			trigger = SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
 				MovementTriggerSettings(listOf(
@@ -124,8 +124,8 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		)
 
 		bootstrapPhase(
-			sequenceKey = SequenceKeys.TUTORIAL,
 			phaseKey = BROKEN_ELEVATOR,
+			sequenceKey = SequenceKeys.TUTORIAL,
 			trigger = SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
 				MovementTriggerSettings(listOf(
@@ -153,8 +153,8 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		)
 
 		bootstrapPhase(
-			sequenceKey = SequenceKeys.TUTORIAL,
 			phaseKey = LOOK_AT_TRACTOR,
+			sequenceKey = SequenceKeys.TUTORIAL,
 			trigger = SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
 				MovementTriggerSettings(listOf(
@@ -179,8 +179,8 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		)
 
 		bootstrapPhase(
-			sequenceKey = SequenceKeys.TUTORIAL,
 			phaseKey = CREW_QUARTERS,
+			sequenceKey = SequenceKeys.TUTORIAL,
 			trigger = SequenceTrigger(SequenceTriggerTypes.USE_TRACTOR_BEAM, TractorBeamTriggerSettings()),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
@@ -196,8 +196,8 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		)
 
 		bootstrapPhase(
-			sequenceKey = SequenceKeys.TUTORIAL,
 			phaseKey = FIRE_OBSTACLE,
+			sequenceKey = SequenceKeys.TUTORIAL,
 			trigger = SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
 				MovementTriggerSettings(listOf(
@@ -218,8 +218,8 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		)
 
 		bootstrapPhase(
-			sequenceKey = SequenceKeys.TUTORIAL,
 			phaseKey = GET_CHETHERITE,
+			sequenceKey = SequenceKeys.TUTORIAL,
 			trigger = SequenceTrigger(
 				SequenceTriggerTypes.PLAYER_MOVEMENT,
 				MovementTriggerSettings(listOf(
@@ -241,8 +241,8 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		)
 
 		bootstrapPhase(
-			sequenceKey = SequenceKeys.TUTORIAL,
 			phaseKey = RECEIVED_CHETHERITE,
+			sequenceKey = SequenceKeys.TUTORIAL,
 			trigger = SequenceTrigger(
 				SequenceTriggerTypes.CONTAINS_ITEM,
 				ContainsItemTrigger.ContainsItemTriggerSettings { it?.customItem?.key == CustomItemKeys.CHETHERITE }
@@ -261,8 +261,8 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 
 	private fun registerTutorialBranches() {
 		bootstrapPhase(
-			sequenceKey = SequenceKeys.TUTORIAL,
 			phaseKey = BRANCH_LOOK_OUTSIDE,
+			sequenceKey = SequenceKeys.TUTORIAL,
 			trigger = SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
 				// If looking out window
 				SequenceTrigger(
@@ -291,8 +291,8 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		)
 
 		bootstrapPhase(
-			sequenceKey = SequenceKeys.TUTORIAL,
 			phaseKey = BRANCH_DYNMAP,
+			sequenceKey = SequenceKeys.TUTORIAL,
 			trigger = SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
 				// If looking out window
 				SequenceTrigger(
@@ -320,8 +320,8 @@ class SequencePhaseRegistry  : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHA
 		)
 
 		bootstrapPhase(
-			sequenceKey = SequenceKeys.TUTORIAL,
 			phaseKey = BRANCH_SHIP_COMPUTER,
+			sequenceKey = SequenceKeys.TUTORIAL,
 			trigger = SequenceTrigger(SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(listOf(
 				// If looking out window
 				SequenceTrigger(
