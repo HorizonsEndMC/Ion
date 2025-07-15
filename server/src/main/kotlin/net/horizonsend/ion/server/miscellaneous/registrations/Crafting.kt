@@ -174,6 +174,7 @@ import org.bukkit.Material.HONEYCOMB_BLOCK
 import org.bukkit.Material.HOPPER
 import org.bukkit.Material.IRON_BLOCK
 import org.bukkit.Material.IRON_INGOT
+import org.bukkit.Material.IRON_NUGGET
 import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.Material.LAPIS_BLOCK
 import org.bukkit.Material.LAPIS_LAZULI
@@ -284,6 +285,13 @@ object Crafting : IonServerComponent() {
 		shapedMaterial("big_dripleaf" , Material.BIG_DRIPLEAF, shape1 = "xxx", shape2 = "  y", shape3 = "  y",'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
 
 		Bukkit.removeRecipe(Material.ENDER_CHEST.key)
+		Bukkit.removeRecipe(Material.CHAIN.key)
+		shaped("chain", ItemStack(Material.CHAIN, 4)) {
+			shape("n", "i", "n")
+
+			setIngredient('n', IRON_NUGGET)
+			setIngredient('i', IRON_INGOT)
+		}
 		shaped("Unloaded__Shell", UNLOADED_SHELL.constructItemStack()) {
 			shape(" y ", " z ")
 

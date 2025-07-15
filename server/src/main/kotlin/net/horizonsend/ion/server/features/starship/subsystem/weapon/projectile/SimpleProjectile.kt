@@ -200,7 +200,7 @@ abstract class SimpleProjectile(
 		balancing.entityDamage.deal(entity, shooter, damageType)
 	}
 
-	private fun addToDamagers(world: World, block: Block, shooter: Damager, points: Int = 1, explosionOccurred: Boolean = false) {
+	protected fun addToDamagers(world: World, block: Block, shooter: Damager, points: Int = 1, explosionOccurred: Boolean = false) {
 		val x = block.x
 		val y = block.y
 		val z = block.z

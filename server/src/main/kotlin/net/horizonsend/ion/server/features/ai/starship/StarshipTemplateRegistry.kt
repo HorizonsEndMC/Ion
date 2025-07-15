@@ -132,6 +132,31 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		))
 	))
 
+	val ARBOREALITH = registerTemplate(StarshipTemplate(
+		schematicName = "Arborealith",
+		type = AI_DESTROYER,
+		miniMessageName = miniMessage(text("Arborealith", WATCHER_STANDARD)),
+		manualWeaponSets = mutableSetOf(
+			WeaponSet(
+				name = "phaser",
+				engagementRangeMin = 0.0,
+				engagementRangeMax = 220.0
+			),
+			WeaponSet(
+				name = "manual",
+				engagementRangeMin = 220.0,
+				engagementRangeMax = 550.0
+			),
+		),
+		autoWeaponSets = mutableSetOf(
+			WeaponSet(
+				name = "auto",
+				engagementRangeMin = 250.0,
+				engagementRangeMax = 550.0
+			))
+
+	))
+
 	// END_WATCHERS
 	//START 吃饭人
 

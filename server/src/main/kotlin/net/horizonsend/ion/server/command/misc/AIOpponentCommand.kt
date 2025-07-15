@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.command.misc
 
+import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
@@ -8,6 +9,7 @@ import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.common.extensions.hint
+import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
@@ -41,7 +43,8 @@ object AIOpponentCommand : SLCommand() {
 		}
 
 		manager.commandContexts.registerContext(AITemplate::class.java) { context ->
-			AITemplateRegistry.all()[context.popFirstArg()]
+			val arg = context.popFirstArg()
+			AITemplateRegistry.all()[arg.uppercase()] ?: throw InvalidCommandArgument("Template $arg not found!")
 		}
 
 		manager.commandCompletions.setDefaultCompletion("allTemplates", AITemplate::class.java)
@@ -122,12 +125,13 @@ object AIOpponentCommand : SLCommand() {
 
 
 	private fun summonShip(summoner: Player, template: AITemplate, vec: Vec3i?, difficulty: Int?, targetMode: AITarget.TargetMode, limitSpawns: Boolean = true) {
-		val location = vec?.toLocation(summoner.world) ?: summoner.location.add(summoner.location.direction.multiply(500.0))
+		val location = vec?.toLocation(summoner.world) ?: summoner.location.add(summoner.location.direction.multiply(500.0)).apply { y = 192.0 }
 
 		Tasks.async {
 			if (limitSpawns && getExisting(summoner).isNotEmpty()) return@async summoner.userError("You may only have one AI opponent active at once.")
 
 			Tasks.sync {
+				try {
 
 				AISpawningManager.context.launch {
 					createAIShipFromTemplate(
@@ -153,6 +157,9 @@ object AIOpponentCommand : SLCommand() {
 					) {
 						summoner.success("Summoned ${template.starshipInfo.miniMessageName}")
 					}
+				}
+				} catch (e: Throwable) {
+					summoner.serverError("There was an error spawning ${template.identifier}: ${e.message}")
 				}
 
 			}

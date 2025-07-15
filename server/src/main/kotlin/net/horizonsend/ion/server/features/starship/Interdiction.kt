@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
@@ -120,11 +121,8 @@ object Interdiction : IonServerComponent() {
 		.lastOrNull()
 
 	fun starshipInterdictionRangeEquation(starship: Starship): Double {
-		if (starship.type == StarshipType.SPEEDER ||
-			starship.type == StarshipType.STARFIGHTER ||
-			starship.type == StarshipType.INTERCEPTOR ||
-			starship.type == StarshipType.SHUTTLE ||
-			starship.type == StarshipType.PLATFORM) return 10.0
+		if (starship.initialBlockCount < CombatTimer.MINIMUM_WELL_PROXIMITY_BLOCK_COUNT ||
+			starship.type == StarshipType.PLATFORM) return 1.0
 		return if (starship.type.typeCategory == TypeCategory.WAR_SHIP) 3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())
 		else (3000 / sqrt(12000.0) * sqrt(starship.initialBlockCount.toDouble())) / 2
 	}

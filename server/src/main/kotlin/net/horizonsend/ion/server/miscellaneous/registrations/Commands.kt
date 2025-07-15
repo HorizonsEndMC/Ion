@@ -62,6 +62,8 @@ import net.horizonsend.ion.server.command.qol.CalcExpCommand
 import net.horizonsend.ion.server.command.qol.CheckCryoCommand
 import net.horizonsend.ion.server.command.qol.CheckProtectionCommand
 import net.horizonsend.ion.server.command.qol.ContainerCommand
+import net.horizonsend.ion.server.command.qol.DisplayShieldsCommand
+import net.horizonsend.ion.server.command.qol.EnableOrbitBreakingCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.command.qol.PersonalTransporterCommand
 import net.horizonsend.ion.server.command.qol.SearchCommand
@@ -161,6 +163,7 @@ val commands: List<SLCommand> = listOf(
 	SetFluidCommand,
 	RegenerateCommand,
 	RemoveGhostShipCommand,
+	DisplayShieldsCommand,
 
 	AchievementsCommand,
 	BlockStatsCommand,
@@ -190,5 +193,6 @@ val commands: List<SLCommand> = listOf(
 	ModelCreator,
 	NavigationCommand,
 	DisplayDebug,
-	ChatCommand
+	ChatCommand,
+	EnableOrbitBreakingCommand
 )

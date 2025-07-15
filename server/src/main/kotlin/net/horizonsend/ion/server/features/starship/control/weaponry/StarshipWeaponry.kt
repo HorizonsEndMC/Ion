@@ -40,6 +40,15 @@ object StarshipWeaponry : IonServerComponent() {
 	) {
 		starship.debug("Common manual firing")
 
+		starship.customTurrets.forEach { turret ->
+			if (!turret.isIntact()) return@forEach
+			if (weaponSet != null) {
+				if (!starship.weaponSets[weaponSet].contains(turret)) return@forEach
+			}
+
+			turret.orientToTarget(dir)
+		}
+
 		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet]).shuffled(ThreadLocalRandom.current())
 
 		starship.debug("Weapons: ${weapons.joinToString { it.name }}")
@@ -107,7 +116,7 @@ object StarshipWeaponry : IonServerComponent() {
 		}
 	}
 
-	fun queueShots(
+	private fun queueShots(
         shooter: Damager,
         weapons: List<WeaponSubsystem>,
         leftClick: Boolean,

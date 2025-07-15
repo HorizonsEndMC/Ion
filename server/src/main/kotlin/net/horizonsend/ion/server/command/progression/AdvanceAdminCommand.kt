@@ -122,7 +122,7 @@ object AdvanceAdminCommand : net.horizonsend.ion.server.command.SLCommand() {
 		PlayerXPLevelCache.setLevel(playerId, newLevel)
 
 		sender.success("Changed $player's Level from $oldLevel to $newLevel.")
-		sender.success("Changed $player's SLXP from $oldXP to $newXp.")
+		sender.success("Changed $player's HEXP from $oldXP to $newXp.")
 		sender.success("Subtracted $amount from ${sender.name}.")
 	}
 

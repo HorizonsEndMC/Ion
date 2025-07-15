@@ -9,6 +9,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.util.Vector
+import kotlin.math.roundToInt
 
 class InterceptorCannonProjectile(
 	starship: ActiveStarship?,
@@ -29,14 +30,18 @@ class InterceptorCannonProjectile(
 	override val pitch: Float = balancing.pitch
 	override val soundName: String = balancing.soundName
 
-	private val explosionSize = 12.0f
+	private val explosionSize = 4.0f
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		if (starship.initialBlockCount < 700) {
-			impactLocation.createExplosion(explosionSize)
-		}
-		else if (starship.initialBlockCount < 1000) {
-			impactLocation.createExplosion(explosionSize * explosionCalc(starship.initialBlockCount))
+		val calcExplosionSize = if (starship.initialBlockCount < 700) explosionSize
+		else if (starship.initialBlockCount < 1000) explosionSize * explosionCalc(starship.initialBlockCount)
+		else 0.0f
+
+		if (calcExplosionSize > 0) {
+			impactLocation.createExplosion(calcExplosionSize)
+
+			// explosionOccurred only controls the hull hitmarker sound; just use this to increase damager points on the target
+			addToDamagers(impactLocation.world, impactLocation.block, shooter, calcExplosionSize.roundToInt(), false)
 		}
 	}
 

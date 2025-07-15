@@ -69,13 +69,17 @@ class HyperspaceWarmup(
 			cancel()
 			return
 		}
-
-		if (MassShadows.find(ship.world, ship.centerOfMass.x.toDouble(), ship.centerOfMass.z.toDouble()) != null) {
-			ship.onlinePassengers.forEach { player ->
-				player.userErrorAction("Ship is within Gravity Well, jump cancelled")
+		val massShadows = MassShadows.find(ship.world, ship.centerOfMass.x.toDouble(), ship.centerOfMass.z.toDouble())
+		if (massShadows != null) {
+			var combinedWellStrength = 0.0
+			massShadows.forEach { combinedWellStrength += it.wellStrength }
+			if (ship.balancing.jumpStrength <= combinedWellStrength) {
+				ship.onlinePassengers.forEach { player ->
+					player.userErrorAction("Ship is within a strong Gravity Well! Jump cancelled")
+				}
+				cancel()
+				return
 			}
-			cancel()
-			return
 		}
 
 		if (!PilotedStarships.isPiloted(ship)) {

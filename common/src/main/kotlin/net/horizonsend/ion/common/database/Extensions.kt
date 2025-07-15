@@ -183,6 +183,8 @@ class ProjectedResults(document: Document, vararg properties: KProperty<*>) {
 			return IdTransformer.wrapId(value) as R
 		}
 
+		//TODO handle collections of IDs
+
 		try {
 			return when (value) {
 				is Document -> DBManager.decode(value)

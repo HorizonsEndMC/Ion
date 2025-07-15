@@ -5,12 +5,6 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.StandardAmmoPressMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1
-import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier1Mirrored
-import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2
-import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier2Mirrored
-import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3
-import net.horizonsend.ion.server.features.multiblock.type.autocrafter.AutoCrafterMultiblockTier3Mirrored
 import net.horizonsend.ion.server.features.multiblock.type.defense.active.AntiAirCannonBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield10
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield20
@@ -55,6 +49,7 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.MediumTractorBea
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
 import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.particleshield.BubbleShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass08Left
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.ShieldMultiblockClass08Right
@@ -87,6 +82,12 @@ import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterM
 import net.horizonsend.ion.server.features.multiblock.type.printer.GlassPrinterMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.printer.TechnicalPrinterMultiblockMirrored
+import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter.AutoCrafterMultiblockTier1
+import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter.AutoCrafterMultiblockTier1Mirrored
+import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter.AutoCrafterMultiblockTier2
+import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter.AutoCrafterMultiblockTier2Mirrored
+import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter.AutoCrafterMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter.AutoCrafterMultiblockTier3Mirrored
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
@@ -160,6 +161,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turre
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.BottomLightTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.BottomQuadTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.BottomTriTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.CustomTurretBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TopHeavyTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TopIonTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TopLightTurretMultiblock
@@ -326,6 +328,8 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(TopQuadTurretMultiblock)
 		registerMultiblock(BottomQuadTurretMultiblock)
 		registerMultiblock(HorizontalRocketStarshipWeaponMultiblock)
+		registerMultiblock(CustomTurretBaseMultiblock.CustomTurretBaseMultiblockTop)
+		registerMultiblock(CustomTurretBaseMultiblock.CustomTurretBaseMultiblockBottom)
 		registerMultiblock(UpwardRocketStarshipWeaponMultiblock)
 		registerMultiblock(DownwardRocketStarshipWeaponMultiblock)
 		registerMultiblock(PhaserStarshipWeaponMultiblock)
@@ -376,6 +380,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(ShieldMultiblockClass85)
 		registerMultiblock(ShieldMultiblockClass08i)
 		registerMultiblock(BoxShieldMultiblock)
+		registerMultiblock(BubbleShieldMultiblock)
 		registerMultiblock(EventShieldMultiblock)
 
 		// Starship misc
@@ -435,7 +440,7 @@ object MultiblockRegistration : IonServerComponent() {
 		multiblocks[storageAlias] = multiblock
 	}
 
-	fun getAllMultiblocks() = multiblocks.values.toSet()
+	fun getAllMultiblocks() = multiblocks.values
 
 	fun getByDetectionName(name: String): List<Multiblock> {
 		return byDetectionName[name].toList()

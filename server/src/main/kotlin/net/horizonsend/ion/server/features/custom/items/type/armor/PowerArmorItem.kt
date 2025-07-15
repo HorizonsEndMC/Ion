@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Sound
@@ -35,6 +36,9 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
+import org.bukkit.util.Vector
+import kotlin.math.cos
+import kotlin.math.sin
 
 class PowerArmorItem(
 	identifier: String,
@@ -128,10 +132,32 @@ class PowerArmorItem(
 		}
 
 		entity.isGliding = true
-		entity.velocity = entity.velocity.midpoint(entity.location.direction.multiply(0.6))
+		val dir = entity.location.direction
+		val strafeVel = entity.velocity.midpoint(dir.multiply(0.6))
+		if(RocketBoostingMod.strafingMode[entity.uniqueId] == null && RocketBoostingMod.ascendingMode[entity.uniqueId] == null) entity.velocity = strafeVel
+		else {
+			val relativeUpAxis = when(entity.pitch) {
+				90f -> Vector(-sin(entity.yaw * 0.017444) , 0.0, cos(entity.yaw * 0.017444)) // straight down
+				-90f -> Vector( sin(entity.yaw * 0.017444) , 0.0,-cos(entity.yaw * 0.017444)) // straight up
+				else -> Vector(-(dir.z), 0.0, (dir.x)).crossProduct(strafeVel) // anything else
+			}
+			val strafeRight = strafeVel.clone().crossProduct(relativeUpAxis)
+			val finalVel = strafeVel.clone()
+			when (RocketBoostingMod.strafingMode[entity.uniqueId]) {
+				StrafingMode.LEFT -> entity.velocity = finalVel.rotateAroundAxis(relativeUpAxis, 0.26)
+				StrafingMode.RIGHT -> entity.velocity = finalVel.rotateAroundAxis(relativeUpAxis, -0.26)
+				else -> {}
+			}
+			when(RocketBoostingMod.ascendingMode[entity.uniqueId]) {
+				AscendingMode.ASCENDING -> entity.velocity = finalVel.rotateAroundAxis(strafeRight, 0.2)
+				AscendingMode.DESCENDING -> entity.velocity = finalVel.rotateAroundAxis(strafeRight, -0.2)
+				else -> {}
+			}
+		}
+
 		entity.world.spawnParticle(Particle.SMOKE, entity.location, 5)
 
-		if (!entity.world.hasFlag(WorldFlag.ARENA)) {
+		if (!entity.world.hasFlag(WorldFlag.ARENA) && entity.gameMode != GameMode.CREATIVE) {
 			powerManager.removePower(itemStack, this, 5)
 		}
 

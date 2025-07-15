@@ -52,8 +52,6 @@ object StarshipControl : IonServerComponent() {
 		val controller = starship.controller
 		if (controller is PlayerController) {
 			if (PlanetTeleportCooldown.cannotEnterPlanets(controller.player)) return false
-			// Restrict planet entry if combat tagged
-			PlanetTeleportCooldown.addEnterPlanetRestriction(controller.player)
 		}
 
 		val border = planet.planetWorld?.worldBorder
@@ -85,7 +83,12 @@ object StarshipControl : IonServerComponent() {
 		)
 		starship.setIsInterdicting(false)
 
-		StarshipTeleportation.teleportStarship(starship, target)
+		StarshipTeleportation.teleportStarship(starship, target) {
+			if (controller is PlayerController) {
+				// (Callback) If planet teleportation was successful, add enter planet restriction (if applicable)
+				PlanetTeleportCooldown.addEnterPlanetRestriction(controller.player)
+			}
+		}
 		return true
 	}
 }

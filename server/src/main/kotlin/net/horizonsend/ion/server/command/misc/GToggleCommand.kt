@@ -12,8 +12,8 @@ import net.luckperms.api.node.types.InheritanceNode
 import org.bukkit.entity.Player
 
 object GToggleCommand : SLCommand() {
-	val noGlobalGroup: Group? = luckPerms.groupManager.getGroup("noglobal")
-	val noGlobalInheritanceNode = noGlobalGroup?.let { InheritanceNode.builder(noGlobalGroup).build() }
+	private val noGlobalGroup: Group? = luckPerms.groupManager.getGroup("noglobal")
+	private val noGlobalInheritanceNode = noGlobalGroup?.let { InheritanceNode.builder(noGlobalGroup).build() }
 
 	@Suppress("Unused")
 	@CommandAlias("gtoggle")
@@ -33,5 +33,12 @@ object GToggleCommand : SLCommand() {
 
 	override fun supportsVanilla(): Boolean {
 		return true
+	}
+
+	fun isEnabled(player: Player): Boolean {
+		if (noGlobalInheritanceNode == null) return false
+		val user = player.common().getUser()
+
+		return user.data().contains(noGlobalInheritanceNode, NodeEqualityPredicate.IGNORE_EXPIRY_TIME).asBoolean()
 	}
 }

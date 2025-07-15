@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.features.machine.GeneratorFuel
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
+import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.minecraft.world.inventory.AbstractFurnaceMenu
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -13,7 +14,9 @@ import org.bukkit.Material
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.craftbukkit.inventory.CraftInventoryFurnace
 import org.bukkit.inventory.FurnaceInventory
+import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
+import java.util.concurrent.atomic.AtomicInteger
 
 fun getTransferSpaceFor(inventory: Collection<CraftInventory>, itemStack: ItemStack): Int = inventory.sumOf {
 	getTransferSpaceFor(it, itemStack)
@@ -147,4 +150,59 @@ fun getAdditionSlots(inventory: CraftInventory): Array<Int> {
 
 	var index = -1
 	return Array(inventory.size) { index++ }
+}
+
+fun canAddAll(inventory: Inventory, stacks: Collection<ItemStack>): Boolean {
+	val slots = inventory.storageContents
+	val slotCount = slots.size
+
+	// Store available empty slots
+	var emptySlots = slots.count { it == null }
+
+	val availableRoomInPartialStacks = multimapOf<ItemStack, AtomicInteger>()
+	// Store how much room is available in different slots that are partially occupied
+	slots.filterNotNull().filter { it.amount != it.maxStackSize }.forEach { availableRoomInPartialStacks[it.asOne()].add(AtomicInteger(it.maxStackSize - it.amount)) }
+
+	for (stack in stacks) {
+		val asOne = stack.asOne()
+
+		var remining = stack.amount
+
+		val availableInPartial = availableRoomInPartialStacks[asOne]
+		if (availableInPartial.isNotEmpty()) {
+			val iterator = availableInPartial.iterator()
+
+			while (iterator.hasNext()) {
+				val remainingCount = iterator.next()
+				val toRemove = minOf(remainingCount.get(), remining)
+				remainingCount.addAndGet(-toRemove)
+
+				remining -= toRemove
+
+				if (remainingCount.get() == 0) {
+					iterator.remove()
+				}
+			}
+		}
+
+		if (remining == 0) continue
+
+		// If there are still items remaining that could not be filled by partial stacks, and no empty slots remaining, then the items cannot fit
+		if (emptySlots == 0) return false
+		val maxStackSize = stack.maxStackSize
+
+		// Handle the condition of amount > max stack size
+		var neededSlots = remining / maxStackSize
+		val remainder = remining % maxStackSize
+		if (remainder > 0) {
+			neededSlots++
+		}
+
+		if (neededSlots > emptySlots) return false
+
+		emptySlots -= neededSlots
+		availableInPartial.add(AtomicInteger(maxStackSize - remainder))
+	}
+
+	return true
 }

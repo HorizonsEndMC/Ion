@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.features.starship.movement
 
 import net.horizonsend.ion.server.features.starship.Hangars
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
@@ -49,12 +47,12 @@ object OptimizedMovement {
 		.toSet()
 
 	fun moveStarship(
-		starship: ActiveStarship,
+		executionCheck: () -> Boolean,
 		world1: World,
 		world2: World,
 		oldPositionArray: LongArray,
 		newPositionArray: LongArray,
-		blockDataTransform: (BlockState) -> BlockState,
+		blockStateTransform: (BlockState) -> BlockState,
 		callback: () -> Unit
 	) {
 		val oldChunkMap = getChunkMap(oldPositionArray)
@@ -68,7 +66,7 @@ object OptimizedMovement {
 
 		try {
 			Tasks.syncBlocking {
-				if (!ActiveStarships.isActive(starship)) {
+				if (!executionCheck.invoke()) {
 					return@syncBlocking
 				}
 
@@ -91,7 +89,7 @@ object OptimizedMovement {
 					world2,
 					capturedStates,
 					capturedTiles,
-					blockDataTransform
+					blockStateTransform
 				)
 
 				callback()

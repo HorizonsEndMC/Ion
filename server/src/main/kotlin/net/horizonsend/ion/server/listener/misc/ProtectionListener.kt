@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.listener.misc
 
 import io.papermc.paper.event.player.PlayerItemFrameChangeEvent
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
+import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.lpHasPermission
@@ -54,8 +55,11 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent
 import org.bukkit.event.player.PlayerBucketFillEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.InventoryHolder
+import java.util.UUID
 
 object ProtectionListener : SLEventListener() {
+	val orbitBreakEnable = mutableSetOf<UUID>()
+
 	/** Handle interact events as block edits **/
 	@EventHandler
 	fun onClickBlock(event: PlayerInteractEvent) {
@@ -156,7 +160,19 @@ object ProtectionListener : SLEventListener() {
 
 		if (isLockedShipDenied(player, location)) return true
 
-		if (event is BlockPlaceEvent && isPlanetOrbitDenied(player, location, false)) return true
+		if (isPlanetOrbitDenied(player, location, true)) {
+			if (event is BlockPlaceEvent) {
+				player.userError("You cannot build in the way of a planet's orbit")
+				return true
+			}
+			else if (event is BlockBreakEvent) {
+				return if (!orbitBreakEnable.contains(player.uniqueId)) {
+					player.hint("Did you want to break blocks in the orbit of a planet? Click to enable")
+					player.sendRichMessage("<green><italic><hover:show_text:'<gray>/orbitbreak'><click:run_command:/orbitbreak>Enable</click>")
+					true
+				} else false
+			}
+		}
 
 		return denied
 	}

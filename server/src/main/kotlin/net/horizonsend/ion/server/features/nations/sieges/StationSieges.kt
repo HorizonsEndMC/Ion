@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
@@ -83,6 +84,7 @@ object StationSieges : IonServerComponent() {
 				else -> {
 					val elapsedSecondsDecimal = TimeUnit.MILLISECONDS.toSeconds(siegeMinTimeMillis - elapsed) / 60.0
 					player.informationAction("${String.format("%.2f", elapsedSecondsDecimal)} minutes remaining")
+					CombatTimer.refreshPvpTimer(player, CombatTimer.REASON_SIEGE_STATION)
 				}
 			}
 		}

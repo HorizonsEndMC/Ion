@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.SimplePoweredEntity
@@ -179,7 +180,7 @@ object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMul
 		z: Int,
 		world: World,
 		structureDirection: BlockFace,
-	) : SimplePoweredEntity(data, GasPowerPlantMultiblock, manager, x, y, z, world, structureDirection, 500000), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, LegacyMultiblockEntity {
+	) : SimplePoweredEntity(data, GasPowerPlantMultiblock, manager, x, y, z, world, structureDirection, 500000), SyncTickingMultiblockEntity, StatusTickedMultiblockEntity, LegacyMultiblockEntity, FurnaceBasedMultiblockEntity {
 		override val multiblock: GasPowerPlantMultiblock = GasPowerPlantMultiblock
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(interval = 20)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
@@ -191,6 +192,7 @@ object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMul
 		).register()
 
 		override fun tick() {
+			if (powerStorage.isFull()) return
 			val inventory = getInventory(0, 0, 0) as? FurnaceInventory ?: return
 
 			val fuelItem = inventory.smelting ?: return
@@ -208,6 +210,7 @@ object GasPowerPlantMultiblock : Multiblock(), EntityMultiblock<GasPowerPlantMul
 
 			if (powerStorage.getPower() < maxPower) {
 				tickingManager.sleepForTicks(fuelType.cooldown)
+				setBurningForTicks(fuelType.cooldown)
 
 				inventory.holder?.burnTime = fuelType.cooldown.toShort()
 				inventory.holder?.update()

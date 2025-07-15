@@ -55,7 +55,7 @@ class SelectTypeButton(val parent: ChangeTypeButton, val type: StarshipType) : A
 		player.success("Changed type to $type")
 	}
 
-	fun openSubclassMenu(player: Player) {
+	private fun openSubclassMenu(player: Player) {
 		val returnToPilotMenu = GuiItems.createButton(
 			ItemStack(BARRIER).updateDisplayName(text("Go back to class selection menu", WHITE).itemName)
 		) { _, _, _ ->
@@ -63,7 +63,7 @@ class SelectTypeButton(val parent: ChangeTypeButton, val type: StarshipType) : A
 			parent.openClassMenu(player)
 		}
 
-		val subclassButtons = type.menuSubclasses.get().map { SelectTypeButton(parent, it) }
+		val subclassButtons = type.menuSubclasses.get().filter { it.canUse(player) }.map { SelectTypeButton(parent, it) }
 
 		val gui = PagedGui.items()
 			.setStructure(

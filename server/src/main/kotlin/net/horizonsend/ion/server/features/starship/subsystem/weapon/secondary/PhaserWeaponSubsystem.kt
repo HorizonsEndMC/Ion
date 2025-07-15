@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -11,13 +10,11 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PhaserProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.SoundCategory
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.FaceAttachable
 import org.bukkit.block.data.type.Grindstone
@@ -37,7 +34,7 @@ class PhaserWeaponSubsystem(
 	companion object {
 		private const val WARM_UP_TIME_SECONDS = 0.5
 	}
-		
+
 	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.phaser
 	override val length: Int = balancing.length
 	override val convergeDist: Double = balancing.convergeDistance

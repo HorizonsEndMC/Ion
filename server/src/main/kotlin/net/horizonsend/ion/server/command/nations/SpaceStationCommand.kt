@@ -244,7 +244,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("create nation")
     fun createNation(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
 		if (checkStationCreationCooldown(sender)) {
-			sender.userError("You must wait ${STATION_FORMATION_COOLDOWN.toMinutes() - Duration.ofMillis(System.currentTimeMillis() - 
+			sender.userError("You must wait ${STATION_FORMATION_COOLDOWN.toMinutes() - Duration.ofMillis(System.currentTimeMillis() -
 					lastStationFormedTimeMs[sender.uniqueId]!!).toMinutes()} minutes before you can claim another station")
 			return
 		}
@@ -290,7 +290,7 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("create personal")
     fun createPersonal(sender: Player, name: String, radius: Int, @Optional cost: Int?) {
 		if (checkStationCreationCooldown(sender)) {
-			sender.userError("You must wait ${STATION_FORMATION_COOLDOWN.toMinutes() - Duration.ofMillis(System.currentTimeMillis() - 
+			sender.userError("You must wait ${STATION_FORMATION_COOLDOWN.toMinutes() - Duration.ofMillis(System.currentTimeMillis() -
 					lastStationFormedTimeMs[sender.uniqueId]!!).toMinutes()} minutes before you can claim another station")
 			return
 		}
@@ -787,11 +787,12 @@ object SpaceStationCommand : net.horizonsend.ion.server.command.SLCommand() {
     fun onRename(sender: Player, station: CachedSpaceStation<*, *, *>, newName: String) = asyncCommand(sender) {
 		requireStationOwnership(sender.slPlayerId, station)
 
+		val oldName = station.name
 		validateName(newName)
 		station.rename(newName)
 
-		sender.sendMessage(formatSpaceStationMessage("Renamed {0} to {1}", station.name, newName))
-		Notify.chatAndGlobal(formatSpaceStationMessage("Space station {0}  has been renamed to  {1} by {2}", station.name, newName, sender.name))
+		sender.sendMessage(formatSpaceStationMessage("Renamed {0} to {1}", oldName, newName))
+		Notify.chatAndGlobal(formatSpaceStationMessage("Space station {0} has been renamed to {1} by {2}", oldName, newName, sender.name))
 	}
 
 	@Subcommand("info")

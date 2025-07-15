@@ -25,7 +25,7 @@ import java.util.function.Supplier
 import kotlin.reflect.KClass
 
 class FortuneModifier(
-	private val level: Int,
+	val level: Int,
 	color: String,
 	override val modItem: Supplier<ModificationItem?>
 ) : ItemModification, DropSource {

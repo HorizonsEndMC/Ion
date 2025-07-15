@@ -1,10 +1,10 @@
-package net.horizonsend.ion.server.features.multiblock.type.autocrafter
+package net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter
 
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
 import org.bukkit.Material
 
-object AutoCrafterMultiblockTier1 : AutoCrafterMultiblock(text("Tier 1", DARK_GRAY), Material.IRON_BLOCK, iterations = 2) {
+object AutoCrafterMultiblockTier1 : AutoCrafterMultiblock(text("Tier 1", DARK_GRAY), Material.IRON_BLOCK, craftingIterations = 2) {
 	override val maxPower: Int = 200_000
 }
 

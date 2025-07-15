@@ -105,9 +105,13 @@ object Bounties : IonServerComponent() {
 		val killer = event.entity.killer ?: return@async
 
 		// Check names because of combat NPCs
+		// (was this added when you could kill your own combat npc?)
 		if (killer.name == victim.name) return@async
 
-		if (hasActive(killer.slPlayerId, victim.slPlayerId)) {
+		// gets the victim's slPlayerId, even if they are offline (in the case of combat NPCs)
+		val victimSlPlayerId = SLPlayer[victim.name]?._id ?: return@async
+
+		if (hasActive(killer.slPlayerId, victimSlPlayerId)) {
 			collectBounty(killer, victim)
 		} else {
 			val amount = 2500.0

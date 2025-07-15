@@ -344,7 +344,7 @@ object ShipmentManager : IonServerComponent() {
 
 				val updatedShipments = mutableSetOf<String>() // the shipments that were updated
 				var credits = 0.0 // total credits to give to the player in revenue
-				var xp = 0.0 // total SLXP to reward the player
+				var xp = 0.0 // total HEXP to reward the player
 
 				for ((index: Int, item: ItemStack?) in player.inventory.contents.withIndex()) {
 					if (item == null) {

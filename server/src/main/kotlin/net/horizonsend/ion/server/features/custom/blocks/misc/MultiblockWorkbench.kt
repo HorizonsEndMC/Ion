@@ -55,7 +55,7 @@ object MultiblockWorkbench : CustomBlock(
 	blockData = CustomBlocks.mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.DOWN, BlockFace.EAST)),
 	drops = BlockLoot(
 		requiredTool = null,
-		drops = customItemDrop("MULTIBLOCK_WORKBENCH", 1)
+		drops = customItemDrop(CustomItemRegistry::MULTIBLOCK_WORKBENCH, 1)
 	),
 	customBlockItem = { CustomItemRegistry.MULTIBLOCK_WORKBENCH }
 ), InteractableCustomBlock {

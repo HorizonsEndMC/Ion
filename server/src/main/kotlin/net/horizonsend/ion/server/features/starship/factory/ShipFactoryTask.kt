@@ -15,6 +15,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.Companion.formatProgress
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock
@@ -301,6 +302,9 @@ class ShipFactoryTask(
 		val state = block.state as? Sign
 		if (state != null) {
 			signData?.applyTo(state)
+			Tasks.sync {
+				MultiblockEntities.loadFromSign(state)
+			}
 		}
 	}
 
@@ -350,8 +354,6 @@ class ShipFactoryTask(
 		return true
 	}
 
-	private data class AvailableItemInformation(val amount: AtomicInteger, val references: MutableList<ItemReference>)
-
 	private fun sendMissing(missingMaterials: MutableMap<PrintItem, AtomicInteger>) {
 		missingMaterialsCache[player.uniqueId] = missingMaterials.mapValues { it.value.get() }
 
@@ -377,24 +379,26 @@ class ShipFactoryTask(
 		player.userError("Use <italic><underlined><click:run_command:/shipfactory listmissing all>/shipfactory listmissing all</click></italic> to list all missing materials in one message.")
 	}
 
-	private fun consumeItemFromReferences(references: Collection<ItemReference>, amount: Int): Int {
-		var remaining = amount
+	companion object {
+		fun consumeItemFromReferences(references: Collection<ItemReference>, amount: Int): Int {
+			var remaining = amount
 
-		for (reference in references) {
-			val item = reference.get() ?: continue
-			val stackAmount = item.amount
+			for (reference in references) {
+				val item = reference.get() ?: continue
+				val stackAmount = item.amount
 
-			if (remaining >= stackAmount) {
-				remaining -= stackAmount
-				reference.inventory.setItem(reference.index, null)
-			} else {
-				val toRemove = minOf(stackAmount, remaining)
-				item.amount -= toRemove
-				remaining -= toRemove
+				if (remaining >= stackAmount) {
+					remaining -= stackAmount
+					reference.inventory.setItem(reference.index, null)
+				} else {
+					val toRemove = minOf(stackAmount, remaining)
+					item.amount -= toRemove
+					remaining -= toRemove
+				}
 			}
-		}
 
-		return remaining
+			return remaining
+		}
 	}
 
 	private fun markItemMissing(printItem: PrintItem, amount: Int): Int {

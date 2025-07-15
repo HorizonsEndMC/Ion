@@ -1,4 +1,5 @@
 import io.papermc.paperweight.util.path
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 import java.io.ByteArrayOutputStream
 
 plugins {
@@ -43,6 +44,7 @@ dependencies {
 	compileOnly("com.discordsrv:discordsrv:1.29.0")
 	compileOnly("net.luckperms:api:5.4")
 	compileOnly("xyz.xenondevs.invui:invui:1.43") // Downloaded via paper library manager for remapping
+	compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
 
 	// Included Dependencies
 	implementation("com.manya:persistent-data-types:1.0.25")
@@ -70,6 +72,12 @@ dependencies {
 	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.12.3") { isTransitive = false }
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
+}
+
+tasks.named<KotlinJvmCompile>("compileKotlin") {
+	compilerOptions {
+		javaParameters = true
+	}
 }
 
 paperweight.reobfArtifactConfiguration = io.papermc.paperweight.userdev.ReobfArtifactConfiguration.MOJANG_PRODUCTION

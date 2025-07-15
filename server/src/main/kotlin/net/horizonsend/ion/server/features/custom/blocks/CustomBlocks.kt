@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
 import com.google.common.collect.HashBasedTable
+import io.papermc.paper.datacomponent.DataComponentTypes
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.custom.blocks.extractor.AdvancedItemExtractorBlock
 import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
@@ -11,9 +12,9 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_DRILL_BASIC
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
+import net.horizonsend.ion.server.features.space.encounters.SecondaryChest.Companion.random
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.getMatchingMaterials
-import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.horizonsend.ion.server.miscellaneous.utils.set
 import net.minecraft.world.level.block.Rotation
@@ -29,6 +30,7 @@ import org.bukkit.block.BlockFace.UP
 import org.bukkit.block.BlockFace.WEST
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.MultipleFacing
+import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
 
@@ -51,7 +53,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(NORTH, UP)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-			drops = customItemDrop(CustomItemRegistry::RAW_ALUMINUM)
+			drops = fortuneEnabledCustomItemDrop(CustomItemRegistry::RAW_ALUMINUM)
 		)
 	) { CustomItemRegistry.ALUMINUM_ORE })
 
@@ -78,7 +80,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(EAST, NORTH, UP)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-			drops = customItemDrop(CustomItemRegistry::CHETHERITE)
+			drops = fortuneEnabledCustomItemDrop(CustomItemRegistry::CHETHERITE)
 		)
 	) { CustomItemRegistry.CHETHERITE_ORE })
 
@@ -105,7 +107,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(UP, WEST)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-			drops = customItemDrop(CustomItemRegistry::RAW_TITANIUM)
+			drops = fortuneEnabledCustomItemDrop(CustomItemRegistry::RAW_TITANIUM)
 		)
 	) { CustomItemRegistry.TITANIUM_ORE })
 
@@ -132,7 +134,7 @@ object CustomBlocks {
         blockData = mushroomBlockData(setOf(UP)),
 		drops = BlockLoot(
 			requiredTool = { BlockLoot.Tool.PICKAXE },
-			drops = customItemDrop(CustomItemRegistry::RAW_URANIUM)
+			drops = fortuneEnabledCustomItemDrop(CustomItemRegistry::RAW_URANIUM)
 		)
 	) { CustomItemRegistry.URANIUM_ORE })
 
@@ -208,21 +210,38 @@ object CustomBlocks {
 		)
 	) { CustomItemRegistry.CRUISER_REACTOR_CORE })
 
-	fun customItemDrop(customItem: Supplier<CustomItem>, amount: Int = 1): Supplier<Collection<ItemStack>> {
-		return customItem.map { item -> listOf(item.constructItemStack(amount)) }
+	fun customItemDrop(customItem: Supplier<CustomItem>, amount: Int = 1): (ItemStack?) -> Collection<ItemStack> {
+		return { _ -> listOf(customItem.get().constructItemStack(amount)) }
+	}
+
+	fun fortuneEnabledCustomItemDrop(customItem: Supplier<CustomItem>, amount: Int = 1): (ItemStack?) -> Collection<ItemStack> {
+		return resultSupplier@{ usedTool ->
+			val fallback = listOf(customItem.get().constructItemStack(amount))
+			if (usedTool == null) return@resultSupplier fallback
+			val enchantments = usedTool.getDataOrDefault(DataComponentTypes.ENCHANTMENTS, null) ?: return@resultSupplier fallback
+
+			val fortuneLevel = enchantments.enchantments()[Enchantment.FORTUNE] ?: return@resultSupplier fallback
+			if (fortuneLevel == 0) return@resultSupplier fallback
+
+			val newAmount = if (fortuneLevel > 0) {
+				var i: Int = random.nextInt(fortuneLevel + 2) - 1
+				if (i < 0) {
+					i = 0
+				}
+
+				amount * (i + 1)
+			} else {
+				amount
+			}
+
+			listOf(customItem.get().constructItemStack(newAmount))
+		}
 	}
 
 	val MULTIBLOCK_WORKBENCH = register(MultiblockWorkbench)
 
 	val ADVANCED_ITEM_EXTRACTOR = register(AdvancedItemExtractorBlock)
 	val ITEM_FILTER = registerDirectional(ItemFilterBlock)
-
-    fun customItemDrop(identifier: String, amount: Int = 1): Supplier<Collection<ItemStack>> {
-        val customItem = CustomItemRegistry.getByIdentifier(identifier)?.constructItemStack() ?: return Supplier { listOf() }
-        customItem.amount = amount
-
-        return Supplier { listOf(customItem) }
-    }
 
     fun <T : CustomBlock> register(customBlock: T): T {
         customBlocks[customBlock.identifier] = customBlock
@@ -266,10 +285,10 @@ object CustomBlocks {
 }
 
 open class CustomBlock(
-    val identifier: String,
-    val blockData: BlockData,
-    val drops: BlockLoot,
-	private val customBlockItem: Supplier<CustomBlockItem>
+	val identifier: String,
+	val blockData: BlockData,
+	val drops: BlockLoot,
+	private val customBlockItem: Supplier<CustomBlockItem>,
 ) {
 	val customItem get() = customBlockItem.get()
 
@@ -279,17 +298,17 @@ open class CustomBlock(
 
 data class BlockLoot(
 	val requiredTool: Supplier<Tool>? = Supplier { Tool.PICKAXE },
-	val drops: Supplier<Collection<ItemStack>>,
-	val silkTouchDrops: Supplier<Collection<ItemStack>> = drops,
+	val drops: (ItemStack?) -> Collection<ItemStack>,
+	val silkTouchDrops: (ItemStack?) -> Collection<ItemStack> = drops,
 ) {
 	fun getDrops(tool: ItemStack?, silkTouch: Boolean): Collection<ItemStack> {
 		if (tool != null && requiredTool != null) {
 			if (!requiredTool.get().matches(tool)) return listOf()
 		}
 
-		if (silkTouch) return silkTouchDrops.get().map { it.clone() }
+		if (silkTouch) return silkTouchDrops.invoke(tool).map { it.clone() }
 
-		return drops.get().map { it.clone() }
+		return drops.invoke(tool).map { it.clone() }
 	}
 
 	companion object ToolPredicate {

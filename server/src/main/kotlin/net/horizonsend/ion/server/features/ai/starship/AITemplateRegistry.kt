@@ -144,6 +144,31 @@ object AITemplateRegistry {
 		))
 		.build()
 	)
+
+	val ARBOREALITH = registerTemplate(builder(
+		identifier = "ARBOREALITH",
+		template = StarshipTemplateRegistry.ARBOREALITH,
+		controllerFactory = AIControllerFactories.watcherSpecialFrigate,
+		engagementRange = 2500.0
+	)
+		.addFactionConfiguration(WATCHERS)
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
+		.addRewardProvider(CreditRewardProviderConfiguration(18000.0))
+		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
+			activationThreshold = 0.75,
+			delay = 100L,
+			broadcastMessage = "<italic><$WATCHER_STANDARD>You cannot decipher the transmission from the incoming alien ship",
+			reinforcementShips = listOf(spawnChance(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCEMENT), 1.0))
+		))
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
+			activationThreshold = 0.25,
+			delay = 100L,
+			broadcastMessage = "<italic><$WATCHER_STANDARD>You cannot decipher the transmission from the incoming alien ship",
+			reinforcementShips = listOf(spawnChance(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCEMENT), 1.0))
+		))
+		.build()
+	)
 	// END_WATCHER
 	// START_吃饭人
 	val MALINGSHU_REINFORCEMENT = registerTemplate(builder(

@@ -25,7 +25,6 @@ import net.horizonsend.ion.server.features.starship.isFlyable
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
@@ -34,10 +33,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rectangle
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.nms
-import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.World
-import org.bukkit.block.BlockFace
 import org.bukkit.entity.Animals
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Item
@@ -46,20 +43,12 @@ import org.bukkit.util.Vector
 import org.litote.kmongo.setValue
 import kotlin.math.sqrt
 
-abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: World? = null) {
+abstract class StarshipMovement(val starship: ActiveStarship) : TranslationAccessor {
 	// null if the ship is not a player ship
-	private val playerShip: ActiveControlledStarship? = starship
+	private val playerShip: Starship = starship
 
-	abstract fun displaceX(oldX: Int, oldZ: Int): Int
-	abstract fun displaceY(oldY: Int): Int
-	abstract fun displaceZ(oldZ: Int, oldX: Int): Int
-	abstract fun displaceLocation(oldLocation: Location): Location
-	abstract fun displaceFace(face: BlockFace): BlockFace
-	abstract fun displaceVector(vector: Vector): Vector
-	abstract fun displaceKey(key: BlockKey): BlockKey
 	protected abstract fun movePassenger(passenger: Entity)
 	protected abstract fun onComplete()
-	protected abstract fun blockDataTransform(blockData: BlockState): BlockState
 
 	/* should only be called by the ship itself */
 	fun execute() {
@@ -85,7 +74,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		}
 
 		if (displaceY(starship.max.y) >= world1.maxHeight) {
-			if (playerShip != null && playerShip.type != StarshipType.SPEEDER && exitPlanet(world1, playerShip)) {
+			if (playerShip.type != StarshipType.SPEEDER && exitPlanet(world1, playerShip)) {
 				starship.information("Exiting Planet")
 				return
 			}
@@ -121,12 +110,12 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		}
 
 		OptimizedMovement.moveStarship(
-			starship,
-			world1,
-			world2,
-			oldLocationArray,
-			newLocationArray,
-			this::blockDataTransform
+			executionCheck = { ActiveStarships.isActive(starship) },
+			world1 = world1,
+			world2 = world2,
+			oldPositionArray = oldLocationArray,
+			newPositionArray = newLocationArray,
+			blockStateTransform = this::blockStateTransform
 		) {
 			// this part will run on the main thread
 			movePassengers(findPassengers(world1))
@@ -174,8 +163,8 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	}
 
 	private fun validateWorldBorders(min: Vec3i, max: Vec3i, passengers: List<Entity>, world2: World) {
-		val newMin = displacedVec(min).toLocation(world2)
-		val newMax = displacedVec(max).toLocation(world2)
+		val newMin = displaceVec3i(min).toLocation(world2)
+		val newMax = displaceVec3i(max).toLocation(world2)
 
 		if (!world2.worldBorder.isInside(newMin) || !world2.worldBorder.isInside(newMax))
 			// Handle cases where there are no pilots
@@ -197,8 +186,8 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 	}
 
 	private fun checkCelestialBodies(min: Vec3i, max: Vec3i, world2: World) {
-		val newMin = displacedVec(min).toLocation(world2)
-		val newMax = displacedVec(max).toLocation(world2)
+		val newMin = displaceVec3i(min).toLocation(world2)
+		val newMax = displaceVec3i(max).toLocation(world2)
 
 		val stars = Space.getStars().filter { it.spaceWorld?.uid == world2.uid }
 
@@ -217,12 +206,19 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 
 		if (starship.controller !is PlayerController) return
 
-		val newMin = displacedVec(min).toLocation(world2)
-		val newMax = displacedVec(max).toLocation(world2)
+		val newMin = displaceVec3i(min).toLocation(world2)
+		val newMax = displaceVec3i(max).toLocation(world2)
 
-		val boundingBox = rectangle(newMin, newMax)
+		val oldBoundingBox = rectangle(min.toLocation(world2), max.toLocation(world2))
+		val newBoundingBox = rectangle(newMin, newMax)
 
-		for (point in boundingBox) {
+		// if any point of the old starship's bounding box was inside a trade city, do not perform this check
+		// this should allow for ships that are combat tagged to leave a city, but not return
+		for (point in oldBoundingBox) {
+			if (ProtectionListener.isProtectedCity(point)) return
+		}
+
+		for (point in newBoundingBox) {
 			if (ProtectionListener.isProtectedCity(point) && starship.type.typeCategory == TypeCategory.WAR_SHIP &&
 				CombatTimer.isPvpCombatTagged((starship.controller as PlayerController).player)) {
 
@@ -236,46 +232,27 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		moveCarriedShipComputers(world2)
 	}
 
-	private fun displacedVec(vec: Vec3i): Vec3i {
-		return Vec3i(displaceX(vec.x, vec.z), displaceY(vec.y), displaceZ(vec.z, vec.x))
-	}
-
-	private fun displacedKey(key: Long): Long {
-		val oldX = blockKeyX(key)
-		val oldY = blockKeyY(key)
-		val oldZ = blockKeyZ(key)
-		return blockKey(displaceX(oldX, oldZ), displaceY(oldY), displaceZ(oldZ, oldX))
-	}
-
 	private fun moveSelfComputer(world2: World) {
-		if (playerShip == null) {
-			return
-		}
-
 		val data = playerShip.data
-		ActiveStarships.updateLocation(data, world2, displacedKey(data.blockKey))
+		ActiveStarships.updateLocation(data, world2, displaceLegacyKey(data.blockKey))
 	}
 
 	private fun moveCarriedShipComputers(world2: World) {
-		if (playerShip == null) {
-			return
-		}
-
 		for (data: StarshipData in playerShip.carriedShips.keys) {
-			data.blockKey = displacedKey(data.blockKey)
+			data.blockKey = displaceLegacyKey(data.blockKey)
 			data.levelName = world2.name
 
 			val blocks = playerShip.carriedShips[data] ?: continue // the rest is only for the carried ships
 			playerShip.carriedShips[data] = blocks.mapTo(LongOpenHashSet(blocks.size)) { key: Long ->
-				displacedKey(key)
+				displaceLegacyKey(key)
 			}
 		}
 	}
 
-	fun moveDisconnectLocation() {
+	private fun moveDisconnectLocation() {
 		val disconnectLoc = starship.pilotDisconnectLocation ?: return
 
-		starship.pilotDisconnectLocation = displacedVec(disconnectLoc)
+		starship.pilotDisconnectLocation = displaceVec3i(disconnectLoc)
 	}
 
 	private fun updateDirectControlCenter() {
@@ -294,7 +271,7 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		CoroutineScope(Dispatchers.Default + SupervisorJob()).launch {
 			for (subsystem in starship.subsystems) {
 				launch {
-					val newPos = displacedVec(subsystem.pos)
+					val newPos = displaceVec3i(subsystem.pos)
 					subsystem.pos = newPos
 
 					if (subsystem is CryopodSubsystem) {
@@ -338,8 +315,6 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 		val controller = starship.controller
 		if (controller is PlayerController) {
 			if (PlanetTeleportCooldown.cannotExitPlanets(controller.player)) return false
-			// Restrict planet exit if combat tagged
-			PlanetTeleportCooldown.addExitPlanetRestriction(controller.player)
 		}
 
 		val blockCountSquareRoot = sqrt(starship.initialBlockCount.toDouble())
@@ -349,7 +324,12 @@ abstract class StarshipMovement(val starship: ActiveStarship, val newWorld: Worl
 			.toLocation(spaceWorld)
 			.add(direction.x * distance, 0.0, direction.z * distance)
 
-		StarshipTeleportation.teleportStarship(starship, exitPoint)
+		StarshipTeleportation.teleportStarship(starship, exitPoint) {
+			if (controller is PlayerController) {
+				// (Callback) If planet teleportation was successful, add exit planet restriction (if applicable)
+				PlanetTeleportCooldown.addExitPlanetRestriction(controller.player)
+			}
+		}
 
 		IonServer.slF4JLogger.info("Attempting to exit planet")
 

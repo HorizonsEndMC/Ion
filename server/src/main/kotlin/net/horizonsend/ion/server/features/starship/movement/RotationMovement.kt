@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.starship.movement
 
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.movement.TranslationAccessor.RotationTranslation
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -24,14 +24,14 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : StarshipMovement(starship) {
+class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : StarshipMovement(starship), TranslationAccessor by RotationTranslation(null, if (clockwise) 90.0 else -90.0, starship.centerOfMass) {
 	private val origin get() = starship.centerOfMass
 	private val nmsRotation = if (clockwise) Rotation.CLOCKWISE_90 else Rotation.COUNTERCLOCKWISE_90
 	private val theta: Double = if (clockwise) 90.0 else -90.0
 	private val cosTheta: Double = cos(Math.toRadians(theta))
 	private val sinTheta: Double = sin(Math.toRadians(theta))
 
-	override fun blockDataTransform(blockState: BlockState): BlockState {
+	override fun blockStateTransform(blockState: BlockState): BlockState {
 		val customBlock = CustomBlocks.getByBlockState(blockState)
 		return if (customBlock == null) {
 			blockState.rotate(nmsRotation)
@@ -113,7 +113,7 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 		return if (clockwise) vector.clone().rotateAroundY(0.5 * PI) else vector.clone().rotateAroundY(-0.5 * PI)
 	}
 
-	override fun displaceKey(key: BlockKey): BlockKey {
+	override fun displaceModernKey(key: BlockKey): BlockKey {
 		val oldX = getX(key)
 		val oldY = getY(key)
 		val oldZ = getZ(key)
@@ -141,13 +141,11 @@ class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : Stars
 		starship.forward = rotateBlockFace(starship.forward)
 		starship.rotation += theta
 
-		if (starship is ActiveControlledStarship) {
-			val dir = starship.cruiseData.targetDir
-			if (dir != null) {
-				val newX = dir.x * cosTheta - dir.z * sinTheta
-				val newZ = dir.x * sinTheta + dir.z * cosTheta
-				starship.cruiseData.targetDir = Vector(newX, dir.y, newZ)
-			}
+		val dir = starship.cruiseData.targetDir
+		if (dir != null) {
+			val newX = dir.x * cosTheta - dir.z * sinTheta
+			val newZ = dir.x * sinTheta + dir.z * cosTheta
+			starship.cruiseData.targetDir = Vector(newX, dir.y, newZ)
 		}
 	}
 }

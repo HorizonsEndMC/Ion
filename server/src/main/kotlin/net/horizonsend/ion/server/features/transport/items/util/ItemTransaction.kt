@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.items.util
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap
 import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.inventory.ItemStack
@@ -10,10 +9,10 @@ class ItemTransaction {
 
 	fun addTransfer(
 		sourceReference: ItemReference,
-		destinationInventories: Object2ObjectRBTreeMap<PathfindResult, CraftInventory>,
+		destinationInventories: MutableCollection<PathfindResult>,
 		transferredItem: ItemStack,
 		transferredAmountProvider: Int,
-		destinationSelector: (Object2ObjectRBTreeMap<PathfindResult, CraftInventory>) -> Pair<PathfindResult, CraftInventory>
+		destinationSelector: () -> Pair<PathfindResult, CraftInventory>
 	) {
 		transactions += BackedItemTransaction(sourceReference, transferredItem, transferredAmountProvider, destinationInventories, destinationSelector)
 	}
