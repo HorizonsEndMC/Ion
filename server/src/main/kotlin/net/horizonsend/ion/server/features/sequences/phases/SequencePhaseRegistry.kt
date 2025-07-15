@@ -254,9 +254,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 SequenceTrigger(
-                    SequenceTriggerTypes.PLAYER_MOVEMENT,
-                    MovementTriggerSettings(inBoundingBox(box = BoundingBox.of(Vector(91.0, 351.0, 52.0), Vector(95.0, 355.0, 51.0),))),
-                    triggerResult = SequenceTrigger.startPhase(FIRE_OBSTACLE)
+					type = SequenceTriggerTypes.PLAYER_MOVEMENT,
+					settings = MovementTriggerSettings(inBoundingBox(box = BoundingBox.of(Vector(94.0, 355.0, 61.0), Vector(95.0, 352.0, 65.0),))),
+					triggerResult = SequenceTrigger.startPhase(FIRE_OBSTACLE)
                 )
             ),
             effects = listOf(
@@ -277,9 +277,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 SequenceTrigger(
-                    SequenceTriggerTypes.PLAYER_MOVEMENT,
-                    MovementTriggerSettings(inBoundingBox(box = BoundingBox.of(Vector(91.0, 351.0, 25.0), Vector(95.0, 354.0, 23.0),))),
-                    triggerResult = SequenceTrigger.startPhase(GET_CHETHERITE)
+					type = SequenceTriggerTypes.PLAYER_MOVEMENT,
+					settings = MovementTriggerSettings(inBoundingBox(box = BoundingBox.of(Vector(91.0, 351.0, 25.0), Vector(95.0, 354.0, 23.0),))),
+					triggerResult = SequenceTrigger.startPhase(GET_CHETHERITE)
                 )
             ),
             effects = listOf(
@@ -296,9 +296,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
                 SequenceTrigger(
-                    SequenceTriggerTypes.CONTAINS_ITEM,
-                    ContainsItemTrigger.ContainsItemTriggerSettings { it?.customItem?.key == CustomItemKeys.CHETHERITE },
-                    triggerResult = SequenceTrigger.startPhase(RECEIVED_CHETHERITE)
+					type = SequenceTriggerTypes.CONTAINS_ITEM,
+					settings = ContainsItemTrigger.ContainsItemTriggerSettings { it?.customItem?.key == CustomItemKeys.CHETHERITE },
+					triggerResult = SequenceTrigger.startPhase(RECEIVED_CHETHERITE)
                 )
             ),
             effects = listOf(
@@ -306,7 +306,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 NEXT_PHASE_SOUND,
                 SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, EffectTiming.TICKED), 10),
                 SendMessage(Component.empty(), EffectTiming.START),
-                SendMessage(text("Quick, you'll need to grab some fuel for the escape pod. You can find some in that gargo container.", GRAY, ITALIC), EffectTiming.START),
+                SendMessage(text("Quick, you'll need to grab some fuel for the escape pod's emergancy hyperdrive. You can find some in that gargo container.", GRAY, ITALIC), EffectTiming.START),
                 SendMessage(Component.empty(), EffectTiming.START),
             )
         )
