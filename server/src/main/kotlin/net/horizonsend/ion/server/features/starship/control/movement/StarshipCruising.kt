@@ -10,7 +10,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSettingsCommand
+import net.horizonsend.ion.server.features.gui.custom.settings.SoundSettings
 import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
@@ -235,9 +235,9 @@ object StarshipCruising : IonServerComponent() {
 			if (PlayerCache[passenger.uniqueId].enableAdditionalSounds) {
 				var tick = 0
 				val length = when (PlayerCache[passenger.uniqueId].soundCruiseIndicator) {
-					SoundSettingsCommand.CruiseIndicatorSounds.OFF.ordinal -> 0
-					SoundSettingsCommand.CruiseIndicatorSounds.SHORT.ordinal -> 1
-					SoundSettingsCommand.CruiseIndicatorSounds.LONG.ordinal -> 4
+					SoundSettings.CruiseIndicatorSounds.OFF.ordinal -> 0
+					SoundSettings.CruiseIndicatorSounds.SHORT.ordinal -> 1
+					SoundSettings.CruiseIndicatorSounds.LONG.ordinal -> 4
 					else -> 0
 				}
 
@@ -283,9 +283,9 @@ object StarshipCruising : IonServerComponent() {
 			if (PlayerCache[passenger.uniqueId].enableAdditionalSounds) {
 				var tick = 0
 				val length = when (PlayerCache[passenger.uniqueId].soundCruiseIndicator) {
-					SoundSettingsCommand.CruiseIndicatorSounds.OFF.ordinal -> 0
-					SoundSettingsCommand.CruiseIndicatorSounds.SHORT.ordinal -> 5
-					SoundSettingsCommand.CruiseIndicatorSounds.LONG.ordinal -> 20
+					SoundSettings.CruiseIndicatorSounds.OFF.ordinal -> 0
+					SoundSettings.CruiseIndicatorSounds.SHORT.ordinal -> 5
+					SoundSettings.CruiseIndicatorSounds.LONG.ordinal -> 20
 					else -> 0
 				}
 

@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.gui.custom.settings.button.DBCachedBo
 import net.horizonsend.ion.server.features.gui.custom.settings.button.DBCachedEnumCycle
 import net.horizonsend.ion.server.features.gui.custom.settings.button.DBCachedIntegerInput
 import net.horizonsend.ion.server.features.gui.custom.settings.button.PermissionBooleanToggle
-import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSettingsCommand.CruiseIndicatorSounds
+import net.horizonsend.ion.server.features.gui.custom.settings.SoundSettings.CruiseIndicatorSounds
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.ContactsColoring
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.ContactsSorting

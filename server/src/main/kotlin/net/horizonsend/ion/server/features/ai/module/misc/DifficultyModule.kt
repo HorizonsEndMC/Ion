@@ -129,5 +129,13 @@ class DifficultyModule(
 					Pair(2,0.4)))
 			}
 		}
+
+		enum class AIDifficulty {
+			EASY,
+			NORMAL,
+			HARD,
+			BRUTAL,
+			INSANE;
+		}
 	}
 }
