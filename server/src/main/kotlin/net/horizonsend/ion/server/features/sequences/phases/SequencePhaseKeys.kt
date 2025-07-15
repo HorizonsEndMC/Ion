@@ -13,6 +13,8 @@ object SequencePhaseKeys : KeyRegistry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 	val BRANCH_DYNMAP = registerKey("BRANCH_DYNMAP")
 	val BRANCH_SHIP_COMPUTER = registerKey("BRANCH_SHIP_COMPUTER")
 	val FIRE_OBSTACLE = registerKey("FIRE_OBSTACLE")
+//	val BRANCH_NAVIGATION = registerKey("BRANCH_NAVIGATION")
+//	val BRANCH_MULTIBLOCKS = registerKey("BRANCH_MULTIBLOCKS")
 	val GET_CHETHERITE = registerKey("GET_CHETHERITE")
 	val RECEIVED_CHETHERITE = registerKey("RECEIVED_CHETHERITE")
 }
