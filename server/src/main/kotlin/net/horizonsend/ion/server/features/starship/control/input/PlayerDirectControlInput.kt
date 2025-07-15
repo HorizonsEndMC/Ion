@@ -82,7 +82,7 @@ class PlayerDirectControlInput(override val controller: PlayerController
 	override fun getData(): DirectControlInput.DirectControlData {
 
 		// Ping compensation
-		val refreshRate = if (PlayerCache[player.uniqueId].dcRefreshRate == -1) {getPing(player) * 1.5}
+		val refreshRate = if (PlayerCache[player.uniqueId].dcRefreshRate == -1) {getPing(player) * 2.0}
 			else (PlayerCache[player.uniqueId].dcRefreshRate.toDouble())
 		val catchCooldown = (ceil(refreshRate / 50.0)).toInt().coerceAtLeast(2)
 
@@ -119,6 +119,10 @@ class PlayerDirectControlInput(override val controller: PlayerController
 		vectorWrapper.yaw = vectorWrapper.yaw - (playerDirectionWrapper.yaw - directionWrapper.yaw)
 		vector = vectorWrapper.direction
 
+		if (vector.x.isNaN()) {vector.x = 0.0}
+		if (vector.z.isNaN()) {vector.z = 0.0}
+
+
 		vector.x = round(vector.x)
 		vector.setY(0)
 		vector.z = round(vector.z)
@@ -143,7 +147,7 @@ class PlayerDirectControlInput(override val controller: PlayerController
 			)
 		}
 		cachedState = DirectControlInput.DirectControlData(vector,selectedSpeed,isBoosting)
-		//starship.debug(cachedState.toString())
+		starship.debug(cachedState.toString())
 		return cachedState
 	}
 }
