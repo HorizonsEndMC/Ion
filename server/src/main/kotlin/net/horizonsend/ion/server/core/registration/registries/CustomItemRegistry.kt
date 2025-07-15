@@ -82,11 +82,11 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 
 	private fun registerThrowables() {
 		fun registerThrowable(
-            key: IonRegistryKey<CustomItem, out CustomItem>,
-            customModel: String,
-            displayName: Component,
-            balancing: Supplier<PVPBalancingConfiguration.Throwables.ThrowableBalancing>,
-            thrown: (Item, Int, Entity?) -> ThrownCustomItem
+			key: IonRegistryKey<CustomItem, out CustomItem>,
+			customModel: String,
+			displayName: Component,
+			balancing: Supplier<PVPBalancingConfiguration.Throwables.ThrowableBalancing>,
+			thrown: (Item, Int, Entity?) -> ThrownCustomItem
 		) = register(key, object : ThrowableCustomItem(key = key, customModel = customModel, displayName = displayName, balancingSupplier = balancing) {
 			override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem = thrown.invoke(item, maxTicks, damageSource)
 		})

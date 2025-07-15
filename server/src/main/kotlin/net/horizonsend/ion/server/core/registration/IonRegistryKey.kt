@@ -9,16 +9,14 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.encoding.encodeStructure
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.registries.Registry
-import org.bukkit.NamespacedKey
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
 import kotlin.reflect.KClass
 
-class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClass<out Z>, key: String) : IonResourceKey<Z>(key) {
+class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClass<out Z>, key: String) : IonBindableResourceKey<Z>(key) {
 	override fun toString(): String {
 		return "RegistryKey[${registry.id.key}:$key]"
 	}
@@ -42,8 +40,6 @@ class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClas
 	fun checkBound() {
 		if (!isBound()) error("Unbound registry key $this")
 	}
-
-	val ionNapespacedKey = NamespacedKey(IonServer, key)
 
 	companion object : KSerializer<IonRegistryKey<*, *>> {
 		override val descriptor: SerialDescriptor = buildClassSerialDescriptor("ion.server.core.registries.IonRegistryKey") {

@@ -2,13 +2,13 @@ package net.horizonsend.ion.server.core.registration.keys
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.core.registration.IonBindableResourceKey
 import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
-import net.horizonsend.ion.server.core.registration.IonResourceKey
 import net.horizonsend.ion.server.core.registration.registries.Registry
 import kotlin.reflect.KClass
 
-abstract class KeyRegistry<T : Any>(private val registryId: IonResourceKey<Registry<T>>, private val type: KClass<T>) {
+abstract class KeyRegistry<T : Any>(private val registryId: IonBindableResourceKey<Registry<T>>, private val type: KClass<T>) {
 	@Suppress("UNCHECKED_CAST")
 	val registry: Registry<T> by lazy { IonRegistries[registryId] as Registry<T> }
 

@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeR
 
 object IonRegistries : IonComponent() {
 	private val allRegistries = mutableListOf<Registry<*>>()
-	private val byId = Object2ObjectOpenHashMap<IonResourceKey<out Registry<*>>, Registry<*>>()
+	private val byId = Object2ObjectOpenHashMap<IonBindableResourceKey<out Registry<*>>, Registry<*>>()
 
 	override fun onEnable() {
 		allRegistries.forEach { registry ->
@@ -35,5 +35,5 @@ object IonRegistries : IonComponent() {
 		return registry
 	}
 
-	operator fun get(registryID: IonResourceKey<out Registry<*>>): Registry<*> = byId[registryID]!!
+	operator fun get(registryID: IonBindableResourceKey<out Registry<*>>): Registry<*> = byId[registryID]!!
 }

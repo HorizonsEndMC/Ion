@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.core.registration.keys
 
+import net.horizonsend.ion.server.core.registration.IonBindableResourceKey
 import net.horizonsend.ion.server.core.registration.IonRegistries
-import net.horizonsend.ion.server.core.registration.IonResourceKey
 import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
@@ -26,7 +26,7 @@ object RegistryKeys {
 		return id
 	}
 
-	class RegistryId<T: Any>(key: String) : IonResourceKey<Registry<T>>(key) {
+	class RegistryId<T: Any>(key: String) : IonBindableResourceKey<Registry<T>>(key) {
 		@Suppress("UNCHECKED_CAST")
 		override fun getValue(): Registry<T> = IonRegistries[this] as Registry<T>
 	}
