@@ -1,6 +1,9 @@
 package net.horizonsend.ion.server.features.transport.fluids
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
+import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
+import net.horizonsend.ion.server.features.transport.fluids.properties.FluidPropertyKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -37,6 +40,24 @@ class FluidStack(
 	 * Returns a copy of this fluid stack with the amount specified
 	 **/
 	fun asAmount(amount: Double) = FluidStack(type, amount)
+
+	private val dataComponents: MutableMap<FluidPropertyKeys.FluidPropertyKey<out FluidProperty>, FluidProperty> = Object2ObjectOpenHashMap()
+
+	fun <T : FluidProperty> setData(key: FluidPropertyKeys.FluidPropertyKey<T>, data: T) {
+		dataComponents[key] = data
+	}
+
+	fun <T : FluidProperty> getData(key: FluidPropertyKeys.FluidPropertyKey<T>) : T? {
+		return dataComponents[key]?.let(key::castUnsafe)
+	}
+
+	fun <T : FluidProperty> getDataOrThrow(key: FluidPropertyKeys.FluidPropertyKey<T>) : T {
+		return dataComponents[key]?.let(key::castUnsafe) ?: throw NullPointerException()
+	}
+
+	fun <T : FluidProperty> hasData(key: FluidPropertyKeys.FluidPropertyKey<T>) : Boolean {
+		return dataComponents.keys.contains(key)
+	}
 
 	companion object : PersistentDataType<PersistentDataContainer, FluidStack> {
 		fun empty() = FluidStack(FluidTypeKeys.EMPTY.getValue(), 0.0)
