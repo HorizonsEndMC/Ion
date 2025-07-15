@@ -10,7 +10,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turre
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
-import net.horizonsend.ion.server.features.starship.movement.TranslationAccessor
+import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -169,7 +169,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		return block.y > multiblock.detectionOrigin.y + pos.y
 	}
 
-	override fun onMovement(movement: TranslationAccessor, success: Boolean) {
+	override fun onMovement(movement: TransformationAccessor, success: Boolean) {
 		if (!success) return
 		// Offset the blocks when the ship moves
 		blocks = LongArray(blocks.size) { movement.displaceLegacyKey(blocks[it]) }
@@ -202,8 +202,8 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		try {
 			val oldPositions = blocks
 
-			val translationAccessor = TranslationAccessor.RotationTranslation(null, thetaDegrees, this::pos)
-			translationAccessor.execute(blocks, starship.world, { !starship.isMoving }) { newPositionArray ->
+			val transformationAccessor = TransformationAccessor.RotationTransformation(null, thetaDegrees, this::pos)
+			transformationAccessor.execute(blocks, starship.world, { !starship.isMoving }) { newPositionArray ->
 				blocks = newPositionArray
 
 				starship.blocks.removeAll(LongOpenHashSet(blocks))
@@ -212,7 +212,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 				starship.calculateHitbox()
 
 				totalRotation += thetaDegrees
-				rotateCapturedSubsystems(translationAccessor)
+				rotateCapturedSubsystems(transformationAccessor)
 
 				Tasks.async {
 					for (key in oldPositions.toModernBlockKey().union(LongOpenHashSet(newPositionArray.toModernBlockKey()))) {
@@ -227,7 +227,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		return true
 	}
 
-	private fun rotateCapturedSubsystems(translation: TranslationAccessor.RotationTranslation) {
+	private fun rotateCapturedSubsystems(translation: TransformationAccessor.RotationTransformation) {
 		for (subsystem in captiveSubsystems) {
 			val oldX = subsystem.pos.x
 			val oldZ = subsystem.pos.z

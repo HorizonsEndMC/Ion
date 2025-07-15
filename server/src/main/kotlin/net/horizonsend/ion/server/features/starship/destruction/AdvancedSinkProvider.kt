@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.destruction
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields.getNearbyAreaShields
@@ -168,7 +169,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 				processTileEntities(capturedTiles, newPositions)
 
 				// Broadcast changes
-				OptimizedMovement.sendChunkUpdatesToPlayers(starship.world, starship.world, oldChunkMap, newChunkMap)
+				OptimizedMovement.sendChunkUpdatesToPlayers(starship.world, starship.world, Long2ObjectOpenHashMap(), oldChunkMap, newChunkMap)
 
 				// Save the moved blocks for their next iteration
 				sinkPositions = trimmedPositions.toLongArray()
