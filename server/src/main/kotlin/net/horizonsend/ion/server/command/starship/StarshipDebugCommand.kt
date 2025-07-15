@@ -4,6 +4,7 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
@@ -22,12 +23,21 @@ import net.horizonsend.ion.server.features.starship.control.input.PlayerShiftFli
 import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
 import net.horizonsend.ion.server.features.starship.control.movement.DirecterControlHandler
 import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
+import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor.TranslationTransformation
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VariableVisualProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.helixAroundVector
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -35,6 +45,8 @@ import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Future
 
 @CommandPermission("starlegacy.starshipdebug")
 @CommandAlias("starshipdebug|sbug")
@@ -259,5 +271,106 @@ object StarshipDebugCommand : SLCommand() {
 
 		ship.forecastEnabled = !ship.forecastEnabled
 		sender.information("Toggled forecast for $shipIdentifier to ${ship.forecastEnabled}")
+	}
+
+	const val MAX_ASTEROID_SIZE = 1_000_000
+
+	@Subcommand("move asteroid")
+	fun onMoveAsteroid(sender: Player) = Tasks.async {
+		val standingOn = toBlockKey(Vec3i(sender.location).below(1))
+		val world = sender.world
+
+		val visited = LongOpenHashSet.of(standingOn)
+		val visitQueue = ArrayDeque<Long>(listOf(standingOn))
+
+		val foundBlocks = LongOpenHashSet()
+
+		while (visitQueue.isNotEmpty()) {
+			val current = visitQueue.removeFirst()
+			val x = getX(current)
+			val y = getY(current)
+			val z = getZ(current)
+
+			val blockData = getBlockIfLoaded(world, x, y, z) ?: fail { "The blocks went beyond loaded chunks!" }
+
+			if (blockData.type.isAir) continue
+
+			foundBlocks.add(blockKey(x, y, z))
+
+			if (foundBlocks.size > MAX_ASTEROID_SIZE) {
+				fail { "Asteroid too large!" }
+			}
+
+			// Detect adjacent blocks
+			for (offsetX in -1..1) {
+				for (offsetY in -1..1) {
+					for (offsetZ in -1..1) {
+						val adjacentX = offsetX + x
+						val adjacentY = offsetY + y
+						val adjacentZ = offsetZ + z
+
+						// Ensure it's a valid Y-level before adding it to the queue
+						if (adjacentY < 0 || adjacentY > world.maxHeight) {
+							continue
+						}
+
+						val adjacent = toBlockKey(adjacentX, adjacentY, adjacentZ)
+						if (visited.add(adjacent)) {
+							visitQueue.addFirst(adjacent)
+						}
+					}
+				}
+			}
+		}
+
+		val delta = Vec3i(sender.location.direction.multiply(5))
+		val (dx, dy ,dz) = delta
+
+		var iterations = 0
+
+		var blocks = foundBlocks.toLongArray()
+		var lastTaskFuture: Future<Boolean>? = null
+
+		var lastTicked = System.currentTimeMillis()
+
+		fun run() {
+			if (lastTaskFuture?.get() == false) {
+				return
+			}
+
+			val future = CompletableFuture<Boolean>()
+			lastTaskFuture = future
+
+			iterations++
+			if (iterations > 150) {
+				return
+			}
+
+			val transformation = TranslationTransformation(null, dx, dy, dz)
+
+			try {
+				sender.information("Moving ${blocks.size} blocks")
+				transformation.execute(
+					positions = blocks,
+					world1 = sender.world,
+					executionCheck = { true }
+				) {
+					blocks = it
+					sender.teleport(sender.location.add(delta.toVector()))
+				}
+
+				val now = System.currentTimeMillis()
+				sender.information("Movement took ${(now - lastTicked) / 1000.0}s")
+				lastTicked = now
+				future.complete(true)
+			} catch (e: StarshipMovementException) {
+				sender.information("e: $e")
+				future.complete(false)
+			}
+
+			Tasks.asyncDelay(0L) { run() }
+		}
+
+		run()
 	}
 }

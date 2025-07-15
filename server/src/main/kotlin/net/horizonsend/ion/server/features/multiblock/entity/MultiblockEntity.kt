@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkageHolder
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
-import net.horizonsend.ion.server.features.starship.movement.TranslationAccessor
+import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
@@ -105,7 +105,7 @@ abstract class MultiblockEntity(
 	/** Logic to be run upon the loading of the chunk holding this entity, or its creation */
 	protected open fun onLoad() {}
 
-	open fun displaceAdditional(movement: TranslationAccessor) {}
+	open fun displaceAdditional(movement: TransformationAccessor) {}
 
 	/**
 	 * Stores any additional data for this multiblock (e.g. power, owner, etc)
@@ -176,7 +176,7 @@ abstract class MultiblockEntity(
 		)
 	}
 
-	fun displace(movement: TranslationAccessor) {
+	fun displace(movement: TransformationAccessor) {
 		val newWorld = movement.newWorld
 		if (newWorld != null) {
 			this.world = newWorld

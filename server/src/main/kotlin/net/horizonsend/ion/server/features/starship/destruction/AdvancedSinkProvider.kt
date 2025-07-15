@@ -172,7 +172,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 				processTileEntities(capturedTiles, newPositions)
 
 				// Broadcast changes
-				OptimizedMovement.sendChunkUpdatesToPlayers(starship.world, starship.world, oldChunkMap, newChunkMap)
+				OptimizedMovement.sendChunkUpdatesToPlayers(starship.world, starship.world, Long2ObjectOpenHashMap(), oldChunkMap, newChunkMap)
 
 				// Save the moved blocks for their next iteration
 				sinkPositions = trimmedPositions.toLongArray()

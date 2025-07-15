@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.movement
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.add
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
@@ -24,7 +25,7 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-interface TranslationAccessor {
+interface TransformationAccessor {
 	val newWorld: World?
 
 	fun displaceX(oldX: Int, oldZ: Int): Int
@@ -66,7 +67,7 @@ interface TranslationAccessor {
 		)
 	}
 
-	class RotationTranslation(override val newWorld: World?, private val thetaDegrees: Double, val axisSupplier: Supplier<Vec3i>) : TranslationAccessor {
+	class RotationTransformation(override val newWorld: World?, private val thetaDegrees: Double, val axisSupplier: Supplier<Vec3i>) : TransformationAccessor {
 		val axis get() = axisSupplier.get()
 
 		private val cosTheta: Double = cos(Math.toRadians(thetaDegrees))
@@ -138,5 +139,40 @@ interface TranslationAccessor {
 		override fun displaceVector(vector: Vector): Vector {
 			return vector.clone().rotateAroundY(Math.toRadians(thetaDegrees) * PI)
 		}
+	}
+
+	class TranslationTransformation(override val newWorld: World?, val dx: Int, val dy: Int, val dz: Int) : TransformationAccessor {
+
+		override fun displaceX(oldX: Int, oldZ: Int): Int = oldX + dx
+
+		override fun displaceY(oldY: Int): Int = oldY + dy
+
+		override fun displaceZ(oldZ: Int, oldX: Int): Int = oldZ + dz
+
+		override fun blockStateTransform(blockState: BlockState): BlockState = blockState
+
+		override fun displaceLocation(oldLocation: Location): Location {
+			val newLocation = oldLocation.clone().add(dx, dy, dz)
+			if (newWorld != null) {
+				newLocation.world = newWorld
+			}
+			return newLocation
+		}
+
+		override fun displaceFace(face: BlockFace): BlockFace {
+			return face
+		}
+
+		override fun displaceModernKey(key: BlockKey): BlockKey {
+			return toBlockKey(
+				getX(key) + dx,
+				getY(key) + dy,
+				getZ(key) + dz,
+			)
+		}
+
+		override fun displaceVector(vector: Vector): Vector = vector
+			.clone()
+			.add(Vector(dx.toDouble(), dy.toDouble(), dz.toDouble()))
 	}
 }
