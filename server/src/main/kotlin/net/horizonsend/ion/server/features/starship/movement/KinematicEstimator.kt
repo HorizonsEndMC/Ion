@@ -4,7 +4,6 @@ package net.horizonsend.ion.server.features.starship.movement
 import net.horizonsend.ion.common.utils.miscellaneous.i
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import org.bukkit.util.Vector
-import java.lang.IndexOutOfBoundsException
 import kotlin.math.absoluteValue
 import kotlin.math.pow
 
@@ -28,7 +27,7 @@ class KinematicEstimator(
 	var movements = mutableListOf<TranslationMovements>()
 
 
-	data class TranslationMovements(val time : Long, val movement: TranslateMovement, val origin : Vector)
+	data class TranslationMovements(val time : Long, val dx: Int, val dy: Int, val dz: Int, val origin : Vector)
 
 	private fun estimateCoeffs() {
 		if (!needsUpdate) return //dont do matrix operations until data changes
@@ -43,21 +42,18 @@ class KinematicEstimator(
 		//println("# of movements : ${movements.size}")
 		needsUpdate = false
 		referenceTime = movements[0].time
-		referncePos = movements[0].origin.clone().add(
-			Vector(-movements[0].movement.dx,
-				   -movements[0].movement.dy,
-				   -movements[0].movement.dz))
+		referncePos = movements[0].origin.clone().add(Vector(-movements[0].dx, -movements[0].dy, -movements[0].dz))
 
 		val N = movements.size
 		val timesRaw = movements.map { it.time }
 		val times = timesRaw.map { (it - referenceTime - expireTime).toDouble() / 1000.0}.toMutableList()
-		val xData = movements.map { it.movement.dx.toDouble() }.toMutableList()
-		val yData = movements.map { it.movement.dy.toDouble() }.toMutableList()
-		val zData = movements.map { it.movement.dz.toDouble() }.toMutableList()
+		val xData = movements.map { it.dx.toDouble() }.toMutableList()
+		val yData = movements.map { it.dy.toDouble() }.toMutableList()
+		val zData = movements.map { it.dz.toDouble() }.toMutableList()
 
 		if (N < minN) {
 			val padN = minN - N
-			val timePad = DoubleArray(padN){it.i() * expireTime.toDouble() / padN.toDouble() - expireTime}.toList()
+			val timePad = DoubleArray(padN){ it.i() * expireTime.toDouble() / padN.toDouble() - expireTime }.toList()
 			val xPad = DoubleArray(padN).toList()
 			xData.addAll(xPad)
 			yData.addAll(xPad)
@@ -76,19 +72,18 @@ class KinematicEstimator(
 			}
 		}
 
-		val xCum = xData.runningReduce {sum, el -> sum+el}
-		val yCum = yData.runningReduce {sum, el -> sum+el}
-		val zCum = zData.runningReduce {sum, el -> sum+el}
-
+		val xCum = xData.runningReduce { sum, el -> sum + el }
+		val yCum = yData.runningReduce { sum, el -> sum + el }
+		val zCum = zData.runningReduce { sum, el -> sum + el }
 
 		//println("first time: ${times[0]}, last time: ${times.last()}")
 		//println("first x: ${xCum[0]}, last x: ${xCum.last()}")
 		//println("first y: ${yCum[0]}, last y: ${yCum.last()}")
 		//println("first z: ${zCum[0]}, last z: ${zCum.last()}")
 
-		val resultX = polynomialRegression(times.zip(xCum),numTerms)
-		val resultY = polynomialRegression(times.zip(yCum),numTerms)
-		val resultZ = polynomialRegression(times.zip(zCum),numTerms)
+		val resultX = polynomialRegression(times.zip(xCum), numTerms)
+		val resultY = polynomialRegression(times.zip(yCum), numTerms)
+		val resultZ = polynomialRegression(times.zip(zCum), numTerms)
 
 		for (i in resultX.indices) {
 			xCoefficients[i] = resultX[i]
@@ -114,9 +109,9 @@ class KinematicEstimator(
 		return evaluatePolynomial(timeOffset, numTerms)
 	}
 
-	fun addData(origin : Vector, movement: TranslateMovement) {
+	fun addData(origin : Vector, dx: Int, dy: Int, dz: Int) {
 		val time = System.currentTimeMillis()
-		movements.add(TranslationMovements(time,movement,origin))
+		movements.add(TranslationMovements(time, dx, dy, dz, origin))
 		needsUpdate = true
 	}
 

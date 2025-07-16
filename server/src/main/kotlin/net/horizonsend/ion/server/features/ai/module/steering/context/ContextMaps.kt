@@ -1,19 +1,18 @@
 package net.horizonsend.ion.server.features.ai.module.steering.context
 
 import SteeringModule
-import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextConfiguration
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.GoalTarget
-import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.fleet.FleetMember
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementForecast.forecast
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToPitchYaw
@@ -759,6 +758,6 @@ private fun lookAhead(
 	val dist = offset.length() + 1e-4
 	val vel = maxSpeed ?: (ship.velocity.length() + 1e-5)
 	val t = (dist / (vel * futuremod)).coerceAtMost(2.0)
-	val forecast = other.forecast(System.currentTimeMillis() + (t*1000).toLong(),0)
+	val forecast = forecast(other, System.currentTimeMillis() + (t*1000).toLong(),0)
 	return forecast
 }

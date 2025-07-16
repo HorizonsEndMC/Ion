@@ -24,9 +24,7 @@ import java.util.concurrent.CompletableFuture
 import kotlin.math.max
 import kotlin.math.min
 
-class TranslateMovement(starship: ActiveStarship,
-						val dx: Int, val dy: Int, val dz: Int, override val newWorld: World? = null,
-						val type : MovementType = MovementType.OTHER) : StarshipMovement(starship) {
+class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val dz: Int, override val newWorld: World? = null) : StarshipMovement(starship) {
 	companion object {
 		fun loadChunksAndMove(
 			starship: ActiveStarship,
@@ -40,10 +38,21 @@ class TranslateMovement(starship: ActiveStarship,
 
 			val toLoad = this.getChunkLoadTasks(starship, world, dx, dz)
 
-			return CompletableFuture.allOf(*toLoad.toTypedArray()).thenCompose {
-				Tasks.checkMainThread()
-				return@thenCompose starship.moveAsync(TranslateMovement(starship, dx, dy, dz, newWorld, type))
-			}
+			return CompletableFuture.allOf(*toLoad.toTypedArray())
+				.thenCompose {
+					Tasks.checkMainThread()
+					return@thenCompose starship.moveAsync(TranslateMovement(starship, dx, dy, dz, newWorld))
+				}
+				.whenComplete { original, exception ->
+					if (original == null || exception != null) return@whenComplete
+
+					when (type) {
+						MovementType.MANUAL -> starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
+						MovementType.DC -> starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
+						MovementType.CRUISE -> starship.cruiseKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
+						else -> {}
+					}
+				}
 		}
 
 		private fun getChunkLoadTasks(
@@ -154,21 +163,7 @@ class TranslateMovement(starship: ActiveStarship,
         )
 	}
 
-	override fun onComplete() {
-		when (type) {
-			MovementType.MANUAL -> {
-				starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(),this)
-			}
-			MovementType.DC -> {
-				starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(), this)
-			}
-			MovementType.CRUISE -> {
-				starship.cruiseKinematicEstimator.addData(starship.centerOfMass.toVector(), this)
-			}
-			else -> {}
-		}
-
-	}
+	override fun onComplete() {}
 
 	enum class MovementType {MANUAL, DC, CRUISE,OTHER}
 }

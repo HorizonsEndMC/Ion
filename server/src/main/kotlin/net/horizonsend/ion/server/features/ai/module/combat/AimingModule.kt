@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementForecast.forecast
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
@@ -63,7 +64,7 @@ class AimingModule(
 			} else {
 				(distance / weapon.balancing.speed).coerceAtMost(4.0)
 			}
-			forecast = targetShip.forecast(System.currentTimeMillis() + (travelTime * 1000).toLong(),0)
+			forecast = forecast(targetShip, System.currentTimeMillis() + (travelTime * 1000).toLong(),0)
 		}
 		if (difficulty.aimAdjust > 0.9) return  forecast
 		return forecast.clone().multiply(difficulty.aimAdjust).add(shipPos.multiply(1.0 - difficulty.aimAdjust))
