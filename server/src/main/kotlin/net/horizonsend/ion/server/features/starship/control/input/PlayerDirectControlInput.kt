@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.utils.getPing
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
+import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component.keybind
 import net.kyori.adventure.text.Component.text
@@ -31,7 +32,7 @@ class PlayerDirectControlInput(override val controller: PlayerController
 		set(value) {}
 
 	private var internalTick = 0
-	private var cachedState = DirectControlInput.DirectControlData(Vector(), 9, false)
+	private var cachedState = DirectControlInput.DirectControlData(Vector(), 8, false)
 
 	override fun create() {
 		val message = ofChildren(
@@ -79,53 +80,55 @@ class PlayerDirectControlInput(override val controller: PlayerController
 		player.sendActionBar(text("Speed: $speed", NamedTextColor.AQUA))
 	}
 
+	@Suppress("UnstableApiUsage")
 	override fun getData(): DirectControlInput.DirectControlData {
 
-		// Ping compensation
-		val refreshRate = if (PlayerCache[player.uniqueId].dcRefreshRate == -1) {getPing(player) * 2.0}
-			else (PlayerCache[player.uniqueId].dcRefreshRate.toDouble())
-		val catchCooldown = (ceil(refreshRate / 50.0)).toInt().coerceAtLeast(2)
-
-		internalTick++
-		if (internalTick % catchCooldown != 0) return cachedState // reduce teleports to make it non hyper sensitive
-		internalTick = 0
-		// Use the player's location
-		val pilotLocation = player.location
+		val input = player.currentInput ?: return cachedState
 
 		var center = starship.directControlCenter
 		if (center == null) {
+			starship.debug("Direct control center adjusted")
+			val pilotLocation = player.location
 			center = pilotLocation.toBlockLocation().add(0.5, 0.0, 0.5)
 			starship.directControlCenter = center
 		}
 
-		// Calculate the movement vector by getting how far the player has moved from the center vector
-		var vector = pilotLocation.toVector().subtract(center.toVector())
-		vector.setY(0)
-		vector.normalize()
-
 		val direction = starship.getTargetForward()
 
-		// Create a separate location that contains the direct control center and the direction of the starship
-		val directionWrapper = center.clone()
-		directionWrapper.direction = Vector(direction.modX, direction.modY, direction.modZ)
-		// Crate a separate location which contains the player's view direction
-		val playerDirectionWrapper = center.clone()
-		playerDirectionWrapper.direction = pilotLocation.direction
-		// Create a separate location which the player's direction offset
-		val vectorWrapper = center.clone()
-		vectorWrapper.direction = vector
-		// Set the horizontal rotation of the center clone containing the player's delta
-		// The new yaw value contains an exaggerated stafe, and cancels out ascending / descending inputs.
-		vectorWrapper.yaw = vectorWrapper.yaw - (playerDirectionWrapper.yaw - directionWrapper.yaw)
-		vector = vectorWrapper.direction
+		// Determine movement intent from input keys
+		var strafe = 0.0
+		var ascend = 0.0
 
-		if (vector.x.isNaN()) {vector.x = 0.0}
-		if (vector.z.isNaN()) {vector.z = 0.0}
+		if (input.isLeft) strafe -= 1.0
+		if (input.isRight) strafe += 1.0
+		if (input.isForward) ascend += 1.0
+		if (input.isBackward) ascend -= 1.0
 
+		// Convert to world-relative vector
+		val vector = when (direction.axis) {
+			// Facing Z (N/S): strafe = X, ascend = Z
+			org.bukkit.Axis.Z -> Vector(strafe, 0.0, ascend)
+			// Facing X (E/W): strafe = Z, ascend = X
+			org.bukkit.Axis.X -> Vector(ascend, 0.0, -strafe)
+			else -> Vector()
+		}
 
+		// Normalize and round vector
+		if (vector.lengthSquared() > 0.0) vector.normalize()
 		vector.x = round(vector.x)
-		vector.setY(0)
 		vector.z = round(vector.z)
+		vector.y = 0.0
+
+		// Ping compensation
+		val refreshRate = if (PlayerCache[player.uniqueId].dcRefreshRate == -1) {getPing(player) * 2.0}
+		else (PlayerCache[player.uniqueId].dcRefreshRate.toDouble())
+		val catchCooldown = (ceil(refreshRate / 50.0)).toInt().coerceAtLeast(2)
+
+		cachedState = DirectControlInput.DirectControlData(vector,selectedSpeed,isBoosting)
+
+		internalTick++
+		if (internalTick % catchCooldown != 0) return cachedState // reduce teleports to make it non hyper sensitive
+		internalTick = 0
 
 		// If player moved, teleport them back to dc center
 		if (vector.x != 0.0 || vector.z != 0.0) {
@@ -146,7 +149,6 @@ class PlayerDirectControlInput(override val controller: PlayerController
 				PlayerTeleportEvent.TeleportCause.PLUGIN
 			)
 		}
-		cachedState = DirectControlInput.DirectControlData(vector,selectedSpeed,isBoosting)
 		starship.debug(cachedState.toString())
 		return cachedState
 	}

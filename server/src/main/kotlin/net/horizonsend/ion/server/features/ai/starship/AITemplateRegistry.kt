@@ -148,13 +148,14 @@ object AITemplateRegistry {
 	val ARBOREALITH = registerTemplate(builder(
 		identifier = "ARBOREALITH",
 		template = StarshipTemplateRegistry.ARBOREALITH,
-		controllerFactory = AIControllerFactories.watcherSpecialFrigate,
+		controllerFactory = AIControllerFactories.destroyer,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(WATCHERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(CreditRewardProviderConfiguration(18000.0))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(250.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.75,
 			delay = 100L,
