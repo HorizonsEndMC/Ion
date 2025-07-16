@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.starship.control.input
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.nations.utils.getPing
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -97,7 +99,7 @@ class DirectControlHandler(controller: PlayerController) : PlayerMovementInputHa
 		// Ping compensation
 		val ping = getPing(player)
 		val movementCooldown = starship.directControlCooldown
-		val playerDcModifier = PlayerCache[player.uniqueId].dcSpeedModifier
+		val playerDcModifier = player.getSetting(PlayerSettings::dcSpeedModifier)
 		val speedFac = if (ping > movementCooldown) max(2, playerDcModifier) else playerDcModifier
 
 		val selectedSpeed = controller.selectedDirectControlSpeed
