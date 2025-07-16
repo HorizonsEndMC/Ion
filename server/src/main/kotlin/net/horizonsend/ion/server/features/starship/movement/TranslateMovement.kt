@@ -32,7 +32,7 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 			dy: Int,
 			dz: Int,
 			newWorld: World? = null,
-			type: MovementType = MovementType.OTHER
+			type: MovementSource = MovementSource.OTHER
 		): CompletableFuture<Boolean> {
 			val world = newWorld ?: starship.world
 
@@ -47,9 +47,9 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 					if (original == null || exception != null) return@whenComplete
 
 					when (type) {
-						MovementType.MANUAL -> starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
-						MovementType.DC -> starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
-						MovementType.CRUISE -> starship.cruiseKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
+						MovementSource.MANUAL -> starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
+						MovementSource.DC -> starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
+						MovementSource.CRUISE -> starship.cruiseKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
 						else -> {}
 					}
 				}
@@ -165,5 +165,5 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 
 	override fun onComplete() {}
 
-	enum class MovementType {MANUAL, DC, CRUISE,OTHER}
+	enum class MovementSource {MANUAL, DC, CRUISE,OTHER}
 }

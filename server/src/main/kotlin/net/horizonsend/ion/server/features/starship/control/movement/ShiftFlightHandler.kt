@@ -4,9 +4,6 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
-import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
-import net.horizonsend.ion.server.features.starship.control.input.InputHandler
-import net.horizonsend.ion.server.features.starship.control.input.PlayerMovementInputHandler
 import net.horizonsend.ion.server.features.starship.control.input.ShiftFlightInput
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
@@ -14,7 +11,6 @@ import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.isTankPassable
-import org.bukkit.event.player.PlayerToggleSneakEvent
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
@@ -79,7 +75,7 @@ class ShiftFlightHandler(controller: Controller,
 
 		if (StarshipControl.locationCheck(starship, dx, dy, dz)) return
 
-		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz, type = TranslateMovement.MovementType.MANUAL)
+		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz, type = TranslateMovement.MovementSource.MANUAL)
 	}
 
 	companion object {

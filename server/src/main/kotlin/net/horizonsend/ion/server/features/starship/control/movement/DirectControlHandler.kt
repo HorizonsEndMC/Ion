@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
 import net.horizonsend.ion.common.extensions.userErrorAction
-import net.horizonsend.ion.server.command.admin.debug
-import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.utils.getPing
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
@@ -16,7 +14,6 @@ import org.bukkit.util.Vector
 import java.util.Collections
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.math.abs
-import kotlin.math.max
 import kotlin.math.sign
 
 class DirectControlHandler(controller: Controller, override val input: DirectControlInput
@@ -151,7 +148,7 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 		if (dx == 0 && dy == 0 && dz == 0) {
 			return
 		}
-		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz, type = TranslateMovement.MovementType.DC)
+		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz, type = TranslateMovement.MovementSource.DC)
 	}
 
 	companion object {
