@@ -14,6 +14,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.minecraft.world.entity.Relative
+import org.bukkit.block.BlockFace
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.util.Vector
@@ -105,11 +106,11 @@ class PlayerDirectControlInput(override val controller: PlayerController
 		if (input.isBackward) ascend -= 1.0
 
 		// Convert to world-relative vector
-		val vector = when (direction.axis) {
-			// Facing Z (N/S): strafe = X, ascend = Z
-			org.bukkit.Axis.Z -> Vector(strafe, 0.0, ascend)
-			// Facing X (E/W): strafe = Z, ascend = X
-			org.bukkit.Axis.X -> Vector(ascend, 0.0, -strafe)
+		val vector = when (direction) {
+			BlockFace.NORTH -> Vector(strafe, 0.0, ascend)
+			BlockFace.SOUTH -> Vector(-strafe, 0.0, -ascend)
+			BlockFace.WEST ->  Vector(ascend, 0.0, -strafe)
+			BlockFace.EAST ->  Vector(-ascend, 0.0, strafe)
 			else -> Vector()
 		}
 
