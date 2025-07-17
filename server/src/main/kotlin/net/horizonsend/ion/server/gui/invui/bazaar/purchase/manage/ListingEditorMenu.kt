@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.text.BACKGROUND_EXTENDER
-import net.horizonsend.ion.common.utils.text.BAZAAR_LISTING_HEADER_ICON
+import net.horizonsend.ion.common.utils.text.BAZAAR_LISTING_MANAGE_HEADER_ICON
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_BLUE
 import net.horizonsend.ion.common.utils.text.gui.GuiBorder
 import net.horizonsend.ion.common.utils.text.gui.icons.GuiIcon
@@ -64,7 +64,7 @@ class ListingEditorMenu(viewer: Player, private val listing: BazaarItem) : InvUI
 		val text =  GuiText("")
 			.addBorder(GuiBorder.regular(
 				color = HE_DARK_BLUE,
-				headerIcon = GuiBorder.HeaderIcon(BAZAAR_LISTING_HEADER_ICON, 48, HE_DARK_BLUE),
+				headerIcon = GuiBorder.HeaderIcon(BAZAAR_LISTING_MANAGE_HEADER_ICON, 48, HE_DARK_BLUE),
 				leftText = text("Modifying"),
 				rightText = text("Sell Order")
 			))

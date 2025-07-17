@@ -133,7 +133,7 @@ abstract class AbstractListingManagementMenu(viewer: Player) : ListInvUIWindow<B
         }
     )
 
-	protected val collectButton = FeedbackItem.builder(GuiItem.ROUTE_CANCEL.makeItem(text("Collect Listing Profits")) /*TODO- Icon*/) { _, _ -> Bazaars.collectListingProfit(viewer) }
+	protected val collectButton = FeedbackItem.builder(GuiItem.COLLECT_CREDITS.makeItem(text("Collect Listing Profits"))) { _, _ -> Bazaars.collectListingProfit(viewer) }
 		.withSuccessHandler { _, _ -> openGui() }
 		.build()
 
