@@ -637,6 +637,8 @@ object Bazaars : IonServerComponent() {
 		val itemValidationResult = checkValidString(orderDocument.itemString)
 		val itemReference: ItemStack = itemValidationResult.result ?: return itemValidationResult
 
+		val cityData = territoryResult.result ?: return territoryResult
+
 		val result = FutureInputResult()
 
 		Tasks.sync {
@@ -652,7 +654,9 @@ object Bazaars : IonServerComponent() {
 			}
 
 			Tasks.async {
-				val profit = BazaarOrder.fulfillStock(order, fulfiller.slPlayerId, count)
+				val revenue = BazaarOrder.fulfillStock(order, fulfiller.slPlayerId, count)
+				val tax = (cityData.tax * revenue).roundToInt()
+				val profit = revenue - tax
 				val ordererName = SLPlayer.getName(orderDocument.player)
 
 				fulfiller.depositMoney(profit)
@@ -660,7 +664,7 @@ object Bazaars : IonServerComponent() {
 				consumedAmountConsumer.accept(count)
 				result.complete(
 					InputResult.SuccessReason(listOf(
-					template(text("Fulfilled {0} of {1}'s order of {2} for a profit of {3}", GREEN), count, ordererName, itemReference.displayNameComponent, profit.toCreditComponent())
+					template(text("Fulfilled {0} of {1}'s order of {2} for a profit of {3} (revenue {4} minus tax {5})", GREEN), count, ordererName, itemReference.displayNameComponent, profit.toCreditComponent(), revenue.toCreditComponent(), tax.toCreditComponent())
 				)))
 			}
 		}
