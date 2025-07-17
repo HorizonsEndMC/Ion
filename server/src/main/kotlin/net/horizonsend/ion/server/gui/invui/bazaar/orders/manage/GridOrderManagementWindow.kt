@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.gui.invui.bazaar.orders.manage
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
-import net.horizonsend.ion.common.utils.text.BAZAAR_ORDER_HEADER_ICON
+import net.horizonsend.ion.common.utils.text.BAZAAR_ORDER_MANAGE_HEADER_ICON
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.gui.GuiBorder
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
@@ -56,7 +56,7 @@ class GridOrderManagementWindow(
 		val text = GuiText("")
 			.addBorder(GuiBorder.regular(
 				color = HE_LIGHT_ORANGE,
-				headerIcon = GuiBorder.HeaderIcon(BAZAAR_ORDER_HEADER_ICON, 48, HE_LIGHT_ORANGE),
+				headerIcon = GuiBorder.HeaderIcon(BAZAAR_ORDER_MANAGE_HEADER_ICON, 48, HE_LIGHT_ORANGE),
 				leftText = text("Manage"),
 				rightText = text("Buy Orders")
 			))

@@ -154,6 +154,8 @@ const val BAZAAR_LISTING_HEADER_ICON = '\uF8EE'
 const val DEPOSIT_ICON = '\uF8E5'
 const val WITHDRAW_ICON = '\uF8E4'
 const val RED_SLOT_ICON = '\uF8E3'
+const val BAZAAR_ORDER_MANAGE_HEADER_ICON = '\uF8E2'
+const val BAZAAR_LISTING_MANAGE_HEADER_ICON = '\uF8E1'
 
 // Custom characters end
 
