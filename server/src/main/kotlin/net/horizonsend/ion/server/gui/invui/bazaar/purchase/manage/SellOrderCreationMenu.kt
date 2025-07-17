@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage
 
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.utils.input.InputResult
-import net.horizonsend.ion.common.utils.text.BAZAAR_LISTING_HEADER_ICON
+import net.horizonsend.ion.common.utils.text.BAZAAR_LISTING_MANAGE_HEADER_ICON
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_BLUE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.gui.GuiBorder
@@ -87,7 +87,7 @@ class SellOrderCreationMenu(viewer: Player) : InvUIWindowWrapper(viewer, async =
 			.addBackground()
 			.addBorder(GuiBorder.regular(
 				color = HE_DARK_BLUE,
-				headerIcon = GuiBorder.HeaderIcon(BAZAAR_LISTING_HEADER_ICON, 48, HE_DARK_BLUE),
+				headerIcon = GuiBorder.HeaderIcon(BAZAAR_LISTING_MANAGE_HEADER_ICON, 48, HE_DARK_BLUE),
 				leftText = text("Creating"),
 				rightText = text("Sell Order")
 			))
