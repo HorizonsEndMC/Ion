@@ -137,7 +137,8 @@ object SubsystemDetector {
 	private fun detectSign(starship: ActiveControlledStarship, block: Block) {
 		val sign = block.state as Sign
 
-		if (MultiblockAccess.getFast(sign) is AreaShield) {
+		val multiblock = MultiblockAccess.getFast(sign)
+		if (multiblock is AreaShield) {
 			throw ActiveStarshipFactory.StarshipActivationException("Starships cannot fly with area shields!")
 		}
 
@@ -161,7 +162,7 @@ object SubsystemDetector {
 			return
 		}
 
-		val multiblock = MultiblockAccess.getFast(sign) ?: return
+		if (multiblock == null) return
 
 		when (multiblock) {
 			is SphereShieldMultiblock -> {

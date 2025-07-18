@@ -14,6 +14,8 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.Sil
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.general.AOEDMod
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.general.AutoCompostModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.general.AutoReplantModifier
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.general.PowerCapacityIncrease
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.CollectorModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.chainsaw.ExtendedBar
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.drill.VeinMinerMod
 
@@ -39,14 +41,17 @@ object ItemModRegistry {
 	val FORTUNE_3 = registerMod(FortuneModifier(3, "#E132E1") { CustomItemRegistry.FORTUNE_3 })
 
 	// Boost power capacity (x1000)
-	val POWER_CAPACITY_25 = registerMod(net.horizonsend.ion.server.features.custom.items.type.tool.mods.general.PowerCapacityIncrease(25_000) { CustomItemRegistry.POWER_CAPACITY_25 })
-	val POWER_CAPACITY_50 = registerMod(net.horizonsend.ion.server.features.custom.items.type.tool.mods.general.PowerCapacityIncrease(50_000) { CustomItemRegistry.POWER_CAPACITY_50 })
+	val POWER_CAPACITY_25 = registerMod(PowerCapacityIncrease(25_000) { CustomItemRegistry.POWER_CAPACITY_25 })
+	val POWER_CAPACITY_50 = registerMod(PowerCapacityIncrease(50_000) { CustomItemRegistry.POWER_CAPACITY_50 })
 
 	// Auto replant crops, saplings
 	val AUTO_REPLANT = registerMod(AutoReplantModifier)
 
 	// Send drops to a virtual composter
 	val AUTO_COMPOST = registerMod(AutoCompostModifier)
+
+	//
+	val COLLECTOR = registerMod(CollectorModifier)
 
 	// AOE 3 is just for power hoes
 	val AOE_3 = registerMod(AOEDMod(radius = 3, applicationPredicates = arrayOf(ApplicationPredicate.ClassPredicate(PowerHoe::class))) { CustomItemRegistry.RANGE_3 })

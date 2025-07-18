@@ -2,21 +2,15 @@ package net.horizonsend.ion.server.features.multiblock.crafting.recipe.result
 
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.multiblock.crafting.input.ItemResultEnviornment
-import net.horizonsend.ion.server.features.multiblock.crafting.util.SlotModificationWrapper
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 interface ItemResult<E: ItemResultEnviornment> : RecipeResult<E> {
+	fun asItem(): ItemStack
+
 	override fun verifySpace(enviornment: E): Boolean {
-		val resultOccupant = enviornment.getResultItem() ?: return true
-		if (resultOccupant.isEmpty) return true
-
 		val resultItem = getResultItem(enviornment) ?: return true
-
-		if (!resultOccupant.isSimilar(resultItem)) return false
-
-		val maxStackSize = resultItem.maxStackSize
-		return resultOccupant.amount + resultItem.amount <= maxStackSize
+		return enviornment.getResultSpaceFor(resultItem) >= resultItem.amount
 	}
 
 	/**
@@ -24,8 +18,7 @@ interface ItemResult<E: ItemResultEnviornment> : RecipeResult<E> {
 	 **/
 	fun buildTransaction(
 		recipeEnviornment: E,
-		resultEnviornment: ResultExecutionEnviornment<E>,
-		slotModificationWrapper: SlotModificationWrapper
+		resultEnviornment: ResultExecutionEnviornment<E>
 	)
 
 	/**
@@ -40,14 +33,14 @@ interface ItemResult<E: ItemResultEnviornment> : RecipeResult<E> {
 	}
 
 	class SimpleResult<E: ItemResultEnviornment>(private val item: ItemStack) : ItemResult<E> {
-		override fun getResultItem(enviornment: E): ItemStack? = item
+		override fun asItem(): ItemStack = item
+		override fun getResultItem(enviornment: E): ItemStack = item
 		override fun buildTransaction(
 			recipeEnviornment: E,
-			resultEnviornment: ResultExecutionEnviornment<E>,
-			slotModificationWrapper: SlotModificationWrapper
+			resultEnviornment: ResultExecutionEnviornment<E>
 		) {
-			resultEnviornment.addResult { e ->
-				slotModificationWrapper.addToSlot(item)
+			resultEnviornment.addResult {
+				recipeEnviornment.addItem(item)
 				RecipeExecutionResult.SuccessExecutionResult
 			}
 		}

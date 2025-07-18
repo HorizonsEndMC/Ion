@@ -3,6 +3,7 @@ package net.horizonsend.ion.common.utils.text
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toText
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.gui.icons.GuiIconType
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.key.Key
@@ -10,37 +11,26 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.ComponentLike
+import net.kyori.adventure.text.KeybindComponent
+import net.kyori.adventure.text.ScoreComponent
+import net.kyori.adventure.text.SelectorComponent
 import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.TranslatableComponent
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.flattener.ComponentFlattener
 import net.kyori.adventure.text.flattener.FlattenerListener
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.ShadowColor
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
-
-// Serialization
-/** Skip building the serializer */
-val miniMessage = MiniMessage.miniMessage()
-
-val legacyAmpersand = LegacyComponentSerializer.legacyAmpersand()
-
-/** Serializes the component to minimessage format */
-fun miniMessage(component: Component): String = miniMessage.serialize(component)
-
-/** Converts the provided MiniMessage string to a component using the MiniMessage serializer. */
-fun String.miniMessage() = miniMessage.deserialize(this)
-
-/** Skip building the serializer */
-val plainText = PlainTextComponentSerializer.plainText()
-
-/** Converts the provided Component to a string using the PlainText serializer. */
-fun ComponentLike.plainText(): String = plainText.serialize(this.asComponent())
+import net.kyori.adventure.translation.GlobalTranslator
+import net.kyori.adventure.translation.TranslationStore
+import java.text.MessageFormat
+import java.util.Locale
+import java.util.function.Consumer
 
 // Component manipulation
 operator fun Component.plus(other: ComponentLike): Component = this.append(other)
@@ -88,7 +78,7 @@ fun formatLink(showText: String, link: String): Component {
 		.hoverEvent(text(link))
 }
 
-// Allow static imports
+// Allow easier static imports
 val OBFUSCATED = TextDecoration.OBFUSCATED
 val BOLD = TextDecoration.BOLD
 val STRIKETHROUGH = TextDecoration.STRIKETHROUGH
@@ -122,7 +112,7 @@ const val SHIFT_LEFT_MIN = 1
 const val SHIFT_LEFT_MAX = 256
 const val SHIFT_RIGHT_MIN = 1
 const val SHIFT_RIGHT_MAX = 256
-const val SHIFT_DOWN_MIN = -17
+const val SHIFT_DOWN_MIN = -22
 const val SHIFT_DOWN_MAX = 110
 
 // Custom characters begin
@@ -148,6 +138,24 @@ const val SPACE_MAIN_HYPERSPACE_ROUTES_CHARACTER = '\uF8F6'
 const val SPACE_MINOR_HYPERSPACE_ROUTES_CHARACTER = '\uF8F5'
 const val MULTIBLOCK_WORKBENCH = '\uF8F4'
 const val ADVANCED_SHIP_FACTORY_CHARACTER = '\uF8F3'
+const val BAZAAR_BUY_ORDER_MENU_CHARACTER = '\uF8F2'
+const val TEXT_INPUT_LEFT_CHARACTER = '\uF8F1'
+const val TEXT_INPUT_CENTER_CHARACTER = '\uF8F0'
+const val TEXT_INPUT_RIGHT_CHARACTER = '\uF8EF'
+const val PENCIL_CHARACTER = '\uF8ED'
+const val TRASHCAN_CHARACTER = '\uF8EC'
+const val CHECKMARK_CHARACTER = '\uF8EB'
+const val ICON_BORDER_CHARACTER = '\uF8EA'
+const val CROSS_CHARACTER = '\uF8E6'
+const val EMPTY_ICON_CHARACTER = '\uF8E9'
+const val SIMPLE_GUI_BORDER_CHARACTER = '\uF8E8'
+const val BAZAAR_ORDER_HEADER_ICON = '\uF8E7'
+const val BAZAAR_LISTING_HEADER_ICON = '\uF8EE'
+const val DEPOSIT_ICON = '\uF8E5'
+const val WITHDRAW_ICON = '\uF8E4'
+const val RED_SLOT_ICON = '\uF8E3'
+const val BAZAAR_ORDER_MANAGE_HEADER_ICON = '\uF8E2'
+const val BAZAAR_LISTING_MANAGE_HEADER_ICON = '\uF8E1'
 
 // Custom characters end
 
@@ -157,26 +165,24 @@ val Component.minecraftLength: Int
 /**
  * Gets the width (in pixels) of a string rendered in the default Minecraft font.
  */
-val String.minecraftLength: Int
-	get() = this.sumOf {
-		@Suppress("Useless_Cast")
-		when (it.code) {
-			// for some reason, SHIFT_LEFT_BEGIN and the MIN_1 value does not work here
-			in SHIFT_LEFT_BEGIN..SHIFT_LEFT_END -> 0xDFFF - it.code
-			in SHIFT_RIGHT_BEGIN..SHIFT_RIGHT_END -> -0xE0FF + it.code
-			else -> when (it) {
-				'\n' -> 0
-				'i', '!', ',', '.', '\'', ':', ';', '|' -> 2
-				'l', '`' -> 3
-				'I', 't', ' ', '\"', '(', ')', '*', '[', ']', '{', '}' -> 4
-				'k', 'f', '<', '>' -> 5
-				'@', '~', '«', '»' -> 7
-				CHETHERITE_CHARACTER -> 10
-				SLOT_OVERLAY_CHARACTER -> 19
-				else -> 6
-			} as Int
-		}
+val String.minecraftLength: Int get() = this.sumOf { it.minecraftLength }
+
+val Char.minecraftLength get() = when (code) {
+	// for some reason, SHIFT_LEFT_BEGIN and the MIN_1 value does not work here
+	in SHIFT_LEFT_BEGIN..SHIFT_LEFT_END -> 0xDFFF - code
+	in SHIFT_RIGHT_BEGIN..SHIFT_RIGHT_END -> -0xE0FF + code
+	else -> when (this) {
+		'\n' -> 0
+		'i', '!', ',', '.', '\'', ':', ';', '|' -> 2
+		'l', '`' -> 3
+		'I', 't', ' ', '\"', '(', ')', '*', '[', ']', '{', '}' -> 4
+		'k', 'f', '<', '>' -> 5
+		'@', '~', '«', '»' -> 7
+		CHETHERITE_CHARACTER -> 10
+		SLOT_OVERLAY_CHARACTER -> 19
+		else -> GuiIconType.getByDisplayChar(this)?.width?.plus(1) ?: 6
 	}
+}
 
 /**
  * Create a new Component, shifting text left or right
@@ -254,7 +260,7 @@ fun Component.wrap(width: Int): List<Component> {
 	// list of components acting as lines on a GUI
 	val lines = mutableListOf<Component>()
 	// component for constructing portions of a line
-	var currentComponent: TextComponent
+	var currentComponent: Component
 	// stores the current style
 	var currentStyle: Style = style()
 	// list for storing components in each line
@@ -262,7 +268,7 @@ fun Component.wrap(width: Int): List<Component> {
 	// for parsing component plaintext and adding to new components
 	val stringBuilder = StringBuilder()
 
-	val flattener = ComponentFlattener.basic()
+	val flattener = ADVANCED_FLATTENER
 
 	// The FlattenerListener iterates over a Component and processes over its children. When the listener encounters
 	// a new component or style, its functions can be overridden to process the incoming data.
@@ -334,6 +340,131 @@ fun Component.wrap(width: Int): List<Component> {
 	lines.add(ofChildren(*componentsInLine.toTypedArray()))
 
 	return lines
+}
+
+fun Component.iterateChildren(consumer: Consumer<Component>) {
+	val iterationList = arrayListOf(this)
+
+	while (iterationList.isNotEmpty()) {
+		// Remove last so you get a DFS
+		val current = iterationList.removeLast()
+
+		consumer.accept(current)
+
+		iterationList.addAll(current.children())
+	}
+}
+
+fun TextColor.asShadowColor(alpha: Int) = ShadowColor.shadowColor(this, alpha)
+
+private const val ELLIPSES = "..."
+
+fun Component.clip(width: Int, useEllipses: Boolean = true): Component {
+	val minecraftLength = this.minecraftLength
+
+	if (minecraftLength <= width) return this
+
+	val flattener = ADVANCED_FLATTENER
+
+	val new = text()
+
+	flattener.flatten(this, object : FlattenerListener {
+		var currentStyle: Style = Style.empty()
+		var runningLength = 0
+
+		override fun component(text: String) {
+			val remaining = minecraftLength - runningLength
+
+			// Cannot append any of the string
+			if (remaining <= 0) return
+
+			// Can append the whole string
+			if ((remaining - text.minecraftLength) > 0) {
+				runningLength += text.minecraftLength
+				new.append(text(text, currentStyle))
+				return
+			}
+
+			val stringBuilder = StringBuilder()
+
+			for (char in text) {
+				val charLength = char.minecraftLength
+				if (runningLength + charLength > width - (if (useEllipses) ELLIPSES.minecraftLength else 0)) break
+
+				stringBuilder.append(char)
+				runningLength += char.minecraftLength
+			}
+
+			new.append(text(stringBuilder.toString(), currentStyle))
+			if (useEllipses) new.append(text("...", currentStyle))
+		}
+
+		override fun shouldContinue(): Boolean {
+			return runningLength < width
+		}
+
+		override fun pushStyle(style: Style) {
+			currentStyle = style
+		}
+	})
+
+	return new.build()
+}
+
+// Modified basic flattener that handles translatable components
+val ADVANCED_FLATTENER = ComponentFlattener.builder()
+	.mapper(KeybindComponent::class.java) { component -> component.keybind() }
+	.mapper(ScoreComponent::class.java) { _ -> "" }
+	.mapper(SelectorComponent::class.java, SelectorComponent::pattern)
+	.mapper(TextComponent::class.java, TextComponent::content)
+	.mapper(TranslatableComponent::class.java) { component -> GlobalTranslator.render(component, Locale.ENGLISH).plainText() }
+	.build()
+
+fun bootstrapCustomTranslations() {
+	val store = TranslationStore.messageFormat(Key.key("horizonsend", "translator"))
+
+	store.register("death.attack.interceptor_cannon.player", Locale.US, MessageFormat("{0} was killed by {1} using interceptor cannon", Locale.US))
+	store.register("death.attack.laser_cannon.player", Locale.US, MessageFormat("{0} was killed by {1} using laser cannon", Locale.US))
+	store.register("death.attack.plasma_cannon.player", Locale.US, MessageFormat("{0} was killed by {1} using plasma cannon", Locale.US))
+	store.register("death.attack.pulse_cannon.player", Locale.US, MessageFormat("{0} was killed by {1} using pulse cannon", Locale.US))
+	store.register("death.attack.capital_beam.player", Locale.US, MessageFormat("{0} was killed by {1} using capital beam", Locale.US))
+	store.register("death.attack.cthulhu_beam.player", Locale.US, MessageFormat("{0} was killed by {1} using cthulhu beam", Locale.US))
+	store.register("death.attack.fire_wave.player", Locale.US, MessageFormat("{0} was killed by {1} using fire wave", Locale.US))
+	store.register("death.attack.flamethrower.player", Locale.US, MessageFormat("{0} was killed by {1} using flamethrower", Locale.US))
+	store.register("death.attack.gaze.player", Locale.US, MessageFormat("%s{0}as killed by %s{1}sing the gaze", Locale.US))
+	store.register("death.attack.mini_phaser.player", Locale.US, MessageFormat("{0} was killed by {1} using mini phaser", Locale.US))
+	store.register("death.attack.pumpkin_cannon.player", Locale.US, MessageFormat("{0} was killed by {1} using pumpkin cannon", Locale.US))
+	store.register("death.attack.skull_thrower.player", Locale.US, MessageFormat("{0} was killed by {1} using skull thrower", Locale.US))
+	store.register("death.attack.sonic_missile.player", Locale.US, MessageFormat("{0} was killed by {1} using sonic missile", Locale.US))
+	store.register("death.attack.arsenal_rocket.player", Locale.US, MessageFormat("{0} was killed by {1} using arsenal rocket", Locale.US))
+	store.register("death.attack.doomsday_device.player", Locale.US, MessageFormat("{0} was killed by {1} using doomsday device", Locale.US))
+	store.register("death.attack.heavylaser.player", Locale.US, MessageFormat("{0} was killed by {1} using heavy laser", Locale.US))
+	store.register("death.attack.phaser.player", Locale.US, MessageFormat("{0} was killed by {1} using phaser", Locale.US))
+	store.register("death.attack.oriomium_rocket.player", Locale.US, MessageFormat("{0} was killed by {1} using oriomium rocket", Locale.US))
+	store.register("death.attack.torpedo.player", Locale.US, MessageFormat("{0} was killed by {1} using torpedo", Locale.US))
+	store.register("death.attack.point_defense.player", Locale.US, MessageFormat("{0} was killed by {1} using point defense", Locale.US))
+	store.register("death.attack.interceptor_cannon", Locale.US, MessageFormat("{0} was killed by interceptor cannon", Locale.US))
+	store.register("death.attack.laser_cannon", Locale.US, MessageFormat("{0} was killed by laser cannon", Locale.US))
+	store.register("death.attack.plasma_cannon", Locale.US, MessageFormat("{0} was killed by plasma cannon", Locale.US))
+	store.register("death.attack.pulse_cannon", Locale.US, MessageFormat("{0} was killed by pulse cannon", Locale.US))
+	store.register("death.attack.capital_beam", Locale.US, MessageFormat("{0} was killed by capital beam", Locale.US))
+	store.register("death.attack.cthulhu_beam", Locale.US, MessageFormat("{0} was killed by cthulhu beam", Locale.US))
+	store.register("death.attack.fire_wave", Locale.US, MessageFormat("{0} was killed by fire wave", Locale.US))
+	store.register("death.attack.flamethrower", Locale.US, MessageFormat("{0} was killed by flamethrower", Locale.US))
+	store.register("death.attack.gaze", Locale.US, MessageFormat("{0} was killed by the gaze", Locale.US))
+	store.register("death.attack.mini_phaser", Locale.US, MessageFormat("{0} was killed by mini phaser", Locale.US))
+	store.register("death.attack.pumpkin_cannon", Locale.US, MessageFormat("{0} was killed by pumpkin cannon", Locale.US))
+	store.register("death.attack.skull_thrower", Locale.US, MessageFormat("{0} was killed by skull thrower", Locale.US))
+	store.register("death.attack.sonic_missile", Locale.US, MessageFormat("{0} was killed by sonic missile", Locale.US))
+	store.register("death.attack.arsenal_rocket", Locale.US, MessageFormat("{0} was killed by arsenal rocket", Locale.US))
+	store.register("death.attack.doomsday_device", Locale.US, MessageFormat("{0} was killed by doomsday device", Locale.US))
+	store.register("death.attack.heavylaser", Locale.US, MessageFormat("{0} was killed by heavy laser", Locale.US))
+	store.register("death.attack.phaser", Locale.US, MessageFormat("{0} was killed by phaser", Locale.US))
+	store.register("death.attack.oriomium_rocket", Locale.US, MessageFormat("{0} was killed by oriomium rocket", Locale.US))
+	store.register("death.attack.torpedo", Locale.US, MessageFormat("{0} was killed by torpedo", Locale.US))
+	store.register("death.attack.point_defense", Locale.US, MessageFormat("{0} was killed by point defense", Locale.US))
+
+	GlobalTranslator.translator().addSource(store)
 }
 
 //</editor-fold>

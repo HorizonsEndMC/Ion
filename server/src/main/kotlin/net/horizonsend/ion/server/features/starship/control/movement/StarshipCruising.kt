@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.success
@@ -9,7 +10,7 @@ import net.horizonsend.ion.common.utils.text.colors.Colors
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.gui.custom.settings.SoundSettings
 import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -205,7 +206,7 @@ object StarshipCruising : IonServerComponent() {
 
 		val info = "<aqua>$dx,$dz <dark_gray>; <yellow>Accel<dark_gray>/<green>Speed<dark_gray>: <yellow>$realAccel<dark_gray>/<yellow>$maxSpeed"
 
-		val useAlternateMethod = (controller as? PlayerController)?.player?.let { PlayerCache[it].useAlternateDCCruise } ?: false
+		val useAlternateMethod = (controller as? PlayerController)?.player?.getSetting(PlayerSettings::useAlternateDCCruise) ?: false
 
 		if (!wasCruising) {
 			starship.informationAction("Cruise started, dir<dark_gray>: $info")
@@ -232,9 +233,9 @@ object StarshipCruising : IonServerComponent() {
 
 		// Sound alert for cruise
 		starship.onlinePassengers.forEach { passenger ->
-			if (PlayerCache[passenger.uniqueId].enableAdditionalSounds) {
+			if (passenger.getSetting(PlayerSettings::enableAdditionalSounds)) {
 				var tick = 0
-				val length = when (PlayerCache[passenger.uniqueId].soundCruiseIndicator) {
+				val length = when (passenger.getSetting(PlayerSettings::soundCruiseIndicator)) {
 					SoundSettings.CruiseIndicatorSounds.OFF.ordinal -> 0
 					SoundSettings.CruiseIndicatorSounds.SHORT.ordinal -> 1
 					SoundSettings.CruiseIndicatorSounds.LONG.ordinal -> 4
@@ -280,9 +281,9 @@ object StarshipCruising : IonServerComponent() {
 			passenger.information(
 				"Cruise stopped, decelerating..."
 			)
-			if (PlayerCache[passenger.uniqueId].enableAdditionalSounds) {
+			if (passenger.getSetting(PlayerSettings::enableAdditionalSounds)) {
 				var tick = 0
-				val length = when (PlayerCache[passenger.uniqueId].soundCruiseIndicator) {
+				val length = when (passenger.getSetting(PlayerSettings::soundCruiseIndicator)) {
 					SoundSettings.CruiseIndicatorSounds.OFF.ordinal -> 0
 					SoundSettings.CruiseIndicatorSounds.SHORT.ordinal -> 5
 					SoundSettings.CruiseIndicatorSounds.LONG.ordinal -> 20

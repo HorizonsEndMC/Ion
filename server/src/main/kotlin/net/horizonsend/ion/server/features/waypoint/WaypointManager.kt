@@ -1,12 +1,13 @@
 package net.horizonsend.ion.server.features.waypoint
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
@@ -563,7 +564,7 @@ object WaypointManager : IonServerComponent() {
 
     fun getRouteString(player: Player): String {
         val paths = playerPaths[player.uniqueId] ?: return ""
-        val compactWaypoints = PlayerCache[player].compactWaypoints
+        val compactWaypoints = player.getSetting(PlayerSettings::compactWaypoints)
         val str = StringBuilder()
 
         for (path in paths) {

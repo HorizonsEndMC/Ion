@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.sidebar.component
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.BOOKMARK_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.GENERIC_STARSHIP_ICON
@@ -24,14 +25,14 @@ import net.megavex.scoreboardlibrary.api.sidebar.component.SidebarComponent
 import org.bukkit.entity.Player
 
 class ContactsHeaderSidebarComponent(player: Player) : SidebarComponent {
-    private val contactsDistance = PlayerCache[player].contactsDistance
-    private val starshipsEnabled = PlayerCache[player].contactsStarships
-    private val lastStarshipEnabled = PlayerCache[player].lastStarshipEnabled
-	private val planetsEnabled = PlayerCache[player].planetsEnabled
-	private val starsEnabled = PlayerCache[player].starsEnabled
-	private val beaconsEnabled = PlayerCache[player].beaconsEnabled
-    private val stationsEnabled = PlayerCache[player].stationsEnabled
-    private val bookmarksEnabled = PlayerCache[player].bookmarksEnabled
+    private val contactsDistance = player.getSetting(PlayerSettings::contactsDistance)
+    private val starshipsEnabled = player.getSetting(PlayerSettings::contactsStarships)
+    private val lastStarshipEnabled = player.getSetting(PlayerSettings::lastStarshipEnabled)
+	private val planetsEnabled = player.getSetting(PlayerSettings::planetsEnabled)
+	private val starsEnabled = player.getSetting(PlayerSettings::starsEnabled)
+	private val beaconsEnabled = player.getSetting(PlayerSettings::beaconsEnabled)
+    private val stationsEnabled = player.getSetting(PlayerSettings::stationsEnabled)
+    private val bookmarksEnabled = player.getSetting(PlayerSettings::bookmarksEnabled)
 
     private fun getColor(enabled: Boolean) : NamedTextColor {
         return if (enabled) AQUA else GRAY

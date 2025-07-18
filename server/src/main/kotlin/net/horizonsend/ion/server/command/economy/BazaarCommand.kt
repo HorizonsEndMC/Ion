@@ -10,12 +10,12 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -27,31 +27,30 @@ import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
+import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
-import net.horizonsend.ion.server.features.economy.city.CityNPCs
+import net.horizonsend.ion.server.features.economy.city.CityNPCs.BAZAAR_CITY_TERRITORIES
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
-import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
-import net.horizonsend.ion.server.features.player.CombatTimer
-import net.horizonsend.ion.server.features.space.Space
-import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
+import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.ListListingManagementMenu
+import net.horizonsend.ion.server.gui.invui.misc.util.input.ItemMenu
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
-import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.DyeColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -60,130 +59,111 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import kotlin.math.ceil
 
-@CommandAlias("bazaar|ah|auctionhouse|shop")
+@CommandAlias("bazaar|ah|auctionhouse|shop|buy")
 object BazaarCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
-		registerAsyncCompletion(manager, "bazaarItemStrings") { c ->
-			val player = c.player ?: throw InvalidCommandArgument("Players only")
-			val slPlayerId = player.slPlayerId
-			val territory = Regions.findFirstOf<RegionTerritory>(player.location)
-				?: throw InvalidCommandArgument("You're not in a territory!")
+		registerAsyncCompletion(manager, "bazaarItemStrings") { context ->
+			val player = context.player ?: throw InvalidCommandArgument("Players only")
+			val territory = Regions.findFirstOf<RegionTerritory>(player.location) ?: throw InvalidCommandArgument("You're not in a territory!")
+
 			BazaarItem.findProp(
-				and(BazaarItem::seller eq slPlayerId, BazaarItem::cityTerritory eq territory.id),
+				and(BazaarItem::seller eq player.slPlayerId, BazaarItem::cityTerritory eq territory.id),
 				BazaarItem::itemString
 			).toList()
 		}
-	}
 
-	private fun validateItemString(itemString: String): ItemStack {
-		try {
-			val itemStack = fromItemString(itemString)
-			failIf(!itemStack.type.isItem) { "$itemString is not an inventory item!" }
-			return itemStack
-		} catch (e: Exception) {
-			fail { "Invalid item string $itemString! To see an item's string, use /bazaar string" }
+		registerAsyncCompletion(manager, "bazaarCities") { _ ->
+			TradeCities.getAll().filter { BAZAAR_CITY_TERRITORIES.contains(it.territoryId) }.map { it.displayName }
+		}
+
+		manager.commandContexts.registerContext(TradeCityData::class.java) { c ->
+			val name = c.popFirstArg()
+			TradeCities.getAll().firstOrNull { it.displayName == name }
+		}
+
+		registerAsyncCompletion(manager, "playerOrders") { c ->
+			val city = c.getContextValue(TradeCityData::class.java) ?: throw InvalidCommandArgument("No trade city specified!")
+			BazaarOrder.find(and(BazaarOrder::player eq c.player.slPlayerId, BazaarOrder::cityTerritory eq city.territoryId))
+				.toList()
+				.map { it.itemString }
+		}
+
+		registerAsyncCompletion(manager, "cityOrderers") { c ->
+			val city = c.getContextValue(TradeCityData::class.java) ?: throw InvalidCommandArgument("No trade city specified!")
+			BazaarOrder.findProp(BazaarOrder::cityTerritory eq city.territoryId, BazaarOrder::player).mapNotNull(SLPlayer::getName)
+		}
+
+		registerAsyncCompletion(manager, "cityOrders") { c ->
+			val city = c.getContextValue(TradeCityData::class.java) ?: throw InvalidCommandArgument("No trade city specified!")
+			val owner = c.getContextValue(SLPlayer::class.java) ?: throw InvalidCommandArgument("No trade player specified!")
+
+			BazaarOrder.find(and(BazaarOrder::player eq owner._id, BazaarOrder::cityTerritory eq city.territoryId))
+				.toList()
+				.map { it.itemString }
 		}
 	}
 
-	private fun validatePrice(price: Double) {
-		failIf(price <= 0) { "Price must be above 0" }
-		failIf(price != price.roundToHundredth()) { "Price cannot go further than 2 decimal places" }
+	private fun requireItemInHand(sender: Player): ItemStack {
+		val item = sender.inventory.itemInMainHand
+		failIf(item.isEmpty) { "You aren't holding an item!" }
+
+		return item
 	}
 
-	private fun requireItemInHand(sender: Player) = sender.inventory.itemInMainHand
+	@Suppress("Unused")
+	@Subcommand("browse")
+	@Default
+	@Description("Remotely browse city bazaar markets")
+	fun onBrowse(sender: Player) {
+		BazaarGUIs.openCitySelection(sender, null)
+	}
+
+	@Suppress("Unused")
+	@Subcommand("sell")
+	@Description("Remotely browse city bazaar markets")
+	fun onBrowseOrders(sender: Player) {
+		BazaarGUIs.openBuyOrderMainMenu(sender, null)
+	}
 
 	@Suppress("Unused")
 	@Subcommand("string")
 	fun onString(sender: Player) {
 		val item = requireItemInHand(sender)
-		sender.information(
-			"Item string of ${item.displayNameString}: ${toItemString(item)}"
-		)
+		sender.information("Item string of ${item.displayNameString}: ${toItemString(item)}")
 	}
-
-	private fun cityName(territory: RegionTerritory) = TradeCities.getIfCity(territory)?.displayName
-		?: "<{Unknown}>" // this will be used if the city is disbanded but their items remain there
 
 	@Subcommand("create")
 	@Description("Create a new listing at this city")
 	@CommandCompletion("@anyItem")
-	fun onCreate(sender: Player, itemString: String, pricePerItem: Double) = asyncCommand(sender) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
+	fun onListingCreate(sender: Player, itemString: String, pricePerItem: Double) = asyncCommand(sender) {
 		val territory: RegionTerritory = requireTerritoryIn(sender)
-		failIf(!TradeCities.isCity(territory)) { "Territory is not a trade city" }
-		failIf(!CityNPCs.BAZAAR_CITY_TERRITORIES.contains(territory.id)) { "City doesn't have a registered bazaar" }
-
-		val cityName = cityName(territory)
-		validatePrice(pricePerItem)
-		validateItemString(itemString)
-
-		failIf(!BazaarItem.none(BazaarItem.matchQuery(territory.id, sender.slPlayerId, itemString))) {
-			"You're already selling $itemString at $cityName!"
-		}
-
-		BazaarItem.create(territory.id, sender.slPlayerId, itemString, pricePerItem)
-
-		sender.information(
-			"Created listing for $itemString at $cityName. " +
-				"It will not show in the listing until it has some stock. " +
-				"To add stock, use /bazaar deposit."
-		)
+		Bazaars.createListing(sender, territory, itemString, pricePerItem).sendReason(sender)
 	}
 
 	@Subcommand("create")
 	@Description("Create a new listing at this city")
-	fun onCreate(sender: Player, pricePerItem: Double) = asyncCommand(sender) {
+	fun onListingCreate(sender: Player, pricePerItem: Double) = asyncCommand(sender) {
 		val item = requireItemInHand(sender)
 		val itemString = toItemString(item)
-
-		onCreate(sender, itemString, pricePerItem)
+		onListingCreate(sender, itemString, pricePerItem)
 	}
-
-	private fun requireSelling(territory: RegionTerritory, sender: Player, itemString: String) =
-		BazaarItem.findOne(BazaarItem.matchQuery(territory.id, sender.slPlayerId, itemString))
-			?: fail { "You're not selling $itemString at ${cityName(territory)}" }
 
 	@Suppress("Unused")
 	@Subcommand("deposit")
 	@Description("Deposit all matching items in your inventory")
-	fun onDeposit(sender: Player) = asyncCommand(sender) {
+	fun onDeposit(sender: Player, @Optional limit: Int?) = asyncCommand(sender) {
 		val item = requireItemInHand(sender)
 		val itemString = toItemString(item)
-
-		onDeposit(sender, itemString)
+		onDeposit(sender, itemString, limit)
 	}
 
 	@Suppress("Unused")
 	@Subcommand("deposit")
 	@Description("Deposit all matching items in your inventory")
 	@CommandCompletion("@bazaarItemStrings")
-	fun onDeposit(sender: Player, itemString: String) = asyncCommand(sender) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
+	fun onDeposit(sender: Player, itemString: String, @Optional limit: Int?) = asyncCommand(sender) {
 		val territory = requireTerritoryIn(sender)
-		val cityName = cityName(territory)
-		val itemReference: ItemStack = validateItemString(itemString)
-
-		val item: BazaarItem = requireSelling(territory, sender, itemString)
-
-		Tasks.sync {
-			val inventory = sender.inventory
-
-			var count = 0
-
-			for ((index, itemStack) in inventory.withIndex()) {
-				if (itemStack?.isSimilar(itemReference) == true) {
-					count += itemStack.amount
-					inventory.setItem(index, null)
-				}
-			}
-
-			Tasks.async {
-				BazaarItem.addStock(item._id, count)
-				sender.information(
-					"Added $count of $itemString to listing in $cityName"
-				)
-			}
-		}
+		Bazaars.depositListingStock(sender, sender.inventory, territory, itemString, limit ?: Int.MAX_VALUE).sendReason(sender)
 	}
 
 	@Suppress("Unused")
@@ -191,28 +171,8 @@ object BazaarCommand : SLCommand() {
 	@Description("Withdraw the specified amount of the item")
 	@CommandCompletion("@bazaarItemStrings 1|64")
 	fun onWithdraw(sender: Player, itemString: String, amount: Int) = asyncCommand(sender) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 		val territory = requireTerritoryIn(sender)
-		val cityName = cityName(territory)
-		val itemStack: ItemStack = validateItemString(itemString)
-		failIf(amount < 1) { "Amount must be at least 1" }
-
-		val item: BazaarItem = requireSelling(territory, sender, itemString)
-
-		failIf(item.stock < amount) {
-			"Your listing of $itemString at $cityName only has ${item.stock} item(s) in stock"
-		}
-
-		BazaarItem.removeStock(item._id, amount)
-
-		Tasks.sync {
-			val (fullStacks, remainder) = Bazaars.dropItems(itemStack, amount, sender)
-
-			sender.success(
-				"Withdraw $amount of $itemString at $cityName" +
-					"($fullStacks stack(s) and $remainder item(s))"
-			)
-		}
+		Bazaars.withdrawListingBalance(sender, territory, itemString, amount).sendReason(sender)
 	}
 
 	@Suppress("Unused")
@@ -221,19 +181,7 @@ object BazaarCommand : SLCommand() {
 	@CommandCompletion("@bazaarItemStrings")
 	fun onRemove(sender: Player, itemString: String) = asyncCommand(sender) {
 		val territory = requireTerritoryIn(sender)
-		val cityName = cityName(territory)
-		validateItemString(itemString)
-
-		val item: BazaarItem = requireSelling(territory, sender, itemString)
-
-		failIf(item.stock > 0) {
-			"Withdraw all items before removing! (/bazaar withdraw $itemString ${item.stock})"
-		}
-
-		BazaarItem.delete(item._id)
-		sender.success(
-			"Removed listing for $itemString at $cityName"
-		)
+		Bazaars.removeListing(sender, territory, itemString).sendReason(sender)
 	}
 
 	@Suppress("Unused")
@@ -241,19 +189,9 @@ object BazaarCommand : SLCommand() {
 	@Description("Update the price of the specific item")
 	@CommandCompletion("@bazaarItemStrings @nothing")
 	fun onSetPrice(sender: Player, itemString: String, newPrice: Double) = asyncCommand(sender) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 		val territory = requireTerritoryIn(sender)
-		val cityName = cityName(territory)
-		validateItemString(itemString)
 
-		val item: BazaarItem = requireSelling(territory, sender, itemString)
-
-		validatePrice(newPrice)
-
-		BazaarItem.setPrice(item._id, newPrice)
-		sender.success(
-			"Updated price of $itemString at $cityName to ${newPrice.toCreditsString()}"
-		)
+		Bazaars.setListingPrice(sender, territory, itemString, newPrice).sendReason(sender)
 	}
 
 	@Suppress("Unused")
@@ -301,48 +239,17 @@ object BazaarCommand : SLCommand() {
 	}
 
 	@Suppress("Unused")
-	@Subcommand("list menu")
+	@Subcommand("list menu|list gui")
 	@Description("List the items you're selling at this city")
 	fun onListMenu(sender: Player) = asyncCommand(sender) {
-		val items = BazaarItem.find(BazaarItem::seller eq sender.slPlayerId).toList()
-
-		MenuHelper.apply {
-			val guiItems = items.map { item ->
-				val city = cityName(Regions[item.cityTerritory])
-				val stock = item.stock
-				val uncollected = item.balance.toCreditsString()
-				val price = item.price.toCreditsString()
-
-				guiButton(fromItemString(item.itemString)).apply {
-					setLoreComponent(listOf(
-						text().append(text("City: ", DARK_PURPLE), text(city, LIGHT_PURPLE)).decoration(TextDecoration.ITALIC, false).build(),
-						text().append(text("Stock: ", GRAY), text(stock, GRAY)).decoration(TextDecoration.ITALIC, false).build(),
-						text().append(text("Balance: ", GRAY), text(uncollected, NamedTextColor.GOLD)).decoration(TextDecoration.ITALIC, false).build(),
-						text().append(text("Price: ", GRAY), text(price, NamedTextColor.YELLOW)).decoration(TextDecoration.ITALIC, false).build(),
-					))
-				}
-			}
-
-			Tasks.sync { sender.openPaginatedMenu("Your Items (${items.size})", guiItems) }
-		}
+		ListListingManagementMenu(sender).openGui()
 	}
 
 	@Suppress("Unused")
 	@Subcommand("collect")
 	@Description("Collect the money from all of your items")
 	fun onCollect(sender: Player) = asyncCommand(sender) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
-		requireEconomyEnabled()
-
-		val senderId = sender.slPlayerId
-		val total = BazaarItem.collectMoney(senderId)
-		val count = BazaarItem.count(BazaarItem::seller eq senderId)
-		Tasks.sync {
-			VAULT_ECO.depositPlayer(sender, total)
-			sender.success(
-				"Collected ${total.toCreditsString()} from $count listings"
-			)
-		}
+		Bazaars.collectListingProfit(sender).sendReason(sender)
 	}
 
 	@Suppress("Unused")
@@ -351,50 +258,21 @@ object BazaarCommand : SLCommand() {
 	fun onTax(sender: Player) = asyncCommand(sender) {
 		val territory = requireTerritoryIn(sender)
 		val city = TradeCities.getIfCity(territory) ?: fail { "You're not in a trade city" }
-		sender.information(
-			"Tax of ${city.displayName}: ${(city.tax * 100).toInt()}%"
-		)
-	}
-
-	@Suppress("Unused")
-	@Subcommand("browse")
-	@Default
-	@Description("Remotely browse city bazaar markets")
-	fun onBrowse(sender: Player) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
-//		val sector = Sector.getSector(sender.world)
-
-		val cities: List<TradeCityData> = CityNPCs.BAZAAR_CITY_TERRITORIES
-			.map { Regions.get<RegionTerritory>(it) }
-//			.filter { Sector.getSector(it.world) == sector }
-			.mapNotNull(TradeCities::getIfCity)
-
-		MenuHelper.apply {
-			val cityItems = cities.map { city ->
-				val territoryId = city.territoryId
-				val territory: RegionTerritory = Regions[territoryId]
-
-				// attempt to get the planet icon, just use a detonator if unavailable
-				val item = Space.getPlanet(territory.world)?.planetIconFactory?.construct() ?: CustomItemRegistry.CHANDRA.constructItemStack()
-
-				return@map guiButton(item) {
-					val clicker: Player = playerClicker
-					val remote: Boolean = Regions.findFirstOf<RegionTerritory>(clicker.location)?.id != territoryId
-					Bazaars.openMainMenu(territoryId, clicker, remote)
-				}.setName("${city.displayName} on ${territory.world}")
-			}
-
-			sender.openPaginatedMenu("Remote Bazaar", cityItems)
-		}
+		sender.information("Tax of ${city.displayName}: ${(city.tax * 100).toInt()}%")
 	}
 
 	@Suppress("Unused")
 	@Subcommand("merchant buy")
 	fun onMerchantBuy(sender: Player, itemString: String, amount: Int) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
 		requireEconomyEnabled()
 
-		val item = validateItemString(itemString)
+		val itemValidationResult = Bazaars.checkValidString(itemString)
+		val item: ItemStack? = itemValidationResult.result
+		if (item == null) {
+			itemValidationResult.sendReason(sender)
+			return
+		}
+
 		val npc = CityNpcCommand.requireNearbyNPC(sender, false)
 		failIf(npc.type != CityNPC.Type.MERCHANT) { "Nearest NPC is not a merchant" }
 		val price = (Merchants.getPrice(itemString) ?: fail { "Item not for sale!" }) * amount
@@ -402,7 +280,7 @@ object BazaarCommand : SLCommand() {
 		val tax = ceil(city.tax * price).toInt()
 		requireMoney(sender, price + tax)
 		VAULT_ECO.withdrawPlayer(sender, price + tax)
-		Bazaars.dropItems(item, amount, sender)
+		Bazaars.giveOrDropItems(item, amount, sender)
 
 		sender.sendMessage(
 			text("Bought ").color(NamedTextColor.GREEN)
@@ -425,7 +303,8 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("merchant setprice")
 	@CommandPermission("trade.merchantadmin")
 	fun onMerchantSetPrice(sender: CommandSender, itemString: String, price: Double) {
-		validateItemString(itemString)
+		val itemResult = Bazaars.checkValidString(itemString)
+		if (!itemResult.isSuccess()) return itemResult.sendReason(sender)
 		Merchants.setMerchantDefaultPrice(itemString, price)
 	}
 
@@ -440,15 +319,15 @@ object BazaarCommand : SLCommand() {
 	@Subcommand("merchant prices")
 	@Description("View merchant prices")
 	fun onMerchantPrices(sender: Player) {
-		failIf(CombatTimer.isNpcCombatTagged(sender) || CombatTimer.isPvpCombatTagged(sender)) { "You are currently in combat!" }
-		MenuHelper.apply {
-			val items = Merchants.getPriceMap().entries
-				.asSequence()
+		ItemMenu(
+			title = text("Merchant Prices"),
+			viewer = sender,
+			guiItems = Merchants.getPriceMap().entries
+				.toList()
 				.sortedBy {
 					val key = it.key
 
-					val colorPattern = """(${DyeColor.values().joinToString("|")})_"""
-						.toRegex(RegexOption.DOT_MATCHES_ALL)
+					val colorPattern = """(${DyeColor.entries.joinToString("|")})_""".toRegex(RegexOption.DOT_MATCHES_ALL)
 					val colorMatch = colorPattern.find(key)
 					if (colorMatch != null) {
 						return@sortedBy key.removePrefix(colorMatch.value) + colorMatch.value
@@ -457,13 +336,55 @@ object BazaarCommand : SLCommand() {
 					return@sortedBy key
 				}
 				.map { (itemString, price) ->
-					val item = fromItemString(itemString)
-					return@map guiButton(item) { playerClicker.closeInventory() }
-						.setName(item.displayNameComponent)
-						.setLore("Price: ${price.toCreditsString()}")
-				}.toList()
+					fromItemString(itemString)
+						.updateLore(listOf(template(text("Price: {0}", HE_MEDIUM_GRAY), price.toCreditComponent())))
+						.makeGuiButton { _, _ -> sender.closeInventory() }
+				},
+			backButtonHandler = { sender.closeInventory() }
+		).openGui()
+	}
 
-			sender.openPaginatedMenu("Merchant Prices", items)
+	@Subcommand("order create")
+	@Description("Create a new buy order at this city")
+	@CommandCompletion("@anyItem")
+	fun onOrderCreate(sender: Player, itemString: String, quantity: Int, pricePerItem: Double, @Optional priceConfirmation: Double?) = asyncCommand(sender) {
+		val territory: RegionTerritory = requireTerritoryIn(sender)
+		val realCost = quantity * pricePerItem
+
+		failIf(priceConfirmation != realCost) {
+			"You must acknowledge the cost of the listing to create it. The cost is ${realCost.toCreditsString()}. Run the command: /bazaar order create $itemString $quantity $pricePerItem $realCost"
 		}
+
+		Bazaars.createOrder(sender, territory, itemString, quantity, pricePerItem).sendReason(sender)
+	}
+
+	@Subcommand("order remove")
+	@Description("Create a new buy order at the provided city")
+	@CommandCompletion("@bazaarCities @playerOrders")
+	fun onOrderDelete(sender: Player, city: TradeCityData, orderString: String) = asyncCommand(sender) {
+		val orderCheck = Bazaars.checkHasOrder(sender.slPlayerId, Regions[city.territoryId], orderString)
+		val order = orderCheck.result ?: return@asyncCommand orderCheck.sendReason(sender)
+
+		Bazaars.deleteOrder(sender, order._id).sendReason(sender)
+	}
+
+	@Subcommand("order withdraw")
+	@Description("Withdraws fulfilled items from this order. You may optionally specify a limit.")
+	@CommandCompletion("@bazaarCities @playerOrders")
+	fun onOrderWithdraw(sender: Player, city: TradeCityData, orderString: String, @Optional limit: Int?) = asyncCommand(sender) {
+		val orderCheck = Bazaars.checkHasOrder(sender.slPlayerId, Regions[city.territoryId], orderString)
+		val order = orderCheck.result ?: return@asyncCommand orderCheck.sendReason(sender)
+
+		Bazaars.withdrawOrderStock(sender, order._id, limit ?: Int.MAX_VALUE).sendReason(sender)
+	}
+
+	@Subcommand("order fulfill")
+	@Description("Fulfills the order at the provided city.")
+	@CommandCompletion("@bazaarCities @cityOrderers @cityOrders")
+	fun onOrderFulfill(sender: Player, city: TradeCityData, owner: SLPlayer, orderString: String, @Optional limit: Int?) = asyncCommand(sender) {
+		val orderCheck = Bazaars.checkHasOrder(owner._id, Regions[city.territoryId], orderString)
+		val order = orderCheck.result ?: return@asyncCommand orderCheck.sendReason(sender)
+
+		Bazaars.fulfillOrder(sender, sender.inventory, order._id, limit ?: Int.MAX_VALUE).sendReason(sender)
 	}
 }

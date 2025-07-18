@@ -122,8 +122,6 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 			val entity = entry.value
 			entity.displace(movement)
 		}
-
-		multiblockLinkageManager.displace(movement)
 	}
 
 	/** Mostly to be used with blueprint load or loadship, loads entities from their sign data */
@@ -175,8 +173,9 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 	 * Multiblock entities are stored on the block the sign is placed on.
 	 **/
 	override operator fun get(sign: Sign): MultiblockEntity? {
-		val local = getLocalCoordinate(Vec3i(sign.x, sign.y, sign.z))
-		return multiblockEntities[getRelative(toBlockKey(local), sign.getFacing().oppositeFace)]
+		val origin = getRelative(Vec3i(sign.x, sign.y, sign.z), sign.getFacing().oppositeFace, 0, 0, 1)
+		val local = getLocalCoordinate(origin)
+		return multiblockEntities[toBlockKey(local)]
 	}
 
 	fun clearData() {

@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.economy.cargotrade
 
-import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
 import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
@@ -14,6 +13,8 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.deserializeComponent
+import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
@@ -24,9 +25,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.anvilInputText
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.InputValidator
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.validator.ValidatorResult
+import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import net.horizonsend.ion.server.features.progression.SLXP
@@ -35,8 +34,12 @@ import net.horizonsend.ion.server.features.progression.achievements.rewardAchiev
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.TypeCategory
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openInputMenu
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.InputValidator
+import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
+import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -44,7 +47,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.action
 import net.horizonsend.ion.server.miscellaneous.utils.aqua
 import net.horizonsend.ion.server.miscellaneous.utils.bold
-import net.horizonsend.ion.server.miscellaneous.utils.colorize
 import net.horizonsend.ion.server.miscellaneous.utils.msg
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import net.horizonsend.ion.server.miscellaneous.utils.red
@@ -75,6 +77,9 @@ import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
+import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.item.impl.AbstractItem
+import xyz.xenondevs.invui.window.Window
 import java.time.Instant
 import java.util.Date
 import java.util.Locale
@@ -138,29 +143,49 @@ object ShipmentManager : IonServerComponent() {
 	private fun getShipments(territoryId: Oid<Territory>): List<UnclaimedShipment> = shipments[territoryId] ?: listOf()
 
 	fun openShipmentSelectMenu(player: Player, cityInfo: TradeCityData) {
-		MenuHelper.apply {
-			val pane = staticPane(0, 0, 9, 2)
+		val gui = Gui.normal()
+			.setStructure(
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				". . . . . . . . .",
+			)
+			.build()
 
-			getShipments(cityInfo.territoryId).forEachIndexed { index, shipment: UnclaimedShipment ->
-				if (shipment.isAvailable) {
-					pane.addItem(getCrateItem(shipment, player), index, 0)
-					pane.addItem(getPlanetItem(shipment), index, 1)
-				}
+		getShipments(cityInfo.territoryId).forEachIndexed { index, shipment: UnclaimedShipment ->
+			if (shipment.isAvailable) {
+				gui.setItem(index, 1, getCrateItem(shipment, player))
+				gui.setItem(index, 2, getPlanetItem(shipment))
 			}
-
-			gui(pane.height, "&lCity '${cityInfo.displayName}' Options:".colorize())
-				.withPane(pane)
-				.show(player)
 		}
+
+		val overlay = GuiText("")
+			.add(deserializeComponent("&lCity '${cityInfo.displayName}' Options:", legacyAmpersand), line = -1)
+			.setSlotOverlay(
+				"# # # # # # # # #",
+				". . . . . . . . .",
+				". . . . . . . . .",
+				"# # # # # # # # #",
+			)
+			.build()
+
+		Window.single()
+			.setViewer(player)
+			.setGui(gui)
+			.setTitle(overlay)
+			.build()
+			.open()
 	}
 
-	private fun MenuHelper.getCrateItem(shipment: UnclaimedShipment, player: Player): GuiItem {
+	private fun getCrateItem(shipment: UnclaimedShipment, player: Player): AbstractItem {
 		val item = CrateItems[CargoCrates[shipment.crate]]
 
-		return guiButton(item) {
-			whoClicked.closeInventory()
+		item.updateLore(getCrateItemLore(shipment).map { deserializeComponent(it, legacyAmpersand) })
+
+		return item.makeGuiButton { _, _ ->
+			player.closeInventory()
 			openAmountPrompt(player, shipment)
-		}.setLore(getCrateItemLore(shipment))
+		}
 	}
 
 	private fun getCrateItemLore(shipment: UnclaimedShipment): List<String> {
@@ -176,13 +201,13 @@ object ShipmentManager : IonServerComponent() {
 		)
 	}
 
-	private fun MenuHelper.getPlanetItem(shipment: UnclaimedShipment): GuiItem {
+	private fun getPlanetItem(shipment: UnclaimedShipment): AbstractItem {
 		val destinationTerritory: RegionTerritory = Regions[shipment.to.territoryId]
 		val destinationWorld = destinationTerritory.world
 		val planetId = destinationWorld.uppercase(Locale.getDefault()).replace(" ", "")
 
 		val planetIcon = CustomItemRegistry.getByIdentifier(planetId)?.constructItemStack() ?: CustomItemRegistry.BATTERY_G.constructItemStack()
-		return guiButton(planetIcon)
+		return planetIcon.makeGuiButton { _, _ ->  }
 	}
 
 	private fun openAmountPrompt(player: Player, shipment: UnclaimedShipment) {
@@ -195,20 +220,20 @@ object ShipmentManager : IonServerComponent() {
 		val min = balancing.generator.minShipmentSize
 		val max = min(balancing.generator.maxShipmentSize, maxCrateCount)
 
-		player.anvilInputText(
+		player.openInputMenu(
 			prompt = "Select amount of crates:".toComponent(),
 			description = "Between $min and $max".toComponent(),
 			inputValidator = InputValidator { result ->
 				val amount = result.toIntOrNull() ?: return@InputValidator ValidatorResult.FailureResult(text("Amount must be an integer"))
 				if (amount !in min..max) return@InputValidator ValidatorResult.FailureResult(text("Amount must be between $min and $max"))
 
-				ValidatorResult.ValidatorSuccessSingleEntry(result, amount)
+				ValidatorResult.ValidatorSuccessSingleEntry(amount)
 			},
-		) { _, (_, result) ->
-			if (result !is ValidatorResult.ValidatorSuccessSingleEntry) return@anvilInputText
+		) { _, result ->
+			if (result !is ValidatorResult.ValidatorSuccessSingleEntry) return@openInputMenu
 
 			giveShipment(player, shipment, result.result)
-			return@anvilInputText
+			return@openInputMenu
 		}
 	}
 

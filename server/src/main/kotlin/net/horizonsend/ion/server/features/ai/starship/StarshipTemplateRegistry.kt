@@ -18,6 +18,7 @@ import net.horizonsend.ion.common.utils.text.colors.TSAII_VERY_DARK_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.common.utils.text.miniMessage
+import net.horizonsend.ion.common.utils.text.serialize
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
@@ -53,31 +54,31 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	val TEST_JAMMER = registerTemplate(StarshipTemplate(
 		schematicName = "test_jammer",
 		type = AI_GUNSHIP,
-		miniMessageName = miniMessage(text("Test Jammer", WATCHER_STANDARD))
+		miniMessageName = text("Test Jammer", WATCHER_STANDARD).serialize(miniMessage)
 	))
 
 	val TEST_LOGISTIC = registerTemplate(StarshipTemplate(
 		schematicName = "test_logistic",
 		type = AI_CORVETTE_LOGISTIC,
-		miniMessageName = miniMessage(text("Test Logistic", WATCHER_STANDARD))
+		miniMessageName = text("Test Logistic", WATCHER_STANDARD).serialize(miniMessage)
 	))
 
 	val TEST_BATTLECRUISER = registerTemplate(StarshipTemplate(
 		schematicName = "test_battlecruiser",
 		type = AI_BATTLECRUISER,
-		miniMessageName = miniMessage(text("Test Battlecruiser", WATCHER_STANDARD))
+		miniMessageName = text("Test Battlecruiser", WATCHER_STANDARD).serialize(miniMessage)
 	))
 
 	val TEST_DISINTEGRATOR = registerTemplate(StarshipTemplate(
 		schematicName = "test_disintegrator",
 		type = AI_DESTROYER,
-		miniMessageName = miniMessage(text("Test Disintegrator", WATCHER_STANDARD))
+		miniMessageName = text("Test Disintegrator", WATCHER_STANDARD).serialize(miniMessage)
 	))
 
 	val TEST_CYCLE = registerTemplate(StarshipTemplate(
 		schematicName = "test_cycle",
 		type = AI_FRIGATE,
-		miniMessageName = miniMessage(text("Test Cycle", WATCHER_STANDARD))
+		miniMessageName = text("Test Cycle", WATCHER_STANDARD).serialize(miniMessage)
 	))
 	// END_TEST
 
@@ -86,7 +87,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	val VERDOLITH = registerTemplate(StarshipTemplate(
 		schematicName = "Verdolith",
 		type = AI_FRIGATE,
-		miniMessageName = miniMessage(text("Verdolith", WATCHER_STANDARD)),
+		miniMessageName = text("Verdolith", WATCHER_STANDARD).serialize(miniMessage),
 		manualWeaponSets = mutableSetOf(
 			WeaponSet(
 				name = "phaser",
@@ -111,7 +112,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	val TERALITH = registerTemplate(StarshipTemplate(
 		schematicName = "Teralith",
 		type = AI_FRIGATE,
-		miniMessageName = miniMessage(text("Teralith", WATCHER_STANDARD)),
+		miniMessageName = text("Teralith", WATCHER_STANDARD).serialize(miniMessage),
 		manualWeaponSets = mutableSetOf(
 			WeaponSet(
 				name = "phaser",
@@ -135,7 +136,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	val ARBOREALITH = registerTemplate(StarshipTemplate(
 		schematicName = "Arborealith",
 		type = AI_DESTROYER,
-		miniMessageName = miniMessage(text("Arborealith", WATCHER_STANDARD)),
+		miniMessageName = text("Arborealith", WATCHER_STANDARD).serialize(miniMessage),
 		manualWeaponSets = mutableSetOf(
 			WeaponSet(
 				name = "phaser",
@@ -163,7 +164,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	val MIANBAO = registerTemplate(StarshipTemplate(
 		schematicName = "Mianbao",
 		type = AI_CORVETTE,
-		miniMessageName = miniMessage(text("Mianbao", 吃饭人_STANDARD)),
+		miniMessageName = text("Mianbao", 吃饭人_STANDARD).serialize(miniMessage),
 		manualWeaponSets = mutableSetOf(
 			WeaponSet(
 			name = "manual",
@@ -183,7 +184,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	val MALINGSHU = registerTemplate(StarshipTemplate(
 		schematicName = "Malingshu",
 		type = AI_FRIGATE,
-		miniMessageName = miniMessage(text("Malingshu", 吃饭人_STANDARD)),
+		miniMessageName = text("Malingshu", 吃饭人_STANDARD).serialize(miniMessage),
 		manualWeaponSets = mutableSetOf(
 			WeaponSet(
 			name = "Manual",

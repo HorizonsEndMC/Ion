@@ -216,6 +216,7 @@ object ClientDisplayEntities : IonServerComponent() {
         val offset = (-scale / 2) + 0.5
         block.block = blockData
         block.isGlowing = glow
+		block.brightness = Display.Brightness(0, 15)
         block.transformation = Transformation(Vector3f(0f), Quaternionf(), Vector3f(scale), Quaternionf())
 
         return block.getNMSData(pos.x + offset, pos.y + offset, pos.z + offset)

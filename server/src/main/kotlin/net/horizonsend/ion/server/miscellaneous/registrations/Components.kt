@@ -27,6 +27,7 @@ import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.collectors.CollectionMissions
 import net.horizonsend.ion.server.features.economy.collectors.Collectors
+import net.horizonsend.ion.server.features.economy.misc.StationRentalZones
 import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AreaShields
@@ -34,6 +35,7 @@ import net.horizonsend.ion.server.features.misc.AutoRestart
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
 import net.horizonsend.ion.server.features.misc.ProxyMessaging
+import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.misc.Shuttles
 import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
@@ -46,8 +48,9 @@ import net.horizonsend.ion.server.features.nations.NationsMasterTasks
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.nations.sieges.StationSieges
-import net.horizonsend.ion.server.features.npcs.StarshipDealers
+import net.horizonsend.ion.server.features.npcs.NPCDisplay
 import net.horizonsend.ion.server.features.npcs.TutorialNPCs
+import net.horizonsend.ion.server.features.npcs.database.UniversalNPCs
 import net.horizonsend.ion.server.features.npcs.traits.NPCTraits
 import net.horizonsend.ion.server.features.ores.generation.OreGeneration
 import net.horizonsend.ion.server.features.player.CombatNPCs
@@ -55,11 +58,11 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.DutyModeMonitor
 import net.horizonsend.ion.server.features.player.EventLogger
 import net.horizonsend.ion.server.features.player.NMSAchievements
+import net.horizonsend.ion.server.features.progression.Bounties
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.progression.ShipKillXP
-import net.horizonsend.ion.server.features.progression.bounties.Bounties
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsJammingSidebar
 import net.horizonsend.ion.server.features.space.Orbits
@@ -81,6 +84,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCru
 import net.horizonsend.ion.server.features.starship.control.signs.StarshipSignControl
 import net.horizonsend.ion.server.features.starship.control.weaponry.PlayerStarshipWeaponry
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
+import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
@@ -184,6 +188,8 @@ val components: List<IonComponent> = listOf(
 	StarshipFactories,
 	Tutorials,
 	Interdiction,
+	UniversalNPCs,
+	NPCDisplay,
 	StarshipDealers,
 	TutorialNPCs,
 	ShipKillXP,
@@ -227,4 +233,6 @@ val components: List<IonComponent> = listOf(
 	PlanetTeleportCooldown,
 	MultiBlockDisplay,
 	MultiblockRecipeRegistry,
+	StationRentalZones,
+	ServerInboxes
 )

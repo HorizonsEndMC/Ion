@@ -16,11 +16,12 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_L
 import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.randomString
+import net.horizonsend.ion.common.utils.text.restrictedMiniMessageSerializer
+import net.horizonsend.ion.common.utils.text.serialize
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.gui.custom.starship.RenameButton.Companion.starshipNameSerializer
 import net.horizonsend.ion.server.features.multiblock.manager.ShipMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
@@ -665,14 +666,14 @@ class Starship(
 
 	//region Display Name
 	/** Gets the minimessage display name of this starship */
-	fun getDisplayNameMiniMessage(): String = starshipNameSerializer.serialize(getDisplayName())
+	fun getDisplayNameMiniMessage(): String = getDisplayName().serialize(restrictedMiniMessageSerializer)
 
 	/** Gets the component display name of this starship */
 	fun getDisplayName(): Component {
 		return text()
 			.color(WHITE)
 			.decoration(TextDecoration.ITALIC, false)
-			.append(this.data.name?.let { starshipNameSerializer.deserialize(it) } ?: return type.displayNameComponent)
+			.append(this.data.name?.let { restrictedMiniMessageSerializer.deserialize(it) } ?: return type.displayNameComponent)
 			.hoverEvent(template(text("A {0} block {1}", HE_LIGHT_GRAY), initialBlockCount, type))
 			.build()
 	}
@@ -707,7 +708,7 @@ class Starship(
 		// Shortcut
 		if (rotation == 0.0) return localVec3i + globalReference
 
-		return getAdjusted(localVec3i) + globalReference
+		return getAdjusted(localVec3i, false) + globalReference
 	}
 
 	// Get a world coordinate from a Vec3i relative to the ship's center of mass
@@ -717,12 +718,18 @@ class Starship(
 		// Shortcut
 		if (rotation == 0.0) return local
 
-		return getAdjusted(local)
+		return getAdjusted(local, true)
 	}
 
-	fun getAdjusted(vec3i: Vec3i): Vec3i {
-		val cosTheta: Double = cos(Math.toRadians(rotation))
-		val sinTheta: Double = sin(Math.toRadians(rotation))
+	fun getAdjusted(vec3i: Vec3i, opposite: Boolean): Vec3i {
+		var angle = rotation
+
+		if (opposite) {
+			angle = 360 - (angle % 360)
+		}
+
+		val cosTheta: Double = cos(Math.toRadians(angle))
+		val sinTheta: Double = sin(Math.toRadians(angle))
 
 		return Vec3i(
 			(vec3i.x.toDouble() * cosTheta - vec3i.z.toDouble() * sinTheta).roundToInt(),

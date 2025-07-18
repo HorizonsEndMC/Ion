@@ -9,10 +9,10 @@ interface RecipeProcessingMultiblockEntity<E: RecipeEnviornment> {
 	var lastRecipe: MultiblockRecipe<E>?
 	var hasTicked: Boolean
 
-	fun buildRecipeEnviornment(): E
+	fun buildRecipeEnviornment(): E?
 
 	fun getRecipesFor(): MultiblockRecipe<E>? {
-		val enviornment = buildRecipeEnviornment()
+		val enviornment = buildRecipeEnviornment() ?: return null
 		// Optimization step, avoid checking all recipes
 		if (lastRecipe?.verifyAllRequirements(enviornment) == true) return lastRecipe
 
@@ -28,11 +28,11 @@ interface RecipeProcessingMultiblockEntity<E: RecipeEnviornment> {
 		val recipe = getRecipesFor()
 
 		if (this is ProgressMultiblock && (recipe == null || (lastRecipe != recipe && hasTicked))) progressManager.reset()
+		val enviornment = buildRecipeEnviornment() ?: return false
 
 		hasTicked = true
 		lastRecipe = recipe
 
-		val enviornment = buildRecipeEnviornment()
 		return recipe?.assemble(enviornment) != null
 	}
 }

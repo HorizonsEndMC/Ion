@@ -554,6 +554,12 @@ object CustomItemRegistry : IonServerComponent() {
 		text("Auto Compost Modifier"),
 		text("Sends applicable drops through a composter, turning them into bonemeal.", GRAY)
 	) { ItemModRegistry.AUTO_COMPOST })
+	val COLLECTOR: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_COLLECTOR",
+		"tool/modification/collector",
+		text("Collector Modifier"),
+		text("Sends dropped items directly to your inventory if there is room.", GRAY)
+	) { ItemModRegistry.COLLECTOR })
 	val RANGE_3: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_RANGE_3",
 		"tool/modification/drill_aoe_3",

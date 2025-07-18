@@ -4,10 +4,15 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Optional
+import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayCurrentBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayItem
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
@@ -77,6 +82,14 @@ object SearchCommand : SLCommand() {
 		}
 	}
 
+	@Subcommand("_toggle")
+	fun itemSearchToggle(player: Player, @Optional toggle: Boolean?) {
+		val showItemDisplay = toggle ?: !player.getSetting(PlayerSettings::showItemSearchItem)
+		player.setSetting(PlayerSettings::protectionMessagesEnabled, showItemDisplay)
+
+		player.success("Changed showing searched item to $showItemDisplay")
+	}
+
 	/**
 	 * Searches for an item in a list of containers and displays the results as display entities
 	 */
@@ -89,7 +102,7 @@ object SearchCommand : SLCommand() {
 			if ( (twoOrMoreMatches(inventories.elementAt(block.index), strList)) || // if container has 2+ of the searched items
 				(item.type.isBlock && item.type.isSolid) || // Billboarding blocks looks so messed up, so this mostly prevents that
 				item.type == Material.AIR || // display if item is air, otherwise it would show up as an invisible item
-				!PlayerCache[player].showItemSearchItem) // toggleable setting
+				!player.getSetting(PlayerSettings::showItemSearchItem)) // toggleable setting
 			{
 				sendEntityPacket(player, displayCurrentBlock(player.world.minecraft, loc), 10 * 20) // show block
 			} else {

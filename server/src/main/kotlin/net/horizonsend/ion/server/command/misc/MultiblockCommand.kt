@@ -184,7 +184,7 @@ object MultiblockCommand : SLCommand() {
 			entities,
 			"/ionchunk dumpentities ${visual == true}",
 			page ?: 1,
-		) { entry, index ->
+		) { entry, _ ->
 			val (key, entity) = entry
 			val vec = toVec3i(key)
 
