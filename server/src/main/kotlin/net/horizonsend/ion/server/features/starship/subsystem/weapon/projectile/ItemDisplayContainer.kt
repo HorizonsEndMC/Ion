@@ -99,7 +99,7 @@ class ItemDisplayContainer(
 			entity.itemStack = CraftItemStack.asNMSCopy(itemStack)
 		}
 
-	private var entity: ItemDisplay = createEntity().getNMSData(
+	private val entity: ItemDisplay = createEntity().getNMSData(
 		position.x,
 		position.y,
 		position.z
