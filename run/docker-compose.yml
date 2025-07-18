@@ -64,4 +64,6 @@ services:
       SYNC_SKIP_NEWER_IN_DESTINATION: "FALSE"
       JVM_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
       CREATE_CONSOLE_IN_PIPE: "TRUE"
+      FORCE_REDOWNLOAD: false
+      PAPER_BUILD: 232
 
