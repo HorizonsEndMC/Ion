@@ -35,9 +35,10 @@ class ItemFactory private constructor(
 		return base
 	}
 
-	fun construct(modifier: Consumer<ItemStack>) {
+	fun construct(modifier: Consumer<ItemStack>): ItemStack {
 		val base = construct()
 		modifier.accept(base)
+		return base
 	}
 
 	class Builder() {

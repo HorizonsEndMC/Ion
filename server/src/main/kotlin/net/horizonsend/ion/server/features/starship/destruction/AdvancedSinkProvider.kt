@@ -1,9 +1,16 @@
 package net.horizonsend.ion.server.features.starship.destruction
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.DyedItemColor
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields.getNearbyAreaShields
 import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -11,6 +18,8 @@ import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement
 import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement.AIR
 import net.horizonsend.ion.server.features.starship.movement.OptimizedMovement.updateHeightMaps
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.SupercapitalReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ItemDisplayContainer
+import net.horizonsend.ion.server.features.transport.items.util.DYEABLE_CUBE_MONO
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -29,21 +38,27 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
+import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.minecraft.core.BlockPos
 import net.minecraft.core.SectionPos
 import net.minecraft.nbt.CompoundTag
+import net.minecraft.util.Brightness
 import net.minecraft.world.level.block.BaseEntityBlock
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.World
+import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
+import org.joml.Vector3f
 import java.util.LinkedList
 import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.random.Random
@@ -86,6 +101,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 
 		sinkPositions = newArray
 
+		SinkAnimation(starship, starship.initialBlockCount, starship.world, starship.centerOfMass).schedule()
 		tryReactorParticles()
 		playSinkSound()
 	}
@@ -151,7 +167,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 
 		val n = sinkPositions.size
 		val capturedStates = Array(n) { AIR }
-		val capturedTiles = mutableMapOf<Int, Pair<BlockState, CompoundTag>>()
+		val capturedTiles = Int2ObjectOpenHashMap<Pair<BlockState, CompoundTag>>()
 
 		Tasks.syncBlocking {
 			try {
@@ -463,7 +479,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		 * Formnats the provided position array into the chunk map
 		 **/
 		fun getChunkMap(positionArray: LongArray, world: World): SinkChunkMap {
-			val chunkMap = mutableMapOf<Long, MutableMap<Int, MutableMap<Long, Int>>>()
+			val chunkMap = Long2ObjectOpenHashMap<Int2ObjectOpenHashMap<Long2IntOpenHashMap>>()
 
 			for (index in positionArray.indices) {
 				val blockKey = positionArray[index]
@@ -476,13 +492,97 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 
 				val sectionKey = world.minecraft.getSectionIndexFromSectionY(SectionPos.blockToSectionCoord(y))
 
-				val sectionMap = chunkMap.getOrPut(chunkKey) { mutableMapOf() }
-				val positionMap = sectionMap.getOrPut(sectionKey) { mutableMapOf() }
+				val sectionMap = chunkMap.getOrPut(chunkKey) { Int2ObjectOpenHashMap() }
+				val positionMap = sectionMap.getOrPut(sectionKey) { Long2IntOpenHashMap() }
 
 				positionMap[blockKey] = index
 			}
 
 			return chunkMap
+		}
+	}
+
+	class SinkAnimation(val starship: Starship, val size: Int, val world: World, val origin: Vec3i) : BukkitRunnable() {
+		private val duration = 40
+
+		private val blockWrappers = ObjectOpenHashSet<Block>()
+
+		private var iterations = 0
+
+		inner class Block(val wrapper: ItemDisplayContainer, val direction: Vector, val initColor: Color, val finalColor: Color, val finalScale: Double) {
+			fun blend(original: Number, final: Number): Double {
+				val phase = iterations.toDouble() / duration.toDouble()
+
+				return original.toDouble() + phase * (final.toDouble() - original.toDouble())
+			}
+
+			fun updateColorAndPosition() {
+				val item = wrapper.itemStack
+
+				val middleAlpha = blend(initColor.alpha, finalColor.alpha)
+				val middleRed = blend(initColor.red, finalColor.red)
+				val middleGreen = blend(initColor.green, finalColor.green)
+				val middleBlue = blend(initColor.blue, finalColor.blue)
+
+				val newColor = Color.fromARGB(middleAlpha.roundToInt(), middleRed.roundToInt(), middleGreen.roundToInt(), middleBlue.roundToInt())
+
+				wrapper.itemStack = item.clone().updateData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(newColor, false))
+				wrapper.offset = wrapper.offset.add(direction.toVector3f())
+				wrapper.scale = Vector3f(blend(1.0, finalScale).toFloat())
+//				wrapper.heading = wrapper.heading.add(Vector(
+//					Random.nextDouble(-0.001, 0.001),
+//					Random.nextDouble(-0.001, 0.001),
+//					Random.nextDouble(-0.001, 0.001)
+//				).normalize())
+
+				wrapper.update()
+			}
+		}
+
+		init {
+			val referenceCenter = origin.toCenterVector()
+
+		    repeat(sqrt(size.toDouble()).roundToInt() * 5) {
+				val origin = Vec3i(starship.blocks.random()).toCenterVector()
+				var vector = origin.clone().subtract(referenceCenter)
+
+				if (vector.isZero) vector = Vector.getRandom()
+
+				vector.normalize()
+				vector.y = vector.y.coerceIn(-0.25..0.25)
+
+				val initColor = Color.ORANGE
+
+				val item = DYEABLE_CUBE_MONO.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(initColor, false)) }
+
+				val displayContainer = ItemDisplayContainer(world, 1.0f, origin, Vector.getRandom(), item)
+				displayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
+
+				blockWrappers.add(Block(
+					wrapper = displayContainer,
+					direction = vector,
+					initColor = initColor,
+					finalColor = Color.GRAY.setAlpha(255),
+					finalScale = 7.0
+				))
+			}
+		}
+
+		override fun run() {
+			iterations++
+
+			if (iterations >= duration) {
+				cancel()
+				return
+			}
+
+			blockWrappers.forEach(Block::updateColorAndPosition)
+		}
+
+		fun schedule() = runTaskTimerAsynchronously(IonServer, 2L, 2L)
+
+		override fun cancel() {
+			blockWrappers.forEach { it.wrapper.remove() }
 		}
 	}
 }
@@ -491,3 +591,4 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
  * Map of a chunk key to a map of a section key to a map of a block key to its index in the block list
  **/
 private typealias SinkChunkMap = Map<Long, Map<Int, Map<BlockKey, Int>>>
+
