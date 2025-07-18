@@ -259,9 +259,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	val ANAAN = registerTemplate(StarshipTemplate(
 		schematicName = "Anaan",
 		type = AI_GUNSHIP,
-		miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Anaan",
-		autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
-	))
+		miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Anaan",))
 
 	val VENDETTA = registerTemplate(StarshipTemplate(
 		schematicName = "Vendetta",
@@ -305,7 +303,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		schematicName = "Bloodstar",
 		type = AI_CORVETTE,
 		miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Bloodstar",
-		manualWeaponSets = mutableSetOf(WeaponSet(name = "Manual", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+		manualWeaponSets = mutableSetOf(WeaponSet(name = "manual", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
 		autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 	))
 
@@ -472,12 +470,15 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		schematicName = "Beaver",
 		type = AI_TRANSPORT,
 		miniMessageName = "<$MINING_CORP_LIGHT_ORANGE>Beaver",
+		autoWeaponSets = mutableSetOf(WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+		manualWeaponSets = mutableSetOf(WeaponSet(name = "lw", engagementRangeMin = 0.0, engagementRangeMax = 200.0))
 	))
 
 	val BADGER = registerTemplate(StarshipTemplate(
 		schematicName = "Badger",
 		type = AI_LIGHT_FREIGHTER,
 		miniMessageName = "<$MINING_CORP_DARK_ORANGE>Badger",
+		autoWeaponSets = mutableSetOf(WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 	))
 
 	val TYPE_V11 = registerTemplate(StarshipTemplate(

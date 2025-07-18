@@ -154,7 +154,7 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 	companion object {
 		private const val DIRECT_CONTROL_DIVISOR = 1.75
 
-		fun calculateSpeed(selectedSlot: Int) = if (selectedSlot == 0) -1.0 else (selectedSlot / DIRECT_CONTROL_DIVISOR).toDouble()
+		fun calculateSpeed(selectedSlot: Int) = if (selectedSlot == 0) -1.0 else ((selectedSlot) / DIRECT_CONTROL_DIVISOR).toDouble()
 		fun calculateCooldown(movementCooldown: Long, heldItemSlot: Int) = movementCooldown - heldItemSlot * 8
 	}
 }

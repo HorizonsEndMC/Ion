@@ -107,10 +107,10 @@ class PlayerDirectControlInput(override val controller: PlayerController
 
 		// Convert to world-relative vector
 		val vector = when (direction) {
-			BlockFace.NORTH -> Vector(strafe, 0.0, ascend)
-			BlockFace.SOUTH -> Vector(-strafe, 0.0, -ascend)
-			BlockFace.WEST ->  Vector(ascend, 0.0, -strafe)
-			BlockFace.EAST ->  Vector(-ascend, 0.0, strafe)
+			BlockFace.NORTH -> Vector(strafe, 0.0, -ascend)
+			BlockFace.SOUTH -> Vector(-strafe, 0.0, ascend)
+			BlockFace.WEST ->  Vector(-ascend, 0.0, -strafe)
+			BlockFace.EAST ->  Vector(ascend, 0.0, strafe)
 			else -> Vector()
 		}
 
