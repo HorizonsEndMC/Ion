@@ -519,9 +519,10 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 			val finalScale: Double,
 			val rotationVector: Vector,
 		) {
+			private val internalDuration = Random.nextInt(duration, (duration / 2) + duration)
 
 			fun blend(original: Number, final: Number): Double {
-				val phase = iterations.toDouble() / duration.toDouble()
+				val phase = iterations.toDouble() / internalDuration.toDouble()
 
 				return original.toDouble() + phase * (final.toDouble() - original.toDouble())
 			}
@@ -536,12 +537,13 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 
 //				val newColor = Color.fromARGB(middleAlpha.roundToInt(), middleRed.roundToInt(), middleGreen.roundToInt(), middleBlue.roundToInt())
 
-				val newColor = colors.getEntry(iterations.toDouble() / duration.toDouble())
+				val newColor = colors.getEntry(iterations.toDouble() / internalDuration.toDouble())
 
 				wrapper.itemStack = item.clone().updateData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(newColor, false))
 				wrapper.offset = wrapper.offset.add(direction.toVector3f())
 				wrapper.scale = Vector3f(blend(1.0, finalScale).toFloat())
-				wrapper.heading = wrapper.heading.add(rotationVector)
+
+				wrapper.heading = wrapper.heading.clone().add(rotationVector)
 
 				wrapper.update()
 			}
@@ -578,10 +580,10 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 					)),
 					finalScale = 7.0,
 					rotationVector = Vector(
-						Random.nextDouble(-0.05, 0.05),
-						Random.nextDouble(-0.05, 0.05),
-						Random.nextDouble(-0.05, 0.05)
-					).normalize()
+						Random.nextDouble(-0.15, 0.15),
+						Random.nextDouble(-0.15, 0.15),
+						Random.nextDouble(-0.15, 0.15)
+					)
 				))
 			}
 
@@ -606,10 +608,10 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 					)),
 					finalScale = 3.0,
 					Vector(
-						Random.nextDouble(-0.001, 0.001),
-						Random.nextDouble(-0.001, 0.001),
-						Random.nextDouble(-0.001, 0.001)
-					).normalize()
+						Random.nextDouble(-0.05, 0.05),
+						Random.nextDouble(-0.05, 0.05),
+						Random.nextDouble(-0.05, 0.05)
+					)
 				))
 			}
 		}
