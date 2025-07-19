@@ -6,31 +6,28 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import net.horizonsend.ion.common.database.schema.misc.ClaimedBounty
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.colors.PIRATE_SATURATED_RED
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
-import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.lineBreak
+import net.horizonsend.ion.common.utils.text.lineBreakWithCenterTextSpecificWidth
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
-import net.horizonsend.ion.server.features.progression.bounties.Bounties
-import net.horizonsend.ion.server.features.progression.bounties.BountiesMenu
+import net.horizonsend.ion.server.gui.invui.misc.BountyGui
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import org.litote.kmongo.and
-import org.litote.kmongo.eq
 import org.litote.kmongo.inc
 
 @CommandAlias("bounty")
@@ -38,34 +35,11 @@ object BountyCommand : SLCommand() {
 	private fun requireBountiesEnabled() = failIf(!ConfigurationFiles.featureFlags().bounties) { "Bounties are disabled on this server!" }
 
 	@Default
-	@Subcommand("menu")
+	@Subcommand("menu|gui|list")
 	@Description("Open the bounty menu")
 	fun menu(sender: Player) {
 		requireBountiesEnabled()
-		BountiesMenu.openMenuAsync(sender)
-	}
-
-	@Subcommand("list")
-	@Description("List your active bounties")
-	fun list(sender: Player) = asyncCommand(sender) {
-		requireBountiesEnabled()
-
-		val bountiesText = text()
-
-		val bounties = ClaimedBounty.find(and(ClaimedBounty::hunter eq sender.slPlayerId, ClaimedBounty::completed eq false)).toList().map {  bounty ->
-			text()
-				.append(text("Bounty for ", NamedTextColor.RED))
-				.append(text(SLPlayer.getName(bounty.target)!!, NamedTextColor.DARK_RED))
-				.append(text(" acquired on ", NamedTextColor.RED))
-				.append(text(bounty.claimTime.toString(), NamedTextColor.GOLD))
-				.append(newline())
-				.build()
-		}.toTypedArray()
-
-		if (bounties.isEmpty()) sender.sendMessage(text("You don't have any bounties!", NamedTextColor.RED))
-
-		bountiesText.append(*bounties)
-		sender.sendMessage(bountiesText.build())
+		BountyGui(sender).openGui()
 	}
 
 	@Subcommand("put")
@@ -77,7 +51,7 @@ object BountyCommand : SLCommand() {
 		requireEconomyEnabled()
 
 		if (amount <= 50) fail { "The minimum amount is C50" }
-		if (Bounties.isNotSurvival()) fail { "You can only do that on the Survival server!" }
+		if (!ConfigurationFiles.featureFlags().bounties) fail { "Bounties are not enabled on this server!" }
 		val target = SLPlayer[targetName] ?: fail { "Player $targetName not found!" }
 		if (target._id == sender.slPlayerId) fail { "You can't place a bounty on yourself!" }
 		requireMoney(sender, amount)
@@ -95,49 +69,21 @@ object BountyCommand : SLCommand() {
 		Tasks.sync {
 			VAULT_ECO.withdrawPlayer(sender, amount)
 
-			Notify.chatAndGlobal(
-				text()
-					.append(text(sender.name, NamedTextColor.DARK_RED))
-					.append(text(" has placed a bounty of ", NamedTextColor.RED))
-					.append(text(amount.toCreditsString(), NamedTextColor.GOLD))
-					.append(text(" on ", NamedTextColor.RED))
-					.append(text(targetName, NamedTextColor.DARK_RED))
-					.append(text(". Their bounty is now ", NamedTextColor.RED))
-					.append(text((bounty + amount).toCreditsString(), NamedTextColor.GOLD))
-					.build()
-			)
+			Tasks.async {
+				val message = template(
+					text("{0} has placed a bounty of {1} on {2}. Their bounty is now {3}", HE_MEDIUM_GRAY),
+					paramColor = PIRATE_SATURATED_RED,
+					sender.name,
+					amount.toCreditComponent(),
+					targetName,
+					(bounty + amount).toCreditComponent()
+				)
 
-			SLPlayer.updateById(target._id, inc(SLPlayer::bounty, amount))
+				SLPlayer.updateById(target._id, inc(SLPlayer::bounty, amount))
+
+				Notify.chatAndGlobal(message)
+			}
 		}
-	}
-
-	@Subcommand("claim")
-	@Description("Acquire a bounty")
-	@CommandCompletion("@players")
-	fun claim(sender: Player, targetName: String, @Optional amount: Double? = null) = asyncCommand(sender) {
-		requireBountiesEnabled()
-		requireEconomyEnabled()
-
-		if (Bounties.isNotSurvival()) fail { "You can only do that on the Survival server!" }
-		val target = SLPlayer[targetName] ?: fail { "Player $targetName not found!" }
-		if (target._id == sender.slPlayerId) fail { "You can't claim a bounty on yourself!" }
-
-		if (target.bounty == 0.0) fail { "$targetName doesn't have a bounty!" }
-
-		if (amount != null) {
-			val message = text()
-				.append(text(targetName, NamedTextColor.DARK_RED))
-				.append(text(" has a bounty of ", NamedTextColor.RED))
-				.append(text(target.bounty.toCreditsString(), NamedTextColor.GOLD))
-				.append(text(". You must complete this bounty within 24 hours, you cannot claim a bounty on $targetName again until ${Bounties.nextClaim}\n", NamedTextColor.RED))
-				.append(text("If you wish to proceed, enter /bounty claim $targetName ${target.bounty}", NamedTextColor.RED))
-				.build()
-
-			sender.sendMessage(message)
-			return@asyncCommand
-		}
-
-		Bounties.claimBounty(sender, target._id, targetName, target.bounty)
 	}
 
 	@Subcommand("top")
@@ -147,7 +93,7 @@ object BountyCommand : SLCommand() {
 
 		val builder = text()
 
-		builder.append(text("The Galaxy's Most Wanted:", NamedTextColor.RED).decorate(TextDecoration.BOLD), newline())
+		builder.append(lineBreakWithCenterTextSpecificWidth(text("Most Wanted", PIRATE_SATURATED_RED), width = 240), newline())
 
 		val bounties = SLPlayer.all()
 			.toList()
@@ -157,11 +103,17 @@ object BountyCommand : SLCommand() {
 			bounties.size,
 			"/bounty top",
 			page ?: 1,
-			color = NamedTextColor.RED
+			color = HE_MEDIUM_GRAY,
+			footerSeparator = lineBreak(40)
 		) {
 			val player = bounties[it]
 
-			ofChildren(text(player.lastKnownName, NamedTextColor.DARK_RED), text(": ", NamedTextColor.RED), player.bounty.toCreditComponent())
+			template(
+				text("{0}: {1}.", HE_MEDIUM_GRAY),
+				paramColor = PIRATE_SATURATED_RED,
+				player.lastKnownName,
+				player.bounty.toCreditComponent()
+			)
 		}
 
 		builder.append(body)
@@ -178,21 +130,19 @@ object BountyCommand : SLCommand() {
 
 		val bounty = target.bounty
 
-		if (target.bounty >= 0) {
-			sender.sendMessage(
-				text()
-					.append(text(targetName, NamedTextColor.DARK_RED))
-					.append(text("'s bounty is ", NamedTextColor.RED))
-					.append(text(bounty.toCreditsString(), NamedTextColor.GOLD))
-					.build()
-			)
+		if (target.bounty > 0) {
+			sender.sendMessage(template(
+				text("{0}'s bounty is {1}.", HE_MEDIUM_GRAY),
+				paramColor = PIRATE_SATURATED_RED,
+				targetName,
+				bounty.toCreditComponent()
+			))
 		} else {
-			sender.sendMessage(
-				text()
-					.append(text(targetName, NamedTextColor.DARK_RED))
-					.append(text(" does not have a bounty!", NamedTextColor.RED))
-					.build()
-			)
+			sender.sendMessage(template(
+				text("{0} doesn't have a bounty!", HE_MEDIUM_GRAY),
+				paramColor = PIRATE_SATURATED_RED,
+				targetName
+			))
 		}
 	}
 }

@@ -554,6 +554,12 @@ object CustomItemRegistry : IonServerComponent() {
 		text("Auto Compost Modifier"),
 		text("Sends applicable drops through a composter, turning them into bonemeal.", GRAY)
 	) { ItemModRegistry.AUTO_COMPOST })
+	val COLLECTOR: ModificationItem = register(ModificationItem(
+		"TOOL_MODIFICATION_COLLECTOR",
+		"tool/modification/collector",
+		text("Collector Modifier"),
+		text("Sends dropped items directly to your inventory if there is room.", GRAY)
+	) { ItemModRegistry.COLLECTOR })
 	val RANGE_3: ModificationItem = register(ModificationItem(
 		"TOOL_MODIFICATION_RANGE_3",
 		"tool/modification/drill_aoe_3",
@@ -602,6 +608,13 @@ object CustomItemRegistry : IonServerComponent() {
 	val REGULUS = unStackable(identifier = "REGULUS", displayName = text("Regulus"), model = "planet/regulus")
 	val SIRIUS = unStackable(identifier = "SIRIUS", displayName = text("Sirius"), model = "planet/sirius")
 	val PLANET_SELECTOR = unStackable(identifier = "PLANET_SELECTOR", displayName = text("PLANET_SELECTOR"), model = "planet/planet_selector")
+
+	//Debug start
+	val DEBUG_LINE = unStackable("DEBUG_LINE", displayName = text("DEBUG_LINE"), model = "debug/debug_line")
+	val DEBUG_LINE_GREEN = unStackable("DEBUG_LINE_GREEN", displayName = text("DEBUG_LINE_GREEN"), model = "debug/debug_line_green")
+	val DEBUG_LINE_RED = unStackable("DEBUG_LINE_RED", displayName = text("DEBUG_LINE_RED"), model = "debug/debug_line_red")
+	val DEBUG_LINE_BLUE = unStackable("DEBUG_LINE_BLUE", displayName = text("DEBUG_LINE_BLUE"), model = "debug/debug_line_blue")
+
 
 
 	init {

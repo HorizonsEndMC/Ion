@@ -4,7 +4,9 @@ import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -15,9 +17,17 @@ import java.util.concurrent.atomic.AtomicInteger
 open class AICreditRewardProvider(override val starship: ActiveStarship, val configuration: AITemplate.CreditRewardProviderConfiguration) : AIRewardsProvider {
 	override val log: Logger = LoggerFactory.getLogger(javaClass)
 
-	override fun processDamagerRewards(damager: PlayerDamager, points: AtomicInteger, pointsSum: Int) {
+	override fun processDamagerRewards(
+		damager: PlayerDamager,
+		topDamagerPoints: AtomicInteger,
+		points: AtomicInteger,
+		pointsSum: Int
+	) {
+		val difficultyMultiplier  = (starship.controller as? AIController)?.getCoreModuleByType<DifficultyModule>()?.rewardMultiplier ?: 1.0
+		val topPercent = topDamagerPoints.get().toDouble()/pointsSum.toDouble()
+		val killStreakBonus = AIKillStreak.getHeatMultiplier(damager.player)
 		val percent = points.get().toDouble() / pointsSum.toDouble()
-		val money = configuration.creditReward * percent
+		val money = configuration.creditReward * percent / topPercent * difficultyMultiplier * killStreakBonus
 
 		if (money <= 0.0) return
 

@@ -40,6 +40,9 @@ object Hyperspace : IonServerComponent() {
 
 	fun isWarmingUp(starship: ActiveStarship) = warmupTasks.containsKey(starship)
 	fun isMoving(starship: ActiveStarship) = movementTasks.containsKey(starship)
+	fun getJumpDestination(starship: ActiveStarship) : Location? {
+		return movementTasks[starship]?.dest
+	}
 
 	const val HYPERMATTER_AMOUNT = 2
 	const val INTER_SYSTEM_DISTANCE = 60000
@@ -52,11 +55,12 @@ object Hyperspace : IonServerComponent() {
 
 	fun beginJumpWarmup(
 		starship: ActiveStarship,
-		hyperdrive: HyperdriveSubsystem,
+		hyperdrive: HyperdriveSubsystem?,
 		x: Int,
 		z: Int,
 		destinationWorld: World,
-		useFuel: Boolean
+		useFuel: Boolean,
+		nullable: Boolean = false
 	) {
 		val massShadows = MassShadows.find(
 			starship.world,
@@ -81,17 +85,29 @@ object Hyperspace : IonServerComponent() {
 
 		check(!isWarmingUp(starship)) { "Starship is already warming up!" }
 		check(!isMoving(starship)) { "Starship is already moving in hyperspace" }
-		check(hyperdrive.isIntact()) { "Hyperdrive @ ${hyperdrive.pos} damaged" }
-
 		val spaceWorld = starship.world
 		check(spaceWorld.ion.hasFlag(WorldFlag.SPACE_WORLD)) { "${spaceWorld.name} is not a space world" }
-
 		val hyperspaceWorld = getHyperspaceWorld(spaceWorld)
 		checkNotNull(hyperspaceWorld) { "${spaceWorld.name} does not have a hyperspace world" }
 
+		if (hyperdrive != null) {
+			check(hyperdrive.isIntact()) { "Hyperdrive @ ${hyperdrive.pos} damaged" }
+			jumpWarmup(starship,hyperdrive,x,z,destinationWorld,useFuel)
+		}
+		check(nullable) {"Hyperdrive does not exist (invalid null state)"}
+		jumpWarmup(starship,null,x,z,destinationWorld,useFuel)
+	}
+
+	private fun jumpWarmup(starship: ActiveStarship,
+						   hyperdrive: HyperdriveSubsystem?,
+						   x: Int,
+						   z: Int,
+						   destinationWorld: World,
+						   useFuel: Boolean) {
 		val dest = Location(destinationWorld, x.toDouble(), 192.0, z.toDouble())
 		val mass = starship.mass
-		val speed = calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)
+		val speed = if (hyperdrive != null) {calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)}
+			else calculateSpeed(3, mass)
 		val warmup = (5.0 + log10(mass) * 2.0 + sqrt(speed.toDouble()) / 10.0).toInt()
 
 		warmupTasks[starship] = HyperspaceWarmup(starship, warmup, dest, hyperdrive, useFuel)
@@ -99,12 +115,18 @@ object Hyperspace : IonServerComponent() {
 		(starship.controller as? PlayerController)?.player?.rewardAchievement(Achievement.USE_HYPERSPACE)
 	}
 
+
 	fun cancelJumpWarmup(warmup: HyperspaceWarmup) {
 		check(warmupTasks.remove(warmup.ship, warmup)) { "Warmup wasn't in the map!" }
 
-		val drive: HyperdriveSubsystem = warmup.drive
-		if (drive.isIntact()) drive.restoreFuel()
+		val drive: HyperdriveSubsystem? = warmup.drive
+		if (drive != null && drive.isIntact()) drive.restoreFuel()
 		warmup.ship.information("Canceled Jump Warmup")
+	}
+
+	fun interruptWarmup(ship: ActiveControlledStarship){ // used only for AI
+		val warmup = warmupTasks[ship] ?: return
+		warmup.cancel()
 	}
 
 	fun completeJumpWarmup(warmup: HyperspaceWarmup) {
@@ -133,7 +155,8 @@ object Hyperspace : IonServerComponent() {
 			}
 
 			val mass = starship.mass
-			val speed = calculateSpeed(warmup.drive.multiblock.hyperdriveClass, mass) / 10
+			val speed = (if (warmup.drive != null) calculateSpeed(warmup.drive.multiblock.hyperdriveClass, mass)
+				 else calculateSpeed(3, mass)) / 10
 			movementTasks[starship] = HyperspaceMovement(starship, speed, originWorld, warmup.dest)
 		}
 	}

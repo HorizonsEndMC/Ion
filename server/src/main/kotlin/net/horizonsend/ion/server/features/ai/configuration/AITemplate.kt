@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.features.ai.configuration
 
 import kotlinx.serialization.Serializable
+import net.horizonsend.ion.server.configuration.util.IntegerAmount
 import net.horizonsend.ion.server.features.ai.reward.AICreditRewardProvider
 import net.horizonsend.ion.server.features.ai.reward.AIItemRewardProvider
+import net.horizonsend.ion.server.features.ai.reward.AIKillStreakRewardProvider
 import net.horizonsend.ion.server.features.ai.reward.AIXPRewardProvider
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.starship.BehaviorConfiguration
@@ -16,7 +18,8 @@ data class AITemplate(
 	val identifier: String,
 	val starshipInfo: StarshipTemplate,
 	val behaviorInformation: BehaviorConfiguration,
-	val rewardProviders: List<AIRewardsProviderConfiguration>
+	val rewardProviders: List<AIRewardsProviderConfiguration>,
+	val difficulty: IntegerAmount
 ) {
 	@Serializable
 	data class SpawningInformationHolder(
@@ -48,6 +51,15 @@ data class AITemplate(
 	) : AIRewardsProviderConfiguration {
 		override fun createRewardsProvider(starship: ActiveControlledStarship, template: AITemplate): RewardsProvider {
 			return AIItemRewardProvider(starship, this)
+		}
+	}
+
+	@Serializable
+	data class KillStreakRewardProviderConfiguration(
+		val streakMultiplier: Double
+	) : AIRewardsProviderConfiguration {
+		override fun createRewardsProvider(starship: ActiveControlledStarship, template: AITemplate): RewardsProvider {
+			return AIKillStreakRewardProvider(starship, this)
 		}
 	}
 

@@ -6,8 +6,7 @@ import net.citizensnpcs.trait.HologramTrait
 import net.citizensnpcs.trait.LookClose
 import net.citizensnpcs.trait.SkinTrait
 import net.horizonsend.ion.common.extensions.serverError
-import net.horizonsend.ion.common.utils.configuration.Configuration
-import net.horizonsend.ion.common.utils.configuration.UUIDSerializer
+import net.horizonsend.ion.common.redis.kserializers.UUIDSerializer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.util.Pos
@@ -34,7 +33,7 @@ object TutorialNPCs : IonServerComponent(true) {
 		manager.disableRegistry()
 	}
 
-	private var npcMetaData: TutorialNPCs = Configuration.load(JsonNPCStore.npcStorageDirectory, "TutorialNPCs.json")
+//	private var npcMetaData: TutorialNPCs = Configuration.load(JsonNPCStore.npcStorageDirectory, "TutorialNPCs.json")
 
 	fun createNPC(location: Location, type: TutorialNPCType, uuid: UUID, save: Boolean = true) {
 		manager.createNPC(
@@ -68,35 +67,35 @@ object TutorialNPCs : IonServerComponent(true) {
 
 			if (!save) return@callback
 
-			npcMetaData.data[npc.uniqueId] = TutorialNPCs.TutorialNPCData(
-				Pos(location.world.name, location.blockX, location.blockY, location.blockZ),
-				type
-			)
-
-			saveStorage()
+//			npcMetaData.data[npc.uniqueId] = TutorialNPCs.TutorialNPCData(
+//				Pos(location.world.name, location.blockX, location.blockY, location.blockZ),
+//				type
+//			)
+//
+//			saveStorage()
 		}
 	}
 
 	fun removeNPC(uuid: UUID) {
 		manager.removeNPC(uuid)
-		npcMetaData.data.remove(uuid)
+//		npcMetaData.data.remove(uuid)
 		saveStorage()
 	}
 
 	private fun loadNPCs() {
 		manager.clearNPCs()
 
-		for ((uuid, data) in npcMetaData.data) {
-			createNPC(data.location.toLocation(), data.type, uuid, save = false)
-		}
+//		for ((uuid, data) in npcMetaData.data) {
+//			createNPC(data.location.toLocation(), data.type, uuid, save = false)
+//		}
 	}
 
 	private fun saveStorage() {
 		onDisable()
 
-		Configuration.save(npcMetaData, JsonNPCStore.npcStorageDirectory, "TutorialNPCs.json")
-
-		npcMetaData = Configuration.load(JsonNPCStore.npcStorageDirectory, "TutorialNPCs.json")
+//		Configuration.save(npcMetaData, JsonNPCStore.npcStorageDirectory, "TutorialNPCs.json")
+//
+//		npcMetaData = Configuration.load(JsonNPCStore.npcStorageDirectory, "TutorialNPCs.json")
 
 		onEnable()
 	}
@@ -110,9 +109,9 @@ object TutorialNPCs : IonServerComponent(true) {
 			return
 		}
 
-		val stored = npcMetaData.data[event.npc.uniqueId] ?: return
-
-		stored.type.onRightClick(event)
+//		val stored = npcMetaData.data[event.npc.uniqueId] ?: return
+//
+//		stored.type.onRightClick(event)
 	}
 
 	@Serializable

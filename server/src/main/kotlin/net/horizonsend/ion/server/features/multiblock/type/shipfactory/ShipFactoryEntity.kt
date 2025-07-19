@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.gui.item.FeedbackItem.FeedbackItemResult
+import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.task.TaskHandlingMultiblockEntity
@@ -14,13 +14,11 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTi
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock.InventoryReference
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.factory.BoundingBoxTask
 import net.horizonsend.ion.server.features.starship.factory.PreviewTask
-import net.horizonsend.ion.server.features.starship.factory.ShipFactoryTask
-import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
-import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
-import net.horizonsend.ion.server.features.transport.nodes.util.Path
+import net.horizonsend.ion.server.features.starship.factory.ShipFactoryPrintTask
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.canAccess
@@ -29,9 +27,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
 import org.litote.kmongo.and
@@ -57,7 +53,7 @@ abstract class ShipFactoryEntity(
 	y,
 	z,
 	structureDirection
-), StatusTickedMultiblockEntity, AsyncTickingMultiblockEntity, UserManagedMultiblockEntity, DisplayMultiblockEntity, TaskHandlingMultiblockEntity<ShipFactoryTask> {
+), StatusTickedMultiblockEntity, AsyncTickingMultiblockEntity, UserManagedMultiblockEntity, DisplayMultiblockEntity, TaskHandlingMultiblockEntity<ShipFactoryPrintTask> {
 	val settings = ShipFactorySettings.load(data)
 
 	override val userManager: UserManagedMultiblockEntity.UserManager = UserManagedMultiblockEntity.UserManager(data, persistent = false)
@@ -67,7 +63,7 @@ abstract class ShipFactoryEntity(
 	abstract val guiTitle: String
 
 	fun openMenu(player: Player) {
-		ShipFactoryGui(player, this).open()
+		ShipFactoryGui(player, this).openGui()
 	}
 
 	val isRunning get() = userManager.currentlyUsed()
@@ -79,6 +75,8 @@ abstract class ShipFactoryEntity(
 		blueprintName = blueprint.name
 		currentBlueprint = blueprint._id
 		cachedBlueprintData = blueprint
+
+		boundingBoxPreviews.clear()
 	}
 
 	// Not saved, loaded async when #ensureBlueprintLoaded is called
@@ -92,9 +90,9 @@ abstract class ShipFactoryEntity(
 		store.addAdditionalData(NamespacedKeys.BLUEPRINT_NAME, PersistentDataType.STRING, blueprintName)
 	}
 
-	override var task: ShipFactoryTask? = null
+	override var task: ShipFactoryPrintTask? = null
 
-	fun enable(user: Player) {
+	fun enable(user: Player, gui: ShipFactoryGui?) {
 		if (userManager.currentlyUsed()) return
 
 		if (!ensureBlueprintLoaded(user)) return
@@ -103,7 +101,11 @@ abstract class ShipFactoryEntity(
 		if (!checkBlueprintPermissions(blueprint, user)) return
 
 		userManager.setUser(user)
-		startTask(ShipFactoryTask(blueprint, settings,this, getInventories(), user))
+		startTask(blueprint, gui, user)
+	}
+
+	open fun startTask(blueprint: Blueprint, gui: ShipFactoryGui?, user: Player) {
+		startTask(ShipFactoryPrintTask(blueprint, settings,this, listOf(), gui, getInventories(), user))
 	}
 
 	fun disable() {
@@ -175,11 +177,11 @@ abstract class ShipFactoryEntity(
 		return true
 	}
 
-	fun checkEnableButton(user: Player): FeedbackItemResult? {
-		if (CombatTimer.isPvpCombatTagged(user)) return FeedbackItemResult.FailureLore(listOf(Component.text("Cannot activate Ship Factories while in combat!", NamedTextColor.RED)))
+	fun checkEnableButton(user: Player): InputResult? {
+		if (CombatTimer.isPvpCombatTagged(user)) return InputResult.FailureReason(listOf(Component.text("Cannot activate Ship Factories while in combat!", NamedTextColor.RED)))
 
-		val cached = cachedBlueprintData ?: return FeedbackItemResult.FailureLore(listOf(Component.text("Blueprint not found!", NamedTextColor.RED)))
-		if (!cached.canAccess(user)) return FeedbackItemResult.FailureLore(listOf(Component.text("You don't have access to that blueprint!", NamedTextColor.RED)))
+		val cached = cachedBlueprintData ?: return InputResult.FailureReason(listOf(Component.text("Blueprint not found!", NamedTextColor.RED)))
+		if (!cached.canAccess(user)) return InputResult.FailureReason(listOf(Component.text("You don't have access to that blueprint!", NamedTextColor.RED)))
 
 		return null
 	}
@@ -228,22 +230,4 @@ abstract class ShipFactoryEntity(
 	fun canEditSettings() = task == null
 
 	abstract fun getInventories(): Set<InventoryReference>
-
-	sealed interface InventoryReference {
-		val inventory: CraftInventory
-		fun isAvailable(itemStack: ItemStack): Boolean
-
-		data class StandardInventoryReference(override val inventory: CraftInventory): InventoryReference {
-			override fun isAvailable(itemStack: ItemStack): Boolean = true
-		}
-
-		data class RemoteInventoryReference(
-			override val inventory: CraftInventory,
-			val originCache: CacheHolder<ItemTransportCache>,
-			val path: Path,
-			val entity: AdvancedShipFactoryMultiblock.AdvancedShipFactoryEntity
-		): InventoryReference {
-			override fun isAvailable(itemStack: ItemStack): Boolean = path.isValid(originCache)
-		}
-	}
 }

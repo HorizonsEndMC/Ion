@@ -31,7 +31,9 @@ interface AIRewardsProvider : RewardsProvider {
 	private fun processDamagers(dataMap: Map<PlayerDamager, ShipKillXP.ShipDamageData>) {
 		val sum = dataMap.values.sumOf { it.points.get() }
 
-		dataMap.entries.maxByOrNull { it.value.points.get() }?.let {
+		val topDamager = dataMap.entries.maxByOrNull { it.value.points.get() }
+
+		topDamager?.let {
 			processPrimaryDamagerRewards(it.key, sum, it.value)
 		}
 
@@ -40,7 +42,7 @@ interface AIRewardsProvider : RewardsProvider {
 			val player = damager.player
 
 			try {
-				processDamagerRewards(damager, points, sum)
+				processDamagerRewards(damager, points,topDamager!!.value.points, sum)
 			} catch (e: Throwable) {
 				log.error("Exception processing damager rewards: ${e.message}!")
 				e.printStackTrace()
@@ -50,6 +52,11 @@ interface AIRewardsProvider : RewardsProvider {
 		}
 	}
 
-	fun processDamagerRewards(damager: PlayerDamager, points: AtomicInteger, pointsSum: Int) {}
+	fun processDamagerRewards(
+		damager: PlayerDamager,
+		topDamagerPoints: AtomicInteger,
+		points: AtomicInteger,
+		pointsSum: Int
+	) {}
 	fun processPrimaryDamagerRewards(damager: PlayerDamager, sum: Int, dataMap: ShipKillXP.ShipDamageData) {}
 }

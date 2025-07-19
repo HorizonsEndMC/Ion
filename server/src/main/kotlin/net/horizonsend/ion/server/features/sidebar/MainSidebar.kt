@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.sidebar
 
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.sidebar.component.CombatTagSidebarComponent
 import net.horizonsend.ion.server.features.sidebar.component.ContactsHeaderSidebarComponent
@@ -59,14 +60,14 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 
 
 		// Combat tag
-		val combatTimerEnabled = PlayerCache[player.uniqueId].combatTimerEnabled
+		val combatTimerEnabled = player.getSetting(PlayerSettings::combatTimerEnabled)
 		if (combatTimerEnabled && (CombatTimer.isNpcCombatTagged(player) || CombatTimer.isPvpCombatTagged(player))) {
 			val combatTagComponent: SidebarComponent = CombatTagSidebarComponent(player)
 			lines.addComponent(combatTagComponent)
 		}
 
 		// Starship
-		val starshipsEnabled = PlayerCache[player.uniqueId].starshipsEnabled
+		val starshipsEnabled = player.getSetting(PlayerSettings::starshipsEnabled)
 		if (starshipsEnabled) {
 			val starship = PilotedStarships[player]
 			if (starship != null) {
@@ -80,14 +81,14 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 				lines.addComponent(starshipsSidebarComponent1)
 				lines.addComponent(starshipsSidebarComponent2)
 				lines.addComponent(starshipsSidebarComponent3)
-				if (PlayerCache[player.uniqueId].advancedStarshipInfo) {
+				if (player.getSetting(PlayerSettings::advancedStarshipInfo)) {
 					lines.addComponent(starshipsSidebarComponent4)
 				}
 			}
 		}
 
 		// Contacts
-		val contactsEnabled = PlayerCache[player.uniqueId].contactsEnabled
+		val contactsEnabled = player.getSetting(PlayerSettings::contactsEnabled)
 		if (contactsEnabled) {
 			val contactsHeaderComponent: SidebarComponent = ContactsHeaderSidebarComponent(player)
 			val contacts = ContactsSidebar.getPlayerContacts(player)
@@ -106,7 +107,7 @@ class MainSidebar(private val player: Player, val backingSidebar: Sidebar) {
 		}
 
 		// Waypoints
-		val waypointsEnabled = PlayerCache[player.uniqueId].waypointsEnabled
+		val waypointsEnabled = player.getSetting(PlayerSettings::waypointsEnabled)
 		if (waypointsEnabled && WaypointManager.getNextWaypoint(player) != null) {
 			val waypointsHeaderComponent: SidebarComponent = WaypointsHeaderSidebarComponent(player)
 			lines.addComponent(waypointsHeaderComponent)

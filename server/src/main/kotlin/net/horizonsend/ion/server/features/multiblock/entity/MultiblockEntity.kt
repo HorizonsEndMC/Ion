@@ -2,14 +2,15 @@ package net.horizonsend.ion.server.features.multiblock.entity
 
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlerHolder
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkageHolder
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.linkage.MultiblockLinkageHolder
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.starship.movement.TranslationAccessor
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -26,6 +27,7 @@ import org.bukkit.block.data.type.WallSign
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.persistence.PersistentDataAdapterContext
+import kotlin.reflect.KClass
 
 /**
  * @param manager The multiblock manager that this is registered to
@@ -347,6 +349,41 @@ abstract class MultiblockEntity(
 
 	fun removeLinkages() {
 		linkages.forEach { linkage -> linkage.deRegister() }
+	}
+
+	fun createLinkage(
+		offsetRight: Int,
+		offsetUp: Int,
+		offsetForward: Int,
+		linkageDirection: RelativeFace,
+		vararg allowedEntities: KClass<out MultiblockEntity>
+	): MultiblockLinkageHolder {
+		val holder = MultiblockLinkageHolder(
+			this,
+			offsetRight,
+			offsetUp,
+			offsetForward,
+			allowedEntities,
+			linkageDirection
+		)
+
+		linkages.add(holder)
+
+		holder.register()
+		return holder
+	}
+
+	fun createLinkage(
+		offsetRight: Int,
+		offsetUp: Int,
+		offsetForward: Int,
+		linkageDirection: RelativeFace,
+		predicate: () -> Boolean = { true },
+		vararg allowedEntities: KClass<out MultiblockEntity>
+	): MultiblockLinkageHolder? {
+		if (!predicate.invoke()) return null
+
+		return createLinkage(offsetRight, offsetUp, offsetForward, linkageDirection, *allowedEntities)
 	}
 
 	override fun handlerGetWorld(): World {

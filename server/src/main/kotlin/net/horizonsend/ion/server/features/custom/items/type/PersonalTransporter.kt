@@ -44,7 +44,7 @@ object PersonalTransporter : CustomItem(
 			PersonalTransporterManager.removeItemFromPlayer(player)
             return
         } else {
-            PersonalTransporterGui(player).openMainWindow()
+            PersonalTransporterGui(player).openGui()
         }
     }
 }

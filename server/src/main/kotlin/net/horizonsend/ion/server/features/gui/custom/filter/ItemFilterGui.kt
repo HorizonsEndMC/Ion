@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.gui.custom.filter
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems.createButton
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.GuiWrapper
 import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI.Companion.setTitle
 import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.filters.FilterEntry
@@ -11,6 +10,8 @@ import net.horizonsend.ion.server.features.transport.filters.FilterMeta
 import net.horizonsend.ion.server.features.transport.filters.FilterMethod
 import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
+import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.block.TileState
@@ -19,14 +20,13 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.InventoryView
 import org.bukkit.inventory.ItemStack
-import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
 import java.util.function.Supplier
 
-class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack, FilterMeta.ItemFilterMeta>, private val tileState: Supplier<TileState>) : GuiWrapper {
+class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack, FilterMeta.ItemFilterMeta>, private val tileState: Supplier<TileState>) : CommonGuiWrapper {
 	private var currentWindow: Window? = null
 
 	val whitelistText get() = if (data.isWhitelist) text("Whitelist") else text("Blacklist")
@@ -38,7 +38,7 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack, 
 		FilterCache.save(tileState.get(), data)
 	}
 
-	override fun open() {
+	override fun openGui() {
 		val gui = Gui.normal()
 			.setStructure(
 				"1 2 3 4 5 6 x z x",
@@ -65,7 +65,7 @@ class ItemFilterGui(val viewer: Player, private val data: FilterData<ItemStack, 
 		val window = Window
 			.single()
 			.setGui(gui)
-			.setTitle(AdventureComponentWrapper(getSlotOverlay()))
+			.setTitle(getSlotOverlay())
 			.build(viewer)
 
 		currentWindow = window.apply { open() }
