@@ -259,7 +259,7 @@ class AIFaction private constructor(
 			.addDifficultySuffix(1,"✦✦")
 			.addDifficultySuffix(2,"👁")
 			.addDifficultySuffix(3,"👁👁")
-			.addDifficultySuffix(4,"🌀")
+			.addDifficultySuffix(4,"\uD83C\uDF00")
 			.build()
 
 		val 吃饭人 = builder("吃饭人", 吃饭人_STANDARD.value())
@@ -317,7 +317,7 @@ class AIFaction private constructor(
 			.addDifficultySuffix(1,"✦✦")
 			.addDifficultySuffix(2,"🥖")
 			.addDifficultySuffix(3,"🥖🥖")
-			.addDifficultySuffix(4,"🥐")
+			.addDifficultySuffix(4,"\uD83E\uDD50")
 			.build()
 
 		val miningGuildMini = "<$MINING_CORP_LIGHT_ORANGE>Mining <$MINING_CORP_DARK_ORANGE>Guild"
@@ -403,7 +403,7 @@ class AIFaction private constructor(
 			.addDifficultySuffix(1,"✦✦")
 			.addDifficultySuffix(2,"⛏")
 			.addDifficultySuffix(3,"⛏⛏")
-			.addDifficultySuffix(4,"💰")
+			.addDifficultySuffix(4,"\uD83D\uDCB0")
 			.build()
 
 		val PERSEUS_EXPLORERS = builder("PERSEUS_EXPLORERS", EXPLORER_LIGHT_CYAN.value())
@@ -512,9 +512,9 @@ class AIFaction private constructor(
 			)
 			.addDifficultySuffix(0,"✦")
 			.addDifficultySuffix(1,"✦✦")
-			.addDifficultySuffix(2,"@")
-			.addDifficultySuffix(3,"@@")
-			.addDifficultySuffix(4,"♠️")
+			.addDifficultySuffix(2,"\uD83D\uDEE1")
+			.addDifficultySuffix(3,"\uD83D\uDEE1\uD83D\uDEE1")
+			.addDifficultySuffix(4,"♠")
 			.build()
 
 		val TSAII_RAIDERS = builder("TSAII_RAIDERS", TSAII_MEDIUM_ORANGE.value())
@@ -617,7 +617,7 @@ class AIFaction private constructor(
 			.addDifficultySuffix(1,"✦✦")
 			.addDifficultySuffix(2,"🔥")
 			.addDifficultySuffix(3,"🔥🔥")
-			.addDifficultySuffix(4,"💥")
+			.addDifficultySuffix(4,"\uD83D\uDCA5")
 			.build()
 
 		val ABYSSAL = builder("ABYSALL", ABYSSAL_LIGHT_RED.value())

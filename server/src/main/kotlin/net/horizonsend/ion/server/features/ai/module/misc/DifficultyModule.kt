@@ -16,10 +16,10 @@ class DifficultyModule(
 	val speedModifier: Double get () {
 		return when (internalDifficulty) {
 			0 -> 0.4
-			1 -> 0.7
+			1 -> 0.8
 			2 -> 1.0
 			3 -> 1.0
-			4 -> 1.1
+			4 -> 1.2
 			else -> {1.0}
 		}
 	}

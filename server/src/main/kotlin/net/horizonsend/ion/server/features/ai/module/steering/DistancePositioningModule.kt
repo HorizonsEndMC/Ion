@@ -52,7 +52,7 @@ class DistancePositioningModule(
 		// Compute vector from center to ship (flattened)
 		val toShip = target.ship.centerOfMass.toVector().subtract(getCenter().toVector())
 		toShip.y = 0.0
-		val length = toShip.length()
+		val length = toShip.length() * 1.1
 		if (length >= optimalDist) return optimalDist
 		val adjustedRatio = (blockRatio * config.agressionTolerance).coerceIn(0.0,1.0)
 		val minTolerableDist = optimalDist * adjustedRatio
