@@ -187,7 +187,7 @@ object AISpawners : IonServerComponent(true) {
 			"<${HE_MEDIUM_GRAY}>An <$WATCHER_STANDARD>Unknown Signal<${HE_MEDIUM_GRAY}> has been detected in {0} at {1} {3}. <$WATCHER_ACCENT>Alien starships patrol the area.".miniMessage(),
 			"<${HE_MEDIUM_GRAY}>The <$WATCHER_STANDARD>Unknown Signal<${HE_MEDIUM_GRAY}> has disappeared".miniMessage(),
 			radius = 1500.0,
-			spawnSeparation = { getRandomDuration(Duration.ofSeconds(120), Duration.ofSeconds(180)) },
+			spawnSeparation = { getRandomDuration(Duration.ofSeconds(180), Duration.ofSeconds(260)) },
 			listOf("Trench", "AU-0821", "Horizon")
 		)
 

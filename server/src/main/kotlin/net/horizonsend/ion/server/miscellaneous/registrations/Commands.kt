@@ -27,6 +27,7 @@ import net.horizonsend.ion.server.command.misc.BountyCommand
 import net.horizonsend.ion.server.command.misc.ChatCommand
 import net.horizonsend.ion.server.command.misc.CombatTimerCommand
 import net.horizonsend.ion.server.command.misc.DyeCommand
+import net.horizonsend.ion.server.command.misc.EncounterStatusCommand
 import net.horizonsend.ion.server.command.misc.GToggleCommand
 import net.horizonsend.ion.server.command.misc.GlobalGameRuleCommand
 import net.horizonsend.ion.server.command.misc.IonBroadcastCommand
@@ -143,6 +144,7 @@ val commands: List<SLCommand> = listOf(
 	StarshipDebugCommand,
 	AIDebugCommand,
 	AIOpponentCommand,
+	EncounterStatusCommand,
 	StarshipCommand,
 
 	StarshipsCommand,
