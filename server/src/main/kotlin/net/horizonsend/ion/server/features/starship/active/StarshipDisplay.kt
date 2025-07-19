@@ -172,7 +172,7 @@ object StarshipDisplay : IonServerComponent(true) {
 		while (iterator.hasNext()) {
 			val (identifier, icon) = iterator.next()
 
-			if (ActiveStarships[identifier] != null) continue
+			if (ActiveStarships.getByCharIdentifier(identifier) != null) continue
 
 			val gravityWellCircleMarker: CircleMarker? = markerSet.findCircleMarker("${identifier}_gravity_well")
 			gravityWellCircleMarker?.deleteMarker()

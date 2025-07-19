@@ -123,7 +123,9 @@ object ActiveStarships : IonServerComponent() {
 
 	operator fun get(playerShipId: Oid<out StarshipData>) = shipIdMap[playerShipId]
 
-	operator fun get(charIdentifier: String) = set.firstOrNull { it.identifier == charIdentifier }
+	fun getByCharIdentifier(charIdentifier: String) = set.firstOrNull { it.charIdentifier == charIdentifier }
+
+	fun getByIdentifier(identifier: String): ActiveStarship? = set.firstOrNull { it.identifier == identifier }
 
 	fun getByComputerLocation(world: World, x: Int, y: Int, z: Int): StarshipData? {
 		return shipLocationMap[world][blockKey(x, y, z)]

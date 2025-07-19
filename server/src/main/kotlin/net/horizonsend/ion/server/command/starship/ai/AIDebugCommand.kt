@@ -243,9 +243,8 @@ object AIDebugCommand : SLCommand() {
 	@Subcommand("dump controller")
 	@CommandCompletion("@autoTurretTargets")
 	fun listController(sender: Player, shipIdentifier: String) {
-		val formatted = if (shipIdentifier.contains(":".toRegex())) shipIdentifier.substringAfter(":") else shipIdentifier
+		val ship = ActiveStarships.getByIdentifier(shipIdentifier) ?: fail { "$shipIdentifier is not a starship" }
 
-		val ship = ActiveStarships[formatted] ?: fail { "$shipIdentifier is not a starship" }
 		sender.information(ship.controller.toString())
 
 		(ship.controller as? AIController)?.let { sender.userError(it.coreModules.entries.joinToString(separator = "\n") { mod ->

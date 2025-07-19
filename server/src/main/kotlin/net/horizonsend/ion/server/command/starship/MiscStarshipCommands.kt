@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.command.starship
 
-import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
@@ -107,16 +106,17 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		manager.commandContexts.registerContext(AutoTurretTargeting.AutoTurretTarget::class.java) { context ->
 			val target = context.popFirstArg()
-			val formatted = if (target.contains(":".toRegex())) target.substringAfter(":") else target
 
-			Bukkit.getPlayer(formatted)?.let { AutoTurretTargeting.target(it) } ?:
-				ActiveStarships[formatted]?.let { AutoTurretTargeting.target(it) } ?:
-				runCatching {
-					val type = EntityType.valueOf(formatted)
-					val instance = type.entityClass?.let { Enemy::class.java.isAssignableFrom(it) }
-					return@runCatching type.takeIf { instance ?: false }
-				}.getOrNull()?.let { AutoTurretTargeting.target(it) } ?:
-				throw InvalidCommandArgument("Target $target could not be found!")
+			val player = Bukkit.getPlayer(target)
+			if (player != null) return@registerContext AutoTurretTargeting.target(player)
+
+			val starship = ActiveStarships.getByIdentifier(target)
+			if (starship != null) return@registerContext AutoTurretTargeting.target(starship)
+
+			val entityType = EntityType.entries.firstOrNull { type -> type.name == target } ?: return@registerContext null
+			if (!Enemy::class.java.isAssignableFrom(entityType::class.java)) return@registerContext null
+
+			AutoTurretTargeting.target(entityType)
 		}
 
 		manager.commandCompletions.registerAsyncCompletion("autoTurretTargets") { context ->
