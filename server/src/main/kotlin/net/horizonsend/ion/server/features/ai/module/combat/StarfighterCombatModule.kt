@@ -26,7 +26,7 @@ class StarfighterCombatModule(
 		fireAllWeapons(
 			origin = starship.centerOfMass,
 			target = target,
-			false
+			true
 		)
 	}
 }

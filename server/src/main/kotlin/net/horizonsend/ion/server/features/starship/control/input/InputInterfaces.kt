@@ -32,8 +32,9 @@ interface ShiftFlightInput : InputHandler {
 
 interface DirectControlInput : InputHandler {
 	var isBoosting: Boolean
-	var selectedSpeed : Int
-	data class DirectControlData(val strafeVector: Vector, val selectedSpeed : Int, val isBoosting: Boolean)
+	var selectedSpeed : Double
+
+	data class DirectControlData(val strafeVector: Vector, val selectedSpeed : Double, val isBoosting: Boolean)
 	override fun getData(): DirectControlData
 }
 

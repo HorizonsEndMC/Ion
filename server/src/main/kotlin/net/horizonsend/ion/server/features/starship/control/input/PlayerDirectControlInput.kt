@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.starship.control.input
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.admin.debug
-import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.nations.utils.getPing
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -26,15 +25,15 @@ import kotlin.math.roundToInt
 class PlayerDirectControlInput(override val controller: PlayerController
 ) : DirectControlInput, PlayerInput{
 	override val player get() = controller.player
-	override var selectedSpeed: Int
-		get() = player.inventory.heldItemSlot
+	override var selectedSpeed: Double
+		get() = player.inventory.heldItemSlot.toDouble()
 		set(value) {}
 	override var isBoosting : Boolean
 		get() = player.isSneaking
 		set(value) {}
 
 	private var internalTick = 0
-	private var cachedState = DirectControlInput.DirectControlData(Vector(), 8, false)
+	private var cachedState = DirectControlInput.DirectControlData(Vector(), 8.0, false)
 
 	override fun create() {
 		val message = ofChildren(
@@ -74,8 +73,9 @@ class PlayerDirectControlInput(override val controller: PlayerController
 		inventory.setItem(newSlot, oldItem)
 		inventory.setItem(previousSlot, newItem)
 
-		val baseSpeed = DirectControlHandler.calculateSpeed(newSlot)
-		val cooldown: Long = DirectControlHandler.calculateCooldown(starship.directControlCooldown, newSlot)
+		val baseSpeed = DirectControlHandler.calculateSpeed(newSlot.toDouble())
+		val cooldown: Long = DirectControlHandler
+			.calculateCooldown(starship.directControlCooldown, newSlot.toDouble()).toLong()
 		val speed = (10.0f * baseSpeed * starship.directControlSpeedModifierFromIonTurrets *
 				starship.directControlSpeedModifierFromHeavyLasers * (1000.0f / cooldown)).roundToInt() / 10.0f
 

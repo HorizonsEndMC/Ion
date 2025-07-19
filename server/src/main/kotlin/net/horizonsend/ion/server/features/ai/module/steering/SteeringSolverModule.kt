@@ -12,10 +12,8 @@ import net.horizonsend.ion.server.features.starship.control.input.AIInput
 import net.horizonsend.ion.server.features.starship.control.input.DirectControlInput
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToPitchYaw
-import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import java.util.function.Supplier
 import kotlin.math.PI
@@ -66,12 +64,11 @@ class SteeringSolverModule(
 
 	private fun updateDirectControl() {
 		if (!controller.starship.isDirectControlEnabled)  controller.starship.setDirectControlEnabled(true)
-		val isBoosting = !difficulty.speedDebuff
 
 		//map onto player slots
-		var selectedSpeed = round(throttle * 7.0).toInt() + 1
-		if (thrust.dot(ship.forward.direction) < -0.01) selectedSpeed = 0 //ship wants to go backwards
-		val data = DirectControlInput.DirectControlData(thrust,selectedSpeed,isBoosting)
+		var selectedSpeed = throttle * difficulty.speedModifier * 7.0 + 1
+		if (thrust.dot(ship.forward.direction) < -0.01) selectedSpeed = 0.0 //ship wants to go backwards
+		val data = DirectControlInput.DirectControlData(thrust,selectedSpeed,true)
 		(controller.movementHandler.input as? AIInput)?.updateInput(data)
 	}
 
@@ -98,9 +95,7 @@ class SteeringSolverModule(
 
 		var (_, maxSpeed) = starship.getThrustData(dx, dz)
 		maxSpeed /= 2
-		if (difficulty.speedDebuff) {
-			maxSpeed = round(0.7 * maxSpeed).toInt()
-		}
+		maxSpeed =  (maxSpeed * difficulty.speedModifier).toInt()
 
 		maxSpeed = (maxSpeed * starship.balancing.cruiseSpeedMultiplier).toInt()
 		val finalSpeed = round(throttle * maxSpeed).toInt()

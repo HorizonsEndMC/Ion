@@ -13,7 +13,16 @@ class DifficultyModule(
 
 	val doBackOff get() = internalDifficulty >= 2
 
-	val speedDebuff get () = internalDifficulty <= 0
+	val speedModifier: Double get () {
+		return when (internalDifficulty) {
+			0 -> 0.4
+			1 -> 0.7
+			2 -> 1.0
+			3 -> 1.0
+			4 -> 1.1
+			else -> {1.0}
+		}
+	}
 
 	val outOfRangeAggro : Double get() {
 		return when (internalDifficulty) {
@@ -41,8 +50,9 @@ class DifficultyModule(
 
 	val shotVariation : Double get() {
 		return when (internalDifficulty) {
-			0 -> 0.3
-			1 -> 0.15
+			0 -> 0.8
+			1 -> 0.3
+			2 -> 0.15
 			else -> 0.0
 		}
 	}
@@ -57,12 +67,14 @@ class DifficultyModule(
 		return when (internalDifficulty) {
 			0 -> 0.0
 			1 -> 0.0
-			2 -> 0.5
-			3 -> 1.0
+			2 -> 0.4
+			3 -> 0.7
 			4 -> 1.0
 			else -> {0.0}
 		}
 	}
+
+	val targetLowestShield get() = internalDifficulty >= 4
 
 	val powerModeSwitch get() = internalDifficulty >= 2
 	val useSpecialPowerModes  get() = internalDifficulty >= 4

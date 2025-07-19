@@ -58,7 +58,7 @@ abstract class CombatModule<T>(
 
 		val targetPos = target.getVec3i()
 		//println("targetPos : $targetPos")
-		val targetOffset = target.getVec3i(aimAtRandom).minus(targetPos)
+		val targetOffset = target.getVec3i(aimAtRandom, difficulty.targetLowestShield).minus(targetPos)
 
 		//account for opponent size
 		val fudgeFactor = target.getFudgeFactor()

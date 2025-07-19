@@ -13,7 +13,7 @@ import kotlin.math.round
 class AIDirectControlInput(override val controller: AIController
 ) : DirectControlInput, AIInput{
 	override var isBoosting: Boolean = true
-	override var selectedSpeed: Int = 1
+	override var selectedSpeed: Double = 1.0
 	private var thrust = Vector()
 
 	override fun create() {

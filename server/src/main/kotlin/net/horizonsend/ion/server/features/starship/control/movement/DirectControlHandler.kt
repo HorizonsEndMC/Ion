@@ -83,14 +83,14 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 		val targetSpeed = (calculateSpeed(data.selectedSpeed) * starship.directControlSpeedModifierFromIonTurrets *
 				starship.directControlSpeedModifierFromHeavyLasers)
 
-		// Initialize forward movement
-		dx += (targetSpeed * direction.modX).toInt()
-		dz += (targetSpeed * direction.modZ).toInt()
-
-		// Boost if shift flying
 		if (data.isBoosting) {
-			dx *= 2
-			dz *= 2
+			// Initialize forward movement
+			dx += (targetSpeed * direction.modX * 2).toInt()
+			dz += (targetSpeed * direction.modZ * 2 ).toInt()
+		} else {
+			// Initialize forward movement
+			dx += (targetSpeed * direction.modX).toInt()
+			dz += (targetSpeed * direction.modZ).toInt()
 		}
 
 
@@ -152,9 +152,9 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 	}
 
 	companion object {
-		private const val DIRECT_CONTROL_DIVISOR = 1.75
+		private const val DIRECT_CONTROL_DIVISOR = 14.0 / 7.0
 
-		fun calculateSpeed(selectedSlot: Int) = if (selectedSlot == 0) -1.0 else ((selectedSlot) / DIRECT_CONTROL_DIVISOR).toDouble()
-		fun calculateCooldown(movementCooldown: Long, heldItemSlot: Int) = movementCooldown - heldItemSlot * 8
+		fun calculateSpeed(selectedSlot: Double) = if (selectedSlot == 0.0) -1.0 else ((selectedSlot -1) / DIRECT_CONTROL_DIVISOR).toDouble()
+		fun calculateCooldown(movementCooldown: Long, heldItemSlot: Double) = movementCooldown - (heldItemSlot * 8)
 	}
 }

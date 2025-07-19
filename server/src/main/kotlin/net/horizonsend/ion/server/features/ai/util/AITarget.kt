@@ -17,7 +17,7 @@ abstract class AITarget(val attack : Boolean = true) {
 
 
 	abstract fun getLocation(random: Boolean = false): Location
-	abstract fun getVec3i(random: Boolean = false): Vec3i
+	abstract fun getVec3i(random: Boolean = false, lowest: Boolean = false): Vec3i
 
 	abstract fun getFudgeFactor() : Double
 
@@ -36,7 +36,7 @@ class PlayerTarget(val player: Player, attack: Boolean = true) : AITarget(attack
 		return player.location.add(offset)
 	}
 
-	override fun getVec3i(random: Boolean): Vec3i {
+	override fun getVec3i(random: Boolean, lowest : Boolean): Vec3i {
 		return Vec3i(player.location).plus(offset)
 	}
 
@@ -82,9 +82,10 @@ class StarshipTarget(val ship: ActiveStarship, attack: Boolean = true) : AITarge
 		return getVec3i(random).toLocation(getWorld()).add(offset)
 	}
 
-	override fun getVec3i(random: Boolean): Vec3i {
-		return if (random) {
-			val key = ship.shields.random(ThreadLocalRandom.current().asKotlinRandom()).pos
+	override fun getVec3i(random: Boolean, lowest : Boolean): Vec3i {
+		return if (random && ship.shields.size >= 1) {
+			val shields = ship.shields
+			val key =  (if (!lowest) shields.random(ThreadLocalRandom.current().asKotlinRandom()) else shields.minBy {it.power}).pos
 
 			Vec3i(key).plus(offset)
 		} else ship.centerOfMass.plus(offset)
@@ -131,7 +132,7 @@ class GoalTarget(val position : Vec3i, private val world: World, var hyperspace 
 		return position.toLocation(world)
 	}
 
-	override fun getVec3i(random: Boolean): Vec3i {
+	override fun getVec3i(random: Boolean, lowest : Boolean): Vec3i {
 		return position
 	}
 
