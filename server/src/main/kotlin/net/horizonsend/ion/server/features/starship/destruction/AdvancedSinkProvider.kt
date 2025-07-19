@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields.getNearbyAreaShields
 import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
@@ -24,6 +25,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKey
@@ -52,6 +54,7 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import org.joml.Vector3f
@@ -503,13 +506,20 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 	}
 
 	class SinkAnimation(val starship: Starship, val size: Int, val world: World, val origin: Vec3i) : BukkitRunnable() {
-		private val duration = 40
+		private val duration = 30
 
 		private val blockWrappers = ObjectOpenHashSet<Block>()
 
 		private var iterations = 0
 
-		inner class Block(val wrapper: ItemDisplayContainer, val direction: Vector, val initColor: Color, val finalColor: Color, val finalScale: Double) {
+		inner class Block(
+			val wrapper: ItemDisplayContainer,
+			val direction: Vector,
+			val colors: WeightedRandomList<Color>, // Color to weight
+			val finalScale: Double,
+			val rotationVector: Vector,
+		) {
+
 			fun blend(original: Number, final: Number): Double {
 				val phase = iterations.toDouble() / duration.toDouble()
 
@@ -519,21 +529,19 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 			fun updateColorAndPosition() {
 				val item = wrapper.itemStack
 
-				val middleAlpha = blend(initColor.alpha, finalColor.alpha)
-				val middleRed = blend(initColor.red, finalColor.red)
-				val middleGreen = blend(initColor.green, finalColor.green)
-				val middleBlue = blend(initColor.blue, finalColor.blue)
+//				val middleAlpha = blend(initColor.alpha, finalColor.alpha)
+//				val middleRed = blend(initColor.red, finalColor.red)
+//				val middleGreen = blend(initColor.green, finalColor.green)
+//				val middleBlue = blend(initColor.blue, finalColor.blue)
 
-				val newColor = Color.fromARGB(middleAlpha.roundToInt(), middleRed.roundToInt(), middleGreen.roundToInt(), middleBlue.roundToInt())
+//				val newColor = Color.fromARGB(middleAlpha.roundToInt(), middleRed.roundToInt(), middleGreen.roundToInt(), middleBlue.roundToInt())
+
+				val newColor = colors.getEntry(iterations.toDouble() / duration.toDouble())
 
 				wrapper.itemStack = item.clone().updateData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(newColor, false))
 				wrapper.offset = wrapper.offset.add(direction.toVector3f())
 				wrapper.scale = Vector3f(blend(1.0, finalScale).toFloat())
-//				wrapper.heading = wrapper.heading.add(Vector(
-//					Random.nextDouble(-0.001, 0.001),
-//					Random.nextDouble(-0.001, 0.001),
-//					Random.nextDouble(-0.001, 0.001)
-//				).normalize())
+				wrapper.heading = wrapper.heading.add(rotationVector)
 
 				wrapper.update()
 			}
@@ -561,9 +569,47 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 				blockWrappers.add(Block(
 					wrapper = displayContainer,
 					direction = vector,
-					initColor = initColor,
-					finalColor = Color.GRAY.setAlpha(255),
-					finalScale = 7.0
+					colors = WeightedRandomList(mapOf(
+						Color.fromRGB(HE_LIGHT_ORANGE.value()) to 1,
+						Color.ORANGE to 1,
+						Color.RED to 1,
+						Color.GRAY to 1,
+						Color.BLACK to 1,
+					)),
+					finalScale = 7.0,
+					rotationVector = Vector(
+						Random.nextDouble(-0.05, 0.05),
+						Random.nextDouble(-0.05, 0.05),
+						Random.nextDouble(-0.05, 0.05)
+					).normalize()
+				))
+			}
+
+			val shockwavePoints = 90
+
+			repeat(shockwavePoints) { iteration ->
+				val degrees = (shockwavePoints / iteration.toDouble()) * 360.0
+				val vector = BlockFace.NORTH.direction.rotateAroundY(Math.toRadians(degrees)).normalize().multiply(3)
+
+				val item = DYEABLE_CUBE_MONO.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(Color.GRAY, false)) }
+				val displayContainer = ItemDisplayContainer(world, 1.0f, origin.toCenterVector(), Vector.getRandom(), item)
+				displayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
+
+				blockWrappers.add(Block(
+					wrapper = displayContainer,
+					direction = vector,
+					colors = WeightedRandomList(mapOf(
+						Color.WHITE to 1,
+						Color.SILVER to 1,
+						Color.GRAY to 1,
+						Color.BLACK to 1,
+					)),
+					finalScale = 3.0,
+					Vector(
+						Random.nextDouble(-0.001, 0.001),
+						Random.nextDouble(-0.001, 0.001),
+						Random.nextDouble(-0.001, 0.001)
+					).normalize()
 				))
 			}
 		}
