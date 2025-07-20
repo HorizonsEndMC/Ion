@@ -4,6 +4,7 @@ import io.papermc.paper.raytracing.RayTraceTarget
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TugMultiblock
@@ -16,6 +17,7 @@ import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
+import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
@@ -29,8 +31,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import org.bukkit.Particle
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
@@ -81,7 +86,7 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 		val hitBlock = starship.world.rayTrace {
 			it.direction(dir)
 			it.start(originLoc)
-			it.blockFilter { !starship.contains(it.x, it.y, it.z) }
+			it.blockFilter { verifyBlock(shooter.player, it) }
 			it.maxDistance(100.0)
 			it.targets(RayTraceTarget.BLOCK)
 		}?.hitBlock ?: return
@@ -128,12 +133,12 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 				return@async
 			}
 
-			if (minX == null || minX > x) minX = x
-			if (minY == null || minY > y) minY = y
-			if (minZ == null || minZ > z) minZ = z
-			if (maxX == null || maxX < x) maxX = x
-			if (maxY == null || maxY < y) maxY = y
-			if (maxZ == null || maxZ < z) maxZ = z
+			if (minX > x) minX = x
+			if (minY > y) minY = y
+			if (minZ > z) minZ = z
+			if (maxX < x) maxX = x
+			if (maxY < y) maxY = y
+			if (maxZ < z) maxZ = z
 
 			// Detect adjacent blocks
 			for (offsetX in -1..1) {
@@ -176,33 +181,35 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 	fun handleMovement(movement: TranslateMovement) {
 		var lastTicked = System.currentTimeMillis()
 
-		if (lastTaskFuture?.get() == false) {
+		if (lastTaskFuture?.isDone == false) {
 			return
 		}
 
 		val future = CompletableFuture<Boolean>()
 		lastTaskFuture = future
 
-		try {
-			starship.information("Moving ${movedBlocks.size} blocks")
-			movement.execute(
-				positions = movedBlocks,
-				world1 = starship.world,
-				executionCheck = { true }
-			) {
-				movedBlocks = it
+		Tasks.async {
+			try {
+				starship.information("Moving ${movedBlocks.size} blocks")
+				movement.execute(
+					positions = movedBlocks,
+					world1 = starship.world,
+					executionCheck = { true }
+				) {
+					movedBlocks = it
 
-				minPoint?.let { minPoint = movement.displaceVec3i(it) }
-				maxPoint?.let { maxPoint = movement.displaceVec3i(it) }
+					minPoint?.let { minPoint = movement.displaceVec3i(it) }
+					maxPoint?.let { maxPoint = movement.displaceVec3i(it) }
+				}
+
+				val now = System.currentTimeMillis()
+				starship.information("Movement took ${(now - lastTicked) / 1000.0}s")
+				lastTicked = now
+				future.complete(true)
+			} catch (e: StarshipMovementException) {
+				starship.sendMessage(ofChildren(Component.text("Towed Load Blocked! ", RED), e.formatMessage()))
+				future.complete(false)
 			}
-
-			val now = System.currentTimeMillis()
-			starship.information("Movement took ${(now - lastTicked) / 1000.0}s")
-			lastTicked = now
-			future.complete(true)
-		} catch (e: StarshipMovementException) {
-			starship.information("e: $e")
-			future.complete(false)
 		}
 	}
 
@@ -213,6 +220,11 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 		cube(minVec.toCenterVector().toLocation(starship.world), maxVec.toCenterVector().toLocation(starship.world)).forEach { t ->
 			starship.playerPilot?.spawnParticle(Particle.SOUL_FIRE_FLAME, t.x, t.y, t.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 		}
+	}
+
+	fun verifyBlock(player: Player, block: Block): Boolean {
+		if (starship.contains(block.x, block.y, block.z)) return false
+		return !ProtectionListener.denyBlockAccess(player, block.location, null)
 	}
 
 	companion object {
