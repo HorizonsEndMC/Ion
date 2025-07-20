@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -30,8 +31,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor.RED
+import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -47,17 +50,21 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 	override val powerUsage: Int = 0
 
 	override fun canFire(dir: Vector, target: Vector): Boolean {
-		return true
+		return !isFloodFilling
 	}
 
 	override fun getName(): Component {
-		return Component.text("Tub")
+		return Component.text("Tug")
 	}
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
-		return dir
+		return target.clone().subtract(getFirePosition().toVector()).normalize()
 	}
 
+	private fun getFirePosition(): Location {
+		val firePos = getRelative(pos.getRelative(face.oppositeFace), face.oppositeFace, multiblock.firePosOffset.x, multiblock.firePosOffset.y, multiblock.firePosOffset.z)
+		return firePos.toCenterVector().toLocation(starship.world)
+	}
 
 	override fun isIntact(): Boolean {
 		val origin = pos.getRelative(face.oppositeFace)
@@ -70,17 +77,17 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 
 	var movedBlocks = LongArray(0)
 
+	var isFloodFilling: Boolean = false
+
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		if (shooter !is PlayerDamager) return
 
-		val firePos = getRelative(pos.getRelative(face.oppositeFace), face.oppositeFace, multiblock.firePosOffset.x, multiblock.firePosOffset.y, multiblock.firePosOffset.z)
-
-		val originLoc = firePos.toCenterVector().toLocation(starship.world)
+		val originLoc = getFirePosition()
 
 		val distance = distance(target, originLoc.toVector())
 
-		originLoc.alongVector(dir.clone().multiply(distance), distance.roundToInt() * 3).forEach { t ->
-			starship.world.spawnParticle(Particle.SOUL_FIRE_FLAME, t.x, t.y, t.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
+		originLoc.alongVector(dir.clone().multiply(distance), distance.roundToInt() * 3).forEach { intermediate ->
+			starship.world.spawnParticle(Particle.SOUL_FIRE_FLAME, intermediate.x, intermediate.y, intermediate.z, 0, 0.0, 0.0, 0.0, 0.0, null, true)
 		}
 
 		val hitBlock = starship.world.rayTrace {
@@ -91,10 +98,18 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 			it.targets(RayTraceTarget.BLOCK)
 		}?.hitBlock ?: return
 
-		setupMovedBlocks(Vec3i(hitBlock.location))
+		try {
+			isFloodFilling = true
+			setupMovedBlocks(shooter.player, Vec3i(hitBlock.location)) {
+				isFloodFilling = false
+			}
+		} catch (e: Throwable) {
+			isFloodFilling = false
+			throw e
+		}
 	}
 
-	fun setupMovedBlocks(pos: Vec3i) = Tasks.async {
+	fun setupMovedBlocks(player: Player, pos: Vec3i, callback: () -> Unit = {}) = Tasks.async {
 		val standingOn = toBlockKey(pos)
 		val world = starship.world
 
@@ -117,14 +132,14 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 			val y = getY(current)
 			val z = getZ(current)
 
-			val blockData = getBlockIfLoaded(world, x, y, z)
+			val block = getBlockIfLoaded(world, x, y, z)
 
-			if (blockData == null) {
-				starship.userError("That structure is too large to move!")
+			if (block == null) {
+				starship.userError("That structure goes beyond loaded chunks!")
 				return@async
 			}
 
-			if (blockData.type.isAir) continue
+			if (!verifyBlock(player, block)) continue
 
 			foundBlocks.add(blockKey(x, y, z))
 
@@ -164,6 +179,8 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 
 		starship.information("Acquired ${foundBlocks.size} blocks")
 		movedBlocks = foundBlocks.toLongArray()
+
+		callback.invoke()
 
 		if (movedBlocks.isEmpty()) return@async
 
@@ -215,15 +232,24 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 
 	override fun tick() {
 		val minVec = minPoint ?: return
-		val maxVec = maxPoint ?: return
+		val maxVec = maxPoint?.plus(Vec3i(1, 1, 1)) ?: return
 
-		cube(minVec.toCenterVector().toLocation(starship.world), maxVec.toCenterVector().toLocation(starship.world)).forEach { t ->
+		cube(
+			minVec.toLocation(starship.world),
+			maxVec.toLocation(starship.world)
+		).forEach { t ->
 			starship.playerPilot?.spawnParticle(Particle.SOUL_FIRE_FLAME, t.x, t.y, t.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 		}
 	}
 
 	fun verifyBlock(player: Player, block: Block): Boolean {
+		val type = block.getTypeSafe() ?: return false
+		if (type.isAir) return false
+
 		if (starship.contains(block.x, block.y, block.z)) return false
+
+		if (block.world.ion.detectionForbiddenBlocks.contains(toBlockKey(block.x, block.y, block.z))) return false
+
 		return !ProtectionListener.denyBlockAccess(player, block.location, null)
 	}
 
