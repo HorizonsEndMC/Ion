@@ -85,10 +85,13 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 		val originLoc = getFirePosition()
 
 		val distance = distance(target, originLoc.toVector())
+		val beamDistance = minOf(100, distance.roundToInt())
 
-		originLoc.alongVector(dir.clone().multiply(distance), distance.roundToInt() * 3).forEach { intermediate ->
-			starship.world.spawnParticle(Particle.SOUL_FIRE_FLAME, intermediate.x, intermediate.y, intermediate.z, 0, 0.0, 0.0, 0.0, 0.0, null, true)
-		}
+		originLoc
+			.alongVector(dir.clone().multiply(beamDistance), beamDistance)
+			.forEach { intermediate ->
+				starship.world.spawnParticle(Particle.SOUL_FIRE_FLAME, intermediate.x, intermediate.y, intermediate.z, 0, 0.0, 0.0, 0.0, 0.0, null, true)
+			}
 
 		val hitBlock = starship.world.rayTrace {
 			it.direction(dir)
