@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TugMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
@@ -252,6 +253,10 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 		if (starship.contains(block.x, block.y, block.z)) return false
 
 		if (block.world.ion.detectionForbiddenBlocks.contains(toBlockKey(block.x, block.y, block.z))) return false
+
+		if (ActiveStarships.findByBlock(block) != null) {
+			return false
+		}
 
 		return !ProtectionListener.denyBlockAccess(player, block.location, null)
 	}
