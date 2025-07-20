@@ -354,7 +354,7 @@ object OptimizedMovement {
 		chunkCache: Long2ObjectOpenHashMap<LevelChunk>,
 		oldChunkMap: ChunkMap,
 		newChunkMap: ChunkMap,
-	) = Tasks.async {
+	) {
 		for ((chunkMap, world) in listOf(oldChunkMap to world1.uid, newChunkMap to world2.uid)) {
 			for ((chunkKey, _) in chunkMap) {
 				val nmsChunk = chunkCache.getOrPut(chunkKey) { Bukkit.getWorld(world)!!.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft }
