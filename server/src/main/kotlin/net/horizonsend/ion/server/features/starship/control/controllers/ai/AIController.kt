@@ -155,7 +155,7 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 		for (module in utilModules) {
 			module.tick()
 		}
-		SpeedTracker.addSpeed(starship.velocity.length())
+		speedTracker.addSpeed(starship.velocity.length())
 	}
 
 	override fun destroy() {
@@ -271,9 +271,9 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 		}
 	}
 
-	val maxSpeed get() = SpeedTracker.getMaxSpeed()
+	val maxSpeed get() = speedTracker.getMaxSpeed()
 
-	private object SpeedTracker {
+	private val speedTracker = object  {
 		private val deque: Deque<Pair<Long, Double>> = LinkedList()
 		private val windowSizeMillis = 60_000L  // 10 seconds in milliseconds
 

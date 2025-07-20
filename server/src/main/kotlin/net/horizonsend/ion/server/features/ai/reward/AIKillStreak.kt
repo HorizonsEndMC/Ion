@@ -25,8 +25,8 @@ object AIKillStreak : IonServerComponent() {
 	private fun decayHeat() {
 		playerHeatList.forEach {
 			it.score = (it.score - decay).coerceAtLeast(0)
-			if (it.score / 1000 < it.currentHeat) {
-				it.currentHeat = it.score / 1000
+			if (calculateHeat(it.score) < it.currentHeat) {
+				it.currentHeat = calculateHeat(it.score)
 				it.player.sendMessage(
 					template(
 					message = Component.text("Reduced AI heat streak to {0}", NamedTextColor.GRAY),
@@ -46,8 +46,8 @@ object AIKillStreak : IonServerComponent() {
 		} else {
 			entry.score += score
 		}
-		if (entry.score / 1000 >= entry.currentHeat) {
-			entry.currentHeat = entry.score / 1000
+		if (calculateHeat(entry.score) >= entry.currentHeat) {
+			entry.currentHeat = calculateHeat(entry.score)
 			entry.player.sendMessage(
 				template(
 					message = Component.text("Increased AI heat streak to {0}, rewards increased by {1}%", NamedTextColor.GOLD),
@@ -56,6 +56,10 @@ object AIKillStreak : IonServerComponent() {
 				)
 			)
 		}
+	}
+
+	private fun calculateHeat(score : Int) : Int {
+		return (score + 500) / 1000
 	}
 
 	fun getHeatMultiplier(player: Player) : Double {

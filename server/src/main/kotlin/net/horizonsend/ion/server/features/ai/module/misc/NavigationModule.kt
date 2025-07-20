@@ -45,7 +45,7 @@ class NavigationModule(
 	}
 	private var hyperdriveNavigate = false
 	private var navigate = false
-	private var navigationTarget = GoalTarget(starship.centerOfMass,world, false)
+	private var navigationTarget = GoalTarget(starship.centerOfMass, world, false)
 	private var lastWorld = world
 	private var triggerUpdate = false
 

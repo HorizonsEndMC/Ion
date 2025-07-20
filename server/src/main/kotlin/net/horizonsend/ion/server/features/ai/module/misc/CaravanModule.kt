@@ -32,7 +32,7 @@ class CaravanModule(
 	val route: ConvoyRoute
 ) : AIModule(controller){
 
-	var target : AITarget = GoalTarget(Vec3i(source),source.world,false)
+	var target : AITarget = GoalTarget(Vec3i(source), source.world, false)
 	var isTraveling = true
 
 	val tickRate = 20 * 2

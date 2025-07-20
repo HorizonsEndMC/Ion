@@ -125,7 +125,13 @@ class StarshipTarget(val ship: ActiveStarship, attack: Boolean = true) : AITarge
 	}
 }
 
-class GoalTarget(val position : Vec3i, private val world: World, var hyperspace : Boolean, attack: Boolean = false) : AITarget(attack) {
+class GoalTarget(
+	val position : Vec3i,
+	private val world: World,
+	var hyperspace : Boolean,
+	val weight : Double = 1.0,
+	attack: Boolean = false,
+) : AITarget(attack) {
 	override var offset: Vec3i = Vec3i(0,0,0)
 
 	override fun getLocation(random: Boolean): Location {

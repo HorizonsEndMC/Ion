@@ -1,15 +1,12 @@
 package net.horizonsend.ion.server.features.ai.module.misc
 
-import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.util.GoalTarget
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceToVector
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import java.util.*
 import kotlin.random.Random
 
@@ -20,7 +17,7 @@ class RandomGoalModule(
 	var iterations = 0
 	var ticks = 0
 	val tickRate = 40
-	var currentGoal : GoalTarget? = nextEndpoint() ?: GoalTarget(starship.centerOfMass,world,false,false)
+	var currentGoal : GoalTarget? = nextEndpoint() ?: GoalTarget(starship.centerOfMass, world, false, attack = false)
 	val enmity : EnmityModule? get() = controller.getCoreModuleByType<EnmityModule>()
 
 	override fun tick() {
@@ -73,7 +70,7 @@ class RandomGoalModule(
 		// If there are planets, and the distance to any of them along the path of travel is less than 200, discard
 		if (minDistance != null && minDistance <= 200.0) return nextEndpoint()
 		iterations++
-		return GoalTarget(endPoint,world,false,false)
+		return GoalTarget(endPoint, world, false, attack = false)
 
 	}
 

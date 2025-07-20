@@ -193,8 +193,8 @@ class OffsetSeekContext(
 	private val offsetDist get() =  offsetSupplier.get()
 	override fun populateContext() {
 		clearContext()
-
-		val seekPos = generalTarget.get()?.getLocation()?.toVector() ?: return
+		val aiTarget = generalTarget.get() ?: return
+		val seekPos = aiTarget.getLocation().toVector()
 		val shipPos = ship.centerOfMass.toVector()
 		val center = seekPos.clone()
 
@@ -239,7 +239,9 @@ class OffsetSeekContext(
 		val targetOffset = target.clone().subtract(shipPos)
 		targetOffset.normalize()
 
-		dotContext(targetOffset, config.dotShift, config.weight)
+		val weight = if (aiTarget is GoalTarget) config.weight * aiTarget.weight else config.weight
+
+		dotContext(targetOffset, config.dotShift, weight)
 		checkContext()
 	}
 

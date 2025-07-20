@@ -126,7 +126,7 @@ abstract class CombatModule<T>(
 			return
 		} //dont do anything if both of the options are false
 
-		if (weaponSet == null) {
+		if (weaponSet == null || !target.attack) {
 			AIControlUtils.unSetAllWeapons(controller)
 			return
 		}

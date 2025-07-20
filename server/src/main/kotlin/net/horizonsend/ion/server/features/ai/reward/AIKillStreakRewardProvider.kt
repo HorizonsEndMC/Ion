@@ -30,8 +30,9 @@ class AIKillStreakRewardProvider(override val starship: ActiveStarship, val conf
 		val ratio = (cbrt(killedSize) / cbrt(damagerSize)).coerceAtMost(3.0)
 		val difficultyMultiplier  = (starship.controller as? AIController)?.getCoreModuleByType<DifficultyModule>()?.rewardMultiplier ?: 1.0
 		val topPercent = topDamagerPoints.get().toDouble()/pointsSum.toDouble()
+		val killStreakBonus = AIKillStreak.getHeatMultiplier(damager.player)
 		val percent = points.get().toDouble() / pointsSum.toDouble()
-		val score = (ratio * (percent / topPercent) * configuration.streakMultiplier * difficultyMultiplier).toInt()
+		val score = (ratio * (percent / topPercent) * configuration.streakMultiplier * difficultyMultiplier * killStreakBonus).toInt()
 
 		if (score <= 0) return
 

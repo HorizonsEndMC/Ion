@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.CaravanModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
+import net.horizonsend.ion.server.features.ai.util.GoalTarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
@@ -49,6 +50,12 @@ open class EnmityModule(
 	val tickRate = 20 * 2
 	var ticks = 0 + randomInt(0,tickRate) //randomly offset targeting updates
 
+	init {
+		//effectivity anchor ship to spawn point if nothing else is going on
+	    val spawnTarget = GoalTarget(starship.centerOfMass, starship.world, false, attack = false, weight = 1/1500.0)
+		addTarget(spawnTarget, baseWeight = 0.1, decay = false, aggroed = true)
+	}
+
 	override fun tick() {
 		ticks++
 		if (ticks % tickRate != 0) return
@@ -82,7 +89,9 @@ open class EnmityModule(
 			return findTargetsAnywhere().filter { it.getWorld() == world}
 		}
 		else {
-			return findTargetsAnywhere().filter { it.getWorld() == world && getOpponentDistance(it)!! < config.aggroRange}
+			return findTargetsAnywhere().filter {
+				it.getWorld() == world
+				&& (getOpponentDistance(it)!! < config.aggroRange || it is GoalTarget) }
 		}
 	}
 
