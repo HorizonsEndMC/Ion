@@ -128,6 +128,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier4SideMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier4Top
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier4TopMirrored
+import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TugMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.HorizontalNavigationComputerMultiblockAdvanced
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.VerticalNavigationComputerMultiblockAdvanced
@@ -191,6 +192,8 @@ object MultiblockRegistration : IonServerComponent() {
 
 	private fun initMultiblocks() {
 		// Power
+		registerMultiblock(TugMultiblock)
+
 		registerMultiblock(PowerBankMultiblockTier1)
 		registerMultiblock(PowerBankMultiblockTier2)
 		registerMultiblock(PowerBankMultiblockTier3)
