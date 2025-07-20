@@ -117,7 +117,7 @@ object OptimizedMovement {
 		newPositionArray: LongArray
 	) {
 		for ((chunkKey, sectionMap) in collisionChunkMap) {
-			val nmsChunk = chunkCache.getOrPut(chunkKey) { world.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft }
+			val nmsChunk = getNMSChunk(chunkCache, world, chunkKey)
 
 			for ((sectionKey, positionMap) in sectionMap) {
 				val section = nmsChunk.sections[sectionKey]
@@ -182,7 +182,7 @@ object OptimizedMovement {
 		val relightChunks = ObjectOpenHashSet<ChunkPos>()
 
 		for ((chunkKey, sectionMap) in oldChunkMap) {
-			val nmsChunk = chunkCache.getOrPut(chunkKey) { world2.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft }
+			val nmsChunk = getNMSChunk(chunkCache, world1, chunkKey)
 			relightChunks.add(nmsChunk.pos)
 
 			for ((sectionKey, positionMap) in sectionMap) {
@@ -236,7 +236,7 @@ object OptimizedMovement {
 		val relightChunks = ObjectOpenHashSet<ChunkPos>()
 
 		for ((chunkKey, sectionMap) in newChunkMap) {
-			val nmsChunk = chunkCache.getOrPut(chunkKey) { world2.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft }
+			val nmsChunk = getNMSChunk(chunkCache, world2, chunkKey)
 			relightChunks.add(nmsChunk.pos)
 
 			for ((sectionKey, positionMap) in sectionMap) {
@@ -278,12 +278,13 @@ object OptimizedMovement {
 			val z = blockKeyZ(blockKey)
 
 			val newPos = BlockPos(x, y, z)
-			val chunk = world2.getChunkAt(x shr 4, z shr 4)
 
 			val data = blockDataTransform(tile.first)
 
 			val blockEntity = BlockEntity.loadStatic(newPos, data, tile.second, world2.minecraft.registryAccess()) ?: continue
-			chunk.minecraft.addAndRegisterBlockEntity(blockEntity)
+
+			val nmsChunk = getNMSChunk(chunkCache, world2, chunkKey(x shr 4, z shr 4))
+			nmsChunk.addAndRegisterBlockEntity(blockEntity)
 		}
 	}
 
@@ -357,7 +358,7 @@ object OptimizedMovement {
 	) {
 		for ((chunkMap, world) in listOf(oldChunkMap to world1.uid, newChunkMap to world2.uid)) {
 			for ((chunkKey, _) in chunkMap) {
-				val nmsChunk = chunkCache.getOrPut(chunkKey) { Bukkit.getWorld(world)!!.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft }
+				val nmsChunk = getNMSChunk(chunkCache, Bukkit.getWorld(world)!!, chunkKey)
 				nmsChunk.`moonrise$getChunkAndHolder`().holder.broadcastChanges(nmsChunk)
 			}
 		}
@@ -377,6 +378,10 @@ object OptimizedMovement {
 		}
 
 		changedBlockSets[sectionIndex]?.add(SectionPos.sectionRelativePos(blockPos))
+	}
+
+	private fun getNMSChunk(chunkCache: Long2ObjectOpenHashMap<LevelChunk>, world: World, chunkKey: Long): LevelChunk {
+		return chunkCache.getOrPut(chunkKey) { world.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft }
 	}
 }
 
