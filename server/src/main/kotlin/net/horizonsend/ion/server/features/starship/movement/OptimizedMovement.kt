@@ -64,8 +64,8 @@ object OptimizedMovement {
 		val collisionChunkMap = getCollisionChunkMap(oldChunkMap, newChunkMap)
 
 		val n = oldPositionArray.size
-		val capturedStates = java.lang.reflect.Array.newInstance(BlockState::class.java, n) as Array<BlockState>
-		val capturedTiles = mutableMapOf<Int, Pair<BlockState, CompoundTag>>()
+		val capturedStates = arrayOfNulls<BlockState>(n) as Array<BlockState>
+		val capturedTiles = Int2ObjectOpenHashMap<Pair<BlockState, CompoundTag>>()
 		val hangars = LinkedList<Long>()
 
 		try {
