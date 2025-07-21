@@ -4,9 +4,13 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.P
 import net.horizonsend.ion.server.features.starship.control.input.InputHandler
 import net.horizonsend.ion.server.features.starship.control.input.PlayerInput
 import net.horizonsend.ion.server.features.starship.control.movement.MovementHandler
+import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.lastRotationAttempt
+import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.util.Vector
 import kotlin.math.roundToInt
@@ -20,6 +24,11 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 		if (tug == null) return
 		if (tug.movedBlocks.isEmpty()) return
 
+		popTranslations(tug)
+		popRotations(tug)
+	}
+
+	fun popTranslations(tug: TugSubsystem) {
 		val delta = Vector()
 
 		while (input.moveVectorDequeue.isNotEmpty()) {
@@ -36,11 +45,27 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 		tug.doMovement(TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
 	}
 
+	fun popRotations(tug: TugSubsystem) {
+		val middle = tug.centerPoint ?: return
+
+		var fullRotation = 0.0
+
+		while (input.queuedRotations.isNotEmpty()) {
+			val theta = input.queuedRotations.removeFirst()
+			fullRotation += theta
+		}
+
+		if ((fullRotation % 360.0) == 0.0) return
+
+		tug.doMovement(TransformationAccessor.RotationTransformation(null, fullRotation) { middle })
+	}
+
 	inner class TugWASDInput(override val controller: PlayerController) : InputHandler, PlayerInput {
 		override fun getData(): Any = Any()
 		override val player: Player = controller.player
 
 		val moveVectorDequeue = ArrayDeque<Vector>()
+		val queuedRotations = ArrayDeque<Double>()
 
 		override fun handleMove(event: PlayerMoveEvent) {
 			if (tug == null) return
@@ -64,6 +89,28 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 			if (tug.lastTaskFuture?.isDone == false) return
 
 			moveVectorDequeue.addLast(Vector(0.0, -1.0, 0.0))
+		}
+
+		override fun handleSwapHands(event: PlayerSwapHandItemsEvent) {
+			if (event.offHandItem.type != StarshipControl.CONTROLLER_TYPE) return
+
+			event.isCancelled = true
+
+			if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
+
+			queuedRotations.add(90.0)
+		}
+
+		override fun handleDropItem(event: PlayerDropItemEvent) {
+			if (event.itemDrop.itemStack.type != StarshipControl.CONTROLLER_TYPE) return
+
+			event.isCancelled = true
+
+			if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
+
+			lastRotationAttempt[event.player.uniqueId] = System.currentTimeMillis()
+
+			queuedRotations.add(270.0)
 		}
 	}
 }

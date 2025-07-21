@@ -4,8 +4,10 @@ import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.util.Vector
 
@@ -47,6 +49,8 @@ interface PlayerInput {
 	fun handleSneak(event: PlayerToggleSneakEvent) {}
 	fun handleJump(event: PlayerJumpEvent) {}
 	fun handlePlayerHoldItem(event: PlayerItemHeldEvent) {}
+	fun handleDropItem(event: PlayerDropItemEvent) {}
+	fun handleSwapHands(event: PlayerSwapHandItemsEvent) {}
 }
 
 interface AIInput {
