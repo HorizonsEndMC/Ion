@@ -83,7 +83,7 @@ class RayTracedParticleProjectile(
 			location.world.viewDistance.toDouble(),
 			FluidCollisionMode.NEVER,
 			true,
-			balancing.shotSize * 2
+			balancing.shotSize * 4
 		) { it != shooter && (it as? Player)?.isGliding == true }
 
 		// Block Check
