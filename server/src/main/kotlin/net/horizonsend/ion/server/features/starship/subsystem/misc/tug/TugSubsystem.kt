@@ -24,6 +24,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -228,8 +231,7 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 				) {
 					movedBlocks = it
 
-					minPoint?.let { minPoint = movement.displaceVec3i(it) }
-					maxPoint?.let { maxPoint = movement.displaceVec3i(it) }
+					recalculateMinMax()
 				}
 
 				val now = System.currentTimeMillis()
@@ -272,5 +274,36 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 
 	companion object {
 		const val MAX_ASTEROID_SIZE = 1_000_000
+	}
+
+	fun recalculateMinMax() {
+		if (movedBlocks.isEmpty()) return
+
+		val start = movedBlocks.iterator().next()
+		var minX = blockKeyX(start)
+		var minY = blockKeyY(start)
+		var minZ = blockKeyZ(start)
+
+		var maxX = minX
+		var maxY = minY
+		var maxZ = minZ
+
+		for (key in movedBlocks) {
+			val x = blockKeyX(key)
+			val y = blockKeyY(key)
+			val z = blockKeyZ(key)
+
+			if (x < minX) minX = x
+			if (x > maxX) maxX = x
+
+			if (y < minY) minY = y
+			if (y > maxY) maxY = y
+
+			if (z < minZ) minZ = z
+			if (z > maxZ) maxZ = z
+		}
+
+		minPoint = Vec3i(minX, minY, minZ)
+		maxPoint = Vec3i(maxX, maxY, maxZ)
 	}
 }
