@@ -54,7 +54,7 @@ class PhaserWeaponSubsystem(
 
 		loc.world.players.forEach {
 			if (it.location.distance(loc) < balancing.range) {
-				shooter.playSound(Sound.sound(Key.key("horizonsend:starship.weapon.plasma_cannon.shoot"), Sound.Source.PLAYER, 1.0f, 2.0f))
+				shooter.playSound(Sound.sound(Key.key("horizonsend:starship.weapon.phaser.shoot.near"), Sound.Source.PLAYER, 1.0f, 1.0f))
 			}
 		}
 
