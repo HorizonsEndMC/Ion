@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
+import net.horizonsend.ion.server.features.starship.subsystem.misc.tug.TugControlMode
 import net.horizonsend.ion.server.miscellaneous.utils.AbstractCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -172,4 +173,9 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Subcommand("sell")
 	fun onSell(sender: Player, className: String, shipName: String, price: Double, @Optional priceConfirm: Double?, @Optional description: String?) = SellStarshipCommand.onSellStarship(sender, className, shipName, price, priceConfirm, description)
+
+	@Subcommand("tow mode")
+	fun onSetTowMode(sender: Player, mode: TugControlMode) {
+		MiscStarshipCommands.onSetTowMode(sender, mode)
+	}
 }
