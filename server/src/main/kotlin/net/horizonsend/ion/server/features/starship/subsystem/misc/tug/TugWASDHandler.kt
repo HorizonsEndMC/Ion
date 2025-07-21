@@ -31,8 +31,8 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 	fun popTranslations(tug: TugSubsystem) {
 		val delta = Vector()
 
-		while (input.moveVectorDequeue.isNotEmpty()) {
-			val vector = input.moveVectorDequeue.removeFirst()
+		while (input.moveVectorDeque.isNotEmpty()) {
+			val vector = input.moveVectorDeque.removeFirst()
 			delta.add(vector)
 		}
 
@@ -64,7 +64,7 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 		override fun getData(): Any = Any()
 		override val player: Player = controller.player
 
-		val moveVectorDequeue = ArrayDeque<Vector>()
+		val moveVectorDeque = ArrayDeque<Vector>()
 		val queuedRotations = ArrayDeque<Double>()
 
 		override fun handleMove(event: PlayerMoveEvent) {
@@ -79,7 +79,7 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 
 			val difference = event.to.clone().subtract(event.from).toVector().normalize()
 
-			moveVectorDequeue.addLast(difference)
+			moveVectorDeque.addLast(difference)
 		}
 
 		override fun handleSneak(event: PlayerToggleSneakEvent) {
@@ -88,7 +88,7 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 			event.isCancelled = true
 			if (tug.lastTaskFuture?.isDone == false) return
 
-			moveVectorDequeue.addLast(Vector(0.0, -1.0, 0.0))
+			moveVectorDeque.addLast(Vector(0.0, -1.0, 0.0))
 		}
 
 		override fun handleSwapHands(event: PlayerSwapHandItemsEvent) {

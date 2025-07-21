@@ -23,7 +23,19 @@ enum class TugControlMode {
 		}
 	},
 	LOOK() {
+		override fun onSetup(starship: Starship) {
+			val controller = starship.controller
+			if (controller !is ActivePlayerController) return
 
+			controller.movementHandler = TugLookHandler(controller)
+		}
+
+		override fun onStop(starship: Starship) {
+			val controller = starship.controller
+			if (controller !is ActivePlayerController) return
+
+			controller.movementHandler = ShiftFlightHandler(controller, PlayerShiftFlightInput(controller))
+		}
 	}
 
 	;
