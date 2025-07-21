@@ -73,6 +73,14 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 		return multiblock.blockMatchesStructure(starship.world.getBlockAt(origin.x, origin.y, origin.z), face.oppositeFace)
 	}
 
+	fun setControlMode(new: TugControlMode) {
+		controlMode.onStop(starship)
+		controlMode = new
+		new.onSetup(starship)
+	}
+
+	private var controlMode: TugControlMode = TugControlMode.FOLLOW
+
 	var minPoint: Vec3i? = null
 	var maxPoint: Vec3i? = null
 	val centerPoint: Vec3i? get() = minPoint?.let { min -> maxPoint?.let { max -> Vec3i((min.x + max.x) / 2, (min.y + max.y) / 2, (min.z + max.z) / 2) } }
@@ -194,13 +202,13 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 	}
 
 	override fun onMovement(movement: TransformationAccessor, success: Boolean) {
-		if (movement !is TranslateMovement || !success) return
-//		handleMovement(movement)
+		if (movement !is TranslateMovement || !success || controlMode != TugControlMode.FOLLOW) return
+		doMovement(movement)
 	}
 
 	var lastTaskFuture: Future<Boolean>? = null
 
-	fun handleMovement(movement: TransformationAccessor) {
+	fun doMovement(movement: TransformationAccessor) {
 		var lastTicked = System.currentTimeMillis()
 
 		if (lastTaskFuture?.isDone == false) {

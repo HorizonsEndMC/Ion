@@ -16,7 +16,6 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 
 	val tug = controller.starship.tugs.firstOrNull()
 
-
 	override fun tick() {
 		if (tug == null) return
 		if (tug.movedBlocks.isEmpty()) return
@@ -34,7 +33,7 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 		val dy = delta.y.roundToInt()
 		val dz = delta.z.roundToInt()
 
-		tug.handleMovement(TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
+		tug.doMovement(TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
 	}
 
 	inner class TugWASDInput(override val controller: PlayerController) : InputHandler, PlayerInput {
