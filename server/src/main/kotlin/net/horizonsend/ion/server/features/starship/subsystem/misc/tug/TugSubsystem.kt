@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.subsystem.misc
+package net.horizonsend.ion.server.features.starship.subsystem.misc.tug
 
 import io.papermc.paper.raytracing.RayTraceTarget
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
@@ -34,7 +34,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.Block
@@ -75,6 +75,7 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 
 	var minPoint: Vec3i? = null
 	var maxPoint: Vec3i? = null
+	val centerPoint: Vec3i? get() = minPoint?.let { min -> maxPoint?.let { max -> Vec3i((min.x + max.x) / 2, (min.y + max.y) / 2, (min.z + max.z) / 2) } }
 
 	var movedBlocks = LongArray(0)
 
@@ -194,12 +195,12 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 
 	override fun onMovement(movement: TransformationAccessor, success: Boolean) {
 		if (movement !is TranslateMovement || !success) return
-		handleMovement(movement)
+//		handleMovement(movement)
 	}
 
 	var lastTaskFuture: Future<Boolean>? = null
 
-	fun handleMovement(movement: TranslateMovement) {
+	fun handleMovement(movement: TransformationAccessor) {
 		var lastTicked = System.currentTimeMillis()
 
 		if (lastTaskFuture?.isDone == false) {
@@ -228,7 +229,7 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 				lastTicked = now
 				future.complete(true)
 			} catch (e: StarshipMovementException) {
-				starship.sendMessage(ofChildren(Component.text("Towed Load Blocked! ", RED), e.formatMessage()))
+				starship.sendMessage(ofChildren(Component.text("Towed Load Blocked! ", NamedTextColor.RED), e.formatMessage()))
 				future.complete(false)
 			}
 		}
@@ -239,9 +240,9 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 		val maxVec = maxPoint?.plus(Vec3i(1, 1, 1)) ?: return
 
 		cube(
-			minVec.toLocation(starship.world),
-			maxVec.toLocation(starship.world)
-		).forEach { t ->
+            minVec.toLocation(starship.world),
+            maxVec.toLocation(starship.world)
+        ).forEach { t ->
 			starship.playerPilot?.spawnParticle(Particle.SOUL_FIRE_FLAME, t.x, t.y, t.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 		}
 	}

@@ -16,8 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue
 import kotlin.math.abs
 import kotlin.math.sign
 
-class DirectControlHandler(controller: Controller, override val input: DirectControlInput
-) : MovementHandler(controller, "Direct Control",	input) {
+class DirectControlHandler(controller: Controller, override val input: DirectControlInput) : MovementHandler(controller, "Direct Control") {
 	private val directControlPreviousVectors = LinkedBlockingQueue<Vector>(4)
 	private val directControlVector = Vector()
 

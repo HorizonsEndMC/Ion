@@ -65,6 +65,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSub
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.PlanetDrillSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.tug.TugSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustData
@@ -467,6 +468,7 @@ class Starship(
 	val drills = LinkedList<PlanetDrillSubsystem>()
 	val fuelTanks = LinkedList<FuelTankSubsystem>()
 	val customTurrets = LinkedList<CustomTurretSubsystem>()
+	val tugs = LinkedList<TugSubsystem>()
 
 	val shieldBars = mutableMapOf<String, BossBar>()
 
