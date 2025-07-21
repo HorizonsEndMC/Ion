@@ -671,7 +671,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 	@CommandAlias("usebeacon")
 	fun onUseBeacon(sender: Player) {
-		val ship = getStarshipRiding(sender) as? ActiveControlledStarship ?: return
+		val ship = getStarshipRiding(sender)
 		HyperspaceBeaconManager.detectNearbyBeacons(ship, 0, 0)
 		val beacon = ship.beacon
 
@@ -781,6 +781,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	fun onSetTowMode(sender: Player, mode: TugControlMode) {
 		val starship = getStarshipPiloting(sender)
 		val tug = starship.tugs.firstOrNull() ?: fail { "Your starship is not equipped with a tug!" }
+
+		sender.information("Updated starship tow mode to $mode")
 		tug.setControlMode(mode)
 	}
 }
