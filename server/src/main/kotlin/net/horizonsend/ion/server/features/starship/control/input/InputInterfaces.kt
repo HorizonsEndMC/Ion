@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.starship.control.input
 
-
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -9,7 +8,6 @@ import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.util.Vector
-
 
 interface InputHandler {
 	val controller: Controller

@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.player
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.input.InputHandler
 import net.horizonsend.ion.server.features.starship.control.input.NoInput
 import net.horizonsend.ion.server.features.starship.control.movement.MovementHandler
 import net.kyori.adventure.audience.Audience
@@ -9,8 +10,9 @@ import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
 
 class UnpilotedController(oldPilot: Player, starship: ActiveStarship) : PlayerController(oldPilot, starship, "Unpiloted") {
-	override var movementHandler: MovementHandler =
-		object : MovementHandler(this,"Unpiloted", NoInput(this)) {}
+	override var movementHandler: MovementHandler = object : MovementHandler(this,"Unpiloted") {
+		override val input: InputHandler = NoInput(this@UnpilotedController)
+	}
 
 
 	// Shouldn't be treated like they're still piloting it

@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 class DirecterControlHandler(
 	controller: PlayerController,
 	override val input: DirecterControlInput
-) : MovementHandler(controller, "Direct-er", input) {
+) : MovementHandler(controller, "Direct-er") {
 	override fun tick() {
 		val deltaV = input.getData()
 		val now = System.currentTimeMillis()

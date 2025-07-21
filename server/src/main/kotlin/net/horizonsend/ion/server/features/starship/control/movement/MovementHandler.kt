@@ -4,7 +4,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.Controll
 import net.horizonsend.ion.server.features.starship.control.input.InputHandler
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 
-abstract class MovementHandler(val controller: Controller, val name: String, open val input :InputHandler) {
+abstract class MovementHandler(val controller: Controller, val name: String) {
+	abstract val input: InputHandler
 
 	val starship = controller.starship
 	open fun create() {}

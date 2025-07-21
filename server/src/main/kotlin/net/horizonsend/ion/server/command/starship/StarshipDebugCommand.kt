@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.features.starship.control.movement.DirectContr
 import net.horizonsend.ion.server.features.starship.control.movement.DirecterControlHandler
 import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
+import net.horizonsend.ion.server.features.starship.subsystem.misc.tug.TugWASDHandler
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VariableVisualProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
@@ -224,6 +225,11 @@ object StarshipDebugCommand : SLCommand() {
 		DIRECTER_CONTROL {
 			override fun apply(controller: ActivePlayerController) {
 				controller.movementHandler = DirecterControlHandler(controller, PlayerDirecterControlInput(controller))
+			}
+		},
+		TUG_WASD {
+			override fun apply(controller: ActivePlayerController) {
+				controller.movementHandler = TugWASDHandler(controller)
 			}
 		},
 
