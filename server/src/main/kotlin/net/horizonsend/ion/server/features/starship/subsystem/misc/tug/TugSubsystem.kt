@@ -251,7 +251,7 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
             minVec.toLocation(starship.world),
             maxVec.toLocation(starship.world)
         ).forEach { t ->
-			starship.playerPilot?.spawnParticle(Particle.SOUL_FIRE_FLAME, t.x, t.y, t.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
+			starship.playerPilot?.spawnParticle(Particle.ELECTRIC_SPARK, t.x, t.y, t.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 		}
 	}
 
