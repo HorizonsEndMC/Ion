@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.configuration.util.VariableIntegerAmount
 import net.horizonsend.ion.server.features.ai.configuration.WorldSettings
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.DEBUG_CONVOY_GLOBAL
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.DEBUG_CONVOY_LOCAL
+import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.DEEP_SPACE_MINING
 import net.horizonsend.ion.server.features.ai.convoys.LocationContext
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.MINING_GUILD
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEUS_EXPLORERS
@@ -49,6 +50,7 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MIANBA
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PATROLLER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.RAIDER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.REAVER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.RESOLUTE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.SCYTHE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.SWARMER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TENETA
@@ -785,7 +787,8 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK), 0.12)
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE), 0.20)
 					)
 				),
 				WorldSettings(worldName = "Trench",
@@ -799,7 +802,9 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK), 0.12)
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE), 0.30),
+
 					)
 				),
 				WorldSettings(
@@ -814,7 +819,8 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 0.12),
 						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 0.12),
-						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK), 0.12)
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK), 0.12),
+						spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE), 0.10)
 					)
 				)
 			)
@@ -864,7 +870,8 @@ object AISpawners : IonServerComponent(true) {
                     SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK),
                     SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR),
                     SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER),
-                    SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK)
+                    SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK),
+					SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE)
                 ),
                 daggerLocusScheduler.spawnLocationProvider,
                 SpawnMessage.WorldMessage("<$PRIVATEER_LIGHT_TEAL>Privateer patrol <${HE_MEDIUM_GRAY}>operation vessel {0} spawned at {1}, {3}, in {4}".miniMessage()),
@@ -886,12 +893,13 @@ object AISpawners : IonServerComponent(true) {
 					VariableIntegerAmount(30, 50),
 					"<$PRIVATEER_LIGHT_TEAL>Privateer <${HE_MEDIUM_GRAY}>Assault Force has been spotted engaging a target in {3}, at {0} {2}".miniMessage(),
 					null,
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 5),
-					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(0.0, 50.0, 0.0, 250.0), 10),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 2),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 4),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 4),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 4),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 7),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(0.0, 50.0, 0.0, 250.0), 15),
+					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE).withRandomRadialOffset(0.0, 50.0, 0.0, 250.0), 25),
 					difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY }
 				)
@@ -1026,6 +1034,18 @@ object AISpawners : IonServerComponent(true) {
 		/* helper suppliers --------------------------------------------------- */
 		val localCtx : (World) -> LocationContext = { w -> LocationContext(randomLocationIn(w)) }
 		val anyCtx   : () -> LocationContext      = { LocationContext(randomLocationAnywhere()) }
+
+		/* GLOBAL (any world) ------------------------------------------------- */
+		registerGlobalSpawner(
+			LazyWorldSpawner(
+				id = "DEEP_SPACE_MINING",
+				worldFilter      = { it.hasFlag(SPACE_WORLD) }, //TODO: do something about this unused param
+				mechanicSupplier = {
+					DEEP_SPACE_MINING.spawnMechanicBuilder(anyCtx())
+				}
+			)
+		)
+
 
 		/* LOCAL (same world) ------------------------------------------------- */
 		registerPerWorldSpawner { world ->

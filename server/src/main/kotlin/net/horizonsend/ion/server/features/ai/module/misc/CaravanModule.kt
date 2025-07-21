@@ -123,7 +123,7 @@ class CaravanFleetLogic(
 ) : FleetLogic(fleet) {
 	var isTraveling = true
 	var currentDestination = advanceDestination() ?: source
-	val waitTime = 60 // number of seconds to wait at a location
+	val waitTime = 60*3 // number of seconds to wait at a location
 
 	fun advanceDestination() : Location? {
 		val next = route.advanceDestination()

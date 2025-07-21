@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.ai.starship
 
 import net.horizonsend.ion.common.utils.text.colors.ABYSSAL_DESATURATED_RED
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_LIGHT_TEAL
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
@@ -459,6 +460,36 @@ object AITemplateRegistry {
 		.build()
 	)
 
+	val RESOLUTE = registerTemplate(builder(
+		identifier = "RESOLUTE",
+		template = StarshipTemplateRegistry.RESOLUTE,
+		controllerFactory = AIControllerFactories.destroyer,
+		engagementRange = 1250.0,
+	)
+		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
+		.addRewardProvider(SLXPRewardProviderConfiguration(1.0))
+		.addRewardProvider(CreditRewardProviderConfiguration(16000.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(3500.0))
+		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
+			activationThreshold = 0.70,
+			delay = 100L,
+			broadcastMessage =  "$<$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
+		) {
+			BagSpawner(
+				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 100.0, 200.0),
+				VariableIntegerAmount(4, 7),
+				null,
+				null,
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 2),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA), 2),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 3),
+				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
+			)
+		})
+		.build()
+	)
+
 	val CONTRACTOR = registerTemplate(builder(
 		identifier = "CONTRACTOR",
 		template = StarshipTemplateRegistry.CONTRACTOR,
@@ -724,6 +755,70 @@ object AITemplateRegistry {
 
 	// END_EXPLORER
 	// START_MINING_GUILD
+
+	val ANGLE = registerTemplate(builder(
+		identifier = "ANGLE",
+		template = StarshipTemplateRegistry.ANGLE,
+		controllerFactory = AIControllerFactories.battlecruiser,
+		engagementRange = 500.0
+	)
+		.addFactionConfiguration(AIFaction.MINING_GUILD)
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(20000.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
+			activationThreshold = 0.75,
+			delay = 100L,
+			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE), 1.0))
+		))
+		.build()
+	)
+
+
+	val DUNKLEOSTEUS = registerTemplate(builder(
+		identifier = "DUNKLEOSTEUS",
+		template = StarshipTemplateRegistry.DUNKLEOSTEUS,
+		controllerFactory = AIControllerFactories.destroyer,
+		engagementRange = 500.0
+	)
+		.addFactionConfiguration(AIFaction.MINING_GUILD)
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(10000.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
+			activationThreshold = 0.9,
+			delay = 100L,
+			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 1.0))
+		))
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
+			activationThreshold = 0.75,
+			delay = 100L,
+			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 1.0))
+		))
+		.build()
+	)
+
+	val GROUPER = registerTemplate(builder(
+		identifier = "GROUPER",
+		template = StarshipTemplateRegistry.GROUPER,
+		controllerFactory = AIControllerFactories.frigate,
+		engagementRange = 500.0
+	)
+		.addFactionConfiguration(AIFaction.MINING_GUILD)
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(6000.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
+			activationThreshold = 0.75,
+			delay = 100L,
+			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 1.0))
+		))
+		.build()
+	)
 
 	val OSTRICH = registerTemplate(builder(
 		identifier = "OSTRICH",

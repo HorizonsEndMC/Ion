@@ -22,7 +22,7 @@ class LazyWorldSpawner(
 		override suspend fun trigger(logger: Logger) {
 
 		}
-		override fun getAvailableShips(): Collection<SpawnedShip> {
+		override fun getAvailableShips(draw: Boolean): Collection<SpawnedShip> {
 			return emptyList()
 		}
 	}

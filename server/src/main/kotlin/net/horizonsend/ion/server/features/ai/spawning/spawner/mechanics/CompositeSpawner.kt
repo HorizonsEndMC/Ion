@@ -56,7 +56,7 @@ class CompositeSpawner(
 			)
 		)
 
-		val allShips = components.flatMap { it.getAvailableShips() }
+		val allShips = components.flatMap { it.getAvailableShips(draw = true) }
 		if (allShips.isEmpty()) {
 			logger.info("CompositeSpawner found no ships to spawn.")
 			return
@@ -71,7 +71,7 @@ class CompositeSpawner(
 				.coerceIn(DifficultyModule.minDifficulty, DifficultyModule.maxDifficulty)
 			println("difficulty: $difficulty")
 
-			debugAudience.debug("Spawning ${ship.template.identifier} at $spawnPoint")
+			logger.info("Spawning ${ship.template.identifier} at $spawnPoint")
 
 			ship.spawn(logger, spawnPoint, difficulty,targetModeSupplier.get()) {
 				addUtilModule(AIFleetManageModule(this, aiFleet))
@@ -100,6 +100,6 @@ class CompositeSpawner(
 
 	private fun getShips(): List<SpawnedShip> = components.flatMap { it.getAvailableShips() }
 
-	override fun getAvailableShips(): Collection<SpawnedShip> = getShips()
+	override fun getAvailableShips(draw: Boolean): Collection<SpawnedShip> = getShips()
 }
 

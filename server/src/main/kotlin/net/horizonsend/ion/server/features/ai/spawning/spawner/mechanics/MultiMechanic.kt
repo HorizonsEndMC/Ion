@@ -10,7 +10,7 @@ class MultiMechanic(vararg mechanics: SpawnerMechanic) : SpawnerMechanic() {
 		mechanics.forEach { it.trigger(logger) }
 	}
 
-	override fun getAvailableShips(): Collection<SpawnedShip> {
+	override fun getAvailableShips(draw: Boolean): Collection<SpawnedShip> {
 		return mechanics.flatMap { it.getAvailableShips() }
 	}
 }

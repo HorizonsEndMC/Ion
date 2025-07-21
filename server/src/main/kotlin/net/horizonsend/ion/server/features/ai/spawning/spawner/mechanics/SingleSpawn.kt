@@ -28,7 +28,8 @@ class SingleSpawn(
 		spawnMessage?.broadcast(spawnPoint, ship.template)
 	}
 
-	override fun getAvailableShips(): Collection<SpawnedShip> {
-		return shipPool.getAllAvailable()
+	override fun getAvailableShips(draw: Boolean): Collection<SpawnedShip> {
+		if (!draw) return shipPool.getAllAvailable()
+		return listOf(shipPool.get())
 	}
 }

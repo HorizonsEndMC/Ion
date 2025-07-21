@@ -284,7 +284,7 @@ fun applyPostSpawnBehavior(
 			}
 		}
 
-		override fun getAvailableShips(): Collection<SpawnedShip> = mechanic.getAvailableShips()
+		override fun getAvailableShips(draw: Boolean): Collection<SpawnedShip> = mechanic.getAvailableShips()
 	}
 }
 

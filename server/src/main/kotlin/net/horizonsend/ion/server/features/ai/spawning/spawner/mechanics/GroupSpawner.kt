@@ -21,7 +21,7 @@ class GroupSpawner(
 		return ships
 	}
 
-	override fun getAvailableShips(): Collection<SpawnedShip> {
+	override fun getAvailableShips(draw: Boolean): Collection<SpawnedShip> {
 		return ships
 	}
 }

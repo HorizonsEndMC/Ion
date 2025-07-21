@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_LIGHT_TEAL
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.configuration.util.VariableIntegerAmount
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.MINING_GUILD
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEUS_EXPLORERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
@@ -17,17 +18,22 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleS
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SpawnerMechanic
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.AMPH
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.ANGLE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAGGER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DESSLE
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DUNKLEOSTEUS
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.GROUPER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MINHAUL_CHETHERITE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MINHAUL_REDSTONE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MINHAUL_TITANIUM
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.NIMBLE
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.OSTRICH
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PATROLLER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.STRIKER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TENETA
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VETERAN
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.WAYFINDER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.WOODPECKER
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.economy.city.TradeCities
@@ -88,6 +94,55 @@ object AIConvoyRegistry {
 			BagSpawner(
 				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
 				VariableIntegerAmount(5, 15),
+				"<$PRIVATEER_LIGHT_TEAL>Privateer <$HE_MEDIUM_GRAY>Escorting defense force spotted in {3}, at {0} {2}".miniMessage(),
+				null,
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
+				difficultySupplier = difficulty, targetModeSupplier = targetMode
+			),
+		)
+	}
+
+	val DEEP_SPACE_MINING = AIConvoyRegistry.freeRoute("DEEP_SPACE_MINING", 2) { ctx ->
+		val route = RandomConvoyRoute.fromList(listOf("Trench"))
+
+		CompositeSpawner(
+			locationProvider     = { route.getSourceLocation() },
+			difficultySupplier   = AIConvoyRegistry["DEEP_SPACE_MINING"]!!.difficultySupplier,
+			groupMessage         = "DEEP_SPACE_MINING".miniMessage(),
+			individualSpawnMessage = null,
+			onPostSpawn          = { c -> attachCaravanModule(c, route, "DEEP_SPACE_MINING") },
+			components           = makeMiningComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
+			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED)
+		)
+	}
+
+	fun makeMiningComponents(route : ConvoyRoute, difficulty : (String) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
+		return listOf(
+			SingleSpawn(
+				RandomShipSupplier(
+					MINING_GUILD.asSpawnedShip(ANGLE),
+				),
+				{route.getSourceLocation()},
+				SpawnMessage.WorldMessage("Flag trade ship joined the convoy!".miniMessage()),
+				difficulty,targetMode
+			),
+			BagSpawner(
+				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
+				VariableIntegerAmount(5, 15),
+				"Additional mining ships".miniMessage(),
+				null,
+				asBagSpawned(MINING_GUILD.asSpawnedShip(DUNKLEOSTEUS).withRandomRadialOffset(100.0, 200.0, 0.0, 250.0), 7),
+				asBagSpawned(MINING_GUILD.asSpawnedShip(GROUPER).withRandomRadialOffset(100.0, 200.0, 0.0, 250.0), 5),
+				asBagSpawned(MINING_GUILD.asSpawnedShip(OSTRICH).withRandomRadialOffset(100.0, 200.0, 0.0, 250.0), 3),
+				asBagSpawned(MINING_GUILD.asSpawnedShip(WOODPECKER).withRandomRadialOffset(100.0, 200.0, 0.0, 250.0), 2),
+				difficultySupplier = difficulty, targetModeSupplier = targetMode
+			),
+			BagSpawner(
+				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
+				VariableIntegerAmount(5, 10),
 				"<$PRIVATEER_LIGHT_TEAL>Privateer <$HE_MEDIUM_GRAY>Escorting defense force spotted in {3}, at {0} {2}".miniMessage(),
 				null,
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
