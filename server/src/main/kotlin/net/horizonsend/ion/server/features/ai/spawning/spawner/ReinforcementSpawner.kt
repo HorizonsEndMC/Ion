@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner
 
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
+import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
@@ -10,6 +11,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.Weighte
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.SpawnerScheduler
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import java.util.function.Supplier
 
 /**
@@ -32,9 +34,17 @@ class ReinforcementSpawner(
             null, // Calling module handles this
             {_ -> Supplier { reinforced.getCoreModuleByType<DifficultyModule>()?.internalDifficulty ?: 2 }},
 			{ reinforced.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY },
+			{reinforced.getUtilModule(AIFleetManageModule::class.java)?.fleet},
             ::setupReinforcementShip
         )
-	)
+	) {
+		//check if reinforced ship is part of a fleet.
+		var fleet = reinforced.getUtilModule(AIFleetManageModule::class.java)?.fleet
+		if (fleet == null) {
+			fleet = Fleets.createAIFleet()
+			reinforced.addUtilModule(AIFleetManageModule(reinforced,fleet))
+		}
+	}
 
 	override val scheduler: SpawnerScheduler = SpawnerScheduler.DummyScheduler(this)
 

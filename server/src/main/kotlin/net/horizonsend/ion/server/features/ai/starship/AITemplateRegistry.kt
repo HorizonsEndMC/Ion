@@ -475,17 +475,15 @@ object AITemplateRegistry {
 			delay = 100L,
 			broadcastMessage =  "$<$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
 		) {
-			BagSpawner(
-				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 100.0, 200.0),
-				VariableIntegerAmount(4, 7),
-				null,
-				null,
-				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 2),
-				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA), 2),
-				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 3),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
-			)
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 100.0, 200.0),
+                VariableIntegerAmount(4, 7),
+                null,
+                null,
+                asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 2),
+                asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA), 2),
+                asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 3),
+            )(it)
 		})
 		.build()
 	)
@@ -1030,18 +1028,16 @@ object AITemplateRegistry {
 			delay = 5L,
 			broadcastMessage = "<italic><red>Gotcha! You hoomies always fall for the bait!",
 		) {
-			BagSpawner(
-				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
-				VariableIntegerAmount(10, 15),
-				null,
-				null,
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER), 1),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
-			)
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+                VariableIntegerAmount(10, 15),
+                null,
+                null,
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER), 1),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
+            )(it)
 		})
 		.build()
 	)
@@ -1061,18 +1057,16 @@ object AITemplateRegistry {
 			delay = 5L,
 			broadcastMessage = "<italic><red>Gotcha! You hoomies always fall for the bait!",
 		) {
-			BagSpawner(
-				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
-				VariableIntegerAmount(10, 15),
-				null,
-				null,
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER), 1),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
-			)
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+                VariableIntegerAmount(10, 15),
+                null,
+                null,
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER), 1),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
+            )(it)
 		})
 		.build()
 	)
@@ -1092,18 +1086,16 @@ object AITemplateRegistry {
 			delay = 5L,
 			broadcastMessage = "<italic><red>Gotcha! You hoomies always fall for the bait!",
 		) {
-			BagSpawner(
-				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
-				VariableIntegerAmount(11, 15),
-				null,
-				null,
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER).withRandomRadialOffset(150.0, 200.0, 0.0), 1),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE).withRandomRadialOffset(75.0, 150.0, 0.0), 3),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 75.0, 0.0), 5),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 50.0, 0.0), 10),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
-			)
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+                VariableIntegerAmount(11, 15),
+                null,
+                null,
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER).withRandomRadialOffset(150.0, 200.0, 0.0), 1),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE).withRandomRadialOffset(75.0, 150.0, 0.0), 3),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 75.0, 0.0), 5),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 50.0, 0.0), 10),
+            )(it)
 		})
 		.build()
 	)
@@ -1140,15 +1132,13 @@ object AITemplateRegistry {
 			delay = 5L,
 			broadcastMessage = "<$ABYSSAL_DESATURATED_RED>Feast, my children.",
 		) {
-			BagSpawner(
-				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
-				VariableIntegerAmount(2, 3),
-				null,
-				null,
-				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
-			)
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+                VariableIntegerAmount(2, 3),
+                null,
+                null,
+                asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+            )(it)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
@@ -1172,15 +1162,13 @@ object AITemplateRegistry {
 			delay = 5L,
 			broadcastMessage = "<$ABYSSAL_DESATURATED_RED>Feast, my children.",
 		) {
-			BagSpawner(
-				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
-				VariableIntegerAmount(2, 3),
-				null,
-				null,
-				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
-			)
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+                VariableIntegerAmount(2, 3),
+                null,
+                null,
+                asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+            )(it)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
@@ -1203,15 +1191,13 @@ object AITemplateRegistry {
 			delay = 5L,
 			broadcastMessage = "<$ABYSSAL_DESATURATED_RED>Feast, my children.",
 		) {
-			BagSpawner(
-				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
-				VariableIntegerAmount(2, 3),
-				null,
-				null,
-				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
-			)
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+                VariableIntegerAmount(2, 3),
+                null,
+                null,
+                asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+            )(it)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
@@ -1234,15 +1220,13 @@ object AITemplateRegistry {
 			delay = 5L,
 			broadcastMessage = "<$ABYSSAL_DESATURATED_RED>Feast, my children.",
 		) {
-			BagSpawner(
-				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
-				VariableIntegerAmount(2, 3),
-				null,
-				null,
-				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
-				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-				targetModeSupplier = { it.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY }
-			)
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+                VariableIntegerAmount(2, 3),
+                null,
+                null,
+                asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+            )(it)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))

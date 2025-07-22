@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.ships.spawn
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
+import net.horizonsend.ion.server.features.starship.fleet.Fleet
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.kyori.adventure.text.Component
@@ -24,6 +25,7 @@ abstract class MultiSpawner(
 	private val individualSpawnMessage: SpawnMessage?,
 	private val difficultySupplier: (String) -> Supplier<Int>,
 	private val targetModeSupplier: Supplier<AITarget.TargetMode>,
+	private val fleetSupplier: Supplier<Fleet?>
 ) : SpawnerMechanic() {
 	abstract fun getShips(): List<SpawnedShip>
 
@@ -41,7 +43,7 @@ abstract class MultiSpawner(
 			return
 		}
 
-		val aiFleet = Fleets.createAIFleet()
+		val aiFleet = if (fleetSupplier.get() == null) Fleets.createAIFleet() else fleetSupplier.get()!!
 		val fleetDifficulty = difficultySupplier(spawnOrigin.world.name).get()
 		val shipDifficultySupplier = WeightedIntegerAmount(
 			setOf(

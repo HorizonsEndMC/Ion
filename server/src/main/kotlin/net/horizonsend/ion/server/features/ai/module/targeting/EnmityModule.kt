@@ -52,8 +52,9 @@ open class EnmityModule(
 
 	init {
 		//effectivity anchor ship to spawn point if nothing else is going on
+		// inverting priority allways places this at the bottom of the agro list
 	    val spawnTarget = GoalTarget(starship.centerOfMass, starship.world, false, attack = false, weight = 1/1500.0)
-		addTarget(spawnTarget, baseWeight = 0.1, decay = false, aggroed = true)
+		addTarget(spawnTarget, baseWeight = 0.1, decay = false, aggroed = true, isAnchor = true)
 	}
 
 	override fun tick() {
@@ -224,10 +225,11 @@ open class EnmityModule(
 				otherList[index].damagerWeight = max(otherList[index].damagerWeight, opponent.damagerWeight)
 			} else {
 				val newAIOpponent = AIOpponent(
-					opponent.target, aggroed = opponent.aggroed,
-					baseWeight = config.initialAggroThreshold,
+					opponent.target, baseWeight = config.initialAggroThreshold,
 					damagerWeight = opponent.damagerWeight,
-					decay = opponent.decay)
+					aggroed = opponent.aggroed,
+					decay = opponent.decay
+				)
 				otherList.add(newAIOpponent)
 			}
 
@@ -256,10 +258,11 @@ open class EnmityModule(
 		}
 
 		enmityList.sortBy {-1 *(//descending
-			it.baseWeight
+			(it.baseWeight
 			+ config.damagerWeight * it.damagerWeight
 			+ config.sizeWeight * cbrt((it.target as? StarshipTarget)?.ship?.initialBlockCount?.toDouble() ?: 0.0)
-			+ config.distanceWeight * calcDistFactor(it.target)
+			+ config.distanceWeight * calcDistFactor(it.target))
+			* (if (it.isAnchor) -1 else 1)
 		)}
 	}
 
@@ -288,15 +291,19 @@ open class EnmityModule(
 		return target.getLocation(false).toVector().distance(location.toVector())
 	}
 
-	fun addTarget(target: AITarget,baseWeight : Double = 1.0, aggroed: Boolean = false, decay: Boolean = true,  ) {
+	fun addTarget(target: AITarget, baseWeight : Double = 1.0, aggroed: Boolean = false, decay: Boolean = true, isAnchor: Boolean = false) {
 		val existing = enmityList.find { it.target == target }
 		if (existing != null) return
 
-		enmityList.add(AIOpponent(target, baseWeight, aggroed = aggroed, decay = decay))
+		enmityList.add(AIOpponent(target, baseWeight, aggroed = aggroed, decay = decay, isAnchor = isAnchor))
 	}
 
 	fun removeTarget(target: AITarget) {
 		enmityList.removeIf { it.target == target }
+	}
+
+	fun removeAnchor() {
+		enmityList.removeIf { it.isAnchor }
 	}
 
 
@@ -316,6 +323,7 @@ open class EnmityModule(
 		var damagerWeight : Double = 0.0,
 		var aggroed : Boolean = false,
 		val decay : Boolean = true,
+		val isAnchor : Boolean = false,
 		var damagePoints : Int = 0
 	) {
 

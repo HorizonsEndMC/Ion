@@ -204,7 +204,7 @@ object AISpawners : IonServerComponent(true) {
 				asBagSpawned(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCED), 1),
 				asBagSpawned(WATCHERS.asSpawnedShip(TERALITH), 2),
 				difficultySupplier = {_ -> Supplier { watcherLocusScheduler.difficulty }},
-				targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY }
+				targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY },
 			)
 		))
 
@@ -224,7 +224,7 @@ object AISpawners : IonServerComponent(true) {
 					asBagSpawned(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCEMENT), 10),
 					asBagSpawned(WATCHERS.asSpawnedShip(TERALITH), 10),
 					difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY }
+					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY },
 				)
 			)
 		}
@@ -841,7 +841,7 @@ object AISpawners : IonServerComponent(true) {
 					null,
 					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(0.0, 250.0, 0.0, 250.0), 1),
 					difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY }
+					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY },
 				)
 			)
 		}
@@ -901,7 +901,7 @@ object AISpawners : IonServerComponent(true) {
 					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(0.0, 50.0, 0.0, 250.0), 15),
 					asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE).withRandomRadialOffset(0.0, 50.0, 0.0, 250.0), 25),
 					difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY }
+					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY },
 				)
 			)
 		}
@@ -923,7 +923,7 @@ object AISpawners : IonServerComponent(true) {
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 75.0, 0.0), 5),
 				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 0.0, 0.0), 10),
 				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
-				targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY }
+				targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY },
 			)
 		) }
 

@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEU
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.CaravanModule
+import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
@@ -53,13 +54,13 @@ object AIConvoyRegistry {
 		)
 
 		CompositeSpawner(
+			components           = makeSmallCaravanComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
 			locationProvider     = { route.getSourceLocation() },
-			difficultySupplier   = AIConvoyRegistry["SMALL_TC_CARAVAN"]!!.difficultySupplier,
 			groupMessage         = "Small convoy fleet!".miniMessage(),
 			individualSpawnMessage = SpawnMessage.WorldMessage("Ship joined the convoy!".miniMessage()),
-			onPostSpawn          = { c -> attachCaravanModule(c, route, "SMALL_TC_CARAVAN") },
-			components           = makeSmallCaravanComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
-			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED)
+			difficultySupplier   = AIConvoyRegistry["SMALL_TC_CARAVAN"]!!.difficultySupplier,
+			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED),
+			onPostSpawn          = { c -> attachCaravanModule(c, route, "SMALL_TC_CARAVAN") }
 		)
 	}
 
@@ -89,7 +90,7 @@ object AIConvoyRegistry {
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(MINHAUL_REDSTONE).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(MINHAUL_TITANIUM).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(AMPH).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
-				difficultySupplier = difficulty, targetModeSupplier = targetMode
+				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = {null}
 			),
 			BagSpawner(
 				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
@@ -100,7 +101,7 @@ object AIConvoyRegistry {
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
-				difficultySupplier = difficulty, targetModeSupplier = targetMode
+				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = {null}
 			),
 		)
 	}
@@ -109,13 +110,13 @@ object AIConvoyRegistry {
 		val route = RandomConvoyRoute.fromList(listOf("Trench"))
 
 		CompositeSpawner(
+			components           = makeMiningComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
 			locationProvider     = { route.getSourceLocation() },
-			difficultySupplier   = AIConvoyRegistry["DEEP_SPACE_MINING"]!!.difficultySupplier,
 			groupMessage         = "DEEP_SPACE_MINING".miniMessage(),
 			individualSpawnMessage = null,
-			onPostSpawn          = { c -> attachCaravanModule(c, route, "DEEP_SPACE_MINING") },
-			components           = makeMiningComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
-			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED)
+			difficultySupplier   = AIConvoyRegistry["DEEP_SPACE_MINING"]!!.difficultySupplier,
+			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED),
+			onPostSpawn          = { c -> attachCaravanModule(c, route, "DEEP_SPACE_MINING") }
 		)
 	}
 
@@ -138,7 +139,7 @@ object AIConvoyRegistry {
 				asBagSpawned(MINING_GUILD.asSpawnedShip(GROUPER).withRandomRadialOffset(100.0, 200.0, 0.0, 250.0), 5),
 				asBagSpawned(MINING_GUILD.asSpawnedShip(OSTRICH).withRandomRadialOffset(100.0, 200.0, 0.0, 250.0), 3),
 				asBagSpawned(MINING_GUILD.asSpawnedShip(WOODPECKER).withRandomRadialOffset(100.0, 200.0, 0.0, 250.0), 2),
-				difficultySupplier = difficulty, targetModeSupplier = targetMode
+				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = {null}
 			),
 			BagSpawner(
 				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
@@ -149,7 +150,7 @@ object AIConvoyRegistry {
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
-				difficultySupplier = difficulty, targetModeSupplier = targetMode
+				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = {null}
 			),
 		)
 	}
@@ -158,13 +159,13 @@ object AIConvoyRegistry {
 		val route = RandomConvoyRoute.sameWorld(ctx.source.world.name)
 
 		CompositeSpawner(
+			components           = makedebugComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
 			locationProvider     = { route.getSourceLocation() },
-			difficultySupplier   = AIConvoyRegistry["DEBUG_CONVOY_LOCAL"]!!.difficultySupplier,
 			groupMessage         = "Debug convoy (local)".miniMessage(),
 			individualSpawnMessage = null,
-			onPostSpawn          = { c -> attachCaravanModule(c, route, "DEBUG_CONVOY_LOCAL") },
-			components           = makedebugComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
-			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED)
+			difficultySupplier   = AIConvoyRegistry["DEBUG_CONVOY_LOCAL"]!!.difficultySupplier,
+			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED),
+			onPostSpawn          = { c -> attachCaravanModule(c, route, "DEBUG_CONVOY_LOCAL") }
 		)
 	}
 
@@ -172,13 +173,13 @@ object AIConvoyRegistry {
 		val route = RandomConvoyRoute.anyWorld()
 
 		CompositeSpawner(
+			components           = makedebugComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
 			locationProvider     = { route.getSourceLocation() },
-			difficultySupplier   = AIConvoyRegistry["DEBUG_CONVOY_GLOBAL"]!!.difficultySupplier,
 			groupMessage         = "Debug convoy (global)".miniMessage(),
 			individualSpawnMessage = null,
-			onPostSpawn          = { c -> attachCaravanModule(c, route, "DEBUG_CONVOY_GLOBAL") },
-			components           = makedebugComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
-			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED)
+			difficultySupplier   = AIConvoyRegistry["DEBUG_CONVOY_GLOBAL"]!!.difficultySupplier,
+			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED),
+			onPostSpawn          = { c -> attachCaravanModule(c, route, "DEBUG_CONVOY_GLOBAL") }
 		)
 	}
 
@@ -201,7 +202,7 @@ object AIConvoyRegistry {
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
-				difficultySupplier = difficulty, targetModeSupplier = targetMode
+				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = {null}
 			),
 		)
 	}
@@ -255,6 +256,7 @@ object AIConvoyRegistry {
 				route
 			)
 		)
+		controller.getCoreModuleByType<EnmityModule>()?.removeAnchor()
 	}
 
 	private fun fixedDifficulty(v: Int) = { _: String -> Supplier { v } }

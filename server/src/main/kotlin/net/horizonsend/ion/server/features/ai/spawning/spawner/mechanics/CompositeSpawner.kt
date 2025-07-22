@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.ai.spawning.ships.spawn
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.fleet.Fleet
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.Location
@@ -31,6 +32,7 @@ class CompositeSpawner(
 	private val individualSpawnMessage: SpawnMessage?,
 	private val difficultySupplier: (String) -> Supplier<Int>,
 	private val targetModeSupplier: Supplier<AITarget.TargetMode>,
+	private val fleetSupplier: Supplier<Fleet?> = Supplier { null },
 	private val onPostSpawn: (AIController) -> Unit
 ) : SpawnerMechanic() {
 
@@ -46,7 +48,7 @@ class CompositeSpawner(
 			return
 		}
 
-		val aiFleet = Fleets.createAIFleet()
+		val aiFleet = if (fleetSupplier.get() == null) Fleets.createAIFleet() else fleetSupplier.get()!!
 		val fleetDifficulty = difficultySupplier(spawnOrigin.world.name).get()
 		val shipDifficultySupplier = WeightedIntegerAmount(
 			setOf(
