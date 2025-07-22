@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -60,7 +61,11 @@ object StarshipDisplay : IonServerComponent(true) {
 
 	/** Stores the StarshipIcon for use in populating the map */
 	private fun createMarker(starship: ActiveStarship, marker: MarkerIcon? = null) {
-		val transponderEnabled = starship.playerPilot?.getSetting(PlayerSettings::transponderEnabled) ?: true
+		val transponderEnabled = if (starship.playerPilot != null) {
+			starship.playerPilot!!.getSetting(PlayerSettings::transponderEnabled) ||
+				CombatTimer.isNpcCombatTagged(starship.playerPilot!!) ||
+				CombatTimer.isPvpCombatTagged(starship.playerPilot!!)
+		} else false
 		val charIdentifier = starship.charIdentifier
 		val displayName = if (transponderEnabled) starship.identifier else "Unidentified Entity"
 

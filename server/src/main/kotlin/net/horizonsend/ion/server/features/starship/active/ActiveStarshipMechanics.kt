@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -275,8 +276,9 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 		val isNoStarship = starship == null
 		val isHoldingController = isHoldingController(player)
-		// Players with transponders off will be replaced by a marker
-		val isInvisible = if (player.getSetting(PlayerSettings::transponderEnabled)) isNoStarship && !isHoldingController else true
+		// Players with transponders off will be replaced by a marker, unless combat tagged
+		val isInvisible = if (player.getSetting(PlayerSettings::transponderEnabled)) isNoStarship && !isHoldingController else
+			if (!CombatTimer.isNpcCombatTagged(player) || !CombatTimer.isPvpCombatTagged(player)) true else false
 		DynmapPlugin.plugin.assertPlayerInvisibility(player, isInvisible, IonServer)
 	}
 
