@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userErrorAction
+import net.horizonsend.ion.server.configuration.StarshipSounds
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -29,6 +30,8 @@ class IonTurretProjectile(
 	override val starshipShieldDamageMultiplier: Double,
 	override val areaShieldDamageMultiplier: Double,
 	override val soundName: String,
+	override val nearSound: StarshipSounds.SoundInfo,
+	override val farSound: StarshipSounds.SoundInfo,
 	override val balancing: StarshipWeapons.ProjectileBalancing,
 	shooter: Damager
 ): LaserProjectile(ship, name, loc, dir, shooter, DamageType.GENERIC) {

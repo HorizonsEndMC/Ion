@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.StarshipSounds
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.damager.damager
@@ -37,6 +38,8 @@ class AntiAirCannonProjectile(
 	override val starshipShieldDamageMultiplier = balancing.starshipShieldDamageMultiplier
 	override val areaShieldDamageMultiplier: Double = balancing.areaShieldDamageMultiplier
 	override val soundName = balancing.soundName
+	override val nearSound: StarshipSounds.SoundInfo = balancing.soundFireNear
+	override val farSound: StarshipSounds.SoundInfo = balancing.soundFireFar
 
 	private fun getColor(shooter: Player): Color {
 		val nation: Oid<Nation>? = PlayerCache[shooter].nationOid

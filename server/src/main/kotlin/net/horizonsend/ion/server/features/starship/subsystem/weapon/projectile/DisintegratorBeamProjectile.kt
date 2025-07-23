@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.StarshipSounds
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -42,6 +43,8 @@ class DisintegratorBeamProjectile(
     override val volume: Int = balancing.volume
     override val pitch: Float = balancing.pitch
     override val soundName: String = balancing.soundName
+    override val nearSound: StarshipSounds.SoundInfo = balancing.soundFireNear
+    override val farSound: StarshipSounds.SoundInfo = balancing.soundFireFar
 
     override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
         super.onImpactStarship(starship, impactLocation)

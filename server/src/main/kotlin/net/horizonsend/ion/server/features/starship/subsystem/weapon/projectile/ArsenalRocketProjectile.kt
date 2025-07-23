@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 import com.mojang.math.Transformation
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
+import net.horizonsend.ion.server.configuration.StarshipSounds
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.getAddEntityPacket
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
@@ -52,6 +53,8 @@ class ArsenalRocketProjectile(
 	override val volume: Int = balancing.volume
 	override val pitch: Float = balancing.pitch
 	override val soundName: String = balancing.soundName
+	override val nearSound: StarshipSounds.SoundInfo = balancing.soundFireNear
+	override val farSound: StarshipSounds.SoundInfo = balancing.soundFireFar
 	override var displayEntities: MutableMap<Player, ItemDisplay?> = mutableMapOf()
 	override val originLocation: Location = loc
 	private var age: Int = 0 //Ticks

@@ -168,6 +168,8 @@ sealed class CycleTurretMultiblock : TurretMultiblock() {
                 getStarshipShieldDamageMultiplier(starship),
                 getAreaShieldDamageMultiplier(starship),
                 getSound(starship),
+                starship.balancing.weapons.cycleTurret.soundFireNear,
+                starship.balancing.weapons.cycleTurret.soundFireFar,
                 starship.balancing.weapons.cycleTurret, // Not used by anything
                 shooter,
                 index,

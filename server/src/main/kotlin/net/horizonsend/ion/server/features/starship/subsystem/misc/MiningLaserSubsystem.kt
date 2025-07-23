@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.StarshipSounds
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
@@ -64,7 +65,9 @@ class MiningLaserSubsystem(
 		fireCooldownMillis = 0,
 		boostChargeSeconds = 0,
 		aimDistance = 0,
-		applyCooldownToAll = false
+		applyCooldownToAll = false,
+		soundFireNear = StarshipSounds.SoundInfo(""),
+		soundFireFar = StarshipSounds.SoundInfo(""),
 	)
 
 	private val firingTasks = mutableListOf<BukkitTask>()
