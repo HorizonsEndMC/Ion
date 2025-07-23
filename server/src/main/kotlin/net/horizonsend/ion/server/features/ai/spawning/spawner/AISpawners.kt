@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner
 
 import com.google.common.collect.Multimap
+import kotlinx.serialization.Serializable
+import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.text.colors.EXPLORER_LIGHT_CYAN
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.colors.PIRATE_SATURATED_RED
@@ -38,6 +40,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.Weighte
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.AISpawnerTicker
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.CaravanScheduler
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.SetTimeScheduler
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.TickedScheduler
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.ARBOREALITH
@@ -66,6 +69,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag.ALLOW_AI_SPAWNS
 import net.horizonsend.ion.server.features.world.WorldFlag.SPACE_WORLD
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getRandomDuration
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.kyori.adventure.text.Component.text
@@ -84,6 +88,7 @@ object AISpawners : IonServerComponent(true) {
 	 **/
 	private val spawners = mutableListOf<AISpawner>()
 	val tickedAISpawners = mutableListOf<TickedScheduler>()
+	private val setTimeSpawners = mutableListOf<SetTimeScheduler>()
 
 	fun getAllSpawners(): List<AISpawner> = spawners
 
@@ -141,9 +146,14 @@ object AISpawners : IonServerComponent(true) {
 	init {
 		registerSpawners()
 
-		spawners.mapNotNullTo(tickedAISpawners) { it.scheduler as? TickedScheduler }
+		spawners.filterIsInstanceTo(tickedAISpawners)
+		spawners.filterIsInstanceTo(setTimeSpawners)
+
+		setTimeSpawners.forEach { t -> t.schedule() }
+
 		tickedAISpawners.add(CaravanScheduler)
 	}
+
 
 	// Run after tick is true
 	override fun onEnable() {
@@ -154,6 +164,10 @@ object AISpawners : IonServerComponent(true) {
 			spawners.addAll(new)
 			new.mapNotNullTo(tickedAISpawners) { it.scheduler as? TickedScheduler }
 		}
+
+		loadPersistentData()
+
+		Tasks.asyncRepeat(120, 120, ::savePersistentData)
 	}
 
 	private fun registerSpawners() {
@@ -1091,4 +1105,29 @@ object AISpawners : IonServerComponent(true) {
 	/** Same logic, but picks a random *loaded* world first. */
 	fun randomLocationAnywhere(): Location =
 		randomLocationIn(Bukkit.getWorlds().filter { it.hasFlag(SPACE_WORLD) }.random())
+
+	fun loadPersistentData() {
+		val stored = Configuration.load<PersistentSpawnerData>(IonServer.dataFolder, "persistentSpawnerData.json")
+
+		for (spawner in getAllSpawners().filterIsInstance<PersistentDataSpawner<*>>()) {
+			val data = stored.keyed[spawner.storageKey] ?: continue
+			spawner.load(data)
+		}
+	}
+
+	fun savePersistentData() = Tasks.async {
+		val data = mutableMapOf<String, String>()
+
+		for (spawner in getAllSpawners().filterIsInstance<PersistentDataSpawner<*>>()) {
+			val stored = spawner.write() ?: continue
+			data[spawner.storageKey] = stored
+		}
+
+		Configuration.save(PersistentSpawnerData(data), IonServer.dataFolder, "persistentSpawnerData.json")
+	}
+
+	@Serializable
+	class PersistentSpawnerData(
+		val keyed: MutableMap<String, String> = mutableMapOf<String, String>()
+	)
 }

@@ -4,14 +4,13 @@ package net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.ai.convoys.toContext
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
-import java.time.ZoneOffset
-import java.time.ZonedDateTime
-import java.util.concurrent.atomic.AtomicBoolean
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import org.slf4j.Logger
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
-object CaravanScheduler : SpawnerScheduler,TickedScheduler {
+object CaravanScheduler : SpawnerScheduler, TickedScheduler {
 
     override fun tick(logger: Logger) {
         val now = ZonedDateTime.now(ZoneOffset.UTC)
