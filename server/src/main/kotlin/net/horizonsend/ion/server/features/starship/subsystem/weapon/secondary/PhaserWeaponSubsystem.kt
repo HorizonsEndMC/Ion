@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PhaserProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.SimpleProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.key.Key
@@ -52,9 +53,11 @@ class PhaserWeaponSubsystem(
 			return
 		}
 
-		loc.world.players.forEach {
-			if (it.location.distance(loc) < balancing.range) {
-				shooter.playSound(Sound.sound(Key.key("horizonsend:starship.weapon.phaser.shoot.near"), Sound.Source.PLAYER, 1.0f, 1.0f))
+		loc.world.players.forEach { player ->
+			val distance = player.location.distance(loc)
+			if (distance < balancing.range * 20) {
+				shooter.playSound(Sound.sound(Key.key(balancing.soundFireNear.key), balancing.soundFireNear.source, balancing.soundFireNear.volume * nearSoundVolumeMod(distance), balancing.soundFireNear.pitch))
+				shooter.playSound(Sound.sound(Key.key(balancing.soundFireFar.key), balancing.soundFireFar.source, balancing.soundFireFar.volume * farSoundVolumeMod(distance), balancing.soundFireFar.pitch))
 			}
 		}
 
@@ -97,5 +100,27 @@ class PhaserWeaponSubsystem(
 
 	override fun consumeAmmo(itemStack: ItemStack) {
 		consumeItem(itemStack, 4)
+	}
+
+	private fun nearSoundVolumeMod(distance: Double): Float {
+		val range = balancing.range
+		val normalized = distance / range
+		return when (distance.toInt()) {
+			in 0 until range.toInt() -> 1f
+			// -0.5x^2 + 0.5x + 1
+			in range.toInt() until (range * 2).toInt() -> ((-0.5 * normalized * normalized) + (0.5 * normalized) + 1).toFloat()
+			else -> 0f
+		}
+	}
+
+	private fun farSoundVolumeMod(distance: Double): Float {
+		val range = balancing.range
+		val normalized = distance / range
+		return when (distance.toInt()) {
+			in 0 until (range * 2).toInt() -> 1f
+			// -0.00277778x^2 + 0.00555556x + 1
+			in (range * 2).toInt() until (range * 20).toInt() -> ((-0.00277778 * normalized * normalized) + (0.00555556 * normalized) + 1).toFloat()
+			else -> 0f
+		}
 	}
 }

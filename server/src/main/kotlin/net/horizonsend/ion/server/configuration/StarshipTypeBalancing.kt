@@ -478,7 +478,7 @@ data class StarshipTypeBalancing(
 				explosionPower = 3.0f,
 				volume = 1,
 				pitch = 1.0f,
-				soundName = "horizonsend:starship.weapon.heavy_laser.shoot.near",
+				soundName = "horizonsend:starship.weapon.heavy_turret.shoot.near",
 				powerUsage = 8000,
 				length = 0,
 				angleRadiansHorizontal = 0.0,

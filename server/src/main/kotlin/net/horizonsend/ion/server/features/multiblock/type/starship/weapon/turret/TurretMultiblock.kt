@@ -10,7 +10,10 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.HeavyTurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.LightTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TurretLaserProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.TriTurretWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
@@ -233,6 +236,20 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 	open fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Damager, subSystem: TurretWeaponSubsystem, isAuto: Boolean = true) {
 		val speed = getProjectileSpeed(starship)
 
+		val nearSound = when (subSystem) {
+			is LightTurretWeaponSubsystem -> starship.balancing.weapons.lightTurret.soundFireNear
+			is HeavyTurretWeaponSubsystem -> starship.balancing.weapons.heavyTurret.soundFireNear
+			is TriTurretWeaponSubsystem -> starship.balancing.weapons.triTurret.soundFireNear
+			else -> starship.balancing.weapons.lightTurret.soundFireNear
+		}
+
+		val farSound = when (subSystem) {
+			is LightTurretWeaponSubsystem -> starship.balancing.weapons.lightTurret.soundFireFar
+			is HeavyTurretWeaponSubsystem -> starship.balancing.weapons.heavyTurret.soundFireFar
+			is TriTurretWeaponSubsystem -> starship.balancing.weapons.triTurret.soundFireFar
+			else -> starship.balancing.weapons.lightTurret.soundFireFar
+		}
+
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
 			if (starship.isInternallyObstructed(point, dir)) continue
 
@@ -251,8 +268,8 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 				getStarshipShieldDamageMultiplier(starship),
 				getAreaShieldDamageMultiplier(starship),
 				getSound(starship),
-				starship.balancing.weapons.logisticTurret.soundFireNear,
-				starship.balancing.weapons.logisticTurret.soundFireFar,
+				nearSound,
+				farSound,
 				starship.balancing.weapons.heavyTurret, // Not used by anything
 				shooter
 			).fire()

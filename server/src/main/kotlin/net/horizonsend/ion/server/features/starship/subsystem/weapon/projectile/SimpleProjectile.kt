@@ -70,8 +70,9 @@ abstract class SimpleProjectile(
 	private fun nearSoundVolumeMod(distance: Double): Float {
 		val normalized = distance / range
 		return when (distance.toInt()) {
-			in 0 until (0.25 * range).toInt() -> 1f
-			in (0.25 * range).toInt() until range.toInt() -> (-0.721348 * ln(normalized)).toFloat()
+			in 0 until range.toInt() -> 1f
+			// -0.5x^2 + 0.5x + 1
+			in range.toInt() until (range * 2).toInt() -> ((-0.5 * normalized * normalized) + (0.5 * normalized) + 1).toFloat()
 			else -> 0f
 		}
 	}
@@ -79,8 +80,9 @@ abstract class SimpleProjectile(
 	private fun farSoundVolumeMod(distance: Double): Float {
 		val normalized = distance / range
 		return when (distance.toInt()) {
-			in 0 until (0.25 * range).toInt() -> 0f
-			in (0.25 * range).toInt() until (2 * range).toInt() -> ((-1.33333 * normalized * normalized) + (3 * normalized) - 0.666667).toFloat()
+			in 0 until (range * 2).toInt() -> 1f
+			// -0.00277778x^2 + 0.00555556x + 1
+			in (range * 2).toInt() until (range * 20).toInt() -> ((-0.00277778 * normalized * normalized) + (0.00555556 * normalized) + 1).toFloat()
 			else -> 0f
 		}
 	}
@@ -88,9 +90,7 @@ abstract class SimpleProjectile(
 	protected open fun playCustomSound(loc: Location, nearSound: StarshipSounds.SoundInfo, farSound: StarshipSounds.SoundInfo) {
 		loc.world.players.forEach { player ->
 			val distance = player.location.distance(loc)
-			if (distance < 2 * range) {
-				println("NEAR RANGE MOD: ${nearSoundVolumeMod(distance)}")
-				println("FAR RANGE MOD: ${farSoundVolumeMod(distance)}")
+			if (distance < range * 20) {
 				player.playSound(sound(key(nearSound.key), nearSound.source, nearSound.volume * nearSoundVolumeMod(distance), nearSound.pitch))
 				player.playSound(sound(key(farSound.key), farSound.source, farSound.volume * farSoundVolumeMod(distance), farSound.pitch))
 			}
