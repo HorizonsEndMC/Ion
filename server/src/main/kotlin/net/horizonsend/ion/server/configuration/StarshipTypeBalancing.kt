@@ -86,7 +86,9 @@ data class StarshipTypeBalancing(
 				inaccuracyRadians = 2.0,
 				applyCooldownToAll = true,
 				maxBlockCount = 12000,
-				minBlockCount = 1750
+				minBlockCount = 1750,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 		)
 	),
@@ -157,7 +159,9 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				forwardOnly = true,
 				maxPerShot = 2,
-				applyCooldownToAll = true
+				applyCooldownToAll = true,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.plasma_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.plasma_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 			laserCannon = StarshipWeapons.StarshipWeapon(
 				canFire = false,
@@ -178,7 +182,9 @@ data class StarshipTypeBalancing(
 				extraDistance = 2,
 				fireCooldownMillis = 250,
 				aimDistance = 0,
-				applyCooldownToAll = true
+				applyCooldownToAll = true,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 			interceptorCannon = StarshipWeapons.StarshipWeapon(
 				canFire = true,
@@ -200,7 +206,9 @@ data class StarshipTypeBalancing(
 				extraDistance = 3,
 				fireCooldownMillis = 250,
 				aimDistance = 0,
-				applyCooldownToAll = true
+				applyCooldownToAll = true,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 			protonTorpedo = StarshipWeapons.StarshipWeapon(
 				canFire = false,
@@ -225,7 +233,9 @@ data class StarshipTypeBalancing(
 				aimDistance = 3,
 				forwardOnly = true,
 				maxPerShot = 2,
-				applyCooldownToAll = false
+				applyCooldownToAll = false,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 		)
 	),
@@ -259,7 +269,9 @@ data class StarshipTypeBalancing(
 				inaccuracyRadians = 2.0,
 				applyCooldownToAll = true,
 				maxBlockCount = 12000,
-				minBlockCount = 1750
+				minBlockCount = 1750,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 			pulseCannon = StarshipWeapons.StarshipWeapon(
 				canFire = true,
@@ -282,7 +294,9 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				applyCooldownToAll = true,
 				minBlockCount = 1000,
-				maxBlockCount = 4000
+				maxBlockCount = 4000,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			)
 		)
 	),
@@ -315,7 +329,9 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				inaccuracyRadians = 2.0,
 				applyCooldownToAll = true,
-				maxBlockCount = 12000
+				maxBlockCount = 12000,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 			triTurret = StarshipWeapons.StarshipWeapon(
 				range = 500.0,
@@ -338,7 +354,9 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				inaccuracyRadians = 3.0,
 				applyCooldownToAll = false,
-				minBlockCount = 3400
+				minBlockCount = 3400,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 			pulseCannon = StarshipWeapons.StarshipWeapon(
 				canFire = true,
@@ -361,7 +379,9 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				applyCooldownToAll = true,
 				minBlockCount = 1000,
-				maxBlockCount = 4000
+				maxBlockCount = 4000,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			)
 		)
 	),
@@ -395,7 +415,9 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				applyCooldownToAll = true,
 				minBlockCount = 1000,
-				maxBlockCount = 4000
+				maxBlockCount = 4000,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			)
 		)
 
@@ -442,7 +464,9 @@ data class StarshipTypeBalancing(
 				maxPerShot = 4,
 				applyCooldownToAll = true,
 				minBlockCount = 13500,
-				maxBlockCount = 16000
+				maxBlockCount = 16000,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.ion_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.ion_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 			heavyTurret = StarshipWeapons.StarshipWeapon(
 				canFire = false,
@@ -466,7 +490,9 @@ data class StarshipTypeBalancing(
 				applyCooldownToAll = true,
 				aimDistance = 0,
 				maxBlockCount = 12000,
-				minBlockCount = 6500
+				minBlockCount = 6500,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 			arsenalMissile = StarshipWeapons.StarshipWeapon(
 				canFire = true,
@@ -490,7 +516,9 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				applyCooldownToAll = false,
 				displayEntityCustomModelData = 1101,
-				displayEntitySize = 1.0
+				displayEntitySize = 1.0,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
 			)
 		),
 		requiredMultiblocks = listOf(
@@ -544,7 +572,9 @@ data class StarshipTypeBalancing(
 				inaccuracyRadians = 2.0,
 				maxPerShot = 3,
 				applyCooldownToAll = true,
-				minBlockCount = 17500
+				minBlockCount = 17500,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 			triTurret = StarshipWeapons.StarshipWeapon(
 				range = 500.0,
@@ -567,7 +597,9 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				inaccuracyRadians = 3.0,
 				applyCooldownToAll = false,
-				minBlockCount = 3400
+				minBlockCount = 3400,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 			arsenalMissile = StarshipWeapons.StarshipWeapon(
 				canFire = true,
@@ -591,7 +623,9 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				applyCooldownToAll = false,
 				displayEntityCustomModelData = 1101,
-				displayEntitySize = 1.0
+				displayEntitySize = 1.0,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
 			)
 
 		),
@@ -647,7 +681,9 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				inaccuracyRadians = 3.0,
 				applyCooldownToAll = false,
-				minBlockCount = 3400
+				minBlockCount = 3400,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 			heavyTurret = StarshipWeapons.StarshipWeapon(
 				canFire = true,
@@ -671,7 +707,9 @@ data class StarshipTypeBalancing(
 				applyCooldownToAll = true,
 				aimDistance = 0,
 				maxBlockCount = 20000,
-				minBlockCount = 16500
+				minBlockCount = 16500,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 
 			),
@@ -724,7 +762,9 @@ data class StarshipTypeBalancing(
 				inaccuracyRadians = 2.0,
 				maxPerShot = 5,
 				applyCooldownToAll = true,
-				minBlockCount = 30000
+				minBlockCount = 30000,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 			triTurret = StarshipWeapons.StarshipWeapon(
 				range = 500.0,
@@ -747,7 +787,9 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				inaccuracyRadians = 3.0,
 				applyCooldownToAll = false,
-				minBlockCount = 3400
+				minBlockCount = 3400,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 			arsenalMissile = StarshipWeapons.StarshipWeapon(
 				canFire = true,
@@ -771,7 +813,9 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				applyCooldownToAll = false,
 				displayEntityCustomModelData = 1101,
-				displayEntitySize = 1.0
+				displayEntitySize = 1.0,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
 			)
 		)
 	),
@@ -807,7 +851,9 @@ data class StarshipTypeBalancing(
 				inaccuracyRadians = 2.0,
 				maxPerShot = 7,
 				applyCooldownToAll = true,
-				minBlockCount = 45000
+				minBlockCount = 45000,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 			triTurret = StarshipWeapons.StarshipWeapon(
 				range = 500.0,
@@ -830,7 +876,9 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				inaccuracyRadians = 3.0,
 				applyCooldownToAll = false,
-				minBlockCount = 3400
+				minBlockCount = 3400,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 			arsenalMissile = StarshipWeapons.StarshipWeapon(
 				canFire = true,
@@ -854,7 +902,9 @@ data class StarshipTypeBalancing(
 				aimDistance = 0,
 				applyCooldownToAll = false,
 				displayEntityCustomModelData = 1101,
-				displayEntitySize = 1.0
+				displayEntitySize = 1.0,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
 			)
 		)
 	),
@@ -894,7 +944,9 @@ data class StarshipTypeBalancing(
 				applyCooldownToAll = true,
 				minBlockCount = 0,
 				maxBlockCount = 4000,
-				canFire = true
+				canFire = true,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
 		)
 	),
@@ -969,6 +1021,8 @@ data class AntiAirCannonBalancing(
 	override var displayEntitySize: Double? = null,
 	override var delayMillis: Int? = null,
 	override val entityDamage: ProjectileBalancing.EntityDamage = ProjectileBalancing.RegularDamage(10.0),
+	override var soundFireNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.turbolaser.tri.shoot", volume = 1f, source = Sound.Source.PLAYER),
+	override var soundFireFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.turbolaser.tri.shoot", volume = 1f, source = Sound.Source.PLAYER),
 ) : ProjectileBalancing
 
 @Serializable
@@ -1053,7 +1107,9 @@ class StarshipWeapons(
 				aimDistance = 0,
 				forwardOnly = true,
 				maxPerShot = 2,
-				applyCooldownToAll = true
+				applyCooldownToAll = true,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.plasma_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.plasma_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val laserCannon: StarshipWeapon = StarshipWeapon(
@@ -1074,7 +1130,9 @@ class StarshipWeapons(
 				extraDistance = 2,
 				fireCooldownMillis = 250,
 				aimDistance = 0,
-				applyCooldownToAll = true
+				applyCooldownToAll = true,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val interceptorCannon: StarshipWeapon = StarshipWeapon(
@@ -1097,7 +1155,9 @@ class StarshipWeapons(
 				extraDistance = 3,
 				fireCooldownMillis = 250,
 				aimDistance = 0,
-				applyCooldownToAll = true
+				applyCooldownToAll = true,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val pulseCannon: StarshipWeapon = StarshipWeapon(
@@ -1121,7 +1181,9 @@ class StarshipWeapons(
 				aimDistance = 0,
 				applyCooldownToAll = true,
 				minBlockCount = 1000,
-				maxBlockCount = 4000
+				maxBlockCount = 4000,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		// Heavy Weapons
@@ -1145,7 +1207,9 @@ class StarshipWeapons(
 				boostChargeSeconds = 5,
 				aimDistance = 10,
 				maxDegrees = 25.0,
-				applyCooldownToAll = false
+				applyCooldownToAll = false,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val aiHeavyLaser: StarshipWeapon = StarshipWeapon(
@@ -1168,7 +1232,9 @@ class StarshipWeapons(
 				boostChargeSeconds = 5,
 				aimDistance = 10,
 				maxDegrees = 25.0,
-				applyCooldownToAll = false
+				applyCooldownToAll = false,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val phaser: StarshipWeapon = StarshipWeapon(
@@ -1191,7 +1257,9 @@ class StarshipWeapons(
 				boostChargeSeconds = 3,
 				aimDistance = 0,
 				applyCooldownToAll = false,
-				maxBlockCount = 12000
+				maxBlockCount = 12000,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.phaser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.phaser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val protonTorpedo: StarshipWeapon = StarshipWeapon(
@@ -1216,7 +1284,9 @@ class StarshipWeapons(
 				aimDistance = 3,
 				forwardOnly = true,
 				maxPerShot = 2,
-				applyCooldownToAll = false
+				applyCooldownToAll = false,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val rocket: StarshipWeapon = StarshipWeapon(
@@ -1238,7 +1308,9 @@ class StarshipWeapons(
 				fireCooldownMillis = 250,
 				boostChargeSeconds = 7,
 				aimDistance = 0,
-				applyCooldownToAll = false
+				applyCooldownToAll = false,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val arsenalMissile: StarshipWeapon = StarshipWeapon(
@@ -1263,7 +1335,9 @@ class StarshipWeapons(
 			aimDistance = 0,
 			applyCooldownToAll = false,
 			displayEntityCustomModelData = 1101,
-			displayEntitySize = 1.0
+			displayEntitySize = 1.0,
+			soundFireNear = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
+			soundFireFar = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
 		),
 		// Auto Turret Stuff
 		val lightTurret: StarshipWeapon = StarshipWeapon(
@@ -1286,7 +1360,9 @@ class StarshipWeapons(
 				aimDistance = 0,
 				inaccuracyRadians = 2.0,
 				applyCooldownToAll = true,
-				maxBlockCount = 12000
+				maxBlockCount = 12000,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val heavyTurret: StarshipWeapon = StarshipWeapon(
@@ -1310,7 +1386,9 @@ class StarshipWeapons(
 				applyCooldownToAll = true,
 				aimDistance = 0,
 				maxBlockCount = 12000,
-				minBlockCount = 6500
+				minBlockCount = 6500,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val triTurret: StarshipWeapon = StarshipWeapon(
@@ -1333,7 +1411,9 @@ class StarshipWeapons(
 				boostChargeSeconds = 3,
 				aimDistance = 0,
 				inaccuracyRadians = 3.0,
-				applyCooldownToAll = false
+				applyCooldownToAll = false,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.tri_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val ionTurret: StarshipWeapon = StarshipWeapon(
@@ -1359,7 +1439,9 @@ class StarshipWeapons(
 				maxPerShot = 4,
 				applyCooldownToAll = true,
 				minBlockCount = 13500,
-				maxBlockCount = 16000
+				maxBlockCount = 16000,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.ion_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.ion_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val quadTurret: StarshipWeapon = StarshipWeapon(
@@ -1384,7 +1466,9 @@ class StarshipWeapons(
 				inaccuracyRadians = 2.0,
 				maxPerShot = 3,
 				applyCooldownToAll = true,
-				minBlockCount = 18500
+				minBlockCount = 18500,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val cycleTurret: StarshipWeapon = StarshipWeapon(
@@ -1410,7 +1494,9 @@ class StarshipWeapons(
 			maxPerShot = 3,
 			applyCooldownToAll = true,
 			minBlockCount = 0,
-			delayMillis = 250
+			delayMillis = 250,
+			soundFireNear = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+			soundFireFar = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val disintegratorBeam: StarshipWeapon = StarshipWeapon(
@@ -1435,7 +1521,9 @@ class StarshipWeapons(
 			inaccuracyRadians = 0.01,
 			maxPerShot = 6,
 			applyCooldownToAll = true,
-			minBlockCount = 0
+			minBlockCount = 0,
+			soundFireNear = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+			soundFireFar = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val doomsdayDevice: StarshipWeapon = StarshipWeapon(
@@ -1461,7 +1549,9 @@ class StarshipWeapons(
 			boostChargeSeconds = 25,
 			maxPerShot = 1,
 			applyCooldownToAll = true,
-			minBlockCount = 0
+			minBlockCount = 0,
+			soundFireNear = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+			soundFireFar = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val logisticTurret: StarshipWeapon = StarshipWeapon(
@@ -1487,7 +1577,9 @@ class StarshipWeapons(
 			maxPerShot = 1,
 			applyCooldownToAll = true,
 			minBlockCount = 0,
-			delayMillis = 250
+			delayMillis = 250,
+			soundFireNear = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+			soundFireFar = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val pointDefence: StarshipWeapon = StarshipWeapon(
@@ -1508,7 +1600,9 @@ class StarshipWeapons(
 				extraDistance = 0,
 				fireCooldownMillis = 10,
 				aimDistance = 0,
-				applyCooldownToAll = true
+				applyCooldownToAll = true,
+				soundFireNear = SoundInfo("horizonsend:starship.weapon.point_defense.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("horizonsend:starship.weapon.point_defense.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		// Event weapons
@@ -1532,7 +1626,9 @@ class StarshipWeapons(
 				extraDistance = 0,
 				fireCooldownMillis = 10,
 				aimDistance = 0,
-				applyCooldownToAll = false
+				applyCooldownToAll = false,
+				soundFireNear = SoundInfo("entity.firework_rocket.blast_far", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("entity.firework_rocket.blast_far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		// Event manual weapons
@@ -1555,7 +1651,9 @@ class StarshipWeapons(
 				extraDistance = 0,
 				fireCooldownMillis = 10,
 				aimDistance = 0,
-				applyCooldownToAll = false
+				applyCooldownToAll = false,
+				soundFireNear = SoundInfo("block.fire.ambient", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("block.fire.ambient", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val pumpkinCannon: StarshipWeapon = StarshipWeapon(
@@ -1578,7 +1676,9 @@ class StarshipWeapons(
 				fireCooldownMillis = 10,
 				aimDistance = 0,
 				inaccuracyRadians = 3.0,
-				applyCooldownToAll = false
+				applyCooldownToAll = false,
+				soundFireNear = SoundInfo("entity.firework_rocket.blast_far", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("entity.firework_rocket.blast_far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val plagueCannon: StarshipWeapon = StarshipWeapon(
@@ -1600,7 +1700,9 @@ class StarshipWeapons(
 				extraDistance = 2,
 				fireCooldownMillis = 250,
 				aimDistance = 0,
-				applyCooldownToAll = false
+				applyCooldownToAll = false,
+				soundFireNear = SoundInfo("entity.firework_rocket.blast_far", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("entity.firework_rocket.blast_far", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val miniPhaser: StarshipWeapon = StarshipWeapon(
@@ -1622,7 +1724,9 @@ class StarshipWeapons(
 				extraDistance = 0,
 				fireCooldownMillis = 500,
 				aimDistance = 0,
-				applyCooldownToAll = true
+				applyCooldownToAll = true,
+				soundFireNear = SoundInfo("block.conduit.deactivate", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("block.conduit.deactivate", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		// Event heavy weapons
@@ -1646,7 +1750,9 @@ class StarshipWeapons(
 				fireCooldownMillis = 3000,
 				boostChargeSeconds = 10,
 				aimDistance = 0,
-				applyCooldownToAll = true
+				applyCooldownToAll = true,
+				soundFireNear = SoundInfo("entity.zombie_villager.converted", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("entity.zombie_villager.converted", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val sonicMissile: StarshipWeapon = StarshipWeapon(
@@ -1669,7 +1775,9 @@ class StarshipWeapons(
 				fireCooldownMillis = 5000,
 				boostChargeSeconds = 5,
 				aimDistance = 0,
-				applyCooldownToAll = false
+				applyCooldownToAll = false,
+				soundFireNear = SoundInfo("entity.warden.sonic_boom", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("entity.warden.sonic_boom", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val skullThrower: StarshipWeapon = StarshipWeapon(
@@ -1692,7 +1800,9 @@ class StarshipWeapons(
 				fireCooldownMillis = 5000,
 				boostChargeSeconds = 5,
 				aimDistance = 0,
-				applyCooldownToAll = false
+				applyCooldownToAll = false,
+				soundFireNear = SoundInfo("entity.warden.sonic_boom", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("entity.warden.sonic_boom", volume = 1f, source = Sound.Source.PLAYER),
 		),
 
 		val abyssalGaze: StarshipWeapon = StarshipWeapon(
@@ -1715,8 +1825,10 @@ class StarshipWeapons(
 				fireCooldownMillis = 1000,
 				boostChargeSeconds = 5,
 				aimDistance = 0,
-				applyCooldownToAll = false
-		),
+				applyCooldownToAll = false,
+				soundFireNear = SoundInfo("item.trident.riptide_1", volume = 1f, source = Sound.Source.PLAYER),
+				soundFireFar = SoundInfo("item.trident.riptide_1", volume = 1f, source = Sound.Source.PLAYER),
+			),
 ) {
 	/**
 	 * @param canFire Whether this weapon can be fired.
@@ -1779,6 +1891,8 @@ class StarshipWeapons(
 		override var particleThickness: Double,
 
 		override var soundName: String,
+		override var soundFireNear: SoundInfo,
+		override var soundFireFar: SoundInfo,
 		override var volume: Int,
 		override var pitch: Float,
 
@@ -1822,6 +1936,8 @@ class StarshipWeapons(
 		var volume: Int
 		var pitch: Float
 		var soundName: String
+		var soundFireNear: SoundInfo
+		var soundFireFar: SoundInfo
 		var maxDegrees: Double
 
 		var displayEntityCustomModelData: Int?

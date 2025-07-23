@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.server.configuration.StarshipSounds
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -14,21 +15,23 @@ import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
 class LogisticTurretProjectile(
-	ship: ActiveStarship?,
-	name: Component,
-	loc: Location,
-	dir: Vector,
-	override val speed: Double,
-	override val color: Color,
-	override val range: Double,
-	override val particleThickness: Double,
-	override val explosionPower: Float,
-	override val starshipShieldDamageMultiplier: Double,
-	override val areaShieldDamageMultiplier: Double,
-	override val soundName: String,
-	override val balancing: StarshipWeapons.ProjectileBalancing,
-	shooter: Damager,
-	damageType: DamageType
+    ship: ActiveStarship?,
+    name: Component,
+    loc: Location,
+    dir: Vector,
+    override val speed: Double,
+    override val color: Color,
+    override val range: Double,
+    override val particleThickness: Double,
+    override val explosionPower: Float,
+    override val starshipShieldDamageMultiplier: Double,
+    override val areaShieldDamageMultiplier: Double,
+    override val soundName: String,
+    override val nearSound: StarshipSounds.SoundInfo,
+    override val farSound: StarshipSounds.SoundInfo,
+    override val balancing: StarshipWeapons.ProjectileBalancing,
+    shooter: Damager,
+    damageType: DamageType
 ) : LaserProjectile(ship, name, loc, dir, shooter, damageType) {
 
     override val volume: Int = (range / 16).toInt()

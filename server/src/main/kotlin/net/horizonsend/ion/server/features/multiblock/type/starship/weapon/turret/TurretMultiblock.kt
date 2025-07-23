@@ -251,6 +251,8 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 				getStarshipShieldDamageMultiplier(starship),
 				getAreaShieldDamageMultiplier(starship),
 				getSound(starship),
+				starship.balancing.weapons.logisticTurret.soundFireNear,
+				starship.balancing.weapons.logisticTurret.soundFireFar,
 				starship.balancing.weapons.heavyTurret, // Not used by anything
 				shooter
 			).fire()
