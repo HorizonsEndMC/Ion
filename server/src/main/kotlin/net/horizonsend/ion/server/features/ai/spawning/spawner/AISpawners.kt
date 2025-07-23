@@ -38,6 +38,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.Weighte
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.AISpawnerTicker
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.CaravanScheduler
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.SetTimeScheduler
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.TickedScheduler
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.ARBOREALITH
@@ -84,6 +85,7 @@ object AISpawners : IonServerComponent(true) {
 	 **/
 	private val spawners = mutableListOf<AISpawner>()
 	val tickedAISpawners = mutableListOf<TickedScheduler>()
+	private val setTimeSpawners = mutableListOf<SetTimeScheduler>()
 
 	fun getAllSpawners(): List<AISpawner> = spawners
 
@@ -141,7 +143,11 @@ object AISpawners : IonServerComponent(true) {
 	init {
 		registerSpawners()
 
-		spawners.mapNotNullTo(tickedAISpawners) { it.scheduler as? TickedScheduler }
+		spawners.filterIsInstanceTo(tickedAISpawners)
+		spawners.filterIsInstanceTo(setTimeSpawners)
+
+		setTimeSpawners.forEach { t -> t.schedule() }
+
 		tickedAISpawners.add(CaravanScheduler)
 	}
 
