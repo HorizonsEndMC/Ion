@@ -26,6 +26,7 @@ abstract class CombatModule<T>(
 ) : net.horizonsend.ion.server.features.ai.module.AIModule(controller) {
 
 	open var shouldFaceTarget: Boolean = false
+	var lastFire: Long = System.nanoTime()
 
 	// Turn cooldown adjustment
 	private var turnTicks: Int = 0
@@ -55,6 +56,9 @@ abstract class CombatModule<T>(
 
 		if (!AIDebugModule.showAims && !AIDebugModule.fireWeapons) return //dont do anything if both of the options are false
 		if (!target.attack) return //dont mess with goals
+
+		if (!shouldTick()) return
+		lastFire = System.nanoTime()
 
 		val targetPos = target.getVec3i()
 		//println("targetPos : $targetPos")
@@ -158,6 +162,10 @@ abstract class CombatModule<T>(
 			fireHeavyWeapons(heavyDirection, correctedHeavyTarget, weaponSet = weaponSet.name.lowercase(), false)
 			fireLightWeapons(lightDirection, correctedLightTarget, weaponSet = weaponSet.name.lowercase(), false)
 		}
+	}
+
+	private fun shouldTick(): Boolean {
+		return System.nanoTime() - lastFire >= difficulty.combatTickCooldown
 	}
 }
 
