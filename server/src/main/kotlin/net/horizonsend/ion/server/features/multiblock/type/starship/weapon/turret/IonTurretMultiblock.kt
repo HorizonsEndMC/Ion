@@ -162,6 +162,8 @@ sealed class IonTurretMultiblock : TurretMultiblock() {
 				getStarshipShieldDamageMultiplier(starship),
 				getAreaShieldDamageMultiplier(starship),
 				getSound(starship),
+				starship.balancing.weapons.ionTurret.soundFireNear,
+				starship.balancing.weapons.ionTurret.soundFireFar,
 				starship.balancing.weapons.ionTurret, // Not used by anything
 				shooter
 			).fire()

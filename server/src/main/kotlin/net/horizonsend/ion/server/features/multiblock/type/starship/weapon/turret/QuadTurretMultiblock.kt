@@ -212,6 +212,8 @@ sealed class QuadTurretMultiblock : TurretMultiblock() {
 				getAreaShieldDamageMultiplier(starship),
 				getSound(starship),
 				starship.balancing.weapons.quadTurret, // Not used by anything
+				starship.balancing.weapons.logisticTurret.soundFireNear,
+				starship.balancing.weapons.logisticTurret.soundFireFar,
 				shooter
 			).fire()
 		}
