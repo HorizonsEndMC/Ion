@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner
 
 import com.google.common.collect.Multimap
+import kotlinx.serialization.Serializable
+import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.text.colors.EXPLORER_LIGHT_CYAN
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.colors.PIRATE_SATURATED_RED
@@ -67,6 +69,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag.ALLOW_AI_SPAWNS
 import net.horizonsend.ion.server.features.world.WorldFlag.SPACE_WORLD
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getRandomDuration
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.kyori.adventure.text.Component.text
@@ -151,6 +154,7 @@ object AISpawners : IonServerComponent(true) {
 		tickedAISpawners.add(CaravanScheduler)
 	}
 
+
 	// Run after tick is true
 	override fun onEnable() {
 		// Initialize all the per world spawners, after the worlds have all initialized
@@ -160,6 +164,10 @@ object AISpawners : IonServerComponent(true) {
 			spawners.addAll(new)
 			new.mapNotNullTo(tickedAISpawners) { it.scheduler as? TickedScheduler }
 		}
+
+		loadPersistentData()
+
+		Tasks.asyncRepeat(120, 120, ::savePersistentData)
 	}
 
 	private fun registerSpawners() {
@@ -1097,4 +1105,29 @@ object AISpawners : IonServerComponent(true) {
 	/** Same logic, but picks a random *loaded* world first. */
 	fun randomLocationAnywhere(): Location =
 		randomLocationIn(Bukkit.getWorlds().filter { it.hasFlag(SPACE_WORLD) }.random())
+
+	fun loadPersistentData() {
+		val stored = Configuration.load<PersistentSpawnerData>(IonServer.dataFolder, "persistentSpawnerData.json")
+
+		for (spawner in getAllSpawners().filterIsInstance<PersistentDataSpawner<*>>()) {
+			val data = stored.keyed[spawner.storageKey] ?: continue
+			spawner.load(data)
+		}
+	}
+
+	fun savePersistentData() = Tasks.async {
+		val data = mutableMapOf<String, String>()
+
+		for (spawner in getAllSpawners().filterIsInstance<PersistentDataSpawner<*>>()) {
+			val stored = spawner.write() ?: continue
+			data[spawner.storageKey] = stored
+		}
+
+		Configuration.save(PersistentSpawnerData(data), IonServer.dataFolder, "persistentSpawnerData.json")
+	}
+
+	@Serializable
+	class PersistentSpawnerData(
+		val keyed: MutableMap<String, String> = mutableMapOf<String, String>()
+	)
 }
