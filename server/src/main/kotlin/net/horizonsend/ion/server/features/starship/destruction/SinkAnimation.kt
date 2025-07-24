@@ -70,9 +70,9 @@ class SinkAnimation(
 				initialScale = 1.0 * scale,
 				finalScale = 7.0 * scale,
 				rotationVector = Vector(
-					Random.nextDouble(-0.15, 0.15),
-					Random.nextDouble(-0.15, 0.15),
-					Random.nextDouble(-0.15, 0.15)
+					Random.nextDouble(-0.0015, 0.0015),
+					Random.nextDouble(-0.0015, 0.0015),
+					Random.nextDouble(-0.0015, 0.0015)
 				),
 				colors = mapOf(
 					Color.fromRGB(HE_LIGHT_ORANGE.value()) to 1,
@@ -196,7 +196,7 @@ class SinkAnimation(
 			motionAdjuster.invoke(this)
 			wrapper.offset = wrapper.offset.add(direction.toVector3f())
 			wrapper.scale = Vector3f(blend(initialScale, finalScale, phase).toFloat())
-			wrapper.heading = wrapper.heading.clone().add(rotationVector)
+			wrapper.heading = wrapper.heading.clone().rotateAroundAxis(rotationVector.normalize(), rotationVector.length())
 		}
 	}
 
