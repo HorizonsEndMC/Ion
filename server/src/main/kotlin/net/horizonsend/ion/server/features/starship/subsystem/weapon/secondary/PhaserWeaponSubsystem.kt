@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeapo
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PhaserProjectile
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.SimpleProjectile
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.key.Key
@@ -106,9 +105,9 @@ class PhaserWeaponSubsystem(
 		val range = balancing.range
 		val normalized = distance / range
 		return when (distance.toInt()) {
-			in 0 until range.toInt() -> 1f
+			in 0 until (range * 0.5).toInt() -> 1f
 			// -0.5x^2 + 0.5x + 1
-			in range.toInt() until (range * 2).toInt() -> ((-0.5 * normalized * normalized) + (0.5 * normalized) + 1).toFloat()
+			in (range * 0.5).toInt() until (range * 2).toInt() -> ((-0.333333 * normalized * normalized) + (0.166667 * normalized) + 1).toFloat()
 			else -> 0f
 		}
 	}
