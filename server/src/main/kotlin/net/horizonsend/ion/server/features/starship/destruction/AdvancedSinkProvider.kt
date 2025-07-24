@@ -25,7 +25,6 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKey
@@ -505,7 +504,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		}
 	}
 
-	class SinkAnimation(val starship: Starship, val size: Int, val world: World, val origin: Vec3i, val scale: Double = 1.5) : BukkitRunnable() {
+	class SinkAnimation(val starship: Starship, val size: Int, val world: World, val origin: Vec3i, val scale: Double = 0.5) : BukkitRunnable() {
 		private val duration = (60 * scale).roundToInt()
 
 		private val blockWrappers = ObjectOpenHashSet<Block>()
@@ -515,15 +514,23 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		inner class Block(
 			val wrapper: ItemDisplayContainer,
 			val direction: Vector,
-			val colors: WeightedRandomList<Color>, // Color to weight
+			colors: Map<Color, Int>, // Color to weight
 			val finalScale: Double,
 			val rotationVector: Vector,
 		) {
+			val colors = mutableListOf<Color>()
+
+			init {
+			    for ((color, weight) in colors) {
+					repeat(weight) { this.colors.add(color) }
+				}
+			}
+
 			private val internalDuration = Random.nextInt(duration, (duration / 2) + duration)
 
-			fun blend(original: Number, final: Number): Double {
-				val phase = iterations.toDouble() / internalDuration.toDouble()
+			val phase get() = iterations.toDouble() / internalDuration.toDouble()
 
+			fun blend(original: Number, final: Number, phase: Double): Double {
 				return original.toDouble() + phase * (final.toDouble() - original.toDouble())
 			}
 
@@ -537,11 +544,21 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 
 //				val newColor = Color.fromARGB(middleAlpha.roundToInt(), middleRed.roundToInt(), middleGreen.roundToInt(), middleBlue.roundToInt())
 
-				val newColor = colors.getEntry(iterations.toDouble() / internalDuration.toDouble())
+				val colorPhase = colors.lastIndex * phase
+				val colorIndex = colorPhase.toInt()
+
+				val color = colors[colorIndex]
+				val nextColor = colors[(colorIndex + 1).coerceAtMost(colors.lastIndex)]
+
+				val blendedR = blend(color.red, nextColor.red, colorPhase - colorIndex).roundToInt().coerceAtMost(255)
+				val blendedG = blend(color.green, nextColor.green, colorPhase - colorIndex).roundToInt().coerceAtMost(255)
+				val blendedB = blend(color.blue, nextColor.blue, colorPhase - colorIndex).roundToInt().coerceAtMost(255)
+
+				val newColor = Color.fromRGB(blendedR, blendedG, blendedB)
 
 				wrapper.itemStack = item.clone().updateData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(newColor, false))
 				wrapper.offset = wrapper.offset.add(direction.toVector3f().mul(scale.toFloat()))
-				wrapper.scale = Vector3f(blend(1.0, finalScale).toFloat() * scale.toFloat())
+				wrapper.scale = Vector3f(blend(1.0, finalScale, phase).toFloat() * scale.toFloat())
 
 				wrapper.heading = wrapper.heading.clone().add(rotationVector)
 
@@ -571,13 +588,13 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 				blockWrappers.add(Block(
 					wrapper = displayContainer,
 					direction = vector,
-					colors = WeightedRandomList(mapOf(
+					colors = mapOf(
 						Color.fromRGB(HE_LIGHT_ORANGE.value()) to 1,
 						Color.ORANGE to 1,
-						Color.RED to 1,
+						Color.fromRGB(235, 64, 52) to 1,
 						Color.GRAY to 1,
 						Color.BLACK to 1,
-					)),
+					),
 					finalScale = 7.0,
 					rotationVector = Vector(
 						Random.nextDouble(-0.15, 0.15),
@@ -600,14 +617,14 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 				blockWrappers.add(Block(
 					wrapper = displayContainer,
 					direction = vector,
-					colors = WeightedRandomList(mapOf(
+					colors = mapOf(
 						Color.WHITE to 1,
 						Color.SILVER to 1,
 						Color.GRAY to 1,
 						Color.BLACK to 1,
-					)),
+					),
 					finalScale = 3.0,
-					Vector(
+					rotationVector = Vector(
 						Random.nextDouble(-0.05, 0.05),
 						Random.nextDouble(-0.05, 0.05),
 						Random.nextDouble(-0.05, 0.05)
