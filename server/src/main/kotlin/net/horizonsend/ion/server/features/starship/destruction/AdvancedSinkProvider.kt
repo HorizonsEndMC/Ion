@@ -505,8 +505,8 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		}
 	}
 
-	class SinkAnimation(val starship: Starship, val size: Int, val world: World, val origin: Vec3i) : BukkitRunnable() {
-		private val duration = 30
+	class SinkAnimation(val starship: Starship, val size: Int, val world: World, val origin: Vec3i, val scale: Double = 1.5) : BukkitRunnable() {
+		private val duration = (60 * scale).roundToInt()
 
 		private val blockWrappers = ObjectOpenHashSet<Block>()
 
@@ -540,8 +540,8 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 				val newColor = colors.getEntry(iterations.toDouble() / internalDuration.toDouble())
 
 				wrapper.itemStack = item.clone().updateData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(newColor, false))
-				wrapper.offset = wrapper.offset.add(direction.toVector3f())
-				wrapper.scale = Vector3f(blend(1.0, finalScale).toFloat())
+				wrapper.offset = wrapper.offset.add(direction.toVector3f().mul(scale.toFloat()))
+				wrapper.scale = Vector3f(blend(1.0, finalScale).toFloat() * scale.toFloat())
 
 				wrapper.heading = wrapper.heading.clone().add(rotationVector)
 
@@ -552,7 +552,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		init {
 			val referenceCenter = origin.toCenterVector()
 
-		    repeat(sqrt(size.toDouble()).roundToInt() * 5) {
+		    repeat((sqrt(size.toDouble()) * 5 * scale).roundToInt()) {
 				val origin = Vec3i(starship.blocks.random()).toCenterVector()
 				var vector = origin.clone().subtract(referenceCenter)
 
@@ -587,7 +587,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 				))
 			}
 
-			val shockwavePoints = 90
+			val shockwavePoints = (90 * scale).roundToInt()
 
 			repeat(shockwavePoints) { iteration ->
 				val degrees = (shockwavePoints / iteration.toDouble()) * 360.0
