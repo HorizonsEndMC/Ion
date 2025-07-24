@@ -31,7 +31,6 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
 import java.util.Locale
-import kotlin.math.ln
 import kotlin.math.roundToInt
 
 abstract class SimpleProjectile(
@@ -70,9 +69,9 @@ abstract class SimpleProjectile(
 	private fun nearSoundVolumeMod(distance: Double): Float {
 		val normalized = distance / range
 		return when (distance.toInt()) {
-			in 0 until range.toInt() -> 1f
+			in 0 until (range * 0.5).toInt() -> 1f
 			// -0.5x^2 + 0.5x + 1
-			in range.toInt() until (range * 2).toInt() -> ((-0.5 * normalized * normalized) + (0.5 * normalized) + 1).toFloat()
+			in (range * 0.5).toInt() until (range * 2).toInt() -> ((-0.333333 * normalized * normalized) + (0.166667 * normalized) + 1).toFloat()
 			else -> 0f
 		}
 	}
