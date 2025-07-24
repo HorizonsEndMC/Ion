@@ -72,15 +72,15 @@ class PhaserProjectile(
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		super.impact(newLoc, block, entity)
 
-		val rayEnds = newLoc.spherePoints(1.0, 2)
+		val rayEnds = newLoc.spherePoints(3.0, 3)
 		for (rayEnd in rayEnds) {
-			val lightningPoints = lightning(newLoc, rayEnd, 3, 0.5, 0.7)
+			val lightningPoints = lightning(newLoc, rayEnd, generations, maxOffset, 0.7)
 			for (lightningPoint in lightningPoints) {
 				lightningPoint.world.spawnParticle(Particle.SOUL_FIRE_FLAME, lightningPoint.x, lightningPoint.y, lightningPoint.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 			}
 		}
 
-		for (point in newLoc.spherePoints(1.5, 5)) {
+		for (point in newLoc.spherePoints(2.5, 5)) {
 			newLoc.iterateVector(Vector(point.x - newLoc.x, point.y - newLoc.y, point.z - newLoc.z), 5) { pointAlong, _ ->
 				pointAlong.world.spawnParticle(
 					Particle.DUST_COLOR_TRANSITION,

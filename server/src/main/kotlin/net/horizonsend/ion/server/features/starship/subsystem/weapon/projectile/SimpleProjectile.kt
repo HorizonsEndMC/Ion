@@ -71,8 +71,8 @@ abstract class SimpleProjectile(
 		val normalized = distance / range
 		return when (distance.toInt()) {
 			in 0 until (range * 0.5).toInt() -> 1f
-			// -0.333333x^2 + 0.166667x + 1
-			in (range * 0.5).toInt() until (range * 2).toInt() -> ((-0.333333 * normalized * normalized) + (0.166667 * normalized) + 1).toFloat()
+			// -0.666667x + 1.33333
+			in (range * 0.5).toInt() until (range * 2).toInt() -> ((-0.666667 * normalized) + 1.33333).toFloat()
 			else -> 0f
 		}
 	}
@@ -81,8 +81,8 @@ abstract class SimpleProjectile(
 		val normalized = distance / range
 		return when (distance.toInt()) {
 			in 0 until (range * 2).toInt() -> 1f
-			// -0.00277778x^2 + 0.00555556x + 1
-			in (range * 2).toInt() until (range * 20).toInt() -> ((-0.00277778 * normalized * normalized) + (0.00555556 * normalized) + 1).toFloat()
+			// -0.0555556x + 1.11111
+			in (range * 2).toInt() until (range * 20).toInt() -> ((-0.0555556 * normalized) + 1.11111).toFloat()
 			else -> 0f
 		}
 	}
