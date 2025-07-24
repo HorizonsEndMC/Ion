@@ -31,6 +31,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
 import java.util.Locale
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 abstract class SimpleProjectile(
@@ -70,7 +71,7 @@ abstract class SimpleProjectile(
 		val normalized = distance / range
 		return when (distance.toInt()) {
 			in 0 until (range * 0.5).toInt() -> 1f
-			// -0.5x^2 + 0.5x + 1
+			// -0.333333x^2 + 0.166667x + 1
 			in (range * 0.5).toInt() until (range * 2).toInt() -> ((-0.333333 * normalized * normalized) + (0.166667 * normalized) + 1).toFloat()
 			else -> 0f
 		}
@@ -89,9 +90,12 @@ abstract class SimpleProjectile(
 	protected open fun playCustomSound(loc: Location, nearSound: StarshipSounds.SoundInfo, farSound: StarshipSounds.SoundInfo) {
 		loc.world.players.forEach { player ->
 			val distance = player.location.distance(loc)
+			val dir = Vector(loc.x - player.location.x, loc.y - player.location.y, loc.z - player.location.z)
+			val offsetDistance = min(distance, 16.0)
+			val soundLoc = player.location.add(dir.normalize().multiply(offsetDistance))
 			if (distance < range * 20) {
-				player.playSound(sound(key(nearSound.key), nearSound.source, nearSound.volume * nearSoundVolumeMod(distance), nearSound.pitch))
-				player.playSound(sound(key(farSound.key), farSound.source, farSound.volume * farSoundVolumeMod(distance), farSound.pitch))
+				player.playSound(sound(key(nearSound.key), nearSound.source, nearSound.volume * nearSoundVolumeMod(distance), nearSound.pitch), soundLoc.x, soundLoc.y, soundLoc.z)
+				player.playSound(sound(key(farSound.key), farSound.source, farSound.volume * farSoundVolumeMod(distance), farSound.pitch), soundLoc.x, soundLoc.y, soundLoc.z)
 			}
 		}
 	}

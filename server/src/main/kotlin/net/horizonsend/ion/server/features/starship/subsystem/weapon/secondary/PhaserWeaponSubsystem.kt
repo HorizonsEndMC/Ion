@@ -22,6 +22,7 @@ import org.bukkit.block.data.type.Hopper
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
+import kotlin.math.min
 
 class PhaserWeaponSubsystem(
     starship: ActiveStarship,
@@ -54,9 +55,12 @@ class PhaserWeaponSubsystem(
 
 		loc.world.players.forEach { player ->
 			val distance = player.location.distance(loc)
+			val dir = Vector(loc.x - player.location.x, loc.y - player.location.y, loc.z - player.location.z)
+			val offsetDistance = min(distance, 16.0)
+			val soundLoc = player.location.add(dir.normalize().multiply(offsetDistance))
 			if (distance < balancing.range * 20) {
-				shooter.playSound(Sound.sound(Key.key(balancing.soundFireNear.key), balancing.soundFireNear.source, balancing.soundFireNear.volume * nearSoundVolumeMod(distance), balancing.soundFireNear.pitch))
-				shooter.playSound(Sound.sound(Key.key(balancing.soundFireFar.key), balancing.soundFireFar.source, balancing.soundFireFar.volume * farSoundVolumeMod(distance), balancing.soundFireFar.pitch))
+				player.playSound(Sound.sound(Key.key(balancing.soundFireNear.key), balancing.soundFireNear.source, balancing.soundFireNear.volume * nearSoundVolumeMod(distance), balancing.soundFireNear.pitch), soundLoc.x, soundLoc.y, soundLoc.z)
+				player.playSound(Sound.sound(Key.key(balancing.soundFireFar.key), balancing.soundFireFar.source, balancing.soundFireFar.volume * farSoundVolumeMod(distance), balancing.soundFireFar.pitch), soundLoc.x, soundLoc.y, soundLoc.z)
 			}
 		}
 
@@ -106,7 +110,7 @@ class PhaserWeaponSubsystem(
 		val normalized = distance / range
 		return when (distance.toInt()) {
 			in 0 until (range * 0.5).toInt() -> 1f
-			// -0.5x^2 + 0.5x + 1
+			// -0.333333x^2 + 0.166667x + 1
 			in (range * 0.5).toInt() until (range * 2).toInt() -> ((-0.333333 * normalized * normalized) + (0.166667 * normalized) + 1).toFloat()
 			else -> 0f
 		}
