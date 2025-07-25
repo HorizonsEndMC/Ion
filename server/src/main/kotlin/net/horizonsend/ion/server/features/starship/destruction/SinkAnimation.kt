@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.starship.destruction
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.DyedItemColor
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.modular.DisplayWrapper
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
@@ -21,6 +20,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
+import kotlin.math.cbrt
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.random.Random
@@ -30,8 +30,8 @@ class SinkAnimation(
 	val size: Int,
 	val world: World,
 	val origin: Vec3i,
-	val scale: Double = 0.5,
 ) : BukkitRunnable() {
+	val scale: Double = 0.5 * (cbrt(size.toDouble()) / cbrt(739.0))
 	private val duration = (60 * scale).roundToInt()
 
 	private val blockWrappers = ObjectOpenHashSet<SinkAnimationBlock>()
@@ -71,13 +71,14 @@ class SinkAnimation(
 			blockWrappers.add(ColoredSinkAnimationBlock(
 				wrapper = displayContainer,
 				direction = vector.multiply(scale),
-				initialScale = 1.0 * scale,
-				finalScale = 7.0 * scale,
-				rotationVector = right.normalize().multiply(0.006125),
+				initialScale = 2.0 * scale,
+				finalScale = 8.0 * scale,
+				rotationAxis = Vector.getRandom(),
+				rotationDegrees = 360.0 / 20.0,
 				colors = mapOf(
-					Color.fromRGB(HE_LIGHT_ORANGE.value()) to 1,
-					Color.ORANGE to 1,
-					Color.fromRGB(235, 64, 52) to 1,
+					Color.fromRGB(255, 219, 1) to 2,
+					Color.ORANGE to 2,
+					Color.fromRGB(235, 64, 52) to 2,
 					Color.GRAY to 1,
 					Color.BLACK to 1,
 				)
@@ -101,15 +102,16 @@ class SinkAnimation(
 				direction = vector,
 				initialScale = 1.0 * scale,
 				finalScale = 3.0 * scale,
-				rotationVector = Vector(
+				rotationAxis = Vector(
 					Random.nextDouble(-0.05, 0.05),
 					Random.nextDouble(-0.05, 0.05),
 					Random.nextDouble(-0.05, 0.05)
 				),
+				rotationDegrees = 360.0 / 20.0,
 				colors = mapOf(
-					Color.WHITE to 1,
-					Color.SILVER to 1,
-					Color.GRAY to 1,
+					Color.WHITE to 4,
+					Color.SILVER to 3,
+					Color.GRAY to 2,
 					Color.BLACK to 1,
 				)
 			))
@@ -144,11 +146,12 @@ class SinkAnimation(
 				direction = direction,
 				initialScale = 1.0,
 				finalScale = 1.0,
-				rotationVector = Vector(
+				rotationAxis = Vector(
 					Random.nextDouble(-0.025, 0.025),
 					Random.nextDouble(-0.025, 0.025),
 					Random.nextDouble(-0.025, 0.025)
 				),
+				rotationDegrees = 360.0 / 20.0,
 				motionAdjuster = {
 					if (world.ion.hasFlag(WorldFlag.SPACE_WORLD)) return@SinkAnimationBlock
 
@@ -186,7 +189,8 @@ class SinkAnimation(
 		val direction: Vector,
 		val initialScale: Double,
 		val finalScale: Double,
-		val rotationVector: Vector,
+		val rotationAxis: Vector,
+		val rotationDegrees: Double,
 		val motionAdjuster: SinkAnimationBlock.() -> Unit = {}
 	) {
 		private val durationOffset = Random.nextInt(duration, (duration / 2) + duration)
@@ -204,7 +208,8 @@ class SinkAnimation(
 			val scale = blend(initialScale, finalScale, phase).toFloat()
 			wrapper.scale = Vector(scale, scale, scale)
 
-			wrapper.heading = wrapper.heading.clone().rotateAroundAxis(rotationVector.normalize(), rotationVector.length())
+			val rotated = wrapper.heading.clone().rotateAroundNonUnitAxis(rotationAxis, Math.toRadians(rotationDegrees))
+			wrapper.heading = rotated
 		}
 	}
 
@@ -213,9 +218,10 @@ class SinkAnimation(
 		direction: Vector,
 		initialScale: Double,
 		finalScale: Double,
-		rotationVector: Vector,
+		rotationAxis: Vector,
+		rotationDegrees: Double,
 		colors: Map<Color, Int>, // Color to weight
-	) : SinkAnimationBlock(wrapper, direction, initialScale, finalScale, rotationVector) {
+	) : SinkAnimationBlock(wrapper, direction, initialScale, finalScale, rotationAxis, rotationDegrees) {
 		val colors = mutableListOf<Color>().apply {
 			for ((color, weight) in colors) {
 				repeat(weight) { add(color) }
