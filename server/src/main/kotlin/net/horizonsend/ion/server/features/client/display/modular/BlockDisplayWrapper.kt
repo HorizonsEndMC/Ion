@@ -22,29 +22,30 @@ class BlockDisplayWrapper(
 	initTransformation: Vector,
 	val blockData: BlockData,
 	initScale: Vector = Vector(1.0, 1.0, 1.0)
-) {
-	var scale: Vector = initScale
-		set(value) {
-			field = value
-			updateTransformation(entity)
-			playerManager.runUpdates()
-		}
+) : DisplayWrapper {
 
-	var position: Vector = initPosition
+	override var position: Vector = initPosition
 		set(value) {
 			field = value
 			updateTransformation(entity)
 			playerManager.sendTeleport()
 		}
 
-	var heading: Vector = initHeading
+	override var heading: Vector = initHeading
 		set(value) {
 			field = value
 			updateTransformation(entity)
 			playerManager.runUpdates()
 		}
 
-	var offset: Vector = initTransformation
+	override var offset: Vector = initTransformation
+		set(value) {
+			field = value
+			updateTransformation(entity)
+			playerManager.runUpdates()
+		}
+
+	override var scale: Vector = initScale
 		set(value) {
 			field = value
 			updateTransformation(entity)
@@ -89,13 +90,13 @@ class BlockDisplayWrapper(
 		update()
 	}
 
-	fun remove() {
+	override fun remove() {
 		playerManager.sendAllRemove()
 	}
 
-	fun update() {
+	override fun update() {
 		playerManager.runUpdates()
 	}
 
-	fun getEntity() = entity
+	override fun getEntity() = entity
 }
