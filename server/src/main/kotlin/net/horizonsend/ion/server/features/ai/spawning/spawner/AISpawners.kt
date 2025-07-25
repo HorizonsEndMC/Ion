@@ -146,7 +146,8 @@ object AISpawners : IonServerComponent(true) {
 	init {
 		registerSpawners()
 
-		spawners.filterIsInstanceTo(tickedAISpawners)
+		spawners.mapNotNullTo(tickedAISpawners) { it.scheduler as? TickedScheduler }
+
 		spawners.filterIsInstanceTo(setTimeSpawners)
 
 		setTimeSpawners.forEach { t -> t.schedule() }
