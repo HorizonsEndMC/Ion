@@ -5,7 +5,6 @@ import io.papermc.paper.datacomponent.item.DyedItemColor
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.client.display.modular.BlockDisplayWrapper
 import net.horizonsend.ion.server.features.client.display.modular.DisplayWrapper
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.features.starship.Starship
@@ -13,11 +12,13 @@ import net.horizonsend.ion.server.features.transport.items.util.DYEABLE_CUBE_MON
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.orthogonalVectors
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.minecraft.util.Brightness
 import org.bukkit.Color
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import kotlin.math.roundToInt
@@ -29,7 +30,7 @@ class SinkAnimation(
 	val size: Int,
 	val world: World,
 	val origin: Vec3i,
-	val scale: Double = 1.5,
+	val scale: Double = 0.5,
 ) : BukkitRunnable() {
 	private val duration = (60 * scale).roundToInt()
 
@@ -61,7 +62,10 @@ class SinkAnimation(
 
 			val item = DYEABLE_CUBE_MONO.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(initColor, false)) }
 
-			val displayContainer = ItemDisplayContainer(world, 1.0f, origin, Vector.getRandom(), item)
+			val originHeading = Vector(Random.nextDouble(-1.0, 1.0), Random.nextDouble(-1.0, 1.0), Random.nextDouble(-1.0, 1.0))
+			val (right, _) = originHeading.orthogonalVectors()
+
+			val displayContainer = ItemDisplayContainer(world = world, initScale = 1.0f, initPosition = origin, initHeading = originHeading, item = item)
 			displayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
 
 			blockWrappers.add(ColoredSinkAnimationBlock(
@@ -69,11 +73,7 @@ class SinkAnimation(
 				direction = vector.multiply(scale),
 				initialScale = 1.0 * scale,
 				finalScale = 7.0 * scale,
-				rotationVector = Vector(
-					Random.nextDouble(-0.0015, 0.0015),
-					Random.nextDouble(-0.0015, 0.0015),
-					Random.nextDouble(-0.0015, 0.0015)
-				),
+				rotationVector = right.normalize().multiply(0.006125),
 				colors = mapOf(
 					Color.fromRGB(HE_LIGHT_ORANGE.value()) to 1,
 					Color.ORANGE to 1,
@@ -125,13 +125,18 @@ class SinkAnimation(
 			val blockData = starship.world.getBlockAtKey(position).blockData
 			if (!blockData.material.isItem) continue
 
-			val direction = Vector(
-				Random.nextDouble(-6.0, 6.0),
-				Random.nextDouble(-6.0, 6.0),
-				Random.nextDouble(-6.0, 6.0)
-			).multiply(scale)
+			val position = Vec3i(position).toVector()
 
-			val displayContainer = BlockDisplayWrapper(world, origin.toCenterVector(), direction, Vector(), blockData)
+			val direction = position.clone().subtract(origin.toCenterVector()).normalize().multiply(6 * scale)
+
+			val displayContainer = ItemDisplayContainer(
+				world = world,
+				initPosition = position,
+				initHeading = direction,
+				initScale = 1.0f,
+				item = ItemStack(blockData.material)
+			)
+
 			displayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
 
 			blockWrappers.add(SinkAnimationBlock(
@@ -140,9 +145,9 @@ class SinkAnimation(
 				initialScale = 1.0,
 				finalScale = 1.0,
 				rotationVector = Vector(
-					Random.nextDouble(-0.25, 0.25),
-					Random.nextDouble(-0.25, 0.25),
-					Random.nextDouble(-0.25, 0.25)
+					Random.nextDouble(-0.025, 0.025),
+					Random.nextDouble(-0.025, 0.025),
+					Random.nextDouble(-0.025, 0.025)
 				),
 				motionAdjuster = {
 					if (world.ion.hasFlag(WorldFlag.SPACE_WORLD)) return@SinkAnimationBlock

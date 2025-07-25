@@ -28,6 +28,7 @@ class BlockDisplayWrapper(
 		set(value) {
 			field = value
 			updateTransformation(entity)
+			entity.transformationInterpolationDuration = 3
 			playerManager.sendTeleport()
 		}
 
@@ -35,21 +36,21 @@ class BlockDisplayWrapper(
 		set(value) {
 			field = value
 			updateTransformation(entity)
-			playerManager.runUpdates()
+			entity.transformationInterpolationDuration = 3
 		}
 
 	override var offset: Vector = initTransformation
 		set(value) {
 			field = value
 			updateTransformation(entity)
-			playerManager.runUpdates()
+			entity.transformationInterpolationDuration = 3
 		}
 
 	override var scale: Vector = initScale
 		set(value) {
 			field = value
 			updateTransformation(entity)
-			playerManager.runUpdates()
+			entity.transformationInterpolationDuration = 3
 		}
 
 	private var entity: Display.BlockDisplay = createEntity().getNMSData(
@@ -64,8 +65,9 @@ class BlockDisplayWrapper(
 		IonServer.server as CraftServer,
 		Display.BlockDisplay(EntityType.BLOCK_DISPLAY, world.minecraft)
 	).apply {
-		teleportDuration = 1
-		interpolationDuration = 1
+		teleportDuration = 3
+		interpolationDelay = 0
+		interpolationDuration = 3
 		viewRange = 1000f
 		brightness = org.bukkit.entity.Display.Brightness(15, 15)
 
@@ -86,8 +88,6 @@ class BlockDisplayWrapper(
 			scale.toVector3f(),
 			Quaternionf()
 		))
-
-		update()
 	}
 
 	override fun remove() {
