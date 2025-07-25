@@ -35,7 +35,10 @@ data class StarshipTypeBalancing(
 		jumpStrength = 0.0,
 		wellStrength = 0.0,
 		hyperspaceRangeMultiplier = 3.0,
-		shieldPowerMultiplier = 1.0
+		shieldPowerMultiplier = 1.0,
+		sounds = StarshipSounds(
+			explode = SoundInfo("horizonsend:starship.explosion.fighter.near")
+		)
 	),
 
 	val shuttle: StarshipBalancing = StarshipBalancing(
@@ -45,7 +48,10 @@ data class StarshipTypeBalancing(
 		jumpStrength = 1.0,
 		wellStrength = 0.0,
 		hyperspaceRangeMultiplier = 1.2,
-		shieldPowerMultiplier = 1.0
+		shieldPowerMultiplier = 1.0,
+		sounds = StarshipSounds(
+			explode = SoundInfo("horizonsend:starship.explosion.fighter.near")
+		)
 	),
 	val transport: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 10,
@@ -54,7 +60,10 @@ data class StarshipTypeBalancing(
 		jumpStrength = 1.0,
 		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.25,
-		shieldPowerMultiplier = 1.0
+		shieldPowerMultiplier = 1.0,
+		sounds = StarshipSounds(
+			explode = SoundInfo("horizonsend:starship.explosion.small.near")
+		)
 	),
 	val lightFreighter: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 10,
@@ -90,6 +99,9 @@ data class StarshipTypeBalancing(
 				soundFireNear = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 				soundFireFar = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
+		),
+		sounds = StarshipSounds(
+			explode = SoundInfo("horizonsend:starship.explosion.small.near")
 		)
 	),
 	val mediumFreighter: StarshipBalancing = StarshipBalancing(
@@ -99,7 +111,10 @@ data class StarshipTypeBalancing(
 		jumpStrength = 1.0,
 		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.35,
-		shieldPowerMultiplier = 1.0
+		shieldPowerMultiplier = 1.0,
+		sounds = StarshipSounds(
+			explode = SoundInfo("horizonsend:starship.explosion.large.near")
+		)
 	),
 	val heavyFreighter: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 10,
@@ -108,7 +123,10 @@ data class StarshipTypeBalancing(
 		jumpStrength = 1.0,
 		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.4,
-		shieldPowerMultiplier = 1.0
+		shieldPowerMultiplier = 1.0,
+		sounds = StarshipSounds(
+			explode = SoundInfo("horizonsend:starship.explosion.large.near")
+		)
 	),
 	val starfighter: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 4,
@@ -117,7 +135,10 @@ data class StarshipTypeBalancing(
 		jumpStrength = 1.0,
 		wellStrength = 0.0,
 		hyperspaceRangeMultiplier = 1.5,
-		shieldPowerMultiplier = 1.0
+		shieldPowerMultiplier = 1.0,
+		sounds = StarshipSounds(
+			explode = SoundInfo("horizonsend:starship.explosion.fighter.near")
+		)
 	),
 	val tank: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 4,
@@ -237,6 +258,9 @@ data class StarshipTypeBalancing(
 				soundFireNear = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 				soundFireFar = SoundInfo("horizonsend:starship.weapon.torpedo.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
+		),
+		sounds = StarshipSounds(
+			explode = SoundInfo("horizonsend:starship.explosion.fighter.near")
 		)
 	),
 	val gunship: StarshipBalancing = StarshipBalancing(
@@ -298,6 +322,9 @@ data class StarshipTypeBalancing(
 				soundFireNear = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 				soundFireFar = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			)
+		),
+		sounds = StarshipSounds(
+			explode = SoundInfo("horizonsend:starship.explosion.small.near")
 		)
 	),
 	val corvette: StarshipBalancing = StarshipBalancing(
@@ -383,6 +410,9 @@ data class StarshipTypeBalancing(
 				soundFireNear = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 				soundFireFar = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			)
+		),
+		sounds = StarshipSounds(
+			explode = SoundInfo("horizonsend:starship.explosion.small.near")
 		)
 	),
 	val frigate: StarshipBalancing = StarshipBalancing(
@@ -419,8 +449,10 @@ data class StarshipTypeBalancing(
 				soundFireNear = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 				soundFireFar = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			)
+		),
+		sounds = StarshipSounds(
+			explode = SoundInfo("horizonsend:starship.explosion.large.near")
 		)
-
 	),
 	val destroyer: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 5,
@@ -429,7 +461,10 @@ data class StarshipTypeBalancing(
 		jumpStrength = 1.0,
 		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.9,
-		shieldPowerMultiplier = 1.0
+		shieldPowerMultiplier = 1.0,
+		sounds = StarshipSounds(
+			explode = SoundInfo("horizonsend:starship.explosion.large.near")
+		)
 	),
 	val cruiser: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 5,
@@ -948,6 +983,9 @@ data class StarshipTypeBalancing(
 				soundFireNear = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 				soundFireFar = SoundInfo("horizonsend:starship.weapon.pulse_cannon.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 			),
+		),
+		sounds = StarshipSounds(
+			explode = SoundInfo("horizonsend:starship.explosion.fighter.near")
 		)
 	),
 	val aiGunship: StarshipBalancing = gunship,
@@ -958,7 +996,10 @@ data class StarshipTypeBalancing(
 		jumpStrength = 1.0,
 		wellStrength = 1.0,
 		hyperspaceRangeMultiplier = 1.7,
-		weapons = corvette.weapons
+		weapons = corvette.weapons,
+		sounds = StarshipSounds(
+			explode = SoundInfo("horizonsend:starship.explosion.small.near")
+		)
 	),
 	val aiCorvetteLogistic: StarshipBalancing = StarshipBalancing(
 		sneakFlyAccelDistance = 3,
@@ -981,7 +1022,10 @@ data class StarshipTypeBalancing(
 		hyperspaceRangeMultiplier = 2.5,
 		cruiseSpeedMultiplier = 0.88,
 		shieldPowerMultiplier = 1.20,
-		weapons = battlecruiser.weapons
+		weapons = battlecruiser.weapons,
+		sounds = StarshipSounds(
+			explode = SoundInfo("horizonsend:starship.explosion.battlecruiser")
+		)
 	),
 	val aiBattleship: StarshipBalancing = battleship,
 	val aiDreadnought: StarshipBalancing = dreadnought,

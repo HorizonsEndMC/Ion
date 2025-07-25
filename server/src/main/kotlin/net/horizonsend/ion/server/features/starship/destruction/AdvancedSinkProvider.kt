@@ -126,6 +126,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 
 	fun playSinkSound() {
 		starship.balancing.sounds.explode?.let {
+			println("PLAYING SOUND: ${starship.balancing.sounds.explode}")
 			playSoundInRadius(starship.centerOfMass.toLocation(starship.world), 7_500.0, it.sound)
 		}
 	}
