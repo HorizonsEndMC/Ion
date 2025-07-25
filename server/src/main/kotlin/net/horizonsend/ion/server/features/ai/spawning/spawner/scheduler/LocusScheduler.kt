@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler
 
+import net.horizonsend.ion.common.database.cache.AIEncounterCache
+import net.horizonsend.ion.common.database.schema.misc.AIEncounterData
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
@@ -45,7 +47,7 @@ class LocusScheduler(
 	val radius: Double,
 	private val spawnSeparation: Supplier<Duration>,
 	private val worlds: List<String>
-) : SpawnerScheduler, TickedScheduler {
+) : SpawnerScheduler, TickedScheduler , PersistentScheduler{
 	private lateinit var spawner: AISpawner
 	val MAX_TICK_MULTIPLIER = 4
 
@@ -186,6 +188,26 @@ class LocusScheduler(
 			(distanceSquared(loc, center.toVector()) < distSquared) && (it.controller is PlayerController)
 		}.size
  	}
+
+	override fun loadData() {
+		val data = AIEncounterCache[spawner.identifier]
+		if (data != null) {
+			lastActiveTime = data.lastActiveTime
+			lastDuration = data.lastDuration
+			lastSeparation = data.lastSeparation
+		}
+	}
+
+	override fun saveData() {
+		val data = AIEncounterCache[spawner.identifier]
+		if (data == null) {
+			AIEncounterData.create(spawner.identifier, lastActiveTime, lastDuration, lastSeparation)
+			return
+		}
+		data.lastActiveTime = lastActiveTime
+		data.lastDuration = lastDuration
+		data.lastSeparation  = lastSeparation
+	}
 
 	companion object {
 		const val LOCUS_Y = 192.0

@@ -1,0 +1,34 @@
+package net.horizonsend.ion.common.database.schema.misc
+
+import net.horizonsend.ion.common.database.DbObject
+import net.horizonsend.ion.common.database.Oid
+import net.horizonsend.ion.common.database.OidDbObjectCompanion
+import net.horizonsend.ion.common.database.objId
+import net.horizonsend.ion.common.database.trx
+import org.litote.kmongo.ensureIndex
+import java.time.Duration
+
+class AIEncounterData(
+	override val _id: Oid<AIEncounterData>,
+	val name: String,
+
+	var lastActiveTime : Long,
+	var lastDuration: Duration,
+	var lastSeparation: Duration
+) : DbObject{
+	companion object : OidDbObjectCompanion<AIEncounterData>(AIEncounterData::class, setup = {
+		ensureIndex(AIEncounterData::name)
+	}) {
+
+		fun create(name: String,lastActiveTime : Long,lastDuration: Duration, lastSeparation: Duration): Oid<AIEncounterData> = trx { sess ->
+			val id = objId<AIEncounterData>()
+
+			AIEncounterData.col.insertOne(
+				sess,
+				AIEncounterData(id, name, lastActiveTime, lastDuration, lastSeparation)
+			)
+
+			return@trx id
+		}
+	}
+}

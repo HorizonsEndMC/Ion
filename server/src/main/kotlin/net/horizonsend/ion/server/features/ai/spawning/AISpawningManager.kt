@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.PersistentScheduler
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -27,11 +28,13 @@ object AISpawningManager : IonServerComponent(true) {
 	val context = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
 	override fun onEnable() {
+		loadData()
 		if (ConfigurationFiles.featureFlags().aiSpawns) { Tasks.syncRepeat(0L, 0L, AISpawningManager::tickSpawners) }
 		Tasks.syncRepeat(60L, 60L, AISpawningManager::despawnOldAIShips)
 	}
 
 	override fun onDisable() {
+		saveData()
 		for (starship in ActiveStarships.all()) {
 			if (starship.controller !is AIController) continue
 
@@ -87,5 +90,17 @@ object AISpawningManager : IonServerComponent(true) {
 
 	fun allAIStarships(): List<ActiveStarship> = ActiveStarships.all().filter { ship ->
 		ship.controller is AIController
+	}
+
+	fun loadData() {
+		for (scheduler in AISpawners.tickedAISpawners.filterIsInstance<PersistentScheduler>()) {
+			scheduler.loadData()
+		}
+	}
+
+	fun saveData() {
+		for (scheduler in AISpawners.tickedAISpawners.filterIsInstance<PersistentScheduler>()) {
+			scheduler.saveData()
+		}
 	}
 }
