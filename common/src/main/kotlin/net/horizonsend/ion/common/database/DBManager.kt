@@ -17,6 +17,7 @@ import net.horizonsend.ion.common.database.schema.economy.CollectedItem
 import net.horizonsend.ion.common.database.schema.economy.CompletedCollectionMission
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
 import net.horizonsend.ion.common.database.schema.economy.StationRentalZone
+import net.horizonsend.ion.common.database.schema.misc.AIEncounterData
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
 import net.horizonsend.ion.common.database.schema.misc.Message
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
@@ -115,6 +116,7 @@ object DBManager : IonComponent() {
 		Shuttle.init()
 		Bookmark.init()
 		Message.init()
+		AIEncounterData.init()
 
 		// nations
 		CapturableStation.init()
