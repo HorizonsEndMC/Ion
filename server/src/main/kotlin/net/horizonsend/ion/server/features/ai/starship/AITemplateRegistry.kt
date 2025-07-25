@@ -473,7 +473,7 @@ object AITemplateRegistry {
 		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
 			activationThreshold = 0.70,
 			delay = 100L,
-			broadcastMessage =  "$<$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
+			broadcastMessage =  "<$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
 		) {
 			BagSpawner.asReinforcement(
                 formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 100.0, 200.0),

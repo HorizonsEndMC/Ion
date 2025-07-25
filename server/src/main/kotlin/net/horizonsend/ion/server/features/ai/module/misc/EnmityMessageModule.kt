@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.ai.configuration.AIEmities
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -19,7 +20,7 @@ class EnmityMessageModule(
 	private val configSupplier: () -> AIEmities.AIEmityConfiguration
 ) : AIModule(controller) {
 	private val enmityModule = controller.getCoreModuleByType<EnmityModule>()!!
-	private val messaged = mutableSetOf<Pair<Any, String>>() // (AITarget, message ID)
+	private val messaged = mutableSetOf<Pair<AITarget, String>>() // (AITarget, message ID)
 
 	override fun tick() {
 		val enmity = enmityModule
@@ -40,6 +41,9 @@ class EnmityMessageModule(
 				messaged.add(key)
 			}
 		}
+		messaged.removeIf {messaged -> !enmityModule.enmityList.any {
+			it.target == messaged.first
+		}}
 	}
 
 	private fun buildMessage(msg: Component): Component = template(

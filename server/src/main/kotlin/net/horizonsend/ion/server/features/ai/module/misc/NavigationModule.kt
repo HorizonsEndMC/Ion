@@ -179,30 +179,30 @@ class NavigationModule(
 		}
 
 		if (targetLocation == null) { // no target, nothing to navigate to
-			starship.debug("No target to navigate towards")
+			//starship.debug("No target to navigate towards")
 			navigate = false
 			setOverride(null)
 			return
 		}
 		if (targetLocation!!.world != world) { //need to navigate to a different world
-			starship.debug("target in different world")
+			//starship.debug("target in different world")
 			navigate = true
 			return
 		}
 		val dist = targetLocation!!.toVector().distance(location.toVector())
 		if (dist >= engageHyperdiveRange && world.hasFlag(WorldFlag.SPACE_WORLD)) {
-			starship.debug("target far away")
+			//starship.debug("target far away")
 			navigate = true
 			return
 		}
 		if (!world.hasFlag(WorldFlag.HYPERSPACE_WORLD)) {
-			starship.debug("target is close by")
+			//starship.debug("target is close by")
 			navigate = false //target is close enough to not require navigation
 			hyperdriveNavigate = false
 			setOverride(null)
 			return
 		} else {
-			starship.debug("weird final condition met!")
+			//starship.debug("weird final condition met!")
 		} // not sure what the other condition should be
 
 	}
@@ -235,7 +235,7 @@ class NavigationModule(
 		var goalPoint = Vec3i(starship.centerOfMass.x, 400, starship.centerOfMass.z)
 		goalPoint += Vec3i(starship.forward.direction.multiply(100.0))
 		hyperdriveNavigate = false
-		navigationTarget = GoalTarget(goalPoint, world, false)
+		navigationTarget = GoalTarget(goalPoint, world, false, attack = false)
 		setOverride(navigationTarget)
 	}
 
@@ -255,7 +255,7 @@ class NavigationModule(
 		if (dest.world == world && dest.toVector().distance(location.toVector()) < engageHyperdiveRange) {
 			starship.debug("target in nearby world, navigating")
 			hyperdriveNavigate = false
-			navigationTarget = GoalTarget(Vec3i(dest), dest.world, false)
+			navigationTarget = GoalTarget(Vec3i(dest), dest.world, false, attack = false)
 			setOverride(navigationTarget)
 			return
 		}
@@ -273,7 +273,7 @@ class NavigationModule(
 			return
 		}
 		val jump = path!!.edgeList.first().target.loc
-		navigationTarget = GoalTarget(Vec3i(jump), jump.world, true)
+		navigationTarget = GoalTarget(Vec3i(jump), jump.world, true, attack = false)
 		setOverride(navigationTarget)
 		hyperdriveNavigate = true
 		return

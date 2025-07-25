@@ -115,6 +115,10 @@ abstract class CombatModule<T>(
 			AIControlUtils.unSetAllWeapons(controller)
 			return
 		}
+		if (!target.attack) {
+			AIControlUtils.unSetAllWeapons(controller)
+			return
+		}
 		val fudgeFactor = target.getFudgeFactor()
 		val distance = (target.getLocation().toVector().distance(origin.toVector()) - fudgeFactor).coerceAtLeast(1.0)
 		starship.debug("Distance auto: $distance (fudged)")
@@ -130,7 +134,7 @@ abstract class CombatModule<T>(
 			return
 		} //dont do anything if both of the options are false
 
-		if (weaponSet == null || !target.attack) {
+		if (weaponSet == null) {
 			AIControlUtils.unSetAllWeapons(controller)
 			return
 		}

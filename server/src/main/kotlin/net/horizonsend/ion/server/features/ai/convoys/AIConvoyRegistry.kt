@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.ai.convoys
 
+import net.horizonsend.ion.common.utils.text.colors.EXPLORER_LIGHT_CYAN
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_LIGHT_TEAL
 import net.horizonsend.ion.common.utils.text.miniMessage
@@ -7,6 +9,7 @@ import net.horizonsend.ion.server.configuration.util.VariableIntegerAmount
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.MINING_GUILD
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEUS_EXPLORERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.CaravanModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
@@ -107,15 +110,15 @@ object AIConvoyRegistry {
 	}
 
 	val DEEP_SPACE_MINING = AIConvoyRegistry.freeRoute("DEEP_SPACE_MINING", 2) { ctx ->
-		val route = RandomConvoyRoute.fromList(listOf("Trench"))
+		val route = RandomConvoyRoute.fromList(listOf("Trench", "AU-0821", "Horizon"))
 
 		CompositeSpawner(
 			components           = makeMiningComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
 			locationProvider     = { route.getSourceLocation() },
-			groupMessage         = "DEEP_SPACE_MINING".miniMessage(),
-			individualSpawnMessage = null,
+			groupMessage         = "$miningGuildMini<GOLD><bold> Deep Space Mining Convoy</bold> <${HE_MEDIUM_GRAY}>has arrived in {3}, at {0} {2}".miniMessage(),
+			individualSpawnMessage = SpawnMessage.WorldMessage("$miningGuildMini <${HE_MEDIUM_GRAY}> {0} joined the convoy".miniMessage()),
 			difficultySupplier   = AIConvoyRegistry["DEEP_SPACE_MINING"]!!.difficultySupplier,
-			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED),
+			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.PLAYER_ONLY),
 			onPostSpawn          = { c -> attachCaravanModule(c, route, "DEEP_SPACE_MINING") }
 		)
 	}

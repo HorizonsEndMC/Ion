@@ -34,6 +34,7 @@ import org.bukkit.event.entity.PlayerDeathEvent
 import java.util.function.Supplier
 import kotlin.math.cbrt
 import kotlin.math.max
+import kotlin.math.pow
 
 open class EnmityModule(
 	controller: AIController,
@@ -138,7 +139,9 @@ open class EnmityModule(
 			val dist = getOpponentDistance(tempTarget.target)!! + 1e-4
 			val weight : Double
 			if (dist > config.aggroRange) {
-				weight = (config.aggroRange / dist * config.distanceAggroWeight * difficulty.outOfRangeAggro).coerceAtMost(config.distanceAggroWeight)
+				weight = ((config.aggroRange / dist).pow(2)
+					* config.distanceAggroWeight * difficulty.outOfRangeAggro)
+					.coerceAtMost(config.distanceAggroWeight)
 			} else {
 				weight = config.distanceAggroWeight
 			}
@@ -238,7 +241,7 @@ open class EnmityModule(
 
 	fun decayEnmity() {
 		enmityList.forEach {
-			if (it.decay && randomDouble(0.0,1.0) < difficulty.decayEmityThreshold) {
+			if (it.decay && randomDouble(0.0,1.0) > difficulty.decayEmityThreshold) {
 				val dist = getOpponentDistance(it.target)
 				if (dist == null) {
 					it.baseWeight *= config.outOfSystemDecay
