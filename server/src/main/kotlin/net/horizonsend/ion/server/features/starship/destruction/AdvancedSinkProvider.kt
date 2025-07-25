@@ -98,7 +98,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		val reactor = starship.subsystems.filterIsInstance<SupercapitalReactorSubsystem<*>>().firstOrNull() ?: return
 		val center = (reactor.pos).toCenterVector()
 
-		val tickRate = 4L
+		val tickRate = 8L
 		val growRate = 4.5 * (tickRate.toDouble() / 20.0)
 
 		var particleRadius = 0.0
