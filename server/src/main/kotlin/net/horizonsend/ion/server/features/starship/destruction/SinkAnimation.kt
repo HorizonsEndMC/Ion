@@ -5,8 +5,10 @@ import io.papermc.paper.datacomponent.item.DyedItemColor
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.client.display.modular.BlockDisplayWrapper
+import net.horizonsend.ion.server.features.client.display.modular.DisplayWrapper
+import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.features.starship.Starship
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ItemDisplayContainer
 import net.horizonsend.ion.server.features.transport.items.util.DYEABLE_CUBE_MONO
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -16,10 +18,8 @@ import net.minecraft.util.Brightness
 import org.bukkit.Color
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
-import org.joml.Vector3f
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.random.Random
@@ -131,14 +131,14 @@ class SinkAnimation(
 				Random.nextDouble(-6.0, 6.0)
 			).multiply(scale)
 
-			val displayContainer = ItemDisplayContainer(world, 1.0f, origin.toCenterVector(), direction, ItemStack(blockData.material))
+			val displayContainer = BlockDisplayWrapper(world, origin.toCenterVector(), direction, Vector(), blockData)
 			displayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
 
 			blockWrappers.add(SinkAnimationBlock(
 				wrapper = displayContainer,
 				direction = direction,
-				initialScale = 3.0,
-				finalScale = 3.0,
+				initialScale = 1.0,
+				finalScale = 1.0,
 				rotationVector = Vector(
 					Random.nextDouble(-0.25, 0.25),
 					Random.nextDouble(-0.25, 0.25),
@@ -177,7 +177,7 @@ class SinkAnimation(
 	}
 
 	open inner class SinkAnimationBlock(
-		val wrapper: ItemDisplayContainer,
+		open val wrapper: DisplayWrapper,
 		val direction: Vector,
 		val initialScale: Double,
 		val finalScale: Double,
@@ -194,14 +194,17 @@ class SinkAnimation(
 
 		private fun updatePosition() {
 			motionAdjuster.invoke(this)
-			wrapper.offset = wrapper.offset.add(direction.toVector3f())
-			wrapper.scale = Vector3f(blend(initialScale, finalScale, phase).toFloat())
+			wrapper.offset = wrapper.offset.add(direction)
+
+			val scale = blend(initialScale, finalScale, phase).toFloat()
+			wrapper.scale = Vector(scale, scale, scale)
+
 			wrapper.heading = wrapper.heading.clone().rotateAroundAxis(rotationVector.normalize(), rotationVector.length())
 		}
 	}
 
 	inner class ColoredSinkAnimationBlock(
-		wrapper: ItemDisplayContainer,
+		override val wrapper: ItemDisplayContainer,
 		direction: Vector,
 		initialScale: Double,
 		finalScale: Double,

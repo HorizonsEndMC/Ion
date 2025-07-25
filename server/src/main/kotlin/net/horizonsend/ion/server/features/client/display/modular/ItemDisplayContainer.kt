@@ -1,5 +1,6 @@
-package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
+package net.horizonsend.ion.server.features.client.display.modular
 
+import com.mojang.math.Transformation
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
@@ -8,32 +9,31 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.world.entity.Display.ItemDisplay
+import net.minecraft.world.entity.Display
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.PositionMoveRotation
 import net.minecraft.world.entity.Relative
-import org.bukkit.Bukkit.getPlayer
+import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.craftbukkit.CraftServer
 import org.bukkit.craftbukkit.entity.CraftItemDisplay
 import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack
-import org.bukkit.util.Transformation
 import org.bukkit.util.Vector
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import java.util.UUID
 
 class ItemDisplayContainer(
-	val world: World,
-	initScale: Float,
-	initPosition: Vector,
-	initHeading: Vector,
-	item: ItemStack
-) {
+    val world: World,
+    initScale: Float,
+    initPosition: Vector,
+    initHeading: Vector,
+    item: ItemStack
+) : DisplayWrapper {
 	private var shownPlayers = mutableSetOf<UUID>()
 
-	var position: Vector = initPosition
+	override var position: Vector = initPosition
 		set(value) {
 			field = value
 
@@ -45,53 +45,58 @@ class ItemDisplayContainer(
 
 			entity.transformationInterpolationDuration = 3
 
-			shownPlayers.map(::getPlayer).forEach {
+			shownPlayers.map(Bukkit::getPlayer).forEach {
 				it?.minecraft?.connection?.send(ClientboundTeleportEntityPacket.teleport(entity.id, PositionMoveRotation.of(entity), setOf<Relative>(), entity.onGround))
 			}
 		}
 
-	var heading: Vector = initHeading
+	override var heading: Vector = initHeading
 		set(value) {
 			field = value
 
-			entity.setTransformation(com.mojang.math.Transformation(
-				Vector3f(offset),
-				ClientDisplayEntities.rotateToFaceVector(value.toVector3f()),
-				Vector3f(scale),
-				Quaternionf()
-			))
+			entity.setTransformation(
+                Transformation(
+					offset.toVector3f(),
+					ClientDisplayEntities.rotateToFaceVector(value.toVector3f()),
+					scale.toVector3f(),
+                    Quaternionf()
+				)
+            )
 
 			entity.transformationInterpolationDuration = 3
 		}
 
-	var scale: Vector3f = Vector3f(initScale)
+	override var scale: Vector = Vector(initScale, initScale, initScale)
 		set(value) {
 			field = value
 
-			entity.setTransformation(com.mojang.math.Transformation(
-				Vector3f(offset),
-				ClientDisplayEntities.rotateToFaceVector(heading.toVector3f()),
-				Vector3f(scale),
-				Quaternionf()
-			))
+			entity.setTransformation(
+                Transformation(
+					offset.toVector3f(),
+					ClientDisplayEntities.rotateToFaceVector(heading.toVector3f()),
+					scale.toVector3f(),
+                    Quaternionf()
+				)
+            )
 
 			entity.transformationInterpolationDuration = 3
 		}
 
-	var offset: Vector3f = Vector3f(0f)
+	override var offset: Vector = Vector(0.0, 0.0, 0.0)
 		set(value) {
 			field = value
 
-			entity.setTransformation(com.mojang.math.Transformation(
-				Vector3f(value),
-				ClientDisplayEntities.rotateToFaceVector(heading.toVector3f()),
-				Vector3f(scale),
-				Quaternionf()
-			))
+			entity.setTransformation(
+                Transformation(
+                    value.toVector3f(),
+					ClientDisplayEntities.rotateToFaceVector(heading.toVector3f()),
+					scale.toVector3f(),
+                    Quaternionf()
+				)
+            )
 
 			entity.transformationInterpolationDuration = 3
 		}
-
 
 	var itemStack: ItemStack = item
 		set(value) {
@@ -99,39 +104,39 @@ class ItemDisplayContainer(
 			entity.itemStack = CraftItemStack.asNMSCopy(itemStack)
 		}
 
-	private val entity: ItemDisplay = createEntity().getNMSData(
+	private val entity: Display.ItemDisplay = createEntity().getNMSData(
 		position.x,
 		position.y,
 		position.z
 	)
 
 	private fun createEntity(): CraftItemDisplay =  CraftItemDisplay(
-		IonServer.server as CraftServer,
-		ItemDisplay(EntityType.ITEM_DISPLAY, world.minecraft)
-	).apply {
+        IonServer.server as CraftServer,
+        Display.ItemDisplay(EntityType.ITEM_DISPLAY, world.minecraft)
+    ).apply {
 		setItemStack(this@ItemDisplayContainer.itemStack)
 		billboard = org.bukkit.entity.Display.Billboard.FIXED
 		brightness = org.bukkit.entity.Display.Brightness(15, 15)
 		teleportDuration = 0
 		viewRange = 1000f
 
-		transformation = Transformation(
-			Vector3f(0f),
-			ClientDisplayEntities.rotateToFaceVector2d(heading.toVector3f()),
-			Vector3f(scale),
-			Quaternionf()
-		)
+		transformation = org.bukkit.util.Transformation(
+            Vector3f(0f),
+            ClientDisplayEntities.rotateToFaceVector2d(heading.toVector3f()),
+			scale.toVector3f(),
+            Quaternionf()
+        )
 	}
 
-	fun remove() {
-		for (shownPlayer in shownPlayers) getPlayer(shownPlayer)?.minecraft?.connection?.send(
-			ClientboundRemoveEntitiesPacket(entity.id)
+	override fun remove() {
+		for (shownPlayer in shownPlayers) Bukkit.getPlayer(shownPlayer)?.minecraft?.connection?.send(
+            ClientboundRemoveEntitiesPacket(entity.id)
 		)
 
 		shownPlayers.clear()
 	}
 
-	fun update() {
+	override fun update() {
 		val chunk = entity.level().world.getChunkAtIfLoaded(entity.x.toInt().shr(4), entity.z.toInt().shr(4)) ?: return
 		val playerChunk = chunk.minecraft.`moonrise$getChunkAndHolder`().holder ?: return
 
@@ -149,7 +154,7 @@ class ItemDisplayContainer(
 		}
 
 		for (player in lostViewers) {
-			getPlayer(player)?.minecraft?.connection?.send(ClientboundRemoveEntitiesPacket(entity.id))
+			Bukkit.getPlayer(player)?.minecraft?.connection?.send(ClientboundRemoveEntitiesPacket(entity.id))
 		}
 
 		shownPlayers = chunkViewers.mapTo(mutableSetOf()) { it.uuid }
@@ -164,5 +169,5 @@ class ItemDisplayContainer(
 		shownPlayers.add(player.uuid)
 	}
 
-	fun getEntity() = entity
+	override fun getEntity() = entity
 }
