@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.cache
 
+import net.horizonsend.ion.common.database.cache.AIEncounterCache
 import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.cache.Cache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
@@ -21,7 +22,8 @@ object Caches : IonServerComponent() {
 		CargoCrates,
 		EcoStations,
 		SpaceStationCache,
-		BookmarkCache
+		BookmarkCache,
+		AIEncounterCache
 	)
 
 	override fun onEnable() = caches.forEach(Cache::load)

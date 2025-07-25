@@ -13,11 +13,7 @@ object AIEncounterCache : DbObjectCache<AIEncounterData, Oid<AIEncounterData>>(A
 	override val idAttribute = AIEncounterCache.attribute(AIEncounterData::_id)
 	private val nameAttribute = AIEncounterCache.attribute(AIEncounterData::name)
 
-	override fun update(cached: AIEncounterData, change: ChangeStreamDocument<AIEncounterData>) {
-		change[AIEncounterData::lastActiveTime]?.let { cached.lastActiveTime = it.long() }
-		change[AIEncounterData::lastDuration]?.let { cached.lastDuration = Duration.parse(it.string()) }
-		change[AIEncounterData::lastSeparation]?.let { cached.lastSeparation = Duration.parse(it.string()) }
-	}
+	override fun update(cached: AIEncounterData, change: ChangeStreamDocument<AIEncounterData>) {}
 
 	operator fun get(name: String): AIEncounterData? = AIEncounterCache.cache.retrieve(
 		equal(nameAttribute, name)

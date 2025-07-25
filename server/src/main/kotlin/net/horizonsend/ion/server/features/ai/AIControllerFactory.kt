@@ -12,7 +12,7 @@ import kotlin.reflect.KClass
 class AIControllerFactory private constructor(
 	val identifier: String,
 	private val coreModules: (AIController, Int, AITarget.TargetMode) -> Builder.ModuleBuilder,
-	private var utilModules: (AIController) -> Set<AIModule>
+	private val utilModules: (AIController) -> Set<AIModule>
 ) {
 	/** Build the controller */
 	operator fun invoke(

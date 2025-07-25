@@ -204,9 +204,7 @@ class LocusScheduler(
 			AIEncounterData.create(spawner.identifier, lastActiveTime, lastDuration, lastSeparation)
 			return
 		}
-		data.lastActiveTime = lastActiveTime
-		data.lastDuration = lastDuration
-		data.lastSeparation  = lastSeparation
+		AIEncounterData.saveData(data._id, lastActiveTime, lastDuration, lastSeparation)
 	}
 
 	companion object {

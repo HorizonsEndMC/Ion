@@ -5,7 +5,10 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.OidDbObjectCompanion
 import net.horizonsend.ion.common.database.objId
 import net.horizonsend.ion.common.database.trx
+import org.litote.kmongo.combine
 import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.setValue
+import org.litote.kmongo.updateOneById
 import java.time.Duration
 
 class AIEncounterData(
@@ -29,6 +32,18 @@ class AIEncounterData(
 			)
 
 			return@trx id
+		}
+
+		fun saveData(
+			id : Oid<AIEncounterData>,
+			lastActiveTime: Long,
+			lastDuration: Duration,
+			lastSeparation: Duration) {
+			col.updateOneById(id, combine(
+				setValue(AIEncounterData::lastActiveTime, lastActiveTime),
+				setValue(AIEncounterData::lastDuration, lastDuration),
+				setValue(AIEncounterData::lastSeparation, lastSeparation)
+			))
 		}
 	}
 }
