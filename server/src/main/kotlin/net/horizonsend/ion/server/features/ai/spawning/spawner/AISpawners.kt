@@ -39,6 +39,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleS
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.WeightedShipSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.AISpawnerTicker
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.CaravanScheduler
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.ConvoyScheduler
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.SetTimeScheduler
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.TickedScheduler
@@ -1050,6 +1051,12 @@ object AISpawners : IonServerComponent(true) {
 		val localCtx : (World) -> LocationContext = { w -> LocationContext(randomLocationIn(w)) }
 		val anyCtx   : () -> LocationContext      = { LocationContext(randomLocationAnywhere()) }
 
+		val deepSpaceScheduler = ConvoyScheduler(
+			"$miningGuildMini<GOLD><bold> Deep Space Mining Convoy</bold>".miniMessage(),
+			separation = { getRandomDuration(Duration.ofHours(12), Duration.ofHours(60)) },
+			announcementMessage = null
+		)
+
 		/* GLOBAL (any world) ------------------------------------------------- */
 		registerGlobalSpawner(
 			LazyWorldSpawner(
@@ -1057,7 +1064,8 @@ object AISpawners : IonServerComponent(true) {
 				worldFilter      = { it.hasFlag(SPACE_WORLD) }, //TODO: do something about this unused param
 				mechanicSupplier = {
 					DEEP_SPACE_MINING.spawnMechanicBuilder(anyCtx())
-				}
+				},
+				scheduler = deepSpaceScheduler
 			)
 		)
 

@@ -47,7 +47,7 @@ class LocusScheduler(
 	val radius: Double,
 	private val spawnSeparation: Supplier<Duration>,
 	private val worlds: List<String>
-) : SpawnerScheduler, TickedScheduler , PersistentScheduler{
+) : SpawnerScheduler, TickedScheduler , PersistentScheduler, StatusScheduler{
 	private lateinit var spawner: AISpawner
 	val MAX_TICK_MULTIPLIER = 4
 
@@ -193,18 +193,18 @@ class LocusScheduler(
 		val data = AIEncounterCache[spawner.identifier]
 		if (data != null) {
 			lastActiveTime = data.lastActiveTime
-			lastDuration = data.lastDuration
-			lastSeparation = data.lastSeparation
+			lastDuration = Duration.ofMillis(data.lastDuration)
+			lastSeparation = Duration.ofMillis(data.lastSeparation)
 		}
 	}
 
 	override fun saveData() {
 		val data = AIEncounterCache[spawner.identifier]
 		if (data == null) {
-			AIEncounterData.create(spawner.identifier, lastActiveTime, lastDuration, lastSeparation)
+			AIEncounterData.create(spawner.identifier, lastActiveTime, lastDuration.toMillis(), lastSeparation.toMillis())
 			return
 		}
-		AIEncounterData.saveData(data._id, lastActiveTime, lastDuration, lastSeparation)
+		AIEncounterData.saveData(data._id, lastActiveTime, lastDuration.toMillis(), lastSeparation.toMillis())
 	}
 
 	companion object {
@@ -262,7 +262,7 @@ class LocusScheduler(
 	private val UTC_TIME: DateTimeFormatter =
 		DateTimeFormatter.ofPattern("HH:mm 'UTC'").withZone(ZoneOffset.UTC)
 
-	fun getStatus(): Component {
+	override fun getStatus(): Component {
 		val now = Instant.now()
 
 		return if (active) {

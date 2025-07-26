@@ -16,14 +16,14 @@ class AIEncounterData(
 	val name: String,
 
 	var lastActiveTime : Long,
-	var lastDuration: Duration,
-	var lastSeparation: Duration
+	var lastDuration: Long,
+	var lastSeparation: Long
 ) : DbObject{
 	companion object : OidDbObjectCompanion<AIEncounterData>(AIEncounterData::class, setup = {
 		ensureIndex(AIEncounterData::name)
 	}) {
 
-		fun create(name: String,lastActiveTime : Long,lastDuration: Duration, lastSeparation: Duration): Oid<AIEncounterData> = trx { sess ->
+		fun create(name: String,lastActiveTime : Long,lastDuration: Long, lastSeparation: Long): Oid<AIEncounterData> = trx { sess ->
 			val id = objId<AIEncounterData>()
 
 			AIEncounterData.col.insertOne(
@@ -37,8 +37,8 @@ class AIEncounterData(
 		fun saveData(
 			id : Oid<AIEncounterData>,
 			lastActiveTime: Long,
-			lastDuration: Duration,
-			lastSeparation: Duration) {
+			lastDuration: Long,
+			lastSeparation: Long) {
 			col.updateOneById(id, combine(
 				setValue(AIEncounterData::lastActiveTime, lastActiveTime),
 				setValue(AIEncounterData::lastDuration, lastDuration),

@@ -28,6 +28,7 @@ import net.horizonsend.ion.server.features.ai.spawning.ships.spawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.AISpawnerTicker
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.ConvoyScheduler
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -254,8 +255,15 @@ object AIDebugCommand : SLCommand() {
 
 	@Subcommand("trigger locus")
 	@CommandCompletion("@aiSpawners")
-	fun listController(sender: Player, spawner: AISpawner) {
+	fun triggerLocus(sender: Player, spawner: AISpawner) {
 		val scheduler = spawner.scheduler as? LocusScheduler ?: fail { "Spawner's scheduler is not a locus" }
 		scheduler.start()
+	}
+
+	@Subcommand("trigger convoy")
+	@CommandCompletion("@aiSpawners")
+	fun triggerConvoy(sender: Player, spawner: AISpawner) {
+		val scheduler = spawner.scheduler as? ConvoyScheduler ?: fail { "Spawner's scheduler is not a convoy" }
+		scheduler.start(log)
 	}
 }
