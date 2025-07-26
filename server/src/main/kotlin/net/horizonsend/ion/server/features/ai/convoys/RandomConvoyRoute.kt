@@ -7,10 +7,11 @@ import kotlin.random.Random
 
 class RandomConvoyRoute private constructor(
 	private val worldList : List<String>,
+	val numDestinations : Int
 ) : ConvoyRoute {
 	private val source: Location = randomLocation()
 	private val destinations: ArrayDeque<Location> =
-		ArrayDeque(List(5) { randomLocation() })
+		ArrayDeque(List(numDestinations) { randomLocation() })
 
 	override fun advanceDestination(): Location? = destinations.removeFirstOrNull()
 	override fun getSourceLocation(): Location      = source
@@ -29,8 +30,8 @@ class RandomConvoyRoute private constructor(
 	}
 
 	companion object {
-		fun sameWorld(worldName: String) = RandomConvoyRoute(listOf(worldName))
-		fun anyWorld()                   = RandomConvoyRoute(Bukkit.getWorlds().map { it.name })
-		fun fromList(worldList: List<String>) = RandomConvoyRoute(worldList)
+		fun sameWorld(worldName: String, numDestinations: Int = 5) = RandomConvoyRoute(listOf(worldName), numDestinations)
+		fun anyWorld(numDestinations: Int = 5) = RandomConvoyRoute(Bukkit.getWorlds().map { it.name }, numDestinations)
+		fun fromList(worldList: List<String>, numDestinations: Int = 5) = RandomConvoyRoute(worldList, numDestinations)
 	}
 }

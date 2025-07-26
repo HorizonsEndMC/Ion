@@ -10,6 +10,7 @@ import kotlinx.coroutines.SupervisorJob
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
+import net.horizonsend.ion.server.features.ai.module.misc.DespawnModule
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.PersistentScheduler
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -80,6 +81,9 @@ object AISpawningManager : IonServerComponent(true) {
 		val mostRecentDamager = starship.damagers.entries.minByOrNull { it.value.lastDamaged }
 
 		if (mostRecentDamager != null && mostRecentDamager.value.lastDamaged > lastDamagedRequirement) return false
+
+		val despawnControl = controller.getUtilModule(DespawnModule::class.java)
+		if (despawnControl != null) return despawnControl.evaluateDespawn()
 
 		return starship.creationTime <= timeLivedRequirement
 	}

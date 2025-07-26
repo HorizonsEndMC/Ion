@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.CaravanModule
+import net.horizonsend.ion.server.features.ai.module.misc.DespawnModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
@@ -110,7 +111,7 @@ object AIConvoyRegistry {
 	}
 
 	val DEEP_SPACE_MINING = AIConvoyRegistry.freeRoute("DEEP_SPACE_MINING", 2) { ctx ->
-		val route = RandomConvoyRoute.fromList(listOf("Trench", "AU-0821", "Horizon"))
+		val route = RandomConvoyRoute.fromList(listOf("Trench", "AU-0821", "Horizon"), 10)
 
 		CompositeSpawner(
 			components           = makeMiningComponents(route, fixedDifficulty(2),fixedTargetMode(AITarget.TargetMode.MIXED)),
@@ -260,6 +261,7 @@ object AIConvoyRegistry {
 			)
 		)
 		controller.getCoreModuleByType<EnmityModule>()?.removeAnchor()
+		controller.addUtilModule(DespawnModule(controller, DespawnModule.neverDespawn))
 	}
 
 	private fun fixedDifficulty(v: Int) = { _: String -> Supplier { v } }
