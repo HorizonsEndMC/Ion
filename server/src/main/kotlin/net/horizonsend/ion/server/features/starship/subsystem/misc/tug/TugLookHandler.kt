@@ -22,15 +22,15 @@ class TugLookHandler(controller: PlayerController) : MovementHandler(controller,
 
 	override fun tick() {
 		if (tug == null) return
-		if (tug.movedBlocks.isEmpty()) return
+		val state = tug.getTowed() ?: return
 
-		popDistanceChanges(tug)
-		popRotations(tug)
-		trackView(tug)
+		popDistanceChanges(tug, state)
+		popRotations(tug, state)
+		trackView(tug, state)
 	}
 
-	fun popDistanceChanges(tug: TugSubsystem) {
-		val center = tug.centerPoint ?: return
+	fun popDistanceChanges(tug: TugSubsystem, state: TowedBlocks) {
+		val center = state.centerPoint ?: return
 		var direction: RelativeFace? = null
 
 		while (input.distanceQueue.isNotEmpty()) {
@@ -50,11 +50,11 @@ class TugLookHandler(controller: PlayerController) : MovementHandler(controller,
 		val dy = vector.y.roundToInt()
 		val dz = vector.z.roundToInt()
 
-		tug.doMovement(TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
+		state.move(TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
 	}
 
-	fun popRotations(tug: TugSubsystem) {
-		val middle = tug.centerPoint ?: return
+	fun popRotations(tug: TugSubsystem, state: TowedBlocks) {
+		val middle = state.centerPoint ?: return
 
 		var fullRotation = 0.0
 
@@ -65,13 +65,13 @@ class TugLookHandler(controller: PlayerController) : MovementHandler(controller,
 
 		if ((fullRotation % 360.0) == 0.0) return
 
-		tug.doMovement(TransformationAccessor.RotationTransformation(null, fullRotation) { middle })
+		state.move(TransformationAccessor.RotationTransformation(null, fullRotation) { middle })
 	}
 
 	var lastDirection: Vector? = starship.playerPilot?.location?.direction
 
-	fun trackView(tug: TugSubsystem) {
-		val center = tug.centerPoint ?: return
+	fun trackView(tug: TugSubsystem, state: TowedBlocks) {
+		val center = state.centerPoint ?: return
 		val playerPilot = starship.playerPilot?: return
 		val viewDirection = playerPilot.location.direction
 
@@ -89,7 +89,7 @@ class TugLookHandler(controller: PlayerController) : MovementHandler(controller,
 		val dy = difference.y.roundToInt()
 		val dz = difference.z.roundToInt()
 
-		tug.doMovement(TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
+		state.move(TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
 	}
 
 	inner class TugLookInput(override val controller: PlayerController) : InputHandler, PlayerInput {

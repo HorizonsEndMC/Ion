@@ -1,10 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.misc.tug
 
 import io.papermc.paper.raytracing.RayTraceTarget
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TugMultiblock
@@ -12,7 +9,6 @@ import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
@@ -23,21 +19,12 @@ import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.Block
@@ -45,7 +32,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Future
 import kotlin.math.roundToInt
 
 class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace, val multiblock: TugMultiblock) : WeaponSubsystem(starship, pos), DirectionalSubsystem, ManualWeaponSubsystem {
@@ -53,8 +39,11 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 
 	override val powerUsage: Int = 0
 
+	private var controlMode: TugControlMode = TugControlMode.FOLLOW
+	var towState: TowState = TowState.Empty; private set
+
 	override fun canFire(dir: Vector, target: Vector): Boolean {
-		return !isFloodFilling
+		return towState.canStartDiscovery()
 	}
 
 	override fun getName(): Component {
@@ -82,24 +71,18 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 		new.onSetup(starship)
 	}
 
-	private var controlMode: TugControlMode = TugControlMode.FOLLOW
-
-	var minPoint: Vec3i? = null
-	var maxPoint: Vec3i? = null
-	val centerPoint: Vec3i? get() = minPoint?.let { min -> maxPoint?.let { max -> Vec3i((min.x + max.x) / 2, (min.y + max.y) / 2, (min.z + max.z) / 2) } }
-
-	var movedBlocks = LongArray(0)
-
-	var isFloodFilling: Boolean = false
-
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		if (shooter !is PlayerDamager) return
+		val player = shooter.player
+
+		if (towState is TowState.Discovering) return
 
 		val originLoc = getFirePosition()
 
 		val distance = distance(target, originLoc.toVector())
 		val beamDistance = minOf(100, distance.roundToInt())
 
+		// Draw beam
 		originLoc
 			.alongVector(dir.clone().multiply(beamDistance), beamDistance)
 			.forEach { intermediate ->
@@ -114,140 +97,44 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 			it.targets(RayTraceTarget.BLOCK)
 		}?.hitBlock ?: return
 
-		try {
-			isFloodFilling = true
-			setupMovedBlocks(shooter.player, Vec3i(hitBlock.location)) {
-				isFloodFilling = false
-			}
-		} catch (e: Throwable) {
-			isFloodFilling = false
-			throw e
-		}
-	}
+		val future = CompletableFuture<TowedBlocks?>()
 
-	fun setupMovedBlocks(player: Player, pos: Vec3i, callback: () -> Unit = {}) = Tasks.async {
-		val standingOn = toBlockKey(pos)
-		val world = starship.world
-
-		val visited = LongOpenHashSet.of(standingOn)
-		val visitQueue = ArrayDeque<Long>(listOf(standingOn))
-
-		val foundBlocks = LongOpenHashSet()
-
-		var minX: Int = Int.MAX_VALUE
-		var minY: Int = Int.MAX_VALUE
-		var minZ: Int = Int.MAX_VALUE
-
-		var maxX: Int = Int.MIN_VALUE
-		var maxY: Int = Int.MIN_VALUE
-		var maxZ: Int = Int.MIN_VALUE
-
-		while (visitQueue.isNotEmpty()) {
-			val current = visitQueue.removeFirst()
-			val x = getX(current)
-			val y = getY(current)
-			val z = getZ(current)
-
-			val block = getBlockIfLoaded(world, x, y, z)
-
-			if (block == null) {
-				starship.userError("That structure goes beyond loaded chunks!")
-				return@async
+		future.whenComplete { blocks: TowedBlocks?, exception: Throwable? ->
+			if (exception != null) {
+				towState = TowState.Empty
+				starship.information("There was an error when collecting blocks, the load has been released.")
+				return@whenComplete
 			}
 
-			if (!verifyBlock(player, block)) continue
-
-			foundBlocks.add(blockKey(x, y, z))
-
-			if (foundBlocks.size > MAX_ASTEROID_SIZE) {
-				starship.userError("That structure is too large to move!")
-				return@async
+			if (blocks == null) {
+				// Fall back to previous if failed
+				(towState as? TowState.Discovering)?.let { discovering -> towState = discovering.previous }
+				return@whenComplete
 			}
 
-			if (minX > x) minX = x
-			if (minY > y) minY = y
-			if (minZ > z) minZ = z
-			if (maxX < x) maxX = x
-			if (maxY < y) maxY = y
-			if (maxZ < z) maxZ = z
-
-			// Detect adjacent blocks
-			for (offsetX in -1..1) {
-				for (offsetY in -1..1) {
-					for (offsetZ in -1..1) {
-						val adjacentX = offsetX + x
-						val adjacentY = offsetY + y
-						val adjacentZ = offsetZ + z
-
-						// Ensure it's a valid Y-level before adding it to the queue
-						if (adjacentY < 0 || adjacentY > world.maxHeight) {
-							continue
-						}
-
-						val adjacent = toBlockKey(adjacentX, adjacentY, adjacentZ)
-						if (visited.add(adjacent)) {
-							visitQueue.addFirst(adjacent)
-						}
-					}
-				}
-			}
+			towState = TowState.Full(blocks)
 		}
 
-		starship.information("Acquired ${foundBlocks.size} blocks")
-		movedBlocks = foundBlocks.toLongArray()
+		towState = TowState.Discovering(future = future, previous = towState)
 
-		callback.invoke()
+		Tasks.async {
+			val new = TowedBlocks.build(player, Vec3i(hitBlock.location), this)
+			if (!new.isSuccess()) new.sendReason(starship)
 
-		if (movedBlocks.isEmpty()) return@async
-
-		this.minPoint = Vec3i(minX, minY, minZ)
-		this.maxPoint = Vec3i(maxX, maxY, maxZ)
+			future.complete(new.result)
+		}
 	}
 
 	override fun onMovement(movement: TransformationAccessor, success: Boolean) {
 		if (movement !is TranslateMovement || !success || controlMode != TugControlMode.FOLLOW) return
-		doMovement(movement)
-	}
-
-	var lastTaskFuture: Future<Boolean>? = null
-
-	fun doMovement(movement: TransformationAccessor) {
-		var lastTicked = System.currentTimeMillis()
-
-		if (lastTaskFuture?.isDone == false) {
-			return
-		}
-
-		val future = CompletableFuture<Boolean>()
-		lastTaskFuture = future
-
-		Tasks.async {
-			try {
-				starship.information("Moving ${movedBlocks.size} blocks")
-				movement.execute(
-					positions = movedBlocks,
-					world1 = starship.world,
-					executionCheck = { true }
-				) {
-					movedBlocks = it
-
-					recalculateMinMax()
-				}
-
-				val now = System.currentTimeMillis()
-				starship.information("Movement took ${(now - lastTicked) / 1000.0}s")
-				lastTicked = now
-				future.complete(true)
-			} catch (e: StarshipMovementException) {
-				starship.sendMessage(ofChildren(Component.text("Towed Load Blocked! ", NamedTextColor.RED), e.formatMessage()))
-				future.complete(false)
-			}
-		}
+		towState.handleMovement(movement)
 	}
 
 	override fun tick() {
-		val minVec = minPoint ?: return
-		val maxVec = maxPoint?.plus(Vec3i(1, 1, 1)) ?: return
+		val state = towState as? TowState.Full ?: return
+
+		val minVec = state.blocks.minPoint
+		val maxVec = state.blocks.maxPoint.plus(Vec3i(1, 1, 1))
 
 		cube(
             minVec.toLocation(starship.world),
@@ -276,34 +163,5 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 		const val MAX_ASTEROID_SIZE = 1_000_000
 	}
 
-	fun recalculateMinMax() {
-		if (movedBlocks.isEmpty()) return
-
-		val start = movedBlocks.iterator().next()
-		var minX = blockKeyX(start)
-		var minY = blockKeyY(start)
-		var minZ = blockKeyZ(start)
-
-		var maxX = minX
-		var maxY = minY
-		var maxZ = minZ
-
-		for (key in movedBlocks) {
-			val x = blockKeyX(key)
-			val y = blockKeyY(key)
-			val z = blockKeyZ(key)
-
-			if (x < minX) minX = x
-			if (x > maxX) maxX = x
-
-			if (y < minY) minY = y
-			if (y > maxY) maxY = y
-
-			if (z < minZ) minZ = z
-			if (z > maxZ) maxZ = z
-		}
-
-		minPoint = Vec3i(minX, minY, minZ)
-		maxPoint = Vec3i(maxX, maxY, maxZ)
-	}
+	fun getTowed(): TowedBlocks? = (towState as? TowState.Full)?.blocks
 }

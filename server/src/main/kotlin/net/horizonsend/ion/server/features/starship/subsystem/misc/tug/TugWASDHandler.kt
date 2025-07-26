@@ -22,13 +22,13 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 
 	override fun tick() {
 		if (tug == null) return
-		if (tug.movedBlocks.isEmpty()) return
+		val state = tug.getTowed() ?: return
 
-		popTranslations(tug)
-		popRotations(tug)
+		popTranslations(state)
+		popRotations(state)
 	}
 
-	fun popTranslations(tug: TugSubsystem) {
+	fun popTranslations(state: TowedBlocks) {
 		val delta = Vector()
 
 		while (input.moveVectorDeque.isNotEmpty()) {
@@ -42,11 +42,11 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 		val dy = delta.y.roundToInt()
 		val dz = delta.z.roundToInt()
 
-		tug.doMovement(TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
+		state.move(TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
 	}
 
-	fun popRotations(tug: TugSubsystem) {
-		val middle = tug.centerPoint ?: return
+	fun popRotations(state: TowedBlocks) {
+		val middle = state.centerPoint ?: return
 
 		var fullRotation = 0.0
 
@@ -57,7 +57,7 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 
 		if ((fullRotation % 360.0) == 0.0) return
 
-		tug.doMovement(TransformationAccessor.RotationTransformation(null, fullRotation) { middle })
+		state.move(TransformationAccessor.RotationTransformation(null, fullRotation) { middle })
 	}
 
 	inner class TugWASDInput(override val controller: PlayerController) : InputHandler, PlayerInput {
@@ -75,7 +75,7 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 			if (player.isSneaking) return
 
 			event.isCancelled = true
-			if (tug.lastTaskFuture?.isDone == false) return
+			if (!tug.towState.canStartDiscovery()) return
 
 			val difference = event.to.clone().subtract(event.from).toVector().normalize()
 
@@ -86,7 +86,7 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 			if (tug == null) return
 
 			event.isCancelled = true
-			if (tug.lastTaskFuture?.isDone == false) return
+			if (!tug.towState.canStartDiscovery()) return
 
 			moveVectorDeque.addLast(Vector(0.0, -1.0, 0.0))
 		}
