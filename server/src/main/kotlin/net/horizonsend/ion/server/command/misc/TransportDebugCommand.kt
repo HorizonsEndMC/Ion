@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
+import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkage
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
 import net.horizonsend.ion.server.features.transport.nodes.cache.DestinationCacheHolder
@@ -179,6 +180,38 @@ object TransportDebugCommand : SLCommand() {
 
 		filters.getFilters().forEach { filterData ->
 			sender.highlightBlock(toVec3i(filterData.position), 50L)
+		}
+	}
+
+	@Subcommand("dump merges chunk")
+	fun dumpMergePointsChunk(sender: Player, network: CacheType) {
+		val ionChunk = sender.chunk.ion()
+		val mergePoints = network.get(ionChunk).holder.getMultiblockManager().getLinkageManager().getAll()
+
+		sender.information("${mergePoints.size} linkages(s).")
+
+		mergePoints.forEach {
+			sender.highlightBlock(toVec3i(it.key), 50L)
+		}
+	}
+
+	@Subcommand("dump merges ship")
+	fun dumpMergePointsShip(sender: Player, network: CacheType) {
+		val ship = getStarshipRiding(sender)
+		val manager = network.get(ship).holder.getMultiblockManager()
+		val mergePoints = manager.getLinkageManager().getAll()
+
+		sender.information("${mergePoints.size} linkages(s).")
+
+		mergePoints.forEach {
+			val global = manager.getGlobalCoordinate(toVec3i(it.key))
+
+			val holder = it.value
+
+			 holder.getLinkages().forEach { multiblockLinkage: MultiblockLinkage ->
+				sender.information("Linkage facing ${multiblockLinkage.linkDirection} (${multiblockLinkage.linkDirection[multiblockLinkage.owner.structureDirection]} at ${toVec3i(multiblockLinkage.location)} (${multiblockLinkage.owner.manager.getGlobalCoordinate(toVec3i(multiblockLinkage.location))}) to ${toVec3i(multiblockLinkage.getLinkLocation())}")
+				sender.highlightBlock(global, 50L)
+			}
 		}
 	}
 

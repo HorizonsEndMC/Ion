@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultibloc
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier2Mirrored
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier3Mirrored
+import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.HarvesterMultiblockTier3
@@ -88,7 +89,9 @@ import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafte
 import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter.AutoCrafterMultiblockTier2Mirrored
 import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter.AutoCrafterMultiblockTier3
 import net.horizonsend.ion.server.features.multiblock.type.processing.autocrafter.AutoCrafterMultiblockTier3Mirrored
-import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.processing.automason.AutoMasonMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent
+import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent.AdvancedShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.LandingGearMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.OdometerMultiblock
@@ -257,6 +260,10 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(GasFurnaceMultiblock)
 		registerMultiblock(MissileLoaderMultiblock)
 		registerMultiblock(AmmoLoaderMultiblock)
+		registerMultiblock(AutoMasonMultiblock.AutoMasonRight)
+		registerMultiblock(AutoMasonMultiblock.AutoMasonLeft)
+		registerMultiblock(AutoMasonMultiblock.AutoMasonRightMergable)
+		registerMultiblock(AutoMasonMultiblock.AutoMasonLeftMergable)
 
 		// Moreso powered multis than ship multis, could go in either spot tbh
 		registerMultiblock(MiningLaserMultiblockTier1Top)
@@ -390,6 +397,9 @@ object MultiblockRegistration : IonServerComponent() {
 		// Machine
 		registerMultiblock(ShipFactoryMultiblock)
 		registerMultiblock(AdvancedShipFactoryMultiblock)
+		registerMultiblock(AdvancedShipFactoryParent.AdvancedShipFactoryMergeableRight)
+		registerMultiblock(AdvancedShipFactoryParent.AdvancedShipFactoryMergeableLeft)
+		registerMultiblock(AdvancedShipFactoryParent.AdvancedShipFactoryMergeableDouble)
 
 		registerMultiblock(DecomposerMultiblock)
 
@@ -403,6 +413,10 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(TractorBeamMultiblock)
 		registerMultiblock(MediumTractorBeamMultiblock)
 		registerMultiblock(LargeTractorBeamMultiblock)
+
+		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockStandard)
+		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableRight)
+		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableLeft)
 
 		registerMultiblock(AntiAirCannonBaseMultiblock)
 	}

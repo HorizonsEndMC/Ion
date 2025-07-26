@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.cache
 
+import net.horizonsend.ion.common.database.cache.AIEncounterCache
 import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.cache.Cache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
@@ -13,15 +14,16 @@ import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 object Caches : IonServerComponent() {
 	private val caches: List<Cache> = listOf(
 		PlayerCache,
+		PlayerSettingsCache,
 		SettlementCache,
 		NationCache,
 		RelationCache,
-		BountyCache,
 
 		CargoCrates,
 		EcoStations,
 		SpaceStationCache,
-		BookmarkCache
+		BookmarkCache,
+		AIEncounterCache
 	)
 
 	override fun onEnable() = caches.forEach(Cache::load)

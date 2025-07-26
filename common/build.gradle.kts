@@ -13,12 +13,12 @@ repositories {
 }
 
 dependencies {
-	compileOnly("net.kyori:adventure-api:4.18.0")
-	compileOnly("net.kyori:adventure-text-logger-slf4j:4.18.0")
-	compileOnly("net.kyori:adventure-text-minimessage:4.18.0")
-	compileOnly("net.kyori:adventure-text-serializer-plain:4.18.0")
-	compileOnly("net.kyori:adventure-text-serializer-gson:4.18.0")
-	compileOnly("net.kyori:adventure-text-serializer-legacy:4.18.0")
+	compileOnly("net.kyori:adventure-api:4.21.0")
+	compileOnly("net.kyori:adventure-text-logger-slf4j:4.21.0")
+	compileOnly("net.kyori:adventure-text-minimessage:4.21.0")
+	compileOnly("net.kyori:adventure-text-serializer-plain:4.21.0")
+	compileOnly("net.kyori:adventure-text-serializer-gson:4.21.0")
+	compileOnly("net.kyori:adventure-text-serializer-legacy:4.21.0")
 
 	compileOnly("net.md-5:bungeecord-chat:1.20-R0.2")
 	compileOnly("net.luckperms:api:5.4")

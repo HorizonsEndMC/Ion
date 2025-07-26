@@ -1,6 +1,10 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler
 
+import net.horizonsend.ion.common.database.cache.AIEncounterCache
+import net.horizonsend.ion.common.database.schema.misc.AIEncounterData
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
@@ -9,11 +13,13 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.nations.NationsMap.dynmapLoaded
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getLocationNear
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -21,6 +27,9 @@ import org.dynmap.bukkit.DynmapPlugin
 import org.dynmap.markers.MarkerAPI
 import org.slf4j.Logger
 import java.time.Duration
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.function.Supplier
 import kotlin.random.Random
 
@@ -32,13 +41,15 @@ class LocusScheduler(
 	private val dynmapColor: TextColor,
 	private val duration: Supplier<Duration>,
 	private val separation: Supplier<Duration>,
+	private val difficultySupplier: (String) -> Supplier<Int>,
 	private val announcementMessage: Component?,
 	private val endMessage: Component?,
 	val radius: Double,
 	private val spawnSeparation: Supplier<Duration>,
 	private val worlds: List<String>
-) : SpawnerScheduler, TickedScheduler {
+) : SpawnerScheduler, TickedScheduler , PersistentScheduler, StatusScheduler{
 	private lateinit var spawner: AISpawner
+	val MAX_TICK_MULTIPLIER = 4
 
 	override fun getSpawner(): AISpawner {
 		return spawner
@@ -51,16 +62,19 @@ class LocusScheduler(
 
 	var active: Boolean = false
 	lateinit var center: Location
+	var difficulty: Int = 2
 
 	private var lastActiveTime = System.currentTimeMillis()
 	private var lastDuration: Duration = duration.get()
+	/** How long to wait after the previous locus ended before we may start the next one */
+	private var lastSeparation: Duration = separation.get()   // first run
 
 	override fun tick(logger: Logger) {
 		if (!active) {
 			// Interval from the end of the last one
 			val interval = System.currentTimeMillis() - (lastActiveTime + lastDuration.toMillis())
 			// Start the locus if the separation has passed
-			if (interval > separation.get().toMillis()) start()
+			if (interval > lastSeparation.toMillis()) start()
 		} else {
 			val interval = System.currentTimeMillis() - (lastActiveTime)
 
@@ -80,6 +94,7 @@ class LocusScheduler(
 		lastDuration = duration.get()
 
 		center = calculateNewCenter()
+		difficulty = difficultySupplier(center.world.name).get()
 		active = true
 		markDynmapZone()
 		addGravityWell()
@@ -99,6 +114,7 @@ class LocusScheduler(
 		active = false
 		removeDynmapZone()
 		removeGravityWell()
+		lastSeparation = separation.get()
 		if (endMessage != null) IonServer.server.sendMessage(endMessage)
 	}
 
@@ -106,13 +122,13 @@ class LocusScheduler(
 	private var lastSpawnSeparation = spawnSeparation.get()
 
 	private fun tickSpawner(logger: Logger) {
+		if (numberOccupied() == 0) return
 		val interval = System.currentTimeMillis() - spawnerLastExecuted
 		if (interval < lastSpawnSeparation.toMillis()) return
 
-		if (!isOccupied()) return
-
 		spawnerLastExecuted = System.currentTimeMillis()
-		lastSpawnSeparation = spawnSeparation.get()
+		val multiplier = (MAX_TICK_MULTIPLIER - numberOccupied()).coerceAtLeast(1)
+		lastSpawnSeparation = spawnSeparation.get().multipliedBy(multiplier.toLong())
 		getSpawner().trigger(logger, AISpawningManager.context)
 	}
 
@@ -161,17 +177,35 @@ class LocusScheduler(
 		center.getLocationNear(0.0, radius)
 	}
 
-	private fun isOccupied(): Boolean {
-		if (!active) return false
+	private fun numberOccupied(): Int {
+		if (!active) return 0
 		val world = center.world
 		val distSquared = radius * radius
 
-		return ActiveStarships.getInWorld(world).any {
+		return ActiveStarships.getInWorld(world).filter {
 			val loc = it.centerOfMass.toVector().setY(LOCUS_Y)
 
-			distanceSquared(loc, center.toVector()) < distSquared
-		}
+			(distanceSquared(loc, center.toVector()) < distSquared) && (it.controller is PlayerController)
+		}.size
  	}
+
+	override fun loadData() {
+		val data = AIEncounterCache[spawner.identifier]
+		if (data != null) {
+			lastActiveTime = data.lastActiveTime
+			lastDuration = Duration.ofMillis(data.lastDuration)
+			lastSeparation = Duration.ofMillis(data.lastSeparation)
+		}
+	}
+
+	override fun saveData() {
+		val data = AIEncounterCache[spawner.identifier]
+		if (data == null) {
+			AIEncounterData.create(spawner.identifier, lastActiveTime, lastDuration.toMillis(), lastSeparation.toMillis())
+			return
+		}
+		AIEncounterData.saveData(data._id, lastActiveTime, lastDuration.toMillis(), lastSeparation.toMillis())
+	}
 
 	companion object {
 		const val LOCUS_Y = 192.0
@@ -223,5 +257,44 @@ class LocusScheduler(
 
 	override fun getTickInfo(): String {
 		return displayName.plainText()
+	}
+
+	private val UTC_TIME: DateTimeFormatter =
+		DateTimeFormatter.ofPattern("HH:mm 'UTC'").withZone(ZoneOffset.UTC)
+
+	override fun getStatus(): Component {
+		val now = Instant.now()
+
+		return if (active) {
+			val endInstant = Instant.ofEpochMilli(lastActiveTime)
+				.plusMillis(lastDuration.toMillis())
+
+			val minsLeft = Duration.between(now, endInstant).toMinutes()
+
+			template(
+				message = text("{0} ends at: {1} ({2} minutes from now)", HE_LIGHT_ORANGE),
+				paramColor = HEColorScheme.HE_LIGHT_GRAY,
+				useQuotesAroundObjects = false,
+				displayName,
+				UTC_TIME.format(endInstant), // {1}
+				minsLeft                     // {2}
+			)
+		} else {
+			// ───── locus is idle; compute next start ─────
+			val nextStartInstant = Instant.ofEpochMilli(lastActiveTime)
+				.plusMillis(lastDuration.toMillis())          // when the last one ended
+				.plusMillis(lastSeparation.toMillis())      // plus the configured gap
+
+			val hoursLeft = (Duration.between(now, nextStartInstant).toMinutes().toDouble() / 60)
+
+			template(
+				message = text("{0} starts at: {1} ({2} hours from now)", HEColorScheme.HE_MEDIUM_GRAY),
+				paramColor = HEColorScheme.HE_LIGHT_GRAY,
+				useQuotesAroundObjects = false,
+				displayName,
+				UTC_TIME.format(nextStartInstant),// {1}
+				String.format("%.1f", hoursLeft)// {2}
+			)
+		}
 	}
 }

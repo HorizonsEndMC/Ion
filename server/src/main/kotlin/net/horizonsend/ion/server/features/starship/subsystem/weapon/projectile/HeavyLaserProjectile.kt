@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
@@ -38,9 +39,15 @@ class HeavyLaserProjectile(
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
 		// firing ships larger than 4000 should not slow at all
-		if ((shooter.starship?.initialBlockCount ?: 0) > 4000) return
-
 		var speedPenalty = SLOW_FACTOR
+		if ((shooter.starship?.initialBlockCount ?: 0) > 4000 ) {
+			if (starship.controller is PlayerController) {
+				return
+			}
+			speedPenalty = SLOW_FACTOR * 0.5
+		}
+
+
 		// ships above 1400 not affected
 		if (starship.initialBlockCount >= 1400) return
 		// ships above 700 half affected

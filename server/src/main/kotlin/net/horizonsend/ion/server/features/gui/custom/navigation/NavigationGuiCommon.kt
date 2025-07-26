@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.searchEntires
 import net.horizonsend.ion.server.features.ores.generation.PlanetOreSettings
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.space.Space
@@ -24,6 +23,7 @@ import net.horizonsend.ion.server.features.space.body.planet.CachedPlanet
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
@@ -46,7 +46,7 @@ object NavigationGuiCommon {
     private const val MENU_ROW = 5
 
     fun openSearchMenu(player: Player, world: World, gui: Gui, backButtonHandler: () -> Unit) {
-		player.searchEntires(
+		player.openSearchMenu(
 			entries = getSearchableNavigationItems(player),
 			searchTermProvider = { listOf(it.name) },
 			prompt = text("Search for destination"),
@@ -259,7 +259,7 @@ object NavigationGuiCommon {
 
 			ClickType.RIGHT -> waypointAction(player, beacon.name.replace(' ', '_'), gui)
 			ClickType.SHIFT_LEFT -> {
-				NavigationSystemMapGui(player, beacon.destination.bukkitWorld()).openMainWindow()
+				NavigationSystemMapGui(player, beacon.destination.bukkitWorld()).openGui()
 			}
 
 			ClickType.SHIFT_RIGHT -> dynmapLinkAction(
@@ -299,7 +299,7 @@ object NavigationGuiCommon {
 			ClickType.LEFT -> if (planet.spaceWorldName == player.world.name) jumpAction(player, planet.name)
 			ClickType.RIGHT -> waypointAction(player, planet.name, gui)
 			ClickType.SHIFT_LEFT -> {
-				NavigationInfoGui(player, planet.name, getPlanetItems(planet.name), oreComponent2(planet)) { backButtonHandler.invoke() }.openMainWindow()
+				NavigationInfoGui(player, planet.name, getPlanetItems(planet.name), oreComponent2(planet)) { backButtonHandler.invoke() }.openGui()
 			}
 
 			ClickType.SHIFT_RIGHT -> {
@@ -341,7 +341,7 @@ object NavigationGuiCommon {
 
 			ClickType.RIGHT -> waypointAction(player, star.spaceWorldName, star.location.x, star.location.z, gui)
 			ClickType.SHIFT_LEFT -> {
-				NavigationInfoGui(player, star.name, getPlanetItems(star.name)) { backButtonHandler.invoke() }.openMainWindow()
+				NavigationInfoGui(player, star.name, getPlanetItems(star.name)) { backButtonHandler.invoke() }.openGui()
 			}
 
 			ClickType.SHIFT_RIGHT -> {

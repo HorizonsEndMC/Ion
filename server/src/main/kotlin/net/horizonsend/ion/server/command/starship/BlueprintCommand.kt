@@ -13,21 +13,22 @@ import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.world.block.BlockState
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
-import net.horizonsend.ion.server.features.gui.custom.blueprint.BlueprintMenu
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipComputers
 import net.horizonsend.ion.server.features.starship.StarshipDetection
 import net.horizonsend.ion.server.features.starship.StarshipSchematic
 import net.horizonsend.ion.server.features.starship.StarshipType
-import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.factory.PrintItem
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories
+import net.horizonsend.ion.server.gui.invui.misc.BlueprintMenu
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -45,7 +46,6 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
-import org.litote.kmongo.descendingSort
 import org.litote.kmongo.eq
 import org.litote.kmongo.save
 import java.util.LinkedList
@@ -84,6 +84,10 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		// TODO: confirm accept rules
 		val slPlayerId = sender.slPlayerId
 		val starship = getStarshipPiloting(sender)
+
+		val starshipData = starship.data
+		failIf(starshipData is PlayerStarshipData && starshipData.disallowBlueprinting) { "You cannot blueprint ships you do did not create without explicit permission from the creator!" }
+
 		validateName(name)
 		var pilotLoc = Vec3i(sender.location)
 		failIf(!starship.isWithinHitbox(pilotLoc.x, pilotLoc.y, pilotLoc.z, 1)) {
@@ -166,19 +170,14 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		val slPlayerId = sender.slPlayerId
 
 		Tasks.async {
-			val blueprints: List<Blueprint> = Blueprint
-				.find(Blueprint::owner eq slPlayerId)
-				.descendingSort(Blueprint::size)
-				.toList()
-
-			failIf(blueprints.isEmpty()) {
+			failIf(!Blueprint.any(Blueprint::owner eq slPlayerId)) {
 				"You have no blueprints"
 			}
 
 			BlueprintMenu(sender) { blueprint, player ->
 				player.closeInventory()
 				Tasks.async { showMaterials(player, blueprint) }
-			}.open()
+			}.openGui()
 		}
 	}
 
@@ -276,7 +275,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
         origin: Vec3i,
         type: StarshipType,
         name: String,
-        callback: (ActiveControlledStarship) -> Unit = {}
+        callback: (Starship) -> Unit = {}
 	) {
 		val block = sender.world.getBlockAtKey(origin.toBlockKey())
 

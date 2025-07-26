@@ -395,6 +395,10 @@ fun Location.toBlockPos() = BlockPos(this.x.roundToInt(), this.y.roundToInt(), t
 
 fun Location.toVector3f(): Vector3f = Vector3f(this.x.toFloat(), this.y.toFloat(), this.z.toFloat())
 
+fun Vector.isNan() :Boolean {
+	return this.x.isNaN() || this.y.isNaN() || this.z.isNaN()
+}
+
 fun vectorToBlockFace(vector: Vector, includeVertical: Boolean = false): BlockFace {
 	val x = vector.x
 	val z = vector.z
@@ -438,7 +442,7 @@ fun yawToBlockFace(yawDegrees: Int): BlockFace = when (yawDegrees) {
 	else -> throw IllegalArgumentException("yaw $yawDegrees isn't within 0..360!")
 }
 
-fun vectorToPitchYaw(vector: Vector): Pair<Float, Float> {
+fun vectorToPitchYaw(vector: Vector, radians : Boolean= false): Pair<Float, Float> {
 	val pitch: Float
 	val yaw: Float
 
@@ -447,17 +451,29 @@ fun vectorToPitchYaw(vector: Vector): Pair<Float, Float> {
 	val z = vector.z
 
 	if (x == 0.0 && z == 0.0) {
+		if (radians) {
+			pitch = (if (vector.y > 0) -Math.PI else Math.PI).toFloat()
+			return pitch to 0F
+		}
 		pitch = if (vector.y > 0) -90F else 90F
 		return pitch to 0F
 	}
 
 	val theta = atan2(-x, z)
-	yaw = Math.toDegrees((theta + twoPi) % twoPi).toFloat()
 
 	val x2 = NumberConversions.square(x)
 	val z2 = NumberConversions.square(z)
 	val xz = sqrt(x2 + z2)
-	pitch = Math.toDegrees(atan(-vector.y / xz)).toFloat()
+
+	val phi = atan(-vector.y / xz)
+
+	if (radians) {
+		yaw = theta.toFloat()
+		pitch = phi.toFloat()
+	} else {
+		yaw = Math.toDegrees((theta + twoPi) % twoPi).toFloat()
+		pitch = Math.toDegrees(phi).toFloat()
+	}
 
 	return pitch to yaw
 }

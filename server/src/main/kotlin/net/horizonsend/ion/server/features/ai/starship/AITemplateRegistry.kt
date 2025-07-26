@@ -2,9 +2,11 @@ package net.horizonsend.ion.server.features.ai.starship
 
 import net.horizonsend.ion.common.utils.text.colors.ABYSSAL_DESATURATED_RED
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_LIGHT_TEAL
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
+import net.horizonsend.ion.server.configuration.util.IntegerAmount
 import net.horizonsend.ion.server.configuration.util.VariableIntegerAmount
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
@@ -22,10 +24,13 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.TSAII_
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
+import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.PUMPKIN_GRENADE
 import net.horizonsend.ion.server.features.world.WorldSettings.DroppedItem
@@ -91,19 +96,21 @@ object AITemplateRegistry {
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(250.0))
 		.build()
 	)
 
 	val VERDOLITH_REINFORCED = registerTemplate(builder(
 			identifier = "VERDOLITH_REINFORCED",
 			template = StarshipTemplateRegistry.VERDOLITH,
-			controllerFactory = AIControllerFactories.watcherSpecialFrigate,
+			controllerFactory = AIControllerFactories.frigate,
 			engagementRange = 2500.0
 		)
 		.addFactionConfiguration(WATCHERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(250.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
@@ -116,13 +123,14 @@ object AITemplateRegistry {
 	val TERALITH = registerTemplate(builder(
 			identifier = "TERALITH",
 			template = StarshipTemplateRegistry.TERALITH,
-			controllerFactory = AIControllerFactories.watcherSpecialFrigate,
+			controllerFactory = AIControllerFactories.frigate,
 			engagementRange = 2500.0
 		)
 		.addFactionConfiguration(WATCHERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(CreditRewardProviderConfiguration(18000.0))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(250.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.75,
 			delay = 100L,
@@ -141,13 +149,14 @@ object AITemplateRegistry {
 	val ARBOREALITH = registerTemplate(builder(
 		identifier = "ARBOREALITH",
 		template = StarshipTemplateRegistry.ARBOREALITH,
-		controllerFactory = AIControllerFactories.watcherSpecialFrigate,
+		controllerFactory = AIControllerFactories.destroyer,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(WATCHERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(CreditRewardProviderConfiguration(18000.0))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(250.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.75,
 			delay = 100L,
@@ -167,38 +176,41 @@ object AITemplateRegistry {
 	val MALINGSHU_REINFORCEMENT = registerTemplate(builder(
 		identifier = "MALINGSHU_REINFORCEMENT",
 		template = StarshipTemplateRegistry.MALINGSHU,
-		controllerFactory = AIControllerFactories.watcherSpecialFrigate,
+		controllerFactory = AIControllerFactories.miniFrigate,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(250.0))
 		.build()
 	)
 
 	val MIANBAO_REINFORCEMENT = registerTemplate(builder(
 		identifier = "MIANBAO_REINFORCEMENT",
 		template = StarshipTemplateRegistry.MIANBAO,
-		controllerFactory = AIControllerFactories.watcherSpecialFrigate,
+		controllerFactory = AIControllerFactories.frigate,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(500.0))
 		.build()
 	)
 
 	val MALINGSHU_REINFORCED = registerTemplate(builder(
 		identifier = "MALINGSHU_REINFORCED",
 		template = StarshipTemplateRegistry.MALINGSHU,
-		controllerFactory = AIControllerFactories.watcherSpecialFrigate,
+		controllerFactory = AIControllerFactories.miniFrigate,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(250.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
@@ -211,12 +223,13 @@ object AITemplateRegistry {
 	val MIANBAO_REINFORCED = registerTemplate(builder(
 		identifier = "MIANBAO_REINFORCED",
 		template = StarshipTemplateRegistry.MIANBAO,
-		controllerFactory = AIControllerFactories.frigate,
+		controllerFactory = AIControllerFactories.miniFrigate,
 		engagementRange = 2500.0
 	)
 		.addFactionConfiguration(吃饭人)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 		.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(500.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
@@ -237,6 +250,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
 		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2000.0))
 		.build()
 	)
 
@@ -249,6 +263,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
 		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2000.0))
 		.build()
 	)
 
@@ -261,6 +276,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
 		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2000.0))
 		.build()
 	)
 
@@ -273,6 +289,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
 		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2000.0))
 		.build()
 	)
 
@@ -285,6 +302,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
 		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2000.0))
 		.build()
 	)
 
@@ -297,6 +315,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
 		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2000.0))
 		.build()
 	)
 
@@ -309,6 +328,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
 		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2000.0))
 		.build()
 	)
 
@@ -321,78 +341,85 @@ object AITemplateRegistry {
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.4))
 		.addRewardProvider(CreditRewardProviderConfiguration(750.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2000.0))
 		.build()
 	)
 
 	val ANAAN = registerTemplate(builder(
 		identifier = "ANAAN",
 		template = StarshipTemplateRegistry.ANAAN,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.5))
 		.addRewardProvider(CreditRewardProviderConfiguration(1250.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2000.0))
 		.build()
 	)
 
 	val VENDETTA = registerTemplate(builder(
 		identifier = "VENDETTA",
 		template = StarshipTemplateRegistry.VENDETTA,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.5))
 		.addRewardProvider(CreditRewardProviderConfiguration(1250.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2000.0))
 		.build()
 	)
 
 	val CORMORANT = registerTemplate(builder(
 		identifier = "CORMORANT",
 		template = StarshipTemplateRegistry.CORMORANT,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.5))
 		.addRewardProvider(CreditRewardProviderConfiguration(1250.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2000.0))
 		.build()
 	)
 
 	val MANTIS = registerTemplate(builder(
 		identifier = "MANTIS",
 		template = StarshipTemplateRegistry.MANTIS,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.5))
 		.addRewardProvider(CreditRewardProviderConfiguration(1250.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2000.0))
 		.build()
 	)
 
 	val HERNSTEIN = registerTemplate(builder(
 		identifier = "HERNSTEIN",
 		template = StarshipTemplateRegistry.HERNSTEIN,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.5))
 		.addRewardProvider(CreditRewardProviderConfiguration(1250.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2000.0))
 		.build()
 	)
 
 	val FYR = registerTemplate(builder(
 		identifier = "FYR",
 		template = StarshipTemplateRegistry.FYR,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 750.0
 	)
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.5))
 		.addRewardProvider(CreditRewardProviderConfiguration(1250.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2000.0))
 		.build()
 	)
 
@@ -405,6 +432,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(PIRATES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(CreditRewardProviderConfiguration(2650.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2000.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
@@ -428,18 +456,48 @@ object AITemplateRegistry {
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(CreditRewardProviderConfiguration(5750.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(3000.0))
+		.build()
+	)
+
+	val RESOLUTE = registerTemplate(builder(
+		identifier = "RESOLUTE",
+		template = StarshipTemplateRegistry.RESOLUTE,
+		controllerFactory = AIControllerFactories.destroyer,
+		engagementRange = 1250.0,
+	)
+		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
+		.addRewardProvider(SLXPRewardProviderConfiguration(1.0))
+		.addRewardProvider(CreditRewardProviderConfiguration(16000.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(3500.0))
+		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
+			activationThreshold = 0.70,
+			delay = 100L,
+			broadcastMessage =  "<$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
+		) {
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 100.0, 200.0),
+                VariableIntegerAmount(4, 7),
+                null,
+                null,
+                asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 2),
+                asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA), 2),
+                asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 3),
+            )(it)
+		})
 		.build()
 	)
 
 	val CONTRACTOR = registerTemplate(builder(
 		identifier = "CONTRACTOR",
 		template = StarshipTemplateRegistry.CONTRACTOR,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 1250.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(CreditRewardProviderConfiguration(3750.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(3000.0))
 		.build()
 	)
 
@@ -452,6 +510,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(CreditRewardProviderConfiguration(2650.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(3000.0))
 		.build()
 	)
 
@@ -464,42 +523,46 @@ object AITemplateRegistry {
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(CreditRewardProviderConfiguration(2650.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(3000.0))
 		.build()
 	)
 
 	val PATROLLER = registerTemplate(builder(
 		identifier = "PATROLLER",
 		template = StarshipTemplateRegistry.PATROLLER,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 650.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(CreditRewardProviderConfiguration(1850.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(3000.0))
 		.build()
 	)
 
 	val PROTECTOR = registerTemplate(builder(
 		identifier = "PROTECTOR",
 		template = StarshipTemplateRegistry.PROTECTOR,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 650.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(CreditRewardProviderConfiguration(950.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(3000.0))
 		.build()
 	)
 
 	val VETERAN = registerTemplate(builder(
 		identifier = "VETERAN",
 		template = StarshipTemplateRegistry.VETERAN,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 650.0,
 	)
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.8))
 		.addRewardProvider(CreditRewardProviderConfiguration(1850.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(3000.0))
 		.build()
 	)
 
@@ -512,6 +575,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(CreditRewardProviderConfiguration(950.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(3000.0))
 		.build()
 	)
 
@@ -524,6 +588,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(CreditRewardProviderConfiguration(950.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(3000.0))
 		.build()
 	)
 
@@ -536,6 +601,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(CreditRewardProviderConfiguration(950.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(3000.0))
 		.build()
 	)
 
@@ -551,6 +617,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
 		.addRewardProvider(CreditRewardProviderConfiguration(400.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1000.0))
 		.build()
 	)
 
@@ -563,6 +630,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
 		.addRewardProvider(CreditRewardProviderConfiguration(250.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1000.0))
 		.build()
 	)
 
@@ -575,6 +643,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
 		.addRewardProvider(CreditRewardProviderConfiguration(250.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1000.0))
 		.build()
 	)
 
@@ -587,6 +656,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
 		.addRewardProvider(CreditRewardProviderConfiguration(550.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1000.0))
 		.build()
 	)
 
@@ -599,6 +669,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
 		.addRewardProvider(CreditRewardProviderConfiguration(250.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1000.0))
 		.build()
 	)
 
@@ -611,6 +682,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
 		.addRewardProvider(CreditRewardProviderConfiguration(250.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1000.0))
 		.build()
 	)
 
@@ -623,6 +695,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
 		.addRewardProvider(CreditRewardProviderConfiguration(250.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1000.0))
 		.build()
 	)
 
@@ -635,6 +708,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
 		.addRewardProvider(CreditRewardProviderConfiguration(550.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1000.0))
 		.build()
 	)
 
@@ -647,6 +721,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
 		.addRewardProvider(CreditRewardProviderConfiguration(550.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1000.0))
 		.build()
 	)
 
@@ -659,6 +734,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
 		.addRewardProvider(CreditRewardProviderConfiguration(550.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1000.0))
 		.build()
 	)
 
@@ -671,11 +747,76 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
 		.addRewardProvider(CreditRewardProviderConfiguration(400.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1000.0))
 		.build()
 	)
 
 	// END_EXPLORER
 	// START_MINING_GUILD
+
+	val ANGLE = registerTemplate(builder(
+		identifier = "ANGLE",
+		template = StarshipTemplateRegistry.ANGLE,
+		controllerFactory = AIControllerFactories.battlecruiser,
+		engagementRange = 500.0
+	)
+		.addFactionConfiguration(AIFaction.MINING_GUILD)
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(20000.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
+			activationThreshold = 0.75,
+			delay = 100L,
+			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE), 1.0))
+		))
+		.build()
+	)
+
+
+	val DUNKLEOSTEUS = registerTemplate(builder(
+		identifier = "DUNKLEOSTEUS",
+		template = StarshipTemplateRegistry.DUNKLEOSTEUS,
+		controllerFactory = AIControllerFactories.destroyer,
+		engagementRange = 500.0
+	)
+		.addFactionConfiguration(AIFaction.MINING_GUILD)
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(10000.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
+			activationThreshold = 0.9,
+			delay = 100L,
+			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 1.0))
+		))
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
+			activationThreshold = 0.75,
+			delay = 100L,
+			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 1.0))
+		))
+		.build()
+	)
+
+	val GROUPER = registerTemplate(builder(
+		identifier = "GROUPER",
+		template = StarshipTemplateRegistry.GROUPER,
+		controllerFactory = AIControllerFactories.frigate,
+		engagementRange = 500.0
+	)
+		.addFactionConfiguration(AIFaction.MINING_GUILD)
+		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+		.addRewardProvider(CreditRewardProviderConfiguration(6000.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
+		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
+			activationThreshold = 0.75,
+			delay = 100L,
+			broadcastMessage = "$miningGuildMini<${HEColorScheme.HE_MEDIUM_GRAY}> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
+			reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 1.0))
+		))
+		.build()
+	)
 
 	val OSTRICH = registerTemplate(builder(
 		identifier = "OSTRICH",
@@ -686,6 +827,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(CreditRewardProviderConfiguration(2650.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.75,
 			delay = 100L,
@@ -704,6 +846,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(CreditRewardProviderConfiguration(650.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.65,
 			delay = 100L,
@@ -722,6 +865,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(CreditRewardProviderConfiguration(1850.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.5,
 			delay = 100L,
@@ -740,6 +884,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(CreditRewardProviderConfiguration(2560.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.75,
 			delay = 100L,
@@ -758,6 +903,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(CreditRewardProviderConfiguration(650.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.55,
 			delay = 100L,
@@ -776,6 +922,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(CreditRewardProviderConfiguration(650.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.55,
 			delay = 100L,
@@ -794,6 +941,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.MINING_GUILD)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
 		.addRewardProvider(CreditRewardProviderConfiguration(650.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.55,
 			delay = 100L,
@@ -815,6 +963,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(TSAII_RAIDERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.7))
 		.addRewardProvider(CreditRewardProviderConfiguration(1550.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2500.0))
 		.build()
 	)
 
@@ -827,18 +976,20 @@ object AITemplateRegistry {
 		.addFactionConfiguration(TSAII_RAIDERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.7))
 		.addRewardProvider(CreditRewardProviderConfiguration(1550.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2500.0))
 		.build()
 	)
 
 	val RAIDER = registerTemplate(builder(
 		identifier = "RAIDER",
 		template = StarshipTemplateRegistry.RAIDER,
-		controllerFactory = AIControllerFactories.gunship_pulse,
+		controllerFactory = AIControllerFactories.gunship,
 		engagementRange = 1000.0
 	)
 		.addFactionConfiguration(TSAII_RAIDERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.7))
 		.addRewardProvider(CreditRewardProviderConfiguration(2500.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2500.0))
 		.build()
 	)
 
@@ -851,6 +1002,7 @@ object AITemplateRegistry {
 		.addFactionConfiguration(TSAII_RAIDERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.7))
 		.addRewardProvider(CreditRewardProviderConfiguration(6500.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2500.0))
 		.addAdditionalModule(BehaviorConfiguration.BasicReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 100L,
@@ -867,24 +1019,25 @@ object AITemplateRegistry {
 		controllerFactory = AIControllerFactories.passive_cruise,
 		engagementRange = 750.0
 	)
-//		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
+		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
 		.addRewardProvider(CreditRewardProviderConfiguration(400.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2500.0))
 		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 5L,
 			broadcastMessage = "<italic><red>Gotcha! You hoomies always fall for the bait!",
 		) {
-			BagSpawner(
-				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
-				VariableIntegerAmount(10, 15),
-				null,
-				null,
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER), 1),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
-			)
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+                VariableIntegerAmount(10, 15),
+                null,
+                null,
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER), 1),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
+            )(it)
 		})
 		.build()
 	)
@@ -898,21 +1051,22 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
 		.addRewardProvider(CreditRewardProviderConfiguration(250.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2500.0))
 		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 5L,
 			broadcastMessage = "<italic><red>Gotcha! You hoomies always fall for the bait!",
 		) {
-			BagSpawner(
-				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
-				VariableIntegerAmount(10, 15),
-				null,
-				null,
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER), 1),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
-			)
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+                VariableIntegerAmount(10, 15),
+                null,
+                null,
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER), 1),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
+            )(it)
 		})
 		.build()
 	)
@@ -926,21 +1080,22 @@ object AITemplateRegistry {
 		.addFactionConfiguration(AIFaction.PERSEUS_EXPLORERS)
 		.addRewardProvider(SLXPRewardProviderConfiguration(0.25))
 		.addRewardProvider(CreditRewardProviderConfiguration(250.0))
+		.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(2500.0))
 		.addAdditionalModule(BehaviorConfiguration.AdvancedReinforcementInformation(
 			activationThreshold = 0.85,
 			delay = 5L,
 			broadcastMessage = "<italic><red>Gotcha! You hoomies always fall for the bait!",
 		) {
-			BagSpawner(
-				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
-				VariableIntegerAmount(11, 15),
-				null,
-				null,
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER).withRandomRadialOffset(150.0, 200.0, 0.0), 1),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE).withRandomRadialOffset(75.0, 150.0, 0.0), 3),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 75.0, 0.0), 5),
-				asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 50.0, 0.0), 10)
-			)
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+                VariableIntegerAmount(11, 15),
+                null,
+                null,
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER).withRandomRadialOffset(150.0, 200.0, 0.0), 1),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE).withRandomRadialOffset(75.0, 150.0, 0.0), 3),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 75.0, 0.0), 5),
+                asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 50.0, 0.0), 10),
+            )(it)
 		})
 		.build()
 	)
@@ -977,13 +1132,13 @@ object AITemplateRegistry {
 			delay = 5L,
 			broadcastMessage = "<$ABYSSAL_DESATURATED_RED>Feast, my children.",
 		) {
-			BagSpawner(
-				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
-				VariableIntegerAmount(2, 3),
-				null,
-				null,
-				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
-			)
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+                VariableIntegerAmount(2, 3),
+                null,
+                null,
+                asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+            )(it)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
@@ -1007,13 +1162,13 @@ object AITemplateRegistry {
 			delay = 5L,
 			broadcastMessage = "<$ABYSSAL_DESATURATED_RED>Feast, my children.",
 		) {
-			BagSpawner(
-				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
-				VariableIntegerAmount(2, 3),
-				null,
-				null,
-				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
-			)
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+                VariableIntegerAmount(2, 3),
+                null,
+                null,
+                asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+            )(it)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
@@ -1036,13 +1191,13 @@ object AITemplateRegistry {
 			delay = 5L,
 			broadcastMessage = "<$ABYSSAL_DESATURATED_RED>Feast, my children.",
 		) {
-			BagSpawner(
-				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
-				VariableIntegerAmount(2, 3),
-				null,
-				null,
-				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
-			)
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+                VariableIntegerAmount(2, 3),
+                null,
+                null,
+                asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+            )(it)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
@@ -1065,13 +1220,13 @@ object AITemplateRegistry {
 			delay = 5L,
 			broadcastMessage = "<$ABYSSAL_DESATURATED_RED>Feast, my children.",
 		) {
-			BagSpawner(
-				formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
-				VariableIntegerAmount(2, 3),
-				null,
-				null,
-				asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
-			)
+			BagSpawner.asReinforcement(
+                formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 250.0, 500.0),
+                VariableIntegerAmount(2, 3),
+                null,
+                null,
+                asBagSpawned(ABYSSAL.asSpawnedShip(DREDGE).withRandomRadialOffset(50.0, 300.0, 0.0), 1),
+            )(it)
 		})
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.05f, amount = StaticIntegerAmount(1)))))
 		.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
@@ -1135,6 +1290,8 @@ object AITemplateRegistry {
 		private val additionalModules: MutableList<BehaviorConfiguration.AdditionalModule> = mutableListOf()
 		private val rewardProviders: MutableList<AITemplate.AIRewardsProviderConfiguration> = mutableListOf()
 
+		private var difficulty: IntegerAmount = StaticIntegerAmount(3)
+
 		fun addRewardProvider(provider: AITemplate.AIRewardsProviderConfiguration): Builder {
 			rewardProviders += provider
 			return this
@@ -1151,6 +1308,11 @@ object AITemplateRegistry {
 			return this
 		}
 
+		fun setDifficulty(difficulty: IntegerAmount) : Builder{
+			this.difficulty = difficulty
+			return this
+		}
+
 		fun build(): AITemplate {
 			return AITemplate(
 				identifier = this.identifier,
@@ -1160,7 +1322,8 @@ object AITemplateRegistry {
 					engagementRange = this.engagementRange,
 					additionalModules = this.additionalModules
 				),
-				rewardProviders = this.rewardProviders
+				rewardProviders = this.rewardProviders,
+				difficulty = difficulty
 			)
 		}
 	}

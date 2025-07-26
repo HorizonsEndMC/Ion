@@ -26,7 +26,9 @@ import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.Levels
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -278,13 +280,15 @@ abstract class SLCommand : BaseCommand() {
 		return Regions[territoryId]
 	}
 
-	protected fun getStarshipRiding(sender: Player) = ActiveStarships.findByPassenger(sender)
+	protected fun getStarshipRiding(sender: Player): Starship = ActiveStarships.findByPassenger(sender)
 		?: fail { "You must be riding a starship" }
 
-	protected fun getStarshipPiloting(sender: Player) = ActiveStarships.findByPilot(sender)
+	protected fun getStarshipPiloting(sender: Player): Starship = ActiveStarships.findByPilot(sender)
 		?: fail { "You must be piloting a starship" }
 
 	protected fun requireSelection(sender: Player) = runCatching { sender.getSelection() }.getOrNull() ?: fail { "You must have a worldedit selection!" }
+
+	protected fun requireNotInCombat(sender: Player) = failIf(CombatTimer.isPvpCombatTagged(sender) || CombatTimer.isNpcCombatTagged(sender)) { "You can't do that while in combat!" }
 
 	open fun supportsVanilla(): Boolean = false
 }

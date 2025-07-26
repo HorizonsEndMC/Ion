@@ -39,6 +39,7 @@ class RegionTerritory(territory: Territory) :
 	override var world: String = territory.world; private set
 	var settlement: Oid<Settlement>? = territory.settlement; private set
 	var nation: Oid<Nation>? = territory.nation; private set
+	var alias: String? = territory.alias; private set
 	var npcOwner: Oid<NPCTerritoryOwner>? = territory.npcOwner; private set
 	override val children: MutableSet<Region<*>> = ConcurrentHashMap.newKeySet()
 	var isProtected: Boolean = territory.isProtected; private set
@@ -72,6 +73,7 @@ class RegionTerritory(territory: Territory) :
 		}
 		delta[Territory::settlement]?.let { settlement = it.nullable()?.oid() }
 		delta[Territory::nation]?.let { nation = it.nullable()?.oid() }
+		delta[Territory::alias]?.let { alias = it.nullable()?.string() }
 		delta[Territory::npcOwner]?.let { npcOwner = it.nullable()?.oid() }
 		delta[Territory::isProtected]?.let {
 			isProtected = it.boolean()

@@ -245,6 +245,7 @@ inline operator fun <reified R> BsonDocument.get(property: KProperty<R>): BsonVa
 
 fun BsonValue.nullable(): BsonValue? = if (isNull) null else this
 fun BsonValue.int(): Int = asInt32().intValue()
+fun BsonValue.long(): Long = asInt64().longValue()
 fun BsonValue.double(): Double = asDouble().doubleValue()
 fun BsonValue.boolean(): Boolean = asBoolean().value
 fun BsonValue.string(): String = asString().value

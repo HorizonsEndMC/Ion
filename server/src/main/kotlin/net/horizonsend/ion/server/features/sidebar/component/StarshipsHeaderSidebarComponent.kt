@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.sidebar.component
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.COMPASS_NEEDLE_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.LIST_ICON
@@ -10,7 +11,10 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.NamedTextColor.*
+import net.kyori.adventure.text.format.NamedTextColor.AQUA
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
+import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.kyori.adventure.text.format.Style.style
 import net.kyori.adventure.text.format.TextDecoration.BOLD
 import net.megavex.scoreboardlibrary.api.sidebar.component.LineDrawable
@@ -20,8 +24,8 @@ import org.bukkit.entity.Player
 class StarshipsHeaderSidebarComponent(starship: ActiveControlledStarship, player: Player) : SidebarComponent {
     private val starshipName = starship.getDisplayNamePlain()
     private val starshipIcon = starship.type.icon
-    private val advancedStarshipInfo = PlayerCache[player.uniqueId].advancedStarshipInfo
-    private val rotateCompass = PlayerCache[player.uniqueId].rotateCompass
+    private val advancedStarshipInfo = player.getSetting(PlayerSettings::advancedStarshipInfo)
+    private val rotateCompass = player.getSetting(PlayerSettings::rotateCompass)
 
     private fun getColor(enabled: Boolean) : NamedTextColor {
         return if (enabled) AQUA else GRAY

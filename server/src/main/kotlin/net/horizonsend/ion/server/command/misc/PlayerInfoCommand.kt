@@ -12,7 +12,7 @@ import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.uuid
-import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdown
+import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdownString
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.miscellaneous.utils.get
@@ -116,7 +116,7 @@ object PlayerInfoCommand : SLCommand() {
 			else -> "<red>Offline"
 		}
 
-		return "$prefix<gray> for ${getDurationBreakdown(time)}"
+		return "$prefix<gray> for ${getDurationBreakdownString(time)}"
 	}
 
 	override fun supportsVanilla(): Boolean {
