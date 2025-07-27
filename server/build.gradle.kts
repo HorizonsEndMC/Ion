@@ -14,7 +14,7 @@ repositories {
 	mavenCentral()
 
 	maven("https://repo.dmulloy2.net/repository/public/")
-	maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") // UnifiedMetrics
+	maven("https://central.sonatype.com/repository/maven-snapshots/") // UnifiedMetrics
 	maven("https://jitpack.io/") // Dynmap, Vault
 	maven("https://m2.dv8tion.net/releases/") // JDA
 	maven("https://maven.citizensnpcs.co/repo") // Citizens
