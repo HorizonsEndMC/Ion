@@ -16,11 +16,13 @@ import net.horizonsend.ion.server.features.ai.util.GoalTarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
+import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
 import net.horizonsend.ion.server.features.starship.fleet.Fleet
@@ -35,6 +37,7 @@ import java.util.function.Supplier
 import kotlin.math.cbrt
 import kotlin.math.max
 import kotlin.math.pow
+import kotlin.random.Random
 
 open class EnmityModule(
 	controller: AIController,
@@ -174,9 +177,10 @@ open class EnmityModule(
 	}
 
 	private fun aggroOnDamager() {
-		val topDamager = starship.damagers.maxByOrNull { it.value.points.get() } ?: return
-		val points = starship.damagers.maxOfOrNull{ it.value.points.get() } ?: return
-		val tempTarget  = topDamager.key.getAITarget()?.let { AIOpponent(it) } ?: return
+		val damagerEntries = starship.damagers.entries
+		val damagerEntry = damagerEntries.weightedRandom({it.value.points.get().toDouble()}) ?: return
+		val points = damagerEntry.value.points.get()
+		val tempTarget  = damagerEntry.key.getAITarget()?.let { AIOpponent(it) } ?: return
 		if (!targetFilter(starship,tempTarget.target,targetMode)) return
 
 		//extra friendly fire check for AI ships
@@ -195,14 +199,34 @@ open class EnmityModule(
 		if (index != -1) {
 			if (enmityList[index].damagePoints >= points) return
 			enmityList[index].damagePoints = points
-			println("damagePoints : $points")
+			debugAudience.debug("damagePoints : $points")
 			enmityList[index].damagerWeight += config.damagerAggroWeight //the highest damager will generate base emity
-			println("damagerWeight : ${enmityList[index].damagerWeight}")
+			debugAudience.debug("damagerWeight : ${enmityList[index].damagerWeight}")
 		} else {
 			tempTarget.damagerWeight = config.damagerAggroWeight
 			tempTarget.damagePoints = points
 			enmityList.add(tempTarget)
 		}
+	}
+
+	/** Returns one element with probability proportional to `weight`.  */
+	private fun <T> Iterable<T>.weightedRandom(
+		weight: (T) -> Double,
+		rnd: Random = Random.Default
+	): T? {
+		// First pass – total weight
+		var total = 0.0
+		for (e in this) total += weight(e)
+		if (total == 0.0) return null
+
+		// Second pass – find the bucket
+		val r = rnd.nextDouble() * total
+		var acc = 0.0
+		for (e in this) {
+			acc += weight(e)
+			if (r < acc) return e
+		}
+		return null
 	}
 
 	private fun updateAggro() {
@@ -216,8 +240,10 @@ open class EnmityModule(
 	}
 
 	private fun propagateToFleet(opponent : AIOpponent, fleet: Fleet) {
+		debugAudience.debug("propagating agro from ${starship.getDisplayNamePlain()} to fleet")
 		val aiFleetMembers = fleet.members.filterIsInstance<FleetMember.AIShipMember>().mapNotNull { it.shipRef.get() }
 		aiFleetMembers.forEach {starship ->
+			debugAudience.debug("propagating agro to ${starship.getDisplayNamePlain()}")
 			val enmityModule = (starship.controller as? AIController)?.getCoreModuleByType<EnmityModule>() ?: return
 			val otherList = enmityModule.enmityList
 			val index = otherList.indexOf(opponent)
@@ -353,8 +379,8 @@ open class EnmityModule(
 				aiTarget is StarshipTarget && aiTarget.ship.controller is PlayerController -> {
 					if (targetMode == AITarget.TargetMode.AI_ONLY) return false
 					val player = (aiTarget.ship.controller as PlayerController).player
-					if (!player.hasProtection()) return true // check for prot
 					if (starship.world.ion.hasFlag(WorldFlag.NOT_SECURE)) return true //ignore prot in unsafe areas
+					if (!player.hasProtection()) return true // check for prot
 					if (starship.damagers.keys.any{(it as PlayerDamager).player == player}) return true //fire first
 				}
 				aiTarget is StarshipTarget && aiTarget.ship.controller is AIController -> {

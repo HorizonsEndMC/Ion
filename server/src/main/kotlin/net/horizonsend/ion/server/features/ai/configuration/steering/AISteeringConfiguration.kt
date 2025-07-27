@@ -57,7 +57,8 @@ data class AISteeringConfiguration(
 		val optimalDist: Double = 300.0,
 		val startFleeing: Double = 0.3,
 		val stopFleeing: Double = 0.8,
-		val agressionTolerance: Double = 0.5
+		val agressionTolerance: Double = 0.5,
+		val fleeChance : Double = 0.005 // evaluated every tick
 	)
 
 }

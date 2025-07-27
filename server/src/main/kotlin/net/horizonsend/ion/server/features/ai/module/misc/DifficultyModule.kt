@@ -13,6 +13,17 @@ class DifficultyModule(
 
 	val doBackOff get() = internalDifficulty >= 2
 
+	val fleeChance : Double get() {
+		return when ( internalDifficulty) {
+			0 -> 0.0
+			1 -> 0.0
+			2 -> 1.0
+			3 -> 0.3
+			4 -> 0.0
+			else -> {1.0}
+		}
+	}
+
 	val speedModifier: Double get () {
 		return when (internalDifficulty) {
 			0 -> 0.4

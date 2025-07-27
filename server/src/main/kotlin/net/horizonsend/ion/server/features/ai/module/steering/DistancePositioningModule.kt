@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.ai.module.steering
 
+import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
 import net.horizonsend.ion.server.features.ai.module.AIModule
@@ -27,13 +28,14 @@ class DistancePositioningModule(
 	private val startFleeing get() = config.startFleeing
 	private val stopFleeing get() = config.stopFleeing
 
-	private var isFleeing = false
+	var isFleeing = false
 
 	fun calcDistance() : Double {
 		if (!difficulty.doBackOff) return calcCombatDist()
 
 		if (controller.getMinimumShieldHealth() <= startFleeing) {
-			isFleeing = true
+			val fleeChance = config.fleeChance * difficulty.fleeChance
+			if (randomDouble(0.0,1.0) < fleeChance) isFleeing = true
 		}
 		if (controller.getMinimumShieldHealth() >= stopFleeing) {
 			isFleeing = false

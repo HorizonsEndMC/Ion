@@ -10,7 +10,7 @@ import org.bukkit.entity.Player
 object AIKillStreak : IonServerComponent() {
 
 	private val playerHeatList : MutableList<PlayerHeat> = mutableListOf()
-	private val decay = 10
+	private val decay = 5
 
 	override fun onEnable() {
 		Tasks.syncRepeat(200,20) {
@@ -46,7 +46,7 @@ object AIKillStreak : IonServerComponent() {
 		} else {
 			entry.score += score
 		}
-		if (calculateHeat(entry.score) >= entry.currentHeat) {
+		if (calculateHeat(entry.score) > entry.currentHeat) {
 			entry.currentHeat = calculateHeat(entry.score)
 			entry.player.sendMessage(
 				template(

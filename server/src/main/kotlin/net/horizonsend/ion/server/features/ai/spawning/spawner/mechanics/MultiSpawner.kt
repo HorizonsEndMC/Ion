@@ -56,7 +56,8 @@ abstract class MultiSpawner(
 
 			val spawnPoint = spawnOrigin.clone()
 
-			val difficulty = shipDifficultySupplier.get().coerceIn(DifficultyModule.minDifficulty,DifficultyModule.maxDifficulty)
+			val minDifficulty = if (fleetDifficulty >= 2) 2 else DifficultyModule.minDifficulty
+			val difficulty = shipDifficultySupplier.get().coerceIn(minDifficulty, DifficultyModule.maxDifficulty)
 
 			val absoluteHeight = spawnedShip.absoluteHeight
 

@@ -69,9 +69,9 @@ class CompositeSpawner(
 			for (offset in ship.offsets) spawnPoint.add(offset.get())
 			ship.absoluteHeight?.let { spawnPoint.y = it }
 
-			val difficulty = shipDifficultySupplier.get()
-				.coerceIn(DifficultyModule.minDifficulty, DifficultyModule.maxDifficulty)
-			println("difficulty: $difficulty")
+			val minDifficulty = if (fleetDifficulty >= 2) 2 else DifficultyModule.minDifficulty
+			val difficulty = shipDifficultySupplier.get().coerceIn(minDifficulty, DifficultyModule.maxDifficulty)
+			logger.info("difficulty: $difficulty")
 
 			logger.info("Spawning ${ship.template.identifier} at $spawnPoint")
 

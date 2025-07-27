@@ -8,6 +8,8 @@ import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.misc.EnmityMessageModule
 import net.horizonsend.ion.server.features.ai.module.misc.EnmityTriggerMessage
+import net.horizonsend.ion.server.features.ai.module.misc.FleeMessageModule
+import net.horizonsend.ion.server.features.ai.module.misc.FleeTriggerMessage
 import net.horizonsend.ion.server.features.ai.module.misc.RadiusMessageModule
 import net.horizonsend.ion.server.features.ai.module.misc.ReinforcementSpawnerModule
 import net.horizonsend.ion.server.features.ai.module.misc.SmackTalkModule
@@ -85,6 +87,19 @@ class BehaviorConfiguration(
 			}
 
 			return EnmityMessageModule(controller, prefixComponent, compiled, configSupplier)
+		}
+	}
+
+	data class FleeMessageInformation(
+		val prefix: String,
+		val compiled: List<FleeTriggerMessage>
+	) : AdditionalModule {
+		override val name: String = "fleeMessage"
+
+		override fun createModule(controller: AIController): FleeMessageModule {
+			val prefixComponent = MiniMessage.miniMessage().deserialize(prefix)
+
+			return FleeMessageModule(controller, prefixComponent, compiled)
 		}
 	}
 

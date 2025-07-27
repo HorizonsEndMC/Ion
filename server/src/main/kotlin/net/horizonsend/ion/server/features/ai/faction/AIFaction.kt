@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.features.ai.module.misc.EnmityMessageModule.Co
 import net.horizonsend.ion.server.features.ai.module.misc.EnmityMessageModule.Companion.triggeredByFriendlyFire
 import net.horizonsend.ion.server.features.ai.module.misc.EnmityTriggerMessage
 import net.horizonsend.ion.server.features.ai.module.misc.FactionManagerModule
+import net.horizonsend.ion.server.features.ai.module.misc.FleeTriggerMessage
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager.allAIStarships
 import net.horizonsend.ion.server.features.ai.spawning.ships.FactionShip
@@ -34,6 +35,7 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.BehaviorConfiguration
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.miscellaneous.utils.seconds
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.DARK_RED
@@ -175,6 +177,19 @@ class AIFaction private constructor(
 			return this
 		}
 
+		fun addFleeMessages(
+			vararg messages : Pair<String, Boolean>
+		): Builder {
+			val fleeMessages = mutableListOf<FleeTriggerMessage>()
+			messages.forEach {
+				fleeMessages += FleeTriggerMessage(it.first.miniMessage(), it.second)
+			}
+			this.templateProcessing += {
+				addAdditionalModule(BehaviorConfiguration.FleeMessageInformation(prefix = this@Builder.messagePrefix, fleeMessages))
+			}
+			return this
+		}
+
 
 
 		fun build(): AIFaction {
@@ -233,17 +248,20 @@ class AIFaction private constructor(
 			.setMessagePrefix("<${HEColorScheme.HE_MEDIUM_GRAY}>Receiving transmission from <$WATCHER_ACCENT>unknown</$WATCHER_ACCENT> vessel. <italic>Translating:</italic>")
 			.addSmackMessages(
 				"<$WATCHER_STANDARD>Intercepting hostile transmissions. Adapting swarm behavior to disrupt enemy communications.",
-				"<$WATCHER_STANDARD>Evasive maneuvers engaged; navigating hostile terrain.",
 				"<$WATCHER_STANDARD>Near-field barrier corroded under hostile fire. Re-routing aortal flow to priority organs.",
 				"<$WATCHER_STANDARD>Deploying attack swarm.",
 				"<$WATCHER_STANDARD>Hostile vessel subsystem lock-on confirmed. Firing.",
 				"<$WATCHER_STANDARD>Combat pattern analysis transmitted to nearest Hive.",
 				"<$WATCHER_STANDARD>Hostile vessel damaged.",
-				"<$WATCHER_STANDARD>Hive directive received, switching designation: Hunter-Seeker.",
 				"<$WATCHER_STANDARD>Releasing attack swarm.",
 				"<$WATCHER_STANDARD>Attack vector plotted.",
-				"<$WATCHER_STANDARD>Engaging defensive maneuvers.",
 				"<$WATCHER_STANDARD>Re-routing aortal flow to drone locomotion systems."
+			)
+			.addFleeMessages(
+				"<$WATCHER_STANDARD>Engaging defensive maneuvers." to true,
+				"<$WATCHER_STANDARD>Evasive maneuvers engaged; navigating hostile terrain." to true,
+				"<$WATCHER_STANDARD>Hive directive received, switching designation: Hunter-Seeker." to false,
+				"<$WATCHER_STANDARD>Nanomachine stabilization competed, resuming protocol" to false,
 			)
 			.addEnmityMessages(
 				"warn" to (0.1 to "<gray>..."),
@@ -389,6 +407,12 @@ class AIFaction private constructor(
 				text("Executive Kyllikki Kukock", MINING_CORP_LIGHT_ORANGE),
 				text("Executive Sighebyrn Strenkann", MINING_CORP_LIGHT_ORANGE)
 			)
+			.addFleeMessages(
+				"Hey you! yes you! put out that fire! <#FFA500>Before we get blown up" to true,
+				"<#FFA500>If we die here we will get our pay cut so move it!" to true,
+				"<#FFA500>Engine patched, reengaging!" to false,
+				"Lets try this again" to false,
+			)
 			.addEnmityMessages(
 				"notice" to (0.1 to "<gray>Unregistered vessel detected near Guild claim."),
 				"warn" to (0.5 to "<#FFA500>Warning: You are trespassing on Mining Guild property.")
@@ -448,10 +472,13 @@ class AIFaction private constructor(
 				"<white>Spare me; this ship is all I have!",
 				"<white>My friends will avenge me!",
 				"<white>I'm calling the [current system name] Defense Patrol! ",
-				"<white>Mayday, mayday, going down!",
 				"<white>Shields are down!",
 				"<white>Hull integrity critical!",
 				"<white>Engines compromised!"
+			)
+			.addFleeMessages(
+				"<white>Mayday, mayday, going down!" to true,
+				"<white>Shields are down!" to true,
 			)
 			.addDifficultySuffix(0,"✦")
 			.addDifficultySuffix(1,"✦✦")
@@ -506,9 +533,12 @@ class AIFaction private constructor(
 				"<white>Stand down, we have you outmatched!",
 				"<white>Once I breach your shields, there's no going back.",
 				"<white>Ha, you call those weapons?",
-				"<white>System command, hostile contact is taking severe shield damage.",
 				"<white>Flanking right!",
 				"<white>Flanking left!"
+			)
+			.addFleeMessages(
+				"<white>System command, hostile contact is taking severe shield damage." to true,
+				"<white>System command, shield stabilized reengaging." to false,
 			)
 			.addDifficultySuffix(0,"✦")
 			.addDifficultySuffix(1,"✦✦")
@@ -549,6 +579,12 @@ class AIFaction private constructor(
 				"I'll leave nothing but scrap",
 				"I'll cut you to bacon",
 				"When I'm done with you, I'll mantle your skull!"
+			)
+			.addFleeMessages(
+				"<#FFA500> is this guy made of sriracha? too spicy!" to true,
+				"<#FFA500> hot! hot! hot!" to true,
+				"<#FFA500> Lets try this again" to false,
+				"<#FFA500> Back and hungry!" to false,
 			)
 			.addEnmityMessages(
 				"notice" to (0.1 to "<gray>Heh. What's this then?"),
@@ -602,6 +638,12 @@ class AIFaction private constructor(
 				"Scram or we'll blow you to pieces!",
 				"Someones too curious for their own good.",
 				"Don't say I didn't warn ya, mate."
+			)
+			.addFleeMessages(
+				"<#FFA500> Screw this this aint worth my hide!" to true,
+				"<#FFA500> time for a tactical retreat" to true,
+				"<#FFA500> Lets try this again" to false,
+				"<#FFA500> Second time is the charm!" to false,
 			)
 			.addEnmityMessages(
 				"notice" to (0.1 to "<gray>They're watching us..."),
