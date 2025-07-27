@@ -4,9 +4,9 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.Spawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.SpawnerScheduler
 
 open class GlobalWorldSpawner(
-    identifier: String,
-    override val scheduler: SpawnerScheduler,
-    mechanic: SpawnerMechanic
+	identifier: String,
+	override val scheduler: SpawnerScheduler,
+	mechanic: SpawnerMechanic
 ) : AISpawner(identifier, mechanic) {
 	init {
 		scheduler.setSpawner(this)

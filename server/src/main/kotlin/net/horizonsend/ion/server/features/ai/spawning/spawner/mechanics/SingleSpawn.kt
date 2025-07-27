@@ -18,7 +18,7 @@ class SingleSpawn(
 	private val spawnMessage: SpawnMessage?,
 	private val difficultySupplier: (String) -> Supplier<Int>,
 	private val targetModeSupplier: Supplier<AITarget.TargetMode>,
-	private val fleetSupplier: Supplier<Fleet?>  = Supplier { null },
+	private val fleetSupplier: Supplier<Fleet?> = Supplier { null },
 	private val controllerModifier: AIController.() -> Unit = {}
 ) : SpawnerMechanic() {
 	override suspend fun trigger(logger: Logger) {
@@ -26,10 +26,10 @@ class SingleSpawn(
 		val spawnPoint = locationProvider.get() ?: return
 		val difficulty = difficultySupplier(spawnPoint.world.name).get()
 
-		ship.spawn(logger, spawnPoint, difficulty,targetModeSupplier.get()) {
+		ship.spawn(logger, spawnPoint, difficulty, targetModeSupplier.get()) {
 			val fleet = fleetSupplier.get()
 			if (fleet != null) {
-				addUtilModule(AIFleetManageModule(this,fleet))
+				addUtilModule(AIFleetManageModule(this, fleet))
 			}
 			controllerModifier
 		}

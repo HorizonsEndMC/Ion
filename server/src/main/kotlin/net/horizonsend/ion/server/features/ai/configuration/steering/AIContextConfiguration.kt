@@ -65,8 +65,8 @@ data class AIContextConfiguration(
 	data class OffsetSeekContextConfiguration(
 		val weight: Double = 1.0,
 		val dotShift: Double = 0.0,
-		val defaultOffsetDist : Double = 100.0,
-		val maxHeightDiff : Double= 20.0
+		val defaultOffsetDist: Double = 100.0,
+		val maxHeightDiff: Double = 20.0
 	)
 
 	@Serializable
@@ -96,8 +96,8 @@ data class AIContextConfiguration(
 		val criticalPoint: Double = 0.3,
 		val power: Double = 1.5,
 		val histDecay: Double = 0.98,
-		val verticalDamp :Double = 0.3,
-		val damageSensitivity : Double = 100.0,
+		val verticalDamp: Double = 0.3,
+		val damageSensitivity: Double = 100.0,
 	)
 
 	@Serializable
@@ -125,7 +125,7 @@ data class AIContextConfiguration(
 	@Serializable
 	data class ObstructionDangerContextConfiguration(
 		val falloff: Double = 4.0,
-		val dotShift : Double = 0.3,
+		val dotShift: Double = 0.3,
 		val dotPower: Double = 1.0,
 		val expireTime: Int = 5 * 1000,
 	)

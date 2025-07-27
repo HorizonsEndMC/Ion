@@ -14,23 +14,23 @@ class AIKillStreakRewardProvider(override val starship: ActiveStarship, val conf
 	override val log: Logger = LoggerFactory.getLogger(javaClass)
 
 	override fun processDamagerRewards(
-        damager: PlayerDamager,
-        topDamagerPoints: AtomicInteger,
-        points: AtomicInteger,
-        pointsSum: Int
-    ) {
+		damager: PlayerDamager,
+		topDamagerPoints: AtomicInteger,
+		points: AtomicInteger,
+		pointsSum: Int
+	) {
 		val killedSize = starship.initialBlockCount.toDouble()
 		val damagerSize = (damager.starship?.initialBlockCount ?: 2000).toDouble()
 		val ratio = (cbrt(killedSize) / cbrt(damagerSize)).coerceAtMost(3.0)
-		val difficultyMultiplier  = (starship.controller as? AIController)?.getCoreModuleByType<DifficultyModule>()?.rewardMultiplier ?: 1.0
-		val topPercent = topDamagerPoints.get().toDouble()/pointsSum.toDouble()
+		val difficultyMultiplier = (starship.controller as? AIController)?.getCoreModuleByType<DifficultyModule>()?.rewardMultiplier ?: 1.0
+		val topPercent = topDamagerPoints.get().toDouble() / pointsSum.toDouble()
 		val killStreakBonus = AIKillStreak.getHeatMultiplier(damager.player)
 		val percent = points.get().toDouble() / pointsSum.toDouble()
 		val score = (ratio * (percent / topPercent) * configuration.streakMultiplier * difficultyMultiplier * killStreakBonus).toInt()
 
 		if (score <= 0) return
 
-		AIKillStreak.rewardHeat(damager.player,score)
+		AIKillStreak.rewardHeat(damager.player, score)
 
 		log.info("Gave $damager $score heat score for ship-killing AI vessel ${starship.identifier}")
 	}

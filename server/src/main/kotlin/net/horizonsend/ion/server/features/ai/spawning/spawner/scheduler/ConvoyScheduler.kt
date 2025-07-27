@@ -29,7 +29,7 @@ class ConvoyScheduler(
 	private val displayName: Component,
 	private val separation: Supplier<Duration>,
 	private val announcementMessage: Component?,
-) : SpawnerScheduler, TickedScheduler, PersistentDataSpawnerComponent<ConvoyPersistentData>, StatusScheduler{
+) : SpawnerScheduler, TickedScheduler, PersistentDataSpawnerComponent<ConvoyPersistentData>, StatusScheduler {
 	private lateinit var spawner: AISpawner
 
 	override fun getSpawner(): AISpawner {
@@ -46,6 +46,7 @@ class ConvoyScheduler(
 	var difficulty: Int = 2
 
 	private var lastActiveTime = System.currentTimeMillis()
+
 	/** How long to wait after the previous locus ended before we may start the next one */
 	private var lastSeparation: Duration = separation.get()   // first run
 
@@ -60,15 +61,17 @@ class ConvoyScheduler(
 		lastActiveTime = System.currentTimeMillis()
 		lastSeparation = separation.get()
 
-		if (announcementMessage != null) Notify.chatAndGlobal(template(
-			announcementMessage,
-			paramColor = HE_LIGHT_GRAY,
-			useQuotesAroundObjects = false,
-			center.world.name,
-			center.blockX,
-			center.blockY,
-			center.blockZ
-		))
+		if (announcementMessage != null) Notify.chatAndGlobal(
+			template(
+				announcementMessage,
+				paramColor = HE_LIGHT_GRAY,
+				useQuotesAroundObjects = false,
+				center.world.name,
+				center.blockX,
+				center.blockY,
+				center.blockZ
+			)
+		)
 		getSpawner().trigger(logger, AISpawningManager.context)
 	}
 
@@ -90,7 +93,7 @@ class ConvoyScheduler(
 
 		return template(
 			message = text("{0} starts at: {1} ({2} hours from now)", HEColorScheme.HE_MEDIUM_GRAY),
-			paramColor = HEColorScheme.HE_LIGHT_GRAY,
+			paramColor = HE_LIGHT_GRAY,
 			useQuotesAroundObjects = false,
 			displayName,
 			UTC_TIME.format(nextStartInstant),// {1}
@@ -112,6 +115,6 @@ class ConvoyScheduler(
 	@Serializable
 	data class ConvoyPersistentData(
 		val lastActiveTime: Long,
-		val	lastSeparation: Long,
+		val lastSeparation: Long,
 	)
 }

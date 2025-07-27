@@ -29,26 +29,32 @@ import kotlin.math.sqrt
 
 class AimingModule(
 	controller: AIController,
-	val difficulty : DifficultyModule,
-) : AIModule(controller){
-	val shotDeviation: Double get () {return difficulty.shotVariation + 0.025}
+	val difficulty: DifficultyModule,
+) : AIModule(controller) {
+	val shotDeviation: Double
+		get() {
+			return difficulty.shotVariation + 0.025
+		}
 
 	/** given a target vector (global position of a target), and a weaponset, firing mode
 	 * Guess the weapon being fired and adjust the target for a leading shot */
-	fun adjustAim(targetShip : Starship, origin: Vec3i,
-				  weaponSet: AIStarshipTemplate.WeaponSet?, leftClick : Boolean, manual : Boolean) : Vector {
+	fun adjustAim(
+		targetShip: Starship, origin: Vec3i,
+		weaponSet: AIStarshipTemplate.WeaponSet?, leftClick: Boolean, manual: Boolean
+	): Vector {
 		val shipPos = targetShip.centerOfMass.toVector()
-		if (difficulty.aimAdjust < 0.1) return  shipPos
+		if (difficulty.aimAdjust < 0.1) return shipPos
 
-		val predicate = {it : WeaponSubsystem ->
+		val predicate = { it: WeaponSubsystem ->
 			((it is HeavyWeaponSubsystem) xor leftClick)
-			&& ((it is AutoWeaponSubsystem) xor manual)
-			&& !(it is MiningLaserSubsystem) // because screw you
-			&& it.isIntact()
-			&& it.canFire(getDirection(origin, targetShip.centerOfMass).normalize(), shipPos)// this is a shortcut
+				&& ((it is AutoWeaponSubsystem) xor manual)
+				&& !(it is MiningLaserSubsystem) // because screw you
+				&& it.isIntact()
+				&& it.canFire(getDirection(origin, targetShip.centerOfMass).normalize(), shipPos)// this is a shortcut
 		} //reduce the amount of different weapon types as much as possible
 		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet.name.lowercase()]).shuffled(
-			ThreadLocalRandom.current()).filter(predicate)
+			ThreadLocalRandom.current()
+		).filter(predicate)
 		if (weapons.isEmpty()) return shipPos //nothing to aim
 		val weapon = weapons.first()
 
@@ -60,24 +66,23 @@ class AimingModule(
 			//calculate the travel time to at most 3 seconds in the future
 			val travelTime = if (weapon is PhaserWeaponSubsystem) {
 				(distance / PhaserProjectile.speedUpSpeed
-					+ TimeUnit.NANOSECONDS.toMillis(PhaserProjectile.speedUpTime).toDouble()/ 1000).coerceAtMost(4.0)
+					+ TimeUnit.NANOSECONDS.toMillis(PhaserProjectile.speedUpTime).toDouble() / 1000).coerceAtMost(4.0)
 			} else {
 				(distance / weapon.balancing.speed).coerceAtMost(4.0)
 			}
-			forecast = forecast(targetShip, System.currentTimeMillis() + (travelTime * 1000).toLong(),0)
+			forecast = forecast(targetShip, System.currentTimeMillis() + (travelTime * 1000).toLong(), 0)
 		}
-		if (difficulty.aimAdjust > 0.9) return  forecast
+		if (difficulty.aimAdjust > 0.9) return forecast
 		return forecast.clone().multiply(difficulty.aimAdjust).add(shipPos.multiply(1.0 - difficulty.aimAdjust))
 	}
 
 
-
-	fun sampleDirection(direction: Vector) : Vector{
+	fun sampleDirection(direction: Vector): Vector {
 		// Step 1: Generate a random azimuthal angle φ ∈ [0, 2π]
 		val phi = randomDouble(0.0, 2 * Math.PI)
 
 		// Step 2: Generate a random inclination angle θ' for uniform solid angle sampling
-		val cosThetaPrime = 1 - randomDouble(0.0,1 - cos(shotDeviation))
+		val cosThetaPrime = 1 - randomDouble(0.0, 1 - cos(shotDeviation))
 		val sinThetaPrime = sqrt(1 - cosThetaPrime * cosThetaPrime)
 
 		// Step 3: Construct the local coordinate frame (T, B, N)
@@ -104,14 +109,13 @@ class AimingModule(
 	}
 
 	companion object {
-		fun showAims(world : World,target : Vector, leftClick: Boolean) {
+		fun showAims(world: World, target: Vector, leftClick: Boolean) {
 			val particle = Particle.DUST
 			val size = 2.0f
-			val dustOptions = if (leftClick) Particle.DustOptions(Color.LIME, size,) else Particle.DustOptions(Color.ORANGE, size,)
-			world.spawnParticle(particle,target.x, target.y, target.z,1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
+			val dustOptions = if (leftClick) Particle.DustOptions(Color.LIME, size) else Particle.DustOptions(Color.ORANGE, size)
+			world.spawnParticle(particle, target.x, target.y, target.z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, true)
 		}
 	}
-
 
 
 }

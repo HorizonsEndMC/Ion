@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 
 class ClosestTargetingModule(
 	controller: AIController,
-	targetAI : Boolean = false,
+	targetAI: Boolean = false,
 	var maxRange: Double,
 	existingTarget: AITarget? = null
 ) : TargetingModule(controller, targetAI) {
@@ -28,6 +28,6 @@ class ClosestTargetingModule(
 	}
 
 	override fun searchForTargetList(): List<AITarget> {
-		return controller.getNearbyTargetsInRadius(0.0, maxRange) { targetFilter(it,targetAI) }.toList()
+		return controller.getNearbyTargetsInRadius(0.0, maxRange) { targetFilter(it, targetAI) }.toList()
 	}
 }

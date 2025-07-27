@@ -21,8 +21,8 @@ class GroupSpawner(
 	groupMessage,
 	individualSpawnMessage,
 	difficultySupplier,
-	{AITarget.TargetMode.PLAYER_ONLY},
-	{null}
+	{ AITarget.TargetMode.PLAYER_ONLY },
+	{ null }
 ) {
 	override fun getShips(): List<SpawnedShip> {
 		return ships

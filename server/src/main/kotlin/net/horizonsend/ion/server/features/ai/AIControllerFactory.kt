@@ -22,7 +22,7 @@ class AIControllerFactory private constructor(
 		manualSets: Set<WeaponSet>,
 		difficulty: Int,
 		targetMode: AITarget.TargetMode = AITarget.TargetMode.PLAYER_ONLY
-	) : AIController {
+	): AIController {
 		return AIController(
 			starship = starship,
 			damager = AIShipDamager(starship),
@@ -46,7 +46,7 @@ class AIControllerFactory private constructor(
 		class ModuleBuilder {
 			private val modules: MutableMap<KClass<out AIModule>, AIModule> = mutableMapOf()
 
-			fun <T: AIModule> addModule(identifier: KClass<out AIModule>, module: T): T {
+			fun <T : AIModule> addModule(identifier: KClass<out AIModule>, module: T): T {
 				modules[identifier] = module
 				return module
 			}

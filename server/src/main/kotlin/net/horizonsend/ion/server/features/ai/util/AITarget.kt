@@ -11,15 +11,16 @@ import org.bukkit.entity.Player
 import java.util.concurrent.ThreadLocalRandom
 import kotlin.random.asKotlinRandom
 
-abstract class AITarget(val attack : Boolean = true) {
-	enum class TargetMode {PLAYER_ONLY,AI_ONLY,MIXED}
+abstract class AITarget(val attack: Boolean = true) {
+	enum class TargetMode { PLAYER_ONLY, AI_ONLY, MIXED }
+
 	abstract var offset: Vec3i
 
 
 	abstract fun getLocation(random: Boolean = false): Location
 	abstract fun getVec3i(random: Boolean = false, lowest: Boolean = false): Vec3i
 
-	abstract fun getFudgeFactor() : Double
+	abstract fun getFudgeFactor(): Double
 
 	abstract fun getWorld(): World
 	abstract fun getAutoTurretTarget(): AutoTurretTargeting.AutoTurretTarget<*>
@@ -36,7 +37,7 @@ class PlayerTarget(val player: Player, attack: Boolean = true) : AITarget(attack
 		return player.location.add(offset)
 	}
 
-	override fun getVec3i(random: Boolean, lowest : Boolean): Vec3i {
+	override fun getVec3i(random: Boolean, lowest: Boolean): Vec3i {
 		return Vec3i(player.location).plus(offset)
 	}
 
@@ -82,18 +83,18 @@ class StarshipTarget(val ship: ActiveStarship, attack: Boolean = true) : AITarge
 		return getVec3i(random).toLocation(getWorld()).add(offset)
 	}
 
-	override fun getVec3i(random: Boolean, lowest : Boolean): Vec3i {
+	override fun getVec3i(random: Boolean, lowest: Boolean): Vec3i {
 		return if (random && ship.shields.size >= 1) {
 			val shields = ship.shields
-			val key =  (if (!lowest) shields.random(ThreadLocalRandom.current().asKotlinRandom()) else shields.minBy {it.power}).pos
+			val key = (if (!lowest) shields.random(ThreadLocalRandom.current().asKotlinRandom()) else shields.minBy { it.power }).pos
 
 			Vec3i(key).plus(offset)
 		} else ship.centerOfMass.plus(offset)
 	}
 
 	override fun getFudgeFactor(): Double {
-		val minPos = Vec3i(ship.min.x,0,ship.min.z)
-		val maxPos = Vec3i(ship.max.x,0,ship.max.z)
+		val minPos = Vec3i(ship.min.x, 0, ship.min.z)
+		val maxPos = Vec3i(ship.max.x, 0, ship.max.z)
 		val dist = maxPos.distance(minPos)
 		return dist / 3.0
 	}
@@ -126,19 +127,19 @@ class StarshipTarget(val ship: ActiveStarship, attack: Boolean = true) : AITarge
 }
 
 class GoalTarget(
-	val position : Vec3i,
+	val position: Vec3i,
 	private val world: World,
-	var hyperspace : Boolean,
-	val weight : Double = 1.0,
+	var hyperspace: Boolean,
+	val weight: Double = 1.0,
 	attack: Boolean = false,
 ) : AITarget(attack) {
-	override var offset: Vec3i = Vec3i(0,0,0)
+	override var offset: Vec3i = Vec3i(0, 0, 0)
 
 	override fun getLocation(random: Boolean): Location {
 		return position.toLocation(world)
 	}
 
-	override fun getVec3i(random: Boolean, lowest : Boolean): Vec3i {
+	override fun getVec3i(random: Boolean, lowest: Boolean): Vec3i {
 		return position
 	}
 

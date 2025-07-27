@@ -10,7 +10,7 @@ import org.slf4j.Logger
 abstract class SpawnerMechanic {
 	abstract suspend fun trigger(logger: Logger)
 
-	abstract fun getAvailableShips(draw : Boolean = false): Collection<SpawnedShip>
+	abstract fun getAvailableShips(draw: Boolean = false): Collection<SpawnedShip>
 
 	// Utility
 	/** 0: x, 1: y, 2: z, 3: world name, */

@@ -10,41 +10,41 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getDirection
 import java.util.function.Supplier
 
 class GravityWellModule(
-    controller: AIController,
-    private val activeRange: Double,
-    private val canWellWhileCruising: Boolean,
-    private val targetingSupplier: Supplier<AITarget?>
+	controller: AIController,
+	private val activeRange: Double,
+	private val canWellWhileCruising: Boolean,
+	private val targetingSupplier: Supplier<AITarget?>
 ) : net.horizonsend.ion.server.features.ai.module.AIModule(controller) {
-    override fun tick() {
-        val target = targetingSupplier.get()
+	override fun tick() {
+		val target = targetingSupplier.get()
 
-        if (!canWellWhileCruising && StarshipCruising.isCruising(starship)) {
-            starship.setIsInterdicting(false)
-            return
-        }
+		if (!canWellWhileCruising && StarshipCruising.isCruising(starship)) {
+			starship.setIsInterdicting(false)
+			return
+		}
 
-        if (target == null) {
-            starship.setIsInterdicting(false)
-            return
-        }
+		if (target == null) {
+			starship.setIsInterdicting(false)
+			return
+		}
 
 		if (target is GoalTarget) {
 			starship.setIsInterdicting(false)
 			return
 		}
 
-        if (getDirection(Vec3i(getCenter()), target.getVec3i(false)).length() > activeRange) {
-            starship.setIsInterdicting(false)
-            return
-        }
+		if (getDirection(Vec3i(getCenter()), target.getVec3i(false)).length() > activeRange) {
+			starship.setIsInterdicting(false)
+			return
+		}
 
-        val gravityWell = Interdiction.findGravityWell(starship)
+		val gravityWell = Interdiction.findGravityWell(starship)
 
-        if (gravityWell == null || !gravityWell.isIntact()) {
-            starship.setIsInterdicting(false)
-            return
-        }
+		if (gravityWell == null || !gravityWell.isIntact()) {
+			starship.setIsInterdicting(false)
+			return
+		}
 
-        starship.setIsInterdicting(true)
-    }
+		starship.setIsInterdicting(true)
+	}
 }

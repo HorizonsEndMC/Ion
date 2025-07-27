@@ -29,7 +29,7 @@ class EnmityMessageModule(
 			for (msg in messages) {
 				val key = opponent.target to msg.id
 				if (messaged.contains(key)) continue
-				if (!msg.shouldTrigger(opponent,config)) continue
+				if (!msg.shouldTrigger(opponent, config)) continue
 
 				val player = if (opponent.target is PlayerTarget) {
 					(opponent.target as PlayerTarget).player
@@ -40,9 +40,11 @@ class EnmityMessageModule(
 				messaged.add(key)
 			}
 		}
-		messaged.removeIf {messaged -> !enmityModule.enmityList.any {
-			it.target == messaged.first
-		}}
+		messaged.removeIf { messaged ->
+			!enmityModule.enmityList.any {
+				it.target == messaged.first
+			}
+		}
 	}
 
 	private fun buildMessage(msg: Component): Component = template(

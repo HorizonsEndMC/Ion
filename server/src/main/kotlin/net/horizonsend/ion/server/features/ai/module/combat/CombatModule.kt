@@ -19,8 +19,8 @@ import java.util.function.Supplier
 
 abstract class CombatModule<T>(
 	controller: AIController,
-	val difficulty : DifficultyModule,
-	val aiming : AimingModule,
+	val difficulty: DifficultyModule,
+	val aiming: AimingModule,
 	val targetingSupplier: Supplier<T>
 ) : net.horizonsend.ion.server.features.ai.module.AIModule(controller) {
 
@@ -51,7 +51,7 @@ abstract class CombatModule<T>(
 	 *
 	 * Lambda allows modification of the aiming direction
 	 **/
-	protected fun fireAllWeapons(origin: Vec3i, target: AITarget, aimAtRandom : Boolean	) {
+	protected fun fireAllWeapons(origin: Vec3i, target: AITarget, aimAtRandom: Boolean) {
 
 		if (!AIDebugModule.showAims && !AIDebugModule.fireWeapons) return //dont do anything if both of the options are false
 		if (!target.attack) return //dont mess with goals
@@ -68,21 +68,25 @@ abstract class CombatModule<T>(
 		val distance = (target.getLocation().toVector().distance(origin.toVector()) - fudgeFactor).coerceAtLeast(1.0)
 		starship.debug("Distance manual: $distance (fudged)")
 
-		val weaponSets : List<AIStarshipTemplate.WeaponSet?> = controller.getManualSetsInRange(distance) ?: listOf(null)
+		val weaponSets: List<AIStarshipTemplate.WeaponSet?> = controller.getManualSetsInRange(distance) ?: listOf(null)
 		if (weaponSets.isEmpty()) return //there are no valid weaponsets in range
 
-		for (weaponSet in weaponSets){
+		for (weaponSet in weaponSets) {
 			val correctedHeavyTarget = if (target is StarshipTarget) {
-				aiming.adjustAim(target.ship,origin,weaponSet, false, true)
-			} else {targetPos.toVector()}
+				aiming.adjustAim(target.ship, origin, weaponSet, false, true)
+			} else {
+				targetPos.toVector()
+			}
 			//println("weaponset: ${weaponSet?.name?.lowercase()}")
 			correctedHeavyTarget.add(targetOffset.toVector())
 			//println("correctedHeavyTarget : $correctedHeavyTarget")
 			val heavyDirection = aiming.sampleDirection(correctedHeavyTarget.clone().subtract(origin.toVector()).normalize())
 
 			val correctedLightTarget = if (target is StarshipTarget) {
-				aiming.adjustAim(target.ship,origin,weaponSet, true, true)
-			} else {targetPos.toVector()}
+				aiming.adjustAim(target.ship, origin, weaponSet, true, true)
+			} else {
+				targetPos.toVector()
+			}
 			//println("correctedLightTarget : $correctedLightTarget")
 			correctedLightTarget.add(targetOffset.toVector())
 			val lightDirection = aiming.sampleDirection(correctedLightTarget.clone().subtract(origin.toVector()).normalize())
@@ -96,7 +100,7 @@ abstract class CombatModule<T>(
 	}
 
 	/** Fires light weapons (left click) in a direction */
-	protected fun fireLightWeapons(direction: Vector, target: Vector? = null, weaponSet: String? = null, manual : Boolean) {
+	protected fun fireLightWeapons(direction: Vector, target: Vector? = null, weaponSet: String? = null, manual: Boolean) {
 		starship.debug("Firing light weapons: Set: $weaponSet")
 		AIControlUtils.shootInDirection(controller, direction, leftClick = true, manual = manual, target = target, weaponSet = weaponSet)
 	}
@@ -121,9 +125,9 @@ abstract class CombatModule<T>(
 		val fudgeFactor = target.getFudgeFactor()
 		val distance = (target.getLocation().toVector().distance(origin.toVector()) - fudgeFactor).coerceAtLeast(1.0)
 		starship.debug("Distance auto: $distance (fudged)")
-		var weaponSets : Set<AIStarshipTemplate.WeaponSet?> = controller.getAutoSetsInRange(distance)
+		var weaponSets: Set<AIStarshipTemplate.WeaponSet?> = controller.getAutoSetsInRange(distance)
 		if (weaponSets.isEmpty()) weaponSets = setOf(null)
-		weaponSets.forEach { handleAutoWeapon(it,origin,target) }
+		weaponSets.forEach { handleAutoWeapon(it, origin, target) }
 	}
 
 	private fun handleAutoWeapon(weaponSet: AIStarshipTemplate.WeaponSet?, origin: Vec3i, target: AITarget) {
@@ -142,21 +146,25 @@ abstract class CombatModule<T>(
 			return
 		}
 		//since we are aiming everything we treat auto weapons as manual weapons
-		val dummy : AutoTurretTargeting.AutoTurretTarget<*>? = null
+		val dummy: AutoTurretTargeting.AutoTurretTarget<*>? = null
 		AIControlUtils.setAutoWeapons(controller, weaponSet.name.lowercase(), dummy)
 
 		val targetPos = target.getVec3i()
 		val targetOffset = target.getVec3i(true).minus(targetPos)
 
 		val correctedHeavyTarget = if (target is StarshipTarget) {
-			aiming.adjustAim(target.ship,origin,weaponSet, false, false)
-		} else {targetPos.toVector()}
+			aiming.adjustAim(target.ship, origin, weaponSet, false, false)
+		} else {
+			targetPos.toVector()
+		}
 		correctedHeavyTarget.add(targetOffset.toVector())
 		val heavyDirection = aiming.sampleDirection(correctedHeavyTarget.clone().subtract(origin.toVector()).normalize())
 
 		val correctedLightTarget = if (target is StarshipTarget) {
-			aiming.adjustAim(target.ship,origin,weaponSet, true, false)
-		} else {targetPos.toVector()}
+			aiming.adjustAim(target.ship, origin, weaponSet, true, false)
+		} else {
+			targetPos.toVector()
+		}
 		correctedLightTarget.add(targetOffset.toVector())
 		val lightDirection = aiming.sampleDirection(correctedLightTarget.clone().subtract(origin.toVector()).normalize())
 
@@ -175,18 +183,15 @@ abstract class CombatModule<T>(
 abstract class MultiTargetCombatModule(
 	controller: AIController,
 	difficulty: DifficultyModule,
-	aiming : AimingModule,
+	aiming: AimingModule,
 	targetingSupplier: Supplier<List<AITarget>>
-) : CombatModule<List<AITarget>>(controller, difficulty,aiming, targetingSupplier) {
-}
+) : CombatModule<List<AITarget>>(controller, difficulty, aiming, targetingSupplier)
 
 abstract class SingleTargetCombatModule(
 	controller: AIController,
 	difficulty: DifficultyModule,
-	aiming : AimingModule,
+	aiming: AimingModule,
 	targetingSupplier: Supplier<AITarget?>
-) : CombatModule<AITarget?>(controller, difficulty,aiming,targetingSupplier) {
-
-}
+) : CombatModule<AITarget?>(controller, difficulty, aiming, targetingSupplier)
 
 

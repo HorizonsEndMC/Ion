@@ -142,13 +142,13 @@ fun createFromClipboard(
 }
 
 private fun tryPilotWithController(
-    logger: Logger,
-    world: World,
-    origin: Vec3i,
-    type: StarshipType,
-    name: String,
-    createController: (ActiveControlledStarship) -> Controller,
-    callback: (ActiveControlledStarship) -> Unit = {}
+	logger: Logger,
+	world: World,
+	origin: Vec3i,
+	type: StarshipType,
+	name: String,
+	createController: (ActiveControlledStarship) -> Controller,
+	callback: (ActiveControlledStarship) -> Unit = {}
 ) {
 	val (x, y, z) = origin
 	val block = world.getBlockAt(x, y, z)
@@ -165,9 +165,9 @@ private fun tryPilotWithController(
 				DeactivatedPlayerStarships.updateState(data, state)
 
 				Tasks.sync { PilotedStarships.activateWithoutPilot(debugAudience, data, createController, callback) }
-			}
-			catch (e: SpawningException) { handleException(logger, e) }
-			catch (e: Throwable) {
+			} catch (e: SpawningException) {
+				handleException(logger, e)
+			} catch (e: Throwable) {
 				logger.error("An error occurred when attempting to pilot starship ${e.message}")
 				e.printStackTrace()
 			}
@@ -269,7 +269,7 @@ fun formatLocationSupplier(centerSupplier: Supplier<Location>, minDistance: Doub
 	return@Supplier null
 }
 
-private fun formatPilotName(fullName : String) : String{
+private fun formatPilotName(fullName: String): String {
 	return fullName.replace(Regex("""(.?)(?:^|\s|-)+([^\s-])[^\s-]*(?:(?:\s+)(?:the\s+)?(?:jr|sr|II|2nd|III|3rd|IV|4th)\.?${'$'})?"""), "$2.").uppercase()
 }
 

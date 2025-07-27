@@ -16,19 +16,20 @@ import kotlin.math.pow
 class PowerModeModule(
 	controller: AIController,
 	val difficulty: DifficultyModule,
-	val generalTargetSupplier : Supplier<AITarget?>,
+	val generalTargetSupplier: Supplier<AITarget?>,
 	val steeringModule: SteeringModule,
-	val configSupplier: Supplier<AIPowerModes.AIPowerModeConfiguration> = Supplier{
-		ConfigurationFiles.aiPowerModeConfiguration().defaultAIPowerModeConfiguration},
+	val configSupplier: Supplier<AIPowerModes.AIPowerModeConfiguration> = Supplier {
+		ConfigurationFiles.aiPowerModeConfiguration().defaultAIPowerModeConfiguration
+	},
 ) : AIModule(controller) {
-    private val ship: Starship get() = controller.starship
+	private val ship: Starship get() = controller.starship
 	private val config get() = configSupplier.get()
-	private val target : AITarget? get() = generalTargetSupplier.get()
+	private val target: AITarget? get() = generalTargetSupplier.get()
 
 	val tickRate = 5
-	var ticks = 0 + randomInt(0,tickRate) //randomly offset powermode updates
+	var ticks = 0 + randomInt(0, tickRate) //randomly offset powermode updates
 
-	var currentPowerMode = PowerMode(0.3,0.3,0.4, false, true)
+	var currentPowerMode = PowerMode(0.3, 0.3, 0.4, false, true)
 
 
 	override fun tick() {
@@ -38,73 +39,76 @@ class PowerModeModule(
 		evaluateBestPowerMode()
 	}
 
-    fun evaluateBestPowerMode(useSoftMax : Boolean = true) {
+	fun evaluateBestPowerMode(useSoftMax: Boolean = true) {
 
-		val finalPowerMode : PowerMode
+		val finalPowerMode: PowerMode
 
 		if (!difficulty.powerModeSwitch) {
 			finalPowerMode = config.powermodes.first { it.base }
 		} else if (useSoftMax) {
-			val ratios : List<Double>
+			val ratios: List<Double>
 			//ship.debug("Shield score : ${shieldScore()},Weapon score : ${weaponsScore()},Thrust score : ${thrustScore()}")
 			if (difficulty.useSpecialPowerModes) {
-				ratios = distributeScores(listOf(shieldScore(),weaponsScore(),thrustScore()),0.0,0.6,1.1)
+				ratios = distributeScores(listOf(shieldScore(), weaponsScore(), thrustScore()), 0.0, 0.6, 1.1)
 			} else {
-				ratios = distributeScores(listOf(shieldScore(),weaponsScore(),thrustScore()))
+				ratios = distributeScores(listOf(shieldScore(), weaponsScore(), thrustScore()))
 			}
 			//ship.debug("ratios : $ratios")
-			finalPowerMode = PowerMode(ratios[0],ratios[1],ratios[2],false, false)
+			finalPowerMode = PowerMode(ratios[0], ratios[1], ratios[2], false, false)
 
 		} else {
 			val scored = config.powermodes.filter {
-				difficulty.useSpecialPowerModes or !it.special }.map { score(it) to it }
-			finalPowerMode = scored.maxByOrNull{it.first}!!.second  // there will always be one non-special powermode
+				difficulty.useSpecialPowerModes or !it.special
+			}.map { score(it) to it }
+			finalPowerMode = scored.maxByOrNull { it.first }!!.second  // there will always be one non-special powermode
 		}
 
 		if (currentPowerMode == finalPowerMode) return
 
 		currentPowerMode = finalPowerMode
 
-        ship.updatePower("AI", finalPowerMode.shield,finalPowerMode.weapons,finalPowerMode.thrust,
-			difficulty.useSpecialPowerModes)
-    }
+		ship.updatePower(
+			"AI", finalPowerMode.shield, finalPowerMode.weapons, finalPowerMode.thrust,
+			difficulty.useSpecialPowerModes
+		)
+	}
 
-	fun score(powerMode: PowerMode) : Double {
-		return (shieldScore()* powerMode.shield
+	fun score(powerMode: PowerMode): Double {
+		return (shieldScore() * powerMode.shield
 			+ weaponsScore() * powerMode.weapons
 			+ thrustScore() * powerMode.thrust)
 	}
 
 
-	fun shieldScore() : Double {
+	fun shieldScore(): Double {
 		return (
 			config.baseShieldScore
-			//raise on critical shield
-			+ (if (ship.shields.isEmpty()) 0.0 else 1 - ship.shields.map{it.powerRatio}.average()).pow(3)
+				//raise on critical shield
+				+ (if (ship.shields.isEmpty()) 0.0 else 1 - ship.shields.map { it.powerRatio }.average()).pow(3)
 				* config.criticalShieldMultiplier
-			//increase on distance
-			+ (((target?.getLocation()?.toVector()?.distance(location.toVector()) ?: 500.0))/500.0).coerceIn(0.0,1.0)
+				//increase on distance
+				+ (((target?.getLocation()?.toVector()?.distance(location.toVector()) ?: 500.0)) / 500.0).coerceIn(0.0, 1.0)
 				* config.shieldDistanceMultiplier
 			)
 	}
 
-	fun weaponsScore() : Double {
+	fun weaponsScore(): Double {
 		return (
 			config.baseWeaponsScore
-			//discount based on distance
-			- (((target?.getLocation()?.toVector()?.distance(location.toVector()) ?: 500.0))/500.0).coerceIn(0.0,1.0)
+				//discount based on distance
+				- (((target?.getLocation()?.toVector()?.distance(location.toVector()) ?: 500.0)) / 500.0).coerceIn(0.0, 1.0)
 				.pow(0.5) * config.weaponsDistanceMultiplier
 			).coerceAtLeast(0.0)
 
 	}
 
 
-	fun thrustScore() : Double {
+	fun thrustScore(): Double {
 		val result = (
 			config.baseThrustScore
-			+ speedScore() * config.thrustSpeedMultiplier
-			+ directionScore() * config.thrustDirectionMultiplier
-			+ driftScore() * config.thrustDriftMultiplier
+				+ speedScore() * config.thrustSpeedMultiplier
+				+ directionScore() * config.thrustDirectionMultiplier
+				+ driftScore() * config.thrustDriftMultiplier
 			).coerceAtLeast(0.0)
 
 		if (result == 0.0) {
@@ -113,25 +117,25 @@ class PowerModeModule(
 			ship.debug("Direction : ${directionScore()} * ${config.thrustDirectionMultiplier}")
 			ship.debug("Drift : ${driftScore()} * ${config.thrustDriftMultiplier}")
 		}
-		return  result
+		return result
 	}
 
-	fun speedScore() : Double {
+	fun speedScore(): Double {
 		//might need to account for throttle later
-		val speedRatio = 1 - (ship.velocity.length() / (controller.maxSpeed * 1.1)).coerceIn(0.0,1.0)
+		val speedRatio = 1 - (ship.velocity.length() / (controller.maxSpeed * 1.1)).coerceIn(0.0, 1.0)
 		return speedRatio.pow(config.thrustSpeedPower)
 	}
 
-	fun directionScore() : Double {
+	fun directionScore(): Double {
 		val velocity = ship.velocity.clone()
 		if (velocity.lengthSquared() > 1e-4) velocity.normalize()
 		val dot = velocity.dot(steeringModule.thrustOut)
-		return (-dot + 1)/2.0
+		return (-dot + 1) / 2.0
 	}
 
-	fun driftScore() : Double {
+	fun driftScore(): Double {
 		val dot = steeringModule.headingOut.dot(steeringModule.thrustOut)
-		return (dot - 0.3).coerceIn(-2.0,0.0)
+		return (dot - 0.3).coerceIn(-2.0, 0.0)
 
 	}
 
@@ -177,7 +181,9 @@ class PowerModeModule(
 
 
 	@Serializable
-	data class PowerMode(val shield : Double, val weapons : Double, val thrust : Double,
-						 val special : Boolean, val base : Boolean) {}
+	data class PowerMode(
+		val shield: Double, val weapons: Double, val thrust: Double,
+		val special: Boolean, val base: Boolean
+	)
 
 }

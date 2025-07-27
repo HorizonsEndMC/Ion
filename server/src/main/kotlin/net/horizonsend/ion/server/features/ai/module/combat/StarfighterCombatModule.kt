@@ -7,17 +7,19 @@ import java.util.function.Supplier
 
 class StarfighterCombatModule(
 	controller: AIController,
-	difficulty : DifficultyModule,
-	aiming : AimingModule,
+	difficulty: DifficultyModule,
+	aiming: AimingModule,
 	targetingSupplier: Supplier<AITarget?>
-) : SingleTargetCombatModule(controller,difficulty,aiming, targetingSupplier) {
+) : SingleTargetCombatModule(controller, difficulty, aiming, targetingSupplier) {
 	override var shouldFaceTarget: Boolean = true
 
 	override fun tick() {
 		val target = targetingSupplier.get() ?: return
 
 		val distance = target.getLocation().toVector().distance(getCenter().toVector())
-		if (distance > 750) {return}
+		if (distance > 750) {
+			return
+		}
 
 		handleAutoWeapons(starship.centerOfMass, target)
 		fireAllWeapons(

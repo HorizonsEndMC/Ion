@@ -20,26 +20,24 @@ data class AIPowerModes(
 ) {
 	@Serializable
 	data class AIPowerModeConfiguration(
-		val baseShieldScore : Double = 1.0,
-		val criticalShieldMultiplier : Double = 1.0,
-		val shieldDistanceMultiplier : Double = 2.0,
+		val baseShieldScore: Double = 1.0,
+		val criticalShieldMultiplier: Double = 1.0,
+		val shieldDistanceMultiplier: Double = 2.0,
 
-		val baseWeaponsScore : Double = 2.5,
-		val weaponsDistanceMultiplier : Double = 0.5,
+		val baseWeaponsScore: Double = 2.5,
+		val weaponsDistanceMultiplier: Double = 0.5,
 
 		val baseThrustScore: Double = 0.5,
-		val thrustSpeedMultiplier : Double = 2.5,
-		val thrustSpeedPower : Double = 1.5,
-		val thrustDirectionMultiplier : Double = 2.0,
-		val thrustDriftMultiplier : Double = 3.0,
+		val thrustSpeedMultiplier: Double = 2.5,
+		val thrustSpeedPower: Double = 1.5,
+		val thrustDirectionMultiplier: Double = 2.0,
+		val thrustDriftMultiplier: Double = 3.0,
 
-		val powermodes : List<PowerModeModule.PowerMode> = listOf(
-			PowerModeModule.PowerMode(0.4,0.5,0.1,false, false),
-			PowerModeModule.PowerMode(0.4,0.1,0.5,false, false),
-			PowerModeModule.PowerMode(0.1,0.5,0.4,false, false),
-			PowerModeModule.PowerMode(0.4,0.4,0.2,false, true),
+		val powermodes: List<PowerModeModule.PowerMode> = listOf(
+			PowerModeModule.PowerMode(0.4, 0.5, 0.1, false, false),
+			PowerModeModule.PowerMode(0.4, 0.1, 0.5, false, false),
+			PowerModeModule.PowerMode(0.1, 0.5, 0.4, false, false),
+			PowerModeModule.PowerMode(0.4, 0.4, 0.2, false, true),
 		)
-	){
-
-	}
+	)
 }

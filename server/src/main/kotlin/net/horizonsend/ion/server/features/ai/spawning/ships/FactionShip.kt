@@ -17,14 +17,14 @@ class FactionShip(
 ) : SpawnedShip {
 	override val offsets: MutableList<Supplier<Vector>> = mutableListOf()
 	override var absoluteHeight: Double? = null
-	override var pilotName : Component? = null
+	override var pilotName: Component? = null
 
 	override fun createController(
-        logger: Logger,
-        starship: ActiveStarship,
-        difficulty: Int,
-        targetMode: AITarget.TargetMode
-    ): AIController {
+		logger: Logger,
+		starship: ActiveStarship,
+		difficulty: Int,
+		targetMode: AITarget.TargetMode
+	): AIController {
 		val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
 
 		val controller = factory.invoke(

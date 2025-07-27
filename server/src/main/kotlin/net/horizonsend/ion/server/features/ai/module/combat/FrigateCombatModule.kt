@@ -7,11 +7,11 @@ import java.util.function.Supplier
 
 class FrigateCombatModule(
 	controller: AIController,
-	difficulty : DifficultyModule,
+	difficulty: DifficultyModule,
 	private val toggleRandomTargeting: Boolean = true,
-	aiming : AimingModule,
+	aiming: AimingModule,
 	targetingSupplier: Supplier<AITarget?>
-) : SingleTargetCombatModule(controller,difficulty,aiming, targetingSupplier) {
+) : SingleTargetCombatModule(controller, difficulty, aiming, targetingSupplier) {
 	var leftFace: Boolean = false
 	var ticks = 0
 	private var aimAtRandom = false
@@ -21,7 +21,9 @@ class FrigateCombatModule(
 		val target = targetingSupplier.get() ?: return
 
 		val distance = target.getLocation().toVector().distance(getCenter().toVector())
-		if (distance > 750) {return}
+		if (distance > 750) {
+			return
+		}
 
 		handleAutoWeapons(starship.centerOfMass, target)
 		fireAllWeapons(

@@ -18,7 +18,7 @@ class FleeMessageModule(
 ) : AIModule(controller) {
 	private val distanceModule = controller.getCoreModuleByType<DistancePositioningModule>()!!
 	private val enmityModule = controller.getCoreModuleByType<EnmityModule>()!!
-	private var fleeState : Boolean = false
+	private var fleeState: Boolean = false
 
 	override fun tick() {
 		if (!(distanceModule.isFleeing xor fleeState)) return
@@ -31,7 +31,7 @@ class FleeMessageModule(
 			} else {
 				(opponent.target as? StarshipTarget)?.ship?.playerPilot
 			} ?: continue
-			message?.let{ player.sendMessage(buildMessage(message.message))}
+			message?.let { player.sendMessage(buildMessage(message.message)) }
 		}
 	}
 
@@ -49,5 +49,5 @@ class FleeMessageModule(
 
 data class FleeTriggerMessage(
 	val message: Component,
-	val isFleeing : Boolean
+	val isFleeing: Boolean
 )

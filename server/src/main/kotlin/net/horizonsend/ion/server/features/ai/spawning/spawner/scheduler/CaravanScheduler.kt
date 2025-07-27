@@ -1,4 +1,3 @@
-
 package net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler
 
 import kotlinx.coroutines.launch
@@ -12,26 +11,26 @@ import java.time.ZonedDateTime
 
 object CaravanScheduler : SpawnerScheduler, TickedScheduler {
 
-    override fun tick(logger: Logger) {
-        val now = ZonedDateTime.now(ZoneOffset.UTC)
-        val minute = now.minute
-        val hour = now.hour
+	override fun tick(logger: Logger) {
+		val now = ZonedDateTime.now(ZoneOffset.UTC)
+		val minute = now.minute
+		val hour = now.hour
 
-        if (minute == 0 ) {
-            TradeCities.getAll().forEach { city ->
-                val scheduled = city.scheduledHour ?: return@forEach
-                val convoyTemplate = city.convoyTemplate ?: return@forEach
-                val effectiveAfter = city.configEffectiveAfter ?: return@forEach
-                if (scheduled != hour || System.currentTimeMillis() < effectiveAfter) return@forEach
+		if (minute == 0) {
+			TradeCities.getAll().forEach { city ->
+				val scheduled = city.scheduledHour ?: return@forEach
+				val convoyTemplate = city.convoyTemplate ?: return@forEach
+				val effectiveAfter = city.configEffectiveAfter ?: return@forEach
+				if (scheduled != hour || System.currentTimeMillis() < effectiveAfter) return@forEach
 
 				val mechanic = convoyTemplate.spawnMechanicBuilder(city.toContext())
 
 				AISpawningManager.context.launch {
 					mechanic.trigger(logger)
 				}
-            }
-        }
-    }
+			}
+		}
+	}
 
 	override fun getSpawner(): AISpawner {
 		TODO("Not yet implemented")

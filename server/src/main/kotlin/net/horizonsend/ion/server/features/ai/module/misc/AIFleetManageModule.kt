@@ -11,7 +11,7 @@ import java.lang.ref.WeakReference
 
 class AIFleetManageModule(controller: AIController, val fleet: Fleet) : AIModule(controller) {
 	init {
-	    fleet.add(this.starship.toFleetMember())
+		fleet.add(this.starship.toFleetMember())
 		debugAudience.debug("Added : ${this.starship.getDisplayNamePlain()} to fleet")
 	}
 

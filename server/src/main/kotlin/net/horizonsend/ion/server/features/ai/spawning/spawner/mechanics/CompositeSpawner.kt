@@ -75,7 +75,7 @@ class CompositeSpawner(
 
 			logger.info("Spawning ${ship.template.identifier} at $spawnPoint")
 
-			ship.spawn(logger, spawnPoint, difficulty,targetModeSupplier.get()) {
+			ship.spawn(logger, spawnPoint, difficulty, targetModeSupplier.get()) {
 				addUtilModule(AIFleetManageModule(this, aiFleet))
 				onPostSpawn(this)
 			}

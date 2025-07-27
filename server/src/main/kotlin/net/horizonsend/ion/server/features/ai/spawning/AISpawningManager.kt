@@ -28,7 +28,9 @@ object AISpawningManager : IonServerComponent(true) {
 	val context = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
 	override fun onEnable() {
-		if (ConfigurationFiles.featureFlags().aiSpawns) { Tasks.syncRepeat(0L, 0L, AISpawningManager::tickSpawners) }
+		if (ConfigurationFiles.featureFlags().aiSpawns) {
+			Tasks.syncRepeat(0L, 0L, AISpawningManager::tickSpawners)
+		}
 		Tasks.syncRepeat(60L, 60L, AISpawningManager::despawnOldAIShips)
 	}
 
@@ -45,10 +47,10 @@ object AISpawningManager : IonServerComponent(true) {
 
 	val schematicCache: LoadingCache<File, Optional<Clipboard>> = CacheBuilder.newBuilder().build(
 		CacheLoader.from { schematicFile ->
-				val clipboard = readSchematic(schematicFile) ?: return@from Optional.empty<Clipboard>()
-				return@from Optional.of(clipboard)
-			}
-		)
+			val clipboard = readSchematic(schematicFile) ?: return@from Optional.empty<Clipboard>()
+			return@from Optional.of(clipboard)
+		}
+	)
 
 	/** Ticks all the spawners, increasing points and maybe triggering an execution */
 	private fun tickSpawners() {
@@ -67,6 +69,7 @@ object AISpawningManager : IonServerComponent(true) {
 
 	// The AI ship must be at least 30 minutes old
 	val timeLivedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(30)
+
 	// And not damaged within the last 15 minutes
 	val lastDamagedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(7)
 

@@ -35,38 +35,38 @@ data class AIStarshipTemplate(
 	val radiusMessageInformation: RadiusMessageInformation? = null,
 	val reinforcementInformation: ReinforcementInformation? = null
 ) {
-    init {
+	init {
 //			if (AISpawningManager.templates.values.contains(this)) error("Identifiers must be unique! $identifier already exists!")
 
-        AISpawningManager.templates[identifier] = this
-    }
+		AISpawningManager.templates[identifier] = this
+	}
 
-    @Transient
-    val schematicFile: File = IonServer.dataFolder.resolve("aiShips").resolve("$schematicName.schem")
-    fun getSchematic(): Clipboard? = AISpawningManager.schematicCache[schematicFile].getOrNull()
+	@Transient
+	val schematicFile: File = IonServer.dataFolder.resolve("aiShips").resolve("$schematicName.schem")
+	fun getSchematic(): Clipboard? = AISpawningManager.schematicCache[schematicFile].getOrNull()
 
-    @Serializable
-    data class WeaponSet(val name: String, private val engagementRangeMin: Double, private val engagementRangeMax: Double) {
-        @Transient
-        val engagementRange = DoubleRange(engagementRangeMin, engagementRangeMax)
-    }
+	@Serializable
+	data class WeaponSet(val name: String, private val engagementRangeMin: Double, private val engagementRangeMax: Double) {
+		@Transient
+		val engagementRange = DoubleRange(engagementRangeMin, engagementRangeMax)
+	}
 
-    @Serializable
-    data class SmackInformation(
-        val prefix: String,
-        val messages: List<String>
-    )
+	@Serializable
+	data class SmackInformation(
+		val prefix: String,
+		val messages: List<String>
+	)
 
-    @Serializable
-    data class RadiusMessageInformation(
-        val prefix: String,
-        val messages: Map<Double, String>
-    )
+	@Serializable
+	data class RadiusMessageInformation(
+		val prefix: String,
+		val messages: Map<Double, String>
+	)
 
-    @Serializable
-    data class ReinforcementInformation(
-        val activationThreshold: Double,
-        val delay: Long,
-        val broadcastMessage: String?,
-    )
+	@Serializable
+	data class ReinforcementInformation(
+		val activationThreshold: Double,
+		val delay: Long,
+		val broadcastMessage: String?,
+	)
 }

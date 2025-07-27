@@ -19,35 +19,38 @@ class VectorDisplay private constructor(
 	val vecDeg: Box,
 	val item: ItemStack,
 	val parent: ActiveStarship,
-	val offset : Vector = Vector(0.0,10.0,0.0)
+	val offset: Vector = Vector(0.0, 10.0, 0.0)
 ) {
-	val entity : ItemDisplay = createEntity()
+	val entity: ItemDisplay = createEntity()
 	private val playerManager = DisplayPlayerManager(entity)
 
-	private val mag : Double get() = vecDeg.getMag()
-	private val dir : Vector get() = vecDeg.getDir()
+	private val mag: Double get() = vecDeg.getMag()
+	private val dir: Vector get() = vecDeg.getDir()
 
-	constructor(directionSupplier: () -> Vector,
-				item : ItemStack,
-				parent: ActiveStarship,
-				offset: Vector
+	constructor(
+		directionSupplier: () -> Vector,
+		item: ItemStack,
+		parent: ActiveStarship,
+		offset: Vector
 	) : this(FunctionVectorBox(directionSupplier), item, parent, offset)
 
-	constructor(magSupplier: () -> Double,dir: Vector,
-				item : ItemStack,
-				parent: ActiveStarship,
-				offset: Vector
-	) : this (MagiitudeBox(dir,magSupplier), item, parent, offset)
+	constructor(
+		magSupplier: () -> Double, dir: Vector,
+		item: ItemStack,
+		parent: ActiveStarship,
+		offset: Vector
+	) : this(MagiitudeBox(dir, magSupplier), item, parent, offset)
 
-	constructor(map : ContextMap,
-				binIndex : Int,
-				item : ItemStack,
-				parent: ActiveStarship,
-				offset: Vector
+	constructor(
+		map: ContextMap,
+		binIndex: Int,
+		item: ItemStack,
+		parent: ActiveStarship,
+		offset: Vector
 	) : this(ContextVectorBox(map, binIndex), item, parent, offset)
 
 	private fun createEntity(): ItemDisplay {
-		val offset = calcOffset()
+		calcOffset()
 		val entity = ItemDisplay(EntityType.ITEM_DISPLAY, parent.world.minecraft).apply {
 			itemStack = CraftItemStack.asNMSCopy(item)
 			viewRange = 5.0f
@@ -66,7 +69,7 @@ class VectorDisplay private constructor(
 		val transformation = Transformation(
 			Vector3f(0f),
 			ClientDisplayEntities.rotateToFaceVector(dir.clone().normalize().multiply(-1.0).toVector3f()),
-			Vector3f(1f,1f,mag.toFloat()),
+			Vector3f(1f, 1f, mag.toFloat()),
 			Quaternionf()
 		)
 
@@ -81,7 +84,7 @@ class VectorDisplay private constructor(
 	private fun createTransformation(): Transformation = Transformation(
 		offset.toVector3f(),
 		ClientDisplayEntities.rotateToFaceVector(dir.clone().normalize().multiply(-1.0).toVector3f()),
-		Vector3f(1f,1f,mag.toFloat()),
+		Vector3f(1f, 1f, mag.toFloat()),
 		Quaternionf()
 	)
 
@@ -93,8 +96,8 @@ class VectorDisplay private constructor(
 	}
 
 	abstract class Box {
-		abstract fun getMag() : Double
-		abstract fun getDir() : Vector
+		abstract fun getMag(): Double
+		abstract fun getDir(): Vector
 	}
 
 	class ContextVectorBox(val map: ContextMap, val index: Int) : Box() {
@@ -108,7 +111,7 @@ class VectorDisplay private constructor(
 
 	}
 
-	class MagiitudeBox(private val dir : Vector, val mag : () -> Double) : Box() {
+	class MagiitudeBox(private val dir: Vector, val mag: () -> Double) : Box() {
 		override fun getMag(): Double {
 			return mag()
 		}

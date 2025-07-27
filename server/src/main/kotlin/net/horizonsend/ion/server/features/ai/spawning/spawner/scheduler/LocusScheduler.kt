@@ -69,6 +69,7 @@ class LocusScheduler(
 
 	private var lastActiveTime = System.currentTimeMillis()
 	private var lastDuration: Duration = duration.get()
+
 	/** How long to wait after the previous locus ended before we may start the next one */
 	private var lastSeparation: Duration = separation.get()   // first run
 
@@ -102,15 +103,17 @@ class LocusScheduler(
 		markDynmapZone()
 		addGravityWell()
 
-		if (announcementMessage != null) Notify.chatAndGlobal(template(
-			announcementMessage,
-			paramColor = HE_LIGHT_GRAY,
-			useQuotesAroundObjects = false,
-			center.world.name,
-			center.blockX,
-			center.blockY,
-			center.blockZ
-		))
+		if (announcementMessage != null) Notify.chatAndGlobal(
+			template(
+				announcementMessage,
+				paramColor = HE_LIGHT_GRAY,
+				useQuotesAroundObjects = false,
+				center.world.name,
+				center.blockX,
+				center.blockY,
+				center.blockZ
+			)
+		)
 	}
 
 	fun end() {
@@ -190,14 +193,14 @@ class LocusScheduler(
 
 			(distanceSquared(loc, center.toVector()) < distSquared) && (it.controller is PlayerController)
 		}.size
- 	}
+	}
 
 	companion object {
 		const val LOCUS_Y = 192.0
 		private val markerAPI: MarkerAPI get() = DynmapPlugin.plugin.markerAPI
 		private val markerSet
 			get() = markerAPI.getMarkerSet("events")
-			?: markerAPI.createMarkerSet("events", "World Event Markers", null, false)
+				?: markerAPI.createMarkerSet("events", "World Event Markers", null, false)
 
 		fun addLocus(locus: LocusScheduler) {
 			if (!dynmapLoaded) return
@@ -258,7 +261,7 @@ class LocusScheduler(
 
 			template(
 				message = text("{0} ends at: {1} ({2} minutes from now)", HE_LIGHT_ORANGE),
-				paramColor = HEColorScheme.HE_LIGHT_GRAY,
+				paramColor = HE_LIGHT_GRAY,
 				useQuotesAroundObjects = false,
 				displayName,
 				UTC_TIME.format(endInstant), // {1}
@@ -297,7 +300,7 @@ class LocusScheduler(
 
 	@Serializable
 	data class LocusPersistentData(
-		var lastActiveTime : Long,
+		var lastActiveTime: Long,
 		var lastDuration: Long,
 		var lastSeparation: Long
 	)

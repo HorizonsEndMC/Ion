@@ -14,7 +14,7 @@ class SmackTalkModule(
 	private vararg val messages: Component
 ) : net.horizonsend.ion.server.features.ai.module.AIModule(controller) {
 	var tickChance: Double = 0.8
-	var tickThreshold= 600
+	var tickThreshold = 600
 	var ticks = 0
 	var sendRange = 500.0
 

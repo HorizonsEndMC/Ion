@@ -10,7 +10,7 @@ import org.bukkit.event.entity.PlayerDeathEvent
 object AIModuleListener : SLEventListener() {
 
 	@EventHandler
-	fun onShipSink(event : StarshipSunkEvent) {
+	fun onShipSink(event: StarshipSunkEvent) {
 		for (controller in getAllAIControllers()) {
 			controller.getAllModules().filterIsInstance<AIModuleHandleShipSink>().forEach { it.onShipSink(event) }
 		}
@@ -24,7 +24,7 @@ object AIModuleListener : SLEventListener() {
 	}
 
 
-	fun getAllAIControllers() : List<AIController> {
+	fun getAllAIControllers(): List<AIController> {
 		return ActiveStarships.all().map { it.controller }.filterIsInstance<AIController>()
 	}
 }
