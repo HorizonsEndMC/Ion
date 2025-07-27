@@ -11,7 +11,6 @@ import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import java.util.function.Supplier
-import kotlin.math.exp
 import kotlin.math.pow
 
 class PowerModeModule(

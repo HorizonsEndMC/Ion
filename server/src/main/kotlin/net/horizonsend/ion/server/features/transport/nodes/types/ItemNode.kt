@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.transport.items.LegacyFilterData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.PipeChannel.entries
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.Companion.adjacentMinusBackwards
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.util.CacheType

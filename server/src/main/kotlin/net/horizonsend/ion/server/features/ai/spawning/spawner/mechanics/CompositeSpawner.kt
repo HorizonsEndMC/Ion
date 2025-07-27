@@ -15,8 +15,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.fleet.Fleet
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
-import org.bukkit.Location
 import net.kyori.adventure.text.Component
+import org.bukkit.Location
 import org.slf4j.Logger
 import java.util.function.Supplier
 

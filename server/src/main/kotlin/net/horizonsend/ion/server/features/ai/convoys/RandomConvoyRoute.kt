@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.ai.convoys
 
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import org.bukkit.World
 import kotlin.random.Random
 
 class RandomConvoyRoute private constructor(

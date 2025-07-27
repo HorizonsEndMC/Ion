@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceToVector
-import java.util.*
+import java.util.Optional
 import kotlin.random.Random
 
 class RandomGoalModule(

@@ -1,16 +1,10 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics
 
 import net.horizonsend.ion.server.configuration.util.IntegerAmount
-import net.horizonsend.ion.server.configuration.util.VariableIntegerAmount
-import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
-import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.CONTRACTOR
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAGGER
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TENETA
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController

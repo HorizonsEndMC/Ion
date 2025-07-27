@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.features.ai.convoys
 
-import net.horizonsend.ion.common.utils.text.colors.EXPLORER_LIGHT_CYAN
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_LIGHT_TEAL
 import net.horizonsend.ion.common.utils.text.miniMessage

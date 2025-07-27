@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.ai.module.misc
 
-import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.ai.configuration.AIEmities

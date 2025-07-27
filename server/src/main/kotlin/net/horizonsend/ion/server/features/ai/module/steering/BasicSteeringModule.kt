@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.ai.module.steering
 
 import SteeringModule
-import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.steering.context.AvoidIlliusContext
@@ -20,8 +19,6 @@ import net.horizonsend.ion.server.features.ai.module.steering.context.WorldBlock
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import java.util.function.Supplier
-import kotlin.math.exp
-import kotlin.math.ln
 import kotlin.math.pow
 
 /** Basic implementation of a Steering Module, showcasing all the different modulues for */
