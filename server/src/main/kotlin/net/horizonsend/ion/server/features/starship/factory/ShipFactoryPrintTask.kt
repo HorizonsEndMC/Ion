@@ -9,17 +9,15 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
+import net.horizonsend.ion.common.utils.text.*
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
-import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
-import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.common.utils.text.toComponent
-import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.Companion.formatProgress
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock.InventoryReference
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
@@ -27,22 +25,17 @@ import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFacto
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories.missingMaterialsCache
 import net.horizonsend.ion.server.features.starship.factory.integration.ShipFactoryIntegration
+import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
+import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
-import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
-import net.horizonsend.ion.server.miscellaneous.utils.setNMSBlockData
-import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
-import net.kyori.adventure.text.format.NamedTextColor.GREEN
-import net.kyori.adventure.text.format.NamedTextColor.RED
-import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.NamedTextColor.*
 import net.starlegacy.javautil.SignUtils.SignData
 import org.bukkit.Material
 import org.bukkit.block.Sign
@@ -325,11 +318,19 @@ class ShipFactoryPrintTask(
 
 		world.setNMSBlockData(x, y, z, getRotatedBlockData(placedData))
 
+		if (ExtractorManager.isExtractorData(data)) {
+			NewTransport.addExtractor(world, x, y, z)
+		}
+
 		val state = block.state as? Sign
 		if (state != null) {
 			signData?.applyTo(state)
-			Tasks.sync {
-				MultiblockEntities.loadFromSign(state)
+			Tasks.syncDelay(2L) {
+				val placed = MultiblockEntities.loadFromSign(state)
+
+				if (placed is LegacyMultiblockEntity) placed.resetSign()
+
+				if (placed is PoweredMultiblockEntity) placed.powerStorage.setPower(0)
 			}
 		}
 	}
