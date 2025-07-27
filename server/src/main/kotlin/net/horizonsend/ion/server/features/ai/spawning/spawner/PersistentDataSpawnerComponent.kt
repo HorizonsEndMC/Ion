@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.ai.spawning.spawner
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import kotlin.reflect.KClass
 
-interface PersistentDataSpawner<T : Any> {
+interface PersistentDataSpawnerComponent<T : Any> {
 	val typeClass: KClass<T>
 	val storageKey: String
 

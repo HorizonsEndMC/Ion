@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler
 
-import net.horizonsend.ion.common.database.cache.AIEncounterCache
-import net.horizonsend.ion.common.database.schema.misc.AIEncounterData
+import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
@@ -10,6 +9,8 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
+import net.horizonsend.ion.server.features.ai.spawning.spawner.PersistentDataSpawnerComponent
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler.LocusPersistentData
 import net.horizonsend.ion.server.features.nations.NationsMap.dynmapLoaded
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -32,11 +33,13 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.function.Supplier
 import kotlin.random.Random
+import kotlin.reflect.KClass
 
 /**
  * Creates a locus spawner scheduler. The spawner will be executed at a higher rate for set period, near a specific location.
  **/
 class LocusScheduler(
+	override val storageKey: String,
 	private val displayName: Component,
 	private val dynmapColor: TextColor,
 	private val duration: Supplier<Duration>,
@@ -47,7 +50,7 @@ class LocusScheduler(
 	val radius: Double,
 	private val spawnSeparation: Supplier<Duration>,
 	private val worlds: List<String>
-) : SpawnerScheduler, TickedScheduler , PersistentScheduler, StatusScheduler{
+) : SpawnerScheduler, TickedScheduler, StatusScheduler, PersistentDataSpawnerComponent<LocusPersistentData> {
 	private lateinit var spawner: AISpawner
 	val MAX_TICK_MULTIPLIER = 4
 
@@ -189,24 +192,6 @@ class LocusScheduler(
 		}.size
  	}
 
-	override fun loadData() {
-		val data = AIEncounterCache[spawner.identifier]
-		if (data != null) {
-			lastActiveTime = data.lastActiveTime
-			lastDuration = Duration.ofMillis(data.lastDuration)
-			lastSeparation = Duration.ofMillis(data.lastSeparation)
-		}
-	}
-
-	override fun saveData() {
-		val data = AIEncounterCache[spawner.identifier]
-		if (data == null) {
-			AIEncounterData.create(spawner.identifier, lastActiveTime, lastDuration.toMillis(), lastSeparation.toMillis())
-			return
-		}
-		AIEncounterData.saveData(data._id, lastActiveTime, lastDuration.toMillis(), lastSeparation.toMillis())
-	}
-
 	companion object {
 		const val LOCUS_Y = 192.0
 		private val markerAPI: MarkerAPI get() = DynmapPlugin.plugin.markerAPI
@@ -289,7 +274,7 @@ class LocusScheduler(
 
 			template(
 				message = text("{0} starts at: {1} ({2} hours from now)", HEColorScheme.HE_MEDIUM_GRAY),
-				paramColor = HEColorScheme.HE_LIGHT_GRAY,
+				paramColor = HE_LIGHT_GRAY,
 				useQuotesAroundObjects = false,
 				displayName,
 				UTC_TIME.format(nextStartInstant),// {1}
@@ -297,4 +282,23 @@ class LocusScheduler(
 			)
 		}
 	}
+
+	override val typeClass: KClass<LocusPersistentData> = LocusPersistentData::class
+
+	override fun load(data: LocusPersistentData) {
+		lastActiveTime = data.lastActiveTime
+		lastDuration = Duration.ofMillis(data.lastDuration)
+		lastSeparation = Duration.ofMillis(data.lastSeparation)
+	}
+
+	override fun save(): LocusPersistentData? {
+		return LocusPersistentData(lastActiveTime, lastDuration.toMillis(), lastSeparation.toMillis())
+	}
+
+	@Serializable
+	data class LocusPersistentData(
+		var lastActiveTime : Long,
+		var lastDuration: Long,
+		var lastSeparation: Long
+	)
 }

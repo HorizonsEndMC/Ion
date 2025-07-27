@@ -197,6 +197,7 @@ object AISpawners : IonServerComponent(true) {
 		}
 
 		val watcherLocusScheduler = LocusScheduler(
+			storageKey = "WATCHER_LOCUS",
 			"<$WATCHER_STANDARD>Unknown Signal Locus".miniMessage(),
 			WATCHER_STANDARD,
 			duration = { Duration.ofMinutes(20) },
@@ -544,6 +545,7 @@ object AISpawners : IonServerComponent(true) {
 		))
 
 		val pirateLocusScheduler = LocusScheduler(
+			storageKey = "PIRATE_LOCUS",
 			"<${HE_MEDIUM_GRAY}>Increased <$PIRATE_SATURATED_RED>Pirate<${HE_MEDIUM_GRAY}> Activity".miniMessage(),
 			PIRATE_SATURATED_RED,
 			duration = { Duration.ofMinutes(30) },
@@ -863,6 +865,7 @@ object AISpawners : IonServerComponent(true) {
 		}
 
 		val daggerLocusScheduler = LocusScheduler(
+			storageKey = "DAGGER_LOCUS",
 			"<$PRIVATEER_LIGHT_TEAL>Privateer<${HE_MEDIUM_GRAY}> Naval Drills".miniMessage(),
 			PRIVATEER_LIGHT_TEAL,
 			duration = { Duration.ofMinutes(30) },
@@ -944,6 +947,7 @@ object AISpawners : IonServerComponent(true) {
 		) }
 
 		val tsaiiLocusScheduler = LocusScheduler(
+			storageKey = "TSAII_LOCUS",
 			"<$TSAII_DARK_ORANGE>Tsaii Warband".miniMessage(),
 			PIRATE_SATURATED_RED,
 			duration = { Duration.ofMinutes(30) },
@@ -1048,10 +1052,11 @@ object AISpawners : IonServerComponent(true) {
 //		)}
 
 		/* helper suppliers --------------------------------------------------- */
-		val localCtx : (World) -> LocationContext = { w -> LocationContext(randomLocationIn(w)) }
-		val anyCtx   : () -> LocationContext      = { LocationContext(randomLocationAnywhere()) }
+		val localCtx: (World) -> LocationContext = { w -> LocationContext(randomLocationIn(w)) }
+		val anyCtx: () -> LocationContext = { LocationContext(randomLocationAnywhere()) }
 
-		val deepSpaceScheduler = ConvoyScheduler(
+		val deepSpaceConvoyScheduler = ConvoyScheduler(
+			storageKey = "DEEP_SPACE_CONVOY",
 			"$miningGuildMini<GOLD><bold> Deep Space Mining Convoy</bold>".miniMessage(),
 			separation = { getRandomDuration(Duration.ofHours(12), Duration.ofHours(60)) },
 			announcementMessage = null
@@ -1065,7 +1070,7 @@ object AISpawners : IonServerComponent(true) {
 				mechanicSupplier = {
 					DEEP_SPACE_MINING.spawnMechanicBuilder(anyCtx())
 				},
-				scheduler = deepSpaceScheduler
+				scheduler = deepSpaceConvoyScheduler
 			)
 		)
 
@@ -1118,16 +1123,23 @@ object AISpawners : IonServerComponent(true) {
 	fun loadPersistentData() {
 		val stored = Configuration.load<PersistentSpawnerData>(IonServer.dataFolder, "persistentSpawnerData.json")
 
-		for (spawner in getAllSpawners().filterIsInstance<PersistentDataSpawner<*>>()) {
+		for (spawner in getAllSpawners().filterIsInstance<PersistentDataSpawnerComponent<*>>()) {
 			val data = stored.keyed[spawner.storageKey] ?: continue
 			spawner.load(data)
+
+			val scheduler = (spawner as AISpawner).scheduler
+
+			if (scheduler is PersistentDataSpawnerComponent<*>) {
+				val data = stored.keyed[scheduler.storageKey] ?: continue
+				scheduler.load(data)
+			}
 		}
 	}
 
 	fun savePersistentData() = Tasks.async {
 		val data = mutableMapOf<String, String>()
 
-		for (spawner in getAllSpawners().filterIsInstance<PersistentDataSpawner<*>>()) {
+		for (spawner in getAllSpawners().filterIsInstance<PersistentDataSpawnerComponent<*>>()) {
 			val stored = spawner.write() ?: continue
 			data[spawner.storageKey] = stored
 		}
