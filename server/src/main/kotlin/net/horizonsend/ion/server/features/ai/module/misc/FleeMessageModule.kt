@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.ai.module.misc
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.features.ai.configuration.AIEmities
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.steering.DistancePositioningModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
@@ -19,7 +18,7 @@ class FleeMessageModule(
 ) : AIModule(controller) {
 	private val distanceModule = controller.getCoreModuleByType<DistancePositioningModule>()!!
 	private val enmityModule = controller.getCoreModuleByType<EnmityModule>()!!
-	private var fleeState : Boolean = false
+	private var fleeState: Boolean = false
 
 	override fun tick() {
 		if (!(distanceModule.isFleeing xor fleeState)) return
@@ -32,7 +31,7 @@ class FleeMessageModule(
 			} else {
 				(opponent.target as? StarshipTarget)?.ship?.playerPilot
 			} ?: continue
-			message?.let{ player.sendMessage(buildMessage(message.message))}
+			message?.let { player.sendMessage(buildMessage(message.message)) }
 		}
 	}
 
@@ -50,5 +49,5 @@ class FleeMessageModule(
 
 data class FleeTriggerMessage(
 	val message: Component,
-	val isFleeing : Boolean
+	val isFleeing: Boolean
 )

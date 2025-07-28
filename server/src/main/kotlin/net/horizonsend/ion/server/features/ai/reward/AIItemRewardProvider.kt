@@ -30,12 +30,14 @@ class AIItemRewardProvider(
 			items.keys.forEach {
 				Bazaars.giveOrDropItems(it, it.amount, damager.player)
 
-				damager.sendMessage(template(
-					message = Component.text("Received {0}x {1} for defeating {2}", NamedTextColor.GREEN),
-					it.amount,
-					it.displayName(),
-					starship.getDisplayName()
-				))
+				damager.sendMessage(
+					template(
+						message = Component.text("Received {0}x {1} for defeating {2}", NamedTextColor.GREEN),
+						it.amount,
+						it.displayName(),
+						starship.getDisplayName()
+					)
+				)
 			}
 		}
 	}

@@ -14,11 +14,11 @@ import java.util.function.Supplier
 
 class MultiTargetFrigateCombatModule(
 	controller: AIController,
-	difficulty : DifficultyModule,
+	difficulty: DifficultyModule,
 	private val toggleRandomTargeting: Boolean = true,
-	aiming : AimingModule,
+	aiming: AimingModule,
 	targetingSupplier: Supplier<List<AITarget>>
-) : MultiTargetCombatModule(controller,difficulty,aiming, targetingSupplier) {
+) : MultiTargetCombatModule(controller, difficulty, aiming, targetingSupplier) {
 	var leftFace: Boolean = false
 	var ticks = 0
 	private var aimAtRandom = false
@@ -26,7 +26,7 @@ class MultiTargetFrigateCombatModule(
 	override fun tick() {
 		ticks++
 		val targets = targetingSupplier.get()
-        val numTargets = targets.size
+		val numTargets = targets.size
 		if (targets.isEmpty()) return // prevent divide by zero
 		val target = targets[ticks % numTargets]
 
@@ -35,7 +35,7 @@ class MultiTargetFrigateCombatModule(
 
 		//if (false) handleRotation(target)
 
-		val direction = getDirection(Vec3i(getCenter()), target.getVec3i(false)).normalize()
+		getDirection(Vec3i(getCenter()), target.getVec3i(false)).normalize()
 
 		handleAutoWeapons(starship.centerOfMass, target)
 		fireAllWeapons(

@@ -11,24 +11,24 @@ import org.slf4j.Logger
 import java.util.function.Supplier
 
 data class GroupSpawnedShip(
-    override val template: AITemplate,
-    val nameProvider: Supplier<Component>,
+	override val template: AITemplate,
+	val nameProvider: Supplier<Component>,
 	val suffixProvider: Supplier<String>,
-    val controllerModifier: AIController.() -> Unit = {},
+	val controllerModifier: AIController.() -> Unit = {},
 ) : SpawnedShip {
 	override val offsets: MutableList<Supplier<Vector>> = mutableListOf()
-    override var absoluteHeight: Double? = null
-	override var pilotName : Component? = null
+	override var absoluteHeight: Double? = null
+	override var pilotName: Component? = null
 
-    override fun createController(
-        logger: Logger,
-        starship: ActiveStarship,
-        difficulty: Int,
-        targetMode: AITarget.TargetMode
-    ): AIController {
-        val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
+	override fun createController(
+		logger: Logger,
+		starship: ActiveStarship,
+		difficulty: Int,
+		targetMode: AITarget.TargetMode
+	): AIController {
+		val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
 
-        val controller = factory.invoke(
+		val controller = factory.invoke(
 			starship,
 			getName(difficulty),
 			template.starshipInfo.autoWeaponSets,
@@ -37,20 +37,20 @@ data class GroupSpawnedShip(
 			targetMode
 		)
 
-        controllerModifier.invoke(controller)
+		controllerModifier.invoke(controller)
 		controller.validateWeaponSets()
 
-        return controller
-    }
+		return controller
+	}
 
-    override fun getName(difficulty: Int): Component {
-        if (pilotName == null) {
+	override fun getName(difficulty: Int): Component {
+		if (pilotName == null) {
 			pilotName = nameProvider.get()
 		}
 		return pilotName!!
-    }
+	}
 
 	override fun getSuffix(difficulty: Int): String {
-		return  suffixProvider.get()
+		return suffixProvider.get()
 	}
 }

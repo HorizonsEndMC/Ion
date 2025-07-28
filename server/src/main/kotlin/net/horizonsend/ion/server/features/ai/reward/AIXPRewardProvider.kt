@@ -18,15 +18,15 @@ class AIXPRewardProvider(override val starship: ActiveStarship, val configuratio
 	override val log: Logger = LoggerFactory.getLogger(javaClass)
 
 	override fun processDamagerRewards(
-        damager: PlayerDamager,
-        topDamagerPoints: AtomicInteger,
-        points: AtomicInteger,
-        pointsSum: Int
-    ) {
+		damager: PlayerDamager,
+		topDamagerPoints: AtomicInteger,
+		points: AtomicInteger,
+		pointsSum: Int
+	) {
 		val killedSize = starship.initialBlockCount.toDouble()
-		val difficultyMultiplier  = (starship.controller as? AIController)?.getCoreModuleByType<DifficultyModule>()?.rewardMultiplier ?: 1.0
+		val difficultyMultiplier = (starship.controller as? AIController)?.getCoreModuleByType<DifficultyModule>()?.rewardMultiplier ?: 1.0
 		val killStreakBonus = AIKillStreak.getHeatMultiplier(damager.player)
-		val topPercent = topDamagerPoints.get().toDouble()/pointsSum.toDouble()
+		val topPercent = topDamagerPoints.get().toDouble() / pointsSum.toDouble()
 		val percent = points.get().toDouble() / pointsSum.toDouble()
 		val xp = ((sqrt(killedSize.pow(2.0) / sqrt(killedSize * 0.00005)))
 			* (percent / topPercent) * configuration.xpMultiplier * difficultyMultiplier * killStreakBonus).toInt()
@@ -35,11 +35,13 @@ class AIXPRewardProvider(override val starship: ActiveStarship, val configuratio
 
 		damager.rewardXP(xp)
 
-		damager.sendMessage(template(
-			message = text("Received {0} XP for defeating {1}", NamedTextColor.DARK_PURPLE),
-			text(xp, NamedTextColor.LIGHT_PURPLE),
-			starship.getDisplayName()
-		))
+		damager.sendMessage(
+			template(
+				message = text("Received {0} XP for defeating {1}", NamedTextColor.DARK_PURPLE),
+				text(xp, NamedTextColor.LIGHT_PURPLE),
+				starship.getDisplayName()
+			)
+		)
 
 		log.info("Gave $damager $xp XP for ship-killing AI vessel ${starship.identifier}")
 	}

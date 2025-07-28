@@ -18,7 +18,7 @@ interface SpawnedShip {
 	val template: AITemplate
 	val offsets: MutableList<Supplier<Vector>>
 	var absoluteHeight: Double?
-	var pilotName : Component?
+	var pilotName: Component?
 
 	fun createController(logger: Logger, starship: ActiveStarship, difficulty: Int, targetMode: AITarget.TargetMode): AIController
 
@@ -61,7 +61,7 @@ suspend fun SpawnedShip.spawn(
 		template,
 		location,
 		{
-			val controller = createController(logger, it, difficulty,targetMode)
+			val controller = createController(logger, it, difficulty, targetMode)
 
 			modifyController.invoke(controller)
 			context[PostSpawnBehaviorContext]?.hook?.invoke(controller)

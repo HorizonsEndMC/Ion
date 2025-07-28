@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceToVector
-import java.util.*
+import java.util.Optional
 import kotlin.random.Random
 
 class RandomGoalModule(
@@ -17,8 +17,8 @@ class RandomGoalModule(
 	var iterations = 0
 	var ticks = 0
 	val tickRate = 40
-	var currentGoal : GoalTarget? = nextEndpoint() ?: GoalTarget(starship.centerOfMass, world, false, attack = false)
-	val enmity : EnmityModule? get() = controller.getCoreModuleByType<EnmityModule>()
+	var currentGoal: GoalTarget? = nextEndpoint() ?: GoalTarget(starship.centerOfMass, world, false, attack = false)
+	val enmity: EnmityModule? get() = controller.getCoreModuleByType<EnmityModule>()
 
 	override fun tick() {
 		if (currentGoal == null) return
@@ -30,7 +30,8 @@ class RandomGoalModule(
 
 		val currentLoc = starship.centerOfMass.toLocation(world)
 		if (currentLoc.world == currentGoal!!.getWorld() &&
-			currentLoc.distance(currentGoal!!.getLocation()) < 100.0) {
+			currentLoc.distance(currentGoal!!.getLocation()) < 100.0
+		) {
 
 			val nextDestination = nextEndpoint()
 			enmity!!.removeTarget(currentGoal!!)
@@ -42,7 +43,7 @@ class RandomGoalModule(
 
 	}
 
-	fun nextEndpoint() : GoalTarget? {
+	fun nextEndpoint(): GoalTarget? {
 		if (iterations == maxIterations) return null
 
 		val origin = controller.getCenter()

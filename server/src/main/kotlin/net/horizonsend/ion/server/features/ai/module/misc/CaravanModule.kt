@@ -26,26 +26,26 @@ import java.lang.ref.WeakReference
 
 class CaravanModule(
 	controller: AIController,
-	val fleet : Fleet,
+	val fleet: Fleet,
 	val template: AIConvoyTemplate<out ConvoyContext>,
 	val source: Location,
 	val route: ConvoyRoute
-) : AIModule(controller){
+) : AIModule(controller) {
 
-	var target : AITarget = GoalTarget(Vec3i(source), source.world, false)
+	var target: AITarget = GoalTarget(Vec3i(source), source.world, false)
 	var isTraveling = true
 
 	val tickRate = 20 * 2
-	var ticks = 0 + randomInt(0,tickRate) //randomly offset targeting updates
+	var ticks = 0 + randomInt(0, tickRate) //randomly offset targeting updates
 
 	init {
-	    initialize()
+		initialize()
 	}
 
 	fun initialize() {
 		if (fleet.logic != null) return
-		val logic = CaravanFleetLogic(template,source,route,fleet)
-		fleet.logic  = logic
+		val logic = CaravanFleetLogic(template, source, route, fleet)
+		fleet.logic = logic
 		debugAudience.debug("Added a caravan fleet logic to this ships fleet: ${this.starship.getDisplayNamePlain()}")
 	}
 
@@ -72,7 +72,8 @@ class CaravanModule(
 		val tolerance = if (target !is GoalTarget) 800.0 else 100.0
 
 		if (starship.world == target.getWorld() &&
-			starship.centerOfMass.toVector().distance(target.getVec3i().toVector()) < tolerance) {
+			starship.centerOfMass.toVector().distance(target.getVec3i().toVector()) < tolerance
+		) {
 			enmity.removeTarget(target) //prevent crowding near the destination
 			isTraveling = false
 		} else {
@@ -83,7 +84,7 @@ class CaravanModule(
 	}
 
 
-	fun getLeaderTarget() : AITarget {
+	fun getLeaderTarget(): AITarget {
 		val logic = fleet.logic as CaravanFleetLogic
 		val goalTarget = GoalTarget(Vec3i(logic.currentDestination), logic.currentDestination.world, hyperspace = false)
 		return goalTarget
@@ -107,6 +108,7 @@ class CaravanModule(
 				val player = Bukkit.getPlayer(leader.uuid) ?: return null
 				PlayerTarget(player, attack = false) //TODO cast to piloted starship
 			}
+
 			is FleetMember.AIShipMember -> {
 				val ship = leader.shipRef.get() ?: return null
 				StarshipTarget(ship, attack = false)
@@ -123,9 +125,9 @@ class CaravanFleetLogic(
 ) : FleetLogic(fleet) {
 	var isTraveling = true
 	var currentDestination = advanceDestination() ?: source
-	val waitTime = 60*3 // number of seconds to wait at a location
+	val waitTime = 60 * 3 // number of seconds to wait at a location
 
-	fun advanceDestination() : Location? {
+	fun advanceDestination(): Location? {
 		val next = route.advanceDestination()
 		return next
 	}
@@ -159,14 +161,16 @@ class CaravanFleetLogic(
 		if (!isTraveling) return
 		// Use shared state and tick all members
 		if (fleet.leader == null ||
-			fleet.leader is FleetMember.AIShipMember && (fleet.leader as FleetMember.AIShipMember).shipRef.get() == null) {
+			fleet.leader is FleetMember.AIShipMember && (fleet.leader as FleetMember.AIShipMember).shipRef.get() == null
+		) {
 			assignLeader()
 		}
 		val currentLoc = fleet.getLeaderLocation() ?: return
 
 		// Check world and distance
 		if (currentLoc.world == currentDestination.world &&
-			currentLoc.distance(currentDestination) < 100.0) {
+			currentLoc.distance(currentDestination) < 100.0
+		) {
 
 			val nextDestination = advanceDestination()
 

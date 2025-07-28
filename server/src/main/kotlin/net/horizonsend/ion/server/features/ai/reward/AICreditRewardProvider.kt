@@ -25,8 +25,8 @@ open class AICreditRewardProvider(override val starship: ActiveStarship, val con
 		points: AtomicInteger,
 		pointsSum: Int
 	) {
-		val difficultyMultiplier  = (starship.controller as? AIController)?.getCoreModuleByType<DifficultyModule>()?.rewardMultiplier ?: 1.0
-		val topPercent = topDamagerPoints.get().toDouble()/pointsSum.toDouble()
+		val difficultyMultiplier = (starship.controller as? AIController)?.getCoreModuleByType<DifficultyModule>()?.rewardMultiplier ?: 1.0
+		val topPercent = topDamagerPoints.get().toDouble() / pointsSum.toDouble()
 		debugAudience.debug("topPercent: $topPercent")
 		val killStreakBonus = AIKillStreak.getHeatMultiplier(damager.player)
 		debugAudience.debug("killStreakBonus: $killStreakBonus")
@@ -38,11 +38,13 @@ open class AICreditRewardProvider(override val starship: ActiveStarship, val con
 
 		damager.rewardMoney(money)
 
-		damager.sendMessage(template(
-			message = text("Received {0} for defeating {1}", NamedTextColor.YELLOW),
-			money.roundToHundredth().toCreditComponent(),
-			starship.getDisplayName()
-		))
+		damager.sendMessage(
+			template(
+				message = text("Received {0} for defeating {1}", NamedTextColor.YELLOW),
+				money.roundToHundredth().toCreditComponent(),
+				starship.getDisplayName()
+			)
+		)
 
 		log.info("Gave $damager ${configuration.creditReward} credits for ship-killing AI vessel ${starship.identifier}")
 	}

@@ -7,12 +7,13 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import org.bukkit.Bukkit
 import org.bukkit.Location
 
-	class TraceCityCaravanRoute(
-		val cites: MutableList<TradeCityData> = TradeCities.getAll().shuffled().toMutableList(),
-		val source: TradeCityData = cites.removeFirst()) : ConvoyRoute{
+class TraceCityCaravanRoute(
+	val cites: MutableList<TradeCityData> = TradeCities.getAll().shuffled().toMutableList(),
+	val source: TradeCityData = cites.removeFirst()
+) : ConvoyRoute {
 
 	init {
-	    cites.addLast(source)//make the loop closed
+		cites.addLast(source)//make the loop closed
 	}
 
 	override fun advanceDestination(): Location? {
@@ -27,7 +28,7 @@ import org.bukkit.Location
 
 			val territory = Regions.get<RegionTerritory>(next.territoryId)
 
-			val location = Location(Bukkit.getWorld(territory.world),territory.centerX.toDouble(),200.0,territory.centerZ.toDouble())
+			val location = Location(Bukkit.getWorld(territory.world), territory.centerX.toDouble(), 200.0, territory.centerZ.toDouble())
 
 			return location
 		}
@@ -39,7 +40,7 @@ import org.bukkit.Location
 	override fun getSourceLocation(): Location {
 		val territory = Regions.get<RegionTerritory>(source.territoryId)
 
-		val location = Location(Bukkit.getWorld(territory.world),territory.centerX.toDouble(),200.0,territory.centerZ.toDouble())
+		val location = Location(Bukkit.getWorld(territory.world), territory.centerX.toDouble(), 200.0, territory.centerZ.toDouble())
 
 		return location
 	}

@@ -5,9 +5,9 @@ import org.bukkit.Location
 class LocationConvoyRoute(
 	val source: Location,
 	val destinations: MutableList<Location>,
-) : ConvoyRoute{
+) : ConvoyRoute {
 
-	override fun advanceDestination() : Location? {
+	override fun advanceDestination(): Location? {
 		while (destinations.isNotEmpty()) {
 			val next = destinations.removeFirst()
 

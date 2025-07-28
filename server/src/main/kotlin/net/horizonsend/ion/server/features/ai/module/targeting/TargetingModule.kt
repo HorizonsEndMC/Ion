@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtect
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 
@@ -36,18 +35,20 @@ abstract class TargetingModule(
 		return "${javaClass.simpleName}[sticky: $sticky, lastTarget: $lastTarget]"
 	}
 
-	protected fun targetFilter(aiTarget: AITarget, targetAI : Boolean) : Boolean {
-		when  {
-			aiTarget is StarshipTarget && aiTarget.ship.controller is PlayerController-> {
+	protected fun targetFilter(aiTarget: AITarget, targetAI: Boolean): Boolean {
+		when {
+			aiTarget is StarshipTarget && aiTarget.ship.controller is PlayerController -> {
 				if (targetAI) return false
 				val player = (aiTarget.ship.controller as PlayerController).player
 				if (!player.hasProtection()) return true // check for prot
 				if (starship.world.ion.hasFlag(WorldFlag.NOT_SECURE)) return true //ignore prot in unsafe areas
-				if (starship.damagers.keys.any{(it as PlayerDamager).player == player}) return true //fire first
+				if (starship.damagers.keys.any { (it as PlayerDamager).player == player }) return true //fire first
 			}
+
 			aiTarget is StarshipTarget && aiTarget.ship.controller is AIController -> {
 				return targetAI && aiTarget.ship.controller != controller
 			}
+
 			aiTarget is PlayerTarget && !targetAI -> {
 				if (starship.world.ion.hasFlag(WorldFlag.NOT_SECURE)) return true
 				return !aiTarget.player.hasProtection()

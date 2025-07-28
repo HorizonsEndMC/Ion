@@ -26,30 +26,29 @@ import kotlin.math.ln
 import kotlin.math.roundToInt
 
 class NavigationModule(
-    controller : AIController,
-    val targetModule : EnmityModule,
-    val difficulty : DifficultyModule,
-    val engageHyperdiveRange : Double = 1000.0,
-) : AIModule(controller){
+	controller: AIController,
+	val targetModule: EnmityModule,
+	val difficulty: DifficultyModule,
+	val engageHyperdiveRange: Double = 1000.0,
+) : AIModule(controller) {
 	private val tickRate = 20 * 10
-	private var ticks = 0 + randomInt(0,tickRate) //randomly offset navigation updates
-	private val targetLocation : Location? get() {
-		val target = targetModule.findTargetAnywhere()
-		val location : Location?
-		if (target is StarshipTarget && Hyperspace.isMoving(target.ship)) {
-			location = Hyperspace.getJumpDestination(target.ship)!!
-		} else {
-			location = target?.getLocation()
+	private var ticks = 0 + randomInt(0, tickRate) //randomly offset navigation updates
+	private val targetLocation: Location?
+		get() {
+			val target = targetModule.findTargetAnywhere()
+			val location: Location?
+			if (target is StarshipTarget && Hyperspace.isMoving(target.ship)) {
+				location = Hyperspace.getJumpDestination(target.ship)!!
+			} else {
+				location = target?.getLocation()
+			}
+			return location
 		}
-		return location
-	}
 	private var hyperdriveNavigate = false
 	private var navigate = false
 	private var navigationTarget = GoalTarget(starship.centerOfMass, world, false)
 	private var lastWorld = world
 	private var triggerUpdate = false
-
-
 
 
 	override fun tick() {
@@ -68,7 +67,7 @@ class NavigationModule(
 
 	private fun attemptHyperdrive() {
 		starship.debug("Attempting hyper drive")
-		if (Hyperspace.isWarmingUp(starship) || Hyperspace.isMoving(starship)){
+		if (Hyperspace.isWarmingUp(starship) || Hyperspace.isMoving(starship)) {
 			starship.debug("Already warming up or moving")
 			return
 		}
@@ -112,17 +111,17 @@ class NavigationModule(
 		navigationTarget.hyperspace = true
 		val range = (starship.balancing.hyperspaceRangeMultiplier
 			* VerticalNavigationComputerMultiblockAdvanced.baseRange).toInt()
-		tryJump(hyperdrive,navigationTarget.getLocation(),range)
+		tryJump(hyperdrive, navigationTarget.getLocation(), range)
 
 	}
 
-	private fun useBeacon(hyperdrive : HyperdriveSubsystem?) {
+	private fun useBeacon(hyperdrive: HyperdriveSubsystem?) {
 		val beacon = starship.beacon!!
 		val other = beacon.exits?.randomOrNull() ?: beacon.destination
 		tryJump(hyperdrive, other.toLocation(), Int.MAX_VALUE)
 	}
 
-	private fun tryJump(hyperdrive : HyperdriveSubsystem?, jumpLocation: Location, maxRange : Int) {
+	private fun tryJump(hyperdrive: HyperdriveSubsystem?, jumpLocation: Location, maxRange: Int) {
 		if (getHyperspaceWorld(world) == null) {
 			starship.debug("no hyperspace world attached to space world")
 			return
@@ -279,7 +278,7 @@ class NavigationModule(
 		return
 	}
 
-	private fun setOverride(target : GoalTarget?) {
+	private fun setOverride(target: GoalTarget?) {
 		if (target == null) {
 			if (targetModule.findTargetOverride != null) {
 				starship.debug("Unset target override")
@@ -288,7 +287,7 @@ class NavigationModule(
 			return
 		}
 		starship.debug("Set target override to: $target")
-		targetModule.findTargetOverride = { target}
+		targetModule.findTargetOverride = { target }
 	}
 
 

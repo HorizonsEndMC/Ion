@@ -47,16 +47,16 @@ should be the LAST step.
  *  * Each steering module has its own configuration, each Context also has its own configuration
  */
 abstract class SteeringModule(controller: AIController, val difficulty: DifficultyModule) : AIModule(controller) {
-	val ship : Starship get() = controller.starship
+	val ship: Starship get() = controller.starship
 	val contexts = mutableMapOf<String, ContextMap>()
 	val offset = Math.random()
 
-	var thrustOut = Vector(0.0,0.0,1.0)
-	var headingOut =  Vector(0.0,0.0,1.0)
+	var thrustOut = Vector(0.0, 0.0, 1.0)
+	var headingOut = Vector(0.0, 0.0, 1.0)
 	var throttleOut = 0.0
 
-	var orbitTarget : Vector? = null
-	var dangerTarget : Vector? = null
+	var orbitTarget: Vector? = null
+	var dangerTarget: Vector? = null
 	val obstructions = ConcurrentHashMap<Vec3i, Long>()
 
 	open fun steer() {
@@ -67,7 +67,7 @@ abstract class SteeringModule(controller: AIController, val difficulty: Difficul
 		contexts.forEach { it.value.populateContext() }
 	}
 
-	fun decision(thrustContext : ContextMap, headingContext : ContextMap) {
+	fun decision(thrustContext: ContextMap, headingContext: ContextMap) {
 		val heading = headingContext.maxDir().setY(0)
 		heading.normalize()
 		val thrustMag = thrustContext.lincontext!!.interpolotedMax()

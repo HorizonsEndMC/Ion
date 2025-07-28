@@ -5,16 +5,16 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 
 class DespawnModule(
 	controller: AIController,
-	val condition : DespawnModule.() -> Boolean
-) : AIModule(controller){
+	val condition: DespawnModule.() -> Boolean
+) : AIModule(controller) {
 
-	fun evaluateDespawn() : Boolean {
+	fun evaluateDespawn(): Boolean {
 		return condition.invoke(this)
 	}
 
 	companion object {
 
-		val neverDespawn : DespawnModule.() -> Boolean = {
+		val neverDespawn: DespawnModule.() -> Boolean = {
 			false
 		}
 	}

@@ -5,7 +5,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 
 class HighestDamagerTargetingModule(
 	controller: AIController,
-	targetAI : Boolean = false,) : TargetingModule(controller, targetAI) {
+	targetAI: Boolean = false,
+) : TargetingModule(controller, targetAI) {
 	override fun searchForTarget(): AITarget? {
 		return starship.damagers.maxByOrNull { it.value.points.get() }?.key?.getAITarget()
 	}

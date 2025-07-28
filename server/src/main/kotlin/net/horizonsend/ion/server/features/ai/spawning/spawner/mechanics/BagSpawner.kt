@@ -1,16 +1,10 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics
 
 import net.horizonsend.ion.server.configuration.util.IntegerAmount
-import net.horizonsend.ion.server.configuration.util.VariableIntegerAmount
-import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
-import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.CONTRACTOR
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAGGER
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TENETA
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
@@ -21,11 +15,11 @@ import org.bukkit.Location
 import java.util.function.Supplier
 
 class BagSpawner(
-    locationProvider: Supplier<Location?>,
-    private val budget: IntegerAmount,
-    groupMessage: Component?,
-    individualSpawnMessage: SpawnMessage?,
-    vararg bagSpawnedShips: BagSpawnShip,
+	locationProvider: Supplier<Location?>,
+	private val budget: IntegerAmount,
+	groupMessage: Component?,
+	individualSpawnMessage: SpawnMessage?,
+	vararg bagSpawnedShips: BagSpawnShip,
 	difficultySupplier: (String) -> Supplier<Int>,
 	targetModeSupplier: Supplier<AITarget.TargetMode>,
 	fleetSupplier: Supplier<Fleet?> = Supplier { null }
@@ -56,6 +50,7 @@ class BagSpawner(
 
 	companion object {
 		fun asBagSpawned(ship: SpawnedShip, cost: Int) = BagSpawnShip(ship, cost)
+
 		/** Curried helper function to spawn in a bag spawner as a reinforcement ship*/
 		fun asReinforcement(
 			locationProvider: Supplier<Location?>,
@@ -63,18 +58,18 @@ class BagSpawner(
 			groupMessage: Component?,
 			individualSpawnMessage: SpawnMessage?,
 			vararg bagSpawnedShips: BagSpawnShip,
-		) : (AIController) -> SpawnerMechanic {
+		): (AIController) -> SpawnerMechanic {
 
-			return {controller ->
+			return { controller ->
 				val internalDifficulty = controller.getCoreModuleByType<DifficultyModule>()?.internalDifficulty
 				val targetMode = controller.getCoreModuleByType<EnmityModule>()?.targetMode
 
-				val difficultySupplier : (String) -> Supplier<Int> =
-					if (internalDifficulty != null)	{_ : String -> Supplier{internalDifficulty}}
+				val difficultySupplier: (String) -> Supplier<Int> =
+					if (internalDifficulty != null) { _: String -> Supplier { internalDifficulty } }
 					else DifficultyModule.Companion::regularSpawnDifficultySupplier
 
-				val targetSupplier : Supplier<AITarget.TargetMode> =
-					if (targetMode != null)	Supplier { targetMode }
+				val targetSupplier: Supplier<AITarget.TargetMode> =
+					if (targetMode != null) Supplier { targetMode }
 					else Supplier { AITarget.TargetMode.PLAYER_ONLY }
 
 
@@ -82,20 +77,21 @@ class BagSpawner(
 				var fleet = controller.getUtilModule(AIFleetManageModule::class.java)?.fleet
 				if (fleet == null) {
 					fleet = Fleets.createAIFleet()
-					controller.addUtilModule(AIFleetManageModule(controller,fleet))
+					controller.addUtilModule(AIFleetManageModule(controller, fleet))
 				}
-				val fleetSupplier : Supplier<Fleet?> = Supplier{fleet}
+				val fleetSupplier: Supplier<Fleet?> = Supplier { fleet }
 
 				BagSpawner(
-				locationProvider = locationProvider,
-				budget = budget,
-				groupMessage = groupMessage,
-				individualSpawnMessage = individualSpawnMessage,
-				bagSpawnedShips = bagSpawnedShips,
-				difficultySupplier = difficultySupplier ,
-				targetModeSupplier = targetSupplier,
-				fleetSupplier = fleetSupplier
-			)}
+					locationProvider = locationProvider,
+					budget = budget,
+					groupMessage = groupMessage,
+					individualSpawnMessage = individualSpawnMessage,
+					bagSpawnedShips = bagSpawnedShips,
+					difficultySupplier = difficultySupplier,
+					targetModeSupplier = targetSupplier,
+					fleetSupplier = fleetSupplier
+				)
+			}
 		}
 	}
 

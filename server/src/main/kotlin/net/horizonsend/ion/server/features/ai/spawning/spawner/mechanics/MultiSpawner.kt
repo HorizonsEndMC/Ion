@@ -47,9 +47,11 @@ abstract class MultiSpawner(
 		val fleetDifficulty = difficultySupplier(spawnOrigin.world.name).get()
 		val shipDifficultySupplier = WeightedIntegerAmount(
 			setOf(
-				Pair(fleetDifficulty-1, 0.05),
+				Pair(fleetDifficulty - 1, 0.05),
 				Pair(fleetDifficulty, 0.9),
-				Pair(fleetDifficulty+1, 0.05)))
+				Pair(fleetDifficulty + 1, 0.05)
+			)
+		)
 
 		for (spawnedShip in ships) {
 			val offsets = spawnedShip.offsets
@@ -71,22 +73,24 @@ abstract class MultiSpawner(
 
 			debugAudience.debug("Spawning ${spawnedShip.template.identifier} at $spawnPoint")
 
-			spawnedShip.spawn(logger, spawnPoint, difficulty,targetModeSupplier.get()) { addUtilModule(AIFleetManageModule(this, aiFleet)) }
+			spawnedShip.spawn(logger, spawnPoint, difficulty, targetModeSupplier.get()) { addUtilModule(AIFleetManageModule(this, aiFleet)) }
 
 			individualSpawnMessage?.broadcast(spawnPoint, spawnedShip.template)
 		}
 		aiFleet.initalized = true
 
 		if (aiFleet.members.isNotEmpty() && groupMessage != null) {
-			IonServer.server.sendMessage(template(
-				groupMessage,
-				paramColor = HEColorScheme.HE_LIGHT_GRAY,
-				useQuotesAroundObjects = false,
-				spawnOrigin.blockX,
-				spawnOrigin.blockY,
-				spawnOrigin.blockZ,
-				spawnOrigin.world.name
-			))
+			IonServer.server.sendMessage(
+				template(
+					groupMessage,
+					paramColor = HEColorScheme.HE_LIGHT_GRAY,
+					useQuotesAroundObjects = false,
+					spawnOrigin.blockX,
+					spawnOrigin.blockY,
+					spawnOrigin.blockZ,
+					spawnOrigin.world.name
+				)
+			)
 		}
 	}
 }

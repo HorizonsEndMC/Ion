@@ -9,11 +9,11 @@ import org.bukkit.entity.Player
 
 object AIKillStreak : IonServerComponent() {
 
-	private val playerHeatList : MutableList<PlayerHeat> = mutableListOf()
+	private val playerHeatList: MutableList<PlayerHeat> = mutableListOf()
 	private val decay = 5
 
 	override fun onEnable() {
-		Tasks.syncRepeat(200,20) {
+		Tasks.syncRepeat(200, 20) {
 			tick()
 		}
 	}
@@ -29,9 +29,9 @@ object AIKillStreak : IonServerComponent() {
 				it.currentHeat = calculateHeat(it.score)
 				it.player.sendMessage(
 					template(
-					message = Component.text("Reduced AI heat streak to {0}", NamedTextColor.GRAY),
-					it.currentHeat
-				)
+						message = Component.text("Reduced AI heat streak to {0}", NamedTextColor.GRAY),
+						it.currentHeat
+					)
 				)
 			}
 		}
@@ -41,7 +41,7 @@ object AIKillStreak : IonServerComponent() {
 	fun rewardHeat(player: Player, score: Int) {
 		var entry = playerHeatList.find { it.player == player }
 		if (entry == null) {
-			entry = PlayerHeat(player,score, 0)
+			entry = PlayerHeat(player, score, 0)
 			playerHeatList.add(entry)
 		} else {
 			entry.score += score
@@ -58,19 +58,20 @@ object AIKillStreak : IonServerComponent() {
 		}
 	}
 
-	private fun calculateHeat(score : Int) : Int {
+	private fun calculateHeat(score: Int): Int {
 		return (score + 500) / 1000
 	}
 
-	fun getHeatMultiplier(player: Player) : Double {
+	fun getHeatMultiplier(player: Player): Double {
 		val streak = playerHeatList.find { it.player == player }?.currentHeat ?: 0
 		return 1.0 + streak.toDouble() * 0.1
 	}
 
 	data class PlayerHeat(
-		val player : Player,
-		var score : Int,
-		var currentHeat : Int)
+		val player: Player,
+		var score: Int,
+		var currentHeat: Int
+	)
 }
 
 

@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.fleet
 import net.horizonsend.ion.server.features.starship.Starship
 import org.bukkit.entity.Player
 import java.lang.ref.WeakReference
-import java.util.*
+import java.util.UUID
 
 
 abstract class FleetLogic(val fleet: Fleet) {

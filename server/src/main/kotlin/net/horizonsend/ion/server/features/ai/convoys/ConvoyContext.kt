@@ -15,7 +15,7 @@ data class CityContext(val city: TradeCityData) : ConvoyContext {
 
 	val territory = Regions.get<RegionTerritory>(city.territoryId)
 
-	val location = Location(Bukkit.getWorld(territory.world),territory.centerX.toDouble(),200.0,territory.centerZ.toDouble())
+	val location = Location(Bukkit.getWorld(territory.world), territory.centerX.toDouble(), 200.0, territory.centerZ.toDouble())
 
 	override val worldName get() = location.world.name
 }

@@ -22,9 +22,11 @@ abstract class AISpawner(
 
 	/** Entry point for the spawning mechanics, spawns the ship and handles any exceptions */
 	open fun trigger(logger: Logger, scope: CoroutineScope) = scope.launch {
-		try { mechanic.trigger(logger) }
-		catch (e: SpawningException) { handleException(logger, e) }
-		catch (e: Throwable) {
+		try {
+			mechanic.trigger(logger)
+		} catch (e: SpawningException) {
+			handleException(logger, e)
+		} catch (e: Throwable) {
 			logger.error("An error occurred when attempting to execute spawner: ${e.message}")
 			e.printStackTrace()
 		}

@@ -8,15 +8,17 @@ import kotlin.math.pow
 
 class LinearContext {
 	val bins = DoubleArray(NUMLINBINS)
+
 	companion object {
 
 		const val NUMLINBINS = 12
 	}
 
 	private val binloc = Array(NUMLINBINS) { i ->
-		val spacing = 1.0 /(NUMLINBINS - 3).toDouble()
+		val spacing = 1.0 / (NUMLINBINS - 3).toDouble()
 		(i - 1) * spacing
 	}
+
 	constructor() {
 		bins.fill(0.0)
 	}
@@ -40,32 +42,32 @@ class LinearContext {
 		}
 	}
 
-	inline fun apply(func : (i : Int) -> Double, clear : Boolean = true) {
+	inline fun apply(func: (i: Int) -> Double, clear: Boolean = true) {
 		if (clear) clearContext()
 		for (i in 0 until NUMLINBINS) {
 			bins[i] += func(i)
 		}
 	}
 
-	fun populatePeak(scalar : Double, weight : Double, edgepoints: Boolean = true, spread : Double = 0.25, power : Double = 2.0): (Int) -> Double {
+	fun populatePeak(scalar: Double, weight: Double, edgepoints: Boolean = true, spread: Double = 0.25, power: Double = 2.0): (Int) -> Double {
 		var scaled = max(0.0, min(scalar, 1.0))
 		if (edgepoints) {
 			val range = binloc.last() - binloc.first()
 			scaled = scaled * range + binloc.first()
 		}
-		val lamb  = {i : Int ->
+		val lamb = { i: Int ->
 			val loc = binloc[i]
 			val dist = abs(scaled - loc)
-			max(0.0, 1.0 - dist/spread).pow(power)*weight
+			max(0.0, 1.0 - dist / spread).pow(power) * weight
 		}
 		return lamb
 	}
 
 	fun interpolotedMax(): Double {
 		val i = bins.withIndex().maxBy { it.value }.index
-		var j = i-1
+		var j = i - 1
 		var maxval = 0.0
-		for (k in i-1 until i+2){
+		for (k in i - 1 until i + 2) {
 			if (k == i || k < 0 || k == NUMLINBINS) {
 				continue
 			}
@@ -74,7 +76,7 @@ class LinearContext {
 				j = k
 			}
 		}
-		val interpolated = (bins[i]*binloc[i] + bins[j]*binloc[j])/(bins[i]+bins[j])
+		val interpolated = (bins[i] * binloc[i] + bins[j] * binloc[j]) / (bins[i] + bins[j])
 		return max(0.0, min(interpolated, 1.0))
 	}
 }

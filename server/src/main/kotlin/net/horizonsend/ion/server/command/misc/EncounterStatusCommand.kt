@@ -6,7 +6,6 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
-import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.StatusScheduler
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player

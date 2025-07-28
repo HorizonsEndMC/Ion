@@ -29,26 +29,27 @@ class ReinforcementSpawner(
 	constructor(reinforced: AIController, reinforcementPool: List<AITemplate.SpawningInformationHolder>) : this(
 		reinforced,
 		SingleSpawn(
-            WeightedShipSupplier(*reinforcementPool.toTypedArray()),
-            formatLocationSupplier({ reinforced.getCenter().toLocation(reinforced.starship.world) }, 250.0, 500.0),
-            null, // Calling module handles this
-            {_ -> Supplier { reinforced.getCoreModuleByType<DifficultyModule>()?.internalDifficulty ?: 2 }},
+			WeightedShipSupplier(*reinforcementPool.toTypedArray()),
+			formatLocationSupplier({ reinforced.getCenter().toLocation(reinforced.starship.world) }, 250.0, 500.0),
+			null, // Calling module handles this
+			{ _ -> Supplier { reinforced.getCoreModuleByType<DifficultyModule>()?.internalDifficulty ?: 2 } },
 			{ reinforced.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY },
-			{reinforced.getUtilModule(AIFleetManageModule::class.java)?.fleet},
-            ::setupReinforcementShip
-        )
+			{ reinforced.getUtilModule(AIFleetManageModule::class.java)?.fleet },
+			::setupReinforcementShip
+		)
 	) {
 		//check if reinforced ship is part of a fleet.
 		var fleet = reinforced.getUtilModule(AIFleetManageModule::class.java)?.fleet
 		if (fleet == null) {
 			fleet = Fleets.createAIFleet()
-			reinforced.addUtilModule(AIFleetManageModule(reinforced,fleet))
+			reinforced.addUtilModule(AIFleetManageModule(reinforced, fleet))
 		}
 	}
 
 	override val scheduler: SpawnerScheduler = SpawnerScheduler.DummyScheduler(this)
 
 	companion object {
-		fun setupReinforcementShip(controller: AIController) {/*TODO*/}
+		fun setupReinforcementShip(controller: AIController) {/*TODO*/
+		}
 	}
 }

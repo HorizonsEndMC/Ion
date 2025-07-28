@@ -9,9 +9,7 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockState
-import org.bukkit.util.Vector
 
 open class NoOpController(starship: ActiveStarship, previousDamager: Damager?) : Controller(previousDamager ?: noOpDamager, starship, "Idle") {
 	// Can't move

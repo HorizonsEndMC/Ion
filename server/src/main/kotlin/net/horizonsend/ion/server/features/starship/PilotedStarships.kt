@@ -68,9 +68,6 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.Locale
 import java.util.UUID
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
 object PilotedStarships : IonServerComponent() {
 	internal val map = mutableMapOf<Controller, ActiveControlledStarship>()

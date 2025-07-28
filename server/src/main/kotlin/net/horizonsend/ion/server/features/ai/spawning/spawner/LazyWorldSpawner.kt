@@ -13,9 +13,9 @@ import org.slf4j.Logger
 
 class LazyWorldSpawner(
 	id: String,
-	private val worldFilter : (World) -> Boolean,
+	private val worldFilter: (World) -> Boolean,
 	private val mechanicSupplier: () -> SpawnerMechanic,
-	scheduler : SpawnerScheduler = AISpawnerTicker(pointChance = 0.0, pointThreshold = 100)
+	scheduler: SpawnerScheduler = AISpawnerTicker(pointChance = 0.0, pointThreshold = 100)
 ) : GlobalWorldSpawner(
 	id,
 	scheduler,
@@ -24,6 +24,7 @@ class LazyWorldSpawner(
 		override suspend fun trigger(logger: Logger) {
 
 		}
+
 		override fun getAvailableShips(draw: Boolean): Collection<SpawnedShip> {
 			return emptyList()
 		}
@@ -31,11 +32,13 @@ class LazyWorldSpawner(
 ) {
 
 	/** Build (or reuse) the mechanic and delegate. */
-	override fun trigger(logger: Logger, scope: CoroutineScope) = scope.launch{
+	override fun trigger(logger: Logger, scope: CoroutineScope) = scope.launch {
 		val mech = mechanicSupplier()
-		try { mech.trigger(logger) }
-		catch (e: SpawningException) { handleException(logger, e) }
-		catch (e: Throwable) {
+		try {
+			mech.trigger(logger)
+		} catch (e: SpawningException) {
+			handleException(logger, e)
+		} catch (e: Throwable) {
 			logger.error("An error occurred when attempting to execute spawner: ${e.message}")
 			e.printStackTrace()
 		}

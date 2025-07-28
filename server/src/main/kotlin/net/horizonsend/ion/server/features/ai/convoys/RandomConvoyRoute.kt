@@ -2,22 +2,21 @@ package net.horizonsend.ion.server.features.ai.convoys
 
 import org.bukkit.Bukkit
 import org.bukkit.Location
-import org.bukkit.World
 import kotlin.random.Random
 
 class RandomConvoyRoute private constructor(
-	private val worldList : List<String>,
-	val numDestinations : Int
+	private val worldList: List<String>,
+	val numDestinations: Int
 ) : ConvoyRoute {
 	private val source: Location = randomLocation()
 	private val destinations: ArrayDeque<Location> =
 		ArrayDeque(List(numDestinations) { randomLocation() })
 
 	override fun advanceDestination(): Location? = destinations.removeFirstOrNull()
-	override fun getSourceLocation(): Location      = source
+	override fun getSourceLocation(): Location = source
 
 	private fun randomLocation(): Location {
-		val validWorlds = worldList.filter { Bukkit.getWorld(it) != null}
+		val validWorlds = worldList.filter { Bukkit.getWorld(it) != null }
 		val world = Bukkit.getWorld(validWorlds.random())!!
 		val border = world.worldBorder
 		val r = border.size / 2.0

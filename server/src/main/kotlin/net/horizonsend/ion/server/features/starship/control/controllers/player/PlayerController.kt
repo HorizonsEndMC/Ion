@@ -9,15 +9,12 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.block.Block
-import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockState
 import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.EquipmentSlot
-import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
-import kotlin.math.round
 
 abstract class PlayerController(
 	val player: Player,

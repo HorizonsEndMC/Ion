@@ -7,21 +7,21 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import java.util.function.Supplier
 
 class ContactsJammerModule(
-    controller: AIController,
-    private val range: Double,
-    private val targetingSupplier: Supplier<List<AITarget>>
+	controller: AIController,
+	private val range: Double,
+	private val targetingSupplier: Supplier<List<AITarget>>
 ) : net.horizonsend.ion.server.features.ai.module.AIModule(controller) {
-    private var ticks = 0
-    override fun tick() {
-        ticks++
+	private var ticks = 0
+	override fun tick() {
+		ticks++
 
-        if (ticks % 5 == 0) {
-            val targets = targetingSupplier.get()
-            for (target in targets) {
-                if (target is PlayerTarget && controller.getCenter().distance(target.getVec3i()) < range) {
-                    ContactsJammingSidebar.jamPlayer(target.player, controller.name)
-                }
-            }
-        }
-    }
+		if (ticks % 5 == 0) {
+			val targets = targetingSupplier.get()
+			for (target in targets) {
+				if (target is PlayerTarget && controller.getCenter().distance(target.getVec3i()) < range) {
+					ContactsJammingSidebar.jamPlayer(target.player, controller.name)
+				}
+			}
+		}
+	}
 }

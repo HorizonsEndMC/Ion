@@ -21,11 +21,11 @@ import java.util.function.Supplier
 
 class StarfighterSteeringModule(
 	controller: AIController,
-	difficulty : DifficultyModule,
+	difficulty: DifficultyModule,
 	generalTarget: Supplier<AITarget?>,
-	orbitDist : Supplier<Double>,
-	override val configSupplier: Supplier<AISteeringConfiguration.BasicSteeringConfiguration> = Supplier{ConfigurationFiles.aiSteeringConfiguration().starfighterBasicSteeringConfiguration}
-) : BasicSteeringModule(controller, difficulty ,generalTarget){
+	orbitDist: Supplier<Double>,
+	override val configSupplier: Supplier<AISteeringConfiguration.BasicSteeringConfiguration> = Supplier { ConfigurationFiles.aiSteeringConfiguration().starfighterBasicSteeringConfiguration }
+) : BasicSteeringModule(controller, difficulty, generalTarget) {
 
 
 	init {
@@ -42,25 +42,29 @@ class StarfighterSteeringModule(
 		 *
 		 * This map is the final context to which to determine an agents heading
 		 */
-		contexts["rotationInterest"]= BlankContext()
+		contexts["rotationInterest"] = BlankContext()
 		/** Danger maps on the other hand indicate how bad moving in a particular direction is, with
 		 * a high enough danger leading to an agent avoiding that direction regardless of interest
 		 * (obstacle avoidance). This gives rise to reactive emergent behavior.
 		 *
 		 * This context is the final danger map that masks the interest contexts
 		 */
-		contexts["danger"]= BlankContext()
-		contexts["wander"] = WanderContext(ship,offset)
-		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget,this,
-			{ConfigurationFiles.aiContextConfiguration().starfighterOffsetSeekContextConfiguration}, offsetSupplier = orbitDist)
-		contexts["faceSeek"]= FaceSeekContext(ship,generalTarget,difficulty,
-			{ConfigurationFiles.aiContextConfiguration().starfighterFaceSeekContextConfiguration}, offsetSupplier = orbitDist)
+		contexts["danger"] = BlankContext()
+		contexts["wander"] = WanderContext(ship, offset)
+		contexts["offsetSeek"] = OffsetSeekContext(
+			ship, generalTarget, this,
+			{ ConfigurationFiles.aiContextConfiguration().starfighterOffsetSeekContextConfiguration }, offsetSupplier = orbitDist
+		)
+		contexts["faceSeek"] = FaceSeekContext(
+			ship, generalTarget, difficulty,
+			{ ConfigurationFiles.aiContextConfiguration().starfighterFaceSeekContextConfiguration }, offsetSupplier = orbitDist
+		)
 		contexts["fleetGravity"] = FleetGravityContext(ship)
 		contexts["avoidIllius"] = AvoidIlliusContext(ship)
-		contexts["shieldAwareness"] = ShieldAwarenessContext(ship,difficulty)
-		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed },this)
-		contexts["borderDanger"]= BorderDangerContext(ship)
-		contexts["worldBlockDanger"]= WorldBlockDangerContext(ship)
-		contexts["obstructionDanger"] = ObstructionDangerContext(ship,obstructions)
+		contexts["shieldAwareness"] = ShieldAwarenessContext(ship, difficulty)
+		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed }, this)
+		contexts["borderDanger"] = BorderDangerContext(ship)
+		contexts["worldBlockDanger"] = WorldBlockDangerContext(ship)
+		contexts["obstructionDanger"] = ObstructionDangerContext(ship, obstructions)
 	}
 }
