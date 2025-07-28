@@ -2,12 +2,9 @@ package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
 import com.google.common.collect.Maps
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.utils.input.FutureInputResult
 import net.horizonsend.ion.common.utils.input.InputResult
-import net.horizonsend.ion.common.utils.text.ADVANCED_SHIP_FACTORY_CHARACTER
-import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
-import net.horizonsend.ion.common.utils.text.miniMessage
-import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.common.utils.text.toCreditComponent
+import net.horizonsend.ion.common.utils.text.*
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.command.starship.BlueprintCommand.blueprintInfo
 import net.horizonsend.ion.server.command.starship.BlueprintCommand.showMaterials
@@ -35,20 +32,12 @@ import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Compan
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.RangeDoubleValidator
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.actualType
-import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
-import net.horizonsend.ion.server.miscellaneous.utils.toMap
-import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
-import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.NamedTextColor.GREEN
-import net.kyori.adventure.text.format.NamedTextColor.RED
-import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.NamedTextColor.*
 import net.kyori.adventure.text.format.ShadowColor
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
@@ -197,9 +186,19 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 			if (!entity.ensureBlueprintLoaded(player)) return@builder InputResult.FailureReason(listOf(text("Blueprint not found!", RED)))
 
 			val otherCheckResults = entity.checkEnableButton(player)
-			if (otherCheckResults != null) return@builder otherCheckResults
 
-			InputResult.SuccessReason(listOf(text("Enabled ship factory.", GREEN)))
+			val future = FutureInputResult()
+
+			otherCheckResults.withResult { t ->
+				if (!t.isSuccess()) {
+					future.complete(t)
+					return@withResult
+				}
+
+				future.complete(InputResult.SuccessReason(listOf(text("Enabled ship factory.", GREEN))))
+			}
+
+			future
 		}
 		.withStaticFallbackLore(listOf(text("Start the ship factory.")))
 		.withSuccessHandler { _, player ->

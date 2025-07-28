@@ -3,7 +3,9 @@ package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.input.FutureInputResult
 import net.horizonsend.ion.common.utils.input.InputResult
+import net.horizonsend.ion.common.utils.input.PotentiallyFutureResult
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.task.TaskHandlingMultiblockEntity
@@ -34,7 +36,7 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.id.WrappedObjectId
-import java.util.UUID
+import java.util.*
 
 abstract class ShipFactoryEntity(
 	data: PersistentMultiblockData,
@@ -98,10 +100,14 @@ abstract class ShipFactoryEntity(
 		if (!ensureBlueprintLoaded(user)) return
 		val blueprint = cachedBlueprintData ?: return
 
-		if (!checkBlueprintPermissions(blueprint, user)) return
+		Tasks.async {
+			if (!checkBlueprintPermissions(blueprint, user)) return@async
 
-		userManager.setUser(user)
-		startTask(blueprint, gui, user)
+			Tasks.sync {
+				userManager.setUser(user)
+				startTask(blueprint, gui, user)
+			}
+		}
 	}
 
 	open fun startTask(blueprint: Blueprint, gui: ShipFactoryGui?, user: Player) {
@@ -164,7 +170,7 @@ abstract class ShipFactoryEntity(
 	}
 
 	private fun checkBlueprintPermissions(blueprint: Blueprint, user: Player): Boolean {
-		if (!blueprint.canAccess(user)) {
+		if (!Blueprint.canAccess(user, blueprint._id)) {
 			user.userError("You don't have access to that blueprint")
 			return false
 		}
@@ -177,13 +183,22 @@ abstract class ShipFactoryEntity(
 		return true
 	}
 
-	fun checkEnableButton(user: Player): InputResult? {
+	fun checkEnableButton(user: Player): PotentiallyFutureResult {
 		if (CombatTimer.isPvpCombatTagged(user)) return InputResult.FailureReason(listOf(Component.text("Cannot activate Ship Factories while in combat!", NamedTextColor.RED)))
 
 		val cached = cachedBlueprintData ?: return InputResult.FailureReason(listOf(Component.text("Blueprint not found!", NamedTextColor.RED)))
-		if (!cached.canAccess(user)) return InputResult.FailureReason(listOf(Component.text("You don't have access to that blueprint!", NamedTextColor.RED)))
 
-		return null
+		val future = FutureInputResult()
+
+		Tasks.async {
+			if (!Blueprint.canAccess(user, cached._id)) {
+				future.complete(InputResult.FailureReason(listOf(Component.text("You don't have access to that blueprint!", NamedTextColor.RED))))
+			} else {
+				future.complete(InputResult.InputSuccess)
+			}
+		}
+
+		return future
 	}
 
 	fun getPreview(player: Player, duration: Long): PreviewTask? {

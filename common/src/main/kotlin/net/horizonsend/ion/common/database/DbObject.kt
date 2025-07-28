@@ -1,12 +1,7 @@
 package net.horizonsend.ion.common.database
 
 import com.mongodb.MongoException
-import com.mongodb.client.ChangeStreamIterable
-import com.mongodb.client.ClientSession
-import com.mongodb.client.FindIterable
-import com.mongodb.client.MongoCollection
-import com.mongodb.client.MongoCursor
-import com.mongodb.client.MongoIterable
+import com.mongodb.client.*
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument
@@ -16,17 +11,8 @@ import net.horizonsend.ion.common.database.DBManager.INITIALIZATION_COMPLETE
 import net.horizonsend.ion.common.database.DBManager.getCollection
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
-import org.litote.kmongo.EMPTY_BSON
-import org.litote.kmongo.Id
-import org.litote.kmongo.and
-import org.litote.kmongo.combine
-import org.litote.kmongo.find
-import org.litote.kmongo.findOne
-import org.litote.kmongo.findOneById
+import org.litote.kmongo.*
 import org.litote.kmongo.id.WrappedObjectId
-import org.litote.kmongo.json
-import org.litote.kmongo.match
-import org.litote.kmongo.updateOneById
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
 import org.slf4j.LoggerFactory
 import java.io.Closeable
@@ -87,11 +73,15 @@ abstract class DbObjectCompanion<T : DbObject, ID : Id<T>>(
 //        col.projection(property, query).firstOrNull()
 		col.findValuesById(id, property)?.get(property)
 
+	inline fun <reified Z, reified R : Collection<Z>> findOnePropById(id: Oid<*>, property: KProperty<R>): List<Z>? =
+//        col.projection(property, query).firstOrNull()
+		col.findValuesById(id, property)?.get(property)
+
 	inline fun <reified R> findPropById(id: ID, property: KProperty<R>): R? =
 		col.findOneValue(Filters.eq("_id", id), property)?.get(property)
 
-	fun <R : Any> findPropById(id: ID, clazz: KClass<R>, property: KProperty<R>): R? =
-		col.findOneValue(Filters.eq("_id", id), property)?.get(clazz, property)
+	inline fun <reified Z, reified R : Collection<Z>> findPropById(id: ID, property: KProperty<R>): List<Z>? =
+		col.findOneValue(Filters.eq("_id", id), property)?.get(property)
 
 	@Suppress("UNCHECKED_CAST")
 	fun allIds(): MongoIterable<ID> = findProp(EMPTY_BSON, DbObject::_id) as MongoIterable<ID>
