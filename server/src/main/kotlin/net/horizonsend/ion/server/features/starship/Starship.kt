@@ -284,6 +284,8 @@ class Starship(
 
 	val pendingRotations = LinkedBlockingQueue<PendingRotation>()
 	private val rotationTime get() = TimeUnit.MILLISECONDS.toNanos(50L + initialBlockCount / 30L)
+	// manual move is sneak/direct control
+	var lastRotation = System.nanoTime()
 
 	fun getTargetForward(): BlockFace {
 		val rotation = pendingRotations.peek()
@@ -320,7 +322,7 @@ class Starship(
 			if (pendingRotations.any()) {
 				scheduleRotation()
 			}
-
+			lastRotation = System.nanoTime() //TODO: change this to after the async call
 			moveAsync(RotationMovement(this, rotation.clockwise))
 		}
 	}

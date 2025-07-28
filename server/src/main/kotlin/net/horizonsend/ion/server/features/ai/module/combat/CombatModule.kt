@@ -169,6 +169,7 @@ abstract class CombatModule<T>(
 	}
 
 	private fun shouldTick(): Boolean {
+		if (System.nanoTime() - starship.lastRotation < difficulty.actionPenalty) return false
 		return System.nanoTime() - lastFire >= difficulty.combatTickCooldown
 	}
 }

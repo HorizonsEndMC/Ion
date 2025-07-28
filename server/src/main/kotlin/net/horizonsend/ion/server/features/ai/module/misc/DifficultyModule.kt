@@ -61,9 +61,10 @@ class DifficultyModule(
 
 	val shotVariation : Double get() {
 		return when (internalDifficulty) {
-			0 -> 0.8
-			1 -> 0.3
-			2 -> 0.15
+			0 -> 1.6
+			1 -> 0.8
+			2 -> 0.3
+			3 -> 0.15
 			else -> 0.0
 		}
 	}
@@ -73,13 +74,24 @@ class DifficultyModule(
 	/** crazy clickers vs trackpad users rip */
 	val combatTickCooldown : Long get() {
 		return when (internalDifficulty) {
-			0 -> 350 * 1000
-			1 -> 250 * 1000
-			2 -> 175 * 1000
-			3 -> 100 * 1000
-			4 -> 45 * 1000
-			else -> 150 * 100
-		}
+			0 -> 500
+			1 -> 400
+			2 -> 350
+			3 -> 175
+			4 -> 45
+			else -> 350
+		} * 1000000L
+	}
+
+	val actionPenalty : Long get() {
+		return when (internalDifficulty) {
+			0 -> 1000
+			1 -> 500
+			2 -> 250
+			3 -> 100
+			4 -> 0
+			else -> 250
+		} * 1000000L
 	}
 
 	val aimEverything get() = internalDifficulty >= 4
