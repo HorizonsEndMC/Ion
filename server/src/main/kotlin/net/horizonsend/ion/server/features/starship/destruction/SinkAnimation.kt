@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
 import kotlin.math.cbrt
+import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.random.Random
@@ -119,7 +120,7 @@ class SinkAnimation(
 	}
 
 	fun playRandomBlocks() {
-		val blockCount = sqrt(sqrt(size.toDouble()) * scale).roundToInt() * 10
+		val blockCount = sqrt(sqrt(min(size, 20000).toDouble()) * scale).roundToInt() * 10
 
 		val bockPositions = starship.blocks.shuffled().take(blockCount)
 
