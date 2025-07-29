@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.destruction
 
+import io.netty.util.internal.ThreadLocalRandom
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.DyedItemColor
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
@@ -20,9 +21,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
-import kotlin.math.cbrt
-import kotlin.math.roundToInt
-import kotlin.math.sqrt
+import kotlin.math.*
 import kotlin.random.Random
 
 class SinkAnimation(
@@ -32,7 +31,7 @@ class SinkAnimation(
 	val origin: Vec3i,
 ) : BukkitRunnable() {
 	val scale: Double = 0.5 * (cbrt(size.toDouble()) / cbrt(739.0))
-	private val duration = (60 * scale).roundToInt()
+	private val baseDuration = (60 * scale).roundToLong()
 
 	private val blockWrappers = ObjectOpenHashSet<SinkAnimationBlock>()
 
@@ -63,12 +62,13 @@ class SinkAnimation(
 			val item = DYEABLE_CUBE_MONO.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(initColor, false)) }
 
 			val originHeading = Vector(Random.nextDouble(-1.0, 1.0), Random.nextDouble(-1.0, 1.0), Random.nextDouble(-1.0, 1.0))
-			val (right, _) = originHeading.orthogonalVectors()
+			val (_, _) = originHeading.orthogonalVectors()
 
 			val displayContainer = ItemDisplayContainer(world = world, initScale = 1.0f, initPosition = origin, initHeading = originHeading, item = item)
 			displayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
 
 			blockWrappers.add(ColoredSinkAnimationBlock(
+				duration = Random.nextLong(baseDuration, (baseDuration * 1.5).roundToLong()),
 				wrapper = displayContainer,
 				direction = vector.multiply(scale),
 				initialScale = 2.0 * scale,
@@ -98,6 +98,7 @@ class SinkAnimation(
 			displayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
 
 			blockWrappers.add(ColoredSinkAnimationBlock(
+				duration = (baseDuration * 1.5).roundToLong(),
 				wrapper = displayContainer,
 				direction = vector,
 				initialScale = 1.0 * scale,
@@ -119,9 +120,11 @@ class SinkAnimation(
 	}
 
 	fun playRandomBlocks() {
-		val blockCount = sqrt(sqrt(size.toDouble()) * scale).roundToInt() * 10
+		val blockCount = sqrt(sqrt(min(size, 20000).toDouble()) * scale).roundToInt() * 10
 
 		val bockPositions = starship.blocks.shuffled().take(blockCount)
+
+		val random = ThreadLocalRandom.current()
 
 		for (position in bockPositions) {
 			val blockData = starship.world.getBlockAtKey(position).blockData
@@ -141,7 +144,10 @@ class SinkAnimation(
 
 			displayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
 
+			val d = random.nextLong(baseDuration, (baseDuration / 2) + baseDuration)
+
 			blockWrappers.add(SinkAnimationBlock(
+				duration = d,
 				wrapper = displayContainer,
 				direction = direction,
 				initialScale = 1.0,
@@ -164,12 +170,14 @@ class SinkAnimation(
 	override fun run() {
 		iterations++
 
-		if (iterations >= duration) {
+		@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
+		if (blockWrappers.isEmpty) {
 			cancel()
 			return
 		}
 
 		blockWrappers.forEach(SinkAnimationBlock::update)
+		blockWrappers.removeAll(SinkAnimationBlock::checkDead)
 	}
 
 	override fun cancel() {
@@ -184,7 +192,8 @@ class SinkAnimation(
 		}
 	}
 
-	open inner class SinkAnimationBlock(
+	open class SinkAnimationBlock(
+		val duration: Long,
 		open val wrapper: DisplayWrapper,
 		val direction: Vector,
 		val initialScale: Double,
@@ -193,10 +202,13 @@ class SinkAnimation(
 		val rotationDegrees: Double,
 		val motionAdjuster: SinkAnimationBlock.() -> Unit = {}
 	) {
-		private val durationOffset = Random.nextInt(duration, (duration / 2) + duration)
-		protected val phase get() = iterations.toDouble() / durationOffset.toDouble()
+		private var iterations: Int = 0
+
+		protected val phase get() = iterations.toDouble() / duration.toDouble()
 
 		open fun update() {
+			iterations++
+
 			updatePosition()
 			wrapper.update()
 		}
@@ -211,9 +223,16 @@ class SinkAnimation(
 			val rotated = wrapper.heading.clone().rotateAroundNonUnitAxis(rotationAxis, Math.toRadians(rotationDegrees))
 			wrapper.heading = rotated
 		}
+
+		fun checkDead(): Boolean {
+			val dead = iterations >= duration
+			if (dead) wrapper.remove()
+			return dead
+		}
 	}
 
 	inner class ColoredSinkAnimationBlock(
+		duration: Long,
 		override val wrapper: ItemDisplayContainer,
 		direction: Vector,
 		initialScale: Double,
@@ -221,7 +240,7 @@ class SinkAnimation(
 		rotationAxis: Vector,
 		rotationDegrees: Double,
 		colors: Map<Color, Int>, // Color to weight
-	) : SinkAnimationBlock(wrapper, direction, initialScale, finalScale, rotationAxis, rotationDegrees) {
+	) : SinkAnimationBlock(duration, wrapper, direction, initialScale, finalScale, rotationAxis, rotationDegrees) {
 		val colors = mutableListOf<Color>().apply {
 			for ((color, weight) in colors) {
 				repeat(weight) { add(color) }
