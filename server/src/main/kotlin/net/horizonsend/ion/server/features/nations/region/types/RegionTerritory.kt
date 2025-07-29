@@ -178,14 +178,14 @@ class RegionTerritory(territory: Territory) :
 				return null
 			}
 
-			// if it's nation access, they can build if they're the same nation
-			if (settlementBuildAccess == Settlement.ForeignRelation.NATION_MEMBER && settlementNation == playerNation) {
-				return null
-			}
-
-			// if the min build access is ally, and they're at least an ally, they can build
 			if (settlementNation != null) {
-				if (RelationCache[settlementNation, playerNation].ordinal >= NationRelation.Level.ALLY.ordinal) {
+				// if it's nation access, they can build if they're the same nation
+				if (settlementBuildAccess == Settlement.ForeignRelation.NATION_MEMBER && settlementNation == playerNation) {
+					return null
+				}
+
+				// if the min build access is ally, and they're at least an ally (and not in the same nation), they can build
+				if (settlementBuildAccess == Settlement.ForeignRelation.ALLY && RelationCache[settlementNation, playerNation].ordinal >= NationRelation.Level.ALLY.ordinal) {
 					return null
 				}
 			}
