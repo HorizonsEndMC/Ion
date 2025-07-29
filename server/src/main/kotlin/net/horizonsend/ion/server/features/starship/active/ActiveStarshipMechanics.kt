@@ -40,8 +40,6 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.dynmap.bukkit.DynmapPlugin
 import java.util.LinkedList
 import java.util.concurrent.TimeUnit
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 object ActiveStarshipMechanics : IonServerComponent() {
 	override fun onEnable() {

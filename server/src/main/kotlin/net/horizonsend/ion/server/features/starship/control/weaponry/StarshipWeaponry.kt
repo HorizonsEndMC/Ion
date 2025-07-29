@@ -6,9 +6,12 @@ import net.horizonsend.ion.server.command.admin.debugBanner
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
+import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.PerDamagerCooldown
@@ -32,7 +35,8 @@ object StarshipWeaponry : IonServerComponent() {
         facing: BlockFace,
         dir: Vector,
         target: Vector,
-        weaponSet: String?
+        weaponSet: String?,
+		manual: Boolean = true
 	) {
 		starship.debug("Common manual firing")
 
@@ -50,12 +54,15 @@ object StarshipWeaponry : IonServerComponent() {
 		starship.debug("Weapons: ${weapons.joinToString { it.name }}")
 
 		val fireTask = {
-			val queuedShots = queueShots(shooter, weapons, leftClick, facing, dir, target)
+			val queuedShots = queueShots(shooter, weapons, leftClick, facing, dir, target, manual)
 			starship.debug("Queued shots: ${queuedShots.joinToString { it.weapon.name }}")
 			StarshipWeapons.fireQueuedShots(queuedShots, starship)
 		}
 
-		if (!leftClick) cooldown.tryExec(shooter, fireTask) else fireTask()
+		if (!leftClick) {
+			if (weapons.all { it !is HeavyWeaponSubsystem }) return //prevent light weapons from messing up the cooldown
+			cooldown.tryExec(shooter, fireTask)
+		} else fireTask()
 	}
 
 	fun getTarget(loc: Location, dir: Vector, starship: ActiveStarship, defaultDistance: Int = 500): Vector {
@@ -115,7 +122,8 @@ object StarshipWeaponry : IonServerComponent() {
         leftClick: Boolean,
         facing: BlockFace,
         dir: Vector,
-        target: Vector
+        target: Vector,
+		manual : Boolean,
 	): LinkedList<StarshipWeapons.ManualQueuedShot> {
 		val queuedShots = LinkedList<StarshipWeapons.ManualQueuedShot>()
 
@@ -126,6 +134,16 @@ object StarshipWeaponry : IonServerComponent() {
 
 			if (weapon !is ManualWeaponSubsystem) {
 				shooter.starship?.debug("Continue, weapon cannot be manually fired.")
+				continue
+			}
+
+			if ((weapon is AutoWeaponSubsystem == manual) and (shooter !is PlayerDamager)) {
+				shooter.starship?.debug("Trying to manually fire an auto weapon or vice versa")
+				continue
+			}
+
+			if ((weapon is MiningLaserSubsystem) and (shooter !is PlayerDamager)) {
+				shooter.starship?.debug("AI ships dont fire mining lasers")
 				continue
 			}
 

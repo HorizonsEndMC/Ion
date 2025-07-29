@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
@@ -19,15 +20,20 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
-import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPositioningModule
+import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
+import net.horizonsend.ion.server.features.ai.spawning.ships.spawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.AISpawnerTicker
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.ConvoyScheduler
 import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.kyori.adventure.text.Component.text
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -69,6 +75,20 @@ object AIDebugCommand : SLCommand() {
 		manager.commandCompletions.registerAsyncCompletion("controllerFactories") { _ ->
 			AIControllerFactories.presetControllers.keys
 		}
+		manager.commandCompletions.registerAsyncCompletion("targetMode") { _ ->
+			AITarget.TargetMode.entries.map { it.name }
+		}
+
+		manager.commandCompletions.registerAsyncCompletion("AIDebugColors") { _ ->
+			AIDebugModule.Companion.DebugColor.entries.map { it.name }
+		}
+		manager.commandCompletions.registerAsyncCompletion("AIContexts") { _ ->
+			AIDebugModule.contextMapTypes
+		}
+
+		manager.commandCompletions.registerAsyncCompletion("AIDifficulty") { _ ->
+			DifficultyModule.Companion.AIDifficulty.entries.map { it.name }
+		}
 	}
 
 	@Suppress("Unused")
@@ -80,11 +100,12 @@ object AIDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("ai")
-	@CommandCompletion("@controllerFactories standoffDistance x y z manualSets autoSets @autoTurretTargets ")
+	@CommandCompletion("@controllerFactories @AIDifficulty @targetMode manualSets autoSets")
 	fun ai(
 		sender: Player,
 		controller: AIControllerFactory,
-		standoffDistance: Double,
+		@Optional difficulty: DifficultyModule.Companion.AIDifficulty?,
+		@Optional targetMode: String?,
 		@Optional manualSets: String?,
 		@Optional autoSets: String?,
 	) {
@@ -95,15 +116,78 @@ object AIDebugCommand : SLCommand() {
 			text("Player Created AI Ship"),
 			Configuration.parse<WeaponSetsCollection>(manualSets ?: "{}").sets,
 			Configuration.parse<WeaponSetsCollection>(autoSets ?: "{}").sets,
-		).apply {
-			val positioningEngine = modules["positioning"]
-			(positioningEngine as? AxisStandoffPositioningModule)?.let { it.standoffDistance = standoffDistance }
-		}
+			difficulty?.ordinal ?: 3,
+			targetMode?.let { AITarget.TargetMode.valueOf(it) } ?: AITarget.TargetMode.PLAYER_ONLY
+		)
+
+		AIControlUtils.guessWeaponSets(starship,newController)
+		newController.validateWeaponSets()
 
 		starship.setController(newController)
 
 		starship.removePassenger(sender.uniqueId)
 	}
+
+	@Subcommand("debug show")
+	@CommandCompletion("@AIContexts @AIDebugColors")
+	@Suppress("unused")
+	fun debugShow(
+		sender: Player,
+		context: String,
+		color: String
+	) {
+		if (context !in AIDebugModule.contextMapTypes) throw InvalidCommandArgument("not a context")
+		AIDebugModule.shownContexts.add(Pair(context,AIDebugModule.Companion.DebugColor.valueOf(color)))
+	}
+
+	@Subcommand("debug hide")
+	@CommandCompletion("@AIContexts @AIDebugColors")
+	@Suppress("unused")
+	fun debugHide(
+		sender: Player,
+		context: String,
+		color: String
+	) {
+		if (context !in AIDebugModule.contextMapTypes) throw InvalidCommandArgument("not a context")
+		AIDebugModule.shownContexts.remove(Pair(context,AIDebugModule.Companion.DebugColor.valueOf(color)))
+	}
+
+	@Subcommand("toggle movement")
+	@Suppress("unused")
+	fun toggleMovement(
+		sender: Player,
+	) {
+		AIDebugModule.canShipsMove = !AIDebugModule.canShipsMove
+		sender.information("Toggled movements to ${AIDebugModule.canShipsMove}")
+	}
+
+	@Subcommand("toggle rotation")
+	@Suppress("unused")
+	fun toggleRotation(
+		sender: Player,
+	) {
+		AIDebugModule.canShipsRotate = !AIDebugModule.canShipsRotate
+		sender.information("Toggled rotations to ${AIDebugModule.canShipsRotate}")
+	}
+
+	@Subcommand("toggle showAims")
+	@Suppress("unused")
+	fun toggleShowAims(
+		sender: Player,
+	) {
+		AIDebugModule.showAims = !AIDebugModule.showAims
+		sender.information("Toggled aim visualization to ${AIDebugModule.showAims}")
+	}
+
+	@Subcommand("toggle fireWeapons")
+	@Suppress("unused")
+	fun toggleFireWeapons(
+		sender: Player,
+	) {
+		AIDebugModule.fireWeapons = !AIDebugModule.fireWeapons
+		sender.information("Toggled weapons firing to ${AIDebugModule.fireWeapons}")
+	}
+
 
 	@Subcommand("spawner query")
 	fun onQuery(sender: CommandSender) {
@@ -142,30 +226,44 @@ object AIDebugCommand : SLCommand() {
 	data class WeaponSetsCollection(val sets: MutableSet<AIStarshipTemplate.WeaponSet> = mutableSetOf())
 
 	@Subcommand("spawn")
-	fun spawn(sender: Player, spawner: AISpawner, template: SpawnedShip) {
-		template.spawn(log, sender.location)
+	@CommandCompletion("@controllerFactories @AIDifficulty @targetMode") //TODO: fix command
+	fun spawn(
+		sender: Player,
+		template: SpawnedShip,
+		difficulty: DifficultyModule.Companion.AIDifficulty,
+		@Optional targetMode: String?) {
 
-		sender.success("Spawned ship")
+		AISpawningManager.context.launch {
+			template.spawn(log, sender.location, difficulty.ordinal,
+				targetMode?.let { AITarget.TargetMode.valueOf(it) } ?: AITarget.TargetMode.PLAYER_ONLY)
+			sender.success("Spawned ship")
+		}
 	}
 
 	@Suppress("Unused")
 	@Subcommand("dump controller")
 	@CommandCompletion("@autoTurretTargets")
 	fun listController(sender: Player, shipIdentifier: String) {
-		val formatted = if (shipIdentifier.contains(":".toRegex())) shipIdentifier.substringAfter(":") else shipIdentifier
+		val ship = ActiveStarships.getByIdentifier(shipIdentifier) ?: fail { "$shipIdentifier is not a starship" }
 
-		val ship = ActiveStarships[formatted] ?: fail { "$shipIdentifier is not a starship" }
 		sender.information(ship.controller.toString())
 
-		(ship.controller as? AIController)?.let { sender.userError(it.modules.entries.joinToString(separator = "\n") { mod ->
+		(ship.controller as? AIController)?.let { sender.userError(it.coreModules.entries.joinToString(separator = "\n") { mod ->
 			"[${mod.key}] = ${mod.value}" })
 		}
 	}
 
 	@Subcommand("trigger locus")
 	@CommandCompletion("@aiSpawners")
-	fun listController(sender: Player, spawner: AISpawner) {
+	fun triggerLocus(sender: Player, spawner: AISpawner) {
 		val scheduler = spawner.scheduler as? LocusScheduler ?: fail { "Spawner's scheduler is not a locus" }
 		scheduler.start()
+	}
+
+	@Subcommand("trigger convoy")
+	@CommandCompletion("@aiSpawners")
+	fun triggerConvoy(sender: Player, spawner: AISpawner) {
+		val scheduler = spawner.scheduler as? ConvoyScheduler ?: fail { "Spawner's scheduler is not a convoy" }
+		scheduler.start(log)
 	}
 }

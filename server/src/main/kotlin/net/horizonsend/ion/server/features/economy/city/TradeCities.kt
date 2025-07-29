@@ -11,11 +11,14 @@ import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.string
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.ai.convoys.AIConvoyTemplate
+import net.horizonsend.ion.server.features.ai.convoys.CityContext
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
 import java.util.concurrent.ConcurrentHashMap
 
 object TradeCities : IonServerComponent() {
 	private val cities: MutableMap<Oid<Territory>, TradeCityData> = ConcurrentHashMap()
+	val scheduledHours = mutableMapOf<Int, Oid<Territory>>()  // hour → territory
 
 	override fun onEnable() {
 		val settlementType = TradeCityType.SETTLEMENT
@@ -88,5 +91,26 @@ object TradeCities : IonServerComponent() {
 
 	fun getIfCity(territory: RegionTerritory): TradeCityData? {
 		return cities[territory.id]
+	}
+
+	fun applyConvoySchedule(city: TradeCityData, hour: Int, template: AIConvoyTemplate<CityContext>): Boolean {
+		if (hour !in 0..23) return false
+
+		val currentHolder = scheduledHours[hour]
+		if (currentHolder != null && currentHolder != city.territoryId) return false
+
+		val now = System.currentTimeMillis()
+		city.scheduledHour = hour
+		city.convoyTemplate = template
+		city.configEffectiveAfter = now + 7 * 24 * 60 * 60 * 1000L // 7 days
+		scheduledHours[hour] = city.territoryId
+		return true
+	}
+
+	fun getRemainingDays(city: TradeCityData): Long {
+		val now = System.currentTimeMillis()
+		val future = city.configEffectiveAfter ?: return 0
+		val delta = (future - now).coerceAtLeast(0)
+		return delta / (24 * 60 * 60 * 1000L)
 	}
 }

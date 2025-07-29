@@ -38,9 +38,6 @@ import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -323,6 +320,7 @@ object StarshipShields : IonServerComponent() {
 
 		starship.debugRed("shield damage = ${shield.power} - $usage = ${shield.power - usage}")
 		shield.power -= usage
+		//shield.recentDamage += usage / shield.maxPower
 
 		// do not protect blocks if shield power is lowered to 0
 		if (shield.power <= 0) {

@@ -427,7 +427,7 @@ object ContactsSidebar {
                             interdictionTextComponent(interdictionDistance, Interdiction.starshipInterdictionRangeEquation(starship).toInt(), true)
                         } else empty(),
                         if (inFleet) {
-                            if (fleet != null && otherPlayer != null && fleet.leaderId == otherPlayer.uniqueId) {
+                            if (fleet != null && otherPlayer != null && fleet.leader == otherPlayer.uniqueId) {
                                 fleetCommanderTextComponent()
                             } else fleetTextComponent()
                         } else empty()

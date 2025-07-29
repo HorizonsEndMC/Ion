@@ -56,7 +56,7 @@ data class PlayerSettings(
 	var showItemSearchItem: Boolean = true,
 	var protectionMessagesEnabled: Boolean = true,
 	var useAlternateDCCruise: Boolean = false,
-	var dcSpeedModifier: Int = 1,
+	var dcRefreshRate: Int = -1,
 	var enableAdditionalSounds: Boolean = true,
 	var soundCruiseIndicator: Int = 0,
 	var enableCombatTimerAlerts: Boolean = true,

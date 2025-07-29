@@ -32,11 +32,11 @@ object ControlSettingsCommand : SLCommand() {
 
     @CommandAlias("dcSpeedModifier")
     fun onChangeDcModifier(sender: Player) {
-        val currentSetting = sender.getSetting(PlayerSettings::dcSpeedModifier)
+        val currentSetting = sender.getSetting(PlayerSettings::dcRefreshRate)
 
         val newSetting = if (currentSetting < 3) currentSetting + 1 else 1
-        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::dcSpeedModifier, newSetting))
-		sender.setSetting(PlayerSettings::dcSpeedModifier, newSetting)
+        SLPlayer.updateById(sender.slPlayerId, setValue(PlayerSettings::dcRefreshRate, newSetting))
+		sender.setSetting(PlayerSettings::dcRefreshRate, newSetting)
         sender.success("Changed DC speed modifier to $newSetting")
     }
 }
