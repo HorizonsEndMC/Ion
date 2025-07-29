@@ -514,6 +514,7 @@ class MultiblockShape {
 			Material.REDSTONE_LAMP,
 			Material.MAGMA_BLOCK,
 			Material.SEA_LANTERN,
+			Material.SHROOMLIGHT,
 			alias = "any light block"
 		)
 
