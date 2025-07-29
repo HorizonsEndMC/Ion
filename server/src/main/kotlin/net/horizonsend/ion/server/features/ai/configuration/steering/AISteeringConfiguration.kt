@@ -15,7 +15,7 @@ data class AISteeringConfiguration(
 	val miniFrigateBasicSteeringConfiguration: BasicSteeringConfiguration =
 		BasicSteeringConfiguration(defaultMaxSpeed = 22.0, defaultRotationMixingBias = 0.6, defaultRotationMixingGain = 2.0),
 	val frigateBasicSteeringConfiguration: BasicSteeringConfiguration =
-		BasicSteeringConfiguration(defaultMaxSpeed = 20.0, defaultRotationMixingBias = 0.1, defaultRotationContribution = 0.5),
+		BasicSteeringConfiguration(defaultMaxSpeed = 20.0, defaultRotationContribution = 0.3, defaultRotationBleed = 0.05, defaultRotationMixingBias = 0.3),
 	val destroyerBasicSteeringConfiguration: BasicSteeringConfiguration =
 		BasicSteeringConfiguration(defaultMaxSpeed = 19.0, defaultRotationMixingBias = 0.1, defaultRotationContribution = 0.5),
 	val battlecruiserBasicSteeringConfiguration: BasicSteeringConfiguration =
@@ -28,7 +28,7 @@ data class AISteeringConfiguration(
 		fleeDist = 600.0, optimalDist = 150.0, maxDist = 220.0
 	),
 	val corvetteDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(
-		fleeDist = 600.0, optimalDist = 150.0, maxDist = 500.0
+		fleeDist = 700.0, optimalDist = 150.0, maxDist = 500.0
 	),
 	val interdictionCorvetteDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(
 		fleeDist = 2300.0, optimalDist = 1500.0, maxDist = 2000.0
@@ -41,10 +41,10 @@ data class AISteeringConfiguration(
 	),
 	//because cruising cases the ships to go wide of the optima dist make it closer than normal
 	val capitalDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(
-		fleeDist = 600.0, minDist = 50.0, optimalDist = 150.0, startFleeing = 0.1, stopFleeing = 0.5
+		fleeDist = 400.0, minDist = 50.0,maxDist = 300.0, optimalDist = 150.0, startFleeing = 0.01, stopFleeing = 0.2
 	),//capitals back off
 	val advancedCapitalDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(
-		fleeDist = 600.0, optimalDist = 50.0, startFleeing = 0.01, stopFleeing = 0.3
+		fleeDist = 400.0,maxDist = 300.0, optimalDist = 50.0, startFleeing = 0.01, stopFleeing = 0.3
 	),
 	val battlecruiserDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(
 		fleeDist = 600.0, optimalDist = 200.0, startFleeing = -0.1, stopFleeing = 0.0

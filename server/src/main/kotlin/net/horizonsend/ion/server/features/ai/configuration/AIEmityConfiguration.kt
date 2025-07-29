@@ -11,15 +11,15 @@ data class AIEmities(
 	@Serializable
 	data class AIEmityConfiguration(
 		val damagerWeight: Double = 1.0,
-		val distanceWeight: Double = 3.0,
-		val sizeWeight: Double = 4.0,
-		val outOfRangeDecay: Double = 0.9,
-		val outOfSystemDecay: Double = 0.1,
-		val damagerDeacy: Double = 0.5,
-		val aggroRange: Double = 700.0,
+		val distanceWeight: Double = 100.0,
+		val sizeWeight: Double = 1.0,
+		val outOfRangeDecay: Double = 0.8,
+		val outOfSystemDecay: Double = 0.05,
+		val damagerDeacy: Double = 0.75,
+		val aggroRange: Double = 1000.0,
 		val initialAggroThreshold: Double = 1.0,
-		val distanceAggroWeight: Double = 1.0,
+		val distanceAggroWeight: Double = 0.15,
 		val gravityWellAggro: Double = 10.0,
-		val damagerAggroWeight: Double = 2.0,
+		val damagerAggroWeight: Double = 1.1,
 	)
 }

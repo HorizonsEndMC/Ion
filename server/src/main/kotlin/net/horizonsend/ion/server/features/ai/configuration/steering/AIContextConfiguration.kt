@@ -15,7 +15,7 @@ data class AIContextConfiguration(
 	val starfighterOffsetSeekContextConfiguration: OffsetSeekContextConfiguration =
 		OffsetSeekContextConfiguration(maxHeightDiff = 10.0),
 	val capitalOffsetSeekContextConfiguration: OffsetSeekContextConfiguration =
-		OffsetSeekContextConfiguration(maxHeightDiff = 40.0),
+		OffsetSeekContextConfiguration(maxHeightDiff = 15.0),
 
 	val defaultFaceSeekContextConfiguration: FaceSeekContextConfiguration = FaceSeekContextConfiguration(),
 	val starfighterFaceSeekContextConfiguration: FaceSeekContextConfiguration =
@@ -43,7 +43,7 @@ data class AIContextConfiguration(
 	@Serializable
 	data class WanderContextConfiguration(
 		val weight: Double = 0.5,
-		val jitterRate: Double = 1000000.0,
+		val jitterRate: Double = 20000.0,
 		val sizeFactor: Double = 100.0,
 	)
 
@@ -66,7 +66,7 @@ data class AIContextConfiguration(
 		val weight: Double = 1.0,
 		val dotShift: Double = 0.0,
 		val defaultOffsetDist: Double = 100.0,
-		val maxHeightDiff: Double = 20.0
+		val maxHeightDiff: Double = 25.0
 	)
 
 	@Serializable
@@ -111,20 +111,20 @@ data class AIContextConfiguration(
 	@Serializable
 	data class BorderDangerContextConfiguration(
 		val falloff: Double = 10.0,
-		val verticalFalloff: Double = 20.0,
+		val verticalFalloff: Double = 10.0,
 		val dotShift: Double = 0.2
 	)
 
 	@Serializable
 	data class WorldBlockDangerContextConfiguration(
-		val falloff: Double = 2.0,
+		val falloff: Double = 10.0,
 		val dotPower: Double = 3.0,
 		val maxDist: Double = 200.0
 	)
 
 	@Serializable
 	data class ObstructionDangerContextConfiguration(
-		val falloff: Double = 4.0,
+		val falloff: Double = 20.0,
 		val dotShift: Double = 0.3,
 		val dotPower: Double = 1.0,
 		val expireTime: Int = 5 * 1000,
