@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.ai.convoys
 
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import kotlin.random.Random
@@ -11,9 +13,9 @@ class RandomConvoyRoute private constructor(
 	val numDestinations: Int,
 	val generator : RandomConvoyRoute.() -> Location = randomLocation
 ) : ConvoyRoute {
-	private val source: Location = randomLocation()
+	private val source: Location = generator()
 	private val destinations: ArrayDeque<Location> =
-		ArrayDeque(List(numDestinations) { randomLocation() })
+		ArrayDeque(List(numDestinations) { generator() })
 
 	override fun advanceDestination(): Location? = destinations.removeFirstOrNull()
 	override fun getSourceLocation(): Location = source
