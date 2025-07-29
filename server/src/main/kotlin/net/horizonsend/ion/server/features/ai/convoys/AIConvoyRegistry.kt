@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.MINING
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEUS_EXPLORERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.privateerMini
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.CaravanModule
 import net.horizonsend.ion.server.features.ai.module.misc.DespawnModule
@@ -27,6 +28,7 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.ANGLE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.BULWARK
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.CONTRACTOR
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAGGER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAYBREAK
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DESSLE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DUNKLEOSTEUS
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.GROUPER
@@ -162,17 +164,17 @@ object AIConvoyRegistry {
 		)
 	}
 
-	val PRIVATEER_PATROL_SMALL = freeRoute("PRIVATEER_PATROL_SMALL", 2) { ctx ->
+	val PRIVATEER_PATROL_SMALL = freeRoute("PRIVATEER_PATROL_SMALL", 1) { ctx ->
 		val route = RandomConvoyRoute.fromAnyStation(8)
 
 		CompositeSpawner(
 			components = makePatrolSmallComponents(route, fixedDifficulty(1), fixedTargetMode(AITarget.TargetMode.MIXED)),
 			locationProvider = { route.getSourceLocation() },
-			groupMessage = "Privater patrol <${HE_MEDIUM_GRAY}>has arrived in {3}, at {0} {2}".miniMessage(),
+			groupMessage = "$privateerMini<${HE_MEDIUM_GRAY}> Patrol has arrived in {3}, at {0} {2}".miniMessage(),
 			individualSpawnMessage = SpawnMessage.WorldMessage("Ship <${HE_MEDIUM_GRAY}> {0} joined the patrol".miniMessage()),
 			difficultySupplier = AIConvoyRegistry["PRIVATEER_PATROL_SMALL"]!!.difficultySupplier,
 			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED),
-			onPostSpawn = { c -> attachCaravanModule(c, route, "PRIVATEER_PATROL_SMALL") }
+			onPostSpawn = { c -> modifyPatrol(c, route, "PRIVATEER_PATROL_SMALL") }
 		)
 	}
 
@@ -200,6 +202,49 @@ object AIConvoyRegistry {
 			)
 		)
 	}
+
+	val PRIVATEER_PATROL_MEDIUM = freeRoute("PRIVATEER_PATROL_SMALL", 1) { ctx ->
+		val route = RandomConvoyRoute.fromAnyStation(8)
+
+		CompositeSpawner(
+			components = makePatrolMediumComponents(route, fixedDifficulty(1), fixedTargetMode(AITarget.TargetMode.MIXED)),
+			locationProvider = { route.getSourceLocation() },
+			groupMessage = "$privateerMini<${HE_MEDIUM_GRAY}> Patrol has arrived in {3}, at {0} {2}".miniMessage(),
+			individualSpawnMessage = SpawnMessage.WorldMessage("Ship <${HE_MEDIUM_GRAY}> {0} joined the patrol".miniMessage()),
+			difficultySupplier = AIConvoyRegistry["PRIVATEER_PATROL_SMALL"]!!.difficultySupplier,
+			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED),
+			onPostSpawn = { c -> modifyPatrol(c, route, "PRIVATEER_PATROL_SMALL") }
+		)
+	}
+
+	fun makePatrolMediumComponents(route: ConvoyRoute, difficulty: (String) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
+		return listOf(
+			SingleSpawn(
+				RandomShipSupplier(
+					SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE),
+				),
+				{ route.getSourceLocation() },
+				SpawnMessage.WorldMessage("Flag trade ship joined the patrol!".miniMessage()),
+				difficulty, targetMode
+			),
+			BagSpawner(
+				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
+				VariableIntegerAmount(10, 20),
+				"Additional patrol ships".miniMessage(),
+				null,
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 3),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 5),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 5),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 3),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 8),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 10),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 10),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 10),
+				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = { null }
+			)
+		)
+	}
+
 
 	fun modifyPatrol(
 		controller: AIController,

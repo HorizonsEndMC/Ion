@@ -4,6 +4,7 @@ import com.google.common.collect.Multimap
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.text.colors.EXPLORER_LIGHT_CYAN
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.colors.PIRATE_SATURATED_RED
 import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_LIGHT_TEAL
@@ -20,6 +21,7 @@ import net.horizonsend.ion.server.features.ai.configuration.WorldSettings
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.DEBUG_CONVOY_GLOBAL
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.DEBUG_CONVOY_LOCAL
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.DEEP_SPACE_MINING
+import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.PRIVATEER_PATROL_MEDIUM
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.PRIVATEER_PATROL_SMALL
 import net.horizonsend.ion.server.features.ai.convoys.LocationContext
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.MINING_GUILD
@@ -29,6 +31,7 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.TSAII_RAIDERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.WATCHERS
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
+import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.privateerMini
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.吃饭人
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
@@ -1097,7 +1100,7 @@ object AISpawners : IonServerComponent(true) {
 
 		val smallPatrolScheduler = ConvoyScheduler(
 			storageKey = "PRIVATEER_PATROL_SMALL",
-			"<$PRIVATEER_LIGHT_TEAL>Privateer <GOLD><bold> Small Patrol</bold>".miniMessage(),
+			"$privateerMini<$HE_LIGHT_GRAY><bold> Small Patrol</bold>".miniMessage(),
 			separation = { getRandomDuration(Duration.ofHours(6), Duration.ofHours(12)) },
 			announcementMessage = null
 		)
@@ -1109,6 +1112,25 @@ object AISpawners : IonServerComponent(true) {
 				worldFilter = { it.hasFlag(SPACE_WORLD) }, //TODO: do something about this unused param
 				mechanicSupplier = {
 					PRIVATEER_PATROL_SMALL.spawnMechanicBuilder(anyCtx())
+				},
+				scheduler = smallPatrolScheduler
+			)
+		)
+
+		val mediumPatrolScheduler = ConvoyScheduler(
+			storageKey = "PRIVATEER_PATROL_MEDIUM",
+			"$privateerMini<$HE_LIGHT_GRAY><bold> Medium Patrol</bold>".miniMessage(),
+			separation = { getRandomDuration(Duration.ofHours(12), Duration.ofHours(24)) },
+			announcementMessage = null
+		)
+
+		/* GLOBAL (any world) ------------------------------------------------- */
+		registerGlobalSpawner(
+			LazyWorldSpawner(
+				id = "PRIVATEER_PATROL_MEDIUM",
+				worldFilter = { it.hasFlag(SPACE_WORLD) }, //TODO: do something about this unused param
+				mechanicSupplier = {
+					PRIVATEER_PATROL_MEDIUM.spawnMechanicBuilder(anyCtx())
 				},
 				scheduler = smallPatrolScheduler
 			)

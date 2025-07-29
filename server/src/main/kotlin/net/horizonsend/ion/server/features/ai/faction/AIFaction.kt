@@ -503,6 +503,7 @@ class AIFaction private constructor(
 			.addDifficultySuffix(4, "🌍")
 			.build()
 
+		val privateerMini = "<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL> Forces".miniMessage()
 		val SYSTEM_DEFENSE_FORCES = builder("SYSTEM_DEFENSE_FORCES", PRIVATEER_LIGHT_TEAL.value())
 			.setMessagePrefix("<${HEColorScheme.HE_MEDIUM_GRAY}>Receiving transmission from <$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> vessel")
 			.addNames(
@@ -555,10 +556,11 @@ class AIFaction private constructor(
 				"<white>Once I breach your shields, there's no going back.",
 				"<white>Ha, you call those weapons?",
 				"<white>Flanking right!",
-				"<white>Flanking left!"
+				"<white>Flanking left!",
+				"<white>System command, hostile contact is taking severe shield damage."
 			)
 			.addFleeMessages(
-				"<white>System command, hostile contact is taking severe shield damage." to true,
+				"<white>System command, shields critical, disengaging" to true,
 				"<white>System command, shield stabilized reengaging." to false,
 			)
 			.addDifficultySuffix(0, "✦")
