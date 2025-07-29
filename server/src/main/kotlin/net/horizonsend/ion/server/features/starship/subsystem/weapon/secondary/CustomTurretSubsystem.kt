@@ -16,27 +16,14 @@ import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.transport.NewTransport
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateBlockFace
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toModernBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
-import net.horizonsend.ion.server.miscellaneous.utils.leftFace
-import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.*
 import net.kyori.adventure.text.Component
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Directional
 import org.bukkit.util.Vector
-import java.util.ArrayDeque
-import java.util.LinkedList
+import java.util.*
 
 class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace, val multiblock: CustomTurretBaseMultiblock) : WeaponSubsystem(starship, pos), DirectionalSubsystem {
 	init {
@@ -251,8 +238,6 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 			entity.localOffsetX = localVec3i.x
 			entity.localOffsetY = localVec3i.y
 			entity.localOffsetZ = localVec3i.z
-
-			entity.manager
 
 			entity.displace(translation)
 		}

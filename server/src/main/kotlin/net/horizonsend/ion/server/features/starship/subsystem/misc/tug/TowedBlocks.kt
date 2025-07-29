@@ -1,22 +1,17 @@
 package net.horizonsend.ion.server.features.starship.subsystem.misc.tug
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import net.horizonsend.ion.server.features.starship.subsystem.misc.tug.TugSubsystem.Companion.MAX_ASTEROID_SIZE
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.*
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -26,6 +21,7 @@ import java.util.concurrent.Future
 
 class TowedBlocks private constructor (
 	val subsystem: TugSubsystem,
+	val multiblockEntities: ObjectOpenHashSet<MultiblockEntity>,
 	blocks: LongArray,
 	minPoint: Vec3i,
 	maxPoint: Vec3i,
@@ -63,14 +59,31 @@ class TowedBlocks private constructor (
 					recalculateMinMax()
 				}
 
+				Tasks.syncBlocking {
+					displaceMultiblockEntities(transformationAccessor)
+				}
+
 				val now = System.currentTimeMillis()
 				subsystem.starship.information("Movement took ${(now - lastTicked) / 1000.0}s")
 				lastTicked = now
+
 				future.complete(true)
 			} catch (e: StarshipMovementException) {
 				subsystem.starship.sendMessage(ofChildren(Component.text("Towed Load Blocked! ", NamedTextColor.RED), e.formatMessage()))
 				future.complete(false)
 			}
+		}
+	}
+
+	fun displaceMultiblockEntities(transformationAccessor: TransformationAccessor) {
+		for (entity in multiblockEntities) {
+			val localVec3i = entity.manager.getTransportManager().getLocalCoordinate(transformationAccessor.displaceVec3i(entity.globalVec3i))
+
+			entity.localOffsetX = localVec3i.x
+			entity.localOffsetY = localVec3i.y
+			entity.localOffsetZ = localVec3i.z
+
+			entity.displace(transformationAccessor)
 		}
 	}
 
@@ -113,6 +126,8 @@ class TowedBlocks private constructor (
 			val visited = LongOpenHashSet.of(originKey)
 			val visitQueue = ArrayDeque<Long>(listOf(originKey))
 
+			val foundMultiblockEntities = ObjectOpenHashSet<MultiblockEntity>()
+
 			val foundBlocks = LongOpenHashSet()
 
 			var minX: Int = Int.MAX_VALUE
@@ -138,6 +153,11 @@ class TowedBlocks private constructor (
 				if (!subsystem.verifyBlock(user, block)) continue
 
 				foundBlocks.add(blockKey(x, y, z))
+
+				val multiblockEntity = MultiblockEntities.getMultiblockEntity(block)
+				if (multiblockEntity != null) {
+					foundMultiblockEntities.add(multiblockEntity)
+				}
 
 				if (foundBlocks.size > MAX_ASTEROID_SIZE) {
 					return ValidatorResult.FailureResult(listOf(Component.text("That structure is too large to move!")))
@@ -172,6 +192,7 @@ class TowedBlocks private constructor (
 
 			return ValidatorResult.ValidatorSuccessSingleEntry(TowedBlocks(
 				subsystem,
+				foundMultiblockEntities,
 				foundBlocks.toLongArray(),
 				Vec3i(minX, minY, minZ),
 				Vec3i(maxX, maxY, maxZ),
