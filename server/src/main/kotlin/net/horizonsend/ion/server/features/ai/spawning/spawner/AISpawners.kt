@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.ai.configuration.WorldSettings
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.DEBUG_CONVOY_GLOBAL
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.DEBUG_CONVOY_LOCAL
 import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.DEEP_SPACE_MINING
+import net.horizonsend.ion.server.features.ai.convoys.AIConvoyRegistry.PRIVATEER_PATROL_SMALL
 import net.horizonsend.ion.server.features.ai.convoys.LocationContext
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.MINING_GUILD
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEUS_EXPLORERS
@@ -1091,6 +1092,25 @@ object AISpawners : IonServerComponent(true) {
 					DEEP_SPACE_MINING.spawnMechanicBuilder(anyCtx())
 				},
 				scheduler = deepSpaceConvoyScheduler
+			)
+		)
+
+		val smallPatrolScheduler = ConvoyScheduler(
+			storageKey = "PRIVATEER_PATROL_SMALL",
+			"<$PRIVATEER_LIGHT_TEAL>Privateer <GOLD><bold> Small Patrol</bold>".miniMessage(),
+			separation = { getRandomDuration(Duration.ofHours(6), Duration.ofHours(12)) },
+			announcementMessage = null
+		)
+
+		/* GLOBAL (any world) ------------------------------------------------- */
+		registerGlobalSpawner(
+			LazyWorldSpawner(
+				id = "PRIVATEER_PATROL_SMALL",
+				worldFilter = { it.hasFlag(SPACE_WORLD) }, //TODO: do something about this unused param
+				mechanicSupplier = {
+					PRIVATEER_PATROL_SMALL.spawnMechanicBuilder(anyCtx())
+				},
+				scheduler = smallPatrolScheduler
 			)
 		)
 

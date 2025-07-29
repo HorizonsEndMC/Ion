@@ -11,11 +11,14 @@ import net.horizonsend.ion.server.features.ai.module.listeners.AIModuleHandleShi
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.CaravanModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
+import net.horizonsend.ion.server.features.ai.module.misc.FactionManagerModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.GoalTarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.progression.Bounties
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -43,7 +46,7 @@ open class EnmityModule(
 	val targetMode: AITarget.TargetMode,
 	val configSupplier: Supplier<AIEmities.AIEmityConfiguration>
 	= Supplier { ConfigurationFiles.aiEmityConfiguration().defaultAIEmityConfiguration },
-	val enmityFilter: (starship: Starship, aiTarget: AITarget, targetMode: AITarget.TargetMode) -> Boolean = fleetAwareTargetFilter(controller)
+	var enmityFilter: (starship: Starship, aiTarget: AITarget, targetMode: AITarget.TargetMode) -> Boolean = fleetAwareTargetFilter(controller)
 ) : AIModule(controller), AIModuleHandlePlayerDeath, AIModuleHandleShipSink {
 	val config get() = configSupplier.get()
 	val enmityList: MutableList<AIOpponent> = mutableListOf()
@@ -180,7 +183,6 @@ open class EnmityModule(
 		val damagerEntry = damagerEntries.weightedRandom({ it.value.points.get().toDouble() }) ?: return
 		val points = damagerEntry.value.points.get()
 		val tempTarget = damagerEntry.key.getAITarget()?.let { AIOpponent(it) } ?: return
-		if (!targetFilter(starship, tempTarget.target, targetMode)) return
 
 		//extra friendly fire check for AI ships
 		if ((tempTarget.target as? StarshipTarget)?.ship?.controller is AIController) {
@@ -191,6 +193,10 @@ open class EnmityModule(
 
 			val targetFleet = targetController.getUtilModule(AIFleetManageModule::class.java)?.fleet
 			if (targetFleet != null && targetFleet == fleet) return
+			if (!evaluateFaction(controller, targetController)
+				&& !!targetFilter(starship, tempTarget.target, targetMode)) return
+		} else {
+			if (!targetFilter(starship, tempTarget.target, targetMode)) return
 		}
 
 
@@ -401,6 +407,13 @@ open class EnmityModule(
 			return false
 		}
 
+		/** returns true if the faction is different*/
+		private fun evaluateFaction(controller: AIController, otherController : AIController) : Boolean{
+			val otherFaction = otherController.getUtilModule(FactionManagerModule::class.java)?.faction ?: return false
+			val thisFaction = controller.getUtilModule(FactionManagerModule::class.java)?.faction ?: return false
+			return thisFaction != otherFaction
+		}
+
 		fun fleetAwareTargetFilter(controller: AIController): (Starship, AITarget, AITarget.TargetMode) -> Boolean =
 			FleetAwareTargetFilter@{ starship, target, targetMode ->
 				val fleetModule = controller.getUtilModule(AIFleetManageModule::class.java)
@@ -421,6 +434,45 @@ open class EnmityModule(
 						val player = targetController.player
 						val isSameFleet = fleet?.isMember(player.toFleetMember()) == true
 						if (isSameFleet || isCaravanProtected) return@FleetAwareTargetFilter false
+					}
+
+					// Block if it's an AI in the same fleet
+					if (targetController is AIController) {
+						val faction = targetController.getUtilModule(FactionManagerModule::class.java)?.faction
+							?: return@FleetAwareTargetFilter false
+						if (faction.identifier != "TSAII_RAIDERS" && faction.identifier != "PIRATES") return@FleetAwareTargetFilter false
+						val targetFleet = targetController.getUtilModule(AIFleetManageModule::class.java)?.fleet
+						if (targetFleet != null && targetFleet == fleet) return@FleetAwareTargetFilter false
+					}
+				}
+
+				// All other cases fall back on normal targeting
+				targetFilter(starship, target, targetMode)
+			}
+
+		fun naughtyFilter(controller: AIController): (Starship, AITarget, AITarget.TargetMode) -> Boolean =
+			FleetAwareTargetFilter@{ starship, target, targetMode ->
+				val fleetModule = controller.getUtilModule(AIFleetManageModule::class.java)
+				val fleet = fleetModule?.fleet
+
+				val isCaravanProtected = controller.getUtilModule(CaravanModule::class.java) != null
+
+				// Block targeting players in the same fleet or if protected by caravan
+				if (target is PlayerTarget) {
+					val isSameFleet = fleet?.isMember(target.player.toFleetMember()) == true
+					val hasHighBounty = PlayerCache[target.player].bounty > 100000
+					if (isSameFleet || !hasHighBounty) return@FleetAwareTargetFilter false
+				}
+
+				if (target is StarshipTarget) {
+					val targetController = target.ship.controller
+
+					// Block if it's a player in the same fleet
+					if (targetController is PlayerController) {
+						val player = targetController.player
+						val isSameFleet = fleet?.isMember(player.toFleetMember()) == true
+						val hasHighBounty = PlayerCache[targetController.player].bounty > 100000
+						if (isSameFleet || !hasHighBounty) return@FleetAwareTargetFilter false
 					}
 
 					// Block if it's an AI in the same fleet

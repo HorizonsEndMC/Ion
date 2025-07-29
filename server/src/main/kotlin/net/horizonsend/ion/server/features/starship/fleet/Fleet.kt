@@ -63,6 +63,8 @@ class Fleet(var leader: FleetMember?, var initalized : Boolean = true) : Forward
 
 	fun isMember(member: FleetMember) = members.contains(member)
 
+	fun playerMembers() = members.filterIsInstance<FleetMember.PlayerMember>().map { it.uuid }
+
 	fun delete() {
 		members.clear()
 		invited.clear()

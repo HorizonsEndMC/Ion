@@ -11,6 +11,8 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.mining
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
 import net.horizonsend.ion.server.features.ai.module.misc.CaravanModule
 import net.horizonsend.ion.server.features.ai.module.misc.DespawnModule
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
+import net.horizonsend.ion.server.features.ai.module.misc.NavigationModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
@@ -22,6 +24,8 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.Spawner
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.AMPH
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.ANGLE
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.BULWARK
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.CONTRACTOR
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAGGER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DESSLE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DUNKLEOSTEUS
@@ -32,6 +36,7 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MINHAU
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.NIMBLE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.OSTRICH
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PATROLLER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.RESOLUTE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.STRIKER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TENETA
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VETERAN
@@ -155,6 +160,59 @@ object AIConvoyRegistry {
 				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = { null }
 			),
 		)
+	}
+
+	val PRIVATEER_PATROL_SMALL = freeRoute("PRIVATEER_PATROL_SMALL", 2) { ctx ->
+		val route = RandomConvoyRoute.fromAnyStation(8)
+
+		CompositeSpawner(
+			components = makePatrolSmallComponents(route, fixedDifficulty(1), fixedTargetMode(AITarget.TargetMode.MIXED)),
+			locationProvider = { route.getSourceLocation() },
+			groupMessage = "Privater patrol <${HE_MEDIUM_GRAY}>has arrived in {3}, at {0} {2}".miniMessage(),
+			individualSpawnMessage = SpawnMessage.WorldMessage("Ship <${HE_MEDIUM_GRAY}> {0} joined the patrol".miniMessage()),
+			difficultySupplier = AIConvoyRegistry["PRIVATEER_PATROL_SMALL"]!!.difficultySupplier,
+			targetModeSupplier = fixedTargetMode(AITarget.TargetMode.MIXED),
+			onPostSpawn = { c -> attachCaravanModule(c, route, "PRIVATEER_PATROL_SMALL") }
+		)
+	}
+
+	fun makePatrolSmallComponents(route: ConvoyRoute, difficulty: (String) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
+		return listOf(
+			SingleSpawn(
+				RandomShipSupplier(
+					SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK),
+				),
+				{ route.getSourceLocation() },
+				SpawnMessage.WorldMessage("Flag trade ship joined the patrol!".miniMessage()),
+				difficulty, targetMode
+			),
+			BagSpawner(
+				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
+				VariableIntegerAmount(5, 15),
+				"Additional patrol ships".miniMessage(),
+				null,
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 2),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 4),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 4),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 4),
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 7),
+				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = { null }
+			)
+		)
+	}
+
+	fun modifyPatrol(
+		controller: AIController,
+		route: ConvoyRoute,
+		templateId: String
+	) {
+		val targeting = controller.getCoreModuleByType<EnmityModule>()!!
+		targeting.enmityFilter = EnmityModule.naughtyFilter(controller)
+		val difficulty = controller.getCoreModuleByType<DifficultyModule>()!!
+		if (controller.getCoreModuleByType<NavigationModule>() == null) {
+			controller.addCoreModule(NavigationModule(controller,targeting, difficulty))
+		}
+		attachCaravanModule(controller,route,templateId)
 	}
 
 	val DEBUG_CONVOY_LOCAL: AIConvoyTemplate<LocationContext> = freeRoute("DEBUG_CONVOY_LOCAL", 2) { ctx ->

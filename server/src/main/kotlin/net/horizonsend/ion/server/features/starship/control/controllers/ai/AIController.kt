@@ -75,6 +75,10 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 	/** AI modules are a collection of classes that are ticked along with the starship. These can control movement, positioning, pathfinding, or more. */
 	val coreModules: MutableMap<KClass<out AIModule>, AIModule> = mutableMapOf()
 
+	/** use only in special cases */
+	fun addCoreModule(module: AIModule) = run { coreModules[module::class] = module }
+
+
 	/** Util modules provide less heavy-duty functions like the glow and don't need to be accessed often. */
 	private val utilModules: MutableSet<AIModule> = mutableSetOf()
 
