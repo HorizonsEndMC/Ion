@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.features.starship.destruction
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields.getNearbyAreaShields
@@ -86,6 +89,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 
 		sinkPositions = newArray
 
+		SinkAnimation(starship, starship.initialBlockCount, starship.world, starship.centerOfMass).schedule()
 		tryReactorParticles()
 		playSinkSound()
 	}
@@ -94,7 +98,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		val reactor = starship.subsystems.filterIsInstance<SupercapitalReactorSubsystem<*>>().firstOrNull() ?: return
 		val center = (reactor.pos).toCenterVector()
 
-		val tickRate = 4L
+		val tickRate = 8L
 		val growRate = 4.5 * (tickRate.toDouble() / 20.0)
 
 		var particleRadius = 0.0
@@ -151,7 +155,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 
 		val n = sinkPositions.size
 		val capturedStates = Array(n) { AIR }
-		val capturedTiles = mutableMapOf<Int, Pair<BlockState, CompoundTag>>()
+		val capturedTiles = Int2ObjectOpenHashMap<Pair<BlockState, CompoundTag>>()
 
 		Tasks.syncBlocking {
 			try {
@@ -463,7 +467,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		 * Formnats the provided position array into the chunk map
 		 **/
 		fun getChunkMap(positionArray: LongArray, world: World): SinkChunkMap {
-			val chunkMap = mutableMapOf<Long, MutableMap<Int, MutableMap<Long, Int>>>()
+			val chunkMap = Long2ObjectOpenHashMap<Int2ObjectOpenHashMap<Long2IntOpenHashMap>>()
 
 			for (index in positionArray.indices) {
 				val blockKey = positionArray[index]
@@ -476,8 +480,8 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 
 				val sectionKey = world.minecraft.getSectionIndexFromSectionY(SectionPos.blockToSectionCoord(y))
 
-				val sectionMap = chunkMap.getOrPut(chunkKey) { mutableMapOf() }
-				val positionMap = sectionMap.getOrPut(sectionKey) { mutableMapOf() }
+				val sectionMap = chunkMap.getOrPut(chunkKey) { Int2ObjectOpenHashMap() }
+				val positionMap = sectionMap.getOrPut(sectionKey) { Long2IntOpenHashMap() }
 
 				positionMap[blockKey] = index
 			}
@@ -485,9 +489,12 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 			return chunkMap
 		}
 	}
+
+
 }
 
 /**
  * Map of a chunk key to a map of a section key to a map of a block key to its index in the block list
  **/
 private typealias SinkChunkMap = Map<Long, Map<Int, Map<BlockKey, Int>>>
+

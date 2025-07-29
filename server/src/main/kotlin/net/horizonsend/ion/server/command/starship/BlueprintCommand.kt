@@ -385,4 +385,20 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		saveBlueprint(blueprint)
 		sender.success("Un-trusted nation $nation from blueprint $name")
 	}
+
+	@Subcommand("rename")
+	@CommandCompletion("@blueprints newName")
+	fun onRename(sender: Player, oldName: String, newName: String) = asyncCommand(sender) {
+		val createNew = Blueprint.none(and(Blueprint::owner eq sender.slPlayerId, Blueprint::name eq newName))
+
+		if (!createNew) {
+			sender.userError("You already have a blueprint named $newName")
+			return@asyncCommand
+		}
+
+		val blueprint = getBlueprint(sender, oldName)
+		blueprint.name = newName
+		saveBlueprint(blueprint)
+		sender.success("Renamed '$oldName' to '$newName'")
+	}
 }

@@ -1,28 +1,18 @@
 package net.horizonsend.ion.server.command.nations.admin
 
-import co.aikar.commands.annotation.CommandAlias
-import co.aikar.commands.annotation.CommandCompletion
-import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.*
 import co.aikar.commands.annotation.Optional
-import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
-import net.horizonsend.ion.common.database.schema.nations.CapturableStation
-import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
-import net.horizonsend.ion.common.database.schema.nations.Nation
-import net.horizonsend.ion.common.database.schema.nations.Settlement
-import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.nations.*
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SpaceStationCompanion
 import net.horizonsend.ion.common.database.slPlayerId
-import net.horizonsend.ion.common.extensions.hint
-import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.common.extensions.success
-import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.extensions.*
 import net.horizonsend.ion.common.utils.discord.Embed
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
@@ -30,11 +20,7 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.chat.Discord
-import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
-import net.horizonsend.ion.server.features.nations.NationsBalancing
-import net.horizonsend.ion.server.features.nations.NationsMap
-import net.horizonsend.ion.server.features.nations.NationsMasterTasks
-import net.horizonsend.ion.server.features.nations.TerritoryImporter
+import net.horizonsend.ion.server.features.nations.*
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.sieges.SolarSiege
@@ -47,14 +33,8 @@ import net.kyori.adventure.text.Component
 import org.bukkit.World
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import org.litote.kmongo.and
-import org.litote.kmongo.deleteOneById
-import org.litote.kmongo.eq
-import org.litote.kmongo.gt
-import org.litote.kmongo.ne
-import org.litote.kmongo.setValue
-import org.litote.kmongo.updateOne
-import java.util.Date
+import org.litote.kmongo.*
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
@@ -359,5 +339,15 @@ internal object NationAdminCommand : net.horizonsend.ion.server.command.SLComman
 	fun onSiegeLose(sender: CommandSender, siege: SolarSiege) {
 		siege.fail(true)
 		siege.removeActive()
+	}
+
+	@Subcommand("ecoshutdown")
+	fun emergancyEconomyShutoff(sender: Player) {
+		val newState = !ConfigurationFiles.featureFlags().economy
+
+		ConfigurationFiles.featureFlags().economy = newState
+		ConfigurationFiles.featureFlags.saveToDisk()
+
+		sender.alert("Economy set to $newState")
 	}
 }

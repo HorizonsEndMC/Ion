@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.gui.item
 
-import net.horizonsend.ion.common.utils.input.InputResult
+import net.horizonsend.ion.common.utils.input.PotentiallyFutureResult
 import net.horizonsend.ion.server.gui.invui.utils.buttons.FeedbackLike
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
@@ -17,27 +17,29 @@ abstract class FeedbackItem(
 	override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
 		val result = getResult(event, player)
 
-		if (result.isSuccess()) onSuccess(event, player) else onFailure(event, player)
-		updateWith(result)
+		result.withResult {
+			if (it.isSuccess()) onSuccess(event, player) else onFailure(event, player)
+			updateWith(result)
+		}
 	}
 
-	abstract fun getResult(event: InventoryClickEvent, player: Player): InputResult
+	abstract fun getResult(event: InventoryClickEvent, player: Player): PotentiallyFutureResult
 
 	abstract fun onSuccess(event: InventoryClickEvent, player: Player)
 	abstract fun onFailure(event: InventoryClickEvent, player: Player)
 
 	companion object {
-		fun builder(itemStack: ItemStack, resultProvier: (InventoryClickEvent, Player) -> InputResult): Builder = Builder({ itemStack }, resultProvier)
-		fun builder(itemStack: ItemProvider, resultProvier: (InventoryClickEvent, Player) -> InputResult): Builder = Builder(itemStack, resultProvier)
+		fun builder(itemStack: ItemStack, resultProvier: (InventoryClickEvent, Player) -> PotentiallyFutureResult): Builder = Builder({ itemStack }, resultProvier)
+		fun builder(itemStack: ItemProvider, resultProvier: (InventoryClickEvent, Player) -> PotentiallyFutureResult): Builder = Builder(itemStack, resultProvier)
 	}
 
-	class Builder(val providedItem: ItemProvider, val resultProvier: (InventoryClickEvent, Player) -> InputResult) {
+	class Builder(val providedItem: ItemProvider, val resultProvier: (InventoryClickEvent, Player) -> PotentiallyFutureResult) {
 		private var fallbackLore: List<Component> = listOf()
 		private var onSuccess: (FeedbackItem.(InventoryClickEvent, Player) -> Unit)? = null
 		private var onFailure: (FeedbackItem.(InventoryClickEvent, Player) -> Unit)? = null
 
 		fun build(): FeedbackItem = object : FeedbackItem(providedItem, { fallbackLore }) {
-			override fun getResult(event: InventoryClickEvent, player: Player): InputResult {
+			override fun getResult(event: InventoryClickEvent, player: Player): PotentiallyFutureResult {
 				return resultProvier.invoke(event, player)
 			}
 

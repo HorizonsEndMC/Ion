@@ -36,7 +36,7 @@ import kotlin.math.roundToInt
 @CommandAlias("starshipsell|shipsell")
 object SellStarshipCommand : SLCommand() {
 	@Default
-	fun onSellStarship(sender: Player, className: String, shipName: String, price: Double, @Optional description: String?, @Optional priceConfirm: Double?) = asyncCommand(sender) {
+	fun onSellStarship(sender: Player, className: String, shipName: String, price: Double, @Optional priceConfirm: Double?, @Optional description: String?) = asyncCommand(sender) {
 		requireEconomyEnabled()
 		requireNotInCombat(sender)
 		val starship = getStarshipPiloting(sender)

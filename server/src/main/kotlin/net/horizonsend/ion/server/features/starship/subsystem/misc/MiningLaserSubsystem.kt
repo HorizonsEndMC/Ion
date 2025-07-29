@@ -103,7 +103,7 @@ class MiningLaserSubsystem(
 	}
 
 	override fun onDestroy() {
-		setFiring(false)
+		if (isFiring) setFiring(false)
 	}
 
 	private fun setFiring(firing: Boolean) {

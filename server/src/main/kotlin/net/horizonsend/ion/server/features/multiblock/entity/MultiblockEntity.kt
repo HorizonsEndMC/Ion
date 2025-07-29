@@ -9,16 +9,8 @@ import net.horizonsend.ion.server.features.starship.movement.TranslationAccessor
 import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
-import net.horizonsend.ion.server.miscellaneous.utils.getFacing
-import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
-import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
-import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.*
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -153,8 +145,8 @@ abstract class MultiblockEntity(
 	/**
 	 * Gets the sign of this multiblock
 	 **/
-	fun getSign(): Sign? {
-		return getSignFromOrigin(world, globalVec3i, structureDirection).state as? Sign
+	fun getSign(useSnapshot: Boolean = true): Sign? {
+		return getSignFromOrigin(world, globalVec3i, structureDirection).getState(useSnapshot) as? Sign
 	}
 
 	fun getSignLocation() = getSignFromOrigin(world, globalVec3i, structureDirection).location

@@ -20,11 +20,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import org.bukkit.persistence.PersistentDataType
 
 class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManager() {
-	val extractors = Long2ObjectOpenHashMap<ExtractorData>()
-
-	var needsSave: Boolean = false
+	private val extractors = Long2ObjectOpenHashMap<ExtractorData>()
 
 	private val mutex = Any()
+
+	var isLoading: Boolean = false
 
 	override fun getExtractors(): Collection<ExtractorData> = synchronized(mutex) {
 		return extractors.values
@@ -46,17 +46,14 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 			extractors[key] = data
 		}
 
-		needsSave = true
 		return data
 	}
 
 	override fun removeExtractor(x: Int, y: Int, z: Int): ExtractorData? = synchronized(mutex) {
-		needsSave = true
 		return extractors.remove(toBlockKey(x, y, z))
 	}
 
-	override fun removeExtractor(key: BlockKey): ExtractorData? = synchronized(mutex) {
-		needsSave = true
+	override fun removeExtractor(key: BlockKey): ExtractorData?  {
 		return synchronized(mutex) {
 			extractors.remove(key)
 		}
@@ -70,32 +67,9 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 		return extractors[key]
 	}
 
-	override fun onLoad() {
-		val standard = manager.chunk.inner.persistentDataContainer.get(NamespacedKeys.STANDARD_EXTRACTORS, PersistentDataType.LONG_ARRAY)
-
-		val complex = runCatching { manager.chunk.inner.persistentDataContainer.get(NamespacedKeys.COMPLEX_EXTRACTORS, ListMetaDataContainerType) }
-			.onFailure { exception -> IonServer.slF4JLogger.error("There was an error deserializing complex extractor data: $exception"); exception.printStackTrace() }
-			.getOrNull()
-
-		if (standard == null || complex == null) {
-			loadFromChunk()
-			return
-		}
-
-		runCatching {
-			synchronized(mutex) {
-				standard.associateWithTo(extractors) { StandardExtractorData(it) }
-				complex.associateTo(extractors) { it.data as ExtractorMetaData; it.data.key to it.data.toExtractorData() }
-			}
-		}.onFailure { exception ->
-			IonServer.slF4JLogger.error("There was an error loading complex extractor data: $exception")
-			exception.printStackTrace()
-
-			loadFromChunk()
-		}
-	}
-
 	override fun save() {
+		if (isLoading) return
+
 		val pdc = manager.chunk.inner.persistentDataContainer
 		val standard = Long2ObjectOpenHashMap<ExtractorData>()
 		extractors.filterTo(standard) { entry -> entry.value is StandardExtractorData }
@@ -106,10 +80,9 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 
 		val serialized = complex.map { entry ->
 			val serialized = entry.asMetaDataContainer()
-			getPersistentDataContainer(
-				manager.getGlobalCoordinate(toVec3i(entry.pos)),
-				manager.getWorld()
-			)?.set(NamespacedKeys.COMPLEX_EXTRACTORS, MetaDataContainer, serialized)
+
+			val entityBackup = getPersistentDataContainer(manager.getGlobalCoordinate(toVec3i(entry.pos)), manager.getWorld())
+			entityBackup?.set(NamespacedKeys.COMPLEX_EXTRACTORS, MetaDataContainer, serialized)
 
 			serialized
 		}
@@ -117,7 +90,38 @@ class ChunkExtractorManager(val manager: ChunkTransportManager) : ExtractorManag
 		pdc.set(NamespacedKeys.COMPLEX_EXTRACTORS, ListMetaDataContainerType, serialized)
 	}
 
-	private fun loadFromChunk() = Tasks.async {
+	override fun onLoad() {
+		isLoading = true
+
+		try {
+			val standard = manager.chunk.inner.persistentDataContainer.get(NamespacedKeys.STANDARD_EXTRACTORS, PersistentDataType.LONG_ARRAY)
+
+			val complex = runCatching { manager.chunk.inner.persistentDataContainer.get(NamespacedKeys.COMPLEX_EXTRACTORS, ListMetaDataContainerType) }
+				.onFailure { exception -> IonServer.slF4JLogger.error("There was an error deserializing complex extractor data: $exception"); exception.printStackTrace() }
+				.getOrNull()
+
+			if (standard == null || complex == null) {
+				rebuildFromChunk()
+				return
+			}
+
+			runCatching {
+				synchronized(mutex) {
+					standard.associateWithTo(extractors) { StandardExtractorData(it) }
+					complex.associateTo(extractors) { it.data as ExtractorMetaData; it.data.key to it.data.toExtractorData() }
+				}
+			}.onFailure { exception ->
+				IonServer.slF4JLogger.error("There was an error loading complex extractor data: $exception")
+				exception.printStackTrace()
+
+				rebuildFromChunk()
+			}
+		} finally {
+		    isLoading = false
+		}
+	}
+
+	private fun rebuildFromChunk() = Tasks.async {
 		val snapshot = manager.chunk.inner.chunkSnapshot
 		val minBlockX = snapshot.x.shl(4)
 		val minBlockZ = snapshot.z.shl(4)

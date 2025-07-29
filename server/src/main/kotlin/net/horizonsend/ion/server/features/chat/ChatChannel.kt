@@ -33,7 +33,6 @@ import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
-import net.horizonsend.ion.server.features.starship.fleet.FleetMember
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.miscellaneous.utils.CommonPlayerWrapper.Companion.common
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -366,14 +365,14 @@ enum class ChatChannel(
 
 			val message = formatChatMessage(this, event, messageColor)
 
-			for (fleetMember in fleet.members.filterIsInstance<FleetMember.PlayerMember>()) {
-				val other = Bukkit.getPlayer(fleetMember.uuid) ?: continue
+			for (fleetMember in fleet.memberIds) {
+				val other = Bukkit.getPlayer(fleetMember)!!
 
 				other.sendMessage(message.buildChatComponent(
 					useLevelsPrefix = false,
 					useChannelPrefix = true,
 					useShortenedPrefix = player.getSetting(PlayerSettings::shortenChatChannels),
-					additionalPrefix = leaderPrefix.takeIf { component -> fleet.leader == fleetMember },
+					additionalPrefix = leaderPrefix.takeIf { component -> fleet.leaderId == player.uniqueId },
 					showLuckPermsPrefix = !player.getSetting(PlayerSettings::hideGlobalPrefixes)
 				))
 			}

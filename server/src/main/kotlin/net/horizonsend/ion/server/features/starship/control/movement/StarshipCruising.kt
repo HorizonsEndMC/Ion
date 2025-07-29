@@ -11,7 +11,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
-import net.horizonsend.ion.server.features.gui.custom.settings.SoundSettings
+import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSettingsCommand
 import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
@@ -144,7 +144,7 @@ object StarshipCruising : IonServerComponent() {
 			return
 		}
 
-		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz, type = TranslateMovement.MovementSource.CRUISE)
+		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
 	}
 
 	private fun processUpdatedHullIntegrity(starship: ActiveControlledStarship) {
@@ -236,9 +236,9 @@ object StarshipCruising : IonServerComponent() {
 			if (passenger.getSetting(PlayerSettings::enableAdditionalSounds)) {
 				var tick = 0
 				val length = when (passenger.getSetting(PlayerSettings::soundCruiseIndicator)) {
-					SoundSettings.CruiseIndicatorSounds.OFF.ordinal -> 0
-					SoundSettings.CruiseIndicatorSounds.SHORT.ordinal -> 1
-					SoundSettings.CruiseIndicatorSounds.LONG.ordinal -> 4
+					SoundSettingsCommand.CruiseIndicatorSounds.OFF.ordinal -> 0
+					SoundSettingsCommand.CruiseIndicatorSounds.SHORT.ordinal -> 1
+					SoundSettingsCommand.CruiseIndicatorSounds.LONG.ordinal -> 4
 					else -> 0
 				}
 
@@ -284,9 +284,9 @@ object StarshipCruising : IonServerComponent() {
 			if (passenger.getSetting(PlayerSettings::enableAdditionalSounds)) {
 				var tick = 0
 				val length = when (passenger.getSetting(PlayerSettings::soundCruiseIndicator)) {
-					SoundSettings.CruiseIndicatorSounds.OFF.ordinal -> 0
-					SoundSettings.CruiseIndicatorSounds.SHORT.ordinal -> 5
-					SoundSettings.CruiseIndicatorSounds.LONG.ordinal -> 20
+					SoundSettingsCommand.CruiseIndicatorSounds.OFF.ordinal -> 0
+					SoundSettingsCommand.CruiseIndicatorSounds.SHORT.ordinal -> 5
+					SoundSettingsCommand.CruiseIndicatorSounds.LONG.ordinal -> 20
 					else -> 0
 				}
 
