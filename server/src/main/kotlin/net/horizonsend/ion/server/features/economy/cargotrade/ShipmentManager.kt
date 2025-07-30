@@ -13,15 +13,10 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
-import net.horizonsend.ion.common.utils.text.deserializeComponent
-import net.horizonsend.ion.common.utils.text.legacyAmpersand
-import net.horizonsend.ion.common.utils.text.miniMessage
-import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.common.utils.text.toComponent
+import net.horizonsend.ion.common.utils.text.*
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.economy.city.TradeCityType
@@ -40,29 +35,9 @@ import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorR
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.Notify
-import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
-import net.horizonsend.ion.server.miscellaneous.utils.action
-import net.horizonsend.ion.server.miscellaneous.utils.aqua
-import net.horizonsend.ion.server.miscellaneous.utils.bold
-import net.horizonsend.ion.server.miscellaneous.utils.msg
-import net.horizonsend.ion.server.miscellaneous.utils.orNull
-import net.horizonsend.ion.server.miscellaneous.utils.red
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
-import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
-import net.horizonsend.ion.server.miscellaneous.utils.updateLore
-import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
+import net.horizonsend.ion.server.miscellaneous.utils.*
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.AQUA
-import net.kyori.adventure.text.format.NamedTextColor.DARK_AQUA
-import net.kyori.adventure.text.format.NamedTextColor.DARK_GREEN
-import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
-import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import net.kyori.adventure.text.format.NamedTextColor.GREEN
-import net.kyori.adventure.text.format.NamedTextColor.RED
-import net.kyori.adventure.text.format.NamedTextColor.YELLOW
+import net.kyori.adventure.text.format.NamedTextColor.*
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.block.ShulkerBox
@@ -77,13 +52,11 @@ import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
-import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
 import java.time.Instant
-import java.util.Date
-import java.util.Locale
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import kotlin.math.min
@@ -142,8 +115,8 @@ object ShipmentManager : IonServerComponent() {
 
 	private fun getShipments(territoryId: Oid<Territory>): List<UnclaimedShipment> = shipments[territoryId] ?: listOf()
 
-	fun openShipmentSelectMenu(player: Player, cityInfo: TradeCityData) {
-		val gui = Gui.normal()
+	fun openShipmentSelectMenu(player: Player, cityInfo: TradeCityData) = Tasks.async {
+		val gui = PagedGui.items()
 			.setStructure(
 				". . . . . . . . .",
 				". . . . . . . . .",
@@ -154,13 +127,13 @@ object ShipmentManager : IonServerComponent() {
 
 		getShipments(cityInfo.territoryId).forEachIndexed { index, shipment: UnclaimedShipment ->
 			if (shipment.isAvailable) {
-				gui.setItem(index, 1, getCrateItem(shipment, player))
+				gui.setItem(index, 1, getCrateMenuItem(shipment, player))
 				gui.setItem(index, 2, getPlanetItem(shipment))
 			}
 		}
 
 		val overlay = GuiText("")
-			.add(deserializeComponent("&lCity '${cityInfo.displayName}' Options:", legacyAmpersand), line = -1)
+			.add(text("City '${cityInfo.displayName}' Options:"), line = -1)
 			.setSlotOverlay(
 				"# # # # # # # # #",
 				". . . . . . . . .",
@@ -169,15 +142,17 @@ object ShipmentManager : IonServerComponent() {
 			)
 			.build()
 
-		Window.single()
-			.setViewer(player)
-			.setGui(gui)
-			.setTitle(overlay)
-			.build()
-			.open()
+			Tasks.sync {
+				Window.single()
+					.setViewer(player)
+					.setGui(gui)
+					.setTitle(overlay)
+					.build()
+					.open()
+			}
 	}
 
-	private fun getCrateItem(shipment: UnclaimedShipment, player: Player): AbstractItem {
+	private fun getCrateMenuItem(shipment: UnclaimedShipment, player: Player): AbstractItem {
 		val item = CrateItems[CargoCrates[shipment.crate]]
 
 		item.updateLore(getCrateItemLore(shipment).map { deserializeComponent(it, legacyAmpersand) })
@@ -191,6 +166,7 @@ object ShipmentManager : IonServerComponent() {
 	private fun getCrateItemLore(shipment: UnclaimedShipment): List<String> {
 		val destinationTerritory: RegionTerritory = Regions[shipment.to.territoryId]
 		val destinationWorld = destinationTerritory.world
+
 		return listOf(
 			"${SLTextStyle.GRAY}Destination:" +
 				" ${SLTextStyle.DARK_GREEN}${shipment.to.displayName}" +
@@ -202,12 +178,7 @@ object ShipmentManager : IonServerComponent() {
 	}
 
 	private fun getPlanetItem(shipment: UnclaimedShipment): AbstractItem {
-		val destinationTerritory: RegionTerritory = Regions[shipment.to.territoryId]
-		val destinationWorld = destinationTerritory.world
-		val planetId = destinationWorld.uppercase(Locale.getDefault()).replace(" ", "")
-
-		val planetIcon = CustomItemRegistry.getByIdentifier(planetId)?.constructItemStack() ?: CustomItemRegistry.BATTERY_G.constructItemStack()
-		return planetIcon.makeGuiButton { _, _ ->  }
+		return shipment.to.planetIcon.makeGuiButton { _, _ ->  }
 	}
 
 	private fun openAmountPrompt(player: Player, shipment: UnclaimedShipment) {
