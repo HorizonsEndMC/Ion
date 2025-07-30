@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.ai.module.misc
 import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import org.bukkit.World
 import java.util.function.Supplier
 
 class DifficultyModule(
@@ -149,9 +150,9 @@ class DifficultyModule(
 		val maxDifficulty = 4
 		val minDifficulty = 0
 
-		fun regularSpawnDifficultySupplier(world: String): Supplier<Int> {
+		fun regularSpawnDifficultySupplier(world: World): Supplier<Int> {
 			//println(world)
-			return when (world) {
+			return when (world.name) {
 				"Trench" -> WeightedIntegerAmount(
 					setOf(
 						Pair(0, 0.15),

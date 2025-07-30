@@ -41,6 +41,7 @@ import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import org.bukkit.World
 import java.util.function.Supplier
 
 object AIConvoyRegistry {
@@ -64,7 +65,7 @@ object AIConvoyRegistry {
 		)
 	}
 
-	fun makeSmallCaravanComponents(route: ConvoyRoute, difficulty: (String) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
+	fun makeSmallCaravanComponents(route: ConvoyRoute, difficulty: (World) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
 		return listOf(
 			SingleSpawn(
 				RandomShipSupplier(
@@ -122,7 +123,7 @@ object AIConvoyRegistry {
 		)
 	}
 
-	fun makeMiningComponents(route: ConvoyRoute, difficulty: (String) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
+	fun makeMiningComponents(route: ConvoyRoute, difficulty: (World) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
 		return listOf(
 			SingleSpawn(
 				shipPool = RandomShipSupplier(
@@ -175,7 +176,7 @@ object AIConvoyRegistry {
 		)
 	}
 
-	fun makePatrolSmallComponents(route: ConvoyRoute, difficulty: (String) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
+	fun makePatrolSmallComponents(route: ConvoyRoute, difficulty: (World) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
 		return listOf(
 			SingleSpawn(
 				RandomShipSupplier(
@@ -216,7 +217,7 @@ object AIConvoyRegistry {
 		)
 	}
 
-	fun makePatrolMediumSpawners(route: ConvoyRoute, difficulty: (String) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
+	fun makePatrolMediumSpawners(route: ConvoyRoute, difficulty: (World) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
 		return listOf(
 			SingleSpawn(
 				RandomShipSupplier(
@@ -224,7 +225,8 @@ object AIConvoyRegistry {
 				),
 				{ route.getSourceLocation() },
 				SpawnMessage.WorldMessage("Flag trade ship joined the patrol!".miniMessage()),
-				difficulty, targetMode
+				difficulty,
+				targetMode
 			),
 			BagSpawner(
 				locationProvider = formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
@@ -289,7 +291,7 @@ object AIConvoyRegistry {
 		)
 	}
 
-	fun makedebugComponents(route: ConvoyRoute, difficulty: (String) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
+	fun makedebugComponents(route: ConvoyRoute, difficulty: (World) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
 		return listOf(
 			SingleSpawn(
 				RandomShipSupplier(
@@ -366,7 +368,7 @@ object AIConvoyRegistry {
 		controller.addUtilModule(DespawnModule(controller, DespawnModule.neverDespawn))
 	}
 
-	private fun fixedDifficulty(v: Int): (String) -> Supplier<Int> = { _: String -> Supplier { v } }
+	private fun fixedDifficulty(v: Int): (World) -> Supplier<Int> = { _: World -> Supplier { v } }
 	private fun fixedTargetMode(mode: AITarget.TargetMode): Supplier<AITarget.TargetMode> = Supplier { mode }
 
 	private fun <C : ConvoyContext> register(template: AIConvoyTemplate<C>): AIConvoyTemplate<C> {

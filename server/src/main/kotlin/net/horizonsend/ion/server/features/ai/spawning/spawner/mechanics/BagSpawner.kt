@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.fleet.Fleet
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
+import org.bukkit.World
 import java.util.function.Supplier
 
 class BagSpawner(
@@ -19,7 +20,7 @@ class BagSpawner(
 	private val budget: IntegerAmount,
 	groupMessage: Component?,
 	individualSpawnMessage: SpawnMessage?,
-	difficultySupplier: (String) -> Supplier<Int>,
+	difficultySupplier: (World) -> Supplier<Int>,
 	targetModeSupplier: Supplier<AITarget.TargetMode>,
 	fleetSupplier: Supplier<Fleet?> = Supplier { null },
 	vararg bagSpawnedShips: BagSpawnShip
@@ -64,8 +65,8 @@ class BagSpawner(
 				val internalDifficulty = controller.getCoreModuleByType<DifficultyModule>()?.internalDifficulty
 				val targetMode = controller.getCoreModuleByType<EnmityModule>()?.targetMode
 
-				val difficultySupplier: (String) -> Supplier<Int> =
-					if (internalDifficulty != null) { _: String -> Supplier { internalDifficulty } }
+				val difficultySupplier: (World) -> Supplier<Int> =
+					if (internalDifficulty != null) { _: World -> Supplier { internalDifficulty } }
 					else DifficultyModule.Companion::regularSpawnDifficultySupplier
 
 				val targetSupplier: Supplier<AITarget.TargetMode> =
