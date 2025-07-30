@@ -19,10 +19,10 @@ class BagSpawner(
 	private val budget: IntegerAmount,
 	groupMessage: Component?,
 	individualSpawnMessage: SpawnMessage?,
-	vararg bagSpawnedShips: BagSpawnShip,
 	difficultySupplier: (String) -> Supplier<Int>,
 	targetModeSupplier: Supplier<AITarget.TargetMode>,
-	fleetSupplier: Supplier<Fleet?> = Supplier { null }
+	fleetSupplier: Supplier<Fleet?> = Supplier { null },
+	vararg bagSpawnedShips: BagSpawnShip
 ) : MultiSpawner(locationProvider, groupMessage, individualSpawnMessage, difficultySupplier, targetModeSupplier, fleetSupplier) {
 	private val bagSpawnedShips: List<BagSpawnShip> = listOf(*bagSpawnedShips)
 

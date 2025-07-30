@@ -9,19 +9,11 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEU
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.privateerMini
-import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
-import net.horizonsend.ion.server.features.ai.module.misc.CaravanModule
-import net.horizonsend.ion.server.features.ai.module.misc.DespawnModule
-import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
-import net.horizonsend.ion.server.features.ai.module.misc.NavigationModule
+import net.horizonsend.ion.server.features.ai.module.misc.*
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
-import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.*
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
-import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.CompositeSpawner
-import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.RandomShipSupplier
-import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
-import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SpawnerMechanic
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.AMPH
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.ANGLE
@@ -53,7 +45,6 @@ import java.util.function.Supplier
 
 object AIConvoyRegistry {
 	private val templates = mutableMapOf<String, AIConvoyTemplate<out ConvoyContext>>()
-
 
 	val SMALL_TC_CARAVAN = caravan("SMALL_TC_CARAVAN", 2) { ctx ->
 		val city = ctx.city
@@ -87,10 +78,13 @@ object AIConvoyRegistry {
 				difficulty, targetModeSupplier = targetMode
 			),
 			BagSpawner(
-				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
-				VariableIntegerAmount(5, 15),
-				"<$PRIVATEER_LIGHT_TEAL>Privateer <$HE_MEDIUM_GRAY>Auxiliary caravan ships in {3}, at {0} {2}".miniMessage(),
-				null,
+				locationProvider = formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
+				budget = VariableIntegerAmount(5, 15),
+				groupMessage = "<$PRIVATEER_LIGHT_TEAL>Privateer <$HE_MEDIUM_GRAY>Auxiliary caravan ships in {3}, at {0} {2}".miniMessage(),
+				individualSpawnMessage = null,
+				difficultySupplier = difficulty,
+				targetModeSupplier = targetMode,
+				fleetSupplier = { null },
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(WAYFINDER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(STRIKER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(NIMBLE).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
@@ -98,19 +92,18 @@ object AIConvoyRegistry {
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(MINHAUL_CHETHERITE).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(MINHAUL_REDSTONE).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(MINHAUL_TITANIUM).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
-				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(AMPH).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
-				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = { null }
+				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(AMPH).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5)
 			),
 			BagSpawner(
-				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
-				VariableIntegerAmount(5, 15),
-				"<$PRIVATEER_LIGHT_TEAL>Privateer <$HE_MEDIUM_GRAY>Escorting defense force spotted in {3}, at {0} {2}".miniMessage(),
-				null,
+				locationProvider = formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
+				budget = VariableIntegerAmount(5, 15),
+				groupMessage = "<$PRIVATEER_LIGHT_TEAL>Privateer <$HE_MEDIUM_GRAY>Escorting defense force spotted in {3}, at {0} {2}".miniMessage(),
+				individualSpawnMessage = null,
+				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = { null },
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
-				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
-				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = { null }
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5)
 			),
 		)
 	}
@@ -132,35 +125,39 @@ object AIConvoyRegistry {
 	fun makeMiningComponents(route: ConvoyRoute, difficulty: (String) -> Supplier<Int>, targetMode: Supplier<AITarget.TargetMode>): List<SpawnerMechanic> {
 		return listOf(
 			SingleSpawn(
-				RandomShipSupplier(
+				shipPool = RandomShipSupplier(
 					MINING_GUILD.asSpawnedShip(ANGLE),
 				),
-				{ route.getSourceLocation() },
-				SpawnMessage.WorldMessage("Flag trade ship joined the convoy!".miniMessage()),
-				difficulty, targetMode
+				locationProvider = { route.getSourceLocation() },
+				spawnMessage = SpawnMessage.WorldMessage("Flag trade ship joined the convoy!".miniMessage()),
+				difficultySupplier = difficulty, targetModeSupplier = targetMode
 			),
 			BagSpawner(
-				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
-				VariableIntegerAmount(5, 15),
-				"Additional mining ships".miniMessage(),
-				null,
+				locationProvider = formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
+				budget = VariableIntegerAmount(5, 15),
+				groupMessage = "Additional mining ships".miniMessage(),
+				individualSpawnMessage = null,
+				difficultySupplier = difficulty,
+				targetModeSupplier = targetMode,
+				fleetSupplier = { null },
 				asBagSpawned(MINING_GUILD.asSpawnedShip(DUNKLEOSTEUS).withRandomRadialOffset(100.0, 200.0, 0.0, 250.0), 7),
 				asBagSpawned(MINING_GUILD.asSpawnedShip(GROUPER).withRandomRadialOffset(100.0, 200.0, 0.0, 250.0), 5),
 				asBagSpawned(MINING_GUILD.asSpawnedShip(OSTRICH).withRandomRadialOffset(100.0, 200.0, 0.0, 250.0), 3),
 				asBagSpawned(MINING_GUILD.asSpawnedShip(WOODPECKER).withRandomRadialOffset(100.0, 200.0, 0.0, 250.0), 2),
-				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = { null }
 			),
 			BagSpawner(
-				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
-				VariableIntegerAmount(5, 10),
-				"<$PRIVATEER_LIGHT_TEAL>Privateer <$HE_MEDIUM_GRAY>Escorting defense force spotted in {3}, at {0} {2}".miniMessage(),
-				null,
+				locationProvider = formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
+				budget = VariableIntegerAmount(5, 10),
+				groupMessage = "<$PRIVATEER_LIGHT_TEAL>Privateer <$HE_MEDIUM_GRAY>Escorting defense force spotted in {3}, at {0} {2}".miniMessage(),
+				individualSpawnMessage = null,
+				difficultySupplier = difficulty,
+				targetModeSupplier = targetMode,
+				fleetSupplier = { null },
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
-				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = { null }
-			),
+			)
 		)
 	}
 
@@ -189,16 +186,18 @@ object AIConvoyRegistry {
 				difficulty, targetMode
 			),
 			BagSpawner(
-				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
-				VariableIntegerAmount(5, 15),
-				"Additional patrol ships".miniMessage(),
-				null,
+				locationProvider = formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
+				budget = VariableIntegerAmount(5, 15),
+				groupMessage = "Additional patrol ships".miniMessage(),
+				individualSpawnMessage = null,
+				difficultySupplier = difficulty,
+				targetModeSupplier = targetMode,
+				fleetSupplier = { null },
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 2),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 4),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 4),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 4),
-				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 7),
-				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = { null }
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 7)
 			)
 		)
 	}
@@ -228,10 +227,13 @@ object AIConvoyRegistry {
 				difficulty, targetMode
 			),
 			BagSpawner(
-				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
-				VariableIntegerAmount(10, 20),
-				"Additional patrol ships".miniMessage(),
-				null,
+				locationProvider = formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
+				budget = VariableIntegerAmount(10, 20),
+				groupMessage = "Additional patrol ships".miniMessage(),
+				individualSpawnMessage = null,
+				difficultySupplier = difficulty,
+				targetModeSupplier = targetMode,
+				fleetSupplier = { null },
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 3),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 5),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 5),
@@ -240,11 +242,9 @@ object AIConvoyRegistry {
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 10),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 10),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK).withRandomRadialOffset(50.0, 75.0, 0.0, 250.0), 10),
-				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = { null }
 			)
 		)
 	}
-
 
 	fun modifyPatrol(
 		controller: AIController,
@@ -299,15 +299,17 @@ object AIConvoyRegistry {
 				difficulty, targetMode
 			),
 			BagSpawner(
-				formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
-				VariableIntegerAmount(5, 15),
-				"<$PRIVATEER_LIGHT_TEAL>Privateer <$HE_MEDIUM_GRAY>Escorting defense force spotted in {3}, at {0} {2}".miniMessage(),
-				null,
+				locationProvider = formatLocationSupplier(route.getSourceLocation().world, 1500.0, 2500.0) { player -> !player.hasProtection() },
+				budget = VariableIntegerAmount(5, 15),
+				groupMessage = "<$PRIVATEER_LIGHT_TEAL>Privateer <$HE_MEDIUM_GRAY>Escorting defense force spotted in {3}, at {0} {2}".miniMessage(),
+				individualSpawnMessage = null,
+				difficultySupplier = difficulty,
+				targetModeSupplier = targetMode,
+				fleetSupplier = { null },
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(VETERAN).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
 				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(PATROLLER).withRandomRadialOffset(150.0, 175.0, 0.0, 250.0), 3),
-				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5),
-				difficultySupplier = difficulty, targetModeSupplier = targetMode, fleetSupplier = { null }
+				asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 125.0, 0.0, 250.0), 5)
 			),
 		)
 	}
