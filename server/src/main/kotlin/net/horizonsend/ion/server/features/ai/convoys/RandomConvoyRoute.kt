@@ -1,9 +1,6 @@
 package net.horizonsend.ion.server.features.ai.convoys
 
-import net.horizonsend.ion.server.command.admin.debug
-import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import kotlin.random.Random
@@ -34,10 +31,10 @@ class RandomConvoyRoute private constructor(
 	}
 
 	companion object {
-		fun sameWorld(worldName: String, numDestinations: Int = 5) = RandomConvoyRoute(listOf(worldName), numDestinations)
-		fun anyWorld(numDestinations: Int = 5) = RandomConvoyRoute(Bukkit.getWorlds().map { it.name }, numDestinations)
-		fun fromList(worldList: List<String>, numDestinations: Int = 5) = RandomConvoyRoute(worldList, numDestinations)
-		fun fromAnyStation(numDestinations: Int = 5) = RandomConvoyRoute(Bukkit.getWorlds().map { it.name }, numDestinations, randomStation)
+		fun sameWorld(worldName: String, numDestinations: Int) = RandomConvoyRoute(listOf(worldName), numDestinations)
+		fun anyWorld(numDestinations: Int) = RandomConvoyRoute(Bukkit.getWorlds().map { it.name }, numDestinations)
+		fun fromList(worldList: List<String>, numDestinations: Int) = RandomConvoyRoute(worldList, numDestinations)
+		fun fromAnyStation(numDestinations: Int) = RandomConvoyRoute(Bukkit.getWorlds().map { it.name }, numDestinations, randomStation)
 
 		private val randomLocation : RandomConvoyRoute.() -> Location = lamb@{
 			val validWorlds = worldList.filter { Bukkit.getWorld(it) != null }
