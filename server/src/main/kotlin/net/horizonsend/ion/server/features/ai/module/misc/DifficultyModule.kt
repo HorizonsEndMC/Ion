@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.ai.module.misc
 
-import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import org.bukkit.World
 import java.util.function.Supplier
 
@@ -146,82 +146,10 @@ class DifficultyModule(
 
 
 	companion object {
-
 		val maxDifficulty = 4
 		val minDifficulty = 0
 
-		fun regularSpawnDifficultySupplier(world: World): Supplier<Int> {
-			//println(world)
-			return when (world.name) {
-				"Trench" -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.15),
-						Pair(1, 0.35),
-						Pair(2, 0.35),
-						Pair(3, 0.10)
-					)
-				)
-
-				"AU-0821" -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.0),
-						Pair(1, 0.1),
-						Pair(2, 0.55),
-						Pair(3, 0.25),
-						Pair(4, 0.1),
-					)
-				)
-
-				"Horizon" -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.2),
-						Pair(1, 0.35),
-						Pair(2, 0.4),
-						Pair(3, 0.05),
-					)
-				)
-
-				"Asteri" -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.5),
-						Pair(1, 0.35),
-						Pair(2, 0.15)
-					)
-				)
-
-				"Ilios" -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.5),
-						Pair(1, 0.35),
-						Pair(2, 0.15)
-					)
-				)
-
-				"Sirius" -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.5),
-						Pair(1, 0.35),
-						Pair(2, 0.15)
-					)
-				)
-
-				"Regulus" -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.5),
-						Pair(1, 0.35),
-						Pair(2, 0.15)
-					)
-				)
-
-				else -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.3),
-						Pair(1, 0.4),
-						Pair(2, 0.4)
-					)
-				)
-			}
-		}
+		fun regularSpawnDifficultySupplier(world: World): Supplier<Int> = world.ion.configuration.aiDifficulty
 
 		enum class AIDifficulty {
 			EASY,
