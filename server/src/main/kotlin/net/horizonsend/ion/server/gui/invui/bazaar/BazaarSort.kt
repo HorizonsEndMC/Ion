@@ -13,7 +13,7 @@ enum class BazaarSort(val displayName: Component) {
 		private val property = BazaarItem::price
 
 		override fun sortSellOrders(collection: MutableList<Map.Entry<String, List<BazaarItem>>>) {
-			collection.sortBy { it.value.maxOfOrNull(property) }
+			collection.sortBy { it.value.minOfOrNull(property) }
 		}
 
 		override fun sortSellOrders(collection: FindIterable<BazaarItem>) {
