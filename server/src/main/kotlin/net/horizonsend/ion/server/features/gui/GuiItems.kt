@@ -33,7 +33,7 @@ import xyz.xenondevs.invui.item.impl.SimpleItem
 import xyz.xenondevs.invui.item.impl.controlitem.ControlItem
 import xyz.xenondevs.invui.item.impl.controlitem.PageItem
 import xyz.xenondevs.invui.item.impl.controlitem.ScrollItem
-import java.util.UUID
+import java.util.*
 
 @Suppress("UnstableApiUsage")
 object GuiItems {
@@ -152,6 +152,10 @@ object GuiItems {
 
 		override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
 			clickHandler.invoke(clickType, player, event)
+		}
+
+		override fun equals(other: Any?): Boolean {
+			return other === this
 		}
 	}
 

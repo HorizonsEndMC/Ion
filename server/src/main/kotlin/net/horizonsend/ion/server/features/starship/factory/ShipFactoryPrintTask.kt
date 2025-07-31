@@ -162,7 +162,7 @@ class ShipFactoryPrintTask(
 			val requiredAmount = StarshipFactories.getRequiredAmount(blockData)
 
 			// Check if the position is obstructed, if it is, skip the block and try the next.
-			if (checkObstruction(printItem, blockData, requiredAmount)) {
+			if (!checkObstruction(printItem = printItem, worldBlockData = worldBlockData, requiredAmount = requiredAmount)) {
 				skippedBlocks++
 				continue
 			}
@@ -258,25 +258,22 @@ class ShipFactoryPrintTask(
 		val isAllowedWater = worldBlockData.material == Material.WATER && settings.placeBlocksUnderwater
 
 		// If it is air then it can be placed.
+		if (worldBlockData.material.isAir) return true
+
+		// Air is replacable, so the check should only be done if it is not air
+		if (isAllowedWater || isAllowedReplaceable) return true
+
 		// If it is not air, AND not replaceable (if replaceables are marked as obstructing), OR in water (if water placement is not allowed)
 		// then placement is obstructed
-		if (!worldBlockData.material.isAir) {
-			// Air is replacable, so the check should only be done if it is not air
-			if (!isAllowedReplaceable && !isAllowedWater) {
-				// Continue if it should just be marked as complete, not missing
-				if (settings.markObstrcutedBlocksAsComplete) {
-					return false
-				}
-
-				// Mark missing
-				markItemMissing(printItem, requiredAmount)
-
-				// Move onto next block
-				return false
-			}
+		if (settings.markObstrcutedBlocksAsComplete) {
+			return false
 		}
 
-		return true
+		// Mark missing
+		markItemMissing(printItem, requiredAmount)
+
+		// Move onto next block
+		return false
 	}
 
 	private fun printBlocks(blocks: List<BlockKey>) {
