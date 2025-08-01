@@ -16,6 +16,7 @@ import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
 
 class PhaserProjectile(
 	starship: ActiveStarship?,
