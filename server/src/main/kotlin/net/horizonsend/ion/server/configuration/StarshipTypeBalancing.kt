@@ -37,7 +37,8 @@ data class StarshipTypeBalancing(
 		hyperspaceRangeMultiplier = 3.0,
 		shieldPowerMultiplier = 1.0,
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.fighter.near")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
 		)
 	),
 
@@ -50,7 +51,8 @@ data class StarshipTypeBalancing(
 		hyperspaceRangeMultiplier = 1.2,
 		shieldPowerMultiplier = 1.0,
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.fighter.near")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
 		)
 	),
 	val transport: StarshipBalancing = StarshipBalancing(
@@ -62,7 +64,8 @@ data class StarshipTypeBalancing(
 		hyperspaceRangeMultiplier = 1.25,
 		shieldPowerMultiplier = 1.0,
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.small.near")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
 		)
 	),
 	val lightFreighter: StarshipBalancing = StarshipBalancing(
@@ -101,7 +104,8 @@ data class StarshipTypeBalancing(
 			),
 		),
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.small.near")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
 		)
 	),
 	val mediumFreighter: StarshipBalancing = StarshipBalancing(
@@ -113,7 +117,8 @@ data class StarshipTypeBalancing(
 		hyperspaceRangeMultiplier = 1.35,
 		shieldPowerMultiplier = 1.0,
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.large.near")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
 		)
 	),
 	val heavyFreighter: StarshipBalancing = StarshipBalancing(
@@ -125,7 +130,8 @@ data class StarshipTypeBalancing(
 		hyperspaceRangeMultiplier = 1.4,
 		shieldPowerMultiplier = 1.0,
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.large.near")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
 		)
 	),
 	val starfighter: StarshipBalancing = StarshipBalancing(
@@ -137,7 +143,8 @@ data class StarshipTypeBalancing(
 		hyperspaceRangeMultiplier = 1.5,
 		shieldPowerMultiplier = 1.0,
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.fighter.near")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
 		)
 	),
 	val tank: StarshipBalancing = StarshipBalancing(
@@ -260,7 +267,8 @@ data class StarshipTypeBalancing(
 			),
 		),
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.fighter.near")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
 		)
 	),
 	val gunship: StarshipBalancing = StarshipBalancing(
@@ -324,7 +332,8 @@ data class StarshipTypeBalancing(
 			)
 		),
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.small.near")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
 		)
 	),
 	val corvette: StarshipBalancing = StarshipBalancing(
@@ -412,7 +421,8 @@ data class StarshipTypeBalancing(
 			)
 		),
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.small.near")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
 		)
 	),
 	val frigate: StarshipBalancing = StarshipBalancing(
@@ -451,7 +461,8 @@ data class StarshipTypeBalancing(
 			)
 		),
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.large.near")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
 		)
 	),
 	val destroyer: StarshipBalancing = StarshipBalancing(
@@ -463,7 +474,8 @@ data class StarshipTypeBalancing(
 		hyperspaceRangeMultiplier = 1.9,
 		shieldPowerMultiplier = 1.0,
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.large.near")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
 		)
 	),
 	val cruiser: StarshipBalancing = StarshipBalancing(
@@ -572,7 +584,8 @@ data class StarshipTypeBalancing(
 			pilot = SoundInfo("horizonsend:starship.pilot.cruiser", volume = 5f),
 			release = SoundInfo("horizonsend:starship.release.cruiser", volume = 5f),
 			enterHyperspace = SoundInfo("horizonsend:starship.supercapital.hyperspace_enter"),
-			explode = SoundInfo("horizonsend:starship.explosion.cruiser")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.cruiser"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.cruiser")
 		)
 	),
 	val battlecruiser: StarshipBalancing = StarshipBalancing(
@@ -680,7 +693,8 @@ data class StarshipTypeBalancing(
 			pilot = SoundInfo("horizonsend:starship.pilot.battlecruiser", volume = 7f),
 			release = SoundInfo("horizonsend:starship.release.battlecruiser", volume = 7f),
 			enterHyperspace = SoundInfo("horizonsend:starship.supercapital.hyperspace_enter"),
-			explode = SoundInfo("horizonsend:starship.explosion.battlecruiser")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.battlecruiser"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.battlecruiser")
 		)
 	),
 
@@ -761,7 +775,8 @@ data class StarshipTypeBalancing(
 			)
 		),
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.battlecruiser")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.battlecruiser"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.battlecruiser")
 		)
 	),
 
@@ -985,7 +1000,8 @@ data class StarshipTypeBalancing(
 			),
 		),
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.fighter.near")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
 		)
 	),
 	val aiGunship: StarshipBalancing = gunship,
@@ -998,7 +1014,8 @@ data class StarshipTypeBalancing(
 		hyperspaceRangeMultiplier = 1.7,
 		weapons = corvette.weapons,
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.small.near")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
 		)
 	),
 	val aiCorvetteLogistic: StarshipBalancing = StarshipBalancing(
@@ -1024,7 +1041,8 @@ data class StarshipTypeBalancing(
 		shieldPowerMultiplier = 1.20,
 		weapons = battlecruiser.weapons,
 		sounds = StarshipSounds(
-			explode = SoundInfo("horizonsend:starship.explosion.battlecruiser")
+			explodeNear = SoundInfo("horizonsend:starship.explosion.battlecruiser"),
+			explodeFar = SoundInfo("horizonsend:starship.explosion.battlecruiser")
 		)
 	),
 	val aiBattleship: StarshipBalancing = battleship,
@@ -1112,7 +1130,8 @@ data class StarshipSounds(
 	val release: SoundInfo = SoundInfo("minecraft:block.beacon.deactivate", volume = 5f, pitch = 0.05f),
 	val enterHyperspace: SoundInfo = SoundInfo("minecraft:entity.elder_guardian.hurt", volume = 5f, pitch = 0.05f),
 	val exitHyperspace: SoundInfo = SoundInfo("minecraft:entity.warden.sonic_boom", pitch = 0f),
-	val explode: SoundInfo? = null,
+	val explodeNear: SoundInfo? = null,
+	val explodeFar: SoundInfo? = null,
 	val startCruise: SoundInfo = SoundInfo("minecraft:block.note_block.chime", volume = 5f, pitch = 0.53f),
 	val stopCruise: SoundInfo = SoundInfo("minecraft:block.note_block.banjo", volume = 5f, pitch = 1.782f),
 ) {

@@ -6,7 +6,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields.getNearbyAreaShields
-import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
+import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.Supercap
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -125,9 +126,14 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 	}
 
 	fun playSinkSound() {
-		starship.balancing.sounds.explode?.let {
-			println("PLAYING SOUND: ${starship.balancing.sounds.explode}")
-			playSoundInRadius(starship.centerOfMass.toLocation(starship.world), 7_500.0, it.sound)
+		toPlayersInRadius(starship.centerOfMass.toLocation(starship.world), 1000.0 * 20.0) { player ->
+			playDirectionalStarshipSound(
+				starship.centerOfMass.toLocation(starship.world),
+				player,
+				starship.balancing.sounds.explodeNear,
+				starship.balancing.sounds.explodeFar,
+				1000.0
+			)
 		}
 	}
 
