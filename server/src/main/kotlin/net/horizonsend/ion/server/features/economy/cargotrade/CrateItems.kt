@@ -19,5 +19,5 @@ object CrateItems {
 		crate._id, {
 			ItemStack(Material.valueOf(crate.color.shulkerMaterial), 1).updateDisplayName("${crate.color.legacyChatColor}${crate.name}${ChatColor.RESET} Cargo Crate").ensureServerConversions()
 		}
-	]
+	].clone()
 }

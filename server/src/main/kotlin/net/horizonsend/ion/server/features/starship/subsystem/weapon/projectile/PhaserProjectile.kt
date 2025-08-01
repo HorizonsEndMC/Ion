@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.StarshipSounds
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.PhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -33,6 +34,8 @@ class PhaserProjectile(
 	override val volume: Int = balancing.volume
 	override val pitch: Float = balancing.pitch
 	override val soundName: String = balancing.soundName
+	override val nearSound: StarshipSounds.SoundInfo = balancing.soundFireNear
+	override val farSound: StarshipSounds.SoundInfo = balancing.soundFireFar
 
 	companion object {
 		val speedUpTime = TimeUnit.MILLISECONDS.toNanos(500L)
@@ -77,15 +80,15 @@ class PhaserProjectile(
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		super.impact(newLoc, block, entity)
 
-		val rayEnds = newLoc.spherePoints(1.0, 2)
+		val rayEnds = newLoc.spherePoints(3.0, 3)
 		for (rayEnd in rayEnds) {
-			val lightningPoints = lightning(newLoc, rayEnd, 3, 0.5, 0.7)
+			val lightningPoints = lightning(newLoc, rayEnd, generations, maxOffset, 0.7)
 			for (lightningPoint in lightningPoints) {
 				lightningPoint.world.spawnParticle(Particle.SOUL_FIRE_FLAME, lightningPoint.x, lightningPoint.y, lightningPoint.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 			}
 		}
 
-		for (point in newLoc.spherePoints(1.5, 5)) {
+		for (point in newLoc.spherePoints(2.5, 5)) {
 			newLoc.iterateVector(Vector(point.x - newLoc.x, point.y - newLoc.y, point.z - newLoc.z), 5) { pointAlong, _ ->
 				pointAlong.world.spawnParticle(
 					Particle.DUST_COLOR_TRANSITION,
@@ -119,8 +122,8 @@ class PhaserProjectile(
 	}
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		playCustomSound(impactLocation, "minecraft:entity.firework_rocket.twinkle", 12, 0.5f)
+		impactLocation.world.playSound(impactLocation, "minecraft:entity.firework_rocket.twinkle", 12f, 0.5f)
 	}
 
-	override fun playCustomSound(loc: Location, soundName: String, chunkRange: Int, pitch: Float) { /* Do nothing */ }
+	override fun playCustomSound(loc: Location, nearSound: StarshipSounds.SoundInfo, farSound: StarshipSounds.SoundInfo) { /* Do nothing */ }
 }

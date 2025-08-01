@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.configuration.StarshipSounds
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
@@ -51,7 +52,9 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		fireCooldownMillis = 0,
 		boostChargeSeconds = 0,
 		aimDistance = 0,
-		applyCooldownToAll = false
+		applyCooldownToAll = false,
+		soundFireNear = StarshipSounds.SoundInfo(""),
+		soundFireFar = StarshipSounds.SoundInfo("")
 	)
 
 	override val powerUsage: Int = 0
