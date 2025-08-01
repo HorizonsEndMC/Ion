@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.StarshipSounds
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.PumpkinCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -45,10 +46,12 @@ class PumpkinCannonProjectile(
 	override val explosionPower: Float = balancing.explosionPower
 	override val volume: Int = balancing.volume
 	override val soundName: String = balancing.soundName
+	override val nearSound: StarshipSounds.SoundInfo = balancing.soundFireNear
+	override val farSound: StarshipSounds.SoundInfo = balancing.soundFireFar
 
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		super.impact(newLoc, block, entity)
-		playCustomSound(newLoc, "horizonsend:starship.weapon.rocket.impact", 30)
+		playCustomSound(newLoc, nearSound, farSound)
 	}
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
+import net.horizonsend.ion.server.configuration.StarshipSounds
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -24,6 +25,8 @@ class QuadTurretProjectile(
 	override val areaShieldDamageMultiplier: Double,
 	override val soundName: String,
 	override val balancing: StarshipWeapons.ProjectileBalancing,
+	override val nearSound: StarshipSounds.SoundInfo,
+	override val farSound: StarshipSounds.SoundInfo,
 	shooter: Damager
 
 ): LaserProjectile(ship, name, loc, dir, shooter, DamageType.GENERIC) {

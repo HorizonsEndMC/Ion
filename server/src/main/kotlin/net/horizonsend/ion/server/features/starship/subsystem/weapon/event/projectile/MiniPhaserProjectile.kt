@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.StarshipSounds
 import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.MiniPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -27,6 +28,8 @@ class MiniPhaserProjectile(
 	override val volume: Int = balancing.volume
 	override val pitch: Float = balancing.pitch
 	override val soundName: String = balancing.soundName
+	override val nearSound: StarshipSounds.SoundInfo = balancing.soundFireNear
+	override val farSound: StarshipSounds.SoundInfo = balancing.soundFireFar
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		val offset = 0.0

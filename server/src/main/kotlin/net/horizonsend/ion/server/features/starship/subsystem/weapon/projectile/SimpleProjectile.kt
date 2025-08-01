@@ -3,8 +3,10 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.configuration.StarshipSounds
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.machine.AreaShields
+import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -12,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
+import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound.Source
 import net.kyori.adventure.sound.Sound.sound
@@ -20,7 +23,6 @@ import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
-import org.bukkit.SoundCategory
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.craftbukkit.util.CraftMagicNumbers
@@ -49,6 +51,8 @@ abstract class SimpleProjectile(
 	open val volume: Int = 12
 	open val pitch: Float = 1f
 	abstract val soundName: String
+	abstract val nearSound: StarshipSounds.SoundInfo
+	abstract val farSound: StarshipSounds.SoundInfo
 	protected var distance: Double = 0.0
 	protected var firedAtNanos: Long = -1
 	protected var lastTick: Long = -1
@@ -61,17 +65,12 @@ abstract class SimpleProjectile(
 
 		super.fire()
 
-		val soundName = soundName
-		val pitch = pitch
-		val volume = volume
-		playCustomSound(loc, soundName, volume, pitch)
+		playCustomSound(loc, nearSound, farSound)
 	}
 
-	protected open fun playCustomSound(loc: Location, soundName: String, chunkRange: Int, pitch: Float = 1f) {
-		loc.world.players.forEach {
-			if (it.location.distance(loc) < range) {
-				loc.world.playSound(it.location, soundName, SoundCategory.PLAYERS, 1.0f, pitch)
-			}
+	protected open fun playCustomSound(loc: Location, nearSound: StarshipSounds.SoundInfo, farSound: StarshipSounds.SoundInfo) {
+		toPlayersInRadius(loc, range * 20.0) { player ->
+			playDirectionalStarshipSound(loc, player, nearSound, farSound, range)
 		}
 	}
 
