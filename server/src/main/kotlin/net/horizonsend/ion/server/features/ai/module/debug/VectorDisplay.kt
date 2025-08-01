@@ -22,7 +22,7 @@ class VectorDisplay private constructor(
 	val offset: Vector = Vector(0.0, 10.0, 0.0)
 ) {
 	val entity: ItemDisplay = createEntity()
-	private val playerManager = DisplayPlayerManager(entity)
+	private val playerManager = DisplayPlayerManager(entity, updateInvervalMS = 50L)
 
 	private val mag: Double get() = vecDeg.getMag()
 	private val dir: Vector get() = vecDeg.getDir()

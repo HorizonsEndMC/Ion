@@ -194,7 +194,7 @@ open class EnmityModule(
 			val targetFleet = targetController.getUtilModule(AIFleetManageModule::class.java)?.fleet
 			if (targetFleet != null && targetFleet == fleet) return
 			if (!evaluateFaction(controller, targetController)
-				&& !!targetFilter(starship, tempTarget.target, targetMode)) return
+				&& !targetFilter(starship, tempTarget.target, targetMode)) return
 		} else {
 			if (!targetFilter(starship, tempTarget.target, targetMode)) return
 		}
@@ -438,9 +438,6 @@ open class EnmityModule(
 
 					// Block if it's an AI in the same fleet
 					if (targetController is AIController) {
-						val faction = targetController.getUtilModule(FactionManagerModule::class.java)?.faction
-							?: return@FleetAwareTargetFilter false
-						if (faction.identifier != "TSAII_RAIDERS" && faction.identifier != "PIRATES") return@FleetAwareTargetFilter false
 						val targetFleet = targetController.getUtilModule(AIFleetManageModule::class.java)?.fleet
 						if (targetFleet != null && targetFleet == fleet) return@FleetAwareTargetFilter false
 					}
