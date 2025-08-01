@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.steering.context.AvoidIlliusContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.BlankContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.BorderDangerContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.CommitmentContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.FaceSeekContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.FleetGravityContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.MovementInterestContext
@@ -60,11 +61,13 @@ class StarfighterSteeringModule(
 			{ ConfigurationFiles.aiContextConfiguration().starfighterFaceSeekContextConfiguration }, offsetSupplier = orbitDist
 		)
 		contexts["fleetGravity"] = FleetGravityContext(ship)
+		contexts["commitment"] = CommitmentContext(ship)
 		contexts["avoidIllius"] = AvoidIlliusContext(ship)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship, difficulty)
 		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed }, this)
 		contexts["borderDanger"] = BorderDangerContext(ship)
 		contexts["worldBlockDanger"] = WorldBlockDangerContext(ship)
 		contexts["obstructionDanger"] = ObstructionDangerContext(ship, obstructions)
+		contexts["incomingFire"] = (contexts["shieldAwareness"]!! as ShieldAwarenessContext).incomingFire
 	}
 }

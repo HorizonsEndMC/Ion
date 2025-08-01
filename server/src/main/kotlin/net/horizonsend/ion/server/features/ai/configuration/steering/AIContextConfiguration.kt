@@ -8,6 +8,10 @@ data class AIContextConfiguration(
 	val defaultWanderContext: WanderContextConfiguration = WanderContextConfiguration(),
 
 	val defaultCommitmentContext: CommitmentContextConfiguration = CommitmentContextConfiguration(),
+	val gunshipCommitmentContext: CommitmentContextConfiguration =
+		CommitmentContextConfiguration(weight = 0.2),
+	val capitalCommitmentContext: CommitmentContextConfiguration =
+		CommitmentContextConfiguration(weight = 1.0, hist = 0.99),
 
 	val defaultMomentumContextConfiguration: MomentumContextConfiguration = MomentumContextConfiguration(),
 
@@ -98,6 +102,8 @@ data class AIContextConfiguration(
 		val histDecay: Double = 0.98,
 		val verticalDamp: Double = 0.3,
 		val damageSensitivity: Double = 100.0,
+		val incomingFireWeight: Double = 2.0,
+		val geomWhitening : Double = 0.5
 	)
 
 	@Serializable
@@ -119,7 +125,8 @@ data class AIContextConfiguration(
 	data class WorldBlockDangerContextConfiguration(
 		val falloff: Double = 10.0,
 		val dotPower: Double = 3.0,
-		val maxDist: Double = 200.0
+		val maxDist: Double = 200.0,
+		val sizeFactor: Double = 0.5
 	)
 
 	@Serializable

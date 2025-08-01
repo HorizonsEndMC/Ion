@@ -26,7 +26,9 @@ class AIDebugModule(controller: AIController) : AIModule(controller) {
 			"shipDanger",
 			"borderDanger",
 			"worldBlockDanger",
-			"obstructionDanger"
+			"obstructionDanger",
+			"incomingFire",
+			"commitment"
 		)
 
 		val shownContexts = mutableListOf(

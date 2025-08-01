@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.steering.context.AvoidIlliusContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.BlankContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.BorderDangerContext
+import net.horizonsend.ion.server.features.ai.module.steering.context.CommitmentContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.ContextMap
 import net.horizonsend.ion.server.features.ai.module.steering.context.FaceSeekContext
 import net.horizonsend.ion.server.features.ai.module.steering.context.FleetGravityContext
@@ -19,6 +20,7 @@ import net.horizonsend.ion.server.features.ai.module.steering.context.WorldBlock
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import java.util.function.Supplier
+import kotlin.math.abs
 import kotlin.math.pow
 
 /** Basic implementation of a Steering Module, showcasing all the different modulues for */
@@ -30,6 +32,20 @@ open class BasicSteeringModule(
 
 	open val configSupplier = Supplier { ConfigurationFiles.aiSteeringConfiguration().defaultBasicSteeringConfiguration }
 	val config get() = configSupplier.get()
+
+	private val rotationMask: ContextMap = object : ContextMap() {
+		override fun populateContext() {
+			for (i in 0 until NUMBINS) {
+				val verticalComponent = abs(bindir[i].y) > 1e-4
+				bins[i] = if (verticalComponent) 10.0 else 0.0
+			}
+			for (i in 0 until NUMBINS) {
+				val xComponent = abs(bindir[i].x) > 1e-4
+				val zComponent = abs(bindir[i].z) > 1e-4
+				if (xComponent && zComponent) bins[i] = 10.0
+			}
+		}
+	}
 
 	init {
 		/**
@@ -57,12 +73,15 @@ open class BasicSteeringModule(
 		contexts["offsetSeek"] = OffsetSeekContext(ship, generalTarget, this)
 		contexts["faceSeek"] = FaceSeekContext(ship, generalTarget, difficulty)
 		contexts["fleetGravity"] = FleetGravityContext(ship)
+		contexts["commitment"] = CommitmentContext(ship)
 		contexts["avoidIllius"] = AvoidIlliusContext(ship)
 		contexts["shieldAwareness"] = ShieldAwarenessContext(ship, difficulty)
 		contexts["shipDanger"] = ShipDangerContext(ship, { config.defaultMaxSpeed }, this)
 		contexts["borderDanger"] = BorderDangerContext(ship)
 		contexts["worldBlockDanger"] = WorldBlockDangerContext(ship)
 		contexts["obstructionDanger"] = ObstructionDangerContext(ship, obstructions)
+		contexts["incomingFire"] = (contexts["shieldAwareness"]!! as ShieldAwarenessContext).incomingFire
+		rotationMask.populateContext()
 	}
 
 	/**
@@ -85,6 +104,11 @@ open class BasicSteeringModule(
 
 		contexts["rotationInterest"]!!.addContext(contexts["movementInterest"]!!, config.defaultRotationContribution)
 		contexts["rotationInterest"]!!.addContext(contexts["faceSeek"]!!)
+		contexts["rotationInterest"]!!.addContext(ContextMap.scaled(contexts["commitment"]!!, -1.0))
+		val minWeight = contexts["rotationInterest"]!!.bins.min()
+		if (minWeight >= 0.0) {
+			contexts["rotationInterest"]!!.addScalar(-minWeight)
+		}
 
 		contexts["rotationInterest"]!!.softMaskContext(contexts["shieldAwareness"]!!, threshold = 1.0)
 
@@ -107,7 +131,7 @@ open class BasicSteeringModule(
 		// A current issue is that if the movement and rotation maps are equal and opposing
 		// magnitude then it will lead to an agent jittering under a certain ship.velocity threshold.
 		//mixing
-		val rotationMovementPrior = (ship.velocity.length() / controller.maxSpeed).coerceIn(0.0, 1.0)
+		val rotationMovementPrior = (ship.velocity.length() / controller.maxSpeed).coerceIn(0.05, 1.0)
 		//starship.debug("speed ratio: $rotationMovementPrior")
 		//println(rotationMovementPrior)
 		val movementMix = { ratio: Double ->
@@ -126,6 +150,8 @@ open class BasicSteeringModule(
 		contexts["movementInterest"]!!.softMaskContext(contexts["danger"]!!, 1.0)
 		contexts["movementInterest"]!!.softMaskContext(contexts["obstructionDanger"]!!, 1.0)
 		contexts["rotationInterest"]!!.softMaskContext(contexts["danger"]!!, 1.0)
+		contexts["rotationInterest"]!!.softMaskContext(rotationMask, 1.0)
+
 
 		//decision time
 		decision(contexts["movementInterest"]!!, contexts["rotationInterest"]!!)

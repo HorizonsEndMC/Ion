@@ -130,14 +130,16 @@ class CommitmentContext(
 	override fun populateContext() {
 		clearContext()
 		headingHist.multScalar(config.hist)
-		val velNorm = ship.getTargetForward().direction
+		val velNorm = ship.forward.direction
 		headingHist.dotContext(velNorm, 1.0, (1 - config.hist))
 		dotContext(velNorm.multiply(-1.0), 0.0, config.weight, clipZero = true)
-		multScalar(-1.0)
+		//multScalar(-1.0)
 		for (i in 0 until NUMBINS) {
 			bins[i] *= headingHist.bins[i]
 		}
-		checkContext()
+		//normalize
+		val maxWeight = bins.max()
+		multScalar(config.weight / (1 + maxWeight))
 	}
 }
 
@@ -450,7 +452,7 @@ class ShieldAwarenessContext(
 		Supplier { ConfigurationFiles.aiContextConfiguration().defaultShieldAwarenessContextConfiguration }
 ) : ContextMap() {
 	private val config get() = configSupplier.get()
-	private val incomingFire: ContextMap = object : ContextMap() {}
+	val incomingFire: ContextMap = object : ContextMap() {}
 	private val verticalDamp: ContextMap = object : ContextMap() {
 		override fun populateContext() {
 			dotContext(Vector(0.0, 1.0, 0.0), 0.0, 1.0, clipZero = false)
@@ -460,16 +462,48 @@ class ShieldAwarenessContext(
 			}
 		}
 	}
-	private val criticalShields = listOf<ShieldSubsystem>()
+
+	private data class ShieldInfo(val shield : ShieldSubsystem, val localVector : Vector) {
+		val maxPower get() = shield.maxPower
+		val power get() = shield.power
+	}
+
+	private val shieldsInfo = ship.shields.map {
+		// vector from COM to shield in WORLD space
+		val worldVec = it.pos.toVector().subtract(ship.centerOfMass.toVector())
+
+		// remove current ship yaw → ship-local
+		val shipYaw  = vectorToPitchYaw(ship.forward.direction, true).second.toDouble()
+		val localVec = worldVec.rotateAroundY(-shipYaw).normalize()
+		ShieldInfo(it, localVec)
+	}
+
+	private fun transformCords(info: ShieldInfo, heading: Vector): Vector {
+		val shipYaw = vectorToPitchYaw(ship.forward.direction, true).second.toDouble()
+		//then take those relative cords and rotate then towards the heading direction
+		val headingPlane = heading.clone()
+		headingPlane.y = 0.0
+		val (_, targetYaw) = vectorToPitchYaw(headingPlane, radians = true)
+		return info.localVector.clone().rotateAroundY(-targetYaw.toDouble())
+	}
 
 	init {
 		verticalDamp.populateContext()
-		//val previousCenters = ship.shields.map {it.pos.toVector().add(ship.centerOfMass.toVector().multiply(-1.0))}
+		val previousCenters = ship.shields.map {it.pos.toVector().add(ship.centerOfMass.toVector().multiply(-1.0))}
 		//var rotatedCenters = ship.shields.map {transformCords(ship,it,Vector(0.0,0.0,1.0))}
-		//println("previous centers: $previousCenters")
-		//println("rotated centers around ${Vector(0.0,0.0,1.0)} : $rotatedCenters")
-		//rotatedCenters = ship.shields.map {transformCords(ship,it,Vector(1.0,0.0,0.0))}
-		//("rotated centers around ${Vector(1.0,0.0,0.0)} : $rotatedCenters")
+		println("previous centers: $previousCenters")
+		val shipYaw  = vectorToPitchYaw(ship.forward.direction, true).second.toDouble()
+		println("ship yaw: $shipYaw")
+		val localCenters = shieldsInfo.map { it.localVector }
+		println("localCenters: $localCenters")
+		var targetYaw = vectorToPitchYaw(Vector(0.0,0.0,1.0), true).second.toDouble()
+		println("target yaw: $targetYaw")
+		var rotatedCenters = shieldsInfo.map {transformCords(it,Vector(0.0,0.0,1.0))}
+		println("rotated centers around ${Vector(0.0,0.0,1.0)} : $rotatedCenters")
+		rotatedCenters = shieldsInfo.map {transformCords(it,Vector(1.0,0.0,0.0))}
+		targetYaw = vectorToPitchYaw(Vector(1.0,0.0,0.0), true).second.toDouble()
+		println("target yaw: $targetYaw")
+		println("rotated centers around ${Vector(1.0,0.0,0.0)} : $rotatedCenters")
 	}
 
 	override fun populateContext() {
@@ -477,20 +511,26 @@ class ShieldAwarenessContext(
 		if (!difficulty.isShieldAware) return
 		val shipPos = ship.centerOfMass.toVector()
 		incomingFire.multScalar(config.histDecay)
+		if (ship.shields.size <= 1) return
 		for (shield in ship.shields) {
-			if (ship.shields.size <= 1) return
 			val center = shield.pos.toVector()
 			val offset = center.add(shipPos.clone().multiply(-1.0)).normalize()
-			incomingFire.dotContext(offset, -0.6, shield.recentDamage * config.damageSensitivity)
+			val whitenedOffset = whitenOffset(offset,ship.min.toVector(),ship.max.toVector(),config.geomWhitening)
+			incomingFire.dotContext(whitenedOffset, -0.5, shield.recentDamage * config.damageSensitivity)
+			val maxFire = incomingFire.bins.max()
+			if (maxFire > config.incomingFireWeight && maxFire > 0.0) {
+				incomingFire.multScalar(config.incomingFireWeight / maxFire)   // scale *down* to the cap
+			}
 			incomingFire.checkContext()
 		}
+
 		for (i in 0 until NUMBINS) {
 			val dir = bindir[i]
-			val rotatedCenters = ship.shields.map { transformCords(ship, it, dir) }
+			val rotatedCenters = shieldsInfo.map { transformCords(it, dir) }
 			val response = object : ContextMap() {}
 			for (j in 0 until ship.shields.size) {
 				val shield = ship.shields[j]
-				val offset = rotatedCenters[j].clone().normalize()
+				val offset = rotatedCenters[j]
 				val damage = ((shield.maxPower - shield.power) /
 					(shield.maxPower.toDouble() * (1 - config.criticalPoint))).pow(config.power)
 				response.dotContext(offset, -0.3, damage)
@@ -510,19 +550,25 @@ class ShieldAwarenessContext(
 	}
 }
 
-private fun transformCords(ship: Starship, shield: ShieldSubsystem, heading: Vector): Vector {
-	val shipPos = ship.centerOfMass.toVector()
-	val center = shield.pos.toVector()
-	//first transform centers from absoluate cords to relative cords (including from ships orientation)
-	center.add(shipPos.clone().multiply(-1.0))
-	val shipHeading = ship.forward.direction
-	val (_, shipYaw) = vectorToPitchYaw(shipHeading, radians = true)
-	center.rotateAroundY(-shipYaw.toDouble())
-	//then take those relative cords and rotate then towards the heading direction
-	val headingPlane = heading.clone()
-	headingPlane.y = 0.0
-	val (_, yaw) = vectorToPitchYaw(headingPlane, radians = true)
-	return center.rotateAroundY(yaw.toDouble())
+/** Whitens `v` according to the ship's bounding box and α ∈ [0,1] */
+private fun whitenOffset(v: Vector, min: Vector, max: Vector, alpha: Double): Vector {
+	if (alpha == 0.0) return v                       // fast path
+	val dx = max.x - min.x
+	val dy = max.y - min.y
+	val dz = max.z - min.z
+	val mean = (dx + dy + dz) / 3.0
+
+	// scale factors that would make the hull isotropic …
+	val sx = mean / dx
+	val sy = mean / dy
+	val sz = mean / dz
+
+	// … and blend them with identity according to α
+	return Vector(
+		v.x * (1 - alpha + alpha * sx),
+		v.y * (1 - alpha + alpha * sy),
+		v.z * (1 - alpha + alpha * sz)
+	)
 }
 
 /**
@@ -718,7 +764,7 @@ class WorldBlockDangerContext(
 				shipVelocity.normalize()
 				velocityWeight = (shipVelocity.dot(dir).coerceAtLeast(0.0) * velocityMag).pow(0.5)
 			}
-			val falloff = config.falloff * ship.currentBlockCount.toDouble().pow(1 / 3.0)
+			val falloff = config.falloff * (ship.currentBlockCount * config.sizeFactor).pow(1 / 3.0)
 			val weight = falloff * velocityWeight / dist
 			dotContext(dir, 0.0, weight, config.dotPower)
 		}
