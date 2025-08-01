@@ -2,16 +2,16 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PhaserProjectile
+import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.kyori.adventure.key.Key
-import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
@@ -22,7 +22,6 @@ import org.bukkit.block.data.type.Hopper
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
-import kotlin.math.min
 
 class PhaserWeaponSubsystem(
     starship: ActiveStarship,
@@ -53,15 +52,8 @@ class PhaserWeaponSubsystem(
 			return
 		}
 
-		loc.world.players.forEach { player ->
-			val distance = player.location.distance(loc)
-			val dir = Vector(loc.x - player.location.x, loc.y - player.location.y, loc.z - player.location.z)
-			val offsetDistance = min(distance, 16.0)
-			val soundLoc = player.location.add(dir.normalize().multiply(offsetDistance))
-			if (distance < balancing.range * 20) {
-				player.playSound(Sound.sound(Key.key(balancing.soundFireNear.key), balancing.soundFireNear.source, balancing.soundFireNear.volume * nearSoundVolumeMod(distance), balancing.soundFireNear.pitch), soundLoc.x, soundLoc.y, soundLoc.z)
-				player.playSound(Sound.sound(Key.key(balancing.soundFireFar.key), balancing.soundFireFar.source, balancing.soundFireFar.volume * farSoundVolumeMod(distance), balancing.soundFireFar.pitch), soundLoc.x, soundLoc.y, soundLoc.z)
-			}
+		toPlayersInRadius(loc, balancing.range * 20.0) { player ->
+			playDirectionalStarshipSound(loc, player, balancing.soundFireNear, balancing.soundFireFar, balancing.range)
 		}
 
 		fixDirections(loc)
@@ -103,27 +95,5 @@ class PhaserWeaponSubsystem(
 
 	override fun consumeAmmo(itemStack: ItemStack) {
 		consumeItem(itemStack, 4)
-	}
-
-	private fun nearSoundVolumeMod(distance: Double): Float {
-		val range = balancing.range
-		val normalized = distance / range
-		return when (distance.toInt()) {
-			in 0 until (range * 0.5).toInt() -> 1f
-			// -0.666667x + 1.33333
-			in (range * 0.5).toInt() until (range * 2).toInt() -> ((-0.666667 * normalized) + 1.33333).toFloat()
-			else -> 0f
-		}
-	}
-
-	private fun farSoundVolumeMod(distance: Double): Float {
-		val range = balancing.range
-		val normalized = distance / range
-		return when (distance.toInt()) {
-			in 0 until (range * 2).toInt() -> 1f
-			// -0.0555556x + 1.11111
-			in (range * 2).toInt() until (range * 20).toInt() -> ((-0.0555556 * normalized) + 1.11111).toFloat()
-			else -> 0f
-		}
 	}
 }

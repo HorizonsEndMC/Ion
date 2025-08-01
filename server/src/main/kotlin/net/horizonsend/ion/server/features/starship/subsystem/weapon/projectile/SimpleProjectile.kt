@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.StarshipSounds
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.machine.AreaShields
+import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -13,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
+import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
 import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound.Source
 import net.kyori.adventure.sound.Sound.sound
@@ -31,7 +33,6 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
 import java.util.Locale
-import kotlin.math.min
 import kotlin.math.roundToInt
 
 abstract class SimpleProjectile(
@@ -67,36 +68,9 @@ abstract class SimpleProjectile(
 		playCustomSound(loc, nearSound, farSound)
 	}
 
-	private fun nearSoundVolumeMod(distance: Double): Float {
-		val normalized = distance / range
-		return when (distance.toInt()) {
-			in 0 until (range * 0.5).toInt() -> 1f
-			// -0.666667x + 1.33333
-			in (range * 0.5).toInt() until (range * 2).toInt() -> ((-0.666667 * normalized) + 1.33333).toFloat()
-			else -> 0f
-		}
-	}
-
-	private fun farSoundVolumeMod(distance: Double): Float {
-		val normalized = distance / range
-		return when (distance.toInt()) {
-			in 0 until (range * 2).toInt() -> 1f
-			// -0.0555556x + 1.11111
-			in (range * 2).toInt() until (range * 20).toInt() -> ((-0.0555556 * normalized) + 1.11111).toFloat()
-			else -> 0f
-		}
-	}
-
 	protected open fun playCustomSound(loc: Location, nearSound: StarshipSounds.SoundInfo, farSound: StarshipSounds.SoundInfo) {
-		loc.world.players.forEach { player ->
-			val distance = player.location.distance(loc)
-			val dir = Vector(loc.x - player.location.x, loc.y - player.location.y, loc.z - player.location.z)
-			val offsetDistance = min(distance, 16.0)
-			val soundLoc = player.location.add(dir.normalize().multiply(offsetDistance))
-			if (distance < range * 20) {
-				player.playSound(sound(key(nearSound.key), nearSound.source, nearSound.volume * nearSoundVolumeMod(distance), nearSound.pitch), soundLoc.x, soundLoc.y, soundLoc.z)
-				player.playSound(sound(key(farSound.key), farSound.source, farSound.volume * farSoundVolumeMod(distance), farSound.pitch), soundLoc.x, soundLoc.y, soundLoc.z)
-			}
+		toPlayersInRadius(loc, range * 20.0) { player ->
+			playDirectionalStarshipSound(loc, player, nearSound, farSound, range)
 		}
 	}
 

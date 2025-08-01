@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.nations.utils
 
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.kyori.adventure.sound.Sound
 import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getOfflinePlayer
 import org.bukkit.Location
@@ -38,9 +37,3 @@ fun findOfflinePlayer(name: String?): OfflinePlayer? {
 }
 
 fun toPlayersInRadius(origin: Location, radius: Double, consumer: Consumer<Player>) = origin.getNearbyPlayers(radius).forEach(consumer)
-
-fun playSoundInRadius(origin: Location, radius: Double, sound: Sound) {
-	toPlayersInRadius(origin, radius) { player ->
-		player.playSound(sound)
-	}
-}
