@@ -1417,7 +1417,7 @@ object AITemplateRegistry {
 		private val additionalModules: MutableList<BehaviorConfiguration.AdditionalModule> = mutableListOf()
 		private val rewardProviders: MutableList<AITemplate.AIRewardsProviderConfiguration> = mutableListOf()
 
-		private var difficulty: IntegerAmount = StaticIntegerAmount(3)
+		private var difficulty: IntegerAmount = StaticIntegerAmount(2)
 
 		fun addRewardProvider(provider: AITemplate.AIRewardsProviderConfiguration): Builder {
 			rewardProviders += provider
