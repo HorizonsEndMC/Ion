@@ -1125,7 +1125,7 @@ object AISpawners : IonServerComponent(true) {
 				mechanicSupplier = {
 					PRIVATEER_PATROL_MEDIUM.spawnMechanicBuilder(anyCtx())
 				},
-				scheduler = smallPatrolScheduler
+				scheduler = mediumPatrolScheduler
 			)
 		)
 

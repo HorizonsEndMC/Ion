@@ -324,8 +324,6 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 			schematicName = "Cormorant",
 			type = AI_GUNSHIP,
 			miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Cormorant",
-			manualWeaponSets = mutableSetOf(WeaponSet(name = "manual", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
-			autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 		)
 	)
 
@@ -620,7 +618,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 			type = AI_LIGHT_FREIGHTER,
 			miniMessageName = "<$MINING_CORP_DARK_ORANGE>Ostrich",
 			autoWeaponSets = mutableSetOf(
-				WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 250.0),
+				WeaponSet(name = "lts", engagementRangeMin = 0.0, engagementRangeMax = 250.0),
 				WeaponSet(name = "tt", engagementRangeMin = 300.0, engagementRangeMax = 500.0)),
 			manualWeaponSets = mutableSetOf(
 				WeaponSet(name = "manual", engagementRangeMin = 0.0, engagementRangeMax = 500.0),
