@@ -64,11 +64,12 @@ class VectorDisplay private constructor(
 
 		return entity
 	}
-
+	//
+	private fun rotateToFaceVector(v: Vector3f): Quaternionf = Quaternionf().rotationTo(Vector3f(0f,0f,-1f), v.normalize())
 	fun update() {
 		val transformation = Transformation(
 			Vector3f(0f),
-			ClientDisplayEntities.rotateToFaceVector(dir.clone().normalize().multiply(-1.0).toVector3f()),
+			rotateToFaceVector(dir.clone().toVector3f()),
 			Vector3f(1f, 1f, mag.toFloat()),
 			Quaternionf()
 		)

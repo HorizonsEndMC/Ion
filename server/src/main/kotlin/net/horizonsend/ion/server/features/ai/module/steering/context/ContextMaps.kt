@@ -132,7 +132,7 @@ class CommitmentContext(
 		headingHist.multScalar(config.hist)
 		val velNorm = ship.forward.direction
 		headingHist.dotContext(velNorm, 1.0, (1 - config.hist))
-		dotContext(velNorm.multiply(-1.0), 0.0, config.weight, clipZero = true)
+		dotContext(velNorm.multiply(-1.0), config.dotShift, config.weight, clipZero = true)
 		//multScalar(-1.0)
 		for (i in 0 until NUMBINS) {
 			bins[i] *= headingHist.bins[i]

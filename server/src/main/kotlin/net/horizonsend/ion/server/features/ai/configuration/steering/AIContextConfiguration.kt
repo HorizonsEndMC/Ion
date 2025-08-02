@@ -54,6 +54,7 @@ data class AIContextConfiguration(
 	@Serializable
 	data class CommitmentContextConfiguration(
 		val weight: Double = 0.0,
+		val dotShift : Double = 0.1,
 		val hist: Double = 0.95
 	)
 
