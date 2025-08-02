@@ -47,8 +47,7 @@ object HyperspaceBeaconManager : SLEventListener() {
 	}
 
 	fun detectNearbyBeacons(starship: ActiveControlledStarship, x: Int, z: Int) {
-		val pilot = starship.playerPilot ?: return
-		if (starship.hyperdrives.isEmpty()) return
+		if (starship.hyperdrives.isEmpty() && starship.controller is PlayerController) return
 
 		val worldBeacons = beaconWorlds[starship.world] ?: return
 
@@ -70,6 +69,7 @@ object HyperspaceBeaconManager : SLEventListener() {
 				}
 			}
 		) {
+			val pilot = starship.playerPilot ?: return
 			if (activeRequests.containsKey(pilot.uniqueId)) return
 			val beacon = starship.beacon
 
@@ -82,6 +82,7 @@ object HyperspaceBeaconManager : SLEventListener() {
 			)
 			activeRequests[pilot.uniqueId] = System.currentTimeMillis()
 		} else {
+			val pilot = starship.playerPilot ?: return
 			if (activeRequests.containsKey(pilot.uniqueId)) {
 				if (!activeRequests.containsKey(pilot.uniqueId)) return // returned already if null
 

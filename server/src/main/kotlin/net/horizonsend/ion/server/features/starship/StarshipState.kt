@@ -22,9 +22,6 @@ import org.bukkit.World
 import org.bukkit.block.data.BlockData
 import java.io.InputStream
 import java.io.OutputStream
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
 data class StarshipState(
     /** Set of chunks included in the saved ship */

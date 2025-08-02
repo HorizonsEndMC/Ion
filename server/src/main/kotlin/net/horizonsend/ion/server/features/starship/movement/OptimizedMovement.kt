@@ -37,9 +37,6 @@ import org.bukkit.Material
 import org.bukkit.World
 import java.util.LinkedList
 import java.util.concurrent.ExecutionException
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
 object OptimizedMovement {
 	private val passThroughBlocks = listOf(Material.AIR, Material.CAVE_AIR, Material.VOID_AIR, Material.SNOW)

@@ -609,6 +609,13 @@ object CustomItemRegistry : IonServerComponent() {
 	val SIRIUS = unStackable(identifier = "SIRIUS", displayName = text("Sirius"), model = "planet/sirius")
 	val PLANET_SELECTOR = unStackable(identifier = "PLANET_SELECTOR", displayName = text("PLANET_SELECTOR"), model = "planet/planet_selector")
 
+	//Debug start
+	val DEBUG_LINE = unStackable("DEBUG_LINE", displayName = text("DEBUG_LINE"), model = "debug/debug_line")
+	val DEBUG_LINE_GREEN = unStackable("DEBUG_LINE_GREEN", displayName = text("DEBUG_LINE_GREEN"), model = "debug/debug_line_green")
+	val DEBUG_LINE_RED = unStackable("DEBUG_LINE_RED", displayName = text("DEBUG_LINE_RED"), model = "debug/debug_line_red")
+	val DEBUG_LINE_BLUE = unStackable("DEBUG_LINE_BLUE", displayName = text("DEBUG_LINE_BLUE"), model = "debug/debug_line_blue")
+
+
 
 	init {
 		sortCustomItemListeners()

@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.ai.spawning.ships
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.faction.AIFaction
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.kyori.adventure.text.Component
@@ -16,17 +17,39 @@ class FactionShip(
 ) : SpawnedShip {
 	override val offsets: MutableList<Supplier<Vector>> = mutableListOf()
 	override var absoluteHeight: Double? = null
+	override var pilotName: Component? = null
 
-	override fun createController(logger: Logger, starship: ActiveStarship): AIController {
+	override fun createController(
+		logger: Logger,
+		starship: ActiveStarship,
+		difficulty: Int,
+		targetMode: AITarget.TargetMode
+	): AIController {
 		val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
 
-		val controller = factory.invoke(starship, getName())
+		val controller = factory.invoke(
+			starship,
+			getName(difficulty),
+			template.starshipInfo.autoWeaponSets,
+			template.starshipInfo.manualWeaponSets,
+			difficulty,
+			targetMode
+		)
+
 		faction.controllerModifier.invoke(controller)
+		controller.validateWeaponSets()
 
 		return controller
 	}
 
-	override fun getName(): Component {
-		return faction.getAvailableName()
+	override fun getName(difficulty: Int): Component {
+		if (pilotName == null) {
+			pilotName = faction.getAvailableName(difficulty)
+		}
+		return pilotName!!
+	}
+
+	override fun getSuffix(difficulty: Int): String {
+		return faction.suffixes[difficulty]!!
 	}
 }

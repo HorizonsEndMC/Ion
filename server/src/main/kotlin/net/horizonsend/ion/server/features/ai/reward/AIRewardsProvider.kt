@@ -1,11 +1,13 @@
 package net.horizonsend.ion.server.features.ai.reward
 
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.slf4j.Logger
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -30,17 +32,24 @@ interface AIRewardsProvider : RewardsProvider {
 
 	private fun processDamagers(dataMap: Map<PlayerDamager, ShipKillXP.ShipDamageData>) {
 		val sum = dataMap.values.sumOf { it.points.get() }
+		debugAudience.debug("damager sum: $sum")
 
-		dataMap.entries.maxByOrNull { it.value.points.get() }?.let {
+		val topDamager = dataMap.entries.maxByOrNull { it.value.points.get() }
+
+		topDamager?.let {
 			processPrimaryDamagerRewards(it.key, sum, it.value)
+		}
+		if (topDamager != null) {
+			debugAudience.debug("top damager points: ${topDamager.value.points.get()}")
 		}
 
 		for ((damager, data) in dataMap.entries) {
-			val (points, _) = data
+			val points = data.points
 			val player = damager.player
+			debugAudience.debug("points: ${points.get()}, player : ${player.name}")
 
 			try {
-				processDamagerRewards(damager, points, sum)
+				processDamagerRewards(damager, topDamager!!.value.points, points, sum)
 			} catch (e: Throwable) {
 				log.error("Exception processing damager rewards: ${e.message}!")
 				e.printStackTrace()
@@ -50,6 +59,13 @@ interface AIRewardsProvider : RewardsProvider {
 		}
 	}
 
-	fun processDamagerRewards(damager: PlayerDamager, points: AtomicInteger, pointsSum: Int) {}
+	fun processDamagerRewards(
+		damager: PlayerDamager,
+		topDamagerPoints: AtomicInteger,
+		points: AtomicInteger,
+		pointsSum: Int
+	) {
+	}
+
 	fun processPrimaryDamagerRewards(damager: PlayerDamager, sum: Int, dataMap: ShipKillXP.ShipDamageData) {}
 }

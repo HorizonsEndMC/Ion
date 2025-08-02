@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import kotlin.collections.set
 import kotlin.math.abs
 import kotlin.math.pow
 
@@ -54,7 +53,7 @@ class BubbleShieldSubsystem(
     val semiAxisX = shape.maxX
     val semiAxisY = shape.maxY  //semi-axis lengths
     val semiAxisZ = shape.maxZ
-		
+
 		val lx = blockPos.x - pos.x
 		val ly = blockPos.y - pos.y  //impact location relative to center
 		val lz = blockPos.z - pos.z

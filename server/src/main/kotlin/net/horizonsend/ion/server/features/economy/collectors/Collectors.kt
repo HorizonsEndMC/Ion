@@ -17,7 +17,6 @@ import org.bukkit.Location
 import org.bukkit.entity.EntityType
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.set
 
 object Collectors : IonServerComponent(true) {
 	private lateinit var citizensRegistry: NPCRegistry

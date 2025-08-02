@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.features.nations.gui
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.md_5.bungee.api.ChatColor.GREEN
 import net.md_5.bungee.api.ChatColor.RED
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Material
 import org.bukkit.Material.BARRIER
 import org.bukkit.Material.LILY_PAD

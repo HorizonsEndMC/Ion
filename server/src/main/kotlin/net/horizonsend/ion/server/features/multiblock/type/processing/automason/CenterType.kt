@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.type.processing.automason
 
 import com.google.common.collect.HashBasedTable
 import com.google.common.collect.Table
+import net.horizonsend.ion.server.features.multiblock.type.processing.automason.CenterType.entries
 import net.horizonsend.ion.server.miscellaneous.utils.BRICK_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.CUT_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.GRATE_TYPES

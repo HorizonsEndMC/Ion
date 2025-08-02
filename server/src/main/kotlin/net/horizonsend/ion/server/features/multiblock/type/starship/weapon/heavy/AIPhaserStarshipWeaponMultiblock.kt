@@ -5,7 +5,6 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.Signl
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.AIPhaserWeaponSystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import org.bukkit.Material
 import org.bukkit.block.BlockFace
 
 object AIPhaserStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<AIPhaserWeaponSystem>() {

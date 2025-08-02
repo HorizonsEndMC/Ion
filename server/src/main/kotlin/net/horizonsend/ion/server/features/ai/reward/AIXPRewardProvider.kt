@@ -2,7 +2,9 @@ package net.horizonsend.ion.server.features.ai.reward
 
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -15,21 +17,31 @@ import kotlin.math.sqrt
 class AIXPRewardProvider(override val starship: ActiveStarship, val configuration: AITemplate.SLXPRewardProviderConfiguration) : AIRewardsProvider {
 	override val log: Logger = LoggerFactory.getLogger(javaClass)
 
-	override fun processDamagerRewards(damager: PlayerDamager, points: AtomicInteger, pointsSum: Int) {
+	override fun processDamagerRewards(
+		damager: PlayerDamager,
+		topDamagerPoints: AtomicInteger,
+		points: AtomicInteger,
+		pointsSum: Int
+	) {
 		val killedSize = starship.initialBlockCount.toDouble()
-
+		val difficultyMultiplier = (starship.controller as? AIController)?.getCoreModuleByType<DifficultyModule>()?.rewardMultiplier ?: 1.0
+		val killStreakBonus = AIKillStreak.getHeatMultiplier(damager.player)
+		val topPercent = topDamagerPoints.get().toDouble() / pointsSum.toDouble()
 		val percent = points.get().toDouble() / pointsSum.toDouble()
-		val xp = ((sqrt(killedSize.pow(2.0) / sqrt(killedSize * 0.00005))) * percent * configuration.xpMultiplier).toInt()
+		val xp = ((sqrt(killedSize.pow(2.0) / sqrt(killedSize * 0.00005)))
+			* (percent / topPercent) * configuration.xpMultiplier * difficultyMultiplier * killStreakBonus).toInt()
 
 		if (xp <= 0) return
 
 		damager.rewardXP(xp)
 
-		damager.sendMessage(template(
-			message = text("Received {0} XP for defeating {1}", NamedTextColor.DARK_PURPLE),
-			text(xp, NamedTextColor.LIGHT_PURPLE),
-			starship.getDisplayName()
-		))
+		damager.sendMessage(
+			template(
+				message = text("Received {0} XP for defeating {1}", NamedTextColor.DARK_PURPLE),
+				text(xp, NamedTextColor.LIGHT_PURPLE),
+				starship.getDisplayName()
+			)
+		)
 
 		log.info("Gave $damager $xp XP for ship-killing AI vessel ${starship.identifier}")
 	}

@@ -36,6 +36,13 @@ class PhaserProjectile(
 	override val nearSound: StarshipSounds.SoundInfo = balancing.soundFireNear
 	override val farSound: StarshipSounds.SoundInfo = balancing.soundFireFar
 
+	companion object {
+		val speedUpTime = TimeUnit.MILLISECONDS.toNanos(500L)
+		val speedUpSpeed = 1000.0
+	}
+
+
+
 	private val blueParticleData = Particle.DustTransition(
 		Color.fromARGB(255, 0, 255, 255),
 		Color.WHITE,

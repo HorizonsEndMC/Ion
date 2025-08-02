@@ -1,7 +1,10 @@
 package net.horizonsend.ion.server.features.ai.spawning.ships
 
+import kotlinx.coroutines.currentCoroutineContext
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
+import net.horizonsend.ion.server.features.ai.spawning.PostSpawnBehaviorContext
 import net.horizonsend.ion.server.features.ai.spawning.createAIShipFromTemplate
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRadialRandomPoint
@@ -15,21 +18,13 @@ interface SpawnedShip {
 	val template: AITemplate
 	val offsets: MutableList<Supplier<Vector>>
 	var absoluteHeight: Double?
+	var pilotName: Component?
 
-	fun createController(logger: Logger, starship: ActiveStarship): AIController
+	fun createController(logger: Logger, starship: ActiveStarship, difficulty: Int, targetMode: AITarget.TargetMode): AIController
 
-	fun getName(): Component
+	fun getName(difficulty: Int): Component
 
-	fun spawn(logger: Logger, location: Location, modifyController: AIController.() -> Unit = {}) = createAIShipFromTemplate(
-		logger,
-		template,
-		location,
-		{
-			val controller = createController(logger, it)
-			modifyController.invoke(controller)
-			controller
-		}
-	)
+	fun getSuffix(difficulty: Int): String
 
 	fun withRandomRadialOffset(minDistance: Double, maxDistance: Double, y: Double, absoluteHeight: Double? = null): SpawnedShip {
 		this.absoluteHeight = absoluteHeight
@@ -51,4 +46,28 @@ interface SpawnedShip {
 
 		return this
 	}
+}
+
+suspend fun SpawnedShip.spawn(
+	logger: Logger,
+	location: Location,
+	difficulty: Int,
+	targetMode: AITarget.TargetMode,
+	modifyController: AIController.() -> Unit = {}
+) {
+	val context = currentCoroutineContext()
+	createAIShipFromTemplate(
+		logger,
+		template,
+		location,
+		{
+			val controller = createController(logger, it, difficulty, targetMode)
+
+			modifyController.invoke(controller)
+			context[PostSpawnBehaviorContext]?.hook?.invoke(controller)
+
+			controller
+		},
+		getSuffix(difficulty)
+	)
 }

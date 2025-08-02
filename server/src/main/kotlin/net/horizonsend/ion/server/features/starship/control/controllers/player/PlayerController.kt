@@ -20,8 +20,6 @@ abstract class PlayerController(
 	val player: Player,
 	starship: ActiveStarship, name: String
 ) : Controller(player.damager(), starship, name) {
-	override val yaw: Float get() = player.location.yaw
-	override val pitch: Float get() = player.location.pitch
 
 	override fun getColor(): Color {
 		if (starship.rainbowToggle) {
@@ -39,9 +37,9 @@ abstract class PlayerController(
 
 	override fun audience(): Audience = player
 
+	override val pilotName: Component get() = player.displayName()
+
 	override fun toString(): String {
 		return "$name [${player.name}]"
 	}
-
-	override fun getPilotName(): Component = player.displayName()
 }

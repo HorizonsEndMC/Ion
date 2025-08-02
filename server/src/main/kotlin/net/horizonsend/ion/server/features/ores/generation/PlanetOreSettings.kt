@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.ores.generation
 
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.ores.generation.PlanetOreSettings.entries
 import net.horizonsend.ion.server.features.ores.storage.Ore
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import org.bukkit.Material

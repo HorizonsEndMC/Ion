@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.ores.storage
 
+import net.horizonsend.ion.server.features.ores.storage.Ore.entries
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.BlockData

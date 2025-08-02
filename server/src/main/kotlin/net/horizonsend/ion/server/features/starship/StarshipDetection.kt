@@ -34,9 +34,6 @@ import org.bukkit.scheduler.BukkitTask
 import java.util.Stack
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.sqrt
