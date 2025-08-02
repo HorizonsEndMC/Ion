@@ -17,6 +17,7 @@ import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
 
 class PhaserProjectile(
 	source: ProjectileSource,
@@ -35,6 +36,11 @@ class PhaserProjectile(
 
 	private val generations = 3
 	private val maxOffset = 0.5
+
+	companion object {
+		val speedUpTime = TimeUnit.MILLISECONDS.toNanos(500L)
+		val speedUpSpeed = 1000.0
+	}
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		val origin = Location(location.world, x, y, z)

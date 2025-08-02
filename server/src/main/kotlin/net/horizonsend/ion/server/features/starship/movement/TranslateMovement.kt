@@ -31,18 +31,28 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 			dx: Int,
 			dy: Int,
 			dz: Int,
-			newWorld: World? = null
+			newWorld: World? = null,
+			type: MovementSource = MovementSource.OTHER
 		): CompletableFuture<Boolean> {
-			starship.velocity = Vector(dx.toDouble(), dy.toDouble(), dz.toDouble())
-
 			val world = newWorld ?: starship.world
 
 			val toLoad = this.getChunkLoadTasks(starship, world, dx, dz)
 
-			return CompletableFuture.allOf(*toLoad.toTypedArray()).thenCompose {
-				Tasks.checkMainThread()
-				return@thenCompose starship.moveAsync(TranslateMovement(starship, dx, dy, dz, newWorld))
-			}
+			return CompletableFuture.allOf(*toLoad.toTypedArray())
+				.thenCompose {
+					Tasks.checkMainThread()
+					return@thenCompose starship.moveAsync(TranslateMovement(starship, dx, dy, dz, newWorld))
+				}
+				.whenComplete { original, exception ->
+					if (original == null || exception != null) return@whenComplete
+
+					when (type) {
+						MovementSource.MANUAL -> starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
+						MovementSource.DC -> starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
+						MovementSource.CRUISE -> starship.cruiseKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
+						else -> {}
+					}
+				}
 		}
 
 		private fun getChunkLoadTasks(
@@ -154,4 +164,6 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 	}
 
 	override fun onComplete() {}
+
+	enum class MovementSource {MANUAL, DC, CRUISE,OTHER}
 }

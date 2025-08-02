@@ -220,4 +220,9 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val REGULUS = registerKey("REGULUS")
 	val SIRIUS = registerKey("SIRIUS")
 	val PLANET_SELECTOR = registerKey("PLANET_SELECTOR")
+
+	val DEBUG_LINE_RED = registerKey("DEBUG_LINE_RED")
+	val DEBUG_LINE_GREEN = registerKey("DEBUG_LINE_GREEN")
+	val DEBUG_LINE_BLUE = registerKey("DEBUG_LINE_BLUE")
+	val DEBUG_LINE = registerKey("DEBUG_LINE")
 }

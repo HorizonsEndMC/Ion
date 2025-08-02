@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.type.shipfactory
 
 import com.google.common.collect.Maps
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.utils.input.FutureInputResult
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.ADVANCED_SHIP_FACTORY_CHARACTER
 import net.horizonsend.ion.common.utils.text.DEFAULT_GUI_WIDTH
@@ -197,9 +198,19 @@ class ShipFactoryGui(viewer: Player, val entity: ShipFactoryEntity) : InvUIWindo
 			if (!entity.ensureBlueprintLoaded(player)) return@builder InputResult.FailureReason(listOf(text("Blueprint not found!", RED)))
 
 			val otherCheckResults = entity.checkEnableButton(player)
-			if (otherCheckResults != null) return@builder otherCheckResults
 
-			InputResult.SuccessReason(listOf(text("Enabled ship factory.", GREEN)))
+			val future = FutureInputResult()
+
+			otherCheckResults.withResult { t ->
+				if (!t.isSuccess()) {
+					future.complete(t)
+					return@withResult
+				}
+
+				future.complete(InputResult.SuccessReason(listOf(text("Enabled ship factory.", GREEN))))
+			}
+
+			future
 		}
 		.withStaticFallbackLore(listOf(text("Start the ship factory.")))
 		.withSuccessHandler { _, player ->

@@ -1,10 +1,13 @@
 package net.horizonsend.ion.server.features.gui.custom.starship.type
 
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.gui.custom.starship.StarshipComputerMenu
 import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
+import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
@@ -38,6 +41,9 @@ class ChangeTypeButton(val main: StarshipComputerMenu) : AbstractItem() {
 	override fun getItemProvider(): ItemProvider = provider
 
 	override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+		if (ActiveStarships.findByBlock(main.data.bukkitWorld().getBlockAtKey(main.data.blockKey)) != null)
+			return player.userError("You cannot change a ship's type while active!")
+
 		openClassMenu(player)
 	}
 

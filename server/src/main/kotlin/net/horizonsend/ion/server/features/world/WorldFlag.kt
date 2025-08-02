@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.world
 
 enum class WorldFlag {
     SPACE_WORLD,
+	PlANET_WORLD,
 	SPEEDERS_EXPLODE,
 	ALLOW_MINING_LASERS,
     HYPERSPACE_WORLD,
@@ -10,5 +11,7 @@ enum class WorldFlag {
 	AI_ARENA,
 	ARENA,
 	NO_SHIP_LOCKS,
+	NOT_SECURE,
 	NO_SUPERCAPITAL_REQUIREMENTS,
+	AREA_SHIELDS_DISABLED,
 }

@@ -19,7 +19,6 @@ import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.cache.trade.CargoCrates
 import net.horizonsend.ion.server.features.economy.city.TradeCities
@@ -77,12 +76,11 @@ import org.bukkit.inventory.meta.BlockStateMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.util.Vector
 import org.litote.kmongo.eq
-import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.gui.PagedGui
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
 import java.time.Instant
 import java.util.Date
-import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -142,8 +140,8 @@ object ShipmentManager : IonServerComponent() {
 
 	private fun getShipments(territoryId: Oid<Territory>): List<UnclaimedShipment> = shipments[territoryId] ?: listOf()
 
-	fun openShipmentSelectMenu(player: Player, cityInfo: TradeCityData) {
-		val gui = Gui.normal()
+	fun openShipmentSelectMenu(player: Player, cityInfo: TradeCityData) = Tasks.async {
+		val gui = PagedGui.items()
 			.setStructure(
 				". . . . . . . . .",
 				". . . . . . . . .",
@@ -154,13 +152,13 @@ object ShipmentManager : IonServerComponent() {
 
 		getShipments(cityInfo.territoryId).forEachIndexed { index, shipment: UnclaimedShipment ->
 			if (shipment.isAvailable) {
-				gui.setItem(index, 1, getCrateItem(shipment, player))
+				gui.setItem(index, 1, getCrateMenuItem(shipment, player))
 				gui.setItem(index, 2, getPlanetItem(shipment))
 			}
 		}
 
 		val overlay = GuiText("")
-			.add(deserializeComponent("&lCity '${cityInfo.displayName}' Options:", legacyAmpersand), line = -1)
+			.add(text("City '${cityInfo.displayName}' Options:"), line = -1)
 			.setSlotOverlay(
 				"# # # # # # # # #",
 				". . . . . . . . .",
@@ -169,15 +167,17 @@ object ShipmentManager : IonServerComponent() {
 			)
 			.build()
 
-		Window.single()
-			.setViewer(player)
-			.setGui(gui)
-			.setTitle(overlay)
-			.build()
-			.open()
+			Tasks.sync {
+				Window.single()
+					.setViewer(player)
+					.setGui(gui)
+					.setTitle(overlay)
+					.build()
+					.open()
+			}
 	}
 
-	private fun getCrateItem(shipment: UnclaimedShipment, player: Player): AbstractItem {
+	private fun getCrateMenuItem(shipment: UnclaimedShipment, player: Player): AbstractItem {
 		val item = CrateItems[CargoCrates[shipment.crate]]
 
 		item.updateLore(getCrateItemLore(shipment).map { deserializeComponent(it, legacyAmpersand) })
@@ -191,6 +191,7 @@ object ShipmentManager : IonServerComponent() {
 	private fun getCrateItemLore(shipment: UnclaimedShipment): List<String> {
 		val destinationTerritory: RegionTerritory = Regions[shipment.to.territoryId]
 		val destinationWorld = destinationTerritory.world
+
 		return listOf(
 			"${SLTextStyle.GRAY}Destination:" +
 				" ${SLTextStyle.DARK_GREEN}${shipment.to.displayName}" +
@@ -202,12 +203,7 @@ object ShipmentManager : IonServerComponent() {
 	}
 
 	private fun getPlanetItem(shipment: UnclaimedShipment): AbstractItem {
-		val destinationTerritory: RegionTerritory = Regions[shipment.to.territoryId]
-		val destinationWorld = destinationTerritory.world
-		val planetId = destinationWorld.uppercase(Locale.getDefault()).replace(" ", "")
-
-		val planetIcon = CustomItemKeys[planetId]?.getValue()?.constructItemStack() ?: CustomItemKeys.BATTERY_G.getValue().constructItemStack()
-		return planetIcon.makeGuiButton { _, _ ->  }
+		return shipment.to.planetIcon.makeGuiButton { _, _ ->  }
 	}
 
 	private fun openAmountPrompt(player: Player, shipment: UnclaimedShipment) {

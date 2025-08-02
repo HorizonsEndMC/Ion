@@ -35,8 +35,12 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.UnpilotedController
-import net.horizonsend.ion.server.features.starship.control.input.DirectControlHandler
-import net.horizonsend.ion.server.features.starship.control.input.ShiftFlightHandler
+import net.horizonsend.ion.server.features.starship.control.input.AIDirectControlInput
+import net.horizonsend.ion.server.features.starship.control.input.AIShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectControlInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
+import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -45,10 +49,14 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotat
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.modules.PlayerShipSinkMessageFactory
 import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
+import net.horizonsend.ion.server.features.starship.movement.KinematicEstimator
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipBlockedException
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementForecast.displayForecast
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementForecast.forecast
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementForecast.logStatistics
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.balancing.DefaultStarshipTypeWeaponBalancing
@@ -151,6 +159,15 @@ class Starship(
 		controller.tick()
 
 		subsystems.forEach { it.tick() }
+		shiftKinematicEstimator.removeData()
+		cruiseKinematicEstimator.removeData()
+
+		if (forecastEnabled) {
+			displayForecast(this)
+		}
+		if (statsEnabled) {
+			logStatistics(this)
+		}
 	}
 
 	/** Called when a starship is removed. Any cleanup logic should be done here. */
@@ -273,6 +290,8 @@ class Starship(
 
 	val pendingRotations = LinkedBlockingQueue<PendingRotation>()
 	private val rotationTime get() = TimeUnit.MILLISECONDS.toNanos(50L + initialBlockCount / 30L)
+	// manual move is sneak/direct control
+	var lastRotation = System.nanoTime()
 
 	fun getTargetForward(): BlockFace {
 		val rotation = pendingRotations.peek()
@@ -309,7 +328,7 @@ class Starship(
 			if (pendingRotations.any()) {
 				scheduleRotation()
 			}
-
+			lastRotation = System.nanoTime() //TODO: change this to after the async call
 			moveAsync(RotationMovement(this, rotation.clockwise))
 		}
 	}
@@ -323,11 +342,21 @@ class Starship(
 	// manual move is sneak/direct control
 	var lastManualMove = System.nanoTime() / 1_000_000
 
+	val shiftKinematicEstimator = KinematicEstimator(ship = this, expireTime = manualMoveCooldownMillis * 10, dataWeightFactor = 0.85, regulationfactor = 0.1, numTerms = 2)
+	val cruiseKinematicEstimator = KinematicEstimator(ship = this, expireTime = 20000L, numTerms = 3)
+
 	/**
 	 * Non-normalized vector containing the ships velocity
 	 * Used for target lead / speed estimations
 	 */
-	var velocity: Vector = Vector(0.0, 0.0, 0.0)
+	val velocity: Vector get() = forecast(this, System.currentTimeMillis(), 1)
+
+	/**
+	 * Non-normalized vector containing the ships acceleration
+	 * Used for target lead / speed estimations
+	 */
+	val accel: Vector get() = forecast(this, System.currentTimeMillis(), 2)
+
 	var isMoving: Boolean = false; private set
 
 	fun moveAsync(movement: StarshipMovement): CompletableFuture<Boolean> {
@@ -390,8 +419,7 @@ class Starship(
 
 	//region Direct Control
 	val isDirectControlEnabled: Boolean get() {
-		return controller is ActivePlayerController &&
-			(controller as ActivePlayerController).inputHandler is DirectControlHandler
+		return controller.movementHandler is DirectControlHandler
 	}
 
 	var directControlCenter: Location? = null
@@ -412,11 +440,19 @@ class Starship(
 	var directControlSlowExpiryFromHeavyLasers = 0L
 
 	fun setDirectControlEnabled(enabled: Boolean) {
-		if (controller !is ActivePlayerController) return
-		val controller = controller as ActivePlayerController
-
-		if (enabled) controller.inputHandler = DirectControlHandler(controller) else
-			controller.inputHandler = ShiftFlightHandler(controller)
+		when(controller) {
+			is ActivePlayerController -> {
+				val controller = controller as ActivePlayerController
+				if (enabled) controller.movementHandler = DirectControlHandler(controller, PlayerDirectControlInput(controller)) else
+					controller.movementHandler = ShiftFlightHandler(controller, PlayerShiftFlightInput(controller))
+			}
+			is AIController -> {
+				val controller = controller as AIController
+				if (enabled) controller.movementHandler = DirectControlHandler(controller, AIDirectControlInput(controller)) else
+					controller.movementHandler = ShiftFlightHandler(controller, AIShiftFlightInput(controller))
+			}
+			else -> return
+		}
 	}
 
 	//endregion
@@ -549,14 +585,18 @@ class Starship(
 		}
 	}
 
-	fun updatePower(sender: String, shield: Int, weapon: Int, thruster: Int) {
-		reactor.powerDistributor.setDivision(shield / 100.0, weapon / 100.0, thruster / 100.0)
+	fun updatePower(sender: String, shield: Double, weapon: Double, thruster: Double, bypassCheck : Boolean = false) {
+		reactor.powerDistributor.setDivision(shield, weapon, thruster, bypassCheck)
 
 		onlinePassengers.forEach { player ->
 			player.informationAction(
-				"<green>$sender</green> updated the power mode to <aqua>$shield% shield <red>$weapon% weapon <yellow>$thruster% thruster"
+				"<green>$sender</green> updated the power mode to <aqua>${(shield * 100).toInt()}% shield <red>${(weapon * 100).toInt()}% weapon <yellow>${(thruster * 100).toInt()}% thruster"
 			)
 		}
+	}
+
+	fun updatePower(sender: String, shield: Int, weapon: Int, thruster: Int) {
+		updatePower(sender,shield/100.0,weapon/100.0,thruster/100.0)
 	}
 
 	fun getEntryRange(planet: CachedPlanet): Int {
@@ -653,6 +693,13 @@ class Starship(
 	fun isOversized() =
 		this.initialBlockCount > this.type.maxSize
 		&& (this.initialBlockCount <= (this.type.maxSize * StarshipDetection.OVERSIZE_MODIFIER).toInt())
+
+	//Debugging tools
+
+	var forecastEnabled = false
+	var statsEnabled = false
+
+	//end Debug
 
 	init {
 		IonWorld[world].starships.add(this)

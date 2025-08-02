@@ -11,7 +11,9 @@ interface SpawnerScheduler {
 
 	class DummyScheduler(private val spawner: AISpawner) : SpawnerScheduler {
 		override fun getSpawner(): AISpawner = spawner
-		override fun setSpawner(spawner: AISpawner): SpawnerScheduler { return this }
+		override fun setSpawner(spawner: AISpawner): SpawnerScheduler {
+			return this
+		}
 
 		override fun getTickInfo(): String = "Dummy scheduler"
 	}

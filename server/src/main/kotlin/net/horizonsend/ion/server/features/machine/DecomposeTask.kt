@@ -142,7 +142,7 @@ class DecomposeTask(
 
 		if (!event.callEvent()) {
 			totalBlocksSkiped++
-			return false
+			return true
 		}
 
 		val blockData = block.blockData

@@ -1,14 +1,34 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
+import com.google.common.collect.HashMultimap
+import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.features.ai.module.combat.AimingModule
+import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.starship.control.input.AIInput
 import net.horizonsend.ion.server.features.starship.control.weaponry.StarshipWeaponry
+import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.PointDefenseSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.AIHeavyLaserWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.AIPhaserWeaponSystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ArsenalRocketStarshipWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.HeavyLaserWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.PhaserWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.RocketWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.TorpedoWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.TriTurretWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToPitchYaw
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.Location
@@ -18,19 +38,9 @@ import org.bukkit.util.Vector
 import java.util.concurrent.TimeUnit
 
 object AIControlUtils {
-	/** Will stop moving if provided a null vector **/
+	/** Direct an AI ship to shift fly in a direction. Will stop moving if provided a null vector **/
 	fun shiftFlyInDirection(controller: AIController, direction: Vector?) {
-		if (direction == null) {
-			controller.setShiftFlying(false)
-			return
-		}
-
-		val (pitch, yaw) = vectorToPitchYaw(direction)
-
-		controller.pitch = pitch
-		controller.yaw = yaw
-
-		controller.setShiftFlying(true)
+		(controller.movementHandler.input as? AIInput)?.updateInput(direction)
 	}
 
 	/** Will stop moving if provided a null location **/
@@ -40,7 +50,7 @@ object AIControlUtils {
 
 	fun shiftFlyToLocation(controller: AIController, starshipLocation: Vec3i, location: Vec3i?) = Tasks.async {
 		if (location == null) {
-			controller.setShiftFlying(false)
+			(controller.movementHandler.input as? AIInput)?.updateInput(null)
 			return@async
 		}
 
@@ -118,6 +128,7 @@ object AIControlUtils {
 			controller,
 			direction,
 			leftClick,
+			true,
 			controllerLoc,
 			weaponSet
 		)
@@ -127,10 +138,23 @@ object AIControlUtils {
 		controller: AIController,
 		direction: Vector,
 		leftClick: Boolean,
+		manual: Boolean = true,
 		target: Vector? = null,
 		weaponSet: String? = null,
 		controllerLoc: Location? = null
 	) {
+
+
+		if (AIDebugModule.showAims) {
+			if (target != null) {
+				AimingModule.showAims(controller.getWorld(),target,leftClick)
+			}
+		}
+
+		if (!AIDebugModule.fireWeapons) {
+			return
+		}
+
 		val damager = controller.damager
 		val originLocation = controllerLoc ?: controller.starship.centerOfMass.toLocation(controller.starship.world)
 
@@ -152,7 +176,8 @@ object AIControlUtils {
 			vectorToBlockFace(direction),
 			direction,
 			target ?: StarshipWeaponry.getTarget(originLocation, direction, controller.starship),
-			weaponSet
+			weaponSet,
+			manual
 		)
 	}
 
@@ -173,5 +198,118 @@ object AIControlUtils {
 
 	fun unSetAllWeapons(controller: AIController) {
 		controller.starship.autoTurretTargets.clear()
+	}
+
+	fun guessWeaponSets(starship: Starship, controller: AIController) {
+		debugAudience.information("weaponSets ${starship.weaponSets.keySet()}")
+
+		//easier to manipulate
+		val starshipWeaponSets = starship.weaponSets.asMap().map { (key, values) -> key to values.toSet()}
+
+		val accountedFor : MutableSet<String> = mutableSetOf()
+
+		val fudgeFactor = starship.max.distance(starship.min) / 3
+
+		//special cases first
+		val predicate = { weapon: WeaponSubsystem<*> ->
+			weapon is MiningLaserSubsystem ||
+			weapon is ArsenalRocketStarshipWeaponSubsystem ||
+			weapon is PointDefenseSubsystem ||
+			weapon is RocketWeaponSubsystem
+		}
+		val specialWeapons = starship.weapons.filter(predicate)
+		for (specialWeapon in specialWeapons) {
+			val weaponSets = starshipWeaponSets.filter{ it.second.contains(specialWeapon) }
+			for (weaponSet in weaponSets) {
+				if (accountedFor.contains(weaponSet.first)) continue
+				controller.addSpecialSet(
+					weaponSet.first,0.0,weaponSet.second.first().balancing.projectile.range + fudgeFactor)
+				accountedFor.add(weaponSet.first)
+			}
+		}
+
+		//first we have to divy up manual weapons using heavy weapon range as a guide
+		//get all unique heavy weapons and sort by priority
+		val heavyWeapons = starship.weapons.filter { it is HeavyWeaponSubsystem }.sortedBy {
+			weaponSortMap.getOrDefault(it::class,2) }.distinctBy { it::class }.toMutableList()
+		var initialHeavyRange = 0.0
+		var initialHeavyAutoRange = 0.0
+		var heavyWeapon: WeaponSubsystem<*>
+		//go through weapons until heaves are exausted, or the light weapons range on shared heavy+light set is less than
+		//the next heavy weapon
+		heavyWeapons@ while (heavyWeapons.isNotEmpty()) {
+			heavyWeapon = heavyWeapons.removeFirst()
+
+			val weaponSets = starshipWeaponSets
+				.filter { it.second.contains(heavyWeapon) }
+				.sortedBy { it.second.filter { weapon -> weapon !is HeavyWeaponSubsystem}.minOfOrNull { weapon -> weapon.balancing.projectile.range } }
+
+			for (weaponSet in weaponSets) {
+				if (accountedFor.contains(weaponSet.first)) continue
+				if (weaponSet.second.all { it is AutoWeaponSubsystem }) continue // this is an auto set
+
+				val heavyWeaponRange = heavyWeapon.balancing.projectile.range + fudgeFactor
+
+				val lightWeaponRange = (weaponSet.second.filter{it !is HeavyWeaponSubsystem}.minOfOrNull { weapon -> weapon.balancing.projectile.range } ?: heavyWeaponRange) + fudgeFactor
+
+				if (heavyWeaponRange < lightWeaponRange) {
+					controller.addManualSet(weaponSet.first,initialHeavyRange,heavyWeaponRange)
+					initialHeavyRange = heavyWeaponRange
+					if (heavyWeapon !is AutoWeaponSubsystem) {
+						initialHeavyAutoRange = heavyWeaponRange} // push the auto heavy weapon out
+					accountedFor.add(weaponSet.first)
+					continue@heavyWeapons
+				} else {
+					controller.addManualSet(weaponSet.first,initialHeavyRange,lightWeaponRange)
+					initialHeavyRange = lightWeaponRange
+					if (heavyWeapon !is AutoWeaponSubsystem) {
+						initialHeavyAutoRange = lightWeaponRange} // push the auto heavy weapon out
+					accountedFor.add(weaponSet.first)
+					continue
+				}
+			}
+		}
+		// now that heavies in manual sets are covered, we have to take care of the remaining manual sets and autosets
+		var initialLightRange = 0.0
+		var initialAutoRange = 0.0
+		val weaponSets = starshipWeaponSets.filter{ !accountedFor.contains(it.first) }
+			.sortedBy { it.second.minOf{weapon -> weapon.balancing.projectile.range} }
+		for (weaponSet in weaponSets) {
+			if (weaponSet.second.all { it is AutoWeaponSubsystem }) {// this is an auto set
+				if (weaponSet.second.any { it is HeavyWeaponSubsystem }) {// this is an auto heavy set
+					val heavyWeaponRange = weaponSet.second.filter { it is HeavyWeaponSubsystem }
+						.minOf { weapon -> weapon.balancing.projectile.range } + fudgeFactor
+					controller.addAutoSet(weaponSet.first,initialHeavyAutoRange,heavyWeaponRange)
+					initialHeavyAutoRange = heavyWeaponRange
+					accountedFor.add(weaponSet.first)
+					continue
+				}
+				val lightWeaponRange = weaponSet.second.minOf { weapon -> weapon.balancing.projectile.range } + fudgeFactor
+				controller.addAutoSet(weaponSet.first,initialAutoRange,lightWeaponRange)
+				accountedFor.add(weaponSet.first)
+				continue
+			}
+			val lightWeaponRange = weaponSet.second.minOf { weapon -> weapon.balancing.projectile.range } + fudgeFactor
+			controller.addManualSet(weaponSet.first,initialLightRange,lightWeaponRange)
+			initialLightRange = lightWeaponRange
+			accountedFor.add(weaponSet.first)
+			continue
+		}
+		debugAudience.information("Accounted for ${accountedFor.size} of ${starship.weaponSets.keySet().size}")
+		val notCounted = starship.weaponSets.keySet().subtract(accountedFor)
+		if (notCounted.isNotEmpty()) debugAudience.alert("Some sets not accounted for! ${notCounted.joinToString { it }}")
+	}
+
+	private val weaponSortMap = mapOf(
+		PhaserWeaponSubsystem::class to 0,
+		AIPhaserWeaponSystem::class to 0,
+		HeavyLaserWeaponSubsystem::class to 1,
+		AIHeavyLaserWeaponSubsystem::class to 1,
+		TriTurretWeaponSubsystem::class to 3,
+		TorpedoWeaponSubsystem::class to 4,
+	)
+
+	private fun weaponSetFilter(weaponsets : HashMultimap<String, WeaponSubsystem<*>>, predicate : (Set<WeaponSubsystem<*>> )-> Boolean) {
+
 	}
 }

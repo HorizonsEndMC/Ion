@@ -29,6 +29,7 @@ import net.minecraft.core.component.DataComponents
 import net.minecraft.stats.Stats
 import net.minecraft.tags.ItemTags
 import net.minecraft.world.InteractionResult
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.LayeredCauldronBlock
 import org.bukkit.damage.DamageEffect
@@ -62,6 +63,8 @@ class IonBootstrapper : PluginBootstrap {
 			PointDefenseStarshipWeaponMultiblockTop
 		)
 
+
+
 		context.lifecycleManager.registerEventHandler(RegistryEvents.DAMAGE_TYPE.freeze().newHandler { event ->
 			for (weapon in damageMultiblocks) {
 				event.registry().register(
@@ -77,24 +80,29 @@ class IonBootstrapper : PluginBootstrap {
 			}
 		})
 
-		CauldronInteraction.WATER.map[Items.WARPED_FUNGUS_ON_A_STICK] = CauldronInteraction { blockState, level, blockPos, player, interactionHand, itemStack, direction ->
-			if (!itemStack.`is`(ItemTags.DYEABLE)) {
-				return@CauldronInteraction InteractionResult.TRY_WITH_EMPTY_HAND
-			} else if (!itemStack.has(DataComponents.DYED_COLOR)) {
-				return@CauldronInteraction InteractionResult.TRY_WITH_EMPTY_HAND
-			} else {
-				if (!level.isClientSide) {
-					if (!LayeredCauldronBlock.lowerFillLevel(blockState, level, blockPos, player, CauldronLevelChangeEvent.ChangeReason.ARMOR_WASH)) {
-						return@CauldronInteraction InteractionResult.SUCCESS
+		fun addCauldronInteraction(itemType: Item) {
+			CauldronInteraction.WATER.map[itemType] = CauldronInteraction { blockState, level, blockPos, player, interactionHand, itemStack, direction ->
+				if (!itemStack.`is`(ItemTags.DYEABLE)) {
+					return@CauldronInteraction InteractionResult.TRY_WITH_EMPTY_HAND
+				} else if (!itemStack.has(DataComponents.DYED_COLOR)) {
+					return@CauldronInteraction InteractionResult.TRY_WITH_EMPTY_HAND
+				} else {
+					if (!level.isClientSide) {
+						if (!LayeredCauldronBlock.lowerFillLevel(blockState, level, blockPos, player, CauldronLevelChangeEvent.ChangeReason.ARMOR_WASH)) {
+							return@CauldronInteraction InteractionResult.SUCCESS
+						}
+
+						itemStack.remove(DataComponents.DYED_COLOR)
+						player.awardStat(Stats.CLEAN_ARMOR)
 					}
 
-					itemStack.remove(DataComponents.DYED_COLOR)
-					player.awardStat(Stats.CLEAN_ARMOR)
+					return@CauldronInteraction InteractionResult.SUCCESS
 				}
-
-				return@CauldronInteraction InteractionResult.SUCCESS
 			}
 		}
+
+		addCauldronInteraction(Items.WARPED_FUNGUS_ON_A_STICK)
+		addCauldronInteraction(Items.DIAMOND_PICKAXE)
 	}
 	override fun createPlugin(context: PluginProviderContext): JavaPlugin = IonServer
 }

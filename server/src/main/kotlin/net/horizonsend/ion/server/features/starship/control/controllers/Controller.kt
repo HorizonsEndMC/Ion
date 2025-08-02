@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.controllers
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.movement.MovementHandler
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
@@ -17,13 +18,10 @@ abstract class Controller(
 	val starship: ActiveStarship,
 	val name: String
 ) : ForwardingAudience.Single {
-	/** Current vertical direction **/
-	abstract val pitch: Float
-	/** Current horizontal direction **/
-	abstract val yaw: Float
 
-	abstract val selectedDirectControlSpeed: Int
 	override fun audience(): Audience = Audience.empty()
+
+	abstract var movementHandler: MovementHandler
 
 	/** The color used for this controller. Currently, applies weapon color **/
 	open fun getColor(): Color {
@@ -52,8 +50,5 @@ abstract class Controller(
 	abstract fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block): Boolean
 
 	/** Return the display name of the controller */
-	abstract fun getPilotName(): Component
-
-	/** Checks whether the controller is sneak flying */
-	abstract fun isSneakFlying(): Boolean
+	abstract val pilotName: Component
 }

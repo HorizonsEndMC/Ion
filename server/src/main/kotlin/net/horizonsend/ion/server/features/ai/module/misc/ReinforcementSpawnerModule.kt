@@ -39,7 +39,7 @@ class ReinforcementSpawnerModule(
 			message = spawnBroadCastMessage,
 			paramColor = HEColorScheme.HE_LIGHT_GRAY,
 			useQuotesAroundObjects = false,
-			controller.getPilotName(),
+			controller.pilotName,
 			x,
 			y,
 			z,

@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.items.util
 
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
+import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.gas.type.GasFuel
 import net.horizonsend.ion.server.features.gas.type.GasOxidizer
 import net.horizonsend.ion.server.features.machine.GeneratorFuel
@@ -206,3 +207,5 @@ fun canAddAll(inventory: Inventory, stacks: Collection<ItemStack>): Boolean {
 
 	return true
 }
+
+val DYEABLE_CUBE_MONO = ItemFactory.unStackableCustomItem("misc/dyeable_cube")

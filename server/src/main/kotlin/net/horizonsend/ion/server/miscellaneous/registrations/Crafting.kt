@@ -128,7 +128,6 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_ROD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.WRENCH
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.miscellaneous.registrations.Crafting.shaped
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.ALL_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
@@ -217,7 +216,6 @@ import org.bukkit.Material.TRIPWIRE_HOOK
 import org.bukkit.Material.TURTLE_EGG
 import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.NamespacedKey
-import org.bukkit.craftbukkit.legacy.MaterialRerouting.setIngredient
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.BlastingRecipe
 import org.bukkit.inventory.FurnaceRecipe
@@ -533,6 +531,14 @@ object Crafting : IonServerComponent() {
 			setIngredient('q', QUARTZ)
 			setIngredient('g', GOLD_INGOT)
 			setIngredient('d', GREEN_DYE)
+			setIngredient('r', REDSTONE)
+		}
+		shaped("circuitry_3", CIRCUITRY.getValue().constructItemStack()) {
+			shape("grg", "qqq", "ccc")
+
+			setIngredient('c', COPPER_INGOT)
+			setIngredient('g', GOLD_INGOT)
+			setIngredient('q', QUARTZ)
 			setIngredient('r', REDSTONE)
 		}
 		shaped("circuitry_3", CIRCUITRY) {

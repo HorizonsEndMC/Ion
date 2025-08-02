@@ -153,6 +153,10 @@ object GuiItems {
 		override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
 			clickHandler.invoke(clickType, player, event)
 		}
+
+		override fun equals(other: Any?): Boolean {
+			return other === this
+		}
 	}
 
 	fun createButton(provider: ItemProvider, clickHandler: (ClickType, Player, InventoryClickEvent) -> Unit) = object : AbstractItem() {

@@ -70,6 +70,12 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerModificationItems()
 		registerEnergySwords()
 		registerPlanetIcons()
+
+		unStackable(CustomItemKeys.DEBUG_LINE, displayName = Component.text("DEBUG_LINE"), model = "debug/debug_line")
+		unStackable(CustomItemKeys.DEBUG_LINE_GREEN, displayName = Component.text("DEBUG_LINE_GREEN"), model = "debug/debug_line_green")
+		unStackable(CustomItemKeys.DEBUG_LINE_RED, displayName = Component.text("DEBUG_LINE_RED"), model = "debug/debug_line_red")
+		unStackable(CustomItemKeys.DEBUG_LINE_BLUE, displayName = Component.text("DEBUG_LINE_BLUE"), model = "debug/debug_line_blue")
+
         CustomItemListeners.sortCustomItemListeners()
 	}
 

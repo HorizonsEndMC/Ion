@@ -38,5 +38,7 @@ abstract class AIModule(val controller: AIController) {
 
 	fun adjust(movement: StarshipMovement, location: Location): Location = movement.displaceLocation(location)
 
-	override fun toString(): String { return javaClass.simpleName }
+	override fun toString(): String {
+		return javaClass.simpleName
+	}
 }

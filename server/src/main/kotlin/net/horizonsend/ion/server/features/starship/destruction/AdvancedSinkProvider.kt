@@ -1,9 +1,12 @@
 package net.horizonsend.ion.server.features.starship.destruction
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields.getNearbyAreaShields
-import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
+import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipMechanics
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -14,21 +17,9 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.Supercap
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
-import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.horizonsend.ion.server.miscellaneous.utils.runnable
+import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
+import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.*
 import net.minecraft.core.BlockPos
 import net.minecraft.core.SectionPos
 import net.minecraft.nbt.CompoundTag
@@ -41,7 +32,7 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.util.Vector
-import java.util.LinkedList
+import java.util.*
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -86,6 +77,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 
 		sinkPositions = newArray
 
+		SinkAnimation(starship, starship.initialBlockCount, starship.world, starship.centerOfMass).schedule()
 		tryReactorParticles()
 		playSinkSound()
 	}
@@ -94,8 +86,8 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		val reactor = starship.subsystems.filterIsInstance<SupercapitalReactorSubsystem<*>>().firstOrNull() ?: return
 		val center = (reactor.pos).toCenterVector()
 
-		val tickRate = 4L
-		val growRate = 4.5 * (tickRate.toDouble() / 20.0)
+		val tickRate = 2L
+		val growRate = 35.5 * (tickRate.toDouble() / 20.0)
 
 		var particleRadius = 0.0
 
@@ -121,8 +113,14 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 	}
 
 	fun playSinkSound() {
-		starship.balancing.standardSounds.explode?.let {
-			playSoundInRadius(starship.centerOfMass.toLocation(starship.world), 7_500.0, it.sound)
+		toPlayersInRadius(starship.centerOfMass.toLocation(starship.world), 1000.0 * 20.0) { player ->
+			playDirectionalStarshipSound(
+				starship.centerOfMass.toLocation(starship.world),
+				player,
+				starship.balancing.standardSounds.explodeNear,
+				starship.balancing.standardSounds.explodeFar,
+				1000.0
+			)
 		}
 	}
 
@@ -151,7 +149,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 
 		val n = sinkPositions.size
 		val capturedStates = Array(n) { AIR }
-		val capturedTiles = mutableMapOf<Int, Pair<BlockState, CompoundTag>>()
+		val capturedTiles = Int2ObjectOpenHashMap<Pair<BlockState, CompoundTag>>()
 
 		Tasks.syncBlocking {
 			try {
@@ -463,7 +461,7 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		 * Formnats the provided position array into the chunk map
 		 **/
 		fun getChunkMap(positionArray: LongArray, world: World): SinkChunkMap {
-			val chunkMap = mutableMapOf<Long, MutableMap<Int, MutableMap<Long, Int>>>()
+			val chunkMap = Long2ObjectOpenHashMap<Int2ObjectOpenHashMap<Long2IntOpenHashMap>>()
 
 			for (index in positionArray.indices) {
 				val blockKey = positionArray[index]
@@ -476,8 +474,8 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 
 				val sectionKey = world.minecraft.getSectionIndexFromSectionY(SectionPos.blockToSectionCoord(y))
 
-				val sectionMap = chunkMap.getOrPut(chunkKey) { mutableMapOf() }
-				val positionMap = sectionMap.getOrPut(sectionKey) { mutableMapOf() }
+				val sectionMap = chunkMap.getOrPut(chunkKey) { Int2ObjectOpenHashMap() }
+				val positionMap = sectionMap.getOrPut(sectionKey) { Long2IntOpenHashMap() }
 
 				positionMap[blockKey] = index
 			}
@@ -485,9 +483,12 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 			return chunkMap
 		}
 	}
+
+
 }
 
 /**
  * Map of a chunk key to a map of a section key to a map of a block key to its index in the block list
  **/
 private typealias SinkChunkMap = Map<Long, Map<Int, Map<BlockKey, Int>>>
+

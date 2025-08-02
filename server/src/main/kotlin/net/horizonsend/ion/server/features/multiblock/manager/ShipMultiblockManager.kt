@@ -20,11 +20,7 @@ import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.*
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
@@ -142,7 +138,11 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 			val multiblock = MultiblockAccess.getFast(state)
 			if (multiblock !is EntityMultiblock<*>) return@iterateBlocks
 
-			val data = state.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData) ?: return MultiblockEntities.migrateFromSign(state, multiblock)
+			val data = state.persistentDataContainer.get(NamespacedKeys.MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData)
+			if (data == null) {
+				MultiblockEntities.migrateFromSign(state, multiblock)
+				return
+			}
 
 			// In case it moved
 			data.x = origin.x - starship.centerOfMass.x

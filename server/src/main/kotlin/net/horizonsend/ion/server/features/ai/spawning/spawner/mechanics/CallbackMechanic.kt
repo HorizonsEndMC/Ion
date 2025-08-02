@@ -8,7 +8,7 @@ class CallbackMechanic(val callback: () -> Unit) : SpawnerMechanic() {
 		callback.invoke()
 	}
 
-	override fun getAvailableShips(): Collection<SpawnedShip> {
+	override fun getAvailableShips(draw: Boolean): Collection<SpawnedShip> {
 		return listOf()
 	}
 }

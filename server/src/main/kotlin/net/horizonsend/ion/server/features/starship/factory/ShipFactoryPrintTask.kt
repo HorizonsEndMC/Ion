@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
+import net.horizonsend.ion.common.utils.text.*
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -19,7 +20,9 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.Companion.formatProgress
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock.InventoryReference
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
@@ -27,7 +30,9 @@ import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFacto
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories.missingMaterialsCache
 import net.horizonsend.ion.server.features.starship.factory.integration.ShipFactoryIntegration
+import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
+import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -169,7 +174,7 @@ class ShipFactoryPrintTask(
 			val requiredAmount = StarshipFactories.getRequiredAmount(blockData)
 
 			// Check if the position is obstructed, if it is, skip the block and try the next.
-			if (checkObstruction(printItem, blockData, requiredAmount)) {
+			if (!checkObstruction(printItem = printItem, worldBlockData = worldBlockData, requiredAmount = requiredAmount)) {
 				skippedBlocks++
 				continue
 			}
@@ -265,25 +270,22 @@ class ShipFactoryPrintTask(
 		val isAllowedWater = worldBlockData.material == Material.WATER && settings.placeBlocksUnderwater
 
 		// If it is air then it can be placed.
+		if (worldBlockData.material.isAir) return true
+
+		// Air is replacable, so the check should only be done if it is not air
+		if (isAllowedWater || isAllowedReplaceable) return true
+
 		// If it is not air, AND not replaceable (if replaceables are marked as obstructing), OR in water (if water placement is not allowed)
 		// then placement is obstructed
-		if (!worldBlockData.material.isAir) {
-			// Air is replacable, so the check should only be done if it is not air
-			if (!isAllowedReplaceable && !isAllowedWater) {
-				// Continue if it should just be marked as complete, not missing
-				if (settings.markObstrcutedBlocksAsComplete) {
-					return false
-				}
-
-				// Mark missing
-				markItemMissing(printItem, requiredAmount)
-
-				// Move onto next block
-				return false
-			}
+		if (settings.markObstrcutedBlocksAsComplete) {
+			return false
 		}
 
-		return true
+		// Mark missing
+		markItemMissing(printItem, requiredAmount)
+
+		// Move onto next block
+		return false
 	}
 
 	private fun printBlocks(blocks: List<BlockKey>) {
@@ -325,11 +327,19 @@ class ShipFactoryPrintTask(
 
 		world.setNMSBlockData(x, y, z, getRotatedBlockData(placedData))
 
+		if (ExtractorManager.isExtractorData(data)) {
+			NewTransport.addExtractor(world, x, y, z)
+		}
+
 		val state = block.state as? Sign
 		if (state != null) {
 			signData?.applyTo(state)
-			Tasks.sync {
-				MultiblockEntities.loadFromSign(state)
+			Tasks.syncDelay(2L) {
+				val placed = MultiblockEntities.loadFromSign(state)
+
+				if (placed is LegacyMultiblockEntity) placed.resetSign()
+
+				if (placed is PoweredMultiblockEntity) placed.powerStorage.setPower(0)
 			}
 		}
 	}
