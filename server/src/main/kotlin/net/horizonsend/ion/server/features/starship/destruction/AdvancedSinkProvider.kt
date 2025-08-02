@@ -18,21 +18,8 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
-import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.horizonsend.ion.server.miscellaneous.utils.runnable
+import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.*
 import net.minecraft.core.BlockPos
 import net.minecraft.core.SectionPos
 import net.minecraft.nbt.CompoundTag
@@ -45,7 +32,7 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.util.Vector
-import java.util.LinkedList
+import java.util.*
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -99,8 +86,8 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 		val reactor = starship.subsystems.filterIsInstance<SupercapitalReactorSubsystem<*>>().firstOrNull() ?: return
 		val center = (reactor.pos).toCenterVector()
 
-		val tickRate = 8L
-		val growRate = 4.5 * (tickRate.toDouble() / 20.0)
+		val tickRate = 2L
+		val growRate = 35.5 * (tickRate.toDouble() / 20.0)
 
 		var particleRadius = 0.0
 

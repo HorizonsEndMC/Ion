@@ -38,7 +38,7 @@ import kotlin.math.min
 
 object HudIcons : IonServerComponent() {
     // How often the planet display entities should update in ticks
-    private const val UPDATE_RATE = 10L
+    private const val UPDATE_RATE = 2L
 
     // The threshold for "hovering" over a planet, in radians
     private const val SELECTOR_ANGLE_THRESHOLD = 5.0 / 180.0 * PI
@@ -98,7 +98,7 @@ object HudIcons : IonServerComponent() {
         entity.setItemStack(getItemStack(identifier))
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
-        //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
+        //entity.interpolationDuration = UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
         entity.teleportDuration = 0
 
@@ -211,7 +211,7 @@ object HudIcons : IonServerComponent() {
         entity.setItemStack(CustomItemRegistry.PLANET_SELECTOR.constructItemStack())
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
-        //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
+        //entity.interpolationDuration = UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
         entity.teleportDuration = 0
 
@@ -309,7 +309,7 @@ object HudIcons : IonServerComponent() {
         )
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
-        //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
+        //entity.interpolationDuration = UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
         entity.teleportDuration = 0
         entity.backgroundColor = Color.fromARGB(0x00000000)

@@ -70,7 +70,7 @@ class SinkAnimation(
 			blockWrappers.add(ColoredSinkAnimationBlock(
 				duration = Random.nextLong(baseDuration, (baseDuration * 1.5).roundToLong()),
 				wrapper = displayContainer,
-				direction = vector.multiply(scale),
+				direction = vector.multiply(scale).multiply(Random.nextDouble(0.9, 1.1)),
 				initialScale = 2.0 * scale,
 				finalScale = 8.0 * scale,
 				rotationAxis = Vector.getRandom(),
@@ -132,7 +132,7 @@ class SinkAnimation(
 
 			val position = Vec3i(position).toVector()
 
-			val direction = position.clone().subtract(origin.toCenterVector()).normalize().multiply(6 * scale)
+			val direction = position.clone().subtract(origin.toCenterVector()).normalize().multiply(6 * scale).multiply(Random.nextDouble(0.75, 1.25))
 
 			val displayContainer = ItemDisplayContainer(
 				world = world,
