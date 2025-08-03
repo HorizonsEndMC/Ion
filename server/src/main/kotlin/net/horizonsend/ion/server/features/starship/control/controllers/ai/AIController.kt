@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
 import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
@@ -66,6 +67,9 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 	) : this(starship, damager) {
 		this.coreModules.putAll(setupCoreModules(this).build())
 		this.utilModules.addAll(setupUtilModules(this))
+		if (AIDebugModule.visualDebug) {
+			this.addUtilModule(AIDebugModule(this))
+		}
 
 		this.pilotName = pilotName
 

@@ -188,6 +188,15 @@ object AIDebugCommand : SLCommand() {
 		sender.information("Toggled weapons firing to ${AIDebugModule.fireWeapons}")
 	}
 
+	@Subcommand("toggle visualDebug")
+	@Suppress("unused")
+	fun toggleVisualDebug(
+		sender: Player,
+	) {
+		AIDebugModule.visualDebug = !AIDebugModule.visualDebug
+		sender.information("Toggled weapons firing to ${AIDebugModule.visualDebug}")
+	}
+
 
 	@Subcommand("spawner query")
 	fun onQuery(sender: CommandSender) {

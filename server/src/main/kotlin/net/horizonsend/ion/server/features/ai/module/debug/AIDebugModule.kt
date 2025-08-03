@@ -41,6 +41,7 @@ class AIDebugModule(controller: AIController) : AIModule(controller) {
 
 		enum class DebugColor { WHITE, RED, BLUE, GREEN }
 
+		var visualDebug = false
 		var canShipsMove = true
 		var canShipsRotate = true
 		var showAims = false

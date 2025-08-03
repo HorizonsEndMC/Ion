@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.features.ai.module.combat.DefensiveCombatModul
 import net.horizonsend.ion.server.features.ai.module.combat.FrigateCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.MultiTargetFrigateCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.StarfighterCombatModule
-import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.module.misc.ContactsJammerModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.misc.GravityWellModule
@@ -101,10 +100,6 @@ object AIControllerFactories : IonServerComponent() {
 
 			builder
 		}
-
-		addUtilModule { AIDebugModule(it) }
-
-
 		build()
 	}
 
@@ -171,13 +166,10 @@ object AIControllerFactories : IonServerComponent() {
 
 			builder
 		}
-
-		addUtilModule { AIDebugModule(it) }
-
 		build()
 	}
 
-	val goonship = registerFactory("GOONSHIP") {
+	val basicship = registerFactory("BASICSHIP") {
 		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
@@ -233,9 +225,6 @@ object AIControllerFactories : IonServerComponent() {
 
 			builder
 		}
-
-		addUtilModule { AIDebugModule(it) }
-
 		build()
 	}
 
@@ -303,9 +292,6 @@ object AIControllerFactories : IonServerComponent() {
 			builder.addModule(ContactsJammerModule::class, ContactsJammerModule(controller, 300.0, controller.getCoreModuleSupplier<TargetingModule>(TargetingModule::class).map { it.findTargets() }))
 			builder
 		}
-
-		addUtilModule { AIDebugModule(it) }
-
 		build()
 	}
 
@@ -372,9 +358,6 @@ object AIControllerFactories : IonServerComponent() {
 
 			builder
 		}
-
-		addUtilModule { AIDebugModule(it) }
-
 		build()
 	}
 
@@ -442,7 +425,6 @@ object AIControllerFactories : IonServerComponent() {
 			builder
 		}
 
-		addUtilModule { AIDebugModule(it) }
 		addUtilModule { controller -> GravityWellModule(controller, 1800.0, true, controller.getCoreModuleSupplier<TargetingModule>(TargetingModule::class).map { it.findTarget() }) }
 
 		build()
@@ -513,8 +495,6 @@ object AIControllerFactories : IonServerComponent() {
 			builder
 		}
 
-		addUtilModule { AIDebugModule(it) }
-
 		build()
 	}
 
@@ -582,8 +562,6 @@ object AIControllerFactories : IonServerComponent() {
 			builder
 		}
 
-		addUtilModule { AIDebugModule(it) }
-
 		build()
 	}
 
@@ -649,8 +627,6 @@ object AIControllerFactories : IonServerComponent() {
 
 			builder
 		}
-
-		addUtilModule { AIDebugModule(it) }
 
 		build()
 	}
@@ -718,7 +694,6 @@ object AIControllerFactories : IonServerComponent() {
 			builder
 		}
 
-		addUtilModule { AIDebugModule(it) }
 		addUtilModule { controller -> GravityWellModule(controller, 1800.0, true, controller.getCoreModuleSupplier<TargetingModule>(TargetingModule::class).map { it.findTarget() }) }
 
 		build()
@@ -787,7 +762,6 @@ object AIControllerFactories : IonServerComponent() {
 			builder
 		}
 
-		addUtilModule { AIDebugModule(it) }
 
 		build()
 	}
@@ -855,7 +829,6 @@ object AIControllerFactories : IonServerComponent() {
 			builder
 		}
 
-		addUtilModule { AIDebugModule(it) }
 
 		build()
 	}
@@ -922,8 +895,6 @@ object AIControllerFactories : IonServerComponent() {
 
 			builder
 		}
-
-		addUtilModule { AIDebugModule(it) }
 
 		build()
 	}
@@ -993,7 +964,6 @@ object AIControllerFactories : IonServerComponent() {
 			builder
 		}
 
-		addUtilModule { AIDebugModule(it) }
 		addUtilModule { RandomGoalModule(it) }
 
 		build()
@@ -1100,8 +1070,6 @@ object AIControllerFactories : IonServerComponent() {
 
 			builder
 		}
-
-		addUtilModule { AIDebugModule(it) }
 
 		build()
 	}
