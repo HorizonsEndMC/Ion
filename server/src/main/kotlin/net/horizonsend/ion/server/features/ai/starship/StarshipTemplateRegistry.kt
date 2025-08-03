@@ -540,7 +540,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		StarshipTemplate(
 			schematicName = "Protector",
 			type = AI_GUNSHIP,
-			miniMessageName = "<$PRIVATEER_LIGHT_TEAL>Patroller",
+			miniMessageName = "<$PRIVATEER_LIGHT_TEAL>Protector",
 		)
 	)
 
@@ -628,7 +628,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 
 	val WOODPECKER = registerTemplate(
 		StarshipTemplate(
-			schematicName = "Ostrich",
+			schematicName = "Woodpecker",
 			type = AI_SHUTTLE,
 			miniMessageName = "<$MINING_CORP_LIGHT_ORANGE>Woodpecker",
 		)
@@ -690,7 +690,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 
 	val SCYTHE = registerTemplate(
 		StarshipTemplate(
-			schematicName = "Swarmer",
+			schematicName = "Scythe",
 			type = AI_STARFIGHTER,
 			miniMessageName = "<$TSAII_DARK_ORANGE>Scythe",
 		)

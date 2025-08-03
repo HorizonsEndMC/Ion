@@ -357,7 +357,7 @@ object AITemplateRegistry {
 
 	val TEMPEST = registerTemplate(
 		builder(
-			identifier = "ISKAT",
+			identifier = "TEMPEST",
 			template = StarshipTemplateRegistry.TEMPEST,
 			controllerFactory = AIControllerFactories.starfighter,
 			engagementRange = 750.0
