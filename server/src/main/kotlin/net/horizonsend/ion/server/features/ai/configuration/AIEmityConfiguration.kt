@@ -15,11 +15,11 @@ data class AIEmities(
 		val sizeWeight: Double = 1.0,
 		val outOfRangeDecay: Double = 0.8,
 		val outOfSystemDecay: Double = 0.05,
-		val damagerDeacy: Double = 0.75,
+		val damagerDeacy: Double = 0.9,
 		val aggroRange: Double = 1000.0,
 		val initialAggroThreshold: Double = 1.0,
 		val distanceAggroWeight: Double = 0.15,
 		val gravityWellAggro: Double = 10.0,
-		val damagerAggroWeight: Double = 1.1,
+		val damagerAggroWeight: Double = 2.1,
 	)
 }
