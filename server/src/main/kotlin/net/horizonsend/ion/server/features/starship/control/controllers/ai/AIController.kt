@@ -44,7 +44,7 @@ import kotlin.reflect.KClass
  **/
 class AIController private constructor(starship: ActiveStarship, damager: Damager) : Controller(damager, starship, "AIController") {
 	override var pilotName: Component = text("AI Controller")
-	private var color: Color = super.getColor()
+	private var _color: Color = super.getColor()
 	override var movementHandler: MovementHandler = ShiftFlightHandler(this,AIShiftFlightInput(this))
 		set(value) {
 			field.destroy()
@@ -53,7 +53,10 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 			information("Updated AI control mode to ${value.name}")
 		}
 
-	fun setColor(color: Color) { this.color = color }
+	override fun getColor(): Color {
+		return _color
+	}
+	fun setColor(color: Color) { this._color = color }
 
 	/** Build the controller using a module builder */
 	constructor(
