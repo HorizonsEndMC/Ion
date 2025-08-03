@@ -527,7 +527,7 @@ object AITemplateRegistry {
 				) {
 					BagSpawner.asReinforcement(
 						formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 100.0, 200.0),
-						VariableIntegerAmount(4, 7),
+						VariableIntegerAmount(6, 10),
 						null,
 						null,
 						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 2),
