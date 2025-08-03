@@ -41,10 +41,10 @@ data class AISteeringConfiguration(
 	),
 	//because cruising cases the ships to go wide of the optima dist make it closer than normal
 	val capitalDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(
-		fleeDist = 400.0, minDist = 50.0,maxDist = 300.0, optimalDist = 150.0, startFleeing = 0.01, stopFleeing = 0.2
+		fleeDist = 350.0, minDist = 50.0,maxDist = 300.0, optimalDist = 150.0, startFleeing = 0.01, stopFleeing = 0.2, fleeChance = 0.002,
 	),//capitals back off
 	val advancedCapitalDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(
-		fleeDist = 400.0,maxDist = 300.0, optimalDist = 50.0, startFleeing = 0.01, stopFleeing = 0.3
+		fleeDist = 350.0,maxDist = 300.0, optimalDist = 50.0, startFleeing = 0.01, stopFleeing = 0.3,  fleeChance = 0.002,
 	),
 	val battlecruiserDistanceConfiguration: DistanceConfiguration = DistanceConfiguration(
 		fleeDist = 600.0, optimalDist = 200.0, startFleeing = -0.1, stopFleeing = 0.0
