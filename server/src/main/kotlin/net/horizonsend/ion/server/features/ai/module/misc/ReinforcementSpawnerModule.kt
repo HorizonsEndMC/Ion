@@ -35,11 +35,13 @@ class ReinforcementSpawnerModule(
 
 		val (x, y, z) = starship.centerOfMass
 
+		val reinforcementName = spawner.getAvailableShips().first().template.starshipInfo.componentName()
+
 		val formatted = template(
 			message = spawnBroadCastMessage,
 			paramColor = HEColorScheme.HE_LIGHT_GRAY,
 			useQuotesAroundObjects = false,
-			controller.pilotName,
+			reinforcementName,
 			x,
 			y,
 			z,

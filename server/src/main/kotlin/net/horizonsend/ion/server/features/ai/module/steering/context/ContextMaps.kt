@@ -489,21 +489,6 @@ class ShieldAwarenessContext(
 
 	init {
 		verticalDamp.populateContext()
-		val previousCenters = ship.shields.map {it.pos.toVector().add(ship.centerOfMass.toVector().multiply(-1.0))}
-		//var rotatedCenters = ship.shields.map {transformCords(ship,it,Vector(0.0,0.0,1.0))}
-		println("previous centers: $previousCenters")
-		val shipYaw  = vectorToPitchYaw(ship.forward.direction, true).second.toDouble()
-		println("ship yaw: $shipYaw")
-		val localCenters = shieldsInfo.map { it.localVector }
-		println("localCenters: $localCenters")
-		var targetYaw = vectorToPitchYaw(Vector(0.0,0.0,1.0), true).second.toDouble()
-		println("target yaw: $targetYaw")
-		var rotatedCenters = shieldsInfo.map {transformCords(it,Vector(0.0,0.0,1.0))}
-		println("rotated centers around ${Vector(0.0,0.0,1.0)} : $rotatedCenters")
-		rotatedCenters = shieldsInfo.map {transformCords(it,Vector(1.0,0.0,0.0))}
-		targetYaw = vectorToPitchYaw(Vector(1.0,0.0,0.0), true).second.toDouble()
-		println("target yaw: $targetYaw")
-		println("rotated centers around ${Vector(1.0,0.0,0.0)} : $rotatedCenters")
 	}
 
 	override fun populateContext() {

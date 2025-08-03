@@ -22,6 +22,7 @@ import net.horizonsend.ion.common.utils.text.serialize
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
+import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_BARGE
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_BATTLECRUISER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_CORVETTE
@@ -34,7 +35,7 @@ import net.horizonsend.ion.server.features.starship.StarshipType.AI_LIGHT_FREIGH
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_SHUTTLE
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_STARFIGHTER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_TRANSPORT
-import net.horizonsend.ion.server.features.starship.StarshipType.MEDIUM_FREIGHTER
+import net.horizonsend.ion.server.features.starship.StarshipType.AI_MEDIUM_FREIGHTER
 import net.horizonsend.ion.server.features.starship.StarshipType.UNIDENTIFIEDSHIP
 import net.kyori.adventure.text.Component.text
 
@@ -605,7 +606,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	val GROUPER = registerTemplate(
 		StarshipTemplate(
 			schematicName = "Grouper",
-			type = MEDIUM_FREIGHTER,
+			type = AI_MEDIUM_FREIGHTER,
 			miniMessageName = "<$MINING_CORP_LIGHT_ORANGE>Grouper",
 			autoWeaponSets = mutableSetOf(WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 250.0)),
 			manualWeaponSets = mutableSetOf(WeaponSet(name = "weapons", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
