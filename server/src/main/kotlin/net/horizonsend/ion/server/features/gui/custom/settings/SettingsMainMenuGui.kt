@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.gui.custom.settings
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.command.misc.IonSitCommand.sitStateNode
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedBooleanToggle
@@ -75,7 +76,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 				DBCachedBooleanToggle(text("Route Segments Enabled"), "", GuiItem.LIST, true, PlayerSettings::compactWaypoints)
 			)
 		),
-		createSettingsPage(player, "HUD Settings",
+		createSettingsPage(player, "Graphics Settings",
 			createSettingsPage(player, "HUD Icon Settings",
 				DBCachedBooleanToggle(text("Toggle Planet Selector"), "", GuiItem.COMPASS_NEEDLE, true, PlayerSettings::hudPlanetsSelector),
 				DBCachedBooleanToggle(text("Toggle Planet Visibility"), "", GuiItem.PLANET, true, PlayerSettings::hudPlanetsImage),
@@ -83,6 +84,9 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 				DBCachedBooleanToggle(text("Toggle Beacon Visibility"), "", GuiItem.BEACON, true, PlayerSettings::hudIconBeacons),
 				DBCachedBooleanToggle(text("Toggle Station Visibility"), "", GuiItem.STATION, false, PlayerSettings::hudIconStations),
 				DBCachedBooleanToggle(text("Toggle Bookmark Visibility"), "", GuiItem.BOOKMARK, false, PlayerSettings::hudIconBookmarks),
+			),
+			createSettingsPage(player, "Effects Settings",
+				DBCachedEnumCycle(ClientDisplayEntities.Visibility::class.java, text("Display Entities"), "Changes the visibility of display entity effects", GuiItem.LIST, 0, PlayerSettings::displayEntityVisibility),
 			),
 		),
 		createSettingsPage(player, "Sound Settings",
