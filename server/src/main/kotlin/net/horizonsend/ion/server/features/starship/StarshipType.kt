@@ -640,6 +640,28 @@ enum class StarshipType(
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing()::mediumFreighter
 	),
+	AI_MEDIUM_FREIGHTER(
+		displayName = "Medium Freighter",
+		icon = SidebarIcon.MEDIUM_FREIGHTER_ICON.text,
+		minSize = 4000,
+		maxSize = 8000,
+		minLevel = 1000,
+		concretePercent = 0.0,
+		containerPercent = 0.045,
+		crateLimitMultiplier = 1.0,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.TRADE_SHIP,
+		color = "#0080cc",
+		powerOverrider = 0.7,
+		maxMiningLasers = 4,
+		miningLaserTier = 3,
+		dynmapIcon = "medium_freighter",
+		requiredPermission = "ion.ships.ai",
+		overridePermission = "ion.ships.ai.medium_freighter",
+		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiMediumFreighter
+	),
 	HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
 		icon = SidebarIcon.HEAVY_FREIGHTER_ICON.text,

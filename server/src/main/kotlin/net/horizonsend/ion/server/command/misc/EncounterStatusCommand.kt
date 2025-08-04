@@ -14,7 +14,6 @@ import org.bukkit.entity.Player
 object EncounterStatusCommand : SLCommand() {
 	@Suppress("Unused")
 	@CommandAlias("encounterstatus")
-	@CommandPermission("ion.command.encounterstatus")
 	fun onExecute(sender: Player) {
 		sender.sendMessage(lineBreakWithCenterText(text("AI Encounters", HEColorScheme.HE_LIGHT_ORANGE)))
 

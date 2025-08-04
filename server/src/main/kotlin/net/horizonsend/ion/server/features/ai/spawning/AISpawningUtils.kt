@@ -122,8 +122,9 @@ fun createFromClipboard(
 ) {
 	val target = StarshipDealers.resolveTarget(clipboard, location)
 	val vec3i = Vec3i(target)
-
+	logger.info("Attempting to place $starshipName")
 	placeSchematicEfficiently(clipboard, location.world, vec3i, true) {
+		logger.info("Schematic placed")
 		try {
 			tryPilotWithController(
 				logger,
