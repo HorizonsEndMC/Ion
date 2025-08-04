@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.Spawner
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
+import java.util.function.Consumer
 import java.util.function.Supplier
 
 /**
@@ -21,12 +22,13 @@ import java.util.function.Supplier
  **/
 class ReinforcementSpawner(
 	private val reinforced: AIController,
-	mechanic: SpawnerMechanic
+	mechanic: SpawnerMechanic,
+	val controllerModifiers: MutableList<Consumer<AIController>>
 ) : AISpawner(
 	"NULL",
 	mechanic
 ) {
-	constructor(reinforced: AIController, reinforcementPool: List<AITemplate.SpawningInformationHolder>) : this(
+	constructor(reinforced: AIController, reinforcementPool: List<AITemplate.SpawningInformationHolder>, controllerModifiers: MutableList<Consumer<AIController>>) : this(
 		reinforced,
 		SingleSpawn(
 			WeightedShipSupplier(*reinforcementPool.toTypedArray()),
@@ -35,8 +37,9 @@ class ReinforcementSpawner(
 			{ _ -> Supplier { reinforced.getCoreModuleByType<DifficultyModule>()?.internalDifficulty ?: 2 } },
 			{ reinforced.getCoreModuleByType<EnmityModule>()?.targetMode ?: AITarget.TargetMode.PLAYER_ONLY },
 			{ reinforced.getUtilModule(AIFleetManageModule::class.java)?.fleet },
-			::setupReinforcementShip
-		)
+			{ controllerModifiers.forEach { it.accept(this) } }
+		),
+		controllerModifiers
 	) {
 		//check if reinforced ship is part of a fleet.
 		var fleet = reinforced.getUtilModule(AIFleetManageModule::class.java)?.fleet
@@ -47,9 +50,4 @@ class ReinforcementSpawner(
 	}
 
 	override val scheduler: SpawnerScheduler = SpawnerScheduler.DummyScheduler(this)
-
-	companion object {
-		fun setupReinforcementShip(controller: AIController) {/*TODO*/
-		}
-	}
 }

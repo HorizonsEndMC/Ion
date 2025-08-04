@@ -9,11 +9,20 @@ import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.PERSEU
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.SYSTEM_DEFENSE_FORCES
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.miningGuildMini
 import net.horizonsend.ion.server.features.ai.faction.AIFaction.Companion.privateerMini
-import net.horizonsend.ion.server.features.ai.module.misc.*
+import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
+import net.horizonsend.ion.server.features.ai.module.misc.CaravanModule
+import net.horizonsend.ion.server.features.ai.module.misc.DespawnModule
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
+import net.horizonsend.ion.server.features.ai.module.misc.NavigationModule
+import net.horizonsend.ion.server.features.ai.module.misc.ReinforcementSpawnerModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.spawning.formatLocationSupplier
-import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.*
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.CompositeFleetSpawner
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.RandomShipSupplier
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
+import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SpawnerMechanic
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.AMPH
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.ANGLE
@@ -355,6 +364,8 @@ object AIConvoyRegistry {
 		route: ConvoyRoute,
 		templateId: String
 	) {
+		controller.getCoreModuleByType<ReinforcementSpawnerModule>()?.controllerModifiers?.add { controller -> addCaravanModule(controller, route, templateId) }
+
 		controller.addUtilModule(
 			CaravanModule(
 				controller,
