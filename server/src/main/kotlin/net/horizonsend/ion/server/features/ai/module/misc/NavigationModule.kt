@@ -3,8 +3,10 @@ package net.horizonsend.ion.server.features.ai.module.misc
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.module.combat.DefensiveCombatModule
 import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.util.GoalTarget
+import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.VerticalNavigationComputerMultiblockAdvanced
 import net.horizonsend.ion.server.features.space.Space
@@ -176,6 +178,17 @@ class NavigationModule(
 			lastWorld = world
 			triggerUpdate = true
 		}
+		//fix for passive cruising ships
+		if (controller.getCoreModuleByType<DefensiveCombatModule>() != null) {
+			val target = targetModule.findTargetAnywhere()
+			if (target != null) {
+				if (target.attack && (target is PlayerTarget || target is StarshipTarget)) {
+					navigate = false
+					setOverride(null)
+					return
+				}
+			}
+		}
 
 		if (targetLocation == null) { // no target, nothing to navigate to
 			//starship.debug("No target to navigate towards")
@@ -189,7 +202,12 @@ class NavigationModule(
 			return
 		}
 		val dist = targetLocation!!.toVector().distance(location.toVector())
-		if (dist >= engageHyperdiveRange && world.hasFlag(WorldFlag.SPACE_WORLD)) {
+
+
+
+		val finalEngagementRage = if (targetModule.anchorOnly()) engageHyperdiveRange * 2 else engageHyperdiveRange
+
+		if (dist >= finalEngagementRage && world.hasFlag(WorldFlag.SPACE_WORLD)) {
 			//starship.debug("target far away")
 			navigate = true
 			return

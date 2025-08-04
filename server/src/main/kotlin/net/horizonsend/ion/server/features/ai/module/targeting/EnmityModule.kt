@@ -342,6 +342,10 @@ open class EnmityModule(
 		enmityList.removeIf { it.isAnchor }
 	}
 
+	fun anchorOnly() : Boolean{
+		return enmityList.size == 1 && enmityList.first().isAnchor
+	}
+
 
 	override fun onShipSink(event: StarshipSunkEvent) {
 		val tempTarget = AIOpponent(StarshipTarget(event.starship))
