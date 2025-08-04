@@ -31,7 +31,7 @@ sealed class QuadTurretMultiblock : TurretMultiblock<QuadTurretProjectileBalanci
 	override val displayName: Component get() = text("Quad Turret (${if (getSign() == 1) "Top" else "Bottom"})")
 	override val description: Component get() = text("Rotating weapon system effective against the largest targets. Manual fire only. Consumes ammo.")
 
-	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<QuadTurretProjectileBalancing> = starship.balancingManager.getWeapon()
+	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<QuadTurretProjectileBalancing> = starship.balancingManager.getWeapon(QuadTurretWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
 		listOf(Vec3i(-2, getSign() * 4, +3), Vec3i(-1, getSign() * 4, +4), Vec3i(1, getSign() * 4, +4), Vec3i(2, getSign() * 4, +3))

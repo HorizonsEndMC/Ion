@@ -23,7 +23,7 @@ class DoomsdayDeviceWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace,
-) : CannonWeaponSubsystem<DoomsdayDeviceBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()), HeavyWeaponSubsystem {
+) : CannonWeaponSubsystem<DoomsdayDeviceBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(DoomsdayDeviceWeaponSubsystem::class)), HeavyWeaponSubsystem {
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 
     companion object {

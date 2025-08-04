@@ -41,7 +41,7 @@ import java.util.LinkedList
 class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace, val multiblock: CustomTurretBaseMultiblock) : WeaponSubsystem<StarshipWeaponBalancing<*>>(
 	starship,
 	pos,
-	starship.balancingManager.getWeaponSupplier()
+	starship.balancingManager.getWeaponSupplier(CustomTurretSubsystem::class)
 ), DirectionalSubsystem {
 	init {
 		val furnacePos = pos.plus(multiblock.furnaceOffset)

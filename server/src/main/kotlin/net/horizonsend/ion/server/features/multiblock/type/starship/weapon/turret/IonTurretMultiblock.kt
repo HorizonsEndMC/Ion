@@ -30,7 +30,7 @@ sealed class IonTurretMultiblock : TurretMultiblock<IonTurretProjectileBalancing
 	override val displayName: Component get() = text("Ion Turret (${if (getSign() == 1) "Top" else "Bottom"})")
 	override val description: Component get() = text("Rotating weapon system that slows down starships that are cruising and in Direct Control mode. Manual fire only. Consumes ammo.")
 
-	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<IonTurretProjectileBalancing> = starship.balancingManager.getWeapon()
+	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<IonTurretProjectileBalancing> = starship.balancingManager.getWeapon(IonTurretWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
 		listOf(Vec3i(-1, getSign() * 4, +3), Vec3i(1, getSign() * 4, +3))

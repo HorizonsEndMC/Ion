@@ -46,7 +46,7 @@ abstract class TurretMultiblock<T : StarshipParticleProjectileBalancing> : Multi
 
 	fun getCooldownMillis(starship: ActiveStarship) = TimeUnit.NANOSECONDS.toMillis(getBalancing(starship).fireCooldownNanos)
 	fun getRange(starship: ActiveStarship) = getBalancing(starship).projectile.range
-	fun getSound(starship: ActiveStarship) = getBalancing(starship).projectile.fireSound
+	fun getSound(starship: ActiveStarship) = getBalancing(starship).projectile.fireSoundNear
 	fun getProjectileSpeed(starship: ActiveStarship) = getBalancing(starship).projectile.speed
 	fun getParticleThickness(starship: ActiveStarship) = getBalancing(starship).projectile.particleThickness
 	fun getExplosionPower(starship: ActiveStarship) = getBalancing(starship).projectile.explosionPower
@@ -256,7 +256,7 @@ abstract class TurretMultiblock<T : StarshipParticleProjectileBalancing> : Multi
 				dir,
 				shooter,
 				shooter.color,
-				subSystem.starship.balancingManager.getWeapon()
+				subSystem.starship.balancingManager.getWeapon(subSystem::class).projectile
 			).fire()
 		}
 	}

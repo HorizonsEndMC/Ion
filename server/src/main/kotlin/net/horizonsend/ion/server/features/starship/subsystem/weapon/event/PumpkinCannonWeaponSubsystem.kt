@@ -22,7 +22,7 @@ class PumpkinCannonWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     override var face: BlockFace
-) : WeaponSubsystem<PumpkinCannonBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier()),
+) : WeaponSubsystem<PumpkinCannonBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(PumpkinCannonWeaponSubsystem::class)),
 	ManualWeaponSubsystem,
 	DirectionalSubsystem,
 	PermissionWeaponSubsystem {

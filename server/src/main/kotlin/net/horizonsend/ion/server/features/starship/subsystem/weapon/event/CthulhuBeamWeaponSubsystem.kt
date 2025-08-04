@@ -24,7 +24,7 @@ class CthulhuBeamSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	override var face: BlockFace,
-) : WeaponSubsystem<CthulhuBeamBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier()), DirectionalSubsystem, AutoWeaponSubsystem, PermissionWeaponSubsystem, ManualWeaponSubsystem {
+) : WeaponSubsystem<CthulhuBeamBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(CthulhuBeamSubsystem::class)), DirectionalSubsystem, AutoWeaponSubsystem, PermissionWeaponSubsystem, ManualWeaponSubsystem {
 	override val permission: String = "ioncore.eventweapon"
 
 	override val range: Double get() = balancing.range

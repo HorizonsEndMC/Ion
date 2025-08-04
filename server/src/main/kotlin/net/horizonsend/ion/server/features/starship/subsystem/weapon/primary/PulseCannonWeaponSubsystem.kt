@@ -21,7 +21,7 @@ class PulseCannonWeaponSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	face: BlockFace,
-) : CannonWeaponSubsystem<PulseCannonBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()) {
+) : CannonWeaponSubsystem<PulseCannonBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(PulseCannonWeaponSubsystem::class)) {
 	override val length: Int = 2
 
 	companion object {

@@ -43,7 +43,7 @@ class MiningLaserSubsystem(
 ) : WeaponSubsystem<StarshipWeaponBalancing<*>>(
 	starship,
 	toVec3i(entity.getSignKey()),
-	starship.balancingManager.getWeaponSupplier()
+	starship.balancingManager.getWeaponSupplier(MiningLaserSubsystem::class)
 ), ManualWeaponSubsystem, DirectionalSubsystem, MultiblockEntitySubsystem {
 
 	val multiblock = entity.multiblock

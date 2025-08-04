@@ -246,7 +246,7 @@ object StarshipCruising : IonServerComponent() {
 					if (tick >= length) cancel()
 					if (length != 0) {
 						val startCruiseSound =
-							starship.data.starshipType.actualType.balancing.standardSounds.startCruise.sound
+							starship.data.starshipType.actualType.balancing.shipSounds.startCruise.sound
 						playSoundInRadius(passenger.location, 1.0, startCruiseSound)
 						tick += 1
 					} else cancel()
@@ -294,7 +294,7 @@ object StarshipCruising : IonServerComponent() {
 					if (tick >= length) cancel()
 					if (length != 0) {
 						val stopCruiseSound =
-							starship.data.starshipType.actualType.balancing.standardSounds.stopCruise.sound
+							starship.data.starshipType.actualType.balancing.shipSounds.stopCruise.sound
 						playSoundInRadius(passenger.location, 1.0, stopCruiseSound)
 						tick += 1
 					} else cancel()

@@ -14,11 +14,11 @@ import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
-class FlamingSkullCannon(
+class FlamingSkullCannonWeaponSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	face: BlockFace
-) : CannonWeaponSubsystem<FlamingSkullCannonBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()), HeavyWeaponSubsystem, PermissionWeaponSubsystem {
+) : CannonWeaponSubsystem<FlamingSkullCannonBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(FlamingSkullCannonWeaponSubsystem::class)), HeavyWeaponSubsystem, PermissionWeaponSubsystem {
 	override val permission: String = "ioncore.eventweapon"
 	override val boostChargeNanos: Long = balancing.boostChargeNanos
 	override val length: Int = 4

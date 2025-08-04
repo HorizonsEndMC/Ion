@@ -7,8 +7,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.kyori.adventure.key.Key
-import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
@@ -40,7 +38,7 @@ class PumpkinCannonProjectile(
 
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		super.impact(newLoc, block, entity)
-		playCustomSound(newLoc, Sound.sound(Key.key("horizonsend:starship.weapon.rocket.impact"), Sound.Source.PLAYER, 30f, 1f))
+		newLoc.world.playSound(newLoc, "horizonsend:starship.weapon.rocket.impact", 12f, 0.5f)
 	}
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {

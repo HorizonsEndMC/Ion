@@ -20,7 +20,7 @@ class HeavyLaserWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace
-) : TargetTrackingCannonWeaponSubsystem<HeavyLaserBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()), HeavyWeaponSubsystem, AmmoConsumingWeaponSubsystem {
+) : TargetTrackingCannonWeaponSubsystem<HeavyLaserBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(HeavyLaserWeaponSubsystem::class)), HeavyWeaponSubsystem, AmmoConsumingWeaponSubsystem {
 	override val length: Int = 8
 
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos

@@ -31,7 +31,7 @@ sealed class CycleTurretMultiblock : TurretMultiblock<CycleTurretBalancing.Cycle
 
     protected abstract fun getYFactor(): Int
 
-    override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<CycleTurretBalancing.CycleTurretProjectileBalancing> = starship.balancingManager.getWeapon()
+    override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<CycleTurretBalancing.CycleTurretProjectileBalancing> = starship.balancingManager.getWeapon(CycleTurretWeaponSubsystem::class)
 
     override fun buildFirePointOffsets(): List<Vec3i> = listOf(
         Vec3i(-2, getYFactor() * 4, +2),

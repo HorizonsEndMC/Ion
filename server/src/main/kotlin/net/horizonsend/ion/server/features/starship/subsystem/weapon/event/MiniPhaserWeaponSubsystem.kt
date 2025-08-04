@@ -20,7 +20,7 @@ class MiniPhaserWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace
-) : CannonWeaponSubsystem<MiniPhaserBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()), AmmoConsumingWeaponSubsystem, PermissionWeaponSubsystem {
+) : CannonWeaponSubsystem<MiniPhaserBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(MiniPhaserWeaponSubsystem::class)), AmmoConsumingWeaponSubsystem, PermissionWeaponSubsystem {
 	override val permission: String = "ioncore.eventweapon"
 	override val length: Int = 6
 

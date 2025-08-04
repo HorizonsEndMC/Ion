@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 
 class StarshipProjectileSource(val starship: Starship) : ProjectileSource() {
 	override fun <B : StarshipProjectileBalancing, T : SimpleProjectile<B>> getBalancing(clazz: KClass<T>): B {
-		return starship.balancingManager.getWeapon()
+		return starship.balancingManager.getProjectile(clazz)
 	}
 
 	override fun getWorld(): World {

@@ -17,7 +17,7 @@ class InterceptorCannonWeaponSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	face: BlockFace,
-) : CannonWeaponSubsystem<InterceptorCannonBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()) {
+) : CannonWeaponSubsystem<InterceptorCannonBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(InterceptorCannonWeaponSubsystem::class)) {
 	override val length: Int = 2
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {

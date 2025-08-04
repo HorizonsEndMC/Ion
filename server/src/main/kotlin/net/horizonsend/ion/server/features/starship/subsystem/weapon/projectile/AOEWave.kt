@@ -12,7 +12,7 @@ abstract class AOEWave<T: StarshipWaveProjectileBalancing>(
 	shooter: Damager,
 	val firePos: Location,
 ) : Projectile(shooter) {
-	protected open val balancing: T get() = source.getBalancing()
+	protected open val balancing: T get() = TODO()
 
 	protected  val speed: Double get() = balancing.speed
 	protected  val separation: Double get() = balancing.separation

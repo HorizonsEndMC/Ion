@@ -4,7 +4,7 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.server.configuration.serializer.SubsystemSerializer
-import net.horizonsend.ion.server.configuration.starship.StandardStarshipSounds.SoundInfo
+import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing.FireRestrictions
 import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriTurretProjectileBalancing
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -76,8 +76,11 @@ data class NewStarshipBalancing(
 			jumpStrength = 0.0,
 			wellStrength = 0.0,
 			hyperspaceRangeMultiplier = 0.0,
-			shieldPowerMultiplier = 1.0
-
+			shieldPowerMultiplier = 1.0,
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
+			)
 		),
 		val shuttle: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
@@ -86,7 +89,11 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 0.0,
 			hyperspaceRangeMultiplier = 1.2,
-			shieldPowerMultiplier = 1.0
+			shieldPowerMultiplier = 1.0,
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
+			)
 		),
 		val transport: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 10,
@@ -95,7 +102,11 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.25,
-			shieldPowerMultiplier = 1.0
+			shieldPowerMultiplier = 1.0,
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
+			)
 		),
 		val lightFreighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 10,
@@ -115,6 +126,10 @@ data class NewStarshipBalancing(
 					firePowerConsumption = 5300,
 				)
 			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
+			)
 		),
 		val mediumFreighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 10,
@@ -123,7 +138,11 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.35,
-			shieldPowerMultiplier = 1.0
+			shieldPowerMultiplier = 1.0,
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
+			)
 		),
 		val heavyFreighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 10,
@@ -132,7 +151,11 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.4,
-			shieldPowerMultiplier = 1.0
+			shieldPowerMultiplier = 1.0,
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
+			)
 		),
 		val barge: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 3,
@@ -167,8 +190,9 @@ data class NewStarshipBalancing(
 					"Barges require fuel to pilot!"
 				)
 			),
-			standardSounds = StandardStarshipSounds(
-				explode = SoundInfo("horizonsend:starship.explosion.battlecruiser")
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.battlecruiser"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.battlecruiser"),
 			)
 		),
 		val tank: StarshipTypeBalancing = GroundStarshipBalancing(
@@ -178,7 +202,11 @@ data class NewStarshipBalancing(
 			jumpStrength = 0.0,
 			wellStrength = 0.0,
 			hyperspaceRangeMultiplier = 1.5,
-			shieldPowerMultiplier = 1.0
+			shieldPowerMultiplier = 1.0,
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
+			)
 		),
 		val starfighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 4,
@@ -187,7 +215,11 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 0.0,
 			hyperspaceRangeMultiplier = 1.5,
-			shieldPowerMultiplier = 1.0
+			shieldPowerMultiplier = 1.0,
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
+			)
 		),
 		val interceptor: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 4,
@@ -203,6 +235,10 @@ data class NewStarshipBalancing(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				InterceptorCannonBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
 			)
 		),
 		val gunship: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
@@ -216,6 +252,10 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				LightTurretBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1750, maxBlockCount = 12000)),
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1000, maxBlockCount = 4000))
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
 			)
 		),
 		val corvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
@@ -230,6 +270,10 @@ data class NewStarshipBalancing(
 				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, maxBlockCount = 12000)),
 				TriTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 3400)),
 				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 1000, maxBlockCount = 4000)),
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
 			)
 		),
 		val frigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
@@ -240,6 +284,10 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
 			shieldPowerMultiplier = 1.0,
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
+			)
 		),
 		val destroyer: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
@@ -248,7 +296,11 @@ data class NewStarshipBalancing(
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.9,
-			shieldPowerMultiplier = 1.0
+			shieldPowerMultiplier = 1.0,
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
+			)
 		),
 		val cruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
@@ -276,11 +328,12 @@ data class NewStarshipBalancing(
 					"Cruisers require a reactor to pilot!"
 				)
 			),
-			standardSounds = StandardStarshipSounds(
+			shipSounds = StarshipSounds(
 				pilot = SoundInfo("horizonsend:starship.pilot.cruiser", volume = 5f),
 				release = SoundInfo("horizonsend:starship.release.cruiser", volume = 5f),
 				enterHyperspace = SoundInfo("horizonsend:starship.supercapital.hyperspace_enter"),
-				explode = SoundInfo("horizonsend:starship.explosion.cruiser")
+				explodeNear = SoundInfo("horizonsend:starship.explosion.cruiser"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.cruiser"),
 			)
 		),
 		val battlecruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
@@ -313,11 +366,12 @@ data class NewStarshipBalancing(
 					"Battlecruisers require fuel to pilot!"
 				)
 			),
-			standardSounds = StandardStarshipSounds(
+			shipSounds = StarshipSounds(
 				pilot = SoundInfo("horizonsend:starship.pilot.battlecruiser", volume = 7f),
 				release = SoundInfo("horizonsend:starship.release.battlecruiser", volume = 7f),
 				enterHyperspace = SoundInfo("horizonsend:starship.supercapital.hyperspace_enter"),
-				explode = SoundInfo("horizonsend:starship.explosion.battlecruiser")
+				explodeNear = SoundInfo("horizonsend:starship.explosion.battlecruiser"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.battlecruiser")
 			)
 		),
 		val battleship: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
@@ -335,6 +389,13 @@ data class NewStarshipBalancing(
 					maxPerShot = 5
 				)
 			),
+			shipSounds = StarshipSounds(
+				pilot = SoundInfo("horizonsend:starship.pilot.battlecruiser", volume = 7f),
+				release = SoundInfo("horizonsend:starship.release.battlecruiser", volume = 7f),
+				enterHyperspace = SoundInfo("horizonsend:starship.supercapital.hyperspace_enter"),
+				explodeNear = SoundInfo("horizonsend:starship.explosion.battlecruiser"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.battlecruiser")
+			)
 		),
 		val dreadnought: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 3,
@@ -350,6 +411,13 @@ data class NewStarshipBalancing(
 					fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 30000),
 					maxPerShot = 5
 				)
+			),
+			shipSounds = StarshipSounds(
+				pilot = SoundInfo("horizonsend:starship.pilot.battlecruiser", volume = 7f),
+				release = SoundInfo("horizonsend:starship.release.battlecruiser", volume = 7f),
+				enterHyperspace = SoundInfo("horizonsend:starship.supercapital.hyperspace_enter"),
+				explodeNear = SoundInfo("horizonsend:starship.explosion.battlecruiser"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.battlecruiser")
 			)
 		),
 		val platform: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
@@ -378,7 +446,7 @@ sealed interface StarshipTypeBalancing {
 	val accelMultiplier: Double
 	val maxSpeedMultiplier: Double
 
-	val standardSounds: StandardStarshipSounds
+	val shipSounds: StarshipSounds
 
 	val sneakFlyAccelDistance: Int
 	val maxSneakFlyAccel: Int
@@ -400,7 +468,7 @@ open class StanrdardStarshipTypeBalancing(
 	override val accelMultiplier: Double = 1.0,
 	override val maxSpeedMultiplier: Double = 1.0,
 
-	override val standardSounds: StandardStarshipSounds = StandardStarshipSounds(),
+	override val shipSounds: StarshipSounds = StarshipSounds(),
 
 	override val sneakFlyAccelDistance: Int,
 	override val maxSneakFlyAccel: Int,
@@ -422,7 +490,7 @@ open class GroundStarshipBalancing(
 	override val accelMultiplier: Double = 1.0,
 	override val maxSpeedMultiplier: Double = 1.0,
 
-	override val standardSounds: StandardStarshipSounds = StandardStarshipSounds(),
+	override val shipSounds: StarshipSounds = StarshipSounds(),
 
 	override val sneakFlyAccelDistance: Int,
 	override val maxSneakFlyAccel: Int,
@@ -453,12 +521,13 @@ data class RequiredSubsystemInfo(
 }
 
 @Serializable
-data class StandardStarshipSounds(
+data class StarshipSounds(
 	val pilot: SoundInfo = SoundInfo("minecraft:block.beacon.activate", volume = 5f, pitch = 0.05f),
 	val release: SoundInfo = SoundInfo("minecraft:block.beacon.deactivate", volume = 5f, pitch = 0.05f),
 	val enterHyperspace: SoundInfo = SoundInfo("minecraft:entity.elder_guardian.hurt", volume = 5f, pitch = 0.05f),
 	val exitHyperspace: SoundInfo = SoundInfo("minecraft:entity.warden.sonic_boom", pitch = 0f),
-	val explode: SoundInfo? = null,
+	val explodeNear: SoundInfo? = null,
+	val explodeFar: SoundInfo? = null,
 	val startCruise: SoundInfo = SoundInfo("minecraft:block.note_block.chime", volume = 5f, pitch = 0.53f),
 	val stopCruise: SoundInfo = SoundInfo("minecraft:block.note_block.banjo", volume = 5f, pitch = 1.782f),
 ) {
@@ -490,10 +559,13 @@ sealed interface StarshipProjectileBalancing {
 	/** The amount the explosion damage is multiplied when damaging a shield. **/
 	val areaShieldDamageMultiplier: Double
 
-	val fireSound: SoundInfo
+	val fireSoundNear: SoundInfo
+
+	val fireSoundFar: SoundInfo
 
 	val entityDamage: EntityDamage
 
+	@Suppress("UnstableApiUsage")
 	@Serializable
 	sealed interface EntityDamage {
 		fun deal(target: LivingEntity, shooter: Damager, type: DamageType)

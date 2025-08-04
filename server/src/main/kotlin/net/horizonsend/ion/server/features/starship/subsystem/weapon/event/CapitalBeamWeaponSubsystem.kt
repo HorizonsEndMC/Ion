@@ -18,7 +18,7 @@ import org.bukkit.util.Vector
 class CapitalBeamWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
-) : WeaponSubsystem<CapitalCannonBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier()),
+) : WeaponSubsystem<CapitalCannonBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(CapitalBeamWeaponSubsystem::class)),
 	ManualWeaponSubsystem,
 	HeavyWeaponSubsystem,
 	PermissionWeaponSubsystem {

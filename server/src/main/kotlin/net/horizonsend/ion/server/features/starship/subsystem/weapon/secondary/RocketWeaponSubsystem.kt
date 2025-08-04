@@ -26,7 +26,7 @@ class RocketWeaponSubsystem(
     pos: Vec3i,
     override var face: BlockFace,
     private val multiblock: RocketStarshipWeaponMultiblock
-) : WeaponSubsystem<RocketBalancing>(starship, pos, starship.balancingManager.getWeapon()),
+) : WeaponSubsystem<RocketBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(RocketWeaponSubsystem::class)),
 	HeavyWeaponSubsystem,
 	DirectionalSubsystem,
 	ManualWeaponSubsystem,

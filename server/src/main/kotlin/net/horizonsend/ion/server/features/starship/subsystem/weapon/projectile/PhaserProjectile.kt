@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.configuration.starship.PhaserBalancing.PhaserProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.PhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -8,8 +9,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.iterateVector
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lightning
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
-import net.kyori.adventure.key.Key
-import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
@@ -111,13 +110,8 @@ class PhaserProjectile(
 	}
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		playCustomSound(impactLocation, Sound.sound(
-			Key.key("minecraft:entity.firework_rocket.twinkle"),
-			Sound.Source.PLAYER,
-			12f,
-			0.5f
-		))
+		impactLocation.world.playSound(impactLocation, "minecraft:entity.firework_rocket.twinkle", 12f, 0.5f)
 	}
 
-	override fun playCustomSound(loc: Location, sound: Sound) {}
+	override fun playCustomSound(loc: Location, nearSound: SoundInfo, farSound: SoundInfo) { /* Do nothing */ }
 }
