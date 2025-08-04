@@ -46,6 +46,7 @@ class CaravanModule(
 		if (fleet.logic != null) return
 		val logic = CaravanFleetLogic(template, source, route, fleet)
 		fleet.logic = logic
+
 		debugAudience.debug("Added a caravan fleet logic to this ships fleet: ${this.starship.getDisplayNamePlain()}")
 	}
 

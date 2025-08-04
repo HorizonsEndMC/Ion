@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.ReinforcementSpaw
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
+import java.util.function.Consumer
 
 class ReinforcementSpawnerModule(
 	controller: AIController,
@@ -15,6 +16,7 @@ class ReinforcementSpawnerModule(
 	private val activationAverageShieldHealth: Double,
 	private val spawnBroadCastMessage: Component?,
 	val delay: Long = 200,
+	val controllerModifiers: MutableList<Consumer<AIController>>
 ) : AIModule(controller) {
 	private var triggered: Boolean = false
 
