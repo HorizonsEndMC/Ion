@@ -35,7 +35,7 @@ object AIKillStreak : IonServerComponent() {
 				)
 			}
 		}
-		playerHeatList.removeIf { it.score == 0 }
+		playerHeatList.removeIf { it.score <= 0 }
 	}
 
 	fun rewardHeat(player: Player, score: Int) {
