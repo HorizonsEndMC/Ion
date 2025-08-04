@@ -530,9 +530,9 @@ object AITemplateRegistry {
 						VariableIntegerAmount(6, 10),
 						null,
 						null,
-						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER), 2),
-						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA), 2),
-						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR), 3),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(15.0, 50.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(15.0, 50.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(15.0, 50.0, 0.0), 3),
 					)(it)
 				})
 			.build()
@@ -1174,10 +1174,10 @@ object AITemplateRegistry {
 						VariableIntegerAmount(10, 15),
 						null,
 						null,
-						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER), 1),
-						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
-						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
-						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER).withRandomRadialOffset(150.0, 200.0, 0.0), 1),
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE).withRandomRadialOffset(75.0, 150.0, 0.0), 3),
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 75.0, 0.0), 5),
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 50.0, 0.0), 10),
 					)(it)
 				})
 			.build()
