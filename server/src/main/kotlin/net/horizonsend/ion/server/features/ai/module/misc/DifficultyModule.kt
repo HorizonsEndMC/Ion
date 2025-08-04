@@ -86,7 +86,7 @@ class DifficultyModule(
 	val doubleEstimateAim get() = internalDifficulty >= 4
 
 	/** crazy clickers vs trackpad users rip */
-	val combatTickCooldown: Long
+	val combatTickCooldownNanos: Long
 		get() {
 			return when (internalDifficulty) {
 				0 -> 250
