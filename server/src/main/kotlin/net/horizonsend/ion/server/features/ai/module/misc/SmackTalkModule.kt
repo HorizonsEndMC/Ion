@@ -31,6 +31,7 @@ class SmackTalkModule(
 
 	fun sendMessage() {
 		val message = messages.randomOrNull() ?: return
+		val formattedMessage = template(message, starship.world.name, starship.centerOfMass.x, starship.centerOfMass.y, starship.centerOfMass.z)
 
 		val players = world.getNearbyPlayers(getCenter().toLocation(world), sendRange)
 
@@ -41,7 +42,7 @@ class SmackTalkModule(
 			useQuotesAroundObjects = true,
 			prefix,
 			starship.getDisplayName(),
-			message
+			formattedMessage
 		)
 
 		for (player in players) player.sendMessage(template(text, useQuotesAroundObjects = false, player.name))

@@ -484,13 +484,7 @@ class AIFaction private constructor(
 				"betrayal" to "<red>Dammit, I knew I shouldn't have trusted you "
 			)
 			.addSmackMessages(
-				"<white>Please no, I've done nothing wrong!",
-				"<white>Spare me; this ship is all I have!",
-				"<white>My friends will avenge me!",
-				"<white>I'm calling the [current system name] Defense Patrol! ",
-				"<white>Shields are down!",
-				"<white>Hull integrity critical!",
-				"<white>Engines compromised!"
+				"<white>I'm calling the {0} Defense Patrol! ",
 			)
 			.addFleeMessages(
 				"<white>Mayday, mayday, going down!" to true,
