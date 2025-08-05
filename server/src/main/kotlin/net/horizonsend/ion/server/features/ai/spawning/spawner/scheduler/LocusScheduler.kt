@@ -24,6 +24,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.World
 import org.dynmap.bukkit.DynmapPlugin
 import org.dynmap.markers.MarkerAPI
 import org.slf4j.Logger
@@ -44,7 +45,7 @@ class LocusScheduler(
 	private val dynmapColor: TextColor,
 	private val duration: Supplier<Duration>,
 	private val separation: Supplier<Duration>,
-	private val difficultySupplier: (String) -> Supplier<Int>,
+	private val difficultySupplier: (World) -> Supplier<Int>,
 	private val announcementMessage: Component?,
 	private val endMessage: Component?,
 	val radius: Double,
@@ -98,7 +99,7 @@ class LocusScheduler(
 		lastDuration = duration.get()
 
 		center = calculateNewCenter()
-		difficulty = difficultySupplier(center.world.name).get()
+		difficulty = difficultySupplier(center.world).get()
 		active = true
 		markDynmapZone()
 		addGravityWell()

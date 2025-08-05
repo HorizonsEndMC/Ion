@@ -80,6 +80,8 @@ data class PlayerSettings(
 	var bazaarSellManageFilters: String = "{}",
 	var bazaarOrderBrowseFilters: String = "{}",
 	var bazaarOrderManageFilters: String = "{}",
+
+	var displayEntityVisibility: Int = 0,
 ) : DbObject {
 	companion object : DbObjectCompanion<PlayerSettings, StringId<PlayerSettings>>(PlayerSettings::class, setup = {}) {
 		fun create(id: StringId<PlayerSettings>): InsertOneResult = trx { session ->

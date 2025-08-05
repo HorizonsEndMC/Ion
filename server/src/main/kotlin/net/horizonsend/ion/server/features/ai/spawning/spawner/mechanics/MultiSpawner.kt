@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
+import org.bukkit.World
 import org.slf4j.Logger
 import java.util.function.Supplier
 
@@ -23,7 +24,7 @@ abstract class MultiSpawner(
 	private val locationProvider: Supplier<Location?>,
 	private val groupMessage: Component?,
 	private val individualSpawnMessage: SpawnMessage?,
-	private val difficultySupplier: (String) -> Supplier<Int>,
+	private val difficultySupplier: (World) -> Supplier<Int>,
 	private val targetModeSupplier: Supplier<AITarget.TargetMode>,
 	private val fleetSupplier: Supplier<Fleet?>
 ) : SpawnerMechanic() {
@@ -44,7 +45,7 @@ abstract class MultiSpawner(
 		}
 
 		val aiFleet = if (fleetSupplier.get() == null) Fleets.createAIFleet() else fleetSupplier.get()!!
-		val fleetDifficulty = difficultySupplier(spawnOrigin.world.name).get()
+		val fleetDifficulty = difficultySupplier(spawnOrigin.world).get()
 		val shipDifficultySupplier = WeightedIntegerAmount(
 			setOf(
 				Pair(fleetDifficulty - 1, 0.05),

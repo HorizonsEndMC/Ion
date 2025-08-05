@@ -33,8 +33,8 @@ class DistancePositioningModule(
 		if (!difficulty.doBackOff) return calcCombatDist()
 
 		if (controller.getMinimumShieldHealth() <= startFleeing) {
-			val fleeChance = config.fleeChance * difficulty.fleeChance
-			if (randomDouble(0.0, 1.0) < fleeChance) isFleeing = true
+			val fleeChance = config.fleeChance
+			if (randomDouble(0.0, difficulty.fleeChance) < fleeChance) isFleeing = true
 		}
 		if (controller.getMinimumShieldHealth() >= stopFleeing) {
 			isFleeing = false

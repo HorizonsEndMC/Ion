@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.server.configuration.util.IntegerAmount
 import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
+import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
 import net.horizonsend.ion.server.features.gas.type.WorldGasConfiguration
 import net.horizonsend.ion.server.features.world.environment.Environment
 import org.bukkit.entity.EntityType
@@ -15,6 +16,13 @@ data class WorldSettings(
 	val environments: MutableSet<Environment> = mutableSetOf(),
 	val gasConfiguration: WorldGasConfiguration = WorldGasConfiguration(),
 	val customMobSpawns: List<SpawnedMob> = listOf(),
+	val aiDifficulty: IntegerAmount = WeightedIntegerAmount(
+		setOf(
+			Pair(0, 0.3),
+			Pair(1, 0.4),
+			Pair(2, 0.4)
+		)
+	)
 ) {
 	@Serializable
 	data class SpawnedMob(

@@ -403,4 +403,10 @@ object ClientDisplayEntities : IonServerComponent() {
 			entity.yHeadRot.toDouble()
 		)
 	}
+
+    enum class Visibility {
+        ON,
+        REDUCED,
+        OFF
+    }
 }

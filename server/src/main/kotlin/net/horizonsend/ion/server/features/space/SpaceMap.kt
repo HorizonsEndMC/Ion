@@ -154,6 +154,7 @@ object SpaceMap : IonServerComponent(true) {
 			)
 		}
 
+		/**
 		// TODO: REMOVE THIS; FOR DEBUG USES ONLY
 		for (waypoint in WaypointManager.mainGraph.vertexSet()) {
 			debugWaypointMarkerSet.createMarker(
@@ -184,6 +185,7 @@ object SpaceMap : IonServerComponent(true) {
 				)
 			}
 		}
+		*/
 	}
 
 }

@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.ReinforcementSpaw
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
+import java.util.function.Consumer
 
 class ReinforcementSpawnerModule(
 	controller: AIController,
@@ -15,6 +16,7 @@ class ReinforcementSpawnerModule(
 	private val activationAverageShieldHealth: Double,
 	private val spawnBroadCastMessage: Component?,
 	val delay: Long = 200,
+	val controllerModifiers: MutableList<Consumer<AIController>>
 ) : AIModule(controller) {
 	private var triggered: Boolean = false
 
@@ -35,11 +37,13 @@ class ReinforcementSpawnerModule(
 
 		val (x, y, z) = starship.centerOfMass
 
+		val reinforcementName = spawner.getAvailableShips().first().template.starshipInfo.componentName()
+
 		val formatted = template(
 			message = spawnBroadCastMessage,
 			paramColor = HEColorScheme.HE_LIGHT_GRAY,
 			useQuotesAroundObjects = false,
-			controller.pilotName,
+			reinforcementName,
 			x,
 			y,
 			z,

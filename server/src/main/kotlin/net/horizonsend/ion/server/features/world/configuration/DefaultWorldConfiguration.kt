@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.world.configuration
 
 import net.horizonsend.ion.server.configuration.util.StaticDoubleAmount
 import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
+import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
 import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
 import net.horizonsend.ion.server.features.gas.collection.ChildWeight
 import net.horizonsend.ion.server.features.gas.collection.CollectedGas
@@ -501,5 +502,79 @@ object DefaultWorldConfiguration {
 			spawningWeight = 1.0,
 			type = EntityType.WARDEN.name
 		))
+	))
+
+	val TRENCH = register("Trench", WorldSettings(
+		aiDifficulty = WeightedIntegerAmount(
+			setOf(
+				Pair(0, 0.15),
+				Pair(1, 0.35),
+				Pair(2, 0.35),
+				Pair(3, 0.10)
+			)
+		)
+	))
+
+	val AU0821 = register("AU-0821", WorldSettings(
+		aiDifficulty = WeightedIntegerAmount(
+			setOf(
+				Pair(0, 0.0),
+				Pair(1, 0.1),
+				Pair(2, 0.55),
+				Pair(3, 0.25),
+				Pair(4, 0.1),
+			)
+		)
+	))
+
+	val HORIZON = register("Horizon", WorldSettings(
+		aiDifficulty = WeightedIntegerAmount(
+			setOf(
+				Pair(0, 0.2),
+				Pair(1, 0.35),
+				Pair(2, 0.4),
+				Pair(3, 0.05),
+			)
+		)
+	))
+
+	val ASTERI = register("Asteri", WorldSettings(
+		aiDifficulty = WeightedIntegerAmount(
+			setOf(
+				Pair(0, 0.5),
+				Pair(1, 0.35),
+				Pair(2, 0.15)
+			)
+		)
+	))
+
+	val ILIOS = register("Ilios", WorldSettings(
+		aiDifficulty = WeightedIntegerAmount(
+			setOf(
+				Pair(0, 0.5),
+				Pair(1, 0.35),
+				Pair(2, 0.15)
+			)
+		)
+	))
+
+	val SIRIUS = register("Sirius", WorldSettings(
+		aiDifficulty = WeightedIntegerAmount(
+			setOf(
+				Pair(0, 0.5),
+				Pair(1, 0.35),
+				Pair(2, 0.15)
+			)
+		)
+	))
+
+	val REGULUS = register("Regulus", WorldSettings(
+		aiDifficulty = WeightedIntegerAmount(
+			setOf(
+				Pair(0, 0.5),
+				Pair(1, 0.35),
+				Pair(2, 0.15)
+			)
+		)
 	))
 }

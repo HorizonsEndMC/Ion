@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.SubsystemMul
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BargeReactorMultiBlock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BattleCruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.CruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.FauxReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblock
@@ -31,6 +32,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.FauxReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.CryopodSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
@@ -192,6 +194,10 @@ object SubsystemDetector {
 
 			is BargeReactorMultiBlock -> {
 				starship.subsystems += BargeReactorSubsystem(starship, sign, multiblock)
+			}
+
+			is FauxReactorMultiblock -> {
+				starship.subsystems += FauxReactorSubsystem(starship, sign, multiblock)
 			}
 
 			is FuelTankMultiblock -> {

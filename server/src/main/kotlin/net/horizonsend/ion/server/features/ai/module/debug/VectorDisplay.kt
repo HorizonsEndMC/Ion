@@ -22,7 +22,7 @@ class VectorDisplay private constructor(
 	val offset: Vector = Vector(0.0, 10.0, 0.0)
 ) {
 	val entity: ItemDisplay = createEntity()
-	private val playerManager = DisplayPlayerManager(entity)
+	private val playerManager = DisplayPlayerManager(entity, updateInvervalMS = 50L)
 
 	private val mag: Double get() = vecDeg.getMag()
 	private val dir: Vector get() = vecDeg.getDir()
@@ -64,11 +64,12 @@ class VectorDisplay private constructor(
 
 		return entity
 	}
-
+	//
+	private fun rotateToFaceVector(v: Vector3f): Quaternionf = Quaternionf().rotationTo(Vector3f(0f,0f,-1f), v.normalize())
 	fun update() {
 		val transformation = Transformation(
 			Vector3f(0f),
-			ClientDisplayEntities.rotateToFaceVector(dir.clone().normalize().multiply(-1.0).toVector3f()),
+			rotateToFaceVector(dir.clone().toVector3f()),
 			Vector3f(1f, 1f, mag.toFloat()),
 			Quaternionf()
 		)

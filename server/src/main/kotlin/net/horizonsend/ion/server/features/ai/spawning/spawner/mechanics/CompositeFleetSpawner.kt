@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
+import org.bukkit.World
 import org.slf4j.Logger
 import java.util.function.Supplier
 
@@ -25,19 +26,19 @@ import java.util.function.Supplier
  * into a single fleet. Ships are spawned in one batch with shared difficulty,
  * coordinated fleet behavior, and grouped messaging.
  */
-class CompositeSpawner(
-	private val components: List<SpawnerMechanic>,
+class CompositeFleetSpawner(
+	private val mechanics: List<SpawnerMechanic>,
 	private val locationProvider: Supplier<Location?>,
 	private val groupMessage: Component?,
 	private val individualSpawnMessage: SpawnMessage?,
-	private val difficultySupplier: (String) -> Supplier<Int>,
+	private val difficultySupplier: (World) -> Supplier<Int>,
 	private val targetModeSupplier: Supplier<AITarget.TargetMode>,
 	private val fleetSupplier: Supplier<Fleet?> = Supplier { null },
-	private val onPostSpawn: (AIController) -> Unit
+	private val controllerModifier: (AIController) -> Unit
 ) : SpawnerMechanic() {
 
 	override suspend fun trigger(logger: Logger) {
-		if (components.isEmpty()) {
+		if (mechanics.isEmpty()) {
 			logger.warn("CompositeSpawner triggered with no components.")
 			return
 		}
@@ -49,7 +50,7 @@ class CompositeSpawner(
 		}
 
 		val aiFleet = if (fleetSupplier.get() == null) Fleets.createAIFleet() else fleetSupplier.get()!!
-		val fleetDifficulty = difficultySupplier(spawnOrigin.world.name).get()
+		val fleetDifficulty = difficultySupplier(spawnOrigin.world).get()
 		val shipDifficultySupplier = WeightedIntegerAmount(
 			setOf(
 				fleetDifficulty - 1 to 0.05,
@@ -58,7 +59,7 @@ class CompositeSpawner(
 			)
 		)
 
-		val allShips = components.flatMap { it.getAvailableShips(draw = true) }
+		val allShips = mechanics.flatMap { it.getAvailableShips(draw = true) }
 		if (allShips.isEmpty()) {
 			logger.info("CompositeSpawner found no ships to spawn.")
 			return
@@ -77,7 +78,7 @@ class CompositeSpawner(
 
 			ship.spawn(logger, spawnPoint, difficulty, targetModeSupplier.get()) {
 				addUtilModule(AIFleetManageModule(this, aiFleet))
-				onPostSpawn(this)
+				controllerModifier(this@spawn)
 			}
 
 			individualSpawnMessage?.broadcast(spawnPoint, ship.template)
@@ -100,7 +101,7 @@ class CompositeSpawner(
 		}
 	}
 
-	private fun getShips(): List<SpawnedShip> = components.flatMap { it.getAvailableShips() }
+	private fun getShips(): List<SpawnedShip> = mechanics.flatMap { it.getAvailableShips() }
 
 	override fun getAvailableShips(draw: Boolean): Collection<SpawnedShip> = getShips()
 }
