@@ -79,12 +79,11 @@ class CompositeFleetSpawner(
 			ship.spawn(logger, spawnPoint, difficulty, targetModeSupplier.get()) {
 				addUtilModule(AIFleetManageModule(this, aiFleet))
 				controllerModifier(this@spawn)
+				aiFleet.initalized = true
 			}
 
 			individualSpawnMessage?.broadcast(spawnPoint, ship.template)
-
 		}
-		aiFleet.initalized = true
 
 		if (aiFleet.members.isNotEmpty() && groupMessage != null) {
 			IonServer.server.sendMessage(
