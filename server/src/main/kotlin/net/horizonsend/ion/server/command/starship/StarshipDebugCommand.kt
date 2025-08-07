@@ -80,8 +80,7 @@ object StarshipDebugCommand : SLCommand() {
 	@Subcommand("release")
 	@CommandCompletion("@autoTurretTargets")
 	fun release(sender: CommandSender, identifier: String) {
-		val formatted = if (identifier.contains(":".toRegex())) identifier.substringAfter(":") else identifier
-		val starship = ActiveStarships.getByIdentifier(formatted) ?: fail { "Could not find target $identifier" }
+		val starship = ActiveStarships.getByIdentifier(identifier) ?: fail { "Could not find target $identifier" }
 
 		DeactivatedPlayerStarships.deactivateNow(starship)
 		sender.success("Released $identifier")
