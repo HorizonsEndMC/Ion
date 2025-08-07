@@ -121,11 +121,17 @@ object AIDebugCommand : SLCommand() {
 		)
 
 		AIControlUtils.guessWeaponSets(starship,newController)
-		newController.validateWeaponSets()
 
 		starship.setController(newController)
 
 		starship.removePassenger(sender.uniqueId)
+	}
+
+	@CommandCompletion("@autoTurretTargets")
+	fun validateWeaponSets(sender: Player, shipIdentifier: String) {
+		val ship = ActiveStarships.getByIdentifier(shipIdentifier) ?: fail { "$shipIdentifier is not a starship" }
+		val controller = ship.controller as? AIController ?: fail { "Starship is not AI controlled!" }
+		controller.validateWeaponSets()
 	}
 
 	@Subcommand("debug show")

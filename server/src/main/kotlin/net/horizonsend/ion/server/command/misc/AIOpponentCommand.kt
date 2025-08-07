@@ -150,7 +150,6 @@ object AIOpponentCommand : SLCommand() {
 							)
 
 							processController(summoner, controller)
-							controller.validateWeaponSets()
 							controller
 						},
 						"✦".repeat((difficulty ?: template.difficulty.get())+1)
