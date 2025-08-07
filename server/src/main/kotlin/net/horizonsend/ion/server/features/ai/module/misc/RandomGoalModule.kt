@@ -10,9 +10,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceToVect
 import java.util.Optional
 import kotlin.random.Random
 
-class RandomGoalModule(
-	controller: AIController,
-) : AIModule(controller) {
+class RandomGoalModule(controller: AIController) : AIModule(controller) {
 	val maxIterations = 15
 	var iterations = 0
 	var ticks = 0
