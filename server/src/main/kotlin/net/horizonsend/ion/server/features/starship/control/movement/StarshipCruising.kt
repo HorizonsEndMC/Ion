@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSettingsCommand
-import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
+import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship

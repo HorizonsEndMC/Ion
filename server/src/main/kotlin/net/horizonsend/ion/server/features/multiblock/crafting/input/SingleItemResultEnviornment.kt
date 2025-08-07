@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.input
 
 import net.horizonsend.ion.server.features.multiblock.crafting.util.SlotModificationWrapper
+import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 
 interface SingleItemResultEnviornment : RecipeEnviornment, ItemResultEnviornment {
@@ -9,7 +10,7 @@ interface SingleItemResultEnviornment : RecipeEnviornment, ItemResultEnviornment
 	}
 
 	override fun getResultSpaceFor(item: ItemStack): Int {
-		val resultOccupant = getResultItem() ?: return 0
+		val resultOccupant = getResultItem() ?: ItemStack(Material.AIR)
 		if (resultOccupant.isEmpty) return item.maxStackSize
 
 		if (!resultOccupant.isSimilar(item)) return 0

@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.space.body.NamedCelestialBody
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getSphereBlocks
 import net.horizonsend.ion.server.miscellaneous.utils.nms
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
@@ -40,7 +41,9 @@ abstract class CachedPlanet(
 		val DEFAULT_ITEM_FACTORY = ItemFactory.unStackableCustomItem("planet/chandra_2")
 	}
 
-	val planetIconFactory = ItemFactory.unStackableCustomItem("planet/${name.lowercase().replace(' ', '_')}_2")
+	val planetIconFactory = ItemFactory.builder(ItemFactory.unStackableCustomItem("planet/${name.lowercase().replace(' ', '_')}_2"))
+		.setNameSupplier { Component.text(name).itemName }
+		.build()
 
 	init {
 		require(size > 0 && size <= 1)

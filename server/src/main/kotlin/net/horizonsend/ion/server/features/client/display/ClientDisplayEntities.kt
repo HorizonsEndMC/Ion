@@ -373,7 +373,7 @@ object ClientDisplayEntities : IonServerComponent() {
      * @param player the player to get the view distance from
      */
     fun getViewDistanceEdge(player: Player) =
-        (min(player.clientViewDistance, Bukkit.getWorlds()[0].viewDistance) * 16) - 16
+        (min(player.clientViewDistance, Bukkit.getWorlds()[0].viewDistance) * 12) - 16
 
 
 
@@ -403,4 +403,10 @@ object ClientDisplayEntities : IonServerComponent() {
 			entity.yHeadRot.toDouble()
 		)
 	}
+
+    enum class Visibility {
+        ON,
+        REDUCED,
+        OFF
+    }
 }

@@ -389,6 +389,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("rename")
 	@CommandCompletion("@blueprints newName")
 	fun onRename(sender: Player, oldName: String, newName: String) = asyncCommand(sender) {
+		validateName(newName)
+
 		val createNew = Blueprint.none(and(Blueprint::owner eq sender.slPlayerId, Blueprint::name eq newName))
 
 		if (!createNew) {

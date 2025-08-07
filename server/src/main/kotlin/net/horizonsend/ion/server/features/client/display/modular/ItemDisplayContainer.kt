@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.client.display.modular
 
 import com.mojang.math.Transformation
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.miscellaneous.utils.getChunkAtIfLoaded
@@ -23,13 +25,15 @@ import org.bukkit.util.Vector
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import java.util.UUID
+import kotlin.random.Random
 
 class ItemDisplayContainer(
     val world: World,
     initScale: Float,
     initPosition: Vector,
     initHeading: Vector,
-    item: ItemStack
+    item: ItemStack,
+	val ignorePlayerSetting: Boolean = false,
 ) : DisplayWrapper {
 	private var shownPlayers = mutableSetOf<UUID>()
 
@@ -110,7 +114,7 @@ class ItemDisplayContainer(
 		position.z
 	)
 
-	private fun createEntity(): CraftItemDisplay =  CraftItemDisplay(
+	private fun createEntity(): CraftItemDisplay = CraftItemDisplay(
         IonServer.server as CraftServer,
         Display.ItemDisplay(EntityType.ITEM_DISPLAY, world.minecraft)
     ).apply {
@@ -165,7 +169,15 @@ class ItemDisplayContainer(
 	}
 
 	private fun broadcast(player: ServerPlayer) {
-		ClientDisplayEntities.sendEntityPacket(player.bukkitEntity, entity)
+		val playerSetting = ClientDisplayEntities.Visibility.entries[player.bukkitEntity.getSetting(PlayerSettings::displayEntityVisibility)]
+
+		val display = if (ignorePlayerSetting) true else when (playerSetting) {
+			ClientDisplayEntities.Visibility.ON -> true
+			ClientDisplayEntities.Visibility.REDUCED -> Random.nextBoolean()
+			ClientDisplayEntities.Visibility.OFF -> false
+		}
+
+		if (display) ClientDisplayEntities.sendEntityPacket(player.bukkitEntity, entity)
 		shownPlayers.add(player.uuid)
 	}
 
