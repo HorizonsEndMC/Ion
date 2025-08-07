@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager.schematicCache
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.command.CommandSender
 import kotlin.reflect.KMutableProperty
@@ -188,5 +189,7 @@ object ConfigurationCommands : SLCommand() {
 		}
 	}
 
-	private fun reloadOthers() {}
+	private fun reloadOthers() {
+		schematicCache.invalidateAll()
+	}
 }
