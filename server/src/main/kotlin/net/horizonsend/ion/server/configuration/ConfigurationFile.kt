@@ -6,6 +6,7 @@ import kotlinx.serialization.json.decodeFromStream
 import kotlinx.serialization.serializer
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.configuration.Configuration.save
+import net.horizonsend.ion.server.IonServer
 import java.io.File
 import java.io.IOException
 import kotlin.reflect.KClass
@@ -20,7 +21,8 @@ class ConfigurationFile<T: Any>(private val configurationClass: KClass<out T>, p
 			instance = load()
 			reloadCallback.invoke()
 		} catch (e: Throwable) {
-			throw Throwable("There was an error loading $fileName:", e)
+			IonServer.slF4JLogger.error("There was an error loading $fileName:", e)
+			throw e
 		}
 	}
 
