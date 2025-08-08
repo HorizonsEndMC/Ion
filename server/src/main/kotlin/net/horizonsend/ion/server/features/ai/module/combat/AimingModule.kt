@@ -77,12 +77,12 @@ class AimingModule(
 	}
 
 
-	fun sampleDirection(direction: Vector): Vector {
+	fun sampleDirection(direction: Vector, distance: Double): Vector {
 		// Step 1: Generate a random azimuthal angle φ ∈ [0, 2π]
 		val phi = randomDouble(0.0, 2 * Math.PI)
 
 		// Step 2: Generate a random inclination angle θ' for uniform solid angle sampling
-		val cosThetaPrime = 1 - randomDouble(0.0, 1 - cos(shotDeviation))
+		val cosThetaPrime = 1 - randomDouble(0.0, 1 - cos(evaluateTheta(distance)))
 		val sinThetaPrime = sqrt(1 - cosThetaPrime * cosThetaPrime)
 
 		// Step 3: Construct the local coordinate frame (T, B, N)
@@ -106,6 +106,11 @@ class AimingModule(
 			.add(direction.multiply(cosThetaPrime))
 
 		return sampledVector.normalize() // Ensure it remains a unit vector
+	}
+
+	private fun evaluateTheta(distance :Double) : Double{
+		val multiplier = ((distance - 250.0) / 75.0 + 1.0).coerceAtLeast(1.0)
+		return shotDeviation * multiplier
 	}
 
 	companion object {
