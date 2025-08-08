@@ -1,8 +1,5 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics
 
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
-import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
@@ -15,7 +12,6 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.fleet.Fleet
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
-import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.World
 import org.slf4j.Logger
@@ -25,11 +21,14 @@ import java.util.function.Supplier
  * A spawner that triggers multiple [SpawnerMechanic]s and merges their ships
  * into a single fleet. Ships are spawned in one batch with shared difficulty,
  * coordinated fleet behavior, and grouped messaging.
+ *
+ * @param individualSpawnMessage 0: ship name 1: x 2: y 3: z: 4: World name
+ * @param groupMessage 0: ship name 1: x 2: y 3: z: 4: World name
  */
 class CompositeFleetSpawner(
 	private val mechanics: List<SpawnerMechanic>,
 	private val locationProvider: Supplier<Location?>,
-	private val groupMessage: Component?,
+	private val groupMessage: SpawnMessage?,
 	private val individualSpawnMessage: SpawnMessage?,
 	private val difficultySupplier: (World) -> Supplier<Int>,
 	private val targetModeSupplier: Supplier<AITarget.TargetMode>,
@@ -85,19 +84,7 @@ class CompositeFleetSpawner(
 			individualSpawnMessage?.broadcast(spawnPoint, ship.template)
 		}
 
-		if (aiFleet.members.isNotEmpty() && groupMessage != null) {
-			IonServer.server.sendMessage(
-				template(
-					groupMessage,
-					paramColor = HEColorScheme.HE_LIGHT_GRAY,
-					useQuotesAroundObjects = false,
-					spawnOrigin.blockX,
-					spawnOrigin.blockY,
-					spawnOrigin.blockZ,
-					spawnOrigin.world.name
-				)
-			)
-		}
+		groupMessage?.broadcast(spawnOrigin, null)
 	}
 
 	private fun getShips(): List<SpawnedShip> = mechanics.flatMap { it.getAvailableShips() }

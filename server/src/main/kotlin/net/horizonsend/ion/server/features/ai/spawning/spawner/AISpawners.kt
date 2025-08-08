@@ -3,9 +3,16 @@ package net.horizonsend.ion.server.features.ai.spawning.spawner
 import com.google.common.collect.Multimap
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.utils.configuration.Configuration
-import net.horizonsend.ion.common.utils.text.colors.*
+import net.horizonsend.ion.common.utils.text.colors.EXPLORER_LIGHT_CYAN
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.colors.PIRATE_SATURATED_RED
+import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_LIGHT_TEAL
+import net.horizonsend.ion.common.utils.text.colors.TSAII_DARK_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.TSAII_MEDIUM_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.WATCHER_ACCENT
+import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
+import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.IonServerComponent
@@ -35,7 +42,12 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpaw
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.RandomShipSupplier
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SingleSpawn
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.WeightedShipSupplier
-import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.*
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.AISpawnerTicker
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.CaravanScheduler
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.ConvoyScheduler
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.LocusScheduler
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.SetTimeScheduler
+import net.horizonsend.ion.server.features.ai.spawning.spawner.scheduler.TickedScheduler
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.ARBOREALITH
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.BULWARK
@@ -1240,9 +1252,8 @@ object AISpawners : IonServerComponent(true) {
 
 		val deepSpaceConvoyScheduler = ConvoyScheduler(
 			storageKey = "DEEP_SPACE_CONVOY",
-			"$miningGuildMini<GOLD><bold> Deep Space Mining Convoy</bold>".miniMessage(),
-			separation = { getRandomDuration(Duration.ofHours(12), Duration.ofHours(60)) },
-			announcementMessage = null
+			displayName = "$miningGuildMini<GOLD><bold> Deep Space Mining Convoy</bold>".miniMessage(),
+			separation = { getRandomDuration(Duration.ofHours(12), Duration.ofHours(60)) }
 		)
 
 		/* GLOBAL (any world) ------------------------------------------------- */
@@ -1260,8 +1271,7 @@ object AISpawners : IonServerComponent(true) {
 		val smallPatrolScheduler = ConvoyScheduler(
 			storageKey = "PRIVATEER_PATROL_SMALL",
 			"$privateerMini<$HE_LIGHT_GRAY><bold> Small Patrol</bold>".miniMessage(),
-			separation = { getRandomDuration(Duration.ofHours(6), Duration.ofHours(12)) },
-			announcementMessage = null
+			separation = { getRandomDuration(Duration.ofHours(6), Duration.ofHours(12)) }
 		)
 
 		/* GLOBAL (any world) ------------------------------------------------- */
@@ -1279,15 +1289,14 @@ object AISpawners : IonServerComponent(true) {
 		val mediumPatrolScheduler = ConvoyScheduler(
 			storageKey = "PRIVATEER_PATROL_MEDIUM",
 			"$privateerMini<$HE_LIGHT_GRAY><bold> Medium Patrol</bold>".miniMessage(),
-			separation = { getRandomDuration(Duration.ofHours(12), Duration.ofHours(24)) },
-			announcementMessage = null
+			separation = { getRandomDuration(Duration.ofHours(12), Duration.ofHours(24)) }
 		)
 
 		/* GLOBAL (any world) ------------------------------------------------- */
 		registerGlobalSpawner(
 			LazyWorldSpawner(
 				id = "PRIVATEER_PATROL_MEDIUM",
-				worldFilter = { it.hasFlag(SPACE_WORLD) }, //TODO: do something about this unused param
+				worldFilter = { true },
 				mechanicSupplier = {
 					PRIVATEER_PATROL_MEDIUM.spawnMechanicBuilder(anyCtx())
 				},
