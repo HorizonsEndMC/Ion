@@ -11,14 +11,14 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 
 interface SpawnMessage {
-	fun broadcast(location: Location, template: AITemplate)
+	fun broadcast(location: Location, template: AITemplate?)
 
-	fun format(base: Component, location: Location, template: AITemplate): Component {
+	fun format(base: Component, location: Location, template: AITemplate?): Component {
 		return template(
 			message = base,
 			paramColor = HEColorScheme.HE_LIGHT_GRAY,
 			useQuotesAroundObjects = false,
-			template.starshipInfo.componentName(),
+			template?.starshipInfo?.componentName(),
 			location.blockX,
 			location.blockY,
 			location.blockZ,
@@ -26,32 +26,47 @@ interface SpawnMessage {
 		)
 	}
 
+	/**
+	 * @param message 0: ship name 1: x 2: y 3: z: 4: World name
+	 **/
 	class GlobalMessage(val message: Component) : SpawnMessage {
-		override fun broadcast(location: Location, template: AITemplate) {
+		override fun broadcast(location: Location, template: AITemplate?) {
 			Notify.chatAndGlobal(format(message, location, template))
 		}
 	}
 
+	/**
+	 * @param message 0: ship name 1: x 2: y 3: z: 4: World name
+	 **/
 	class ChatMessage(val message: Component) : SpawnMessage {
-		override fun broadcast(location: Location, template: AITemplate) {
+		override fun broadcast(location: Location, template: AITemplate?) {
 			IonServer.server.sendMessage(format(message, location, template))
 		}
 	}
 
+	/**
+	 * @param message 0: ship name 1: x 2: y 3: z: 4: World name
+	 **/
 	class RadiusMessage(val message: Component, val radius: Double) : SpawnMessage {
-		override fun broadcast(location: Location, template: AITemplate) {
+		override fun broadcast(location: Location, template: AITemplate?) {
 			ForwardingAudience { location.getNearbyPlayers(radius) }.sendMessage(format(message, location, template))
 		}
 	}
 
+	/**
+	 * @param message 0: ship name 1: x 2: y 3: z: 4: World name
+	 **/
 	class WorldMessage(val message: Component) : SpawnMessage {
-		override fun broadcast(location: Location, template: AITemplate) {
+		override fun broadcast(location: Location, template: AITemplate?) {
 			location.world.sendMessage(format(message, location, template))
 		}
 	}
 
+	/**
+	 * @param message 0: ship name 1: x 2: y 3: z: 4: World name
+	 **/
 	class SelectorMessage(val message: Component, private val selector: (Player) -> Boolean) : SpawnMessage {
-		override fun broadcast(location: Location, template: AITemplate) {
+		override fun broadcast(location: Location, template: AITemplate?) {
 			ForwardingAudience { IonServer.server.onlinePlayers.filter(selector) }.sendMessage(format(message, location, template))
 		}
 	}

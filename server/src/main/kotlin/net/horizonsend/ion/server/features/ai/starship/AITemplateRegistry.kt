@@ -530,9 +530,9 @@ object AITemplateRegistry {
 						VariableIntegerAmount(6, 10),
 						null,
 						null,
-						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(15.0, 50.0, 0.0), 2),
-						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(15.0, 50.0, 0.0), 2),
-						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(15.0, 50.0, 0.0), 3),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(25.0, 100.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(25.0, 100.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(25.0, 100.0, 0.0), 3),
 					)(it)
 				})
 			.build()

@@ -8,6 +8,7 @@ import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerQuitEvent
+import java.util.concurrent.TimeUnit
 
 object Fleets : IonServerComponent() {
 
@@ -58,11 +59,20 @@ object Fleets : IonServerComponent() {
 
 	private fun cleanUp() {
 		val toRemove = mutableSetOf<Fleet>()
+
 		for (fleet in fleetList.filter { it.initalized }) {
 			cleanupDeadAiMembers(fleet) ?: toRemove.add(fleet)
 			reassignLeader(fleet)
 		}
-		toRemove.forEach(Fleets::delete)
+
+		val now = System.currentTimeMillis()
+		for (uninitialized in fleetList.filterNot { it.initalized }) {
+			if (TimeUnit.MILLISECONDS.toSeconds(now - uninitialized.createdAt) > 60) {
+				toRemove.add(uninitialized)
+			}
+		}
+
+		toRemove.forEach(::delete)
 	}
 
 	private fun cleanupDeadAiMembers(fleet: Fleet) : Fleet?{
