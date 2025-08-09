@@ -22,7 +22,7 @@ object ReminderManager : IonComponent() {
 		"<$HE_MEDIUM_GRAY>24 siegeable stations exist in space. Only nations can siege stations, and owning between 1-6 stations reaps benefits for all nation members.",
 		"<$HE_MEDIUM_GRAY>Just starting out? Try visiting the planets of Luxiterna or Aret. Both have valuable resources for new players.",
 		"<$HE_MEDIUM_GRAY>Level 80 is currently the highest level required to unlock the biggest available ship classes: Battlecruisers & Barges (20,000 blocks).",
-		"<$HE_MEDIUM_GRAY>Want to pick a fight with AI ships? It's recommended you take a gunship, at least.",
+		"<$HE_MEDIUM_GRAY>Want to pick a fight with AI ships? It's recommended you take on easy ai first.",
 		"<$HE_MEDIUM_GRAY>Looking for a settlement or nation to join? Be sure to ask in global chat using /g. There are always players recruiting.",
 		"<$HE_MEDIUM_GRAY>Setting up machinery? Solar panels and Gas generators are clean and reliable. Do /wiki to learn more.",
 		"<$HE_MEDIUM_GRAY>Don't forget to enable your ship lock when parking in territory that's not your own. You can toggle the lock in the ship computer (jukebox).",
@@ -38,14 +38,25 @@ object ReminderManager : IonComponent() {
 		"<$HE_MEDIUM_GRAY>It is highly recommended to use the /map while you navigate through space.",
 		"<$HE_MEDIUM_GRAY>Trade cities act as safezones: both pvp and svs (ship vs. ship) are disabled in these regions.",
 		"<$HE_MEDIUM_GRAY>Building a speeder (25-100 blocks) is an incredibly fast and easy way to travel around your base. Speeders work planet-side only.",
-		"<$HE_MEDIUM_GRAY>Both asteroid mining and planet mining are great ways to amass resources efficiently.",
+		"<$HE_MEDIUM_GRAY>Both asteroid mining and wreck salvaging are great ways to amass resources efficiently.",
 		"<$HE_MEDIUM_GRAY>Want to fly without a ship? Attach a rocket-boosting module to your power boots.",
 		"<$HE_MEDIUM_GRAY>Shot down or lost your vessel? You can always purchase a new starter ship by visiting the ship dealer at any trade city.",
 		"<$HE_MEDIUM_GRAY>Not all players are friendly. Be aware of your surroundings with /near.",
 		"<$HE_MEDIUM_GRAY>Pickaxes are for boomers. Use a power drill!",
 		"<$HE_MEDIUM_GRAY>You can always use /kit controller if you're in need of one on the go.",
 		"<$HE_MEDIUM_GRAY>Building a mob defender is a cheap way to protect your home from unwanted visitors.",
-		"<$HE_MEDIUM_GRAY>Pro Tip: Ship factories can also be used for printing buildings and infrastructure."
+		"<$HE_MEDIUM_GRAY>Pro Tip: Ship factories can also be used for printing buildings and infrastructure.",
+		"<$HE_MEDIUM_GRAY>AI comes in five difficulties, a Dagger in Asteri will not be the same as a Dagger in the AU!.",
+		"<$HE_MEDIUM_GRAY>Looking for a challenge to do with friends? do /encounterstatus!.",
+		"<$HE_MEDIUM_GRAY>If you need more practice /aiopponet is a good place to start, but does not beat field experience.",
+		"<$HE_MEDIUM_GRAY>Convoys and Patrols are fleets of ship that travel the server expect a challenging fight and big rewards.",
+		"<$HE_MEDIUM_GRAY>AI Loci offer increase spawning rates are are a great way to level up, there are both easy loci like bootcamps and extremely hard loci like unknown signals.",
+		"<$HE_MEDIUM_GRAY>Privateer patrols expect you to be on your best behavior when they come visit, the consequences can be fatal.",
+		"<$HE_MEDIUM_GRAY>The /settings command is your go to for tweaking your experience to suit your needs.",
+		"<$HE_MEDIUM_GRAY>Want to adjust your contacts bar? use /settings",
+		"<$HE_MEDIUM_GRAY>Hard time viewing some effects? use /settings",
+
+
 
 		// expand list here
 	)
