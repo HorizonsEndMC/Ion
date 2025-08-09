@@ -497,7 +497,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 				WeaponSet(name = "Manual", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
 			),
 			autoWeaponSets = mutableSetOf(
-				WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
+				WeaponSet(name = "auto", engagementRangeMin = 220.0, engagementRangeMax = 550.0)
 			)
 		)
 	)
