@@ -45,6 +45,7 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
 import kotlin.math.roundToLong
+import kotlin.random.Random
 
 class MiningLaserSubsystem(
     override val starship: ActiveControlledStarship,
@@ -263,7 +264,7 @@ class MiningLaserSubsystem(
 					val blockLocation = block.location.toVector()
 
 					BrokenBlockAnimation(
-						length = distance(blockLocation, initialPos.toVector()).roundToLong(),
+						length = distance(blockLocation, initialPos.toVector()).times(1.25).roundToLong(),
 						origin = blockLocation,
 						beamOrigin = initialPos.toVector(),
 						beamDesitination = laserEnd.toVector(),
@@ -342,6 +343,8 @@ class MiningLaserSubsystem(
 		val MINING_LASER_NOT_MINED = enumSetOf(Material.AIR, Material.BEDROCK, Material.REINFORCED_DEEPSLATE, Material.BARRIER)
 		private const val ANIMATION_SPEED = 2
 		private const val ANIMATION_COUNT = 3
+		private const val RANDOM_VELOCITY = 1.0
+		private const val BEAM_CORRECTION_FACTOR = 0.125
 	}
 
 	override val powerUsage: Int = 0
@@ -357,6 +360,8 @@ class MiningLaserSubsystem(
 		beamDesitination: Vector,
 		item: ItemStack
 	) : BukkitRunnable() {
+		val randomOffset = Vector(Random.nextDouble(-RANDOM_VELOCITY, RANDOM_VELOCITY), Random.nextDouble(-RANDOM_VELOCITY, RANDOM_VELOCITY), Random.nextDouble(-RANDOM_VELOCITY, RANDOM_VELOCITY))
+
 		val block = object : SinkAnimationBlock(
 			duration = length / ANIMATION_SPEED,
 			wrapper = ItemDisplayContainer(
@@ -366,12 +371,19 @@ class MiningLaserSubsystem(
 				initScale = 1.0f,
 				item = item
 			),
-			direction = beamOrigin.clone().subtract(origin).normalize().multiply(ANIMATION_SPEED),
+			direction = beamOrigin.clone().subtract(origin).normalize().multiply(ANIMATION_SPEED).add(randomOffset),
 			initialScale = 1.0,
 			finalScale = 0.5,
 			rotationAxis = beamDesitination.clone().subtract(origin),
 			rotationDegrees = 5.0 * ANIMATION_SPEED,
-			motionAdjuster = {}
+			motionAdjuster = {
+ 				val currentOffset = wrapper.offset
+				val currentPos = origin.clone().add(currentOffset)
+
+				val newDir = beamOrigin.clone().subtract(currentPos).normalize().multiply(ANIMATION_SPEED)
+
+				direction = Vector().add(direction.clone().multiply(1 - BEAM_CORRECTION_FACTOR)).add(newDir.multiply(BEAM_CORRECTION_FACTOR))
+			}
 		) {}
 
 		override fun run() {
@@ -379,6 +391,6 @@ class MiningLaserSubsystem(
 			if (block.checkDead()) cancel()
 		}
 
-		fun schedule() = runTaskTimerAsynchronously(IonServer, 2L, 2L)
+		fun schedule() = runTaskTimerAsynchronously(IonServer, 1L, 1L)
 	}
 }
