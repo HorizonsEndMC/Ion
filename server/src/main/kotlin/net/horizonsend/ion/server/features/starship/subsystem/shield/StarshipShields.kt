@@ -196,27 +196,15 @@ object StarshipShields : IonServerComponent() {
 
 	private fun formatPercent(percent: Double): Double = (percent * 1000).toInt().toDouble() / 10.0
 
-	private val flaringBlocks = PerWorld { LongOpenHashSet() }
-	private val flaringChunks = PerWorld { LongOpenHashSet() }
-
 	private fun onShieldImpact(location: Location, blockList: MutableList<Block>, power: Double) {
 		LAST_EXPLOSION_ABSORBED = false
 
 		val world: World = location.world
-		val nmsWorld = world.minecraft
-		val chunkKey: Long = location.chunk.chunkKey
 		val size: Int = blockList.size
 
 		if (blockList.isEmpty()) {
 			return
 		}
-
-		val flaringBlocks: LongOpenHashSet = flaringBlocks[world]
-		val flaringChunks: LongOpenHashSet = flaringChunks[world]
-
-		val canFlare = !flaringChunks.contains(chunkKey)
-
-		val flaredBlocks = LongOpenHashSet()
 
 		val protectedBlocks = HashSet<Block>()
 		for (starship in ActiveStarships.getInWorld(world)) {
@@ -228,14 +216,8 @@ object StarshipShields : IonServerComponent() {
 				size,
 				power,
 				protectedBlocks,
-				canFlare,
-				flaringBlocks,
-				flaredBlocks,
-				nmsWorld
 			)
 		}
-
-		scheduleUnflare(canFlare, flaredBlocks, flaringChunks, chunkKey, flaringBlocks, world, nmsWorld)
 
 		blockList.removeAll(protectedBlocks)
 
@@ -253,10 +235,6 @@ object StarshipShields : IonServerComponent() {
 		size: Int,
 		radius: Double,
 		protectedBlocks: HashSet<Block>,
-		canFlare: Boolean,
-		flaringBlocks: LongOpenHashSet,
-		flaredBlocks: LongOpenHashSet,
-		nmsLevel: Level
 	) {
 		// ignore if it's over 500 blocks away
 		if (starship.centerOfMass.toLocation(world).distanceSquared(location) > 250_000) {
@@ -279,10 +257,6 @@ object StarshipShields : IonServerComponent() {
 				protectedBlocks,
 				blocks,
 				damagedPercent,
-				canFlare,
-				flaringBlocks,
-				flaredBlocks,
-				nmsLevel,
 				starship
 			)
 		}
@@ -294,10 +268,6 @@ object StarshipShields : IonServerComponent() {
 		protectedBlocks: HashSet<Block>,
 		blocks: List<Block>,
 		damagedPercent: Float,
-		canFlare: Boolean,
-		flaringBlocks: LongOpenHashSet,
-		flaredBlocks: LongOpenHashSet,
-		nmsLevel: Level,
 		starship: ActiveStarship
 	): Boolean {
 		val containedBlocks = blocks.filter { shield.containsBlock(it) }
@@ -335,8 +305,7 @@ object StarshipShields : IonServerComponent() {
 		// protection check passed; add all blocks in shield to list
 		protectedBlocks.addAll(containedBlocks)
 
-		if (canFlare && protectedBlocks.isNotEmpty() && percent > 0.01f) {
-			addFlare(containedBlocks, shield, flaringBlocks, flaredBlocks, nmsLevel)
+		if (protectedBlocks.isNotEmpty() && percent > 0.01f) {
 			spawnShieldDisplayFlares(
 				starship = starship,
 				blocks = containedBlocks,
@@ -350,80 +319,6 @@ object StarshipShields : IonServerComponent() {
 		}
 
 		return true
-	}
-
-	private fun addFlare(
-		containedBlocks: List<Block>,
-		shield: ShieldSubsystem,
-		flaringBlocks: LongOpenHashSet,
-		flaredBlocks: LongOpenHashSet,
-		nmsLevel: Level
-	) {
-		val percent = shield.powerRatio
-
-		val flare: BlockState = when {
-			shield.isReinforcementActive() -> Material.MAGENTA_STAINED_GLASS
-			percent <= 0.05 -> Material.RED_STAINED_GLASS
-			percent <= 0.10 -> Material.ORANGE_STAINED_GLASS
-			percent <= 0.25 -> Material.YELLOW_STAINED_GLASS
-			percent <= 0.40 -> Material.LIME_STAINED_GLASS
-			percent <= 0.55 -> Material.GREEN_STAINED_GLASS
-			percent <= 0.70 -> Material.CYAN_STAINED_GLASS
-			percent <= 0.85 -> Material.LIGHT_BLUE_STAINED_GLASS
-			else -> Material.BLUE_STAINED_GLASS
-		}.createBlockData().nms
-
-		for (block in containedBlocks) {
-			val bx = block.x
-			val by = block.y
-			val bz = block.z
-
-			val blockKey: Long = block.blockKey
-
-			if (!flaringBlocks.add(blockKey) || !flaredBlocks.add(blockKey)) {
-				continue
-			}
-
-			val pos = BlockPos(bx, by, bz)
-			val packet = ClientboundBlockUpdatePacket(pos, flare)
-			nmsLevel.getChunkAt(pos).`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false).forEach { it.connection.send(packet) }
-		}
-	}
-
-	private fun scheduleUnflare(
-		canFlare: Boolean,
-		flaredBlocks: LongOpenHashSet,
-		flaringChunks: LongOpenHashSet,
-		chunkKey: Long,
-		flaringBlocks: LongOpenHashSet,
-		world: World,
-		nmsLevel: Level
-	) {
-		if (!canFlare || flaredBlocks.isEmpty()) {
-			return
-		}
-
-		flaringChunks.add(chunkKey)
-		flaringBlocks.addAll(flaredBlocks)
-
-		Tasks.syncDelay(3) {
-			flaringChunks.remove(chunkKey)
-
-			for (key: Long in flaredBlocks.iterator()) {
-				flaringBlocks.remove(key)
-
-				val data = world.getBlockAtKey(key).blockData.nms
-
-				if (data.block is BaseEntityBlock) {
-					world.getBlockAtKey(key).state.update(false, false)
-					continue
-				}
-
-				val pos = BlockPos(blockKeyX(key), blockKeyY(key), blockKeyZ(key))
-				val packet = ClientboundBlockUpdatePacket(pos, data)
-				nmsLevel.getChunkAt(pos).`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false).forEach { it.connection.send(packet) }
-			}
-		}
 	}
 
 	private fun spawnShieldDisplayFlares(
