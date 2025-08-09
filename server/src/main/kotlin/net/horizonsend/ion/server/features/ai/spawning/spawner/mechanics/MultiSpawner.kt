@@ -30,7 +30,7 @@ abstract class MultiSpawner(
 ) : SpawnerMechanic() {
 	abstract fun getShips(): List<SpawnedShip>
 
-	override suspend fun trigger(logger: Logger) {
+	override fun trigger(logger: Logger) {
 		val ships = getShips()
 		if (ships.isEmpty()) {
 			debugAudience.debug("Multi spawner didn't get any ships to spawn!")

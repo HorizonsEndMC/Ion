@@ -21,7 +21,11 @@ import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
-import kotlin.math.*
+import kotlin.math.cbrt
+import kotlin.math.min
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 class SinkAnimation(
@@ -195,7 +199,7 @@ class SinkAnimation(
 	open class SinkAnimationBlock(
 		val duration: Long,
 		open val wrapper: DisplayWrapper,
-		val direction: Vector,
+		var direction: Vector,
 		val initialScale: Double,
 		val finalScale: Double,
 		val rotationAxis: Vector,

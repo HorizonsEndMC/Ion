@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedBooleanToggle
 import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedEnumCycle
-import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedIntCycle
 import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedIntegerInput
 import net.horizonsend.ion.server.features.gui.custom.settings.button.permission.PermissionBooleanToggle
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSettingsCommand.CruiseIndicatorSounds
@@ -30,7 +29,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
     override val buttonsList = listOf(
 		createSettingsPage(player, "Control Settings",
 			DBCachedBooleanToggle(text("DC Overrides Cruise"), "", GuiItem.GUNSHIP, false, PlayerSettings::useAlternateDCCruise),
-			DBCachedIntCycle(1_000_000,-1, text("DC Refresh Rate"),
+			DBCachedIntegerInput(1_000_000,-1, text("DC Refresh Rate"),
 				"\"How frequently DC responds to your movement and teleports you, a value of -1 means that refresh is entirely ping driven. High values means more forging feedback but less responsive", GuiItem.GUNSHIP, -1, PlayerSettings::dcRefreshRate)
 		),
 		createSettingsPage(player, "Sidebar Settings",

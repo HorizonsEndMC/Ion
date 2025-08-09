@@ -22,6 +22,7 @@ abstract class AISpawner(
 
 	/** Entry point for the spawning mechanics, spawns the ship and handles any exceptions */
 	open fun trigger(logger: Logger, scope: CoroutineScope) = scope.launch {
+		logger.info("AI Spawner $identifier triggered.")
 		try {
 			mechanic.trigger(logger)
 		} catch (e: SpawningException) {

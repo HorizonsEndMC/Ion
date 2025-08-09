@@ -22,7 +22,7 @@ class SingleSpawn(
 	private val fleetSupplier: Supplier<Fleet?> = Supplier { null },
 	private val controllerModifier: AIController.() -> Unit = {}
 ) : SpawnerMechanic() {
-	override suspend fun trigger(logger: Logger) {
+	override fun trigger(logger: Logger) {
 		val ship = shipPool.get()
 		val spawnPoint = locationProvider.get() ?: return
 		val difficulty = difficultySupplier(spawnPoint.world).get()

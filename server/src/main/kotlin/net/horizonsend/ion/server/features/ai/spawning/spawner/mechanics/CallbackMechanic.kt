@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.features.ai.spawning.ships.SpawnedShip
 import org.slf4j.Logger
 
 class CallbackMechanic(val callback: () -> Unit) : SpawnerMechanic() {
-	override suspend fun trigger(logger: Logger) {
+	override fun trigger(logger: Logger) {
 		callback.invoke()
 	}
 

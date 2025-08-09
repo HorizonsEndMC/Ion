@@ -15,6 +15,7 @@ import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.entity.Display.DATA_POS_ROT_INTERPOLATION_DURATION_ID
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.PositionMoveRotation
 import net.minecraft.world.entity.Relative
@@ -410,3 +411,11 @@ object ClientDisplayEntities : IonServerComponent() {
         OFF
     }
 }
+
+var net.minecraft.world.entity.Display.teleportDuration: Int
+	get() {
+		return entityData.get<Int>(DATA_POS_ROT_INTERPOLATION_DURATION_ID)
+	}
+	set(field) {
+		entityData.set(DATA_POS_ROT_INTERPOLATION_DURATION_ID, field)
+	}
