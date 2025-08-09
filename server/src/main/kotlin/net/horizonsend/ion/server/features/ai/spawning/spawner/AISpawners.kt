@@ -59,6 +59,7 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.INFLIC
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MALINGSHU_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MIANBAO_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PATROLLER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PIONEER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PROTECTOR
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.RAIDER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.REAVER
@@ -999,6 +1000,7 @@ object AISpawners : IonServerComponent(true) {
 					SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK),
 					SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR),
 					SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER),
+					SYSTEM_DEFENSE_FORCES.asSpawnedShip(PIONEER),
 					SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAYBREAK),
 					SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE)
 				),

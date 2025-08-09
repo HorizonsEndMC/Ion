@@ -225,6 +225,20 @@ object AITemplateRegistry {
 			.build()
 	)
 
+	val MIANBAOZHA = registerTemplate(
+		builder(
+			identifier = "MIANBAOZHA",
+			template = StarshipTemplateRegistry.MIANBAOZHA,
+			controllerFactory = AIControllerFactories.starfighter,
+			engagementRange = 2500.0
+		)
+			.addFactionConfiguration(吃饭人)
+			.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
+			.addRewardProvider(CreditRewardProviderConfiguration(4000.0))
+			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(250.0))
+			.build()
+	)
+
 	val MALINGSHU_REINFORCED = registerTemplate(
 		builder(
 			identifier = "MALINGSHU_REINFORCED",
@@ -242,6 +256,14 @@ object AITemplateRegistry {
 					delay = 100L,
 					broadcastMessage = "<italic><$吃饭人_STANDARD>You cannot decipher the transmission from the incoming alien ship",
 					reinforcementShips = listOf(spawnChance(吃饭人.asSpawnedShip(MIANBAO_REINFORCEMENT), 1.0))
+				)
+			)
+			.addAdditionalModule(
+				BehaviorConfiguration.BasicReinforcementInformation(
+					activationThreshold = 0.25,
+					delay = 100L,
+					broadcastMessage = "<italic><$吃饭人_STANDARD>You cannot decipher the transmission from the incoming alien ship",
+					reinforcementShips = listOf(spawnChance(吃饭人.asSpawnedShip(MIANBAOZHA), 1.0))
 				)
 			)
 			.build()
@@ -264,6 +286,14 @@ object AITemplateRegistry {
 					delay = 100L,
 					broadcastMessage = "<italic><$吃饭人_STANDARD>You cannot decipher the transmission from the incoming alien ship",
 					reinforcementShips = listOf(spawnChance(吃饭人.asSpawnedShip(MALINGSHU_REINFORCEMENT), 1.0))
+				)
+			)
+			.addAdditionalModule(
+				BehaviorConfiguration.BasicReinforcementInformation(
+					activationThreshold = 0.25,
+					delay = 100L,
+					broadcastMessage = "<italic><$吃饭人_STANDARD>You cannot decipher the transmission from the incoming alien ship",
+					reinforcementShips = listOf(spawnChance(吃饭人.asSpawnedShip(MIANBAOZHA), 1.0))
 				)
 			)
 			.build()
@@ -654,6 +684,20 @@ object AITemplateRegistry {
 		builder(
 			identifier = "INFLICT",
 			template = StarshipTemplateRegistry.INFLICT,
+			controllerFactory = AIControllerFactories.starfighter,
+			engagementRange = 650.0,
+		)
+			.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
+			.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+			.addRewardProvider(CreditRewardProviderConfiguration(2000.0))
+			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(3000.0))
+			.build()
+	)
+
+	val PIONEER = registerTemplate(
+		builder(
+			identifier = "PIONEER",
+			template = StarshipTemplateRegistry.PIONEER,
 			controllerFactory = AIControllerFactories.starfighter,
 			engagementRange = 650.0,
 		)

@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.features.starship.StarshipType.AI_DESTROYER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_FRIGATE
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_GUNSHIP
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_HEAVY_FREIGHTER
+import net.horizonsend.ion.server.features.starship.StarshipType.AI_INTERCEPTOR
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_LIGHT_FREIGHTER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_SHUTTLE
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_STARFIGHTER
@@ -187,6 +188,14 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 
 	// END_WATCHERS
 	//START 吃饭人
+
+	val MIANBAOZHA = registerTemplate(
+		StarshipTemplate(
+			schematicName = "Mianbaozha",
+			type = AI_STARFIGHTER,
+			miniMessageName = text("Mianbaozha", 吃饭人_STANDARD).serialize(miniMessage),
+		)
+	)
 
 	val MIANBAO = registerTemplate(
 		StarshipTemplate(
@@ -574,6 +583,14 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 			schematicName = "Inflict",
 			type = AI_STARFIGHTER,
 			miniMessageName = "<$PRIVATEER_LIGHT_TEAL>Inflict",
+		)
+	)
+
+	val PIONEER = registerTemplate(
+		StarshipTemplate(
+			schematicName = "Pioneer",
+			type = AI_INTERCEPTOR,
+			miniMessageName = "<$PRIVATEER_LIGHT_TEAL>Pioneer",
 		)
 	)
 
