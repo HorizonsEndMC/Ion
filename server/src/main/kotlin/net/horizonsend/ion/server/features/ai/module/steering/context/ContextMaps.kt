@@ -515,9 +515,12 @@ class ShieldAwarenessContext(
 			for (j in 0 until ship.shields.size) {
 				val shield = ship.shields[j]
 				val offset = rotatedCenters[j]
-				val damage = ((shield.maxPower - shield.power) /
-					(shield.maxPower.toDouble() * (1 - config.criticalPoint))).pow(config.power)
-				response.dotContext(offset, -0.3, damage)
+
+				val damage: Double = ((shield.maxPower - shield.power) / (shield.maxPower.toDouble() * (1 - config.criticalPoint))).pow(config.power)
+
+				if (damage.isNaN()) continue
+
+				response.dotContext(direction = offset, shift = -0.3, scale = damage)
 			}
 			for (k in 0 until NUMBINS) {
 				response.bins[k] *= incomingFire.bins[k]
