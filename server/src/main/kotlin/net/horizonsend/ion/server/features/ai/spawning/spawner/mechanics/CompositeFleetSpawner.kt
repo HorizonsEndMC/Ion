@@ -36,7 +36,7 @@ class CompositeFleetSpawner(
 	private val controllerModifier: (AIController) -> Unit
 ) : SpawnerMechanic() {
 
-	override suspend fun trigger(logger: Logger) {
+	override fun trigger(logger: Logger) {
 		if (mechanics.isEmpty()) {
 			logger.warn("CompositeSpawner triggered with no components.")
 			return

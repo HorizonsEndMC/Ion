@@ -6,7 +6,7 @@ import org.slf4j.Logger
 class MultiMechanic(vararg mechanics: SpawnerMechanic) : SpawnerMechanic() {
 	val mechanics = mechanics.toList()
 
-	override suspend fun trigger(logger: Logger) {
+	override fun trigger(logger: Logger) {
 		mechanics.forEach { it.trigger(logger) }
 	}
 

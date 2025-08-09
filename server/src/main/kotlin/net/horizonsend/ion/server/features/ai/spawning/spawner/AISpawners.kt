@@ -1171,14 +1171,13 @@ object AISpawners : IonServerComponent(true) {
 			)
 		))
 
-		registerGlobalSpawner(
-			GlobalWorldSpawner(
-				"BAIT_SHIP",
-			AISpawnerTicker(
+		registerGlobalSpawner(GlobalWorldSpawner(
+			identifier = "BAIT_SHIP",
+			scheduler = AISpawnerTicker(
 				pointChance = 0.5,
 				pointThreshold = 20 * 60 * 7 * 5
 			),
-			SingleSpawn(
+			mechanic = SingleSpawn(
 				RandomShipSupplier(
 					TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.BAIT_NIMBLE),
 					TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.BAIT_STRIKER),
