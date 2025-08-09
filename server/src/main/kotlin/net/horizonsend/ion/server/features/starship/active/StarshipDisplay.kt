@@ -102,7 +102,7 @@ object StarshipDisplay : IonServerComponent(true) {
 	private fun createDynmapPopupHTML(starship: ActiveStarship, hyperspace: Boolean): String {
 		val starshipDisplayName = starship.getDisplayNamePlain()
 
-		val pilotNamePlain = starship.controller.getPilotName().plainText()
+		val pilotNamePlain = starship.controller.pilotName.plainText()
 
 		val type = starship.type.displayNameComponent.plainText()
 		val blockCount = starship.initialBlockCount
@@ -172,7 +172,7 @@ object StarshipDisplay : IonServerComponent(true) {
 		while (iterator.hasNext()) {
 			val (identifier, icon) = iterator.next()
 
-			if (ActiveStarships[identifier] != null) continue
+			if (ActiveStarships.getByCharIdentifier(identifier) != null) continue
 
 			val gravityWellCircleMarker: CircleMarker? = markerSet.findCircleMarker("${identifier}_gravity_well")
 			gravityWellCircleMarker?.deleteMarker()

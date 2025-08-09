@@ -144,7 +144,7 @@ object StarshipCruising : IonServerComponent() {
 			return
 		}
 
-		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz)
+		TranslateMovement.loadChunksAndMove(starship, dx, dy, dz, type = TranslateMovement.MovementSource.CRUISE)
 	}
 
 	private fun processUpdatedHullIntegrity(starship: ActiveControlledStarship) {

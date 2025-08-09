@@ -54,7 +54,7 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        fleet.remove(sender)
+        fleet.remove(sender.toFleetMember())
         fleet.information("${sender.name} has left your fleet")
     }
 
@@ -84,7 +84,7 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        fleet.remove(player)
+        fleet.remove(player.toFleetMember())
         player.userError("You were kicked from ${sender.name}'s fleet!")
         sender.success("Removed ${player.name} from fleet")
     }
@@ -140,7 +140,7 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        fleet.invite(player)
+        fleet.invite(player.toFleetMember())
         player.information("You have been invited to join ${sender.name}'s fleet. Enter \"/fleet join ${sender.name}\" " +
                 "to join their fleet.")
         sender.success("Invited ${player.name} to your fleet")
@@ -167,11 +167,11 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        if (!fleet.getInvite(player)) {
+        if (!fleet.isInvited(player.toFleetMember())) {
             sender.userError("Player ${player.name} has not been invited")
         }
 
-        fleet.removeInvite(player)
+        fleet.removeInvite(player.toFleetMember())
         player.userError("Your invite to ${sender.name}'s fleet has been removed.")
         sender.success("Removed fleet invite from ${player.name}")
     }
@@ -193,10 +193,10 @@ object FleetCommand : SLCommand() {
         for (fleet in fleetInvites) {
             val inviter = Bukkit.getPlayer(inviterName) ?: continue
 
-            if (fleet.leaderId == inviter.uniqueId) {
+            if (fleet.leader == inviter.toFleetMember()) {
                 fleet.information(("${sender.name} has joined your fleet"))
-                fleet.add(sender)
-                fleet.removeInvite(sender)
+                fleet.add(sender.toFleetMember())
+                fleet.removeInvite(sender.toFleetMember())
                 sender.success("Joined ${inviter.name}'s fleet")
                 return
             }
@@ -310,6 +310,6 @@ object FleetCommand : SLCommand() {
     private fun isFleetCommand(sender: Player): Boolean? {
         val fleet = Fleets.findByMember(sender) ?: return null
 
-        return fleet.leaderId == sender.uniqueId
+        return fleet.leader == sender.toFleetMember()
     }
 }

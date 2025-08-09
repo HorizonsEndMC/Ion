@@ -34,6 +34,7 @@ class ItemDisplayContainer(
     initHeading: Vector,
     item: ItemStack,
 	val ignorePlayerSetting: Boolean = false,
+	val interpolation: Int = 3
 ) : DisplayWrapper {
 	private var shownPlayers = mutableSetOf<UUID>()
 
@@ -47,7 +48,7 @@ class ItemDisplayContainer(
 				value.z
 			)
 
-			entity.transformationInterpolationDuration = 3
+			entity.transformationInterpolationDuration = interpolation
 
 			shownPlayers.map(Bukkit::getPlayer).forEach {
 				it?.minecraft?.connection?.send(ClientboundTeleportEntityPacket.teleport(entity.id, PositionMoveRotation.of(entity), setOf<Relative>(), entity.onGround))
@@ -67,7 +68,7 @@ class ItemDisplayContainer(
 				)
             )
 
-			entity.transformationInterpolationDuration = 3
+			entity.transformationInterpolationDuration = interpolation
 		}
 
 	override var scale: Vector = Vector(initScale, initScale, initScale)
@@ -83,7 +84,7 @@ class ItemDisplayContainer(
 				)
             )
 
-			entity.transformationInterpolationDuration = 3
+			entity.transformationInterpolationDuration = interpolation
 		}
 
 	override var offset: Vector = Vector(0.0, 0.0, 0.0)
@@ -99,7 +100,7 @@ class ItemDisplayContainer(
 				)
             )
 
-			entity.transformationInterpolationDuration = 3
+			entity.transformationInterpolationDuration = interpolation
 		}
 
 	var itemStack: ItemStack = item

@@ -24,7 +24,9 @@ object MultiblockTicking : IonServerComponent() {
 	private fun tickSyncMultiblocks() {
 		if (!IonServer.isEnabled) return
 
-		iterateManagers { manager ->
+		iterateManagers { manager: MultiblockManager? ->
+			if (manager == null) return@iterateManagers
+
 			var multiblock: SyncTickingMultiblockEntity? = null
 
 			for (key in manager.syncTickingMultiblockEntities.keys) runCatching {
@@ -44,7 +46,9 @@ object MultiblockTicking : IonServerComponent() {
 	private fun tickAsyncMultiblocks() {
 		if (!IonServer.isEnabled) return
 
-		iterateManagers { manager ->
+		iterateManagers { manager: MultiblockManager? ->
+			if (manager == null) return@iterateManagers
+
 			var multiblock: AsyncTickingMultiblockEntity? = null
 
 			for (key in manager.asyncTickingMultiblockEntities.keys) runCatching {

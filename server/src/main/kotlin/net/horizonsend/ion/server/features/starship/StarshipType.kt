@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.configuration.StarshipBalancing
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
+import net.horizonsend.ion.server.features.starship.StarshipType.entries
 import net.horizonsend.ion.server.features.starship.destruction.SinkProvider
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -145,6 +146,25 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.1",
 		dynmapIcon = "interceptor",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::interceptor
+	),
+	AI_INTERCEPTOR(
+		displayName = "Interceptor",
+		icon = SidebarIcon.INTERCEPTOR_ICON.text,
+		minSize = 150,
+		maxSize = 350,
+		minLevel = 1,
+		containerPercent = 0.025,
+		crateLimitMultiplier = 0.5,
+		concretePercent = 0.0,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.WAR_SHIP,
+		color = "#ff8000",
+		requiredPermission = "ion.ships.ai",
+		overridePermission = "ion.ships.override.1",
+		dynmapIcon = "interceptor",
+		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
 		balancingSupplier = ConfigurationFiles.starshipBalancing()::interceptor
 	),
 	GUNSHIP(
@@ -638,6 +658,28 @@ enum class StarshipType(
         overridePermission = "ion.ships.ai.medium_freighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing()::mediumFreighter
+	),
+	AI_MEDIUM_FREIGHTER(
+		displayName = "Medium Freighter",
+		icon = SidebarIcon.MEDIUM_FREIGHTER_ICON.text,
+		minSize = 4000,
+		maxSize = 8000,
+		minLevel = 1000,
+		concretePercent = 0.0,
+		containerPercent = 0.045,
+		crateLimitMultiplier = 1.0,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.TRADE_SHIP,
+		color = "#0080cc",
+		powerOverrider = 0.7,
+		maxMiningLasers = 4,
+		miningLaserTier = 3,
+		dynmapIcon = "medium_freighter",
+		requiredPermission = "ion.ships.ai",
+		overridePermission = "ion.ships.ai.medium_freighter",
+		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiMediumFreighter
 	),
 	HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",

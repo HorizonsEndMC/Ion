@@ -16,6 +16,7 @@ import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
 
 class PhaserProjectile(
 	starship: ActiveStarship?,
@@ -35,6 +36,13 @@ class PhaserProjectile(
 	override val soundName: String = balancing.soundName
 	override val nearSound: StarshipSounds.SoundInfo = balancing.soundFireNear
 	override val farSound: StarshipSounds.SoundInfo = balancing.soundFireFar
+
+	companion object {
+		val speedUpTime = TimeUnit.MILLISECONDS.toNanos(500L)
+		val speedUpSpeed = 1000.0
+	}
+
+
 
 	private val blueParticleData = Particle.DustTransition(
 		Color.fromARGB(255, 0, 255, 255),

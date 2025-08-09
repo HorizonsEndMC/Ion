@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
-import kotlin.collections.set
 import kotlin.math.abs
 
 class BoxShieldSubsystem(
