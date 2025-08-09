@@ -61,7 +61,7 @@ data class AISteeringConfiguration(
 
 	@Serializable
 	data class DistanceConfiguration(
-		val minDist: Double = 0.0,
+		val minDist: Double = 0.01,
 		val maxDist: Double = 500.0,
 		val fleeDist: Double = 1000.0, //set this to just beyond the standoff position
 		val optimalDist: Double = 300.0,

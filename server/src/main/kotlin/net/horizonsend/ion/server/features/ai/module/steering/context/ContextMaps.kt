@@ -286,7 +286,7 @@ class FaceSeekContext(
 		val offset = target.add(shipPos.clone().multiply(-1.0))
 		val dist = offset.length() + 1e-4
 		val distWeight = dist / offsetSupplier.get()
-		offset.normalize()
+		if (offset.lengthSquared() >= 1e-3) offset.normalize()
 		val shipVelocity = ship.velocity.clone()
 		if (shipVelocity.lengthSquared() >= 1e-3) shipVelocity.normalize()
 		offset.multiply(config.faceWeight).add(shipVelocity).normalize()
@@ -479,8 +479,7 @@ class ShieldAwarenessContext(
 	}
 
 	private fun transformCords(info: ShieldInfo, heading: Vector): Vector {
-		val shipYaw = vectorToPitchYaw(ship.forward.direction, true).second.toDouble()
-		//then take those relative cords and rotate then towards the heading direction
+		//take those relative cords and rotate then towards the heading direction
 		val headingPlane = heading.clone()
 		headingPlane.y = 0.0
 		val (_, targetYaw) = vectorToPitchYaw(headingPlane, radians = true)
