@@ -31,7 +31,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 		createSettingsPage(player, "Control Settings",
 			DBCachedBooleanToggle(text("DC Overrides Cruise"), "", GuiItem.GUNSHIP, false, PlayerSettings::useAlternateDCCruise),
 			DBCachedIntCycle(1_000_000,-1, text("DC Refresh Rate"),
-				"\"How frequently DC responds to your movement and teleports you, a value of -1 means that refresh is entirely ping driven. High values means more forging feedback but less responsive", GuiItem.GUNSHIP, 1, PlayerSettings::dcRefreshRate)
+				"\"How frequently DC responds to your movement and teleports you, a value of -1 means that refresh is entirely ping driven. High values means more forging feedback but less responsive", GuiItem.GUNSHIP, -1, PlayerSettings::dcRefreshRate)
 		),
 		createSettingsPage(player, "Sidebar Settings",
 			createSettingsPage(player, "Combat Timer Settings",
@@ -88,6 +88,9 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			),
 			createSettingsPage(player, "Effects Settings",
 				DBCachedEnumCycle(ClientDisplayEntities.Visibility::class.java, text("Display Entities"), "Changes the visibility of display entity effects", GuiItem.LIST, 0, PlayerSettings::displayEntityVisibility),
+				DBCachedBooleanToggle(text("Toggle Alternative Shield Impact Particles"), "", GuiItem.BOOKMARK, false, PlayerSettings::useAlternateShieldHitParticle),
+				DBCachedIntegerInput(1,1_000_000, text("Flare Duration"),
+					"\"How long flares from hitting shields should last in ticks", GuiItem.BOOKMARK, 5, PlayerSettings::flareTime)
 			),
 		),
 		createSettingsPage(player, "Sound Settings",
