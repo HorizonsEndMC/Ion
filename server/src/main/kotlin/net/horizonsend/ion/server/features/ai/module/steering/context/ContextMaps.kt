@@ -77,7 +77,7 @@ class WanderContext(
 		val time = System.currentTimeMillis()
 		val wanderAltitudeNoise = generator.noise(
 			0.0,
-			((time / finalRate) % finalRate + timeoffset) / 10,
+			((time / finalRate) % finalRate + timeoffset) / config.verticalJitterMod,
 			0.0,
 			0.5, 0.5
 		)
@@ -87,7 +87,7 @@ class WanderContext(
 		val currentAltitude = ship.centerOfMass.y.toDouble()
 
 		// How far off are we from desired height
-		val verticalBias = (preferredAltitude - currentAltitude) / heightRange
+		val verticalBias = (preferredAltitude - currentAltitude) / heightRange * config.verticalWeight
 
 		// Create a vertical vector pointing up or down
 		val altitudeVector = upVector.clone().multiply(verticalBias)

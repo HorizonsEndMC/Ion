@@ -49,6 +49,8 @@ data class AIContextConfiguration(
 		val weight: Double = 0.5,
 		val jitterRate: Double = 20000.0,
 		val sizeFactor: Double = 100.0,
+		val verticalWeight : Double = 0.75,
+		val verticalJitterMod : Double = 10.0
 	)
 
 	@Serializable
@@ -118,7 +120,7 @@ data class AIContextConfiguration(
 	@Serializable
 	data class BorderDangerContextConfiguration(
 		val falloff: Double = 10.0,
-		val verticalFalloff: Double = 10.0,
+		val verticalFalloff: Double = 5.0,
 		val dotShift: Double = 0.2
 	)
 
