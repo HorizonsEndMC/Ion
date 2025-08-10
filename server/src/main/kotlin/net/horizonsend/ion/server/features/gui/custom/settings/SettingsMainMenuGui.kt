@@ -88,7 +88,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			createSettingsPage(player, "Effects Settings",
 				DBCachedEnumCycle(ClientDisplayEntities.Visibility::class.java, text("Display Entities"), "Changes the visibility of display entity effects", GuiItem.LIST, 0, PlayerSettings::displayEntityVisibility),
 				DBCachedBooleanToggle(text("Toggle Alternative Shield Impact Particles"), "", GuiItem.BOOKMARK, false, PlayerSettings::useAlternateShieldHitParticle),
-				DBCachedIntegerInput(1,1_000_000, text("Flare Duration"),
+				DBCachedIntegerInput(1,100, text("Flare Duration"),
 					"\"How long flares from hitting shields should last in ticks", GuiItem.BOOKMARK, 5, PlayerSettings::flareTime)
 			),
 		),
