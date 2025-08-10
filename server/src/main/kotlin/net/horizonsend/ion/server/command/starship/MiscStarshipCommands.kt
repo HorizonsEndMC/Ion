@@ -723,16 +723,18 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@Description("Try to pilot the ship you're standing on")
 	fun onPilot(sender: Player) {
 		val world = sender.world
-		val (x, y, z) = Vec3i(sender.location)
+		val (x, _, z) = Vec3i(sender.location)
 
-		val starshipData = DeactivatedPlayerStarships.getContaining(world, x, y - 1, z)
+		// If they're standing in a slab, check the slab block, but if they're on a full block, check the full block
+		val y = (sender.location.y - 0.02).toInt()
 
-		if (starshipData == null) {
-			sender.userError("Could not find starship. Is it detected?")
-			return
-		}
+		val starshipData = DeactivatedPlayerStarships.getContaining(world, x, y, z)
+		val unpiloted = ActiveStarships.findByBlock(world, x, y, z)
 
-		PilotedStarships.tryPilot(sender, starshipData)
+		val data = starshipData ?: unpiloted?.data ?: return sender.userError("Could not find starship. Is it detected?")
+
+		PilotedStarships.tryPilot(sender, data)
+		return
 	}
 
 	private val uploadCooldown = object : PerPlayerCooldown(5L, TimeUnit.SECONDS, bypassPermission = "ion.starship.bypassdownloadlimit") {
