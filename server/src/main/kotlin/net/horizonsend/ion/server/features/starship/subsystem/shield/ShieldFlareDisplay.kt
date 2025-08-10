@@ -34,8 +34,7 @@ class ShieldFlareDisplay(
 			initScale = 1.1f, // slightly large for readability
 			initPosition = currentCenter(),
 			initHeading = Vector(0.0, 1.0, 0.0),
-			item = ItemStack(colorItem),
-			ignorePlayerSetting = false
+			item = ItemStack(colorItem)
 		)
 		return c
 	}

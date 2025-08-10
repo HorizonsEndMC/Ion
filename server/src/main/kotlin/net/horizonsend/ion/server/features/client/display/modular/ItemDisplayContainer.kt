@@ -1,11 +1,10 @@
 package net.horizonsend.ion.server.features.client.display.modular
 
 import com.mojang.math.Transformation
-import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
+import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.miscellaneous.utils.getChunkAtIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
@@ -20,12 +19,12 @@ import org.bukkit.World
 import org.bukkit.craftbukkit.CraftServer
 import org.bukkit.craftbukkit.entity.CraftItemDisplay
 import org.bukkit.craftbukkit.inventory.CraftItemStack
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import java.util.UUID
-import kotlin.random.Random
 
 class ItemDisplayContainer(
     val world: World,
@@ -33,8 +32,8 @@ class ItemDisplayContainer(
     initPosition: Vector,
     initHeading: Vector,
     item: ItemStack,
-	val ignorePlayerSetting: Boolean = false,
-	val interpolation: Int = 3
+	val interpolation: Int = 3,
+	val playerFilter: (Player) -> Boolean = { true }
 ) : DisplayWrapper {
 	private var shownPlayers = mutableSetOf<UUID>()
 
@@ -170,15 +169,13 @@ class ItemDisplayContainer(
 	}
 
 	private fun broadcast(player: ServerPlayer) {
-		val playerSetting = ClientDisplayEntities.Visibility.entries[player.bukkitEntity.getSetting(PlayerSettings::displayEntityVisibility)]
+		val bukkit = player.bukkitEntity
 
-		val display = if (ignorePlayerSetting) true else when (playerSetting) {
-			ClientDisplayEntities.Visibility.ON -> true
-			ClientDisplayEntities.Visibility.REDUCED -> Random.nextBoolean()
-			ClientDisplayEntities.Visibility.OFF -> false
-		}
+		if (bukkit.isNPC) return
 
-		if (display) ClientDisplayEntities.sendEntityPacket(player.bukkitEntity, entity)
+		if (!playerFilter.invoke(bukkit)) return
+
+		ClientDisplayEntities.sendEntityPacket(player.bukkitEntity, entity)
 		shownPlayers.add(player.uuid)
 	}
 
