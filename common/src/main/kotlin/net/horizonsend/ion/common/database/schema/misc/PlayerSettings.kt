@@ -61,6 +61,8 @@ data class PlayerSettings(
 	var soundCruiseIndicator: Int = 0,
 	var enableCombatTimerAlerts: Boolean = true,
 	var hitmarkerOnHull: Boolean = true,
+	var flareTime: Int = 5,
+	var useAlternateShieldHitParticle : Boolean = false,
 
 	var shortenChatChannels: Boolean = false,
 

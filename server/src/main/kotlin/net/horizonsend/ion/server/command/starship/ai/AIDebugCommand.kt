@@ -7,7 +7,6 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
@@ -121,11 +120,17 @@ object AIDebugCommand : SLCommand() {
 		)
 
 		AIControlUtils.guessWeaponSets(starship,newController)
-		newController.validateWeaponSets()
 
 		starship.setController(newController)
 
 		starship.removePassenger(sender.uniqueId)
+	}
+
+	@CommandCompletion("@autoTurretTargets")
+	fun validateWeaponSets(sender: Player, shipIdentifier: String) {
+		val ship = ActiveStarships.getByIdentifier(shipIdentifier) ?: fail { "$shipIdentifier is not a starship" }
+		val controller = ship.controller as? AIController ?: fail { "Starship is not AI controlled!" }
+		controller.validateWeaponSets()
 	}
 
 	@Subcommand("debug show")
@@ -242,11 +247,13 @@ object AIDebugCommand : SLCommand() {
 		difficulty: DifficultyModule.Companion.AIDifficulty,
 		@Optional targetMode: String?) {
 
-		AISpawningManager.context.launch {
-			template.spawn(log, sender.location, difficulty.ordinal,
-				targetMode?.let { AITarget.TargetMode.valueOf(it) } ?: AITarget.TargetMode.PLAYER_ONLY)
-			sender.success("Spawned ship")
-		}
+		template.spawn(
+			logger = log,
+			location = sender.location,
+			difficulty = difficulty.ordinal,
+			targetMode = targetMode?.let { AITarget.TargetMode.valueOf(it) } ?: AITarget.TargetMode.PLAYER_ONLY
+		)
+		sender.success("Spawned ship")
 	}
 
 	@Suppress("Unused")

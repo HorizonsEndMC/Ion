@@ -8,6 +8,8 @@ import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
@@ -15,6 +17,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.destruction.SinkAnimation.SinkAnimationBlock
 import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlockEvent
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.MultiblockEntitySubsystem
@@ -22,6 +25,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsy
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
@@ -34,8 +39,12 @@ import org.bukkit.Particle
 import org.bukkit.SoundCategory
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.inventory.ItemStack
+import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
+import kotlin.math.roundToLong
+import kotlin.random.Random
 
 class MiningLaserSubsystem(
     override val starship: ActiveControlledStarship,
@@ -85,7 +94,7 @@ class MiningLaserSubsystem(
 	}
 
 	override fun onDestroy() {
-		setFiring(false)
+		if (isFiring) setFiring(false)
 	}
 
 	private fun setFiring(firing: Boolean) {
@@ -209,12 +218,39 @@ class MiningLaserSubsystem(
 			return setFiring(false)
 		}
 
+		val output = entity.getOutput()
+		if (output == null) {
+			setFiring(false)
+			return starship.alert("Mining Laser at $pos's output inventory could not be found!")
+		}
+
+		var animated = 0
+
 		val blocksBroken = DrillMultiblock.breakBlocks(
 			maxBroken = multiblock.maxBroken,
 			toDestroy = blocks,
-			output = entity.getOutput() ?: run { setFiring(false); return starship.alert("Mining Laser at $pos's output inventory could not be found!") },
-			{ controller.canDestroyBlock(it) && StarshipBreakBlockEvent(controller, it).callEvent() },
-			{ starship.userErrorSubtitle("Not enough space!") }
+			output = output,
+			canBuild = { controller.canDestroyBlock(it) && StarshipBreakBlockEvent(controller, it).callEvent() },
+			cancel = { starship.userErrorSubtitle("Not enough space!") },
+			blockDropConsumer = { block, drops ->
+				if (!ConfigurationFiles.featureFlags().miningLaserAnimation) return@breakBlocks
+				if (animated >= ANIMATION_COUNT) return@breakBlocks
+				val item = drops.firstOrNull() ?: return@breakBlocks
+
+				animated++
+
+				Tasks.async {
+					val blockLocation = block.location.toVector()
+
+					BrokenBlockAnimation(
+						length = distance(blockLocation, initialPos.toVector()).times(1.25).roundToLong(),
+						origin = blockLocation,
+						beamOrigin = initialPos.toVector(),
+						beamDesitination = laserEnd.toVector(),
+						item = item
+					).schedule()
+				}
+			}
 		)
 
 		if (blocksBroken > 0) {
@@ -284,11 +320,56 @@ class MiningLaserSubsystem(
 
 	companion object {
 		val MINING_LASER_NOT_MINED = enumSetOf(Material.AIR, Material.BEDROCK, Material.REINFORCED_DEEPSLATE, Material.BARRIER)
+		private const val ANIMATION_SPEED = 2
+		private const val ANIMATION_COUNT = 3
+		private const val RANDOM_VELOCITY = 1.0
+		private const val BEAM_CORRECTION_FACTOR = 0.125
 	}
 
 	override val firePowerConsumption: Int = 0
 
 	override fun getName(): Component {
 		return text("Mining Laser [how]")
+	}
+
+	inner class BrokenBlockAnimation(
+		length: Long,
+		origin: Vector,
+		val beamOrigin: Vector,
+		beamDesitination: Vector,
+		item: ItemStack
+	) : BukkitRunnable() {
+		val randomOffset = Vector(Random.nextDouble(-RANDOM_VELOCITY, RANDOM_VELOCITY), Random.nextDouble(-RANDOM_VELOCITY, RANDOM_VELOCITY), Random.nextDouble(-RANDOM_VELOCITY, RANDOM_VELOCITY))
+
+		val block = object : SinkAnimationBlock(
+			duration = length / ANIMATION_SPEED,
+			wrapper = ItemDisplayContainer(
+				world = starship.world,
+				initPosition = origin,
+				initHeading = BlockFace.NORTH.direction,
+				initScale = 1.0f,
+				item = item
+			),
+			direction = beamOrigin.clone().subtract(origin).normalize().multiply(ANIMATION_SPEED).add(randomOffset),
+			initialScale = 1.0,
+			finalScale = 0.5,
+			rotationAxis = beamDesitination.clone().subtract(origin),
+			rotationDegrees = 5.0 * ANIMATION_SPEED,
+			motionAdjuster = {
+ 				val currentOffset = wrapper.offset
+				val currentPos = origin.clone().add(currentOffset)
+
+				val newDir = beamOrigin.clone().subtract(currentPos).normalize().multiply(ANIMATION_SPEED)
+
+				direction = Vector().add(direction.clone().multiply(1 - BEAM_CORRECTION_FACTOR)).add(newDir.multiply(BEAM_CORRECTION_FACTOR))
+			}
+		) {}
+
+		override fun run() {
+			block.update()
+			if (block.checkDead()) cancel()
+		}
+
+		fun schedule() = runTaskTimerAsynchronously(IonServer, 1L, 1L)
 	}
 }

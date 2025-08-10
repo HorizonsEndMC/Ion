@@ -225,6 +225,48 @@ object AITemplateRegistry {
 			.build()
 	)
 
+	val MIANBAOZHA = registerTemplate(
+		builder(
+			identifier = "MIANBAOZHA",
+			template = StarshipTemplateRegistry.MIANBAOZHA,
+			controllerFactory = AIControllerFactories.starfighter,
+			engagementRange = 2500.0
+		)
+			.addFactionConfiguration(吃饭人)
+			.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
+			.addRewardProvider(CreditRewardProviderConfiguration(4000.0))
+			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(250.0))
+			.build()
+	)
+
+	val LOUMAI = registerTemplate(
+		builder(
+			identifier = "LOUMAI",
+			template = StarshipTemplateRegistry.LOUMAI,
+			controllerFactory = AIControllerFactories.gunship,
+			engagementRange = 2500.0
+		)
+			.addFactionConfiguration(吃饭人)
+			.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
+			.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
+			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(500.0))
+			.addAdditionalModule(
+				BehaviorConfiguration.AdvancedReinforcementInformation(
+					activationThreshold = 0.60,
+					delay = 100L,
+					broadcastMessage = "<italic><$吃饭人_STANDARD>You detect a cacophony of transmissions",
+				) {
+					BagSpawner.asReinforcement(
+						formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 200.0, 300.0),
+						VariableIntegerAmount(4, 6),
+						null,
+						null,
+						asBagSpawned(吃饭人.asSpawnedShip(MIANBAOZHA).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
+					)(it)
+				})
+			.build()
+	)
+
 	val MALINGSHU_REINFORCED = registerTemplate(
 		builder(
 			identifier = "MALINGSHU_REINFORCED",
@@ -242,6 +284,14 @@ object AITemplateRegistry {
 					delay = 100L,
 					broadcastMessage = "<italic><$吃饭人_STANDARD>You cannot decipher the transmission from the incoming alien ship",
 					reinforcementShips = listOf(spawnChance(吃饭人.asSpawnedShip(MIANBAO_REINFORCEMENT), 1.0))
+				)
+			)
+			.addAdditionalModule(
+				BehaviorConfiguration.BasicReinforcementInformation(
+					activationThreshold = 0.25,
+					delay = 100L,
+					broadcastMessage = "<italic><$吃饭人_STANDARD>You cannot decipher the transmission from the incoming alien ship",
+					reinforcementShips = listOf(spawnChance(吃饭人.asSpawnedShip(MIANBAOZHA), 1.0))
 				)
 			)
 			.build()
@@ -266,6 +316,56 @@ object AITemplateRegistry {
 					reinforcementShips = listOf(spawnChance(吃饭人.asSpawnedShip(MALINGSHU_REINFORCEMENT), 1.0))
 				)
 			)
+			.addAdditionalModule(
+				BehaviorConfiguration.BasicReinforcementInformation(
+					activationThreshold = 0.25,
+					delay = 100L,
+					broadcastMessage = "<italic><$吃饭人_STANDARD>You cannot decipher the transmission from the incoming alien ship",
+					reinforcementShips = listOf(spawnChance(吃饭人.asSpawnedShip(MIANBAOZHA), 1.0))
+				)
+			)
+			.build()
+	)
+
+	val FAGUN = registerTemplate(
+		builder(
+			identifier = "FAGUN",
+			template = StarshipTemplateRegistry.FAGUN,
+			controllerFactory = AIControllerFactories.destroyer,
+			engagementRange = 2500.0
+		)
+			.addFactionConfiguration(吃饭人)
+			.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
+			.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
+			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(500.0))
+			.addAdditionalModule(
+				BehaviorConfiguration.AdvancedReinforcementInformation(
+					activationThreshold = 0.70,
+					delay = 100L,
+					broadcastMessage = "<italic><$吃饭人_STANDARD>You detect a cacophony of transmissions",
+				) {
+					BagSpawner.asReinforcement(
+						formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 200.0, 300.0),
+						VariableIntegerAmount(5, 8),
+						null,
+						null,
+						asBagSpawned(吃饭人.asSpawnedShip(MIANBAOZHA).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
+					)(it)
+				})
+			.addAdditionalModule(
+				BehaviorConfiguration.AdvancedReinforcementInformation(
+					activationThreshold = 0.30,
+					delay = 100L,
+					broadcastMessage = "<italic><$吃饭人_STANDARD>You detect a cacophony of transmissions",
+				) {
+					BagSpawner.asReinforcement(
+						formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 200.0, 300.0),
+						VariableIntegerAmount(5, 8),
+						null,
+						null,
+						asBagSpawned(吃饭人.asSpawnedShip(MIANBAOZHA).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
+					)(it)
+				})
 			.build()
 	)
 	// END_吃饭人
@@ -526,13 +626,13 @@ object AITemplateRegistry {
 					broadcastMessage = "<$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
 				) {
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 100.0, 200.0),
-						VariableIntegerAmount(6, 10),
+						formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 200.0, 300.0),
+						VariableIntegerAmount(5, 8),
 						null,
 						null,
-						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(15.0, 50.0, 0.0), 2),
-						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(15.0, 50.0, 0.0), 2),
-						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(15.0, 50.0, 0.0), 3),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(25.0, 100.0, 0.0), 3),
 					)(it)
 				})
 			.build()
@@ -654,6 +754,20 @@ object AITemplateRegistry {
 		builder(
 			identifier = "INFLICT",
 			template = StarshipTemplateRegistry.INFLICT,
+			controllerFactory = AIControllerFactories.starfighter,
+			engagementRange = 650.0,
+		)
+			.addFactionConfiguration(SYSTEM_DEFENSE_FORCES)
+			.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
+			.addRewardProvider(CreditRewardProviderConfiguration(2000.0))
+			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(3000.0))
+			.build()
+	)
+
+	val PIONEER = registerTemplate(
+		builder(
+			identifier = "PIONEER",
+			template = StarshipTemplateRegistry.PIONEER,
 			controllerFactory = AIControllerFactories.starfighter,
 			engagementRange = 650.0,
 		)

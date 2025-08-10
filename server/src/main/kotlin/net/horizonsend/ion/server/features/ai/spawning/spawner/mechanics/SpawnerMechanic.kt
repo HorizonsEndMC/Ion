@@ -8,7 +8,7 @@ import net.kyori.adventure.text.Component
 import org.slf4j.Logger
 
 abstract class SpawnerMechanic {
-	abstract suspend fun trigger(logger: Logger)
+	abstract fun trigger(logger: Logger)
 
 	abstract fun getAvailableShips(draw: Boolean = false): Collection<SpawnedShip>
 

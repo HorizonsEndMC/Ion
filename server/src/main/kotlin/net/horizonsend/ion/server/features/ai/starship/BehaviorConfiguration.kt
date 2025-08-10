@@ -35,6 +35,9 @@ class BehaviorConfiguration(
 		fun createModule(controller: AIController): AIModule
 	}
 
+	/**
+	 * Replacement params: 0: world, 1: x, 2: y, z: 3
+	 **/
 	@Serializable
 	data class SmackInformation(
 		val prefix: String,

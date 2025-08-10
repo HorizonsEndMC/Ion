@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.features.starship.StarshipType.AI_DESTROYER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_FRIGATE
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_GUNSHIP
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_HEAVY_FREIGHTER
+import net.horizonsend.ion.server.features.starship.StarshipType.AI_INTERCEPTOR
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_LIGHT_FREIGHTER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_SHUTTLE
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_STARFIGHTER
@@ -188,6 +189,36 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	// END_WATCHERS
 	//START 吃饭人
 
+	val MIANBAOZHA = registerTemplate(
+		StarshipTemplate(
+			schematicName = "Mianbaozha",
+			type = AI_STARFIGHTER,
+			miniMessageName = text("Mianbaozha", 吃饭人_STANDARD).serialize(miniMessage),
+		)
+	)
+
+	val LOUMAI = registerTemplate(
+		StarshipTemplate(
+			schematicName = "Loumai",
+			type = AI_GUNSHIP,
+			miniMessageName = text("Loumai", 吃饭人_STANDARD).serialize(miniMessage),
+			manualWeaponSets = mutableSetOf(
+				WeaponSet(
+					name = "manual",
+					engagementRangeMin = 0.0,
+					engagementRangeMax = 550.0
+				)
+			),
+			autoWeaponSets = mutableSetOf(
+				WeaponSet(
+					name = "auto",
+					engagementRangeMin = 0.0,
+					engagementRangeMax = 550.0
+				)
+			)
+		)
+	)
+
 	val MIANBAO = registerTemplate(
 		StarshipTemplate(
 			schematicName = "Mianbao",
@@ -231,6 +262,43 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 				WeaponSet(
 					name = "TT",
 					engagementRangeMin = 250.0,
+					engagementRangeMax = 550.0
+				)
+			)
+		)
+	)
+
+	val FAGUN = registerTemplate(
+		StarshipTemplate(
+			schematicName = "Fagun",
+			type = AI_DESTROYER,
+			miniMessageName = text("Fagun", 吃饭人_STANDARD).serialize(miniMessage),
+			manualWeaponSets = mutableSetOf(
+				WeaponSet(
+					name = "HL",
+					engagementRangeMin = 0.0,
+					engagementRangeMax = 500.0
+				),
+				WeaponSet(
+					name = "HLs",
+					engagementRangeMin = 200.0,
+					engagementRangeMax = 300.0
+				),
+				WeaponSet(
+					name = "PH",
+					engagementRangeMin = 0.0,
+					engagementRangeMax = 200.0
+				)
+			),
+			autoWeaponSets = mutableSetOf(
+				WeaponSet(
+					name = "LT",
+					engagementRangeMin = 0.0,
+					engagementRangeMax = 250.0
+				),
+				WeaponSet(
+					name = "TT",
+					engagementRangeMin = 300.0,
 					engagementRangeMax = 550.0
 				)
 			)
@@ -488,7 +556,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 				WeaponSet(name = "Manual", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
 			),
 			autoWeaponSets = mutableSetOf(
-				WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
+				WeaponSet(name = "auto", engagementRangeMin = 220.0, engagementRangeMax = 550.0)
 			)
 		)
 	)
@@ -574,6 +642,14 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 			schematicName = "Inflict",
 			type = AI_STARFIGHTER,
 			miniMessageName = "<$PRIVATEER_LIGHT_TEAL>Inflict",
+		)
+	)
+
+	val PIONEER = registerTemplate(
+		StarshipTemplate(
+			schematicName = "Pioneer",
+			type = AI_INTERCEPTOR,
+			miniMessageName = "<$PRIVATEER_LIGHT_TEAL>Pioneer",
 		)
 	)
 

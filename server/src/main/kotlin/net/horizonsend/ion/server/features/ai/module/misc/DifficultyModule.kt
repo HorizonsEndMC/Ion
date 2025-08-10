@@ -130,6 +130,18 @@ class DifficultyModule(
 	val targetLowestShield get() = internalDifficulty >= 4
 
 	val powerModeSwitch get() = internalDifficulty >= 2
+	val powerModeDelayMulti : Double
+		get() {
+			return when (internalDifficulty) {
+				0 -> 1.0
+				1 -> 1.0
+				2 -> 1.0
+				3 -> 0.5
+				4 -> 0.2
+				else -> 1.0
+			}
+		}
+
 	val useSpecialPowerModes get() = internalDifficulty >= 4
 
 	val rewardMultiplier: Double

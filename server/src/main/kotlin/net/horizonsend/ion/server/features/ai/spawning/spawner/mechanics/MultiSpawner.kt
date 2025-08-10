@@ -30,7 +30,7 @@ abstract class MultiSpawner(
 ) : SpawnerMechanic() {
 	abstract fun getShips(): List<SpawnedShip>
 
-	override suspend fun trigger(logger: Logger) {
+	override fun trigger(logger: Logger) {
 		val ships = getShips()
 		if (ships.isEmpty()) {
 			debugAudience.debug("Multi spawner didn't get any ships to spawn!")
@@ -74,11 +74,13 @@ abstract class MultiSpawner(
 
 			debugAudience.debug("Spawning ${spawnedShip.template.identifier} at $spawnPoint")
 
-			spawnedShip.spawn(logger, spawnPoint, difficulty, targetModeSupplier.get()) { addUtilModule(AIFleetManageModule(this, aiFleet)) }
+			spawnedShip.spawn(logger, spawnPoint, difficulty, targetModeSupplier.get()) {
+				addUtilModule(AIFleetManageModule(this, aiFleet))
+				aiFleet.initalized = true
+			}
 
 			individualSpawnMessage?.broadcast(spawnPoint, spawnedShip.template)
 		}
-		aiFleet.initalized = true
 
 		if (aiFleet.members.isNotEmpty() && groupMessage != null) {
 			IonServer.server.sendMessage(

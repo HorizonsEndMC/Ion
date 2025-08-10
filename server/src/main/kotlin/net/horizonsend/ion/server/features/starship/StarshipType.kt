@@ -147,6 +147,25 @@ enum class StarshipType(
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::interceptor
 	),
+	AI_INTERCEPTOR(
+		displayName = "Interceptor",
+		icon = SidebarIcon.INTERCEPTOR_ICON.text,
+		minSize = 150,
+		maxSize = 350,
+		minLevel = 1,
+		containerPercent = 0.025,
+		crateLimitMultiplier = 0.5,
+		concretePercent = 0.0,
+		menuItemRaw = { ItemStack(Material.SPONGE) },
+		displayInMainMenu = false,
+		typeCategory = TypeCategory.WAR_SHIP,
+		color = "#ff8000",
+		requiredPermission = "ion.ships.ai",
+		overridePermission = "ion.ships.override.1",
+		dynmapIcon = "interceptor",
+		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
+		balancingSupplier = ConfigurationFiles.starshipBalancing()::interceptor
+	),
 	GUNSHIP(
 		displayName = "Gunship",
 		icon = SidebarIcon.GUNSHIP_ICON.text,

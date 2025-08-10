@@ -487,7 +487,7 @@ class AIFaction private constructor(
 				"<white>Please no, I've done nothing wrong!",
 				"<white>Spare me; this ship is all I have!",
 				"<white>My friends will avenge me!",
-				"<white>I'm calling the [current system name] Defense Patrol! ",
+				"<white>I'm calling the {0} Defense Patrol! ",
 				"<white>Shields are down!",
 				"<white>Hull integrity critical!",
 				"<white>Engines compromised!"

@@ -177,19 +177,43 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 					explosionOccurred = world.createExplosion(newLoc, explosionPower)
 
 					if (explosionPower > 0) {
-						world.spawnParticle(
-							Particle.FLASH,
-							newLoc.x,
-							newLoc.y,
-							newLoc.z,
-							explosionPower.toInt(),
-							explosionPower.toDouble() / 2,
-							explosionPower.toDouble() / 2,
-							explosionPower.toDouble() / 2,
-							0.0,
-							null,
-							true
-						)
+						val base = explosionPower.coerceAtLeast(1f)
+
+						// Send per-player so each user’s setting applies
+						toPlayersInRadius(newLoc, /* visibility radius */ 96.0) { player ->
+							val useAlt = player.getSetting(PlayerSettings::useAlternateShieldHitParticle)
+
+							if (!useAlt) {
+								// Original behavior (large single flash)
+								player.spawnParticle(
+									Particle.FLASH,
+									newLoc.x, newLoc.y, newLoc.z,
+									base.toInt(),                 // count ~ explosionPower
+									(base / 2.0),
+									(base / 2.0),
+									(base / 2.0),
+									0.0,
+									null,
+									true
+								)
+								return@toPlayersInRadius
+							}
+
+							// Heuristic scaling to mimic FLASH’s "big" presence
+							val particle = Particle.ELECTRIC_SPARK
+							val count = (base * 40.0).toInt()
+							val spread = base * 0.5
+							val particleSpeed = 0.5
+							player.spawnParticle(
+								particle,
+								newLoc.x, newLoc.y, newLoc.z,
+								count,
+								spread, spread, spread,
+								particleSpeed,
+								null,
+								true
+							)
+						}
 					}
 
 					hasHit = true

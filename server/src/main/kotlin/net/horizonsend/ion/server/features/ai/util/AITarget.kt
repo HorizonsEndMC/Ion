@@ -85,7 +85,7 @@ class StarshipTarget(val ship: ActiveStarship, attack: Boolean = true) : AITarge
 
 	override fun getVec3i(random: Boolean, lowest: Boolean): Vec3i {
 		return if (random && ship.shields.size >= 1) {
-			val shields = ship.shields
+			val shields = ship.shields.filter { it.isIntact() }
 			val key = (if (!lowest) shields.random(ThreadLocalRandom.current().asKotlinRandom()) else shields.minBy { it.power }).pos
 
 			Vec3i(key).plus(offset)
