@@ -1,12 +1,11 @@
 package net.horizonsend.ion.server.features.starship.subsystem.shield
 
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debugRed
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
-import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
+import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -14,28 +13,16 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDeactivatedEvent
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
-import net.horizonsend.ion.server.miscellaneous.utils.PerWorld
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.horizonsend.ion.server.miscellaneous.utils.nms
-import net.minecraft.core.BlockPos
-import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
-import net.minecraft.world.level.Level
-import net.minecraft.world.level.block.BaseEntityBlock
-import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.boss.BarColor
-import org.bukkit.entity.Player
 import org.bukkit.event.Cancellable
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -327,31 +314,27 @@ object StarshipShields : IonServerComponent() {
 		percent: Double,
 		reinforced: Boolean
 	) {
-		if (blocks.isEmpty()) return
-
-		val sample = blocks.first().location.toCenterLocation()
+		val sample = blocks.firstOrNull()?.location?.toCenterLocation() ?: return
 
 		// Only spawn if at least one nearby player
-		val interested = sample.getNearbyPlayers(500.0)
+		val interested = sample.getNearbyPlayers(500.0) { !it.isNPC }
 		if (interested.isEmpty()) return
 
-		// Lifetime: use the max preference among nearby players
-		val lifetime = interested.maxOf { it.getSetting(PlayerSettings::flareTime).toLong() }
+		Tasks.async {
+			// Lifetime: use the max preference among nearby players
+			val lifetime = interested.maxOf { it.getSetting(PlayerSettings::flareTime).toLong() }
 
-		// Throttle number of displays per hit to keep it light
-		val maxFlares = 20
-		val chosen = if (blocks.size > maxFlares) blocks.shuffled().take(maxFlares) else blocks
+			// Throttle number of displays per hit to keep it light
+			val maxFlares = 20
+			val chosen = if (blocks.size > maxFlares) blocks.shuffled().take(maxFlares) else blocks
 
-		val mat = shieldMaterialFor(percent, reinforced)
+			val mat = shieldMaterialFor(percent, reinforced)
 
-		for (b in chosen) {
-			val local = starship.getLocalCoordinate(Vec3i(b.x, b.y, b.z))
-			ShieldFlareDisplay(
-				starship = starship,
-				local = local,
-				colorItem = mat,
-				lifetime = lifetime
-			).schedule()
+			for (b in chosen) {
+				val local = starship.getLocalCoordinate(Vec3i(b.x, b.y, b.z))
+
+				ShieldFlareDisplay(starship = starship, local = local, colorItem = mat, lifetime = lifetime).schedule()
+			}
 		}
 	}
 
