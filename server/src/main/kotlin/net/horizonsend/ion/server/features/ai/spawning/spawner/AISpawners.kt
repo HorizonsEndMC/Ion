@@ -54,9 +54,12 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.BULWAR
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.CONTRACTOR
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAGGER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAYBREAK
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.FAGUN
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.FURIOUS
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.INFLICT
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.LOUMAI
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MALINGSHU_REINFORCED
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MIANBAOZHA
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.MIANBAO_REINFORCED
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PATROLLER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PIONEER
@@ -253,8 +256,68 @@ object AISpawners : IonServerComponent(true) {
 					difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY },
 					fleetSupplier = { null },
-					asBagSpawned(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCEMENT), 10),
-					asBagSpawned(WATCHERS.asSpawnedShip(TERALITH), 10),
+					asBagSpawned(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCEMENT).withRandomRadialOffset(0.0, 50.0, 0.0, 250.0), 10),
+					asBagSpawned(WATCHERS.asSpawnedShip(TERALITH).withRandomRadialOffset(0.0, 50.0, 0.0, 250.0),  10),
+				)
+			)
+		}
+
+		val 吃饭人LocusScheduler = LocusScheduler(
+			storageKey = "吃饭人_LOCUS",
+			"<$吃饭人_STANDARD>Unknown Signal Locus".miniMessage(),
+			吃饭人_STANDARD,
+			duration = { Duration.ofMinutes(30) },
+			separation = { getRandomDuration(Duration.ofHours(6), Duration.ofHours(9)) },
+			difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+			"<${HE_MEDIUM_GRAY}>An <$吃饭人_STANDARD>Unknown Signal<${吃饭人_STANDARD}> has been detected in {0} at {1} {3}. <$吃饭人_STANDARD>Alien starships patrol the area.".miniMessage(),
+			"<${HE_MEDIUM_GRAY}>The <$吃饭人_STANDARD>Unknown Signal<${吃饭人_STANDARD}> has disappeared".miniMessage(),
+			radius = 1500.0,
+			spawnSeparation = { getRandomDuration(Duration.ofSeconds(100), Duration.ofSeconds(200)) },
+			listOf("Trench", "AU-0821", "Horizon")
+		)
+
+		registerGlobalSpawner(
+			GlobalWorldSpawner(
+				"吃饭人_LOCUS",
+				吃饭人LocusScheduler,
+				SingleSpawn(
+					RandomShipSupplier(
+						吃饭人.asSpawnedShip(MIANBAOZHA),
+						吃饭人.asSpawnedShip(MIANBAOZHA),
+						吃饭人.asSpawnedShip(MIANBAOZHA),
+						吃饭人.asSpawnedShip(LOUMAI),
+						吃饭人.asSpawnedShip(LOUMAI),
+						吃饭人.asSpawnedShip(MIANBAO_REINFORCED),
+						吃饭人.asSpawnedShip(MALINGSHU_REINFORCED),
+						吃饭人.asSpawnedShip(FAGUN),
+					),
+					吃饭人LocusScheduler.spawnLocationProvider,
+					SpawnMessage.WorldMessage("<$吃饭人_STANDARD>Another signal registered".miniMessage()),
+					{ _ -> Supplier { 吃饭人LocusScheduler.difficulty } },
+					{ AITarget.TargetMode.PLAYER_ONLY }
+				)
+			)
+		)
+
+		registerSingleWorldSpawner("Trench", "AU-0821") {
+			SingleWorldSpawner(
+				"吃饭人_BAG_SPAWNER",
+				it,
+				AISpawnerTicker(
+					pointChance = 0.7,
+					pointThreshold = 20 * 60 * 7 * 5
+				),
+				BagSpawner(
+					locationProvider = formatLocationSupplier(it, 2500.0, 4500.0) { player -> !player.hasProtection() },
+					budget = VariableIntegerAmount(15, 30),
+					groupMessage = text("An unusually strong alien signature has been detected in {3} at {0}, {2}", 吃饭人_STANDARD),
+					individualSpawnMessage = null,
+					difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
+					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY },
+					fleetSupplier = { null },
+					asBagSpawned(吃饭人.asSpawnedShip(MIANBAOZHA).withRandomRadialOffset(100.0, 200.0, 0.0, 250.0), 2),
+					asBagSpawned(吃饭人.asSpawnedShip(LOUMAI).withRandomRadialOffset(50.0, 100.0, 0.0, 250.0), 5),
+					asBagSpawned(吃饭人.asSpawnedShip(FAGUN).withRandomRadialOffset(0.0, 50.0, 0.0, 250.0), 15),
 				)
 			)
 		}
@@ -419,7 +482,9 @@ object AISpawners : IonServerComponent(true) {
 						maxDistanceFromPlayer = 4500.0,
 						templates = listOf(
 							spawnChance(吃饭人.asSpawnedShip(MIANBAO_REINFORCED), 0.5),
-							spawnChance(吃饭人.asSpawnedShip(MALINGSHU_REINFORCED), 0.5)
+							spawnChance(吃饭人.asSpawnedShip(MALINGSHU_REINFORCED), 0.5),
+							spawnChance(吃饭人.asSpawnedShip(LOUMAI), 0.1),
+							spawnChance(吃饭人.asSpawnedShip(FAGUN), 0.05),
 						)
 					),
 					WorldSettings(
@@ -429,7 +494,9 @@ object AISpawners : IonServerComponent(true) {
 						maxDistanceFromPlayer = 4500.0,
 						templates = listOf(
 							spawnChance(吃饭人.asSpawnedShip(MIANBAO_REINFORCED), 0.5),
-							spawnChance(吃饭人.asSpawnedShip(MALINGSHU_REINFORCED), 0.5)
+							spawnChance(吃饭人.asSpawnedShip(MALINGSHU_REINFORCED), 0.5),
+							spawnChance(吃饭人.asSpawnedShip(LOUMAI), 0.1),
+							spawnChance(吃饭人.asSpawnedShip(FAGUN), 0.5),
 						)
 					)
 				)
