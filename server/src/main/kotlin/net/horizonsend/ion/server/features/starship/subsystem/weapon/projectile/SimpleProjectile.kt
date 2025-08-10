@@ -181,11 +181,12 @@ abstract class SimpleProjectile(
 									Particle.FLASH,
 									newLoc.x, newLoc.y, newLoc.z,
 									base.toInt(),                 // count ~ explosionPower
-									(base / 2.0).toDouble(),
-									(base / 2.0).toDouble(),
-									(base / 2.0).toDouble(),
+									(base / 2.0),
+									(base / 2.0),
+									(base / 2.0),
 									0.0,
-									null
+									null,
+									true
 								)
 								return@toPlayersInRadius
 							}
@@ -201,7 +202,8 @@ abstract class SimpleProjectile(
 								count,
 								spread, spread, spread,
 								particleSpeed,
-								null
+								null,
+								true
 							)
 						}
 					}
