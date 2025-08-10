@@ -235,7 +235,7 @@ object AITemplateRegistry {
 			.addFactionConfiguration(吃饭人)
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 			.addRewardProvider(CreditRewardProviderConfiguration(4000.0))
-			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(250.0))
+			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(750.0))
 			.build()
 	)
 
@@ -248,7 +248,7 @@ object AITemplateRegistry {
 		)
 			.addFactionConfiguration(吃饭人)
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
-			.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
+			.addRewardProvider(CreditRewardProviderConfiguration(6000.0))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(500.0))
 			.addAdditionalModule(
 				BehaviorConfiguration.AdvancedReinforcementInformation(
@@ -336,8 +336,9 @@ object AITemplateRegistry {
 		)
 			.addFactionConfiguration(吃饭人)
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
-			.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
+			.addRewardProvider(CreditRewardProviderConfiguration(20000.0))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(500.0))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 			.addAdditionalModule(
 				BehaviorConfiguration.AdvancedReinforcementInformation(
 					activationThreshold = 0.70,

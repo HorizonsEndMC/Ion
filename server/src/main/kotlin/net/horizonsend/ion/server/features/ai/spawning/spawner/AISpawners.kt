@@ -315,7 +315,7 @@ object AISpawners : IonServerComponent(true) {
 					difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY },
 					fleetSupplier = { null },
-					asBagSpawned(吃饭人.asSpawnedShip(MIANBAOZHA).withRandomRadialOffset(100.0, 200.0, 0.0, 250.0), 2),
+					asBagSpawned(吃饭人.asSpawnedShip(MIANBAOZHA).withRandomRadialOffset(100.0, 200.0, 0.0, 250.0), 3),
 					asBagSpawned(吃饭人.asSpawnedShip(LOUMAI).withRandomRadialOffset(50.0, 100.0, 0.0, 250.0), 5),
 					asBagSpawned(吃饭人.asSpawnedShip(FAGUN).withRandomRadialOffset(0.0, 50.0, 0.0, 250.0), 15),
 				)
