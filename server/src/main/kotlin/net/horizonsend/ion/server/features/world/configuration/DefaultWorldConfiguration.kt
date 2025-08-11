@@ -531,8 +531,8 @@ object DefaultWorldConfiguration {
 		aiDifficulty = WeightedIntegerAmount(
 			setOf(
 				Pair(0, 0.2),
-				Pair(1, 0.35),
-				Pair(2, 0.4),
+				Pair(1, 0.50),
+				Pair(2, 0.25),
 				Pair(3, 0.05),
 			)
 		)
