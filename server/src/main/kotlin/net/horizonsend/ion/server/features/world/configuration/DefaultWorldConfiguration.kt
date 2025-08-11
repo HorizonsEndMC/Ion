@@ -510,7 +510,7 @@ object DefaultWorldConfiguration {
 				Pair(0, 0.15),
 				Pair(1, 0.35),
 				Pair(2, 0.35),
-				Pair(3, 0.10)
+				Pair(3, 0.15)
 			)
 		)
 	))
