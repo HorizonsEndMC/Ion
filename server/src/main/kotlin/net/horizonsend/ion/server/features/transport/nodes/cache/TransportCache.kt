@@ -171,7 +171,17 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		val cachedEntry = cacheGetter.get()
 		if (cachedEntry != null) return cachedEntry
 
-		val destinations = getNetworkDestinations(task, T::class, originPos, originNode, retainFullPath, destinationCheck, pathfindingFilter, null, nextNodeProvider)
+		val destinations = getNetworkDestinations(
+			task = task,
+			destinationTypeClass = T::class,
+			originPos = originPos,
+			originNode = originNode,
+			retainFullPath = retainFullPath,
+			destinationCheck = destinationCheck,
+			pathfindingFilter = pathfindingFilter,
+			debug = null,
+			nextNodeProvider = nextNodeProvider
+		)
 		cachingFunction.accept(destinations)
 
 		return destinations
@@ -290,14 +300,10 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		for (next in nextNodes) {
 			if (!canVisit(next)) continue
 
-			val wrapped = PathfindingNodeWrapper.fromParent(
-				node = next,
-				parent = current
-			)
-
 			if (visitQueue.contains(next.position)) {
 				continue
 			} else {
+				val wrapped = PathfindingNodeWrapper.fromParent(node = next, parent = current)
 				visitQueue.put(next.position, wrapped)
 			}
 		}
