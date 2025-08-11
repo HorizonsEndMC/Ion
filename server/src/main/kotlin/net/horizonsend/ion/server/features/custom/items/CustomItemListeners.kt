@@ -129,16 +129,11 @@ object CustomItemListeners : SLEventListener() {
 			val tickedArmorGear = mutableListOf<ItemStack?>()
 			tickedArmorGear.addAll(inventory.armorContents)
 
-			// TODO: No handheld ticked gear exists at the moment
-			val tickedHandheldGear = mutableListOf<ItemStack?>()
-			tickedHandheldGear.add(inventory.itemInOffHand)
-			tickedHandheldGear.add(inventory.itemInMainHand)
-
 			// Tick power armor items
 			for (item in tickedArmorGear) {
 				if (item == null) continue
 				val customItem = item.customItem ?: continue
-				val powerArmorItem = if (customItem is PowerArmorItem) customItem else continue
+				val powerArmorItem = customItem as? PowerArmorItem ?: continue
 
 				val tickListeners = getEntries(tickRecievers, customItem)
 				if (tickListeners.isEmpty()) continue
@@ -146,6 +141,24 @@ object CustomItemListeners : SLEventListener() {
 				for (module in tickListeners) {
 					if (event.tickNumber % module.interval != 0) continue
 					module.handleTick(player, item, customItem, powerArmorItem.slot)
+				}
+			}
+
+			val tickedHandheldGear = mutableMapOf<EquipmentSlot, ItemStack?>()
+			tickedHandheldGear[EquipmentSlot.OFF_HAND] = inventory.itemInOffHand
+			tickedHandheldGear[EquipmentSlot.HAND] = inventory.itemInMainHand
+
+			// Tick power armor items
+			for ((slot, item) in tickedHandheldGear) {
+				if (item == null) continue
+				val customItem = item.customItem ?: continue
+
+				val tickListeners = getEntries(tickRecievers, customItem)
+				if (tickListeners.isEmpty()) continue
+
+				for (module in tickListeners) {
+					if (event.tickNumber % module.interval != 0) continue
+					module.handleTick(player, item, customItem, slot)
 				}
 			}
 		}

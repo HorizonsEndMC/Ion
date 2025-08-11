@@ -228,11 +228,11 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		// Populate array with original nodes
 		computeNextNodes(
 			current = PathfindingNodeWrapper.newPath(NodePositionData(
-					originNode,
-					holder.getWorld(),
-					originPos,
-					BlockFace.SELF,
-					this
+				originNode,
+				holder.getWorld(),
+				originPos,
+				BlockFace.SELF,
+				this
 			)),
 			nextNodeProvider = nextNodeProvider,
 			visitQueue = visitQueue,
@@ -264,7 +264,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 			if (destinationTypeClass.isInstance(current.node.type) && (destinationCheck?.invoke(current.node) != false)) {
 				destinations.add(PathfindResult(
 					current.node.position,
-					current.buildPath(retainFullPath)
+					current.buildPath(retainfull = retainFullPath)
 				))
 			}
 
