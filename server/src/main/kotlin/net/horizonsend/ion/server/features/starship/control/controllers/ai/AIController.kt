@@ -50,7 +50,6 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 			field.destroy()
 			field = value
 			value.create()
-			information("Updated AI control mode to ${value.name}")
 		}
 
 	override fun getColor(): Color {
