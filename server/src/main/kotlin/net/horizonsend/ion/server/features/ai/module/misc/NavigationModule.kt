@@ -237,7 +237,7 @@ class NavigationModule(
 		if (world.hasFlag(WorldFlag.HYPERSPACE_WORLD)) return //cant make decisions in hyperspace
 
 		//AI ship in planet
-		if (world.hasFlag(WorldFlag.PlANET_WORLD)) { //ship needs to leave the planet
+		if (world.hasFlag(WorldFlag.PLANET_WORLD)) { //ship needs to leave the planet
 			fromPlanet()
 			return
 		}
@@ -258,7 +258,7 @@ class NavigationModule(
 
 	private fun fromSpace() {
 		starship.debug("AI ship in pace")
-		val dest = if (targetLocation!!.world.hasFlag(WorldFlag.PlANET_WORLD)) { //need to cast to space coordinate
+		val dest = if (targetLocation!!.world.hasFlag(WorldFlag.PLANET_WORLD)) { //need to cast to space coordinate
 			starship.debug("target in planet, casting cords")
 			val spaceworld = Space.getPlanet(targetLocation!!.world)!!.spaceWorld!!
 			Space.getPlanet(targetLocation!!.world)!!.location.toLocation(spaceworld)
@@ -277,7 +277,7 @@ class NavigationModule(
 			return
 		}
 
-		val path = if (targetLocation!!.world.hasFlag(WorldFlag.PlANET_WORLD)) {
+		val path = if (targetLocation!!.world.hasFlag(WorldFlag.PLANET_WORLD)) {
 			WaypointManager.findShortestPathToPlanet(location.toLocation(world), targetLocation!!.world)
 		} else {
 			WaypointManager.findShortestPathBetweenLocations(location.toLocation(world), dest)
