@@ -61,6 +61,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GUN_B
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.ITEM_FILTER
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.MOTHERBOARD
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.MULTIBLOCK_WORKBENCH
+import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.MULTIMETER
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.NETHERITE_CASING
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.PISTOL_RECEIVER
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.POWER_ARMOR_BOOTS
@@ -218,6 +219,7 @@ import org.bukkit.Material.STRING
 import org.bukkit.Material.TRIPWIRE_HOOK
 import org.bukkit.Material.TURTLE_EGG
 import org.bukkit.Material.VERDANT_FROGLIGHT
+import org.bukkit.Material.YELLOW_CONCRETE
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.BlastingRecipe
@@ -866,6 +868,13 @@ object Crafting : IonServerComponent() {
 		shaped("wrench", WRENCH) {
 			shape("a a", " a ", " a ")
 			setIngredient('a', IRON_INGOT)
+		}
+		shaped("multimeter", MULTIMETER) {
+			shape("yry", "ycy", "yiy")
+			setIngredient('y', YELLOW_CONCRETE)
+			setIngredient('r', REDSTONE)
+			setIngredient('c', CIRCUITRY)
+			setIngredient('i', COPPER_INGOT)
 		}
 	}
 
