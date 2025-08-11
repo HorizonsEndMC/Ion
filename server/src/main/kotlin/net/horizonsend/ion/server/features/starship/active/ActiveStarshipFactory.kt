@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.ComponentMessageException
 import net.horizonsend.ion.server.features.starship.Mass
+import net.horizonsend.ion.server.features.starship.StarshipDetection.OVERSIZE_MODIFIER
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
@@ -35,7 +36,7 @@ object ActiveStarshipFactory {
 		if (blocks.isEmpty()) return null
 
 		val type = data.starshipType.actualType
-		if (blocks.size < type.minSize || blocks.size > type.maxSize) throw StarshipActivationException("Starship size out of bounds, please redetect.")
+		if (blocks.size < type.minSize || blocks.size > (type.maxSize * OVERSIZE_MODIFIER)) throw StarshipActivationException("Starship size out of bounds, please redetect.")
 
 		val starship = createStarship(data, blocks, carriedShips)
 
