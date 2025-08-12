@@ -39,6 +39,8 @@ object AIKillStreak : IonServerComponent() {
 	}
 
 	fun rewardHeat(player: Player, score: Int) {
+		return
+
 		var entry = playerHeatList.find { it.player == player }
 		if (entry == null) {
 			entry = PlayerHeat(player, score, 0)
@@ -63,6 +65,8 @@ object AIKillStreak : IonServerComponent() {
 	}
 
 	fun getHeatMultiplier(player: Player): Double {
+		return 1.0
+
 		val streak = playerHeatList.find { it.player == player }?.currentHeat ?: 0
 		return 1.0 + streak.toDouble() * 0.1
 	}
