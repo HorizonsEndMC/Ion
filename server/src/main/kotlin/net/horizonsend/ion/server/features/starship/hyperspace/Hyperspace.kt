@@ -5,7 +5,6 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServerComponent
-import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.space.Space
@@ -26,6 +25,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSub
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -93,17 +93,21 @@ object Hyperspace : IonServerComponent() {
 		if (hyperdrive != null) {
 			check(hyperdrive.isIntact()) { "Hyperdrive @ ${hyperdrive.pos} damaged" }
 			jumpWarmup(starship,hyperdrive,x,z,destinationWorld,useFuel)
+			return
 		}
+
 		check(nullable) {"Hyperdrive does not exist (invalid null state)"}
-		jumpWarmup(starship,null,x,z,destinationWorld,useFuel)
+		jumpWarmup(starship = starship, hyperdrive = null, x = x, z = z, destinationWorld = destinationWorld, useFuel = useFuel)
 	}
 
-	private fun jumpWarmup(starship: ActiveStarship,
-						   hyperdrive: HyperdriveSubsystem?,
-						   x: Int,
-						   z: Int,
-						   destinationWorld: World,
-						   useFuel: Boolean) {
+	private fun jumpWarmup(
+		starship: ActiveStarship,
+		hyperdrive: HyperdriveSubsystem?,
+		x: Int,
+		z: Int,
+		destinationWorld: World,
+		useFuel: Boolean
+	) {
 		val dest = Location(destinationWorld, x.toDouble(), 192.0, z.toDouble())
 		val mass = starship.mass
 		val speed = if (hyperdrive != null) {calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)}
