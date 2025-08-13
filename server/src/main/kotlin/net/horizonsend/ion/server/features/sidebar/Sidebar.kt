@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.sidebar
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.key.Key
 import net.megavex.scoreboardlibrary.api.ScoreboardLibrary

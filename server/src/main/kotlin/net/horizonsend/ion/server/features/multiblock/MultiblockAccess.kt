@@ -6,8 +6,8 @@ import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.getMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.removeMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity

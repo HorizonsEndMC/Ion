@@ -59,6 +59,8 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovementFor
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementForecast.logStatistics
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.balancing.DefaultStarshipTypeWeaponBalancing
+import net.horizonsend.ion.server.features.starship.subsystem.balancing.StarshipWeaponBalancingManager
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
@@ -127,10 +129,14 @@ class Starship(
 	private val hitbox: ActiveStarshipHitbox,
 	carriedShips: Map<StarshipData, LongOpenHashSet> // map of carried ship to its blocks
 ) : ForwardingAudience {
+
 	// Data Aliases
 	val dataId: Oid<out StarshipData> = data._id
+
 	val type: StarshipType = data.starshipType.actualType
-	val balancing = type.balancingSupplier.get()
+	var balancingManager: StarshipWeaponBalancingManager = DefaultStarshipTypeWeaponBalancing(data.starshipType.actualType)
+	val balancing = type.balancing
+
 	val interdictionRange: Int = balancing.interdictionRange
 	val charIdentifier = randomString(5L) // Created once
 	/** Name is misleading, would be more accurate to call this `activationTime` */
@@ -457,8 +463,8 @@ class Starship(
 
 	lateinit var reactor: ReactorSubsystem
 	val shields = LinkedList<ShieldSubsystem>()
-	val weapons = LinkedList<WeaponSubsystem>()
-	val turrets = LinkedList<TurretWeaponSubsystem>()
+	val weapons = LinkedList<WeaponSubsystem<*>>()
+	val turrets = LinkedList<TurretWeaponSubsystem<*, *>>()
 	val hyperdrives = LinkedList<HyperdriveSubsystem>()
 	val navComps = LinkedList<NavCompSubsystem>()
 	val thrusters = LinkedList<ThrusterSubsystem>()
@@ -470,7 +476,7 @@ class Starship(
 
 	val shieldBars = mutableMapOf<String, BossBar>()
 
-	val weaponSets: HashMultimap<String, WeaponSubsystem> = HashMultimap.create()
+	val weaponSets: HashMultimap<String, WeaponSubsystem<*>> = HashMultimap.create()
 	val weaponSetSelections: HashBiMap<UUID, String> = HashBiMap.create()
 
 	val autoTurretTargets = mutableMapOf<String, AutoTurretTargeting.AutoTurretTarget<*>>()
@@ -684,7 +690,9 @@ class Starship(
 	fun getDisplayNamePlain(): String = getDisplayName().plainText()
 	//endregion
 
-	fun isOversized() = this.initialBlockCount > this.type.maxSize && (this.initialBlockCount <= (this.type.maxSize * StarshipDetection.OVERSIZE_MODIFIER).toInt())
+	fun isOversized() =
+		this.initialBlockCount > this.type.maxSize
+		&& (this.initialBlockCount <= (this.type.maxSize * StarshipDetection.OVERSIZE_MODIFIER).toInt())
 
 	//Debugging tools
 

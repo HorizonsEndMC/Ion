@@ -2,11 +2,11 @@ package net.horizonsend.ion.server.features.starship.subsystem.shield
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.miscellaneous.d
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debugRed
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships

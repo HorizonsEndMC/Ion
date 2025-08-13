@@ -4,8 +4,8 @@ import com.destroystokyo.paper.event.server.ServerTickStartEvent
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.utils.configuration.Configuration
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.manager.WorldMultiblockManager
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.transport.nodes.inputs.WorldInputManager
@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.FORBIDDEN_BLOCKS
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
+import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -138,7 +139,7 @@ class IonWorld private constructor(
 
 		operator fun get(world: World): IonWorld = ionWorlds[world] ?: throw IllegalStateException("Unregistered Ion World: $world!")
 
-		fun register(world: World) {
+		fun register(world: World) = kotlin.runCatching {
 			mainThreadCheck()
 
 			if (ionWorlds.contains(world)) {
@@ -152,6 +153,10 @@ class IonWorld private constructor(
 
 			ionWorld.configuration.environments.forEach { it.setup() }
 			Tasks.syncRepeat(10, 10, ionWorld::tickEnvironments)
+		}.onFailure {
+			log.error("There was an error loading an Ion World. The server will now shut down to prevent undefined behavior.")
+			it.printStackTrace()
+			Bukkit.shutdown()
 		}
 
 		fun unregisterAll() {

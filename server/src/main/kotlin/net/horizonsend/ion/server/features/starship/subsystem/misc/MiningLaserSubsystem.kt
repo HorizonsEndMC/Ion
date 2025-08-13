@@ -9,9 +9,8 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.configuration.StarshipSounds
-import net.horizonsend.ion.server.configuration.StarshipWeapons
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
+import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblock
@@ -50,34 +49,14 @@ import kotlin.random.Random
 class MiningLaserSubsystem(
     override val starship: ActiveControlledStarship,
 	override val entity: MiningLaserMultiblock.MiningLaserMultiblockEntity,
-) : WeaponSubsystem(starship, toVec3i(entity.getSignKey())), ManualWeaponSubsystem, DirectionalSubsystem, MultiblockEntitySubsystem {
+) : WeaponSubsystem<StarshipWeaponBalancing<*>>(
+	starship,
+	toVec3i(entity.getSignKey()),
+	starship.balancingManager.getWeaponSupplier(MiningLaserSubsystem::class)
+), ManualWeaponSubsystem, DirectionalSubsystem, MultiblockEntitySubsystem {
 
 	val multiblock = entity.multiblock
 	override var face: BlockFace = entity.structureDirection
-
-	override val balancing: StarshipWeapons.StarshipWeapon = StarshipWeapons.StarshipWeapon(
-		range = 0.0,
-		speed = 0.0,
-		areaShieldDamageMultiplier = 0.0,
-		starshipShieldDamageMultiplier = 0.0,
-		particleThickness = 0.0,
-		explosionPower = 0.0f,
-		volume = 0,
-		pitch = 0.0f,
-		soundName = "",
-		powerUsage = 0,
-		length = 0 ,
-		angleRadiansHorizontal = 0.0,
-		angleRadiansVertical = 0.0,
-		convergeDistance = 0.0,
-		extraDistance = 0,
-		fireCooldownMillis = 0,
-		boostChargeSeconds = 0,
-		aimDistance = 0,
-		applyCooldownToAll = false,
-		soundFireNear = StarshipSounds.SoundInfo(""),
-		soundFireFar = StarshipSounds.SoundInfo(""),
-	)
 
 	private val firingTasks = mutableListOf<BukkitTask>()
 	private var isFiring = false
@@ -347,7 +326,7 @@ class MiningLaserSubsystem(
 		private const val BEAM_CORRECTION_FACTOR = 0.125
 	}
 
-	override val powerUsage: Int = 0
+	override val firePowerConsumption: Int = 0
 
 	override fun getName(): Component {
 		return text("Mining Laser [how]")

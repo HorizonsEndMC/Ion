@@ -11,7 +11,6 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.canno
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.PulseCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CapitalBeamStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CthulhuBeamStarshipWeaponMultiblockTop
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.FireWaveWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.FlamethrowerStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.GazeStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.MiniPhaserStarshipWeaponMultiblock
@@ -49,7 +48,6 @@ class IonBootstrapper : PluginBootstrap {
 			PulseCannonStarshipWeaponMultiblock,
 			CapitalBeamStarshipWeaponMultiblock,
 			CthulhuBeamStarshipWeaponMultiblockTop,
-			FireWaveWeaponMultiblock,
 			FlamethrowerStarshipWeaponMultiblock,
 			GazeStarshipWeaponMultiblock,
 			MiniPhaserStarshipWeaponMultiblock,

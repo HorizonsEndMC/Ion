@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
@@ -50,7 +51,7 @@ import kotlin.math.roundToInt
 import kotlin.random.Random
 
 object MultimeterItem : CustomItem(
-	"MULTIMETER",
+	CustomItemKeys.MULTIMETER,
 	Component.text("Multimeter", NamedTextColor.YELLOW),
 	ItemFactory.builder(ItemFactory.unStackableCustomItem("tool/multimeter")).build()
 ) {

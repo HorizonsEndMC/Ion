@@ -45,10 +45,10 @@ class AimingModule(
 		val shipPos = targetShip.centerOfMass.toVector()
 		if (difficulty.aimAdjust < 0.1) return shipPos
 
-		val predicate = { it: WeaponSubsystem ->
+		val predicate = { it: WeaponSubsystem<*> ->
 			((it is HeavyWeaponSubsystem) xor leftClick)
 				&& ((it is AutoWeaponSubsystem) xor manual)
-				&& !(it is MiningLaserSubsystem) // because screw you
+				&& it !is MiningLaserSubsystem // because screw you
 				&& it.isIntact()
 				&& it.canFire(getDirection(origin, targetShip.centerOfMass).normalize(), shipPos)// this is a shortcut
 		} //reduce the amount of different weapon types as much as possible
@@ -68,7 +68,7 @@ class AimingModule(
 				(distance / PhaserProjectile.speedUpSpeed
 					+ TimeUnit.NANOSECONDS.toMillis(PhaserProjectile.speedUpTime).toDouble() / 1000).coerceAtMost(4.0)
 			} else {
-				(distance / weapon.balancing.speed).coerceAtMost(4.0)
+				(distance / weapon.balancing.projectile.speed).coerceAtMost(4.0)
 			}
 			forecast = forecast(targetShip, System.currentTimeMillis() + (travelTime * 1000).toLong(), 0)
 		}

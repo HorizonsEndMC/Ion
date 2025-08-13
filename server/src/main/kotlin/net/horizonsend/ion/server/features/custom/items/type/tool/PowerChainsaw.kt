@@ -2,14 +2,14 @@ package net.horizonsend.ion.server.features.custom.items.type.tool
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
 import net.horizonsend.ion.server.features.custom.items.component.Listener.Companion.leftClickListener
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModRegistry
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.general.AutoReplantModifier
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.chainsaw.ExtendedBar
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -32,13 +32,13 @@ import java.util.ArrayDeque
 import kotlin.math.roundToInt
 
 class PowerChainsaw(
-	identifier: String,
+	key: IonRegistryKey<CustomItem, out CustomItem>,
 	displayName: Component,
 	modLimit: Int,
 	basePowerCapacity: Int,
 	model: String,
 	val initialBlocksBroken: Int
-) : PowerTool(identifier, displayName, modLimit, basePowerCapacity, model) {
+) : PowerTool(key, displayName, modLimit, basePowerCapacity, model) {
 	override val customComponents: CustomItemComponentManager = super.customComponents.apply {
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, leftClickListener(this@PowerChainsaw) { event, _, item ->
 			handleClick(event.player, item, event)
@@ -49,9 +49,9 @@ class PowerChainsaw(
 		if (event.player.gameMode != GameMode.SURVIVAL) return
 		val origin = event.clickedBlock ?: return
 
-		val mods = getComponent(CustomComponentTypes.MOD_MANAGER).getMods(itemStack)
+		val mods = getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(itemStack)
 
-		val maxDepth = if (mods.contains(ExtendedBar)) initialBlocksBroken + 100 else initialBlocksBroken
+		val maxDepth = if (mods.contains(ItemModKeys.EXTENDED_BAR)) initialBlocksBroken + 100 else initialBlocksBroken
 
 		PowerChainsawMineTask(
 			player = player,
@@ -67,7 +67,7 @@ class PowerChainsaw(
 		private val player: Player,
 		private val chainsawItem: ItemStack,
 		private val chainsaw: PowerChainsaw,
-		private val mods: Array<ItemModification>,
+		private val mods: Array<IonRegistryKey<ItemModification, out ItemModification>>,
 		private val origin: Block,
 		private val maxDepth: Int
 	) : BukkitRunnable() {
@@ -119,7 +119,7 @@ class PowerChainsaw(
 
 			var replacementType: Material? = null
 
-			if (mods.contains(AutoReplantModifier) && (block.type.isWood || block.type.isLog)) {
+			if (mods.contains(ItemModKeys.AUTO_REPLANT) && (block.type.isWood || block.type.isLog)) {
 				if (Crop.SWEET_BERRIES.canBePlanted(block)) {
 					replacementType = saplingTypes[block.type]
 				}
@@ -133,7 +133,7 @@ class PowerChainsaw(
 				powerManager.removePower(chainsawItem, chainsaw, (powerUse * usage.multiplier).roundToInt())
 			}
 
-			val collectorPresent = mods.contains(ItemModRegistry.COLLECTOR)
+			val collectorPresent = mods.contains(ItemModKeys.COLLECTOR)
 
 			for ((dropLocation, items) in drops) {
 				val location = BlockPos.of(dropLocation).toLocation(origin.world).toCenterLocation()

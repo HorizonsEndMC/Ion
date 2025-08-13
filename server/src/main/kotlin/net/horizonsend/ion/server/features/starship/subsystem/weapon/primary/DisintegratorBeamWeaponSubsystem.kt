@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.DisintegratorBeamBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.DisintegratorBeamWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsyst
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DisintegratorBeamProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
@@ -20,20 +21,18 @@ class DisintegratorBeamWeaponSubsystem(
     pos: Vec3i,
     override var face: BlockFace,
     val multiblock: DisintegratorBeamWeaponMultiblock
-) : WeaponSubsystem(starship, pos), DirectionalSubsystem, ManualWeaponSubsystem {
+) : WeaponSubsystem<DisintegratorBeamBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(DisintegratorBeamWeaponSubsystem::class)), DirectionalSubsystem, ManualWeaponSubsystem {
 
     companion object {
         private const val MIN_STACKS = 1
         private const val MAX_STACKS = 20
     }
 
-    override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.disintegratorBeam
-    override val powerUsage: Int = balancing.powerUsage
-    private val range: Double = balancing.range
-    private val inaccuracyRadians = balancing.inaccuracyRadians
+	private val inaccuracyRadians get() = balancing.inaccuracyRadians
 
     // amount of "stacks" that the weapon has; more stacks = more damage
     var lastImpact: Long = System.nanoTime()
+
     // beam stacks always between MIN_STACKS and MAX_STACKS
     var beamStacks: Int = 1
         set(value) { field = value.coerceIn(MIN_STACKS, MAX_STACKS) }
@@ -70,7 +69,7 @@ class DisintegratorBeamWeaponSubsystem(
         lastFire = System.nanoTime()
 
         val loc = getFirePos().toCenterVector().toLocation(starship.world)
-        DisintegratorBeamProjectile(starship, getName(), loc, dir, range, starship.controller.damager, this, damageCalculation()).fire()
+        DisintegratorBeamProjectile(StarshipProjectileSource(starship), getName(), loc, dir, starship.controller.damager, this, damageCalculation()).fire()
     }
 
     override fun getMaxPerShot(): Int = balancing.maxPerShot

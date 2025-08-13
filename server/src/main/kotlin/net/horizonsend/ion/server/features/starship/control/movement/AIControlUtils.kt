@@ -211,7 +211,7 @@ object AIControlUtils {
 		val fudgeFactor = starship.max.distance(starship.min) / 3
 
 		//special cases first
-		val predicate = {weapon :WeaponSubsystem ->
+		val predicate = { weapon: WeaponSubsystem<*> ->
 			weapon is MiningLaserSubsystem ||
 			weapon is ArsenalRocketStarshipWeaponSubsystem ||
 			weapon is PointDefenseSubsystem ||
@@ -223,7 +223,7 @@ object AIControlUtils {
 			for (weaponSet in weaponSets) {
 				if (accountedFor.contains(weaponSet.first)) continue
 				controller.addSpecialSet(
-					weaponSet.first,0.0,weaponSet.second.first().balancing.range + fudgeFactor)
+					weaponSet.first,0.0,weaponSet.second.first().balancing.projectile.range + fudgeFactor)
 				accountedFor.add(weaponSet.first)
 			}
 		}
@@ -234,19 +234,24 @@ object AIControlUtils {
 			weaponSortMap.getOrDefault(it::class,2) }.distinctBy { it::class }.toMutableList()
 		var initialHeavyRange = 0.0
 		var initialHeavyAutoRange = 0.0
-		var heavyWeapon : WeaponSubsystem
+		var heavyWeapon: WeaponSubsystem<*>
 		//go through weapons until heaves are exausted, or the light weapons range on shared heavy+light set is less than
 		//the next heavy weapon
 		heavyWeapons@ while (heavyWeapons.isNotEmpty()) {
 			heavyWeapon = heavyWeapons.removeFirst()
-			val weaponSets = starshipWeaponSets.filter{ it.second.contains(heavyWeapon) }
-				.sortedBy{ it.second.filter { weapon -> weapon !is HeavyWeaponSubsystem}.minOfOrNull { weapon -> weapon.balancing.range } }
+
+			val weaponSets = starshipWeaponSets
+				.filter { it.second.contains(heavyWeapon) }
+				.sortedBy { it.second.filter { weapon -> weapon !is HeavyWeaponSubsystem}.minOfOrNull { weapon -> weapon.balancing.projectile.range } }
+
 			for (weaponSet in weaponSets) {
 				if (accountedFor.contains(weaponSet.first)) continue
 				if (weaponSet.second.all { it is AutoWeaponSubsystem }) continue // this is an auto set
-				val heavyWeaponRange = heavyWeapon.balancing.range + fudgeFactor
-				val lightWeaponRange = (weaponSet.second.filter{it !is HeavyWeaponSubsystem}
-					.minOfOrNull { weapon -> weapon.balancing.range } ?: heavyWeaponRange) + fudgeFactor
+
+				val heavyWeaponRange = heavyWeapon.balancing.projectile.range + fudgeFactor
+
+				val lightWeaponRange = (weaponSet.second.filter{it !is HeavyWeaponSubsystem}.minOfOrNull { weapon -> weapon.balancing.projectile.range } ?: heavyWeaponRange) + fudgeFactor
+
 				if (heavyWeaponRange < lightWeaponRange) {
 					controller.addManualSet(weaponSet.first,initialHeavyRange,heavyWeaponRange)
 					initialHeavyRange = heavyWeaponRange
@@ -268,23 +273,23 @@ object AIControlUtils {
 		var initialLightRange = 0.0
 		var initialAutoRange = 0.0
 		val weaponSets = starshipWeaponSets.filter{ !accountedFor.contains(it.first) }
-			.sortedBy { it.second.minOf{weapon -> weapon.balancing.range} }
+			.sortedBy { it.second.minOf{weapon -> weapon.balancing.projectile.range} }
 		for (weaponSet in weaponSets) {
 			if (weaponSet.second.all { it is AutoWeaponSubsystem }) {// this is an auto set
 				if (weaponSet.second.any { it is HeavyWeaponSubsystem }) {// this is an auto heavy set
 					val heavyWeaponRange = weaponSet.second.filter { it is HeavyWeaponSubsystem }
-						.minOf { weapon -> weapon.balancing.range } + fudgeFactor
+						.minOf { weapon -> weapon.balancing.projectile.range } + fudgeFactor
 					controller.addAutoSet(weaponSet.first,initialHeavyAutoRange,heavyWeaponRange)
 					initialHeavyAutoRange = heavyWeaponRange
 					accountedFor.add(weaponSet.first)
 					continue
 				}
-				val lightWeaponRange = weaponSet.second.minOf { weapon -> weapon.balancing.range } + fudgeFactor
+				val lightWeaponRange = weaponSet.second.minOf { weapon -> weapon.balancing.projectile.range } + fudgeFactor
 				controller.addAutoSet(weaponSet.first,initialAutoRange,lightWeaponRange)
 				accountedFor.add(weaponSet.first)
 				continue
 			}
-			val lightWeaponRange = weaponSet.second.minOf { weapon -> weapon.balancing.range } + fudgeFactor
+			val lightWeaponRange = weaponSet.second.minOf { weapon -> weapon.balancing.projectile.range } + fudgeFactor
 			controller.addManualSet(weaponSet.first,initialLightRange,lightWeaponRange)
 			initialLightRange = lightWeaponRange
 			accountedFor.add(weaponSet.first)
@@ -304,7 +309,7 @@ object AIControlUtils {
 		TorpedoWeaponSubsystem::class to 4,
 	)
 
-	private fun weaponSetFilter(weaponsets : HashMultimap<String, WeaponSubsystem>, predicate : (Set<WeaponSubsystem> )-> Boolean) {
+	private fun weaponSetFilter(weaponsets : HashMultimap<String, WeaponSubsystem<*>>, predicate : (Set<WeaponSubsystem<*>> )-> Boolean) {
 
 	}
 }

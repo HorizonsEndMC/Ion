@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.destruction
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.destruction.RemoveBlockSink.Companion.BlockWrapper.CustomBlockWrapper
 import net.horizonsend.ion.server.features.starship.destruction.RemoveBlockSink.Companion.BlockWrapper.MaterialWrapper
@@ -75,16 +75,16 @@ abstract class SinkProvider(
 					MaterialWrapper(Material.WAXED_EXPOSED_COPPER) to Pair(0.25, Always),
 					MaterialWrapper(Material.WAXED_WEATHERED_COPPER) to Pair(0.25, Always),
 					MaterialWrapper(Material.WAXED_OXIDIZED_COPPER) to Pair(0.25, Always),
-					CustomBlockWrapper(CustomBlocks.TITANIUM_BLOCK) to Pair(0.25, Always),
-					CustomBlockWrapper(CustomBlocks.ALUMINUM_BLOCK) to Pair(0.25, Always),
-					CustomBlockWrapper(CustomBlocks.URANIUM_BLOCK) to Pair(0.25, Always),
-					CustomBlockWrapper(CustomBlocks.ENRICHED_URANIUM_BLOCK) to Pair(1.0, Always),
-					CustomBlockWrapper(CustomBlocks.NETHERITE_CASING) to Pair(1.0, Always),
-					CustomBlockWrapper(CustomBlocks.CHETHERITE_BLOCK) to Pair(1.0, Always),
-					CustomBlockWrapper(CustomBlocks.STEEL_BLOCK) to Pair(1.0, Always),
-					CustomBlockWrapper(CustomBlocks.BARGE_REACTOR_CORE) to Pair(1.0, Always),
-					CustomBlockWrapper(CustomBlocks.CRUISER_REACTOR_CORE) to Pair(1.0, Always),
-					CustomBlockWrapper(CustomBlocks.BATTLECRUISER_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.TITANIUM_BLOCK) to Pair(0.25, Always),
+					CustomBlockWrapper(CustomBlockKeys.ALUMINUM_BLOCK) to Pair(0.25, Always),
+					CustomBlockWrapper(CustomBlockKeys.URANIUM_BLOCK) to Pair(0.25, Always),
+					CustomBlockWrapper(CustomBlockKeys.ENRICHED_URANIUM_BLOCK) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.NETHERITE_CASING) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.CHETHERITE_BLOCK) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.STEEL_BLOCK) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.BARGE_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.CRUISER_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.BATTLECRUISER_REACTOR_CORE) to Pair(1.0, Always),
 				))
 			}
 		},
@@ -112,16 +112,16 @@ abstract class SinkProvider(
 					MaterialWrapper(Material.WAXED_EXPOSED_COPPER) to Pair(1.0, IfPlayerSink),
 					MaterialWrapper(Material.WAXED_WEATHERED_COPPER) to Pair(1.0, IfPlayerSink),
 					MaterialWrapper(Material.WAXED_OXIDIZED_COPPER) to Pair(1.0, IfPlayerSink),
-					CustomBlockWrapper(CustomBlocks.TITANIUM_BLOCK) to Pair(1.0, IfPlayerSink),
-					CustomBlockWrapper(CustomBlocks.ALUMINUM_BLOCK) to Pair(1.0, IfPlayerSink),
-					CustomBlockWrapper(CustomBlocks.URANIUM_BLOCK) to Pair(1.0, IfPlayerSink),
-					CustomBlockWrapper(CustomBlocks.ENRICHED_URANIUM_BLOCK) to Pair(1.0, IfPlayerSink),
-					CustomBlockWrapper(CustomBlocks.NETHERITE_CASING) to Pair(1.0, IfPlayerSink),
-					CustomBlockWrapper(CustomBlocks.CHETHERITE_BLOCK) to Pair(1.0, IfPlayerSink),
-					CustomBlockWrapper(CustomBlocks.STEEL_BLOCK) to Pair(1.0, IfPlayerSink),
-					CustomBlockWrapper(CustomBlocks.BARGE_REACTOR_CORE) to Pair(1.0, Always),
-					CustomBlockWrapper(CustomBlocks.CRUISER_REACTOR_CORE) to Pair(1.0, Always),
-					CustomBlockWrapper(CustomBlocks.BATTLECRUISER_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.TITANIUM_BLOCK) to Pair(1.0, IfPlayerSink),
+					CustomBlockWrapper(CustomBlockKeys.ALUMINUM_BLOCK) to Pair(1.0, IfPlayerSink),
+					CustomBlockWrapper(CustomBlockKeys.URANIUM_BLOCK) to Pair(1.0, IfPlayerSink),
+					CustomBlockWrapper(CustomBlockKeys.ENRICHED_URANIUM_BLOCK) to Pair(1.0, IfPlayerSink),
+					CustomBlockWrapper(CustomBlockKeys.NETHERITE_CASING) to Pair(1.0, IfPlayerSink),
+					CustomBlockWrapper(CustomBlockKeys.CHETHERITE_BLOCK) to Pair(1.0, IfPlayerSink),
+					CustomBlockWrapper(CustomBlockKeys.STEEL_BLOCK) to Pair(1.0, IfPlayerSink),
+					CustomBlockWrapper(CustomBlockKeys.BARGE_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.CRUISER_REACTOR_CORE) to Pair(1.0, Always),
+					CustomBlockWrapper(CustomBlockKeys.BATTLECRUISER_REACTOR_CORE) to Pair(1.0, Always),
 				))
 			}
 		};

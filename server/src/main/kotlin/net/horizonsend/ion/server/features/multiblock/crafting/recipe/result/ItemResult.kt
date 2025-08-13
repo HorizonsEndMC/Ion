@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.recipe.result
 
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.multiblock.crafting.input.ItemResultEnviornment
 import org.bukkit.Material
@@ -28,7 +29,7 @@ interface ItemResult<E: ItemResultEnviornment> : RecipeResult<E> {
 
 	companion object {
 		fun <E: ItemResultEnviornment> simpleResult(itemStack: ItemStack): SimpleResult<E> = SimpleResult(itemStack)
-		fun <E: ItemResultEnviornment> simpleResult(customItem: CustomItem): SimpleResult<E> = SimpleResult(customItem.constructItemStack())
+		fun <E: ItemResultEnviornment> simpleResult(customItem: IonRegistryKey<CustomItem, out CustomItem>): SimpleResult<E> = SimpleResult(customItem.getValue().constructItemStack())
 		fun <E: ItemResultEnviornment> simpleResult(material: Material): SimpleResult<E> = SimpleResult(ItemStack(material, 1))
 	}
 

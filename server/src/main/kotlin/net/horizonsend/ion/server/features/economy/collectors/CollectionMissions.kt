@@ -15,13 +15,13 @@ import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.miscellaneous.randomRange
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.stringItemCache
 import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.sharedDataFolder
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.cache.trade.EcoStations
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.gui.invui.misc.util.input.ItemMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton

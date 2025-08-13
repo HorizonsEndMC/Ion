@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon
 
+import net.horizonsend.ion.server.configuration.starship.StarshipCannonWeaponBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
@@ -8,6 +9,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
+import java.util.function.Supplier
 import kotlin.math.abs
 import kotlin.math.atan
 import kotlin.math.atan2
@@ -17,11 +19,27 @@ import kotlin.math.sign
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, override var face: BlockFace) :
-	WeaponSubsystem(starship, pos), ManualWeaponSubsystem, DirectionalSubsystem {
+abstract class CannonWeaponSubsystem<T : StarshipCannonWeaponBalancing<*>>(
+	starship: ActiveStarship,
+	pos: Vec3i,
+	override var face: BlockFace,
+	balancingSupplier: Supplier<T>
+) : WeaponSubsystem<T>(starship, pos, balancingSupplier), ManualWeaponSubsystem, DirectionalSubsystem {
+
+	/**  The length of the cannon's multiblock. Used for placing the shot's origin. */
 	protected abstract val length: Int
-	protected abstract val convergeDist: Double
-	protected abstract val extraDistance: Int
+
+	/** Controls the distance at which the firing arcs converge on a point. **/
+	protected open val convergeDist: Double get() = balancing.convergeDistance
+
+	/** Extra distance between the multiblock and the fire point to spawn the projectile. */
+	protected open val extraDistance: Int get() = balancing.projectileSpawnDistance
+
+	/** Controls the aiming cone. **/
+	protected open val angleRadiansHorizontal: Double  get() = balancing.angleRadiansHorizontal
+
+	/** Controls the aiming cone. **/
+	protected open val angleRadiansVertical: Double  get() = balancing.angleRadiansVertical
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
 		return this.face == face
@@ -38,9 +56,6 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 		return Vec3i(pos.x + face.modX * distance, pos.y + face.modY * distance, pos.z + face.modZ * distance)
 	}
 
-	protected abstract val angleRadiansHorizontal: Double
-	protected abstract val angleRadiansVertical: Double
-
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
 		val fireDir = target.clone()
 			.add(dir.clone().normalize().multiply(convergeDist))
@@ -50,9 +65,11 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 		var pitch = atan(-fireDir.y / sqrt(fireDir.x.pow(2) + fireDir.z.pow(2)))
 		val baseYaw = atan2(-face.modX.toDouble(), face.modZ.toDouble())
 		val yawDiff = atan2(sin(yaw - baseYaw), cos(yaw - baseYaw))
+
 		if (abs(yawDiff) > angleRadiansHorizontal) {
 			yaw = baseYaw + sign(yawDiff) * angleRadiansHorizontal
 		}
+
 		pitch = pitch.coerceIn(-angleRadiansVertical, angleRadiansVertical)
 
 		val xz = cos(pitch)
@@ -71,10 +88,12 @@ abstract class CannonWeaponSubsystem(starship: ActiveStarship, pos: Vec3i, overr
 			val x = pos.x + face.modX * i
 			val y = pos.y + face.modY * i
 			val z = pos.z + face.modZ * i
+
 			if (starship.world.getBlockAt(x, y, z).type.isAir) {
 				return false
 			}
 		}
+
 		return true
 	}
 

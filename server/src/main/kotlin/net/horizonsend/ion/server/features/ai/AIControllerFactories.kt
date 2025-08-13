@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.ai
 
 import SteeringModule
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.ai.module.combat.AimingModule
 import net.horizonsend.ion.server.features.ai.module.combat.CombatModule

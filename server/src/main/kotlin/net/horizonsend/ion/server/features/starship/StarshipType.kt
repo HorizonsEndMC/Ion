@@ -3,8 +3,7 @@ package net.horizonsend.ion.server.features.starship
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.configuration.StarshipBalancing
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon
 import net.horizonsend.ion.server.features.starship.StarshipType.entries
@@ -57,7 +56,7 @@ enum class StarshipType(
 
 	val sinkProvider: SinkProvider.SinkProviders,
 
-	val balancingSupplier: Supplier<StarshipBalancing>
+	private val balancingSupplier: Supplier<StarshipTypeBalancing>
 ) {
 	SPEEDER(
 		displayName = "Speeder",
@@ -74,7 +73,7 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.1",
 		powerOverrider = 0.0,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::speeder
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::speeder
 	),
 	AI_SPEEDER(
 		displayName = "Speeder",
@@ -92,7 +91,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.speeder",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::speeder
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::speeder
 	),
 	STARFIGHTER(
 		displayName = "Starfighter",
@@ -109,7 +108,7 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.1",
 		dynmapIcon = "starfighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::starfighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::starfighter
 	),
 	AI_STARFIGHTER(
 		displayName = "Starfighter",
@@ -128,7 +127,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.starfighter",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiStarfighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::starfighter
 	),
 	INTERCEPTOR(
 		displayName = "Interceptor",
@@ -146,7 +145,7 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.1",
 		dynmapIcon = "interceptor",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::interceptor
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::interceptor
 	),
 	AI_INTERCEPTOR(
 		displayName = "Interceptor",
@@ -182,7 +181,7 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.10",
 		dynmapIcon = "gunship",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::gunship
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::gunship
 	),
 	AI_GUNSHIP(
 		displayName = "Gunship",
@@ -201,7 +200,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.gunship",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiGunship
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::gunship
 	),
 	CORVETTE(
 		displayName = "Corvette",
@@ -220,7 +219,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::corvette
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::corvette
 	),
 	AI_CORVETTE(
 		displayName = "Corvette",
@@ -241,7 +240,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.corvette",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiCorvette
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::corvette
 	),
 	AI_CORVETTE_LOGISTIC(
 		displayName = "Logistic Corvette",
@@ -262,7 +261,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.corvette",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiCorvetteLogistic
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::corvette
 	),
 	FRIGATE(
 		displayName = "Frigate",
@@ -281,7 +280,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::frigate
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::frigate
 	),
 	AI_FRIGATE(
 		displayName = "Frigate",
@@ -302,7 +301,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.frigate",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiFrigate
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::frigate
 	),
 	DESTROYER(
 		displayName = "Destroyer",
@@ -321,7 +320,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::destroyer
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::destroyer
 	),
 	AI_DESTROYER(
 		displayName = "Destroyer",
@@ -342,7 +341,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.destroyer",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiDestroyer
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::destroyer
 	),
 	CRUISER(
 		displayName = "Cruiser",
@@ -352,7 +351,7 @@ enum class StarshipType(
 		minLevel = 70,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.5,
-		menuItemRaw = { CustomItemRegistry.STEEL_PLATE.constructItemStack() },
+		menuItemRaw = { net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STEEL_PLATE.getValue().constructItemStack() },
 		menuSubclasses = { listOf(AI_CRUISER) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#FFD700",
@@ -361,7 +360,7 @@ enum class StarshipType(
 		maxMiningLasers = 1,
 		miningLaserTier = 1,
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::cruiser,
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::cruiser,
 	),
 	AI_CRUISER(
 		displayName = "Cruiser",
@@ -382,17 +381,17 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.cruiser",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiCruiser
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::cruiser
 	),
 	BATTLECRUISER(
 		displayName = "Battlecruiser",
-		icon = SidebarIcon.BATTLESHIP_ICON.text,
+		icon = SidebarIcon.BATTLECRUISER_ICON.text,
 		minSize = 16000,
 		maxSize = 20000,
 		minLevel = 80,
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.0,
-		menuItemRaw = { CustomItemRegistry.STEEL_BLOCK.constructItemStack() },
+		menuItemRaw = { net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STEEL_BLOCK.getValue().constructItemStack() },
 		menuSubclasses = { listOf(AI_BATTLECRUISER) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#0c5ce8",
@@ -402,7 +401,7 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.80",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		requiredWorldFlags = setOf(WorldFlag.SPACE_WORLD),
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::battlecruiser
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::battlecruiser
 	),
 	AI_BATTLECRUISER(
 		displayName = "Battlecruiser",
@@ -423,7 +422,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.battlecruiser",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiBattlecruiser
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::battlecruiser
 	),
 	BATTLESHIP(
 		displayName = "Battleship",
@@ -433,13 +432,13 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.015,
 		crateLimitMultiplier = 0.5,
-		menuItemRaw = { CustomItemRegistry.STEEL_MODULE.constructItemStack() },
+		menuItemRaw = { net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STEEL_MODULE.getValue().constructItemStack() },
 		menuSubclasses = { listOf(AI_BATTLESHIP) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#0c1cff",
 		overridePermission = "ion.ships.override.battleship",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::battleship
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::battleship
 	),
 	AI_BATTLESHIP(
 		displayName = "Battleship",
@@ -457,7 +456,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.battleship",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiBattleship
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::battleship
 	),
 	DREADNOUGHT(
 		displayName = "Dreadnought",
@@ -467,13 +466,13 @@ enum class StarshipType(
 		minLevel = 1000,
 		containerPercent = 0.015,
 		crateLimitMultiplier = 0.5,
-		menuItemRaw = { CustomItemRegistry.STEEL_ASSEMBLY.constructItemStack() },
+		menuItemRaw = { net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.STEEL_ASSEMBLY.getValue().constructItemStack() },
 		menuSubclasses = { listOf(AI_DREADNOUGHT) },
 		typeCategory = TypeCategory.WAR_SHIP,
 		color = "#320385",
 		overridePermission = "ion.ships.override.dreadnought",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::dreadnought
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::dreadnought
 	),
 	AI_DREADNOUGHT(
 		displayName = "Dreadnought",
@@ -491,7 +490,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.dreadnought",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiDreadnought
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::dreadnought
 	),
 	TANK(
 		displayName = "Tank",
@@ -502,13 +501,13 @@ enum class StarshipType(
 		containerPercent = 0.025,
 		crateLimitMultiplier = 0.0,
 		concretePercent = 0.0,
-		menuItemRaw = { CustomItemRegistry.GAS_CANISTER_EMPTY.constructItemStack() },
+		menuItemRaw = { net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GAS_CANISTER_EMPTY.getValue().constructItemStack() },
 		typeCategory = TypeCategory.SPECIALTY,
 		color = "#ff8000",
 		overridePermission = "ion.ships.tank",
 		dynmapIcon = "starfighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::tank
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::tank
 	),
 	SHUTTLE(
 		displayName = "Shuttle",
@@ -529,7 +528,7 @@ enum class StarshipType(
 		miningLaserTier = 1,
 		dynmapIcon = "shuttle",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::shuttle
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::shuttle
 	),
 	AI_SHUTTLE(
 		displayName = "Shuttle",
@@ -551,7 +550,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.shuttle",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiShuttle
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::shuttle
 	),
 	TRANSPORT(
 		displayName = "Transport",
@@ -572,7 +571,7 @@ enum class StarshipType(
 		miningLaserTier = 2,
 		dynmapIcon = "transport",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::transport
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::transport
 	),
 	AI_TRANSPORT(
 		displayName = "Transport",
@@ -594,7 +593,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.transport",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiTransport
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::transport
 	),
 	LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
@@ -615,7 +614,7 @@ enum class StarshipType(
 		miningLaserTier = 2,
 		dynmapIcon = "light_freighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::lightFreighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::lightFreighter
 	),
 	AI_LIGHT_FREIGHTER(
 		displayName = "Light Freighter",
@@ -637,7 +636,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.light_freighter",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiLightFreighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::lightFreighter
 	),
 	MEDIUM_FREIGHTER(
 		displayName = "Medium Freighter",
@@ -657,7 +656,7 @@ enum class StarshipType(
 		dynmapIcon = "medium_freighter",
         overridePermission = "ion.ships.ai.medium_freighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::mediumFreighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::mediumFreighter
 	),
 	AI_MEDIUM_FREIGHTER(
 		displayName = "Medium Freighter",
@@ -700,7 +699,7 @@ enum class StarshipType(
 		miningLaserTier = 3,
 		dynmapIcon = "heavy_freighter",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::heavyFreighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::heavyFreighter
 	),
 	AI_HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",
@@ -722,7 +721,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.heavy_freighter",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiHeavyFreighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::heavyFreighter
 	),
 	BARGE(
 		displayName = "Barge",
@@ -743,7 +742,7 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.80",
 		sinkProvider = SinkProvider.SinkProviders.PLAYER,
 		requiredWorldFlags = setOf(WorldFlag.SPACE_WORLD),
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::barge
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::barge
 	),
 	AI_BARGE(
 		displayName = "Barge",
@@ -764,7 +763,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.ai.barge",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::barge
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::barge
 	),
 	PLATFORM(
 		displayName = "Platform",
@@ -780,7 +779,7 @@ enum class StarshipType(
 		overridePermission = "ion.ships.platform",
 		powerOverrider = 0.0,
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::platformBalancing
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::platform
 	),
 	UNIDENTIFIEDSHIP(
 		displayName = "UnidentifiedShip",
@@ -797,7 +796,7 @@ enum class StarshipType(
 		eventShip = true,
 		powerOverrider = 2.0,
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::eventShipBalancing
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::unidentified
 	),
 	AI_SHIP(
 		displayName = "AI Ship",
@@ -813,8 +812,10 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
         overridePermission = "ion.ships.aiship",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::eventShipBalancing
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::unidentified
 	);
+
+	val balancing get() = balancingSupplier.get()
 
 	val textColor = TextColor.fromHexString(color)!!
 

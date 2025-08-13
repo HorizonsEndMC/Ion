@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import com.google.common.collect.Multimap
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.StandardAmmoPressMultiblock
@@ -28,7 +28,6 @@ import net.horizonsend.ion.server.features.multiblock.type.farming.planter.Plant
 import net.horizonsend.ion.server.features.multiblock.type.fluid.CanisterVentMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.PipedGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
@@ -140,7 +139,6 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CthulhuBeamStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CthulhuBeamStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CthulhuBeamStarshipWeaponMultiblockTop
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.FireWaveWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.FlamethrowerStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.GazeStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.MiniPhaserStarshipWeaponMultiblock
@@ -293,17 +291,11 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(MiningLaserMultiblockTier4SideMirrored)
 
 		// Gas
-		registerMultiblock(PipedGasCollectorMultiblock)
 		registerMultiblock(CanisterGasCollectorMultiblock, "GasCollectorMultiblock")
 		registerMultiblock(CanisterGasCollectorMultiblock)
 		registerMultiblock(CanisterVentMultiblock, "VentMultiblock")
 		registerMultiblock(CanisterVentMultiblock)
 		registerMultiblock(GasPowerPlantMultiblock)
-
-//		registerMultiblock(ElectrolysisMultiblock)
-//		registerMultiblock(FluidTankSmall)
-//		registerMultiblock(FluidTankMedium)
-//		registerMultiblock(FluidTankLarge)
 
 		// Defenses
 		registerMultiblock(AreaShield5)
@@ -354,7 +346,6 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(CthulhuBeamStarshipWeaponMultiblockSide)
 		registerMultiblock(FlamethrowerStarshipWeaponMultiblock)
 		registerMultiblock(CapitalBeamStarshipWeaponMultiblock)
-		registerMultiblock(FireWaveWeaponMultiblock)
 		registerMultiblock(GazeStarshipWeaponMultiblock)
 		registerMultiblock(SkullThrowerStarshipWeaponMultiblock)
 
@@ -430,7 +421,7 @@ object MultiblockRegistration : IonServerComponent() {
 			if (multi.alternativeDetectionNames.isEmpty()) continue
 
 			for (altName in multi.alternativeDetectionNames) {
-				byDetectionName[multi.name].add(multi)
+				byDetectionName[altName].add(multi)
 			}
 		}
 	}

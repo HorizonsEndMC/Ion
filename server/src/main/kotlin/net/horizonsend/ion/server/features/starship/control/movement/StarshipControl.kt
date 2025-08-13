@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.movement
 
 import net.horizonsend.ion.common.utils.miscellaneous.d
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.StarshipType.BATTLECRUISER
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship

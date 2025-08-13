@@ -6,8 +6,8 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.common.utils.text.legacyAmpersand
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
@@ -287,7 +287,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 					continue
 				}
 
-				val customBlock = CustomBlocks.getByBlock(block)
+				val customBlock = block.customBlock
 				var drops = customBlock?.drops?.getDrops(null, false) ?: if (block.type == Material.SNOW_BLOCK) listOf() else block.drops
 
 				if (block.type.isShulkerBox) drops = listOf()

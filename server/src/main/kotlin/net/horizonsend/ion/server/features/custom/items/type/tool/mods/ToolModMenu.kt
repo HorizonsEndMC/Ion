@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.custom.items.type.tool.mods
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.component.ModManager
 import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI
 import net.horizonsend.ion.server.features.nations.gui.playerClicker
@@ -27,7 +27,7 @@ class ToolModMenu(
 	private val customItem: CustomItem,
 	private val modManager: ModManager
 ) : InteractableGUI(viewer) {
-	override val inventorySize = (ceil((modManager.getMods(itemStack).size + 1).toDouble() / 9.0) * 9).toInt()
+	override val inventorySize = (ceil((modManager.getModKeys(itemStack).size + 1).toDouble() / 9.0) * 9).toInt()
 	override val internalInventory: Inventory = IonServer.server.createInventory(this, inventorySize)
 
 	override fun getInventory(): Inventory = internalInventory
@@ -39,11 +39,11 @@ class ToolModMenu(
 	}
 
 	private fun populateMods() {
-		val mods = modManager.getMods(itemStack)
+		val mods = modManager.getModKeys(itemStack)
 
 		var index = 0
 		for (mod in mods) {
-			val modCustomItem = mod.modItem.get() ?: continue
+			val modCustomItem = mod.getValue().modItem?.getValue() ?: continue
 			internalInventory.setItem(index, modCustomItem.constructItemStack())
 
 			index++
@@ -55,16 +55,16 @@ class ToolModMenu(
 	}
 
 	private fun rebuildFromContents(contents: Collection<ItemStack?>) {
-		val existingMods = modManager.getMods(itemStack).toMutableList()
+		val existingMods = modManager.getModKeys(itemStack).toMutableList()
 
 		val nonItemMods = modManager
-			.getMods(itemStack)
-			.filter { it.modItem.get() == null }
+			.getModKeys(itemStack)
+			.filter { it.getValue().modItem?.getValue() == null }
 
 		val mods = contents
 			.mapNotNull { it?.customItem }
 			.filterIsInstance<ModificationItem>()
-			.mapTo(mutableSetOf()) { it.modification }
+			.mapTo(mutableSetOf()) { it.modKey }
 			.plus(nonItemMods)
 			.toTypedArray()
 
@@ -79,8 +79,8 @@ class ToolModMenu(
 		modManager.setMods(itemStack, customItem, mods)
 
 		// Handle the removal / addition of mods
-		existingMods.forEach { it.onRemove(itemStack) }
-		newMods.forEach { it.onAdd(itemStack) }
+		existingMods.forEach { it.getValue().onRemove(itemStack) }
+		newMods.forEach { it.getValue().onAdd(itemStack) }
 	}
 
 	/**
@@ -122,23 +122,23 @@ class ToolModMenu(
 			return false
 		}
 
-		val mod: ItemModification = customItem.modification
+		val mod: ItemModification = customItem.modKey.getValue()
 
 		if (!mod.applicationPredicates.any { predicate -> predicate.canApplyTo(this.customItem) }) {
 			player.userError("${mod.displayName.plainText()} cannot be used on this tool!")
 			return false
 		}
 
-		if (this.modManager.getMods(this.itemStack).size >= this.modManager.maxMods) {
+		if (this.modManager.getModKeys(this.itemStack).size >= this.modManager.maxMods) {
 			player.userError("Mod limit reached!")
 			return false
 		}
 
-		return this.modManager.getMods(this.itemStack).none { existingMod ->
-			val incompatible = existingMod.incompatibleWithMods.contains(mod::class)
+		return this.modManager.getModKeys(this.itemStack).none { existingMod ->
+			val incompatible = existingMod.getValue().incompatibleWithMods.contains(mod::class)
 
 			if (incompatible) {
-				player.userError("${mod.displayName.plainText()} is incompatible with ${existingMod.displayName.plainText()}!")
+				player.userError("${mod.displayName.plainText()} is incompatible with ${existingMod.getValue().displayName.plainText()}!")
 			}
 
 			// Already installed

@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.checklist
 
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.GAS_CANISTER_HYDROGEN
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GAS_CANISTER_HYDROGEN
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.AbstractMultiblockSubsystem
@@ -29,17 +29,17 @@ class FuelTankSubsystem(starship: ActiveStarship, sign: Sign, multiblock: FuelTa
 		if (inventory.isEmpty) return 0
 
 		val fuelCanisters = inventory.filter { item: ItemStack? ->
-			item?.customItem == GAS_CANISTER_HYDROGEN
+			item?.customItem?.key == GAS_CANISTER_HYDROGEN
 		}
 
 		if (fuelCanisters.isEmpty()) return 0
 
-		val byFuel = fuelCanisters.map { it to GAS_CANISTER_HYDROGEN.getFill(it) }.sortedBy { it.second }
+		val byFuel = fuelCanisters.map { it to GAS_CANISTER_HYDROGEN.getValue().getFill(it) }.sortedBy { it.second }
 
 		for ((itemStack, fuelAmount) in byFuel) {
 			val toRemove = min(remaining, fuelAmount)
 
-			GAS_CANISTER_HYDROGEN.setFill(itemStack, fuelAmount - toRemove)
+			GAS_CANISTER_HYDROGEN.getValue().setFill(itemStack, fuelAmount - toRemove)
 			remaining -= toRemove
 
 			if (remaining == 0) break

@@ -3,7 +3,8 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.debug
-import net.horizonsend.ion.server.configuration.StarshipSounds
+import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
@@ -13,6 +14,8 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
 import net.kyori.adventure.key.Key.key
@@ -35,40 +38,43 @@ import org.bukkit.util.Vector
 import java.util.Locale
 import kotlin.math.roundToInt
 
-abstract class SimpleProjectile(
-	starship: ActiveStarship?,
+abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
+	val source: ProjectileSource,
 	val name: Component,
-	var loc: Location,
-	var dir: Vector,
+
+	var location: Location,
+	var direction: Vector,
+
 	shooter: Damager,
-	private val damageType: DamageType,
-) : Projectile(starship, shooter) {
-	abstract val range: Double
-	abstract val speed: Double
-	abstract val starshipShieldDamageMultiplier: Double
-	abstract val areaShieldDamageMultiplier: Double
-	abstract val explosionPower: Float
-	open val volume: Int = 12
-	open val pitch: Float = 1f
-	abstract val soundName: String
-	abstract val nearSound: StarshipSounds.SoundInfo
-	abstract val farSound: StarshipSounds.SoundInfo
+	private val damageType: DamageType
+) : Projectile(shooter) {
+	protected open val balancing: B get() = source.getBalancing(this::class)
+
+	val range: Double get() = balancing.range
+	open val speed: Double get() = balancing.speed
+
+	open val starshipShieldDamageMultiplier: Double get() = balancing.starshipShieldDamageMultiplier
+	val areaShieldDamageMultiplier: Double get() = balancing.areaShieldDamageMultiplier
+	open val explosionPower: Float get() = balancing.explosionPower
+
 	protected var distance: Double = 0.0
 	protected var firedAtNanos: Long = -1
 	protected var lastTick: Long = -1
 	protected var delta: Double = 0.0
 	private var hasHit: Boolean = false
 
+	val nearSound: SoundInfo get() = balancing.fireSoundNear
+	val farSound: SoundInfo get() = balancing.fireSoundFar
+
 	override fun fire() {
 		firedAtNanos = System.nanoTime()
 		lastTick = firedAtNanos
 
 		super.fire()
-
-		playCustomSound(loc, nearSound, farSound)
+		playCustomSound(location, nearSound, farSound)
 	}
 
-	protected open fun playCustomSound(loc: Location, nearSound: StarshipSounds.SoundInfo, farSound: StarshipSounds.SoundInfo) {
+	protected open fun playCustomSound(loc: Location, nearSound: SoundInfo, farSound: SoundInfo) {
 		toPlayersInRadius(loc, range * 20.0) { player ->
 			playDirectionalStarshipSound(loc, player, nearSound, farSound, range)
 		}
@@ -77,15 +83,15 @@ abstract class SimpleProjectile(
 	override fun tick() {
 		delta = (System.nanoTime() - lastTick) / 1_000_000_000.0 // Convert to seconds
 
-		val predictedNewLoc = loc.clone().add(dir.clone().multiply(delta * speed))
+		val predictedNewLoc = location.clone().add(direction.clone().multiply(delta * speed))
 		if (!predictedNewLoc.isChunkLoaded) {
 			return onDespawn()
 		}
-		val result: RayTraceResult? = loc.world.rayTrace(loc, dir, delta * speed, FluidCollisionMode.NEVER, true, 0.1) { it.type != EntityType.ITEM_DISPLAY }
-		val newLoc = result?.hitPosition?.toLocation(loc.world) ?: predictedNewLoc
-		val travel = loc.distance(newLoc)
+		val result: RayTraceResult? = location.world.rayTrace(location, direction, delta * speed, FluidCollisionMode.NEVER, true, 0.1) { it.type != EntityType.ITEM_DISPLAY }
+		val newLoc = result?.hitPosition?.toLocation(location.world) ?: predictedNewLoc
+		val travel = location.distance(newLoc)
 
-		moveVisually(loc, newLoc, travel)
+		moveVisually(location, newLoc, travel)
 
 		var impacted = false
 
@@ -93,7 +99,7 @@ abstract class SimpleProjectile(
 			impacted = tryImpact(result, newLoc)
 		}
 
-		loc = newLoc
+		location = newLoc
 
 		distance += travel
 
@@ -116,7 +122,7 @@ abstract class SimpleProjectile(
 	protected open fun onDespawn() {}
 
 	protected fun tryImpact(result: RayTraceResult, newLoc: Location): Boolean {
-		if (loc.world.name.lowercase(Locale.getDefault()).contains("hyperspace", ignoreCase = true)) return false
+		if (location.world.name.lowercase(Locale.getDefault()).contains("hyperspace", ignoreCase = true)) return false
 		if (GracePeriod.isGracePeriod) return false
 
 		val block: Block? = result.hitBlock
@@ -126,12 +132,14 @@ abstract class SimpleProjectile(
 			return false
 		}
 
-		if (block != null && starship != null && starship.contains(block.x, block.y, block.z)) {
-			return false
-		}
+		if (source is StarshipProjectileSource) {
+			if (block != null && source.starship.contains(block.x, block.y, block.z)) {
+				return false
+			}
 
-		if (entity != null && starship != null && starship.isPassenger(entity.uniqueId)) {
-			return false
+			if (entity != null && source.starship.isPassenger(entity.uniqueId)) {
+				return false
+			}
 		}
 
 		impact(newLoc, block, entity)
@@ -151,7 +159,7 @@ abstract class SimpleProjectile(
 		val impactedBlastResist = CraftMagicNumbers.getBlock(block?.type ?: Material.STONE_BRICKS).explosionResistance
 		val fraction = 1.0 + (armorBlastResist - impactedBlastResist) / 20.0
 
-		starship?.debug(
+		source.debug(
 			"ship dmg: \n\n" +
 			"armorBlastResist = $armorBlastResist, \n" +
 			"impactedBlastResist = $impactedBlastResist, \n" +
@@ -230,7 +238,7 @@ abstract class SimpleProjectile(
 		val z = block.z
 
 		for (otherStarship in ActiveStarships.getInWorld(world)) {
-			if (otherStarship == starship || !otherStarship.contains(x, y, z)) continue
+			if (otherStarship == (source as? StarshipProjectileSource)?.starship || !otherStarship.contains(x, y, z)) continue
 
 			// plays hitmarker sound if the shot did hull damage (assumes the hit block was part of a starship)
 			if (explosionOccurred) {

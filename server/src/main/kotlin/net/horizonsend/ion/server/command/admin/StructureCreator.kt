@@ -5,7 +5,8 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.STANDARD_EXTRACTOR_TYPE
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -98,15 +99,15 @@ object StructureCreator : SLCommand() {
 	}
 
 	private fun getBlockRequirement(data: BlockData, forwards: BlockFace): String {
-		val customBlock = CustomBlocks.getByBlockData(data)
-		if (customBlock != null) return when (customBlock) {
-			CustomBlocks.TITANIUM_BLOCK -> ".titaniumBlock()"
-			CustomBlocks.ALUMINUM_BLOCK -> ".aluminumBlock()"
-			CustomBlocks.CHETHERITE_BLOCK -> ".chetheriteBlock()"
-			CustomBlocks.STEEL_BLOCK -> ".steelBlock()"
-			CustomBlocks.ENRICHED_URANIUM_BLOCK -> ".enrichedUraniumBlock()"
-			CustomBlocks.NETHERITE_CASING -> ".netheriteCasing()"
-			else -> ".customBlock(CustomBlocks.${customBlock.identifier})"
+		val registryKey = data.customBlock?.key
+		if (registryKey != null) return when (registryKey) {
+			CustomBlockKeys.TITANIUM_BLOCK -> ".titaniumBlock()"
+			CustomBlockKeys.ALUMINUM_BLOCK -> ".aluminumBlock()"
+			CustomBlockKeys.CHETHERITE_BLOCK -> ".chetheriteBlock()"
+			CustomBlockKeys.STEEL_BLOCK -> ".steelBlock()"
+			CustomBlockKeys.ENRICHED_URANIUM_BLOCK -> ".enrichedUraniumBlock()"
+			CustomBlockKeys.NETHERITE_CASING -> ".netheriteCasing()"
+			else -> ".customBlock(CustomBlocks.${registryKey.key})"
 		}
 
 		return when {

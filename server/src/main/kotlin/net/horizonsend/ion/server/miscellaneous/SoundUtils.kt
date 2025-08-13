@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous
 
-import net.horizonsend.ion.server.configuration.StarshipSounds
+import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
@@ -35,7 +35,7 @@ fun playSoundInRadius(origin: Location, radius: Double, sound: Sound) {
     }
 }
 
-fun playDirectionalStarshipSound(origin: Location, player: Player, nearSound: StarshipSounds.SoundInfo?, farSound: StarshipSounds.SoundInfo?, cutoff: Double) {
+fun playDirectionalStarshipSound(origin: Location, player: Player, nearSound: SoundInfo?, farSound: SoundInfo?, cutoff: Double) {
     val distance = player.location.distance(origin)
     val dir = Vector(origin.x - player.location.x, origin.y - player.location.y, origin.z - player.location.z)
     val offsetDistance = min(distance, 16.0)

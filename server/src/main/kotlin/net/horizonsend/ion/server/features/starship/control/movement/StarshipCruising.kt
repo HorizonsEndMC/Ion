@@ -9,10 +9,9 @@ import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.colors.Colors
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSettingsCommand
-import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType.PLATFORM
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -26,6 +25,7 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipStart
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipStopCruisingEvent
 import net.horizonsend.ion.server.features.starship.hyperspace.Hyperspace
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
+import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
@@ -246,7 +246,7 @@ object StarshipCruising : IonServerComponent() {
 					if (tick >= length) cancel()
 					if (length != 0) {
 						val startCruiseSound =
-							starship.data.starshipType.actualType.balancingSupplier.get().sounds.startCruise.sound
+							starship.data.starshipType.actualType.balancing.shipSounds.startCruise.sound
 						playSoundInRadius(passenger.location, 1.0, startCruiseSound)
 						tick += 1
 					} else cancel()
@@ -294,7 +294,7 @@ object StarshipCruising : IonServerComponent() {
 					if (tick >= length) cancel()
 					if (length != 0) {
 						val stopCruiseSound =
-							starship.data.starshipType.actualType.balancingSupplier.get().sounds.stopCruise.sound
+							starship.data.starshipType.actualType.balancing.shipSounds.stopCruise.sound
 						playSoundInRadius(passenger.location, 1.0, stopCruiseSound)
 						tick += 1
 					} else cancel()

@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.type.tool
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.Unbreakable
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
@@ -14,8 +15,8 @@ import org.bukkit.Material
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 
-abstract class PowerTool(identifier: String, displayName: Component, private val modLimit: Int, private val basePowerCapacity: Int, val model: String) : CustomItem(
-	identifier,
+abstract class PowerTool(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Component, private val modLimit: Int, private val basePowerCapacity: Int, val model: String) : CustomItem(
+	key,
 	displayName,
 	ItemFactory
 		.builder()

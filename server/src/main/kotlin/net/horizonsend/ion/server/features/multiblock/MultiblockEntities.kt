@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import com.destroystokyo.paper.event.server.ServerTickEndEvent
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity

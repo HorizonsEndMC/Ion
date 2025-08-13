@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.fleet
 
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience

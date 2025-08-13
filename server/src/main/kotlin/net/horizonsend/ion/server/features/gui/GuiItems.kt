@@ -33,7 +33,7 @@ import xyz.xenondevs.invui.item.impl.SimpleItem
 import xyz.xenondevs.invui.item.impl.controlitem.ControlItem
 import xyz.xenondevs.invui.item.impl.controlitem.PageItem
 import xyz.xenondevs.invui.item.impl.controlitem.ScrollItem
-import java.util.*
+import java.util.UUID
 
 @Suppress("UnstableApiUsage")
 object GuiItems {

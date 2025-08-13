@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.starship.hyperspace
 
 import net.horizonsend.ion.common.utils.text.createHtmlLink
 import net.horizonsend.ion.common.utils.text.wrapStyle
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.isDynmapEnabled
 import net.horizonsend.ion.server.miscellaneous.utils.markerAPI
 import net.horizonsend.ion.server.miscellaneous.utils.registerIcon

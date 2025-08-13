@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.gui.custom.starship.StarshipComputerM
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
@@ -29,7 +30,7 @@ class ChangeTypeButton(val main: StarshipComputerMenu) : AbstractItem() {
 		ItemStack(Material.GHAST_TEAR)
 			.updateDisplayName(text("Change Ship Class").itemName)
 			.updateLore(listOf(
-				ofChildren(text("Current type: ", GRAY), main.data.starshipType.actualType.displayNameComponent).itemName,
+				ofChildren(text("Current type: ", GRAY), main.data.starshipType.actualType.displayNameComponent).itemLore,
 				Component.empty(),
 				text("Different starship types", GRAY).itemName,
 				text("support different block", GRAY).itemName,

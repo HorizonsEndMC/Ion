@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.transport
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.blocks.filter.CustomFilterBlock
 import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlockEvent
 import net.horizonsend.ion.server.features.starship.event.build.StarshipPlaceBlockEvent
@@ -154,7 +154,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 	private fun ensureFilter(world: World, x: Int, y: Int, z: Int) = Tasks.sync {
 		val data = getBlockDataSafe(world, x, y, z) ?: return@sync
-		val customBlock = CustomBlocks.getByBlockData(data)
+		val customBlock = data.customBlock
 
 		if (customBlock is CustomFilterBlock<*, *>) {
 			if (!isFilter(world, x, y, z)) {

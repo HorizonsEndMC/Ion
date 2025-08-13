@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.signs
 
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player

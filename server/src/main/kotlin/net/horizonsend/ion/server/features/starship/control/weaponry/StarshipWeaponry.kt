@@ -1,14 +1,15 @@
 package net.horizonsend.ion.server.features.starship.control.weaponry
 
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugBanner
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.ManualQueuedShot
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.fireQueuedShots
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
@@ -56,7 +57,7 @@ object StarshipWeaponry : IonServerComponent() {
 		val fireTask = {
 			val queuedShots = queueShots(shooter, weapons, leftClick, facing, dir, target, manual)
 			starship.debug("Queued shots: ${queuedShots.joinToString { it.weapon.name }}")
-			StarshipWeapons.fireQueuedShots(queuedShots, starship)
+			fireQueuedShots(queuedShots, starship)
 		}
 
 		if (!leftClick) {
@@ -118,18 +119,18 @@ object StarshipWeaponry : IonServerComponent() {
 
 	private fun queueShots(
         shooter: Damager,
-        weapons: List<WeaponSubsystem>,
+        weapons: List<WeaponSubsystem<*>>,
         leftClick: Boolean,
         facing: BlockFace,
         dir: Vector,
         target: Vector,
 		manual : Boolean,
-	): LinkedList<StarshipWeapons.ManualQueuedShot> {
-		val queuedShots = LinkedList<StarshipWeapons.ManualQueuedShot>()
+	): LinkedList<ManualQueuedShot> {
+		val queuedShots = LinkedList<ManualQueuedShot>()
 
 		shooter.starship?.debugBanner("Queuing shots")
 
-		for (weapon: WeaponSubsystem in weapons) {
+		for (weapon: WeaponSubsystem<*> in weapons) {
 			shooter.starship?.debug("Weapon: ${weapon.name}")
 
 			if (weapon !is ManualWeaponSubsystem) {
@@ -169,7 +170,7 @@ object StarshipWeaponry : IonServerComponent() {
 
 			val targetedDir: Vector = weapon.getAdjustedDir(dir, target)
 
-			if (weapon is TurretWeaponSubsystem && !weapon.ensureOriented(targetedDir)) {
+			if (weapon is TurretWeaponSubsystem<*, *> && !weapon.ensureOriented(targetedDir)) {
 				shooter.starship?.debug("Continue, turret not oriented properly")
 				continue
 			}
@@ -179,7 +180,7 @@ object StarshipWeaponry : IonServerComponent() {
 				continue
 			}
 
-			queuedShots.add(StarshipWeapons.ManualQueuedShot(weapon, shooter, targetedDir, target))
+			queuedShots.add(ManualQueuedShot(weapon, shooter, targetedDir, target))
 		}
 
 		shooter.debugBanner("Queuing shots end")

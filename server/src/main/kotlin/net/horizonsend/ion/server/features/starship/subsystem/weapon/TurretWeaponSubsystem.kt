@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon
 
+import net.horizonsend.ion.server.configuration.starship.StarshipParticleProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTurretWeaponBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -11,16 +13,19 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
+import java.util.function.Supplier
 
-abstract class TurretWeaponSubsystem(
+abstract class TurretWeaponSubsystem<T : StarshipTurretWeaponBalancing<Z>, Z : StarshipParticleProjectileBalancing>(
     ship: ActiveStarship,
     pos: Vec3i,
-    override var face: BlockFace
-) : WeaponSubsystem(ship, pos), DirectionalSubsystem, ManualWeaponSubsystem {
-	private fun getSign() = starship.world.getBlockAtKey(pos.toBlockKey()).getState(false) as? Sign
+    override var face: BlockFace,
+	balancingSupplier: Supplier<T>
+) : WeaponSubsystem<T>(ship, pos, balancingSupplier), DirectionalSubsystem, ManualWeaponSubsystem {
+	private fun getSign() = starship.world.getBlockAt(pos.x, pos.y, pos.z).getState(false) as? Sign
 
-	protected abstract val multiblock: TurretMultiblock
-	protected abstract val inaccuracyRadians: Double
+	protected open val inaccuracyRadians: Double get() = balancing.inaccuracyRadians
+
+	protected abstract val multiblock: TurretMultiblock<Z>
 
 	override fun isIntact(): Boolean {
 		val sign = getSign() ?: return false

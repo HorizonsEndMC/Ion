@@ -18,13 +18,13 @@ import java.util.concurrent.ThreadLocalRandom
 
 object StarshipWeapons {
 	interface QueuedShot {
-		val weapon: WeaponSubsystem
+		val weapon: WeaponSubsystem<*>
 
 		fun shoot()
 	}
 
 	data class ManualQueuedShot(
-        override val weapon: WeaponSubsystem,
+        override val weapon: WeaponSubsystem<*>,
         val shooter: Damager,
         val direction: Vector,
         val target: Vector
@@ -37,7 +37,7 @@ object StarshipWeapons {
 	}
 
 	data class AutoQueuedShot(
-		override val weapon: WeaponSubsystem,
+		override val weapon: WeaponSubsystem<*>,
 		val target: AutoTurretTargeting.AutoTurretTarget<*>,
 		val dir: Vector,
 	) : QueuedShot {
@@ -87,7 +87,7 @@ object StarshipWeapons {
 			boostPower.set(output)
 		}
 
-		val firedCounts = HashMultimap.create<String, WeaponSubsystem>()
+		val firedCounts = HashMultimap.create<String, WeaponSubsystem<*>>()
 
 		for (shot in queuedShots.shuffled(ThreadLocalRandom.current())) {
 			if (shot.weapon.balancing.applyCooldownToAll) {
@@ -131,7 +131,7 @@ object StarshipWeapons {
 	}
 
 	private fun resourcesUnavailable(
-		weapon: WeaponSubsystem,
+		weapon: WeaponSubsystem<*>,
 		ship: ActiveStarship,
 		boostPower: AtomicDouble
 	): Boolean {
@@ -154,7 +154,7 @@ object StarshipWeapons {
 	}
 
 	private fun consumeResources(
-		weapon: WeaponSubsystem,
+		weapon: WeaponSubsystem<*>,
 		boostPower: AtomicDouble,
 		ship: ActiveStarship
 	) {
@@ -165,19 +165,19 @@ object StarshipWeapons {
 		}
 	}
 
-	private fun isPowerAvailable(weapon: WeaponSubsystem, boostPower: AtomicDouble): Boolean {
+	private fun isPowerAvailable(weapon: WeaponSubsystem<*>, boostPower: AtomicDouble): Boolean {
 		val reactor = weapon.starship.reactor
-		val powerUsage = weapon.powerUsage.toDouble()
+		val powerUsage = weapon.firePowerConsumption.toDouble()
 		return when (weapon) {
 			is HeavyWeaponSubsystem -> boostPower.get() >= powerUsage
 			else -> reactor.weaponCapacitor.isAvailable(powerUsage)
 		}
 	}
 
-	private fun tryConsumePower(weapon: WeaponSubsystem, boostPower: AtomicDouble): Boolean {
+	private fun tryConsumePower(weapon: WeaponSubsystem<*>, boostPower: AtomicDouble): Boolean {
 		val reactor = weapon.starship.reactor
 
-		val powerUsage = weapon.powerUsage.toDouble()
+		val powerUsage = weapon.firePowerConsumption.toDouble()
 
 		if (weapon is HeavyWeaponSubsystem) {
 			if (boostPower.get() < powerUsage) {

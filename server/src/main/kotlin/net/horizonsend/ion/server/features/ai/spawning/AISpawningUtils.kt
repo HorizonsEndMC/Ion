@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.Controll
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
 import net.horizonsend.ion.server.features.starship.modules.AISinkMessageFactory
+import net.horizonsend.ion.server.features.starship.subsystem.balancing.AdditionalOverridesManager
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -102,6 +103,11 @@ fun createShipFromTemplate(
 		template.miniMessageName + suffix,
 		createController
 	) { starship ->
+
+		if (template.balancingOverrides.isNotEmpty()) {
+			starship.balancingManager = AdditionalOverridesManager(starship.type, template.balancingOverrides)
+		}
+
 		callback(starship)
 	}
 }

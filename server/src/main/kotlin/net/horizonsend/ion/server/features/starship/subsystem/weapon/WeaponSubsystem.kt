@@ -1,28 +1,35 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.BalancingSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.util.Vector
-import java.util.concurrent.TimeUnit
+import java.util.function.Supplier
 
-abstract class WeaponSubsystem(
+abstract class WeaponSubsystem<T: StarshipWeaponBalancing<*>>(
 	starship: ActiveStarship,
-	pos: Vec3i
-) : StarshipSubsystem(starship, pos), BalancingSubsystem<StarshipWeapons.StarshipWeapon> {
+	pos: Vec3i,
+	val balancingSupplier: Supplier<T>
+) : StarshipSubsystem(starship, pos) {
 	val name = this.javaClass.simpleName.removeSuffix("WeaponSubsystem")
-	open var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250L)
 	var lastFire: Long = System.nanoTime()
-	abstract val powerUsage: Int
+
+	/** Balancing values for this subsystem, and projectile **/
+	val balancing get() = balancingSupplier.get()
+
+	/** Cooldown between firing shots of this weapon **/
+	open val fireCooldownNanos: Long get() = balancing.fireCooldownNanos
+
+	/** The power consumption per shot (from the weapon capacitor) **/
+	open val firePowerConsumption: Int get() = balancing.firePowerConsumption
 
 	fun isCooledDown(): Boolean {
 		return System.nanoTime() - lastFire >= fireCooldownNanos
 	}
 
-	open fun getMaxPerShot(): Int? = null
+	open fun getMaxPerShot(): Int? = balancing.maxPerShot
 
 	abstract fun getAdjustedDir(dir: Vector, target: Vector): Vector
 
@@ -34,11 +41,11 @@ abstract class WeaponSubsystem(
 
 	fun canCreateSubsystem(): Boolean {
 		if (starship.type.eventShip) return true
-		if (!balancing.canFire) return false
-		return starship.initialBlockCount in balancing.minBlockCount..balancing.maxBlockCount
+		if (!balancing.fireRestrictions.canFire && !starship.type.eventShip) return false
+		return starship.initialBlockCount in balancing.fireRestrictions.minBlockCount..balancing.fireRestrictions.maxBlockCount
 	}
 
-	open fun isForwardOnly(): Boolean = false
+	open fun isForwardOnly(): Boolean = balancing.isForwardOnly
 
 	fun postFire() {
 		lastFire = System.nanoTime()

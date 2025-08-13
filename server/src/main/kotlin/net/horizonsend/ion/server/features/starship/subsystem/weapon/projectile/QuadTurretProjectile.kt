@@ -1,9 +1,8 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.configuration.StarshipSounds
-import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.configuration.starship.QuadTurretBalancing
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
@@ -12,33 +11,21 @@ import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
 
 class QuadTurretProjectile(
-	ship: ActiveStarship?,
+	source: ProjectileSource,
 	name: Component,
 	loc: Location,
 	dir: Vector,
 	override val speed: Double,
 	override val color: Color,
-	override val range: Double,
-	override val particleThickness: Double,
-	override val explosionPower: Float,
-	override val starshipShieldDamageMultiplier: Double,
-	override val areaShieldDamageMultiplier: Double,
-	override val soundName: String,
-	override val balancing: StarshipWeapons.ProjectileBalancing,
-	override val nearSound: StarshipSounds.SoundInfo,
-	override val farSound: StarshipSounds.SoundInfo,
 	shooter: Damager
-
-): LaserProjectile(ship, name, loc, dir, shooter, DamageType.GENERIC) {
-
-	override val volume: Int = (range / 16).toInt()
+): LaserProjectile<QuadTurretBalancing.QuadTurretProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 
 		val particle1 = Particle.GUST
 		val particle2 = Particle.DUST
 		val dustOptions = Particle.DustOptions(color, particleThickness.toFloat() * 3f)
-		loc.world.spawnParticle(particle1, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, null, force)
-		loc.world.spawnParticle(particle2, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
+		location.world.spawnParticle(particle1, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, null, force)
+		location.world.spawnParticle(particle2, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
 	}
 }
