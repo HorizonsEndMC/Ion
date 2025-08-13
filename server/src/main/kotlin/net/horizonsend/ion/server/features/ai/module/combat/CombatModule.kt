@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.ai.module.combat
 
 import net.horizonsend.ion.server.command.admin.debug
-import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
+import net.horizonsend.ion.server.features.ai.configuration.WeaponSet
 import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
@@ -68,7 +68,7 @@ abstract class CombatModule<T>(
 		val distance = (target.getLocation().toVector().distance(origin.toVector()) - fudgeFactor).coerceAtLeast(1.0)
 		starship.debug("Distance manual: $distance (fudged)")
 
-		val weaponSets: List<AIStarshipTemplate.WeaponSet?> = controller.getManualSetsInRange(distance) ?: listOf(null)
+		val weaponSets: List<WeaponSet?> = controller.getManualSetsInRange(distance) ?: listOf(null)
 		if (weaponSets.isEmpty()) return //there are no valid weaponsets in range
 
 		for (weaponSet in weaponSets) {
@@ -125,12 +125,12 @@ abstract class CombatModule<T>(
 		val fudgeFactor = target.getFudgeFactor()
 		val distance = (target.getLocation().toVector().distance(origin.toVector()) - fudgeFactor).coerceAtLeast(1.0)
 		starship.debug("Distance auto: $distance (fudged)")
-		var weaponSets: Set<AIStarshipTemplate.WeaponSet?> = controller.getAutoSetsInRange(distance)
+		var weaponSets: Set<WeaponSet?> = controller.getAutoSetsInRange(distance)
 		if (weaponSets.isEmpty()) weaponSets = setOf(null)
 		weaponSets.forEach { handleAutoWeapon(it, origin, target) }
 	}
 
-	private fun handleAutoWeapon(weaponSet: AIStarshipTemplate.WeaponSet?, origin: Vec3i, target: AITarget) {
+	private fun handleAutoWeapon(weaponSet: WeaponSet?, origin: Vec3i, target: AITarget) {
 
 		if (!AIDebugModule.showAims && !AIDebugModule.fireWeapons) {
 			AIControlUtils.unSetAllWeapons(controller)

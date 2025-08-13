@@ -18,7 +18,7 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
-import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
+import net.horizonsend.ion.server.features.ai.configuration.WeaponSet
 import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
@@ -237,7 +237,7 @@ object AIDebugCommand : SLCommand() {
 	}
 
 	@Serializable
-	data class WeaponSetsCollection(val sets: MutableSet<AIStarshipTemplate.WeaponSet> = mutableSetOf())
+	data class WeaponSetsCollection(val sets: MutableSet<WeaponSet> = mutableSetOf())
 
 	@Subcommand("spawn")
 	@CommandCompletion("@controllerFactories @AIDifficulty @targetMode") //TODO: fix command

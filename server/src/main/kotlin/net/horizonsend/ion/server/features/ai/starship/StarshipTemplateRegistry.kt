@@ -21,8 +21,7 @@ import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.serialize
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
-import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.ai.configuration.WeaponSet
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_BARGE
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_BATTLECRUISER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_CORVETTE
@@ -33,10 +32,10 @@ import net.horizonsend.ion.server.features.starship.StarshipType.AI_GUNSHIP
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_HEAVY_FREIGHTER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_INTERCEPTOR
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_LIGHT_FREIGHTER
+import net.horizonsend.ion.server.features.starship.StarshipType.AI_MEDIUM_FREIGHTER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_SHUTTLE
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_STARFIGHTER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_TRANSPORT
-import net.horizonsend.ion.server.features.starship.StarshipType.AI_MEDIUM_FREIGHTER
 import net.horizonsend.ion.server.features.starship.StarshipType.UNIDENTIFIEDSHIP
 import net.kyori.adventure.text.Component.text
 
