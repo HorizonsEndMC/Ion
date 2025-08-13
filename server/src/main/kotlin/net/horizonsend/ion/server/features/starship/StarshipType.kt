@@ -164,7 +164,7 @@ enum class StarshipType(
 		overridePermission = "ion.ships.override.1",
 		dynmapIcon = "interceptor",
 		sinkProvider = SinkProvider.SinkProviders.NO_REMOVAL,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::interceptor
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::interceptor
 	),
 	GUNSHIP(
 		displayName = "Gunship",
@@ -678,7 +678,7 @@ enum class StarshipType(
 		requiredPermission = "ion.ships.ai",
 		overridePermission = "ion.ships.ai.medium_freighter",
 		sinkProvider = SinkProvider.SinkProviders.AI_LARGE,
-		balancingSupplier = ConfigurationFiles.starshipBalancing()::aiMediumFreighter
+		balancingSupplier = ConfigurationFiles.starshipBalancing().shipClasses::mediumFreighter
 	),
 	HEAVY_FREIGHTER(
 		displayName = "Heavy Freighter",

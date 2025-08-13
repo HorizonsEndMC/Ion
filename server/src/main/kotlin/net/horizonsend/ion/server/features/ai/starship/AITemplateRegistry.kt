@@ -9,7 +9,6 @@ import net.horizonsend.ion.server.configuration.util.IntegerAmount
 import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
 import net.horizonsend.ion.server.configuration.util.VariableIntegerAmount
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
-import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry
 import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
@@ -338,7 +337,7 @@ object AITemplateRegistry {
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
 			.addRewardProvider(CreditRewardProviderConfiguration(20000.0))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(500.0))
-			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 			.addAdditionalModule(
 				BehaviorConfiguration.AdvancedReinforcementInformation(
 					activationThreshold = 0.70,
