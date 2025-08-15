@@ -18,7 +18,6 @@ class DistancePositioningModule(
 	val generalTarget: Supplier<AITarget?>,
 	val configSupplier: Supplier<AISteeringConfiguration.DistanceConfiguration>
 ) : AIModule(controller) {
-	val ship get() = controller.starship
 	val config: AISteeringConfiguration.DistanceConfiguration get() = configSupplier.get()
 	private val minDist get() = config.minDist
 	private val maxDist get() = config.maxDist
@@ -27,16 +26,23 @@ class DistancePositioningModule(
 	private val startFleeing get() = config.startFleeing
 	private val stopFleeing get() = config.stopFleeing
 
+	var hasFled = false
+
 	var isFleeing = false
+		set(value) {
+			if (value) hasFled = true
+			field = value
+		}
 
 	fun calcDistance(): Double {
 		if (!difficulty.doBackOff) return calcCombatDist()
 
-		if (controller.getMinimumShieldHealth() <= startFleeing) {
+		if (controller.getMinimumShieldHealth() <= startFleeing && !hasFled) {
 			val fleeChance = config.fleeChance
 			if (difficulty.fleeChance == 0.0) isFleeing = true
 			else if (randomDouble(0.0, difficulty.fleeChance) < fleeChance) isFleeing = true
 		}
+
 		if (controller.getMinimumShieldHealth() >= stopFleeing) {
 			isFleeing = false
 		}

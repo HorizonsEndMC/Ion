@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.ai.module.combat
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
+import net.horizonsend.ion.server.features.ai.configuration.WeaponSet
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.starship.Starship
@@ -40,7 +40,7 @@ class AimingModule(
 	 * Guess the weapon being fired and adjust the target for a leading shot */
 	fun adjustAim(
 		targetShip: Starship, origin: Vec3i,
-		weaponSet: AIStarshipTemplate.WeaponSet?, leftClick: Boolean, manual: Boolean
+		weaponSet: WeaponSet?, leftClick: Boolean, manual: Boolean
 	): Vector {
 		val shipPos = targetShip.centerOfMass.toVector()
 		if (difficulty.aimAdjust < 0.1) return shipPos

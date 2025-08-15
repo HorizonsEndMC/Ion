@@ -32,7 +32,7 @@ class SingleSpawn(
 			if (fleet != null) {
 				addUtilModule(AIFleetManageModule(this, fleet))
 			}
-			controllerModifier
+			controllerModifier(this)
 		}
 
 		spawnMessage?.broadcast(spawnPoint, ship.template)
