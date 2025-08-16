@@ -1421,34 +1421,28 @@ object AISpawners : IonServerComponent(true) {
 	fun loadPersistentData() {
 		val stored = Configuration.load<PersistentSpawnerData>(IonServer.dataFolder, "persistentSpawnerData.json")
 
-		for (spawner in getAllSpawners().filterIsInstance<PersistentDataSpawnerComponent<*>>()) {
+		for (spawner in getAllSpawners()) {
+			val scheduler = spawner.scheduler
+			if (scheduler is PersistentDataSpawnerComponent<*>) stored.keyed[scheduler.storageKey]?.let(scheduler::load)
+
+			if (spawner !is PersistentDataSpawnerComponent<*>) continue
+
 			val data = stored.keyed[spawner.storageKey] ?: continue
 			spawner.load(data)
-
-			val scheduler = (spawner as AISpawner).scheduler
-
-			if (scheduler is PersistentDataSpawnerComponent<*>) {
-				val data = stored.keyed[scheduler.storageKey] ?: continue
-				scheduler.load(data)
-			}
 		}
 	}
 
 	fun savePersistentData() = Tasks.async {
 		val data = mutableMapOf<String, String>()
 
-		for (spawner in getAllSpawners().filterIsInstance<PersistentDataSpawnerComponent<*>>()) {
-			val spawnerData = spawner.write() ?: continue
-			data[spawner.storageKey] = spawnerData
-		}
-
 		for (spawner in getAllSpawners()) {
 			val scheduler = spawner.scheduler
+			if (scheduler is PersistentDataSpawnerComponent<*>) scheduler.write()?.let { data[scheduler.storageKey] = it }
 
-			if (scheduler is PersistentDataSpawnerComponent<*>) {
-				val schedulerData = scheduler.write() ?: continue
-				data[scheduler.storageKey] = schedulerData
-			}
+			if (spawner !is PersistentDataSpawnerComponent<*>) continue
+
+			val spawnerData = spawner.write() ?: continue
+			data[spawner.storageKey] = spawnerData
 		}
 
 		Configuration.save(PersistentSpawnerData(data), IonServer.dataFolder, "persistentSpawnerData.json")
