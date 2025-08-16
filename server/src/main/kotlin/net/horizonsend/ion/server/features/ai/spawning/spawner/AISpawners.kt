@@ -1438,8 +1438,17 @@ object AISpawners : IonServerComponent(true) {
 		val data = mutableMapOf<String, String>()
 
 		for (spawner in getAllSpawners().filterIsInstance<PersistentDataSpawnerComponent<*>>()) {
-			val stored = spawner.write() ?: continue
-			data[spawner.storageKey] = stored
+			val spawnerData = spawner.write() ?: continue
+			data[spawner.storageKey] = spawnerData
+		}
+
+		for (spawner in getAllSpawners()) {
+			val scheduler = spawner.scheduler
+
+			if (scheduler is PersistentDataSpawnerComponent<*>) {
+				val schedulerData = scheduler.write() ?: continue
+				data[scheduler.storageKey] = schedulerData
+			}
 		}
 
 		Configuration.save(PersistentSpawnerData(data), IonServer.dataFolder, "persistentSpawnerData.json")
