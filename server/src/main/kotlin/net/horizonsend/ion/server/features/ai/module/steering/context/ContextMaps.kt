@@ -587,7 +587,12 @@ class ShipDangerContext(
 	private val config get() = configSupplier.get()
 	private val maxSpeed get() = maxSpeedSupplier.get()
 
+	private var tick = 0
+
 	override fun populateContext() {
+		if (tick % INTERVAL != 0) return
+		tick++
+
 		clearContext()
 		var mindist = 1e10
 		val shipPos = ship.centerOfMass.toVector()
@@ -607,6 +612,10 @@ class ShipDangerContext(
 			dotContext(targetOffset, config.dotShift, (config.falloff * dangerWeight) / targetDist, power = 1.0, true)
 			checkContext()
 		}
+	}
+
+	companion object {
+		private const val INTERVAL = 10
 	}
 }
 
