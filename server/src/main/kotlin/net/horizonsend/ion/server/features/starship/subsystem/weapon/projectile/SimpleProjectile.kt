@@ -172,7 +172,7 @@ abstract class SimpleProjectile(
 						val base = explosionPower.coerceAtLeast(1f)
 
 						// Send per-player so each user’s setting applies
-						toPlayersInRadius(newLoc, /* visibility radius */ 96.0) { player ->
+						toPlayersInRadius(newLoc, /* visibility radius */ 500.0) { player ->
 							val useAlt = player.getSetting(PlayerSettings::useAlternateShieldHitParticle)
 
 							if (!useAlt) {
