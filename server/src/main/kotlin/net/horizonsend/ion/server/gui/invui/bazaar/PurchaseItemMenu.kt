@@ -47,7 +47,7 @@ class PurchaseItemMenu(
 			title = extraLine,
 			backButtonHandler = { backButtonHandler.invoke() },
 			inputValidator = RangeIntegerValidator(1..item.stock),
-			componentTransformer = { Component.text(it) },
+			componentTransformer = { qty -> template(message = Component.text("Buying {0} items (unit price {1}, total {2})"), paramColor = null, useQuotesAroundObjects = false, qty, String.format("%.2f", item.price), String.format("%.2f", item.price * qty)) },
 			successfulInputHandler = menu@{ _, result ->
 				val remote = !Regions.get<RegionTerritory>(item.cityTerritory).contains(viewer.location)
 				val futureResult = Bazaars.tryBuyFromSellOrder(viewer, item, result.result, remote, itemConsumer)
