@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.item.CollectionScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.GroupedBrowseGui
@@ -92,7 +93,7 @@ abstract class BazaarBrowseMenu(viewer: Player) : BazaarPurchaseMenuParent<Map.E
 		)
 	}
 
-	override fun onClickDisplayedItem(entry: Map.Entry<String, List<BazaarItem>>) {
+	override fun onClickDisplayedItem(entry: Map.Entry<String, List<BazaarItem>>, clickedFrom: CommonGuiWrapper) {
 		val (itemString, groupedItems) = entry
 
 		if (groupedItems.size == 1 && viewer.getSetting(PlayerSettings::skipBazaarSingleEntryMenus)) {
@@ -101,7 +102,7 @@ abstract class BazaarBrowseMenu(viewer: Player) : BazaarPurchaseMenuParent<Map.E
 			BazaarGUIs.openBrowsePurchaseMenu(
 				player = viewer,
 				item = item,
-				backButtonHandler = { openGui() }
+				backButtonHandler = { clickedFrom.openGui() }
 			)
 
 			return
