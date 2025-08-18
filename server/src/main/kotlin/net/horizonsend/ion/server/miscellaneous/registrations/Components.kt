@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.features.economy.cargotrade.CrateRestrictions
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentBalancing
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentGenerator
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentManager
+import net.horizonsend.ion.server.features.economy.chestshops.ChestShops
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.collectors.CollectionMissions
@@ -237,4 +238,5 @@ val components: List<IonComponent> = listOf(
 	StationRentalZones,
 	ServerInboxes,
 	ServerMutesHook,
+	ChestShops,
 )

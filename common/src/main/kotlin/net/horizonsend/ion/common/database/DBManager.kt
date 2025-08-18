@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.database.schema.economy.BazaarItem
 import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
 import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
+import net.horizonsend.ion.common.database.schema.economy.ChestShop
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.economy.CollectedItem
 import net.horizonsend.ion.common.database.schema.economy.CompletedCollectionMission
@@ -152,6 +153,7 @@ object DBManager : IonComponent() {
 		StationRentalZone.init()
 		BazaarItem.init()
 		BazaarOrder.init()
+		ChestShop.init()
 
 		// starships
 		PlayerStarshipData.init()
