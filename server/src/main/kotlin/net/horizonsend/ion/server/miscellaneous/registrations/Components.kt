@@ -58,6 +58,7 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.DutyModeMonitor
 import net.horizonsend.ion.server.features.player.EventLogger
 import net.horizonsend.ion.server.features.player.NMSAchievements
+import net.horizonsend.ion.server.features.player.ServerMutesHook
 import net.horizonsend.ion.server.features.progression.Bounties
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
@@ -234,5 +235,6 @@ val components: List<IonComponent> = listOf(
 	MultiBlockDisplay,
 	MultiblockRecipeRegistry,
 	StationRentalZones,
-	ServerInboxes
+	ServerInboxes,
+	ServerMutesHook,
 )
