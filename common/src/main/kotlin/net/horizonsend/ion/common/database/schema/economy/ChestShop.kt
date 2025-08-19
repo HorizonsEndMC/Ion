@@ -18,16 +18,18 @@ data class ChestShop(
 	var owner: SLPlayerId,
 	var world: String,
 	var location: DBVec3i,
-	var soldItem: String?
+	var soldItem: String?,
+	var price: Double,
+	var selling: Boolean,
 ) : DbObject {
 	companion object : OidDbObjectCompanion<ChestShop>(ChestShop::class, setup = {
 		ensureIndex(ChestShop::owner)
 		ensureIndex(ChestShop::location)
 		ensureUniqueIndex(ChestShop::location, ChestShop::owner)
 	}) {
-		fun create(owner: SLPlayerId, location: DBVec3i, world: String, soldItem: String?): Oid<ChestShop> = trx { session ->
+		fun create(owner: SLPlayerId, location: DBVec3i, world: String, soldItem: String?, price: Double, selling: Boolean): Oid<ChestShop> = trx { session ->
 			val id = objId<ChestShop>()
-			col.insertOne(session, ChestShop(id, owner, world, location, soldItem))
+			col.insertOne(session, ChestShop(id, owner, world, location, soldItem, price, selling))
 
 			return@trx id
 		}
