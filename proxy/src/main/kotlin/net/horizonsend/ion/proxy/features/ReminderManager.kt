@@ -55,13 +55,14 @@ object ReminderManager : IonComponent() {
 		"<$HE_MEDIUM_GRAY>The /settings command is your go to for tweaking your experience to suit your needs.",
 		"<$HE_MEDIUM_GRAY>Want to adjust your contacts bar? Use /settings",
 		"<$HE_MEDIUM_GRAY>Hard time viewing some effects? Use /settings",
-		"<$HE_MEDIUM_GRAY>Remember to /vote for the server and earn 24 <dark_purple>chetherite</dark_purple> and <gold>1,000C</gold> daily!",
+		"<$HE_MEDIUM_GRAY>Remember to /vote for the server and earn <dark_purple>24 chetherite</dark_purple> and <gold>1,000C</gold> daily!",
 		"<$HE_MEDIUM_GRAY>Top up your supply of chetherite and credits every day with /vote!",
 		"<$HE_MEDIUM_GRAY>Did you /vote yet today?",
 		"<$HE_MEDIUM_GRAY>Want to grow or improve the server? Consider /vote to help attract more players, or contribute to the server at /github.",
 		"<$HE_MEDIUM_GRAY>Horizon's End is open source. Contribute to the server code or resource pack at /github.",
 		"<$HE_MEDIUM_GRAY>Found a bug? Squash it in #support on the /discord.",
 		"<$HE_MEDIUM_GRAY>Having trouble with another player breaking the rules? Report them in #support on the /discord.",
+		"<$HE_MEDIUM_GRAY>Form a /fleet with friends to coordinate hyperdrive jumps and communication in combat.",
 
 
 
