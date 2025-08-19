@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.cache
 
 import net.horizonsend.ion.common.database.cache.BookmarkCache
 import net.horizonsend.ion.common.database.cache.Cache
-import net.horizonsend.ion.common.database.cache.nations.ChestShopCache
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
 import net.horizonsend.ion.common.database.cache.nations.SettlementCache
