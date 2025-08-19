@@ -35,13 +35,14 @@ import org.bukkit.block.data.type.WallSign
 import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import kotlin.jvm.optionals.getOrNull
 import net.minecraft.world.item.ItemStack as NMSItemStack
 
 object ChestShops : IonServerComponent() {
-	@EventHandler()
+	@EventHandler
 	fun onClickSign(event: PlayerInteractEvent) {
 		val block = event.clickedBlock ?: return
 		if (!block.type.isWallSign) return
@@ -58,6 +59,25 @@ object ChestShops : IonServerComponent() {
 
 		val shop = getShop(sign) ?: return
 		interactWithShop(event.player, shop)
+	}
+
+	@EventHandler
+	fun onBlockBreak(event: BlockBreakEvent) {
+		val block = event.block
+		if (!block.type.isWallSign) return
+
+		val state = block.state as Sign
+		val shop = getShop(state) ?: return
+
+		if (event.player.slPlayerId != shop.owner && !event.player.hasPermission("group.dutymode")) {
+			event.isCancelled
+			return
+		}
+
+		Tasks.async {
+			ChestShop.delete(shop._id)
+			event.player.success("Removed Chest Shop")
+		}
 	}
 
 	fun setupShop(player: Player, sign: Sign) {
