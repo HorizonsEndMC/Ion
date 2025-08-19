@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areas
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield20
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield30
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield5
+import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield70
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.ConnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.DisconnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier1
@@ -310,6 +311,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(AreaShield10)
 		registerMultiblock(AreaShield20)
 		registerMultiblock(AreaShield30)
+		registerMultiblock(AreaShield70)
 
 		registerMultiblock(MobDefender)
 
