@@ -8,7 +8,6 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
-import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_LIGHT_TEAL
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServerComponent
@@ -56,8 +55,9 @@ object ChestShops : IonServerComponent() {
 
 		val sign = block.state as Sign
 
-		if (matchesUndetectedSign(sign)) {
-			setupShop(event.player, placedOn.state as Chest, sign)
+		val type = getUndetectedShopType(sign)
+		if (type != null) {
+			setupShop(event.player, placedOn.state as Chest, sign, type)
 			return
 		}
 
@@ -84,7 +84,7 @@ object ChestShops : IonServerComponent() {
 		}
 	}
 
-	fun setupShop(player: Player, chest: Chest, sign: Sign) {
+	private fun setupShop(player: Player, chest: Chest, sign: Sign, type: ShopType) {
 		if (getShop(chest) != null) {
 			player.userError("That chest already has a shop!")
 			return
@@ -106,7 +106,7 @@ object ChestShops : IonServerComponent() {
 				world = worldKey,
 				soldItem = null,
 				price = price,
-				selling = true,
+				selling = type == ShopType.SELL,
 			)
 		}
 	}
@@ -146,10 +146,6 @@ object ChestShops : IonServerComponent() {
 		return InputResult.InputSuccess
 	}
 
-	fun matchesUndetectedSign(sign: Sign): Boolean {
-		return sign.front().line(0).plainText().equals("[shop]", ignoreCase = true)
-	}
-
 	fun getShop(sign: Sign): ChestShop? {
 		val worldKey = sign.world.key()
 		val location = Vec3i(sign.x, sign.y, sign. z)
@@ -171,8 +167,23 @@ object ChestShops : IonServerComponent() {
 		return CraftItemStack.asCraftMirror(nmsStack)
 	}
 
-	private val SELL_SHOP_FIRST_LINE = bracketed(Component.text("Sell Shop", PRIVATEER_LIGHT_TEAL))
-	private val BUY_SHOP_FIRST_LINE = bracketed(Component.text("Buy Shop", PRIVATEER_LIGHT_TEAL))
+	private enum class ShopType(val keyword: String) {
+		BUY("[Buy Shop]"),
+		SELL("[Sell Shop]")
+	}
+
+	private fun getUndetectedShopType(sign: Sign): ShopType? {
+		val topText = sign.front().line(0).plainText()
+
+		ShopType.entries.forEach { type ->
+			if (type.keyword.equals(topText, ignoreCase = true)) return type
+		}
+
+		return null
+	}
+
+	private val SELL_SHOP_FIRST_LINE = bracketed(Component.text("Sell Shop", NamedTextColor.GREEN), leftBracket = '{', rightBracket = '}')
+	private val BUY_SHOP_FIRST_LINE = bracketed(Component.text("Buy Shop", NamedTextColor.GREEN), leftBracket = '{', rightBracket = '}')
 	private val NULL_ITEM_TEXT = Component.text("?", HE_MEDIUM_GRAY)
 
 	fun updateSign(shop: ChestShop) = Tasks.sync {
@@ -186,7 +197,7 @@ object ChestShops : IonServerComponent() {
 		if (sign !is Sign) return@sync
 
 		Tasks.async {
-			sign.front().line(0, SELL_SHOP_FIRST_LINE)
+			sign.front().line(0, if (shop.selling) SELL_SHOP_FIRST_LINE else BUY_SHOP_FIRST_LINE)
 			sign.front().line(1, shop.price.toCreditComponent())
 			sign.front().line(2, Component.text(SLPlayer.getName(shop.owner)!!))
 			sign.front().line(3, shop.soldItem?.let(::loadItem)?.displayNameComponent ?: NULL_ITEM_TEXT)
