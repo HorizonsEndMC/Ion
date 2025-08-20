@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.database.schema.economy.ChestShop
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
@@ -14,11 +15,13 @@ import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.ChestShopCache
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
+import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.key.Key
@@ -30,6 +33,7 @@ import net.minecraft.nbt.SnbtPrinterTagVisitor
 import net.minecraft.server.MinecraftServer
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.block.Chest
 import org.bukkit.block.Sign
 import org.bukkit.block.data.type.WallSign
 import org.bukkit.craftbukkit.inventory.CraftItemStack
@@ -53,7 +57,7 @@ object ChestShops : IonServerComponent() {
 		val sign = block.state as Sign
 
 		if (matchesUndetectedSign(sign)) {
-			setupShop(event.player, sign)
+			setupShop(event.player, placedOn.state as Chest, sign)
 			return
 		}
 
@@ -80,7 +84,12 @@ object ChestShops : IonServerComponent() {
 		}
 	}
 
-	fun setupShop(player: Player, sign: Sign) {
+	fun setupShop(player: Player, chest: Chest, sign: Sign) {
+		if (getShop(chest) != null) {
+			player.userError("That chest already has a shop!")
+			return
+		}
+
 		Tasks.async {
 			val priceResult = validatePrice(sign.front().line(1))
 			val price = priceResult.result ?: return@async priceResult.sendReason(player)
@@ -142,7 +151,7 @@ object ChestShops : IonServerComponent() {
 	}
 
 	fun getShop(sign: Sign): ChestShop? {
-		val worldKey = sign.world.key().asString()
+		val worldKey = sign.world.key()
 		val location = Vec3i(sign.x, sign.y, sign. z)
 
 		return ChestShopCache.getByLocation(worldKey, location)
@@ -186,5 +195,18 @@ object ChestShops : IonServerComponent() {
 				sign.update()
 			}
 		}
+	}
+
+	fun getShop(chest: Chest): ChestShop? {
+		val worldKey = chest.world.key
+		for (dir in CARDINAL_BLOCK_FACES) {
+			val signBlock = chest.block.getRelativeIfLoaded(dir) ?: continue
+			val vec3i = Vec3i(signBlock.x, signBlock.y, signBlock.z)
+
+			val cached = ChestShopCache.getByLocation(worldKey, vec3i)
+			if (cached != null) return cached
+		}
+
+		return null
 	}
 }
