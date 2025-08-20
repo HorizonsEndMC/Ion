@@ -2,27 +2,35 @@ package net.horizonsend.ion.server.features.economy.chestshops
 
 import net.horizonsend.ion.common.database.schema.economy.ChestShop
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.gui.sendDepositMessage
+import net.horizonsend.ion.common.utils.text.gui.sendWithdrawMessage
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.ChestShopCache
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
+import net.horizonsend.ion.server.features.misc.ServerInboxes
+import net.horizonsend.ion.server.features.transport.items.util.getTransferSpaceFor
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.depositMoney
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.front
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -35,12 +43,14 @@ import org.bukkit.Material
 import org.bukkit.block.Chest
 import org.bukkit.block.Sign
 import org.bukkit.block.data.type.WallSign
+import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 import net.minecraft.world.item.ItemStack as NMSItemStack
 
@@ -52,17 +62,22 @@ object ChestShops : IonServerComponent() {
 
 		val placedOn = block.getRelative((block.blockData as WallSign).facing.oppositeFace)
 		if (placedOn.type != Material.CHEST) return
+		val chest = placedOn.state as Chest
 
 		val sign = block.state as Sign
 
 		val type = getUndetectedShopType(sign)
 		if (type != null) {
-			setupShop(event.player, placedOn.state as Chest, sign, type)
+			setupShop(event.player, chest, sign, type)
+			event.isCancelled = true
+
 			return
 		}
 
 		val shop = getShop(sign) ?: return
-		interactWithShop(event.player, shop)
+		event.isCancelled = true
+
+		interactWithShop(event.player, chest, shop)
 	}
 
 	@EventHandler
@@ -121,21 +136,141 @@ object ChestShops : IonServerComponent() {
 		return ValidatorResult.ValidatorSuccessSingleEntry(asDouble)
 	}
 
-	fun interactWithShop(player: Player, shop: ChestShop) {
+	fun interactWithShop(player: Player, chest: Chest, shop: ChestShop) {
 		if (shop.soldItem == null && player.slPlayerId == shop.owner) {
-			val item = player.inventory.itemInMainHand
-			val itemValidation = verifyItem(item)
-			if (!itemValidation.isSuccess()) return itemValidation.sendReason(player)
-
-			val stringRepresentation = getStringRepresentation(item)
-
-			Tasks.async {
-				ChestShop.setItem(shopId = shop._id, stringRepresentation)
-				player.success("Set shop to sell {0}", item.displayNameComponent)
-			}
+			setItem(player, shop)
 		}
 
-		player.serverError("TODO")
+		val itemData = shop.soldItem ?: return player.userError("That shop does not have an item configured!")
+
+		val itemType = loadItem(itemData)
+
+		if (itemType == null) {
+			val id: UUID = UUID.randomUUID()
+
+			log.info("Could not load item data! Id: $id, data: $itemData")
+			player.serverError("That item could not be loaded. Please file a bug report. Id: $id")
+			return
+		}
+
+		val itemValidation = verifyItem(itemType)
+		if (!itemValidation.isSuccess()) return itemValidation.sendReason(player)
+
+		if (player.slPlayerId == shop.owner) {
+			player.userError("You can't purchase from your own shop!")
+//			return TODO uncomment this after testing
+		}
+
+		when (shop.selling) {
+			// Player buys if the shop is selling
+			true -> buyItems(player, chest, shop, itemType)
+			false -> sellItems(player, chest, shop, itemType)
+		}
+	}
+
+	fun setItem(player: Player, shop: ChestShop) {
+		val item = player.inventory.itemInMainHand
+		val itemValidation = verifyItem(item)
+		if (!itemValidation.isSuccess()) return itemValidation.sendReason(player)
+
+		val stringRepresentation = getStringRepresentation(item)
+
+		Tasks.async {
+			ChestShop.setItem(shopId = shop._id, stringRepresentation)
+			player.success("Set shop to sell {0}", item.displayNameComponent)
+		}
+	}
+
+	fun buyItems(interacting: Player, chest: Chest, shop: ChestShop, item: ItemStack) {
+		val asOne = item.asOne()
+		val room = getTransferSpaceFor(interacting.inventory as CraftInventory, asOne)
+
+		if (room == 0) {
+			interacting.userError("Your inventory is full!")
+			return
+		}
+
+		val chestInv = chest.inventory
+		val available = chestInv.sumOf { stack: ItemStack? -> stack?.takeIf { _ -> stack.isSimilar(asOne) }?.amount ?: 0 }
+
+		if (available == 0) {
+			interacting.userError("That shop is out of stock!")
+			return
+		}
+
+		val amount = minOf(if (interacting.isSneaking) 10 else 1, available)
+		val price = amount * shop.price
+
+		if (!interacting.hasEnoughMoney(price)) {
+			interacting.userError("You don't have enough money to purchase that!")
+			return
+		}
+
+		val limit = Bazaars.takePlayerItemsOfType(chestInv, asOne, amount)
+		val newPrice = limit * shop.price
+
+		interacting.withdrawMoney(newPrice)
+		sendWithdrawMessage(interacting, newPrice)
+		Bukkit.getOfflinePlayer(shop.owner.uuid).depositMoney(newPrice)
+		Bukkit.getPlayer(shop.owner.uuid)?.let {
+			it.success("${interacting.name} purchased {0} of {1} for {2}", limit, asOne.displayNameComponent, price.toCreditComponent())
+			sendDepositMessage(it, newPrice)
+		}
+
+		Bazaars.giveOrDropItems(item, limit, interacting)
+
+		Tasks.async {
+			val availableNew = chestInv.sumOf { stack: ItemStack? -> stack?.takeIf { _ -> stack.isSimilar(asOne) }?.amount ?: 0 }
+			if (availableNew <= 0) ServerInboxes.sendServerMessage(shop.owner, Component.text("Sell Shop Empty"), Component.text("Your shop at ${chest.x}, ${chest.y}, ${chest.z} on ${chest.world.name} is empty!"))
+		}
+	}
+
+	fun sellItems(interacting: Player, chest: Chest, shop: ChestShop, item: ItemStack) {
+		val asOne = item.asOne()
+
+		val chestInv = chest.inventory
+		val room = getTransferSpaceFor(chestInv as CraftInventory, asOne)
+
+		if (room == 0) {
+			interacting.userError("The shop inventory is full!")
+			return
+		}
+
+		val available = interacting.inventory.sumOf { stack: ItemStack? -> stack?.takeIf { _ -> stack.isSimilar(asOne) }?.amount ?: 0 }
+
+		if (available == 0) {
+			interacting.userError("You don't have any items to sell!")
+			return
+		}
+
+		val amount = minOf(if (interacting.isSneaking) 10 else 1, room)
+		val profit = amount * shop.price
+
+		val shopOwner = Bukkit.getOfflinePlayer(shop.owner.uuid)
+
+		if (!shopOwner.hasEnoughMoney(profit)) {
+			interacting.userError("The shop owner does not have enough money to purchase that!")
+			return
+		}
+
+		val limit = Bazaars.takePlayerItemsOfType(interacting.inventory, asOne, amount)
+		val newPrice = limit * shop.price
+
+		interacting.depositMoney(newPrice)
+		sendDepositMessage(interacting, newPrice)
+		Bukkit.getOfflinePlayer(shop.owner.uuid).withdrawMoney(newPrice)
+
+		Bukkit.getPlayer(shop.owner.uuid)?.let {
+			it.success("${interacting.name} sold {0} of {1} for {2}", limit, asOne.displayNameComponent, profit.toCreditComponent())
+			sendWithdrawMessage(it, newPrice)
+		}
+
+		Bazaars.giveOrDropItems(item, limit, chestInv, chest.location.toCenterLocation())
+
+		Tasks.async {
+			val room = getTransferSpaceFor(chestInv, asOne)
+			if (room <= 0) ServerInboxes.sendServerMessage(shop.owner, Component.text("Buy Shop Full"), Component.text("Your shop at ${chest.x}, ${chest.y}, ${chest.z} on ${chest.world.name} is full!"))
+		}
 	}
 
 	fun verifyItem(itemStack: ItemStack): InputResult {
