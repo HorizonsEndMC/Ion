@@ -52,6 +52,8 @@ data class Message(
 				Message(_id = id, recipient = recipient, subjec = subject, senderName = senderName, content = content)
 			}
 
+			if (messages.isEmpty()) return@trx setOf()
+
 			col.insertMany(sess, messages)
 
 			return@trx ids
