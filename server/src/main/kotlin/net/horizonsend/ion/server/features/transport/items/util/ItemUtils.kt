@@ -50,6 +50,9 @@ fun getTransferSpaceFor(inventory: CraftInventory, itemStack: ItemStack): Int {
 	return LegacyItemUtils.getSpaceFor(inventory, itemStack)
 }
 
+/**
+ * Returns an interable of item indexes and the item contained at that index
+ **/
 fun getRemovableItems(inventory: CraftInventory): Iterable<Pair<Int, ItemStack>> {
 	val items = inventory.contents.withIndex()
 	val filtered = mutableListOf<Pair<Int, ItemStack>>()
