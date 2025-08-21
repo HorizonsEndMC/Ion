@@ -400,12 +400,12 @@ object ChestShops : IonServerComponent() {
 					continue
 				}
 
-				displayShopContents(soldItem, data, vec3i, world, players)
+				displayShopContents(soldItem, data, vec3i, world, shop.price, players)
 			}
 		}
 	}
 
-	fun displayShopContents(soldItem: ItemStack, signData: WallSign, shopLocation: Vec3i, world: World, worldPlayers: Collection<Player>) {
+	fun displayShopContents(soldItem: ItemStack, signData: WallSign, shopLocation: Vec3i, world: World, price: Double, worldPlayers: Collection<Player>) {
 		val offset = signData.facing.oppositeFace
 		val location = shopLocation.toLocation(world).toCenterLocation().add(offset.direction).add(0.0, 0.25, 0.0)
 
@@ -430,7 +430,8 @@ object ChestShops : IonServerComponent() {
 		val nms = itemDisplay.getNMSData(location.x, location.y + 0.55, location.z)
 
 		players.forEach { player ->
-			player.sendText(location.clone().add(0.0, 1.0, 0.0), soldItem.displayNameComponent, 121L, false)
+			player.sendText(location.clone().add(0.0, 1.15, 0.0), soldItem.displayNameComponent, 121L, false)
+			player.sendText(location.clone().add(0.0, 0.90, 0.0), price.toCreditComponent(), 121L, false)
 			ClientDisplayEntities.sendEntityPacket(player, nms, 121L)
 		}
 	}
