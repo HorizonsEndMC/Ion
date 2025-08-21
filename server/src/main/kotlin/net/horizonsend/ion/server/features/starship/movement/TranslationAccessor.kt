@@ -57,8 +57,8 @@ interface TranslationAccessor {
 
 		OptimizedMovement.moveStarship(
 			executionCheck = executionCheck,
-			world1 = world1,
-			world2 = newWorld ?: world1,
+			currentWorld = world1,
+			newWorld = newWorld ?: world1,
 			oldPositionArray = positions,
 			newPositionArray = newPositions,
 			blockStateTransform = ::blockStateTransform,

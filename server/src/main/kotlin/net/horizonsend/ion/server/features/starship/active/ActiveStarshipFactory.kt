@@ -116,12 +116,17 @@ object ActiveStarshipFactory {
 	}
 
 	private fun determineForward(starship: ActiveStarship) {
-		starship.forward = starship.thrusterMap.entries
+		starship.forward = if (starship.forwardOverride != null) {
+			starship.forwardOverride ?: starship.forward
+		}
+		else starship.thrusterMap.entries
 			.maxByOrNull { it.value.maxSpeed }
 			?.key
 			?: starship.forward
 
 		starship.multiblockManager.referenceForward = starship.forward
+		// forwardOverride should only be used on initial starship pilot
+		starship.forwardOverride = null
 	}
 
 	private fun prepareShields(starship: ActiveControlledStarship) {
