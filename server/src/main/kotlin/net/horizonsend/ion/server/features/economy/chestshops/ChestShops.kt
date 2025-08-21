@@ -58,6 +58,7 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Display
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
@@ -85,7 +86,7 @@ object ChestShops : IonServerComponent() {
 		val sign = block.state as Sign
 
 		val type = getUndetectedShopType(sign)
-		if (type != null) {
+		if (type != null && event.action != Action.LEFT_CLICK_BLOCK) {
 			setupShop(event.player, chest, sign, type)
 			event.isCancelled = true
 
@@ -93,6 +94,10 @@ object ChestShops : IonServerComponent() {
 		}
 
 		val shop = getShop(sign) ?: return
+
+		// Handle the case of the player destroying the shop
+		if (event.player.slPlayerId == shop.owner && event.action == Action.LEFT_CLICK_BLOCK) return
+
 		event.isCancelled = true
 
 		interactWithShop(event.player, chest, shop)
