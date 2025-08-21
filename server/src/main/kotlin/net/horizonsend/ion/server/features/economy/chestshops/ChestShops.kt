@@ -441,6 +441,15 @@ object ChestShops : IonServerComponent() {
 	}
 
 	fun checkShopIntegrity(shop: ChestShop) {
+		val world = Bukkit.getWorld(Key.key(shop.world)) ?: return // Different server
+		val vec3i = Vec3i(shop.location)
+		val data = getBlockDataSafe(world, vec3i.x, vec3i.y, vec3i.z) ?: return // Not loaded
 
+		// If the sign has been removed, destroy the shop
+		if (data !is WallSign) {
+			Tasks.async {
+				ChestShop.delete(shop._id)
+			}
+		}
 	}
 }
