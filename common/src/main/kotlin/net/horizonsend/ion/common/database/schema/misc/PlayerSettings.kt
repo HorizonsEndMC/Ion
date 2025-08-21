@@ -56,7 +56,7 @@ data class PlayerSettings(
 	var showItemSearchItem: Boolean = true,
 	var protectionMessagesEnabled: Boolean = true,
 	var useAlternateDCCruise: Boolean = false,
-	var dcRefreshRate: Int = 1,
+	var dcRefreshRate: Int = -1,
 	var enableAdditionalSounds: Boolean = true,
 	var soundCruiseIndicator: Int = 0,
 	var enableCombatTimerAlerts: Boolean = true,
@@ -92,6 +92,7 @@ data class PlayerSettings(
 	var toggleDcBoost: Boolean = false,
 	var alternateFireButtons: Boolean = false,
 	var fleetStatus: Boolean = true,
+	var chestShopDisplays: Boolean = true,
 ) : DbObject {
 	companion object : DbObjectCompanion<PlayerSettings, StringId<PlayerSettings>>(PlayerSettings::class, setup = {}) {
 		fun create(id: StringId<PlayerSettings>): InsertOneResult = trx { session ->

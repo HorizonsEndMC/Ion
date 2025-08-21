@@ -20,7 +20,7 @@ import net.kyori.adventure.key.Key
 import java.util.concurrent.ConcurrentHashMap
 
 object ChestShopCache : ManualCache() {
-	private val byLocation = HashBasedTable.create</* World Key */ Key, Vec3i, ChestShop>()
+	val byLocation = HashBasedTable.create</* World Key */ Key, Vec3i, ChestShop>()
 	private val locationMap = ConcurrentHashMap<Oid<ChestShop>, Pair<Key, Vec3i>>()
 	private val byId = ConcurrentHashMap<Oid<ChestShop>, ChestShop>()
 

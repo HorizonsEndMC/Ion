@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.economy.chestshops
 
 import net.horizonsend.ion.common.database.schema.economy.ChestShop
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.extensions.serverError
@@ -15,8 +16,14 @@ import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.ChestShopCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.misc.ServerInboxes
+import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.features.transport.items.util.getTransferSpaceFor
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
@@ -25,10 +32,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.depositMoney
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.front
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
 import net.kyori.adventure.key.Key
@@ -40,21 +49,30 @@ import net.minecraft.nbt.SnbtPrinterTagVisitor
 import net.minecraft.server.MinecraftServer
 import org.bukkit.Bukkit
 import org.bukkit.Material
+import org.bukkit.World
 import org.bukkit.block.Chest
 import org.bukkit.block.Sign
 import org.bukkit.block.data.type.WallSign
 import org.bukkit.craftbukkit.inventory.CraftInventory
 import org.bukkit.craftbukkit.inventory.CraftItemStack
+import org.bukkit.entity.Display
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
+import org.bukkit.util.Transformation
+import org.joml.Quaternionf
+import org.joml.Vector3f
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 import net.minecraft.world.item.ItemStack as NMSItemStack
 
 object ChestShops : IonServerComponent() {
+	override fun onEnable() {
+		Tasks.asyncRepeat(120L, 120L, ::displayShops)
+	}
+
 	@EventHandler
 	fun onClickSign(event: PlayerInteractEvent) {
 		val block = event.clickedBlock ?: return
@@ -354,5 +372,65 @@ object ChestShops : IonServerComponent() {
 		}
 
 		return null
+	}
+
+	fun displayShops() {
+		val worlds = ChestShopCache.byLocation.rowKeySet()
+
+		for (worldKey in worlds) {
+			val world = Bukkit.getWorld(worldKey) ?: continue
+			val players = world.players
+			if (players.isEmpty()) continue
+
+			val worldShops = ChestShopCache.byLocation.row(worldKey) ?: continue
+			if (worldShops.isEmpty()) continue
+
+			for ((vec3i, shop) in worldShops) {
+				val soldItem = shop.soldItem?.let(::loadItem) ?: continue
+
+				val data = getBlockDataSafe(world, vec3i.x, vec3i.y, vec3i.z) as? WallSign
+
+				if (data == null) {
+					checkShopIntegrity(shop)
+					continue
+				}
+
+				displayShopContents(soldItem, data, vec3i, world, players)
+			}
+		}
+	}
+
+	fun displayShopContents(soldItem: ItemStack, signData: WallSign, shopLocation: Vec3i, world: World, worldPlayers: Collection<Player>) {
+		val offset = signData.facing.oppositeFace
+		val location = shopLocation.toLocation(world).toCenterLocation().add(offset.direction).add(0.0, 0.25, 0.0)
+
+		val players = worldPlayers.filter { player ->
+			player.location.distance(location) < 20.0
+				&& !player.isNPC
+				&& player.getSetting(PlayerSettings::chestShopDisplays)
+		}
+
+		val itemDisplay = ClientDisplayEntityFactory.createItemDisplay(world.minecraft)
+
+		itemDisplay.setItemStack(soldItem)
+		itemDisplay.billboard = Display.Billboard.VERTICAL
+		itemDisplay.brightness = Display.Brightness(15, 15)
+		itemDisplay.transformation = Transformation(
+			/* translation = */ Vector3f(0f),
+			/* leftRotation = */ Quaternionf(),
+			/* scale = */ Vector3f(0.75f),
+			/* rightRotation = */ Quaternionf()
+		)
+
+		val nms = itemDisplay.getNMSData(location.x, location.y + 0.55, location.z)
+
+		players.forEach { player ->
+			player.sendText(location.clone().add(0.0, 1.0, 0.0), soldItem.displayNameComponent, 121L, false)
+			ClientDisplayEntities.sendEntityPacket(player, nms, 121L)
+		}
+	}
+
+	fun checkShopIntegrity(shop: ChestShop) {
+
 	}
 }
