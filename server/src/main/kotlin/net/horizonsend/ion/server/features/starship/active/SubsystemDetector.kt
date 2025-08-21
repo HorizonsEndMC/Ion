@@ -293,7 +293,10 @@ object SubsystemDetector {
 
 	private fun detectDirectionOverride(starship: ActiveControlledStarship, block: Block) {
 		// lectern "facing" is the direction that the book faces
-		if (block.getRelative(BlockFace.DOWN).type == Material.JUKEBOX) starship.forwardOverride = (block as Directional).facing.oppositeFace
+		if (block.getRelative(BlockFace.DOWN).type == Material.JUKEBOX) {
+			val data = block.blockData as? Directional ?: return
+			starship.forwardOverride = data.facing.oppositeFace
+		}
 	}
 
 	private fun isDuplicate(starship: ActiveControlledStarship, subsystem: StarshipSubsystem): Boolean {
