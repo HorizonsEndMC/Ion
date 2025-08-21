@@ -12,8 +12,10 @@ import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.gui.sendDepositMessage
 import net.horizonsend.ion.common.utils.text.gui.sendWithdrawMessage
+import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.toCreditComponent
+import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.features.cache.ChestShopCache
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
@@ -430,8 +432,10 @@ object ChestShops : IonServerComponent() {
 		val nms = itemDisplay.getNMSData(location.x, location.y + 0.55, location.z)
 
 		players.forEach { player ->
-			player.sendText(location.clone().add(0.0, 1.20, 0.0), soldItem.displayNameComponent, 121L, false)
-			player.sendText(location.clone().add(0.0, 0.95, 0.0), price.toCreditComponent(), 121L, false)
+			val lines = soldItem.displayNameComponent.wrap(50).join(Component.newline())
+
+			player.sendText(location.clone().add(0.0, 1.20, 0.0), lines, 121L, 0.75f)
+			player.sendText(location.clone().add(0.0, 0.95, 0.0), price.toCreditComponent(), 121L)
 			ClientDisplayEntities.sendEntityPacket(player, nms, 121L)
 		}
 	}

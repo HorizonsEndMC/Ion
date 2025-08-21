@@ -425,6 +425,7 @@ object ClientDisplayEntities : IonServerComponent() {
 		location: Location,
 		text: Component,
 		durationTicks: Long,
+		scale: Float = 1.0f,
 		highlight: Boolean = false
 	) {
 		val entity = CraftTextDisplay(IonServer.server as CraftServer, TextDisplay(EntityType.TEXT_DISPLAY, location.world.minecraft))
@@ -442,7 +443,7 @@ object ClientDisplayEntities : IonServerComponent() {
 		entity.transformation = Transformation(
 			Vector3f(),
 			rotateToFaceVector2d(Vector3f()),
-			Vector3f(1.0f),
+			Vector3f(scale),
 			Quaternionf()
 		)
 
