@@ -253,5 +253,5 @@ object MultimeterItem : CustomItem(
 		tryCheckResistance(audience, world, itemStack)
 	}
 
-	private val caches = arrayOf(CacheType.POWER, CacheType.ITEMS)
+	private val caches get() = arrayOf(CacheType.POWER, CacheType.ITEMS)
 }
