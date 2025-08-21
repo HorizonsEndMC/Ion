@@ -587,7 +587,12 @@ class ShipDangerContext(
 	private val config get() = configSupplier.get()
 	private val maxSpeed get() = maxSpeedSupplier.get()
 
+	private var tick = 0
+
 	override fun populateContext() {
+		if (tick % INTERVAL != 0) return
+		tick++
+
 		clearContext()
 		var mindist = 1e10
 		val shipPos = ship.centerOfMass.toVector()
@@ -607,6 +612,10 @@ class ShipDangerContext(
 			dotContext(targetOffset, config.dotShift, (config.falloff * dangerWeight) / targetDist, power = 1.0, true)
 			checkContext()
 		}
+	}
+
+	companion object {
+		private const val INTERVAL = 10
 	}
 }
 
@@ -735,15 +744,23 @@ class WorldBlockDangerContext(
 		Supplier { ConfigurationFiles.aiContextConfiguration().defaultWorldBlockDangerContextConfiguration }
 ) : ContextMap() {
 	private val config get() = configSupplier.get()
+
+	private var tick = 0
+
 	override fun populateContext() {
+		if (tick % INTERVAL != 0) return
+		tick++
+
 		val world = ship.world
 		clearContext()
 		val shipPos = ship.centerOfMass.toLocation(world)
+
 		for (dir in bindir) {
 			val result = world.rayTraceBlocks(shipPos, dir, config.maxDist, FluidCollisionMode.ALWAYS, false) { block -> !ship.contains(block.x, block.y, block.z) } ?: continue
 			val dist = result.hitPosition.add(shipPos.toVector().multiply(-1.0)).length()
 			val shipVelocity = ship.velocity.clone()
 			val velocityWeight: Double
+
 			if (shipVelocity.lengthSquared() < 1e-3) {
 				velocityWeight = 1.0
 			} else {
@@ -751,10 +768,15 @@ class WorldBlockDangerContext(
 				shipVelocity.normalize()
 				velocityWeight = (shipVelocity.dot(dir).coerceAtLeast(0.0) * velocityMag).pow(0.5)
 			}
+
 			val falloff = config.falloff * (ship.currentBlockCount * config.sizeFactor).pow(1 / 3.0)
 			val weight = falloff * velocityWeight / dist
 			dotContext(dir, 0.0, weight, config.dotPower)
 		}
+	}
+
+	companion object {
+		private const val INTERVAL = 20
 	}
 }
 

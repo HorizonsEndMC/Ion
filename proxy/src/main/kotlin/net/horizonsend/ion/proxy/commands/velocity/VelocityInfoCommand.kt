@@ -10,7 +10,7 @@ import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.kyori.adventure.text.format.TextColor.fromHexString
 import net.kyori.adventure.text.format.TextDecoration.UNDERLINED
 
-@CommandAlias("info|map|wiki|patreon|rules")
+@CommandAlias("info|map|wiki|patreon|rules|github")
 object VelocityInfoCommand : ProxyCommand() {
 	@Default
 	@Suppress("Unused")
@@ -23,7 +23,8 @@ object VelocityInfoCommand : ProxyCommand() {
 			.append(text("Resource Pack\n", WHITE, UNDERLINED).clickEvent(openUrl("https://github.com/HorizonsEndMC/ResourcePack/releases/latest")))
 			.append(text("Wiki\n", WHITE, UNDERLINED).clickEvent(openUrl("https://wiki.horizonsend.net")))
 			.append(text("Patreon\n", WHITE, UNDERLINED).clickEvent(openUrl("https://www.patreon.com/horizonsendmc")))
-			.append(text("Server Rules", WHITE, UNDERLINED).clickEvent(openUrl("https://wiki.horizonsend.net/index.php/Rules")))
+			.append(text("Server Rules\n", WHITE, UNDERLINED).clickEvent(openUrl("https://wiki.horizonsend.net/index.php/Rules")))
+			.append(text("Github", WHITE, UNDERLINED).clickEvent(openUrl("https://github.com/HorizonsEndMC")))
 
 		sender.sendMessage(text.build())
 	}

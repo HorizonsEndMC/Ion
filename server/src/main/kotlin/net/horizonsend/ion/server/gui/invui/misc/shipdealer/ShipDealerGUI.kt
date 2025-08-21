@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.starship.dealers.DealerShip
 import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
+import net.horizonsend.ion.server.gui.invui.misc.util.ConfirmationMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
@@ -20,7 +21,9 @@ class ShipDealerGUI(viewer: Player, private val ships: List<DealerShip>) : ListI
 	}
 
 	override fun createItem(entry: DealerShip): Item {
-		return entry.getIcon().makeGuiButton { _, _ -> StarshipDealers.loadShip(viewer, entry) }
+		return entry.getIcon().makeGuiButton { _, _ -> ConfirmationMenu.promptConfirmation(this, GuiText("Purchase ${entry.displayName} for ${entry.price}?")) {
+			StarshipDealers.loadShip(viewer, entry) }
+		}
 	}
 
 	override fun buildWindow(): Window {

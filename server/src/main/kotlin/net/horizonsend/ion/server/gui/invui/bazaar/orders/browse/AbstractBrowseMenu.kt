@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.CollectionScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.getBazaarSettingsButton
@@ -108,7 +109,7 @@ abstract class AbstractBrowseMenu(viewer: Player, private val fullfillmentHandle
 		)
 	}
 
-	override fun onClickDisplayedItem(entry: BazaarOrder) {
+	override fun onClickDisplayedItem(entry: BazaarOrder, clickedFrom: CommonGuiWrapper) {
 		fullfillmentHandler.invoke(this, entry)
 	}
 

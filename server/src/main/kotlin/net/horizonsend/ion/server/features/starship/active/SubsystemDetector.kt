@@ -64,6 +64,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.BlockFace.NORTH
 import org.bukkit.block.HangingSign
 import org.bukkit.block.Sign
+import org.bukkit.block.data.Directional
 import java.util.LinkedList
 import java.util.Locale
 
@@ -75,6 +76,7 @@ object SubsystemDetector {
 		val potentialWeaponBlocks = LinkedList<Block>()
 		val potentialSignBlocks = LinkedList<Block>()
 		val potentialLandingGearBlocks = LinkedList<Block>()
+		val potentialDirectionBlocks = LinkedList<Block>()
 
 		starship.iterateBlocks { x, y, z ->
 			val block = starship.world.getBlockAt(x, y, z)
@@ -95,6 +97,7 @@ object SubsystemDetector {
 			}
 
 			if (type == Material.OBSERVER) potentialLandingGearBlocks.add(block)
+			if (type == Material.LECTERN) potentialDirectionBlocks.add(block)
 		}
 
 		val oversizeModifier = if (starship.initialBlockCount > starship.type.maxSize) ReactorSubsystem.OVERSIZE_POWER_PENALTY else 1.0
@@ -109,6 +112,9 @@ object SubsystemDetector {
 		}
 		for (block in potentialLandingGearBlocks) {
 			detectLandingGear(starship, block)
+		}
+		for (block in potentialDirectionBlocks) {
+			detectDirectionOverride(starship, block)
 		}
 
 		// Create entities for the subsystems before the nodes are checked
@@ -283,6 +289,14 @@ object SubsystemDetector {
 		if (!matches) return
 
 		starship.subsystems += LandingGearMultiblock.createSubsystem(starship, Vec3i(block.location), NORTH)
+	}
+
+	private fun detectDirectionOverride(starship: ActiveControlledStarship, block: Block) {
+		// lectern "facing" is the direction that the book faces
+		if (block.getRelative(BlockFace.DOWN).type == Material.JUKEBOX) {
+			val data = block.blockData as? Directional ?: return
+			starship.forwardOverride = data.facing.oppositeFace
+		}
 	}
 
 	private fun isDuplicate(starship: ActiveControlledStarship, subsystem: StarshipSubsystem): Boolean {

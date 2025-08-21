@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.EnumScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.IndividualBrowseGui
@@ -67,7 +68,7 @@ class IndividualBrowseGui(
 		template(text("Stock: {0}", HE_MEDIUM_GRAY), entry.stock)
 	)
 
-	override fun onClickDisplayedItem(entry: BazaarItem) = purchaseHandler.invoke(entry)
+	override fun onClickDisplayedItem(entry: BazaarItem, clickedFrom: CommonGuiWrapper) = purchaseHandler.invoke(entry)
 
 	override fun buildWindow(): Window {
 		val gui = PagedGui.items().setStructure(

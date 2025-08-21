@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.chat
 
-import net.horizonsend.ion.common.utils.Mutes.muteCache
 import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.player.ServerMutesHook
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.enumValueOfOrNull
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -68,11 +68,16 @@ object ChannelSelections : IonServerComponent() {
 				val oldChannel = get(player)
 
 				if (args.size > 1) {
-					if (muteCache[playerID]) return@let
-
 					localCache[playerID] = channel
+
 					try {
-						player.chat(message.removePrefix("/").removePrefix("$command "))
+						ServerMutesHook.checkMute(playerID).whenComplete { muted, exception ->
+							if (exception != null) throw exception
+
+							if (muted) return@whenComplete
+
+							Tasks.sync { player.chat(message.removePrefix("/").removePrefix("$command ")) }
+						}
 					} finally {
 						localCache[playerID] = oldChannel
 					}

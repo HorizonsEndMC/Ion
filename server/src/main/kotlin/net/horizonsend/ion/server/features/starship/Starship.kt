@@ -503,6 +503,7 @@ class Starship(
 	var targetedPosition: Location? = null
 	var beacon: ServerConfiguration.HyperspaceBeacon? = null
 	var forward: BlockFace = BlockFace.NORTH
+	var forwardOverride: BlockFace? = null
 	var isExploding = false
 
 	var isInterdicting = false; private set
