@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.economy.chestshops
 
 import net.horizonsend.ion.common.database.schema.economy.ChestShop
+import net.horizonsend.ion.common.database.schema.economy.ChestShop.Companion.setItem
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.uuid
@@ -52,6 +53,7 @@ import net.minecraft.server.MinecraftServer
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.block.Block
 import org.bukkit.block.Chest
 import org.bukkit.block.Sign
 import org.bukkit.block.data.type.WallSign
@@ -77,16 +79,23 @@ object ChestShops : IonServerComponent() {
 	}
 
 	@EventHandler
-	fun onClickSign(event: PlayerInteractEvent) {
+	fun onClickBlock(event: PlayerInteractEvent) {
 		val block = event.clickedBlock ?: return
-		if (!block.type.isWallSign) return
+		if (block.type.isWallSign) checkSignInteraction(event, block)
+		if (block.type == Material.CHEST) checkChestInteraction(event, block)
+	}
 
-		val placedOn = block.getRelative((block.blockData as WallSign).facing.oppositeFace)
+	/**
+	 * Main entrypoint of shops. Handles detection, setting the item, and purchases / sales.
+	 **/
+	fun checkSignInteraction(event: PlayerInteractEvent, clickedBlock: Block) {
+		val placedOn = clickedBlock.getRelative((clickedBlock.blockData as WallSign).facing.oppositeFace)
 		if (placedOn.type != Material.CHEST) return
 		val chest = placedOn.state as Chest
 
-		val sign = block.state as Sign
+		val sign = clickedBlock.state as Sign
 
+		// Handle detecting shops
 		val type = getUndetectedShopType(sign)
 		if (type != null && event.action != Action.LEFT_CLICK_BLOCK) {
 			setupShop(event.player, chest, sign, type)
@@ -102,37 +111,26 @@ object ChestShops : IonServerComponent() {
 
 		event.isCancelled = true
 
-		interactWithShop(event.player, chest, shop)
-	}
-
-	@EventHandler
-	fun onBlockBreak(event: BlockBreakEvent) {
-		val block = event.block
-
-		if (block.type == Material.CHEST) {
-			checkSurroundingShops(block.state as? Chest ?: return)
-		}
-
-		if (!block.type.isWallSign) return
-
-		val state = block.state as Sign
-		val shop = getShop(state) ?: return
-
-		if (event.player.slPlayerId != shop.owner && !event.player.hasPermission("group.dutymode")) {
-			event.isCancelled
+		// Handle unset items
+		if (shop.soldItem == null && event.player.slPlayerId == shop.owner) {
+			setItem(event.player, shop)
 			return
 		}
 
-		Tasks.async {
-			ChestShop.delete(shop._id)
-			event.player.success("Removed Chest Shop")
-		}
+		// Handle purchases
+		purchase(event.player, chest, shop)
 	}
 
-	fun checkSurroundingShops(chest: Chest) {
+	/**
+	 * Deny access to chests when they are a shop and the interacting player is not the owner
+	 **/
+	fun checkChestInteraction(event: PlayerInteractEvent, clickedBlock: Block) {
+		val chest = clickedBlock.state as? Chest ?: return
 		val shop = getShop(chest) ?: return
-		// Give time for the block to break
-		Tasks.syncDelay(2L) { checkShopIntegrity(shop) }
+
+		if (event.player.slPlayerId != shop.owner) {
+			event.isCancelled = true
+		}
 	}
 
 	private fun setupShop(player: Player, chest: Chest, sign: Sign, type: ShopType) {
@@ -162,7 +160,10 @@ object ChestShops : IonServerComponent() {
 		}
 	}
 
-	fun validatePrice(line: Component): ValidatorResult<Double> {
+	/**
+	 * Returns a validator result of the price, or an error if it is invalid.
+	 **/
+	private fun validatePrice(line: Component): ValidatorResult<Double> {
 		val plain = line.plainText()
 
 		if (plain.isEmpty()) return ValidatorResult.FailureResult(Component.text("You must enter a price!", NamedTextColor.RED))
@@ -172,11 +173,34 @@ object ChestShops : IonServerComponent() {
 		return ValidatorResult.ValidatorSuccessSingleEntry(asDouble)
 	}
 
-	fun interactWithShop(player: Player, chest: Chest, shop: ChestShop) {
-		if (shop.soldItem == null && player.slPlayerId == shop.owner) {
-			setItem(player, shop)
+	@EventHandler
+	fun onBlockBreak(event: BlockBreakEvent) {
+		val block = event.block
+
+		if (block.type == Material.CHEST) {
+			checkSurroundingShopsIntegrity(block.state as? Chest ?: return)
 		}
 
+		if (!block.type.isWallSign) return
+
+		val state = block.state as Sign
+		val shop = getShop(state) ?: return
+
+		if (event.player.slPlayerId != shop.owner && !event.player.hasPermission("group.dutymode")) {
+			event.isCancelled
+			return
+		}
+
+		Tasks.async {
+			ChestShop.delete(shop._id)
+			event.player.success("Removed Chest Shop")
+		}
+	}
+
+	/**
+	 * Handle purchases and sales to the shop.
+	 **/
+	fun purchase(player: Player, chest: Chest, shop: ChestShop) {
 		val itemData = shop.soldItem ?: return player.userError("That shop does not have an item configured!")
 
 		val itemType = loadItem(itemData)
@@ -194,7 +218,7 @@ object ChestShops : IonServerComponent() {
 
 		if (player.slPlayerId == shop.owner) {
 			player.userError("You can't purchase from your own shop!")
-//			return TODO uncomment this after testing
+			return
 		}
 
 		when (shop.selling) {
@@ -204,7 +228,10 @@ object ChestShops : IonServerComponent() {
 		}
 	}
 
-	fun setItem(player: Player, shop: ChestShop) {
+	/**
+	 * Sets the item sold in the shop.
+	 **/
+	private fun setItem(player: Player, shop: ChestShop) {
 		val item = player.inventory.itemInMainHand
 		val itemValidation = verifyItem(item)
 		if (!itemValidation.isSuccess()) return itemValidation.sendReason(player)
@@ -212,12 +239,12 @@ object ChestShops : IonServerComponent() {
 		val stringRepresentation = getStringRepresentation(item)
 
 		Tasks.async {
-			ChestShop.setItem(shopId = shop._id, stringRepresentation)
+			setItem(shopId = shop._id, stringRepresentation)
 			player.success("Set shop to sell {0}", item.displayNameComponent)
 		}
 	}
 
-	fun buyItems(interacting: Player, chest: Chest, shop: ChestShop, item: ItemStack) {
+	private fun buyItems(interacting: Player, chest: Chest, shop: ChestShop, item: ItemStack) {
 		val asOne = item.asOne()
 		val room = getTransferSpaceFor(interacting.inventory as CraftInventory, asOne)
 
@@ -261,7 +288,7 @@ object ChestShops : IonServerComponent() {
 		}
 	}
 
-	fun sellItems(interacting: Player, chest: Chest, shop: ChestShop, item: ItemStack) {
+	private fun sellItems(interacting: Player, chest: Chest, shop: ChestShop, item: ItemStack) {
 		val asOne = item.asOne()
 
 		val chestInv = chest.inventory
@@ -309,6 +336,9 @@ object ChestShops : IonServerComponent() {
 		}
 	}
 
+	/**
+	 * Blocks / allows items to be sold. Mostly here for future proofing if items need to be banned.
+	 **/
 	fun verifyItem(itemStack: ItemStack): InputResult {
 		if (itemStack.isEmpty) return InputResult.FailureReason(listOf(Component.text("You must hold an item!", NamedTextColor.RED)))
 
@@ -317,20 +347,19 @@ object ChestShops : IonServerComponent() {
 		return InputResult.InputSuccess
 	}
 
-	fun getShop(sign: Sign): ChestShop? {
-		val worldKey = sign.world.key()
-		val location = Vec3i(sign.x, sign.y, sign. z)
-
-		return ChestShopCache.getByLocation(worldKey, location)
-	}
-
-	fun getStringRepresentation(itemStack: ItemStack): String {
+	/**
+	 * Returns a SNBT string containing the item data.
+	 **/
+	private fun getStringRepresentation(itemStack: ItemStack): String {
 		val nms = CraftItemStack.asNMSCopy(itemStack)
 		val tag: CompoundTag = nms.save(MinecraftServer.getServer().registryAccess(), CompoundTag()) as CompoundTag
 		return SnbtPrinterTagVisitor().visit(tag)
 	}
 
-	fun loadItem(string: String): ItemStack? {
+	/**
+	 * Loads an itemstack from SNBT data.
+	 **/
+	private fun loadItem(string: String): ItemStack? {
 		val nbt = NbtUtils.snbtToStructure(string)
 
 		val nmsStack = NMSItemStack.parse(MinecraftServer.getServer().registryAccess(), nbt).getOrNull() ?: return null
@@ -357,6 +386,9 @@ object ChestShops : IonServerComponent() {
 	private val BUY_SHOP_FIRST_LINE = bracketed(Component.text("Buy Shop", NamedTextColor.GREEN), leftBracket = '{', rightBracket = '}')
 	private val NULL_ITEM_TEXT = Component.text("?", HE_MEDIUM_GRAY)
 
+	/**
+	 * Updates the sign text of the shop
+	 **/
 	fun updateSign(shop: ChestShop) = Tasks.sync {
 		val worldKey = Key.key(shop.world)
 		val world = Bukkit.getWorld(worldKey) ?: return@sync
@@ -379,6 +411,7 @@ object ChestShops : IonServerComponent() {
 		}
 	}
 
+	/** Returns the chest attached to the chest with a sign */
 	fun getShop(chest: Chest): ChestShop? {
 		val worldKey = chest.world.key
 		for (dir in CARDINAL_BLOCK_FACES) {
@@ -392,7 +425,40 @@ object ChestShops : IonServerComponent() {
 		return null
 	}
 
-	fun displayShops() {
+	/** Returns the chest shop at the sign */
+	fun getShop(sign: Sign): ChestShop? {
+		val worldKey = sign.world.key()
+		val location = Vec3i(sign.x, sign.y, sign. z)
+
+		return ChestShopCache.getByLocation(worldKey, location)
+	}
+
+	/**
+	 * Checks the integrity of the provided shop.
+	 **/
+	private fun checkShopIntegrity(shop: ChestShop) {
+		val world = Bukkit.getWorld(Key.key(shop.world)) ?: return // Different server
+		val vec3i = Vec3i(shop.location)
+		val data = getBlockDataSafe(world, vec3i.x, vec3i.y, vec3i.z) ?: return // Not loaded
+
+		// If the sign has been removed, destroy the shop
+		if (data !is WallSign) {
+			Tasks.async {
+				ChestShop.delete(shop._id)
+			}
+		}
+	}
+
+	/**
+	 * Checks the integrity of shops placed on the chest.
+	 **/
+	private fun checkSurroundingShopsIntegrity(chest: Chest) {
+		val shop = getShop(chest) ?: return
+		// Give time for the block to break
+		Tasks.syncDelay(2L) { checkShopIntegrity(shop) }
+	}
+
+	private fun displayShops() {
 		val worlds = ChestShopCache.byLocation.rowKeySet()
 
 		for (worldKey in worlds) {
@@ -418,7 +484,7 @@ object ChestShops : IonServerComponent() {
 		}
 	}
 
-	fun displayShopContents(soldItem: ItemStack, signData: WallSign, shopLocation: Vec3i, world: World, price: Double, worldPlayers: Collection<Player>) {
+	private fun displayShopContents(soldItem: ItemStack, signData: WallSign, shopLocation: Vec3i, world: World, price: Double, worldPlayers: Collection<Player>) {
 		val offset = signData.facing.oppositeFace
 		val location = shopLocation.toLocation(world).toCenterLocation().add(offset.direction).add(0.0, 0.25, 0.0)
 
@@ -448,19 +514,6 @@ object ChestShops : IonServerComponent() {
 			player.sendText(location.clone().add(0.0, 1.20, 0.0), lines, 121L, 0.75f)
 			player.sendText(location.clone().add(0.0, 0.95, 0.0), price.toCreditComponent(), 121L)
 			ClientDisplayEntities.sendEntityPacket(player, nms, 121L)
-		}
-	}
-
-	fun checkShopIntegrity(shop: ChestShop) {
-		val world = Bukkit.getWorld(Key.key(shop.world)) ?: return // Different server
-		val vec3i = Vec3i(shop.location)
-		val data = getBlockDataSafe(world, vec3i.x, vec3i.y, vec3i.z) ?: return // Not loaded
-
-		// If the sign has been removed, destroy the shop
-		if (data !is WallSign) {
-			Tasks.async {
-				ChestShop.delete(shop._id)
-			}
 		}
 	}
 }
