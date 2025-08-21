@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.movement
 
 import io.papermc.paper.entity.TeleportFlag
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -12,6 +13,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.world.entity.Relative
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.chunk.LevelChunk
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.World
@@ -24,7 +26,14 @@ import java.util.concurrent.CompletableFuture
 import kotlin.math.max
 import kotlin.math.min
 
-class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val dz: Int, override val newWorld: World? = null) : StarshipMovement(starship) {
+class TranslateMovement(
+	starship: ActiveStarship,
+	val dx: Int,
+	val dy: Int,
+	val dz: Int,
+	override val newWorld: World? = null,
+	val chunkCache: Long2ObjectOpenHashMap<LevelChunk> = Long2ObjectOpenHashMap<LevelChunk>()
+) : StarshipMovement(starship) {
 	companion object {
 		fun loadChunksAndMove(
 			starship: ActiveStarship,
@@ -40,18 +49,20 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 
 			return CompletableFuture.allOf(*toLoad.toTypedArray())
 				.thenCompose {
-					Tasks.checkMainThread()
-					return@thenCompose starship.moveAsync(TranslateMovement(starship, dx, dy, dz, newWorld))
-				}
-				.whenComplete { original, exception ->
-					if (original == null || exception != null) return@whenComplete
+					val chunks = toLoad.associateTo(Long2ObjectOpenHashMap()) { val chunk = it.get(); chunk.chunkKey to chunk.minecraft }
 
-					when (type) {
+					Tasks.checkMainThread()
+					return@thenCompose starship.moveAsync(TranslateMovement(starship, dx, dy, dz, newWorld, chunkCache = chunks))
+				}
+				.thenComposeAsync { original ->
+					if (original == true) when (type) {
 						MovementSource.MANUAL -> starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
 						MovementSource.DC -> starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
 						MovementSource.CRUISE -> starship.cruiseKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
 						else -> {}
 					}
+
+					CompletableFuture.completedFuture(original)
 				}
 		}
 
@@ -81,6 +92,8 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 			return toLoad
 		}
 	}
+
+
 
 	override fun blockStateTransform(blockData: BlockState): BlockState = blockData
 
