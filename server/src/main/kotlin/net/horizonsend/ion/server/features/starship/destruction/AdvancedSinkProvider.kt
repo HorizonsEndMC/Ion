@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.machine.AreaShields.getNearbyAreaShields
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
@@ -179,7 +180,13 @@ open class AdvancedSinkProvider(starship: ActiveStarship) : SinkProvider(starshi
 				processTileEntities(capturedTiles, newPositions)
 
 				// Broadcast changes
-				OptimizedMovement.sendChunkUpdatesToPlayers(starship.world, starship.world, Long2ObjectOpenHashMap(), oldChunkMap, newChunkMap)
+				OptimizedMovement.sendChunkUpdatesToPlayers(
+					currentWorld = starship.world,
+					newWorld = starship.world,
+					chunkCache = Object2ObjectOpenHashMap(),
+					oldChunkMap = oldChunkMap,
+					newChunkMap = newChunkMap
+				)
 
 				// Save the moved blocks for their next iteration
 				sinkPositions = trimmedPositions.toLongArray()
