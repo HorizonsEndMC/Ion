@@ -108,6 +108,11 @@ object ChestShops : IonServerComponent() {
 	@EventHandler
 	fun onBlockBreak(event: BlockBreakEvent) {
 		val block = event.block
+
+		if (block.type == Material.CHEST) {
+			checkSurroundingShops(block.state as? Chest ?: return)
+		}
+
 		if (!block.type.isWallSign) return
 
 		val state = block.state as Sign
@@ -122,6 +127,12 @@ object ChestShops : IonServerComponent() {
 			ChestShop.delete(shop._id)
 			event.player.success("Removed Chest Shop")
 		}
+	}
+
+	fun checkSurroundingShops(chest: Chest) {
+		val shop = getShop(chest) ?: return
+		// Give time for the block to break
+		Tasks.syncDelay(2L) { checkShopIntegrity(shop) }
 	}
 
 	private fun setupShop(player: Player, chest: Chest, sign: Sign, type: ShopType) {
