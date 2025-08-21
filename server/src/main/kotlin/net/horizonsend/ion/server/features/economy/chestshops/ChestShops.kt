@@ -430,8 +430,8 @@ object ChestShops : IonServerComponent() {
 		val nms = itemDisplay.getNMSData(location.x, location.y + 0.55, location.z)
 
 		players.forEach { player ->
-			player.sendText(location.clone().add(0.0, 1.15, 0.0), soldItem.displayNameComponent, 121L, false)
-			player.sendText(location.clone().add(0.0, 0.90, 0.0), price.toCreditComponent(), 121L, false)
+			player.sendText(location.clone().add(0.0, 1.20, 0.0), soldItem.displayNameComponent, 121L, false)
+			player.sendText(location.clone().add(0.0, 0.95, 0.0), price.toCreditComponent(), 121L, false)
 			ClientDisplayEntities.sendEntityPacket(player, nms, 121L)
 		}
 	}
