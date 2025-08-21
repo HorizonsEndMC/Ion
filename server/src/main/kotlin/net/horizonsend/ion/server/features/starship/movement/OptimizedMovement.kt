@@ -1,11 +1,5 @@
 package net.horizonsend.ion.server.features.starship.movement
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
-import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import it.unimi.dsi.fastutil.shorts.ShortOpenHashSet
-import it.unimi.dsi.fastutil.shorts.ShortSet
 import net.horizonsend.ion.server.features.starship.Hangars
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -18,10 +12,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.core.BlockPos
-import net.minecraft.core.SectionPos
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.server.level.ChunkHolder
-import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.BambooSaplingBlock
 import net.minecraft.world.level.block.BambooStalkBlock
 import net.minecraft.world.level.block.BaseCoralPlantTypeBlock
@@ -48,7 +39,9 @@ import java.util.LinkedList
 import java.util.concurrent.ExecutionException
 
 object OptimizedMovement {
-	private val passThroughBlocks = listOf(Material.AIR, Material.CAVE_AIR, Material.VOID_AIR, Material.SNOW).mapTo(ObjectOpenHashSet()) { it.createBlockData().nms }
+	private val passThroughBlocks = listOf(Material.AIR, Material.CAVE_AIR, Material.VOID_AIR, Material.SNOW)
+		.map { it.createBlockData().nms }
+		.toSet()
 
 	fun moveStarship(
 		executionCheck: () -> Boolean,
@@ -57,7 +50,6 @@ object OptimizedMovement {
 		oldPositionArray: LongArray,
 		newPositionArray: LongArray,
 		blockStateTransform: (BlockState) -> BlockState,
-		chunkCache: Long2ObjectOpenHashMap<LevelChunk> = Long2ObjectOpenHashMap<LevelChunk>(),
 		callback: () -> Unit
 	) {
 		val oldChunkMap = getChunkMap(oldPositionArray)
@@ -75,13 +67,12 @@ object OptimizedMovement {
 					return@syncBlocking
 				}
 
-				checkForCollision(world2, collisionChunkMap, chunkCache, hangars, newPositionArray)
+				checkForCollision(world2, collisionChunkMap, hangars, newPositionArray)
 
 				processOldBlocks(
 					oldChunkMap,
 					world1,
 					world2,
-					chunkCache,
 					capturedStates,
 					capturedTiles
 				)
@@ -93,7 +84,6 @@ object OptimizedMovement {
 					newChunkMap,
 					world1,
 					world2,
-					chunkCache,
 					capturedStates,
 					capturedTiles,
 					blockStateTransform
@@ -101,7 +91,7 @@ object OptimizedMovement {
 
 				callback()
 
-				sendChunkUpdatesToPlayers(world1, world2, chunkCache, oldChunkMap, newChunkMap)
+				sendChunkUpdatesToPlayers(world1, world2, oldChunkMap, newChunkMap)
 			}
 		} catch (e: ExecutionException) {
 			throw e.cause ?: e
@@ -111,12 +101,12 @@ object OptimizedMovement {
 	private fun checkForCollision(
 		world: World,
 		collisionChunkMap: ChunkMap,
-		chunkCache: Long2ObjectOpenHashMap<LevelChunk>,
 		hangars: LinkedList<Long>,
 		newPositionArray: LongArray
 	) {
 		for ((chunkKey, sectionMap) in collisionChunkMap) {
-			val nmsChunk = chunkCache.getOrPut(chunkKey) { world.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft }
+			val chunk = world.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
+			val nmsChunk = chunk.minecraft
 
 			for ((sectionKey, positionMap) in sectionMap) {
 				val section = nmsChunk.sections[sectionKey]
@@ -173,16 +163,14 @@ object OptimizedMovement {
 		oldChunkMap: ChunkMap,
 		world1: World,
 		world2: World,
-		chunkCache: Long2ObjectOpenHashMap<LevelChunk>,
 		capturedStates: Array<BlockState>,
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>
 	) {
 		val lightModule = world1.minecraft.lightEngine
-		val relightChunks = ObjectOpenHashSet<ChunkPos>()
 
 		for ((chunkKey, sectionMap) in oldChunkMap) {
-			val nmsChunk = chunkCache.getOrPut(chunkKey) { world2.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft }
-			relightChunks.add(nmsChunk.pos)
+			val chunk = world1.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
+			val nmsChunk = chunk.minecraft
 
 			for ((sectionKey, positionMap) in sectionMap) {
 				val section = nmsChunk.getSection(sectionKey)
@@ -204,21 +192,18 @@ object OptimizedMovement {
 						processOldTile(blockPos, nmsChunk, capturedTiles, index)
 					}
 
-					pseudoBlockChanged(nmsChunk, sectionKey, blockPos)
+					nmsChunk.`moonrise$getChunkAndHolder`().holder.blockChanged(blockPos)
 					nmsChunk.level.onBlockStateChange(blockPos, type, AIR)
 
 					section.setBlockState(localX, localY, localZ, AIR, false)
-//					lightModule.`starlight$getLightEngine`().serverLightQueue.queueBlockChange(BlockPos(x, y, z))
-				}
 
-//				lightModule.updateSectionStatus(SectionPos.of(chunk.x, sectionKey, chunk.z), false)
+					lightModule.checkBlock(BlockPos(x, y, z)) // Lighting is not cringe
+				}
 			}
 
 			updateHeightMaps(nmsChunk)
 			nmsChunk.markUnsaved()
 		}
-
-		lightModule.`starlight$serverRelightChunks`(relightChunks, {}, {})
 	}
 
 	private fun processNewBlocks(
@@ -226,17 +211,15 @@ object OptimizedMovement {
 		newChunkMap: ChunkMap,
 		world1: World,
 		world2: World,
-		chunkCache: Long2ObjectOpenHashMap<LevelChunk>,
 		capturedStates: Array<BlockState>,
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>,
 		blockDataTransform: (BlockState) -> BlockState
 	) {
 		val lightModule = world2.minecraft.lightEngine
-		val relightChunks = ObjectOpenHashSet<ChunkPos>()
 
 		for ((chunkKey, sectionMap) in newChunkMap) {
-			val nmsChunk = chunkCache.getOrPut(chunkKey) { world2.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft }
-			relightChunks.add(nmsChunk.pos)
+			val chunk = world2.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey))
+			val nmsChunk = chunk.minecraft
 
 			for ((sectionKey, positionMap) in sectionMap) {
 				val section = nmsChunk.getSection(sectionKey)
@@ -254,21 +237,17 @@ object OptimizedMovement {
 					val data = blockDataTransform(capturedStates[index])
 
 					val blockPos = BlockPos(x, y, z)
-					pseudoBlockChanged(nmsChunk, sectionKey, blockPos)
+					nmsChunk.`moonrise$getChunkAndHolder`().holder.blockChanged(blockPos)
 					nmsChunk.level.onBlockStateChange(blockPos, AIR /*TODO hangars */, data)
 
 					section.setBlockState(localX, localY, localZ, data, false)
-//					lightModule.`starlight$getLightEngine`().serverLightQueue.queueBlockChange(BlockPos(x, y, z))
+					lightModule.checkBlock(BlockPos(x, y, z))
 				}
-
-//				lightModule.updateSectionStatus(SectionPos.of(chunk.x, sectionKey, chunk.z), false)
 			}
 
 			updateHeightMaps(nmsChunk)
 			nmsChunk.markUnsaved()
 		}
-
-		lightModule.`starlight$serverRelightChunks`(relightChunks, {}, {})
 
 		for ((index, tile) in capturedTiles) {
 			val blockKey = newPositionArray[index]
@@ -303,7 +282,7 @@ object OptimizedMovement {
 	}
 
 	private fun getChunkMap(positionArray: LongArray): ChunkMap {
-		val chunkMap = Long2ObjectOpenHashMap<Int2ObjectOpenHashMap<Long2IntOpenHashMap>>()
+		val chunkMap = mutableMapOf<Long, MutableMap<Int, MutableMap<Long, Int>>>()
 
 		for (index in positionArray.indices) {
 			val blockKey = positionArray[index]
@@ -312,8 +291,8 @@ object OptimizedMovement {
 			val z = blockKeyZ(blockKey)
 			val chunkKey = chunkKey(x shr 4, z shr 4)
 			val sectionKey = y shr 4
-			val sectionMap = chunkMap.getOrPut(chunkKey) { Int2ObjectOpenHashMap() }
-			val positionMap = sectionMap.getOrPut(sectionKey) { Long2IntOpenHashMap() }
+			val sectionMap = chunkMap.getOrPut(chunkKey) { mutableMapOf() }
+			val positionMap = sectionMap.getOrPut(sectionKey) { mutableMapOf() }
 			positionMap[blockKey] = index
 		}
 
@@ -324,7 +303,7 @@ object OptimizedMovement {
 		from the new chunk map that
 		are not in the old chunk map */
 	private fun getCollisionChunkMap(oldChunkMap: ChunkMap, newChunkMap: ChunkMap): ChunkMap {
-		val chunkMap = Long2ObjectOpenHashMap<Int2ObjectOpenHashMap<Long2IntOpenHashMap>>()
+		val chunkMap = mutableMapOf<Long, MutableMap<Int, MutableMap<Long, Int>>>()
 
 		for ((chunkKey, newSectionMap) in newChunkMap) {
 			val oldSectionMap = oldChunkMap[chunkKey]
@@ -337,8 +316,8 @@ object OptimizedMovement {
 						continue
 					}
 
-					val sectionMap = chunkMap.getOrPut(chunkKey) { Int2ObjectOpenHashMap() }
-					val positionMap = sectionMap.getOrPut(sectionKey) { Long2IntOpenHashMap() }
+					val sectionMap = chunkMap.getOrPut(chunkKey) { mutableMapOf() }
+					val positionMap = sectionMap.getOrPut(sectionKey) { mutableMapOf() }
 					positionMap[blockKey] = index
 				}
 			}
@@ -347,35 +326,13 @@ object OptimizedMovement {
 		return chunkMap
 	}
 
-	fun sendChunkUpdatesToPlayers(
-		world1: World,
-		world2: World,
-		chunkCache: Long2ObjectOpenHashMap<LevelChunk>,
-		oldChunkMap: ChunkMap,
-		newChunkMap: ChunkMap,
-	) {
+	fun sendChunkUpdatesToPlayers(world1: World, world2: World, oldChunkMap: ChunkMap, newChunkMap: ChunkMap) {
 		for ((chunkMap, world) in listOf(oldChunkMap to world1.uid, newChunkMap to world2.uid)) {
 			for ((chunkKey, _) in chunkMap) {
-				val nmsChunk = chunkCache.getOrPut(chunkKey) { Bukkit.getWorld(world)!!.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft }
+				val nmsChunk = Bukkit.getWorld(world)!!.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft
 				nmsChunk.`moonrise$getChunkAndHolder`().holder.broadcastChanges(nmsChunk)
 			}
 		}
-	}
-
-	private val blocksChangedPersection = ChunkHolder::class.java.getDeclaredField("changedBlocksPerSection").apply { isAccessible = true }
-	private val hasChangedSections = ChunkHolder::class.java.getDeclaredField("hasChangedSections").apply { isAccessible = true }
-
-	fun pseudoBlockChanged(chunk: LevelChunk, sectionIndex: Int, blockPos: BlockPos) {
-		val holder = chunk.`moonrise$getChunkAndHolder`().holder
-
-		@Suppress("UNCHECKED_CAST") val changedBlockSets: Array<ShortSet?> = blocksChangedPersection.get(holder) as Array<ShortSet?>
-
-		if (changedBlockSets[sectionIndex] == null) {
-			hasChangedSections.set(holder, true)
-			changedBlockSets[sectionIndex] = ShortOpenHashSet(4096)
-		}
-
-		changedBlockSets[sectionIndex]?.add(SectionPos.sectionRelativePos(blockPos))
 	}
 }
 
