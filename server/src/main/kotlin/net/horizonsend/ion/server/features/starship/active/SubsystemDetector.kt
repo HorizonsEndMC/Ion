@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.economy.chestshops.ChestShops
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield
@@ -144,6 +145,10 @@ object SubsystemDetector {
 
 	private fun detectSign(starship: ActiveControlledStarship, block: Block) {
 		val sign = block.state as Sign
+
+		if (ChestShops.getShop(sign) != null) {
+			throw ActiveStarshipFactory.StarshipActivationException("Starships cannot fly with chest shops!")
+		}
 
 		val multiblock = MultiblockAccess.getFast(sign)
 		if (multiblock is AreaShield) {
