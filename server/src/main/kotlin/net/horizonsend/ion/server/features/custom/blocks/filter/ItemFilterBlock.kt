@@ -21,13 +21,13 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.TileState
-import org.bukkit.block.Vault as VaultState
-import org.bukkit.block.data.type.Vault as VaultData
 import org.bukkit.craftbukkit.block.CraftVault
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
+import org.bukkit.block.Vault as VaultState
+import org.bukkit.block.data.type.Vault as VaultData
 
 object ItemFilterBlock : DirectionalCustomBlock(
 	identifier = "ITEM_FILTER",
@@ -103,7 +103,7 @@ object ItemFilterBlock : DirectionalCustomBlock(
 
 	override fun onRightClick(event: PlayerInteractEvent, block: Block) {
 		val clickedItem = event.item
-		if (event.player.isSneaking && clickedItem == null) return
+		if (event.player.isSneaking) return
 
 		event.isCancelled = true
 		event.player.closeInventory()
