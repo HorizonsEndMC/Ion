@@ -275,7 +275,7 @@ object ClientDisplayEntities : IonServerComponent() {
 		pos: Vector,
 		scale: Float = 0.75f,
 	): net.minecraft.world.entity.Display.ItemDisplay {
-		val block = createItemDisplay(player)
+		val block = createItemDisplay(player.world.minecraft)
 		block.setItemStack(item)
 		block.isGlowing = true
 		val dir = player.location.clone().subtract(block.location).toVector()
