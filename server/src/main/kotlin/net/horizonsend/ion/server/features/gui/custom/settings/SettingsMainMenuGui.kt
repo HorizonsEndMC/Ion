@@ -91,6 +91,9 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 				DBCachedIntegerInput(1,100, text("Flare Duration"),
 					"\"How long flares from hitting shields should last in ticks", GuiItem.BOOKMARK, 5, PlayerSettings::flareTime)
 			),
+			createSettingsPage(player, "Misc Settings",
+				DBCachedBooleanToggle(text("Toggle Chest Shop Item Visibility"), "", GuiItem.BOOKMARK, false, PlayerSettings::chestShopDisplays),
+			),
 		),
 		createSettingsPage(player, "Sound Settings",
 			DBCachedBooleanToggle(text("Enable Additional Sounds"), "", GuiItem.SOUND, true, PlayerSettings::enableAdditionalSounds),
