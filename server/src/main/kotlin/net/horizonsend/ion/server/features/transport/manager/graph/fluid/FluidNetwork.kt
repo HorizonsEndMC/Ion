@@ -9,7 +9,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
@@ -24,8 +23,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -39,11 +36,26 @@ import kotlin.random.Random
 class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, TransportNetwork<FluidNode>>) : TransportNetwork<FluidNode>(uuid, manager) {
 	override fun createEdge(nodeOne: FluidNode, nodeTwo: FluidNode): GraphEdge = FluidGraphEdge(nodeOne, nodeTwo)
 
+	var isAlive: Boolean = true; private set
+
+	/**
+	 * A map of each node location to the maximum flow achievable at that node
+	 **/
 	private var flowMap = Long2DoubleOpenHashMap()
 
+	/**
+	 * The contents of the network, contained as a fluid stack
+	 **/
 	var networkContents: FluidStack = FluidStack.empty()
 
-	var cachedVolume: Double? = null
+	/**
+	 * The last calculated volume of the network
+	 **/
+	private var cachedVolume: Double? = null
+
+	fun resetCachedVolume() {
+		cachedVolume = null
+	}
 
 	@Synchronized
 	fun getVolume(): Double {
@@ -55,7 +67,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 	}
 
 	override fun onModified() {
-		cachedVolume = null
+		resetCachedVolume()
 	}
 
 	private var lastStructureTick: Long = System.currentTimeMillis()
@@ -68,7 +80,10 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		if (now - lastStructureTick > STRUCTURE_INTERVAL) {
 			lastStructureTick = now
 
+			// Discover any strucural changes and check integrity of the network
 			discoverNetwork()
+
+			// Determine the direction and capacity for flow through the network
 			edmondsKarp()
 		}
 
@@ -98,10 +113,15 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		tickMultiblockInputs(inputs, delta)
 	}
 
-	fun tickUnpairedPipes(delta: Double) {
+	/**
+	 * Unpaired pipes will leak fluids out of the network
+	 **/
+	private fun tickUnpairedPipes(delta: Double) {
 		if (networkContents.isEmpty()) return
 
 		val type = networkContents.type
+
+		val leakingLocations = LongOpenHashSet()
 
 		for (node in getGraphNodes()) {
 			if (node !is FluidNode.LeakablePipe) continue
@@ -112,20 +132,27 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 			if (edges.size >= 2) continue
 
+			leakingLocations.add(node.location)
+
 			val connectedEdge = edges.first()
 			val direction = (connectedEdge as FluidGraphEdge).direction.oppositeFace
 
-			runCatching {
-				debugAudience.highlightBlock(toVec3i(getRelative(node.location, direction)), 20L)
-				type.playLeakEffects(manager.transportManager.getWorld(), node, direction)
-			}.onFailure { exception -> exception.printStackTrace() }
+			runCatching { type.playLeakEffects(manager.transportManager.getWorld(), node, direction) }
+				.onFailure { exception -> exception.printStackTrace() }
 
 			val removeAmount = (minOf(flowMap.getOrDefault(node.location, 5.0), node.leakRate, networkContents.amount) * delta)
 			networkContents.amount -= removeAmount
 		}
+
+		leakingPipes = leakingLocations
 	}
 
-	fun trackIO(): Pair<Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>, Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>> {
+	private var leakingPipes = LongOpenHashSet()
+
+	/**
+	 * Returns a pair of a location map of inputs, and a location map of outputs
+	 **/
+	private fun trackIO(): Pair<Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>, Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>> {
 		val inputs = Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>()
 		val outputs = Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>()
 
@@ -142,15 +169,15 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		return inputs to outputs
 	}
 
-	fun tickMultiblockInputs(inputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>, delta: Double) {
+	private fun tickMultiblockInputs(inputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>, delta: Double) {
 		inputs.forEach { entry -> addToMultiblocks(entry.key, entry.value, delta) }
 	}
 
-	fun tickMultiblockOutputs(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>, delta: Double) {
+	private fun tickMultiblockOutputs(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>, delta: Double) {
 		outputs.forEach { entry -> depositToNetwork(entry.key, entry.value, delta) }
 	}
 
-	fun depositToNetwork(location: BlockKey, input: IOPort.RegisteredMetaDataInput<FluidInputMetadata>, delta: Double) {
+	private fun depositToNetwork(location: BlockKey, input: IOPort.RegisteredMetaDataInput<FluidInputMetadata>, delta: Double) {
 		if (!input.metaData.outputAllowed) return
 
 		var remainingRoom = maxOf(0.0, getVolume() - networkContents.amount)
@@ -170,7 +197,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		if (!storageContents.isEmpty()) networkContents.type = storageContents.type
 	}
 
-	fun addToMultiblocks(location: BlockKey, ioPort: IOPort.RegisteredMetaDataInput<FluidInputMetadata>, delta: Double) {
+	private fun addToMultiblocks(location: BlockKey, ioPort: IOPort.RegisteredMetaDataInput<FluidInputMetadata>, delta: Double) {
 		if (networkContents.isEmpty()) return
 		if (!ioPort.metaData.inputAllowed) return
 
@@ -187,9 +214,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		networkContents.amount -= toAdd
 	}
 
-	var alive: Boolean = true
-
-	fun discoverNetwork() {
+	private fun discoverNetwork() {
 		val visitQueue = ArrayDeque<BlockKey>()
 		// A set is maintained to allow faster checks of
 		val visitSet = LongOpenHashSet()
@@ -201,7 +226,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		var tick = 0
 
-		while (visitQueue.isNotEmpty() && tick < 10000 && alive) whileLoop@{
+		while (visitQueue.isNotEmpty() && tick < 10000 && isAlive) whileLoop@{
 			tick++
 			val key = visitQueue.removeFirst()
 			val node = nodeMirror[key] ?: continue
@@ -308,7 +333,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			val childContents = child.networkContents
 			if (!childContents.isEmpty() && networkContents.type != childContents.type) return@associateWithNotNull null
 
-			child.cachedVolume = null // Force recalculation of volume
+			resetCachedVolume()
+
 			val childVolume = child.getVolume()
 
 			if (childVolume <= 0.0) {
@@ -342,6 +368,9 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		private const val SUPER_SINK = Long.MIN_VALUE
 	}
 
+	/**
+	 * Runs a multi node and multi sink implementation of the Edmonds-Karp algorithm to determine flow direction and magnitude throughout the network
+	 **/
 	fun edmondsKarp() {
 		// Multimap of nodes to all nodes that connect to them
 		val parentRelationMap = Long2LongOpenHashMap()
@@ -349,7 +378,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		val sources = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.outputAllowed } }
 		val sinks: ObjectOpenHashSet<FluidNode> = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.inputAllowed } }
 
-		if (sinks.isEmpty || sources.isEmpty) return
+		if (sinks.isEmpty() || sources.isEmpty()) return
 
 		val valueGraph = getValueGraphRepresentation()
 
@@ -359,6 +388,11 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		for (sink in sinks) {
 			valueGraph.putEdgeValue(sink.location, SUPER_SINK, Double.MAX_VALUE)
+		}
+
+		// Treat leaking pipes as sinks
+		for (leaking in leakingPipes.iterator()) {
+			valueGraph.putEdgeValue(leaking, SUPER_SINK, Double.MAX_VALUE)
 		}
 
 		var maxFlow = 0.0
