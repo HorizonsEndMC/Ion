@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.gui.invui.misc
 
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.command.starship.BlueprintCommand.blueprintInfo
@@ -27,7 +28,7 @@ import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
 import kotlin.reflect.KMutableProperty1
 
-class BlueprintMenu(viewer: Player, val consumer: (Blueprint, Player) -> Unit) : ListInvUIWindow<Blueprint>(viewer, async = true) {
+class BlueprintMenu(viewer: Player, val target: SLPlayer = SLPlayer[viewer.uniqueId] as SLPlayer, val consumer: (Blueprint, Player) -> Unit) : ListInvUIWindow<Blueprint>(viewer, async = true) {
 	override val listingsPerPage: Int = 36
 
 	private var filterTypes: List<KMutableProperty1<Blueprint, out Any>> = listOf(
@@ -40,7 +41,7 @@ class BlueprintMenu(viewer: Player, val consumer: (Blueprint, Player) -> Unit) :
 
 	override fun generateEntries(): List<Blueprint> {
 		return Blueprint
-			.find(Blueprint::owner eq viewer.slPlayerId)
+			.find(Blueprint::owner eq target._id)
 			.descendingSort(filterTypes[filterType])
 			.toList()
 	}
@@ -81,7 +82,7 @@ class BlueprintMenu(viewer: Player, val consumer: (Blueprint, Player) -> Unit) :
 			.handlePageChange()
 			.build()
 
-		return normalWindow(gui)
+		return normalWindow(gui, viewer)
 	}
 
 	val searchButton = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search Blueprints")).makeGuiButton { _, _ ->
