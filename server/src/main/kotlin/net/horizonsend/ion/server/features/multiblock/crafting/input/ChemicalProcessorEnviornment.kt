@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.input
 
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
-import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.ChemicalProcessorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.ChemicalProcessorMultiblock
 import net.kyori.adventure.sound.Sound
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack

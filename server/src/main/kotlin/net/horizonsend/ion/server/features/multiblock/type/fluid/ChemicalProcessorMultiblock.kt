@@ -1,6 +1,6 @@
-package net.horizonsend.ion.server.features.multiblock.type.fluid.storage
+package net.horizonsend.ion.server.features.multiblock.type.fluid
 
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
@@ -12,7 +12,6 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock
-import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.ProgressManager
 import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
@@ -23,15 +22,13 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedM
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.ChemicalProcessorMultiblock.ChemicalProcessorEntity
+import net.horizonsend.ion.server.features.multiblock.type.fluid.ChemicalProcessorMultiblock.ChemicalProcessorEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.transport.inputs.IOData
-import net.horizonsend.ion.server.features.transport.inputs.IOPort.RegisteredMetaDataInput
+import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.LEFT
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.RIGHT
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -40,14 +37,14 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Slab
-import org.bukkit.block.data.type.Stairs.Shape.STRAIGHT
+import org.bukkit.block.data.type.Stairs
 import org.bukkit.persistence.PersistentDataAdapterContext
 
 object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProcessorEntity> {
 	override val name: String = "chemprocessor"
 	override val signText: Array<Component?> = createSignText(
 		Component.text("Chemical", NamedTextColor.GOLD),
-		Component.text("Processor", HE_MEDIUM_GRAY),
+		Component.text("Processor", HEColorScheme.Companion.HE_MEDIUM_GRAY),
 		null,
 		null
 	)
@@ -65,9 +62,9 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(1).anyGlass()
 			}
 			y(1) {
-				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).ironBlock()
-				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
 		z(1) {
@@ -128,11 +125,11 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		}
 		z(2) {
 			y(-1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.TOP, shape = STRAIGHT))
+				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 				x(-3).ironBlock()
 				x(0).type(Material.PALE_OAK_WOOD)
 				x(3).ironBlock()
-				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.TOP, shape = STRAIGHT))
+				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
 				x(-4).ironBlock()
@@ -142,7 +139,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(4).ironBlock()
 			}
 			y(1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-3).ironBlock()
 				x(-2).ironBlock()
 				x(-1).ironBlock()
@@ -150,7 +147,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(1).ironBlock()
 				x(2).ironBlock()
 				x(3).ironBlock()
-				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(2) {
 				x(-2).titaniumBlock()
@@ -189,15 +186,15 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		}
 		z(3) {
 			y(-1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.TOP, shape = STRAIGHT))
-				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.TOP, shape = STRAIGHT))
+				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
 				x(-4).fluidInput()
 				x(4).fluidInput()
 			}
 			y(1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-3).ironBlock()
 				x(-2).ironBlock()
 				x(-1).ironBlock()
@@ -205,7 +202,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(1).ironBlock()
 				x(2).ironBlock()
 				x(3).ironBlock()
-				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(2) {
 				x(-3).titaniumBlock()
@@ -245,10 +242,10 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		}
 		z(4) {
 			y(-1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.TOP, shape = STRAIGHT))
+				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 				x(-2).type(Material.PALE_OAK_WOOD)
 				x(2).type(Material.PALE_OAK_WOOD)
-				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.TOP, shape = STRAIGHT))
+				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
 				x(-4).anyPipedInventory()
@@ -257,7 +254,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(4).anyPipedInventory()
 			}
 			y(1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-3).ironBlock()
 				x(-2).type(Material.PALE_OAK_WOOD)
 				x(-1).ironBlock()
@@ -265,7 +262,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(1).ironBlock()
 				x(2).type(Material.PALE_OAK_WOOD)
 				x(3).ironBlock()
-				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(2) {
 				x(-3).titaniumBlock()
@@ -308,15 +305,15 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		}
 		z(5) {
 			y(-1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.TOP, shape = STRAIGHT))
-				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.TOP, shape = STRAIGHT))
+				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
 				x(-4).fluidInput()
 				x(4).fluidInput()
 			}
 			y(1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-3).ironBlock()
 				x(-2).ironBlock()
 				x(-1).ironBlock()
@@ -324,7 +321,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(1).ironBlock()
 				x(2).ironBlock()
 				x(3).ironBlock()
-				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(2) {
 				x(-3).titaniumBlock()
@@ -364,11 +361,11 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		}
 		z(6) {
 			y(-1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.TOP, shape = STRAIGHT))
+				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 				x(-3).ironBlock()
 				x(0).type(Material.PALE_OAK_WOOD)
 				x(3).ironBlock()
-				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.TOP, shape = STRAIGHT))
+				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
 				x(-4).ironBlock()
@@ -378,7 +375,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(4).ironBlock()
 			}
 			y(1) {
-				x(-4).anyStairs(PrepackagedPreset.stairs(RIGHT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-3).ironBlock()
 				x(-2).ironBlock()
 				x(-1).ironBlock()
@@ -386,7 +383,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(1).ironBlock()
 				x(2).ironBlock()
 				x(3).ironBlock()
-				x(4).anyStairs(PrepackagedPreset.stairs(LEFT, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(2) {
 				x(-2).titaniumBlock()
@@ -492,9 +489,9 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(1).ironBlock()
 			}
 			y(1) {
-				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).ironBlock()
-				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = STRAIGHT))
+				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
 	}
@@ -506,27 +503,42 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 	class ChemicalProcessorEntity(data: PersistentMultiblockData, manager: MultiblockManager, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace) : MultiblockEntity(
 		manager, ChemicalProcessorMultiblock, world, x, y, z, structureDirection
 	), DisplayMultiblockEntity,
-		FluidStoringMultiblock,
-		SyncTickingMultiblockEntity,
-		ProgressMultiblock,
-		RecipeProcessingMultiblockEntity<ChemicalProcessorEnviornment>
+        FluidStoringMultiblock,
+        SyncTickingMultiblockEntity,
+        ProgressMultiblock,
+        RecipeProcessingMultiblockEntity<ChemicalProcessorEnviornment>
 	{
 		override var lastRecipe: MultiblockRecipe<ChemicalProcessorEnviornment>? = null
 		override var hasTicked: Boolean = false
 
-		override val progressManager: ProgressManager = ProgressManager(data)
+		override val progressManager: ProgressMultiblock.ProgressManager = ProgressMultiblock.ProgressManager(data)
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 
-		override val ioData: IOData = IOData.builder(this)
+		override val ioData: IOData = IOData.Companion.builder(this)
 			// Inputs
-			.addPort(IOType.FLUID, -4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = primaryInput, inputAllowed = true, outputAllowed = false)) }
-			.addPort(IOType.FLUID, -4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = secondaryInput, inputAllowed = true, outputAllowed = false)) }
+			.addPort(IOType.FLUID, -4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = primaryInput, inputAllowed = true, outputAllowed = false)) }
+			.addPort(IOType.FLUID, -4, 0, 5) {
+                IOPort.RegisteredMetaDataInput<FluidInputMetadata>(
+                    this,
+                    FluidInputMetadata(connectedStore = secondaryInput, inputAllowed = true, outputAllowed = false)
+                )
+            }
 
 			// Outputs
-			.addPort(IOType.FLUID, 4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = primaryOutput, inputAllowed = false, outputAllowed = true)) }
-			.addPort(IOType.FLUID, 4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = secondaryOutput, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = primaryOutput, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 4, 0, 5) {
+                IOPort.RegisteredMetaDataInput<FluidInputMetadata>(
+                    this,
+                    FluidInputMetadata(connectedStore = secondaryOutput, inputAllowed = false, outputAllowed = true)
+                )
+            }
 
-			.addPort(IOType.FLUID, 0, 9, 6) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = pollutionOutput, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 0, 9, 6) {
+                IOPort.RegisteredMetaDataInput<FluidInputMetadata>(
+                    this,
+                    FluidInputMetadata(connectedStore = pollutionOutput, inputAllowed = false, outputAllowed = true)
+                )
+            }
 
 			.build()
 
@@ -538,10 +550,54 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
-			{ ComplexFluidDisplayModule(handler = it, container = primaryInput, title = primaryInput.displayName, offsetLeft = 4.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, relativeFace = RIGHT) },
-			{ ComplexFluidDisplayModule(handler = it, container = secondaryInput, title = secondaryInput.displayName, offsetLeft = 4.5, offsetUp = 1.15, offsetBack = -6.0 + 0.39, scale = 0.7f, relativeFace = RIGHT) },
-			{ ComplexFluidDisplayModule(handler = it, container = primaryOutput, title = primaryOutput.displayName, offsetLeft = -4.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, relativeFace = LEFT) },
-			{ ComplexFluidDisplayModule(handler = it, container = secondaryOutput, title = secondaryOutput.displayName, offsetLeft = -4.5, offsetUp = 1.15, offsetBack = -6.0 + 0.39, scale = 0.7f, relativeFace = LEFT) }
+			{
+                ComplexFluidDisplayModule(
+                    handler = it,
+                    container = primaryInput,
+                    title = primaryInput.displayName,
+                    offsetLeft = 4.5,
+                    offsetUp = 1.15,
+                    offsetBack = -4.0 + 0.39,
+                    scale = 0.7f,
+                    relativeFace = RelativeFace.RIGHT
+                )
+            },
+			{
+                ComplexFluidDisplayModule(
+                    handler = it,
+                    container = secondaryInput,
+                    title = secondaryInput.displayName,
+                    offsetLeft = 4.5,
+                    offsetUp = 1.15,
+                    offsetBack = -6.0 + 0.39,
+                    scale = 0.7f,
+                    relativeFace = RelativeFace.RIGHT
+                )
+            },
+			{
+                ComplexFluidDisplayModule(
+                    handler = it,
+                    container = primaryOutput,
+                    title = primaryOutput.displayName,
+                    offsetLeft = -4.5,
+                    offsetUp = 1.15,
+                    offsetBack = -4.0 + 0.39,
+                    scale = 0.7f,
+                    relativeFace = RelativeFace.LEFT
+                )
+            },
+			{
+                ComplexFluidDisplayModule(
+                    handler = it,
+                    container = secondaryOutput,
+                    title = secondaryOutput.displayName,
+                    offsetLeft = -4.5,
+                    offsetUp = 1.15,
+                    offsetBack = -6.0 + 0.39,
+                    scale = 0.7f,
+                    relativeFace = RelativeFace.LEFT
+                )
+            }
 		)
 
 		override fun getStores(): List<FluidStorageContainer> {
@@ -564,15 +620,15 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		}
 
 		override fun buildRecipeEnviornment(): ChemicalProcessorEnviornment = ChemicalProcessorEnviornment(
-			this,
-			leftInventory!!,
-			rightInventory!!,
-			primaryInput,
-			secondaryInput,
-			primaryOutput,
-			secondaryOutput,
-			pollutionOutput
-		)
+            this,
+            leftInventory!!,
+            rightInventory!!,
+            primaryInput,
+            secondaryInput,
+            primaryOutput,
+            secondaryOutput,
+            pollutionOutput
+        )
 
 		val leftInventory get() = getInventory(INVENTORY_OFFSET_LEFT.x, INVENTORY_OFFSET_LEFT.y, INVENTORY_OFFSET_LEFT.z)
 		val rightInventory get() = getInventory(INVENTORY_OFFSET_RIGHT.x, INVENTORY_OFFSET_RIGHT.y, INVENTORY_OFFSET_RIGHT.z)

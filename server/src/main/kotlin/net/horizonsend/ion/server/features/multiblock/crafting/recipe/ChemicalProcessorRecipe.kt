@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.Flu
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ItemResult
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultExecutionEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultHolder
-import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.ChemicalProcessorMultiblock.ChemicalProcessorEntity
+import net.horizonsend.ion.server.features.multiblock.type.fluid.ChemicalProcessorMultiblock.ChemicalProcessorEntity
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult.ValidatorSuccessEmpty.result
 
