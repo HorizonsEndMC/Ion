@@ -25,7 +25,7 @@ object Water : FluidType(FluidTypeKeys.WATER) {
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
 		val trailOptions = Trail(
 			/* target = */ destination.toLocation(world),
-			/* color = */ Color.BLUE,
+			/* color = */ Color.fromRGB(30, 60, 255),
 			/* duration = */ 20
 		)
 
@@ -42,9 +42,9 @@ object Water : FluidType(FluidTypeKeys.WATER) {
 				Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING)
 			))
 			else -> faceCenter.add(Vector(
-				Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING) * leakingDirection.modZ,
+				(Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING) * leakingDirection.modZ) + (leakingDirection.modX * 0.05),
 				Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
-				Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING) * leakingDirection.modX
+				(Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING) * leakingDirection.modX) + (leakingDirection.modZ * 0.05)
 			))
 		}
 

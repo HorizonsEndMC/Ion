@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.fluids.types
 
+import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
@@ -23,9 +24,15 @@ object Lava : FluidType(FluidTypeKeys.WATER) {
 	override val displayName: Component = text("Lava", HE_LIGHT_ORANGE)
 
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
+		val colors = setOf(
+			Color.fromRGB(Integer.parseInt("F5451D", 16)),
+			Color.fromRGB(Integer.parseInt("FC5C38", 16)),
+			Color.fromRGB(Integer.parseInt("DE2E07", 16))
+		)
+
 		val trailOptions = Trail(
 			/* target = */ destination.toLocation(world),
-			/* color = */ Color.fromRGB(Integer.parseInt("F5451D", 16)),
+			/* color = */ colors.random(),
 			/* duration = */ 20
 		)
 
@@ -35,16 +42,18 @@ object Lava : FluidType(FluidTypeKeys.WATER) {
 	override fun playLeakEffects(world: World, leakingNode: FluidNode, leakingDirection: BlockFace) {
 		val faceCenter = leakingNode.getCenter().add(leakingDirection.direction.multiply(0.5)).toLocation(world)
 
+		if (testRandom(0.05)) world.spawnParticle(Particle.LAVA, faceCenter, 1, 0.0, 0.0, 0.0)
+
 		when (leakingDirection.axis) {
 			Axis.Y -> faceCenter.add(Vector(
-				Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
+				Random.nextDouble(-PIPE_INTERIOR_PADDING * 1.6, PIPE_INTERIOR_PADDING * 1.6),
 				0.0,
-				Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING)
+				Random.nextDouble(-PIPE_INTERIOR_PADDING * 1.6, PIPE_INTERIOR_PADDING * 1.6)
 			))
 			else -> faceCenter.add(Vector(
-				Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING) * leakingDirection.modZ,
+				(Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING) * leakingDirection.modZ) + (leakingDirection.modX * 0.05),
 				Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
-				Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING) * leakingDirection.modX
+				(Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING) * leakingDirection.modX) + (leakingDirection.modZ * 0.05)
 			))
 		}
 
