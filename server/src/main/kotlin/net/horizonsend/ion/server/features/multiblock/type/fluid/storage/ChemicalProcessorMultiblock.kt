@@ -519,33 +519,33 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 
 		override val ioData: IOData = IOData.builder(this)
 			// Inputs
-			.addPort(IOType.FLUID, -4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = input1, inputAllowed = true, outputAllowed = false)) }
-			.addPort(IOType.FLUID, -4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = input2, inputAllowed = true, outputAllowed = false)) }
+			.addPort(IOType.FLUID, -4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = primaryInput, inputAllowed = true, outputAllowed = false)) }
+			.addPort(IOType.FLUID, -4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = secondaryInput, inputAllowed = true, outputAllowed = false)) }
 
 			// Outputs
-			.addPort(IOType.FLUID, 4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = output1, inputAllowed = false, outputAllowed = true)) }
-			.addPort(IOType.FLUID, 4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = output2, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 4, 0, 3) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = primaryOutput, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 4, 0, 5) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = secondaryOutput, inputAllowed = false, outputAllowed = true)) }
 
-			.addPort(IOType.FLUID, 0, 9, 6) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = pollutionContainer, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 0, 9, 6) { RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = pollutionOutput, inputAllowed = false, outputAllowed = true)) }
 
 			.build()
 
-		val input1 = FluidStorageContainer(data, "input1", Component.text("input1"), NamespacedKeys.key("input1"), 100_000.0, FluidRestriction.Unlimited)
-		val input2 = FluidStorageContainer(data, "input2", Component.text("input2"), NamespacedKeys.key("input2"), 100_000.0, FluidRestriction.Unlimited)
-		val output1 = FluidStorageContainer(data, "output1", Component.text("output1"), NamespacedKeys.key("output1"), 100_000.0, FluidRestriction.Unlimited)
-		val output2 = FluidStorageContainer(data, "output2", Component.text("output2"), NamespacedKeys.key("output2"), 100_000.0, FluidRestriction.Unlimited)
-		val pollutionContainer = FluidStorageContainer(data, "pollution", Component.text("pollution"), NamespacedKeys.key("pollution"), 100_000.0, FluidRestriction.Unlimited)
+		val primaryInput = FluidStorageContainer(data, "primaryin", Component.text("Primary Input"), NamespacedKeys.key("primaryin"), 100_000.0, FluidRestriction.Unlimited)
+		val secondaryInput = FluidStorageContainer(data, "secondaryin", Component.text("Secondary Input"), NamespacedKeys.key("secondaryin"), 100_000.0, FluidRestriction.Unlimited)
+		val primaryOutput = FluidStorageContainer(data, "primaryout", Component.text("Primary Output"), NamespacedKeys.key("primaryout"), 100_000.0, FluidRestriction.Unlimited)
+		val secondaryOutput = FluidStorageContainer(data, "secondaryout", Component.text("Secondary Output"), NamespacedKeys.key("secondaryout"), 100_000.0, FluidRestriction.Unlimited)
+		val pollutionOutput = FluidStorageContainer(data, "pollutionout", Component.text("Pollution Output"), NamespacedKeys.key("pollutionout"), 100_000.0, FluidRestriction.Unlimited)
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
-			{ ComplexFluidDisplayModule(handler = it, container = input1, title = input1.displayName, offsetLeft = 4.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, relativeFace = RIGHT) },
-			{ ComplexFluidDisplayModule(handler = it, container = input2, title = input2.displayName, offsetLeft = 4.5, offsetUp = 1.15, offsetBack = -6.0 + 0.39, scale = 0.7f, relativeFace = RIGHT) },
-			{ ComplexFluidDisplayModule(handler = it, container = output1, title = output1.displayName, offsetLeft = -4.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, relativeFace = LEFT) },
-			{ ComplexFluidDisplayModule(handler = it, container = output2, title = output2.displayName, offsetLeft = -4.5, offsetUp = 1.15, offsetBack = -6.0 + 0.39, scale = 0.7f, relativeFace = LEFT) }
+			{ ComplexFluidDisplayModule(handler = it, container = primaryInput, title = primaryInput.displayName, offsetLeft = 4.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, relativeFace = RIGHT) },
+			{ ComplexFluidDisplayModule(handler = it, container = secondaryInput, title = secondaryInput.displayName, offsetLeft = 4.5, offsetUp = 1.15, offsetBack = -6.0 + 0.39, scale = 0.7f, relativeFace = RIGHT) },
+			{ ComplexFluidDisplayModule(handler = it, container = primaryOutput, title = primaryOutput.displayName, offsetLeft = -4.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, relativeFace = LEFT) },
+			{ ComplexFluidDisplayModule(handler = it, container = secondaryOutput, title = secondaryOutput.displayName, offsetLeft = -4.5, offsetUp = 1.15, offsetBack = -6.0 + 0.39, scale = 0.7f, relativeFace = LEFT) }
 		)
 
 		override fun getStores(): List<FluidStorageContainer> {
-			return listOf(input1, input2, output1, output2, pollutionContainer)
+			return listOf(primaryInput, secondaryInput, primaryOutput, secondaryOutput, pollutionOutput)
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
@@ -567,11 +567,11 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 			this,
 			leftInventory!!,
 			rightInventory!!,
-			input1,
-			input2,
-			output1,
-			output2,
-			pollutionContainer
+			primaryInput,
+			secondaryInput,
+			primaryOutput,
+			secondaryOutput,
+			pollutionOutput
 		)
 
 		val leftInventory get() = getInventory(INVENTORY_OFFSET_LEFT.x, INVENTORY_OFFSET_LEFT.y, INVENTORY_OFFSET_LEFT.z)
