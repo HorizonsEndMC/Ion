@@ -25,7 +25,7 @@ object Lava : FluidType(FluidTypeKeys.WATER) {
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
 		val trailOptions = Trail(
 			/* target = */ destination.toLocation(world),
-			/* color = */ Color.fromRGB(HE_LIGHT_ORANGE.value()),
+			/* color = */ Color.fromRGB(Integer.parseInt("F5451D", 16)),
 			/* duration = */ 20
 		)
 
