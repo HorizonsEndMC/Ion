@@ -307,6 +307,13 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			val childContents = child.networkContents
 			if (!childContents.isEmpty() && networkContents.type != childContents.type) return@associateWithNotNull null
 
+			child.cachedVolume = null // Force recalculation of volume
+			val childVolume = child.getVolume()
+
+			if (childVolume <= 0.0) {
+				return@associateWithNotNull 0.0
+			}
+
 			availableAmount / (child.getVolume() - childContents.amount)
 		}
 
@@ -339,6 +346,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		val sources = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.outputAllowed } }
 		val sinks: ObjectOpenHashSet<FluidNode> = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.inputAllowed } }
+
+		if (sinks.isEmpty || sources.isEmpty) return
 
 		val valueGraph = getValueGraphRepresentation()
 
