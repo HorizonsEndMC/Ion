@@ -13,7 +13,6 @@ import net.horizonsend.ion.server.features.starship.control.movement.StarshipCru
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
-import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
 import org.bukkit.World
@@ -86,7 +85,7 @@ object Interdiction : IonServerComponent() {
 
 		val input = GravityWellMultiblock.getInput(sign)
 
-		if (LegacyItemUtils.getTotalItems(input, CHETHERITE.getValue().constructItemStack()) < 2) {
+		if (!input.containsAtLeast(CHETHERITE.getValue().constructItemStack(), 2)) {
 			player.userError(
 				"Not enough hypermatter in the dropper. Two chetherite shards are required!"
 			)

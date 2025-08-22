@@ -137,6 +137,7 @@ object CustomBlockListeners : SLEventListener() {
 			} else {
 				event.isCancelled = true
 				event.player.inventory.setItem(event.targetSlot, customBlockItem)
+				event.player.inventory.heldItemSlot = event.targetSlot
 			}
 		}
 
