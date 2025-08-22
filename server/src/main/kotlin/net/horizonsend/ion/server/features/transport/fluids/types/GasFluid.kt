@@ -2,13 +2,16 @@ package net.horizonsend.ion.server.features.transport.fluids.types
 
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork.Companion.PIPE_INTERIOR_PADDING
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
@@ -64,6 +67,24 @@ class GasFluid(
 		)
 
 		world.spawnParticle(Particle.TRAIL, start, 1, 0.0, 0.0, 0.0, 2.125, trial, true)
+	}
+
+	override fun onLeak(world: World, location: Vec3i, amount: Double) {
+		if (key != FluidTypeKeys.FLUORINE) return //TODO TEMP should be replaced with properties
+
+		val leakingBlock = getBlockIfLoaded(world, location.x, location.y, location.z) ?: return
+		if (!leakingBlock.type.isAir) return
+
+//		Tasks.syncBlocking {
+//			world.spawn<AreaEffectCloud>(location.toCenterVector().toLocation(world), AreaEffectCloud::class.java) { cloud ->
+//				cloud.addCustomEffect(PotionEffect(PotionEffectType.POISON, 3, 3), true)
+//				cloud.duration = 3
+//				cloud.color = color
+//				cloud.radius = 0.5f
+//				cloud.height
+//				cloud.basePotionType = PotionType.STRONG_POISON
+//			}
+//		}
 	}
 
 	companion object {

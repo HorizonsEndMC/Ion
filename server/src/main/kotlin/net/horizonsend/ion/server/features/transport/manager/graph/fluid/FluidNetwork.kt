@@ -144,7 +144,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			networkContents.amount -= removeAmount
 
 			// Handle pollution
-			type.onLeak(manager.transportManager.getWorld(), toVec3i(node.location), removeAmount)
+			type.onLeak(manager.transportManager.getWorld(), toVec3i(node.location).getRelative(direction), removeAmount)
 		}
 
 		leakingPipes = leakingLocations
