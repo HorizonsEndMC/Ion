@@ -123,12 +123,17 @@ object BasicFluidStorageTankMultiblock : Multiblock(), EntityMultiblock<FluidTan
 		return FluidTankMultiblockEntity(data, manager, world, x, y, z, structureDirection)
 	}
 
-	class FluidTankMultiblockEntity(data: PersistentMultiblockData, manager: MultiblockManager, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace) : MultiblockEntity(
+	class FluidTankMultiblockEntity(
+		data: PersistentMultiblockData,
+		manager: MultiblockManager,
+		world: World,
+		x: Int,
+		y: Int,
+		z: Int,
+		structureDirection: BlockFace
+	) : MultiblockEntity(
 		manager, BasicFluidStorageTankMultiblock, world, x, y, z, structureDirection
-	), DisplayMultiblockEntity,
-		FluidStoringMultiblock,
-		SyncTickingMultiblockEntity
-	{
+	), DisplayMultiblockEntity, FluidStoringMultiblock, SyncTickingMultiblockEntity {
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 
 		override val ioData: IOData = IOData.Companion.builder(this)
