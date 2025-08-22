@@ -299,6 +299,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 	override fun onSplit(children: Collection<TransportNetwork<FluidNode>>) {
 		val availableAmount = networkContents.amount
+		val contents = networkContents.clone()
 
 		// associate with share of remaining
 		val remainingChildRoom = children.associateWithNotNull { child: TransportNetwork<FluidNode> ->
@@ -325,8 +326,9 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			child as FluidNetwork
 			val childDue = remaining * share
 
-			child.networkContents.amount += childDue
-			child.networkContents.type = networkContents.type
+			val splitContents = contents.asAmount(childDue)
+
+			child.networkContents = splitContents
 		}
 	}
 

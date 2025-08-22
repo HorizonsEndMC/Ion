@@ -11,8 +11,9 @@ import org.bukkit.persistence.PersistentDataType
 
 class FluidStack(
 	type: FluidType,
-	amount: Double
-) : Cloneable {
+	amount: Double,
+	private val dataComponents: MutableMap<FluidPropertyKeys.FluidPropertyKey<out FluidProperty>, FluidProperty> = Object2ObjectOpenHashMap()
+) {
 	var amount: Double = amount
 		@Synchronized
 		get
@@ -41,7 +42,9 @@ class FluidStack(
 	 **/
 	fun asAmount(amount: Double) = FluidStack(type, amount)
 
-	private val dataComponents: MutableMap<FluidPropertyKeys.FluidPropertyKey<out FluidProperty>, FluidProperty> = Object2ObjectOpenHashMap()
+	fun clone(): FluidStack {
+		return FluidStack(type, amount, dataComponents)
+	}
 
 	fun <T : FluidProperty> setData(key: FluidPropertyKeys.FluidPropertyKey<T>, data: T) {
 		dataComponents[key] = data
