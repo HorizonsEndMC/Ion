@@ -115,7 +115,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		} else {
 			val target = SLPlayer[sender.uniqueId] ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
 
-			val blueprint = getBlueprint(target, name)
+			val blueprint = getBlueprint(target._id, name)
 
 			blueprint.blockData = data
 			blueprint.pilotLoc = pilotLoc
@@ -131,8 +131,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 	}
 
-	private fun getBlueprint(sender: SLPlayer, name: String): Blueprint {
-		return Blueprint.find(and(Blueprint::owner eq sender._id, Blueprint::name eq name)).first()
+	private fun getBlueprint(sender: SLPlayerId, name: String): Blueprint {
+		return Blueprint.find(and(Blueprint::owner eq sender, Blueprint::name eq name)).first()
 			?: fail { "You don't have a blueprint named $name." }
 	}
 
@@ -143,7 +143,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("delete")
 	@CommandCompletion("@blueprints")
 	fun onDelete(sender: Player, name: String) = asyncCommand(sender) {
-		val target = SLPlayer[sender.uniqueId] ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
+		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
 
 		val blueprint = getBlueprint(target, name)
 		// TODO: confirm menu
@@ -155,7 +155,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandPermission("starships.blueprint.delete.other")
 	@CommandCompletion("@players blueprintName")
 	fun onDeleteOther(sender: Player, player: String, blueprint: String) = asyncCommand(sender) {
-		val target = SLPlayer[player]
+		val target = SLPlayer[player]?._id
 
 		if (target == null) {
 			sender.userError("Player $player not found or not online.")
@@ -232,7 +232,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("info")
 	@CommandCompletion("@blueprints")
 	fun onInfo(sender: Player, name: String) = asyncCommand(sender) {
-		val target = SLPlayer[sender.uniqueId] ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
+		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, name)
 		sender.sendRichMessage(blueprintInfo(blueprint).joinToString("\n"))
 	}
@@ -241,7 +241,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("materials")
 	@CommandCompletion("@blueprints")
 	fun onMaterials(sender: Player, name: String) = asyncCommand(sender) {
-		val target = SLPlayer[sender.uniqueId] ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
+		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, name)
 		showMaterials(sender, blueprint)
 	}
@@ -251,7 +251,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandPermission("starships.blueprint.load")
 	@CommandCompletion("@blueprints")
 	fun onLoad(sender: Player, name: String) = asyncCommand(sender) {
-		val target = SLPlayer[sender.uniqueId] ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
+		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, name)
 		val schematic: Clipboard = blueprint.loadClipboard()
 		val pilotLoc = blueprint.pilotLoc
@@ -270,7 +270,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandPermission("starships.blueprint.load")
 	@CommandCompletion("@players blueprintName")
 	fun onLoadOther(sender: Player, player: String, blueprint: String) = asyncCommand(sender) {
-		val target = SLPlayer[player] ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
+		val target = SLPlayer[player]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, blueprint)
 		val schematic: Clipboard = blueprint.loadClipboard()
 		val pilotLoc = blueprint.pilotLoc
@@ -289,7 +289,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandPermission("starships.blueprint.load")
 	@CommandCompletion("@blueprints")
 	fun onFix(sender: Player, name: String) = asyncCommand(sender) {
-		val target = SLPlayer[sender.uniqueId] ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
+		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, name)
 		val schematic: Clipboard = blueprint.loadClipboard()
 		val pilotLoc = blueprint.pilotLoc
@@ -400,7 +400,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("trust player")
 	@CommandCompletion("@blueprints @players")
 	fun onTrustPlayer(sender: Player, name: String, player: String) {
-		val target = SLPlayer[sender.uniqueId] ?: return // Silently fail if SLPlayer is somehow null
+		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, name)
 		val playerId: UUID = resolveOfflinePlayer(player)
 		val slPlayerId = playerId.slPlayerId
@@ -417,7 +417,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("untrust player")
 	@CommandCompletion("@blueprints @players")
 	fun onUntrustPlayer(sender: Player, name: String, player: String) {
-		val target = SLPlayer[sender.uniqueId] ?: return // Silently fail if SLPlayer is somehow null
+		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, name)
 		val playerId: UUID = resolveOfflinePlayer(player)
 		val slPlayerId = playerId.slPlayerId
@@ -434,7 +434,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("trust nation")
 	@CommandCompletion("@blueprints @nations")
 	fun onTrustNation(sender: Player, name: String, nation: String) {
-		val target = SLPlayer[sender.uniqueId] ?: return // Silently fail if SLPlayer is somehow null
+		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, name)
 		val nationId = resolveNation(nation)
 		failIf(blueprint.trustedNations.contains(nationId)) {
@@ -449,7 +449,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("untrust nation")
 	@CommandCompletion("@blueprints @nations")
 	fun onUntrustNation(sender: Player, name: String, nation: String) {
-		val target = SLPlayer[sender.uniqueId] ?: return // Silently fail if SLPlayer is somehow null
+		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, name)
 		val nationId = resolveNation(nation)
 		failIf(!blueprint.trustedNations.contains(nationId)) {
@@ -472,7 +472,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			return@asyncCommand
 		}
 
-		val target = SLPlayer[sender.uniqueId] ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
+		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
 		val blueprint = getBlueprint(target, oldName)
 		blueprint.name = newName
 		saveBlueprint(blueprint)
