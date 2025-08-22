@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -137,11 +138,13 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			val connectedEdge = edges.first()
 			val direction = (connectedEdge as FluidGraphEdge).direction.oppositeFace
 
-			runCatching { type.playLeakEffects(manager.transportManager.getWorld(), node, direction) }
-				.onFailure { exception -> exception.printStackTrace() }
+			runCatching { type.playLeakEffects(manager.transportManager.getWorld(), node, direction) }.onFailure { exception -> exception.printStackTrace() }
 
 			val removeAmount = (minOf(flowMap.getOrDefault(node.location, 5.0), node.leakRate, networkContents.amount) * delta)
 			networkContents.amount -= removeAmount
+
+			// Handle pollution
+			type.onLeak(manager.transportManager.getWorld(), toVec3i(node.location), removeAmount)
 		}
 
 		leakingPipes = leakingLocations

@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.Keyed
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -22,4 +23,9 @@ abstract class FluidType(override val key: IonRegistryKey<FluidType, out FluidTy
 	 * Effect played when leaking form a pipe, when this fluid is leaking
 	 **/
 	abstract fun playLeakEffects(world: World, leakingNode: FluidNode, leakingDirection: BlockFace)
+
+	/**
+	 * Called when this fluid leaks from a pipe. Should be used for anything that is not a visual effect, such as pollution.
+	 **/
+	open fun onLeak(world: World, location: Vec3i, amount: Double) {}
 }
