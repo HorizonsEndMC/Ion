@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.gui.invui.misc
 
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.command.starship.BlueprintCommand.blueprintInfo
@@ -28,7 +29,7 @@ import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.window.Window
 import kotlin.reflect.KMutableProperty1
 
-class BlueprintMenu(viewer: Player, val target: SLPlayer = SLPlayer[viewer.uniqueId] as SLPlayer, val consumer: (Blueprint, Player) -> Unit) : ListInvUIWindow<Blueprint>(viewer, async = true) {
+class BlueprintMenu(viewer: Player, val target: SLPlayerId = viewer.slPlayerId, val consumer: (Blueprint, Player) -> Unit) : ListInvUIWindow<Blueprint>(viewer, async = true) {
 	override val listingsPerPage: Int = 36
 
 	private var filterTypes: List<KMutableProperty1<Blueprint, out Any>> = listOf(
@@ -41,7 +42,7 @@ class BlueprintMenu(viewer: Player, val target: SLPlayer = SLPlayer[viewer.uniqu
 
 	override fun generateEntries(): List<Blueprint> {
 		return Blueprint
-			.find(Blueprint::owner eq target._id)
+			.find(Blueprint::owner eq target)
 			.descendingSort(filterTypes[filterType])
 			.toList()
 	}
