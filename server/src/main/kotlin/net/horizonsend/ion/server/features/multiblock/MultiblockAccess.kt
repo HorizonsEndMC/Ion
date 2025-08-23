@@ -275,7 +275,7 @@ object MultiblockAccess : IonServerComponent() {
 
 	@EventHandler
 	fun onPlayerInteract(event: PlayerInteractEvent) {
-		if (event.hand != EquipmentSlot.HAND || event.action != Action.RIGHT_CLICK_BLOCK) return
+		if (event.hand != EquipmentSlot.HAND || (event.action != Action.RIGHT_CLICK_BLOCK && event.action != Action.LEFT_CLICK_BLOCK)) return
 
 		val clickedBlock = event.clickedBlock ?: return
 		val sign = clickedBlock.state as? Sign ?: return
