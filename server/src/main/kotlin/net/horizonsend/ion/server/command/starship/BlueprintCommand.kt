@@ -220,7 +220,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 				sender.userError("${target.lastKnownName} has no blueprints!").toString()
 			}
 
-			BlueprintMenu(sender, target) { blueprint, player ->
+			BlueprintMenu(sender, target._id) { blueprint, player ->
 				sender.closeInventory()
 				Tasks.async { showMaterials(sender, blueprint) }
 			}.openGui()
