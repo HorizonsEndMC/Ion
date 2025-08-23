@@ -113,9 +113,9 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			Blueprint.create(slPlayerId, name, starship.data.starshipType, pilotLoc, starship.initialBlockCount, data)
 			sender.success("Saved blueprint $name")
 		} else {
-			val target = SLPlayer[sender.uniqueId] ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
+			val target = sender.slPlayerId
 
-			val blueprint = getBlueprint(target._id, name)
+			val blueprint = getBlueprint(target, name)
 
 			blueprint.blockData = data
 			blueprint.pilotLoc = pilotLoc
@@ -143,7 +143,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("delete")
 	@CommandCompletion("@blueprints")
 	fun onDelete(sender: Player, name: String) = asyncCommand(sender) {
-		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
+		val target = sender.slPlayerId
 
 		val blueprint = getBlueprint(target, name)
 		// TODO: confirm menu
@@ -155,7 +155,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandPermission("starships.blueprint.delete.other")
 	@CommandCompletion("@players blueprintName")
 	fun onDeleteOther(sender: Player, player: String, blueprint: String) = asyncCommand(sender) {
-		val target = SLPlayer[player]?._id
+		val target = SLPlayer[player]?._id // Database lookup so it works when the player is offline
 
 		if (target == null) {
 			sender.userError("Player $player not found or not online.")
@@ -213,11 +213,10 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandPermission("starships.blueprint.list.other")
 	@CommandCompletion("@players")
 	fun onListOther(sender: Player, player: String) {
-		val target = SLPlayer[player] ?: throw InvalidCommandArgument("Player $player not found or not online.")
-		val slPlayerId = target._id
+		val target = SLPlayer[player] ?: throw InvalidCommandArgument("Player $player not found or not online.") // Database lookup so it works when the player is offline
 
 		Tasks.async {
-			failIf(!Blueprint.any(Blueprint::owner eq slPlayerId)) {
+			failIf(!Blueprint.any(Blueprint::owner eq target._id)) {
 				sender.userError("${target.lastKnownName} has no blueprints!").toString()
 			}
 
@@ -232,7 +231,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("info")
 	@CommandCompletion("@blueprints")
 	fun onInfo(sender: Player, name: String) = asyncCommand(sender) {
-		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
+		val target = sender.slPlayerId
 		val blueprint = getBlueprint(target, name)
 		sender.sendRichMessage(blueprintInfo(blueprint).joinToString("\n"))
 	}
@@ -241,7 +240,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("materials")
 	@CommandCompletion("@blueprints")
 	fun onMaterials(sender: Player, name: String) = asyncCommand(sender) {
-		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
+		val target = sender.slPlayerId
 		val blueprint = getBlueprint(target, name)
 		showMaterials(sender, blueprint)
 	}
@@ -251,7 +250,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandPermission("starships.blueprint.load")
 	@CommandCompletion("@blueprints")
 	fun onLoad(sender: Player, name: String) = asyncCommand(sender) {
-		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
+		val target = sender.slPlayerId
 		val blueprint = getBlueprint(target, name)
 		val schematic: Clipboard = blueprint.loadClipboard()
 		val pilotLoc = blueprint.pilotLoc
@@ -270,7 +269,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandPermission("starships.blueprint.load")
 	@CommandCompletion("@players blueprintName")
 	fun onLoadOther(sender: Player, player: String, blueprint: String) = asyncCommand(sender) {
-		val target = SLPlayer[player]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
+		val target = SLPlayer[player]?._id ?: return@asyncCommand // Database lookup so it works when the player is offline
 		val blueprint = getBlueprint(target, blueprint)
 		val schematic: Clipboard = blueprint.loadClipboard()
 		val pilotLoc = blueprint.pilotLoc
@@ -289,7 +288,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandPermission("starships.blueprint.load")
 	@CommandCompletion("@blueprints")
 	fun onFix(sender: Player, name: String) = asyncCommand(sender) {
-		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
+		val target = sender.slPlayerId
 		val blueprint = getBlueprint(target, name)
 		val schematic: Clipboard = blueprint.loadClipboard()
 		val pilotLoc = blueprint.pilotLoc
