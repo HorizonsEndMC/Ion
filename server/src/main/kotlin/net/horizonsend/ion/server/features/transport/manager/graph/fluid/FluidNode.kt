@@ -1,14 +1,12 @@
 package net.horizonsend.ion.server.features.transport.manager.graph.fluid
 
-import com.manya.pdc.base.EnumDataType
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
+import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
-import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode.Companion.NODE_POSITION
-import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode.NodePersistentDataType
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
@@ -18,7 +16,6 @@ import org.bukkit.Axis
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
-import org.bukkit.persistence.PersistentDataType
 
 abstract class FluidNode(val volume: Double) : TransportNode {
 	private lateinit var graph: FluidNetwork
@@ -37,6 +34,7 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 	}
 
 	class RegularJunctionPipe(override val location: BlockKey) : FluidNode(10.0) {
+		override val type: TransportNodeType<*> = TransportNetworkNodeTypeKeys.FLUID_JUNCTION_REGULAR.getValue()
 		override val flowCapacity: Double = 10.0
 
 		override fun isIntact(): Boolean? {
@@ -48,9 +46,6 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 		}
 
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
-
-		override fun getPersistentDataType(): TransportNode.NodePersistentDataType<*> = persistentDataType
-		private companion object { val persistentDataType = TransportNode.NodePersistentDataType.simpleFluid<RegularJunctionPipe>() }
 	}
 
 	sealed interface LeakablePipe {
@@ -58,6 +53,7 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 	}
 
 	class RegularLinearPipe(override val location: BlockKey, val axis: Axis) : FluidNode(5.0), LeakablePipe {
+		override val type: TransportNodeType<*> = TransportNetworkNodeTypeKeys.FLUID_LINEAR_REGULAR.getValue()
 		override val flowCapacity: Double = 5.0
 
 		override val leakRate: Double = 1.0
@@ -71,23 +67,10 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 		}
 
 		override fun getPipableDirections(): Set<BlockFace> = setOf(axis.faces.first, axis.faces.second)
-
-		override fun getPersistentDataType(): NodePersistentDataType<*> = persistentDataType
-		private companion object {
-			val axisType = EnumDataType(Axis::class.java)
-
-			val persistentDataType = NodePersistentDataType(
-				RegularLinearPipe::class,
-				{
-					set(NamespacedKeys.CONTENTS, FluidStack, it.contents)
-					set(NamespacedKeys.AXIS, axisType, it.axis)
-				},
-				{ data, context -> RegularLinearPipe(data.get(NODE_POSITION, PersistentDataType.LONG)!!, data.get(NamespacedKeys.AXIS, axisType)!!).apply { loadContents(data, context) } }
-			)
-		}
 	}
 
-	class Input(override val location: BlockKey) : FluidNode(0.0) {
+	class FluidPort(override val location: BlockKey) : FluidNode(0.0) {
+		override val type: TransportNodeType<*> = TransportNetworkNodeTypeKeys.FLUID_PORT.getValue()
 		override val flowCapacity = 50.0
 
 		override fun isIntact(): Boolean? {
@@ -99,8 +82,5 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 		}
 
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
-
-		override fun getPersistentDataType(): NodePersistentDataType<*> = persistentDataType
-		private companion object { val persistentDataType = NodePersistentDataType.simpleFluid<Input>() }
 	}
 }

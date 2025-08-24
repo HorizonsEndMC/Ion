@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeBlock
 import net.horizonsend.ion.server.features.transport.manager.TransportHolder
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
-import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.Input
+import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidPort
 import net.horizonsend.ion.server.features.transport.nodes.util.BlockBasedCacheFactory
 import org.bukkit.Material
 import org.bukkit.block.data.MultipleFacing
@@ -21,7 +21,7 @@ class FluidNetworkManager(manager: TransportHolder) : NetworkManager<FluidNode, 
 			val axis = (data.customBlock as FluidPipeBlock).getFace(data)
 			FluidNode.RegularLinearPipe(pos, axis)
 		}
-		.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_INPUT, Material.BROWN_MUSHROOM_BLOCK) { _, pos, holder -> Input(pos) }
+		.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_INPUT, Material.BROWN_MUSHROOM_BLOCK) { _, pos, holder -> FluidPort(pos) }
 		.build()
 
 	override fun networkProvider(): FluidNetwork {
