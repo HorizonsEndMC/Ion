@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -199,7 +200,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		// Make a copy as the amount to be added, then combine with properties into the network
 		val combined = storageContents.asAmount(toRemove - notRemoved)
-		networkContents.combine(combined)
+		networkContents.combine(combined, Location(manager.transportManager.getWorld(), getX(location).toDouble(), getY(location).toDouble(), getZ(location).toDouble()))
 
 		if (!storageContents.isEmpty()) networkContents.type = storageContents.type
 	}
@@ -219,7 +220,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		store.setFluidType(networkContents.type)
 
 		val toCombine = networkContents.asAmount(toAdd)
-		store.getContents().combine(toCombine)
+		store.getContents().combine(toCombine, Location(manager.transportManager.getWorld(), getX(location).toDouble(), getY(location).toDouble(), getZ(location).toDouble()))
 
 		networkContents.amount -= toAdd
 	}
@@ -327,8 +328,11 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		val otherContents = other.networkContents
 		if (!otherContents.isEmpty() && otherContents.type != networkContents.type) return
 
+		val node = getGraphNodes().firstOrNull() ?: other.getGraphNodes().firstOrNull()
+		val location = node?.getCenter()?.toLocation(manager.transportManager.getWorld())
+
 		// Merge amounts if same type
-		otherContents.combine(networkContents)
+		otherContents.combine(networkContents, location)
 		otherContents.type = networkContents.type
 	}
 

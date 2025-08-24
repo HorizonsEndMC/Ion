@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
 import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import org.bukkit.Location
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -77,14 +78,16 @@ class FluidStack(
 
 	/**
 	 * Combines the properties of these two fluid stacks. Assumes that they have already been checked and can combine.
+	 *
+	 * The provided location is used to generate a default value if the other stack does not have this property
 	 **/
-	fun combine(other: FluidStack) {
+	fun combine(other: FluidStack, location: Location?) {
 		val existingPropertyKeys = dataComponents.keys
 		val otherPropertyKeys = other.dataComponents.keys
 		val allPropertyKeys = existingPropertyKeys.plus(otherPropertyKeys)
 
 		for (type: FluidPropertyType<*> in allPropertyKeys) {
-			type.handleCombination(this, other)
+			type.handleCombination(this, other, location)
 		}
 
 		amount += other.amount

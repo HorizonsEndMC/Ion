@@ -43,13 +43,4 @@ interface FluidProperty {
 			return copy()
 		}
 	}
-
-	/**
-	 * Combines this property with the given other property.
-	 *
-	 * The other property may be null if the fluid stack being merged does not contain this property
-	 **/
-	fun combine(thisAmount: Double, other: FluidProperty?, otherAmount: Double): FluidProperty {
-		return typeKey.getValue().handleCombinationUnsafe(this, thisAmount, other, otherAmount)
-	}
 }
