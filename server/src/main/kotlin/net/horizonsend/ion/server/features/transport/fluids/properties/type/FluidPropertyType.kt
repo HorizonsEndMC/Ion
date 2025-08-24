@@ -6,6 +6,9 @@ import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProp
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 
+/**
+ * Represents a type of property. Handles the serialization, combination, and provides a key for types.
+ **/
 abstract class FluidPropertyType<T : FluidProperty> {
 	abstract val key: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<T>>
 
@@ -16,21 +19,23 @@ abstract class FluidPropertyType<T : FluidProperty> {
 	abstract fun serialize(complex: T, adapterContext: PersistentDataAdapterContext): PersistentDataContainer
 	abstract fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): T
 
-	fun handleCombinationUnsafe(currentProperty: FluidProperty, currentAmount: Double, other: FluidProperty?, otherAmount: Double) {
+	fun handleCombinationUnsafe(currentProperty: FluidProperty, currentAmount: Double, other: FluidProperty?, otherAmount: Double): T {
 		@Suppress("UNCHECKED_CAST")
-		handleCombination(currentProperty as T, currentAmount, other as T?, otherAmount)
+		return handleCombination(currentProperty as T, currentAmount, other as T?, otherAmount)
 	}
 
-	abstract fun handleCombination(currentProperty: T, currentAmount: Double, other: T?, otherAmount: Double)
+	abstract fun handleCombination(currentProperty: T, currentAmount: Double, other: T?, otherAmount: Double): T
 
 	fun handleCombination(stackOne: FluidStack, stackTwo: FluidStack) {
 		if (stackOne.hasData(this)) {
-			stackOne.getDataOrThrow(this).combine(stackOne.amount, stackTwo.getData(this), stackTwo.amount)
+			val combined = stackOne.getDataOrThrow(this).combine(stackOne.amount, stackTwo.getData(this), stackTwo.amount)
+			stackOne.setData(this, castUnsafe(combined))
 			return
 		}
 
 		if (stackTwo.hasData(this)) {
-			stackTwo.getDataOrThrow(this).combine(stackTwo.amount, stackOne.getData(this), stackOne.amount)
+			val combined = stackTwo.getDataOrThrow(this).combine(stackTwo.amount, stackOne.getData(this), stackOne.amount)
+			stackOne.setData(this, castUnsafe(combined))
 			return
 		}
 	}

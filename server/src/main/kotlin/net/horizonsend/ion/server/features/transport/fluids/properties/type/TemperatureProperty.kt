@@ -12,12 +12,19 @@ import org.bukkit.persistence.PersistentDataType
 object TemperatureProperty : FluidPropertyType<Temperature>() {
 	override val key: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<Temperature>> = FluidPropertyTypeKeys.TEMPERATURE
 
-	override fun handleCombination(currentProperty: Temperature, currentAmount: Double, other: Temperature?, otherAmount: Double) {
+	override fun handleCombination(currentProperty: Temperature, currentAmount: Double, other: Temperature?, otherAmount: Double): Temperature {
+		if (otherAmount <= 0.0) return currentProperty
+
 		val newVolume = currentAmount + otherAmount
+
+		if (newVolume <= 0.0) return Temperature(DEFAULT_TEMPERATURE)
+
 		val thisPortion = currentProperty.value * (currentAmount / newVolume)
 		val otherPortion = (other?.value ?: DEFAULT_TEMPERATURE) * (otherAmount / newVolume)
 
-		currentProperty.value = thisPortion + otherPortion
+		val newValue = thisPortion + otherPortion
+
+		return Temperature(newValue)
 	}
 
 	override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): Temperature {

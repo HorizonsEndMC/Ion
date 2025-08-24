@@ -25,6 +25,7 @@ class FluidStack(
 
 			if (value == 0.0) {
 				type = FluidTypeKeys.EMPTY.getValue()
+				dataComponents.clear()
 			}
 
 			field = value
@@ -41,10 +42,10 @@ class FluidStack(
 	/**
 	 * Returns a copy of this fluid stack with the amount specified
 	 **/
-	fun asAmount(amount: Double) = FluidStack(type, amount)
+	fun asAmount(amount: Double) = FluidStack(type, amount, Object2ObjectOpenHashMap(dataComponents))
 
 	fun clone(): FluidStack {
-		return FluidStack(type, amount, dataComponents)
+		return FluidStack(type, amount, Object2ObjectOpenHashMap(dataComponents))
 	}
 
 	fun <T : FluidProperty> setData(type: FluidPropertyType<T>, data: T) {

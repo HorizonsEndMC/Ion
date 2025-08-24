@@ -8,21 +8,39 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 interface FluidProperty {
 	val typeKey: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<*>>
 
-	data class Pressure(var value: Double) : FluidProperty {
+	fun clone(): FluidProperty
+
+	data class Pressure(val value: Double) : FluidProperty {
+		init {
+		    check(value.isFinite()) { "Pressure must be finite!" }
+		}
+
 		override val typeKey: IonRegistryKey<FluidPropertyType<*>, FluidPropertyType<Pressure>> = FluidPropertyTypeKeys.PRESSURE
 
 		companion object {
 			val PRESSURE = NamespacedKeys.key("pressure")
 			const val DEFAULT_PRESSURE = 0.0
 		}
+
+		override fun clone(): Pressure {
+			return copy()
+		}
 	}
 
-	data class Temperature(var value: Double) : FluidProperty {
+	data class Temperature(val value: Double) : FluidProperty {
+		init {
+			check(value.isFinite()) { "Temperature must be finite!" }
+		}
+
 		override val typeKey: IonRegistryKey<FluidPropertyType<*>, FluidPropertyType<Temperature>> = FluidPropertyTypeKeys.TEMPERATURE
 
 		companion object {
 			val TEMPERATURE = NamespacedKeys.key("temperature")
 			const val DEFAULT_TEMPERATURE = 15.0
+		}
+
+		override fun clone(): Temperature {
+			return copy()
 		}
 	}
 
@@ -31,7 +49,7 @@ interface FluidProperty {
 	 *
 	 * The other property may be null if the fluid stack being merged does not contain this property
 	 **/
-	fun combine(thisAmount: Double, other: FluidProperty?, otherAmount: Double) {
-		typeKey.getValue().handleCombinationUnsafe(this, thisAmount, other, otherAmount)
+	fun combine(thisAmount: Double, other: FluidProperty?, otherAmount: Double): FluidProperty {
+		return typeKey.getValue().handleCombinationUnsafe(this, thisAmount, other, otherAmount)
 	}
 }

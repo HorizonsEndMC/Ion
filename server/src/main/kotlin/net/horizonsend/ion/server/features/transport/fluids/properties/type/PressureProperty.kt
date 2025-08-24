@@ -12,12 +12,19 @@ import org.bukkit.persistence.PersistentDataType
 object PressureProperty : FluidPropertyType<Pressure>() {
 	override val key: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<Pressure>> = FluidPropertyTypeKeys.PRESSURE
 
-	override fun handleCombination(currentProperty: Pressure, currentAmount: Double, other: Pressure?, otherAmount: Double) {
+	override fun handleCombination(currentProperty: Pressure, currentAmount: Double, other: Pressure?, otherAmount: Double): Pressure {
+		if (otherAmount <= 0.0) return currentProperty
+
 		val newVolume = currentAmount + otherAmount
+
+		if (newVolume <= 0.0) return Pressure(DEFAULT_PRESSURE)
+
 		val thisPortion = currentProperty.value * (currentAmount / newVolume)
 		val otherPortion = (other?.value ?: DEFAULT_PRESSURE) * (otherAmount / newVolume)
 
-		currentProperty.value = thisPortion + otherPortion
+		val newValue = thisPortion + otherPortion
+
+		return Pressure(newValue)
 	}
 
 	override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): Pressure {
