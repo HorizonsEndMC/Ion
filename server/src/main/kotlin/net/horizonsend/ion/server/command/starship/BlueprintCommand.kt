@@ -7,7 +7,6 @@ import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
-import co.aikar.commands.annotation.Syntax
 import com.sk89q.worldedit.bukkit.BukkitAdapter
 import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
@@ -21,7 +20,6 @@ import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.isAlphanumeric
-import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
@@ -46,10 +44,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.horizonsend.ion.server.miscellaneous.utils.toBukkitBlockData
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.minecraft.world.level.block.BaseEntityBlock
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
 import org.litote.kmongo.and
 import org.litote.kmongo.eq
@@ -266,7 +262,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("Unused")
 	@Subcommand("load other")
-	@CommandPermission("starships.blueprint.load")
+	@CommandPermission("starships.blueprint.load.other")
 	@CommandCompletion("@players blueprintName")
 	fun onLoadOther(sender: Player, player: String, blueprint: String) = asyncCommand(sender) {
 		val target = SLPlayer[player]?._id ?: return@asyncCommand // Database lookup so it works when the player is offline
