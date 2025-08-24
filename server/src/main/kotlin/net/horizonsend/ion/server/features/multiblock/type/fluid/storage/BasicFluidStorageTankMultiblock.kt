@@ -131,9 +131,7 @@ object BasicFluidStorageTankMultiblock : Multiblock(), EntityMultiblock<FluidTan
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace
-	) : MultiblockEntity(
-		manager, BasicFluidStorageTankMultiblock, world, x, y, z, structureDirection
-	), DisplayMultiblockEntity, FluidStoringMultiblock, SyncTickingMultiblockEntity {
+	) : MultiblockEntity(manager, BasicFluidStorageTankMultiblock, world, x, y, z, structureDirection), DisplayMultiblockEntity, FluidStoringMultiblock, SyncTickingMultiblockEntity {
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 
 		override val ioData: IOData = IOData.Companion.builder(this)

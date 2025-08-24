@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.faces
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.Axis
 import org.bukkit.block.BlockFace
+import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
@@ -29,13 +30,11 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 		this.graph = graph as FluidNetwork
 	}
 
-	val contents = FluidStack.empty()
+	var contents = FluidStack.empty()
 
-	fun loadContents(saved: PersistentDataContainer) {
-
+	fun loadContents(saved: PersistentDataContainer, adapterContext: PersistentDataAdapterContext) {
+		contents = FluidStack.fromPrimitive(saved, adapterContext)
 	}
-
-
 
 	class RegularJunctionPipe(override val location: BlockKey) : FluidNode(10.0) {
 		override val flowCapacity: Double = 10.0
@@ -83,7 +82,7 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 					set(NamespacedKeys.CONTENTS, FluidStack, it.contents)
 					set(NamespacedKeys.AXIS, axisType, it.axis)
 				},
-				{ RegularLinearPipe(it.get(NODE_POSITION, PersistentDataType.LONG)!!, it.get(NamespacedKeys.AXIS, axisType)!!).apply { loadContents(it) } }
+				{ data, context -> RegularLinearPipe(data.get(NODE_POSITION, PersistentDataType.LONG)!!, data.get(NamespacedKeys.AXIS, axisType)!!).apply { loadContents(data, context) } }
 			)
 		}
 	}
@@ -101,7 +100,7 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
 
-		override fun getPersistentDataType(): TransportNode.NodePersistentDataType<*> = persistentDataType
-		private companion object { val persistentDataType = TransportNode.NodePersistentDataType.simpleFluid<Input>() }
+		override fun getPersistentDataType(): NodePersistentDataType<*> = persistentDataType
+		private companion object { val persistentDataType = NodePersistentDataType.simpleFluid<Input>() }
 	}
 }

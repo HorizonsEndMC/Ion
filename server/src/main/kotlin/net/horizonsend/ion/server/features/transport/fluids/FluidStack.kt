@@ -50,6 +50,10 @@ class FluidStack(
 		dataComponents[key] = data
 	}
 
+	private fun setDataUnsafe(key: FluidPropertyKeys.FluidPropertyKey<out FluidProperty>, data: FluidProperty) {
+		dataComponents[key] = data
+	}
+
 	fun <T : FluidProperty> getData(key: FluidPropertyKeys.FluidPropertyKey<T>) : T? {
 		return dataComponents[key]?.let(key::castUnsafe)
 	}
@@ -60,6 +64,37 @@ class FluidStack(
 
 	fun <T : FluidProperty> hasData(key: FluidPropertyKeys.FluidPropertyKey<T>) : Boolean {
 		return dataComponents.keys.contains(key)
+	}
+
+	/**
+	 * Returns if these FluidStacks are of the same type
+	 **/
+	fun canCombine(other: FluidStack): Boolean {
+		return other.type.key == type.key
+	}
+
+	/**
+	 * Combines the properties of these two fluid stacks. Assumes that they have already been checked and can combine.
+	 **/
+	fun combine(other: FluidStack) {
+		val existingPropertyKeys = dataComponents.keys
+		val otherPropertyKeys = other.dataComponents.keys
+		val allPropertyKeys = existingPropertyKeys.plus(otherPropertyKeys)
+
+		for (key: FluidPropertyKeys.FluidPropertyKey<out FluidProperty> in allPropertyKeys) {
+			if (existingPropertyKeys.contains(key)) {
+				getDataOrThrow(key).combine(amount, other.getData(key), other.amount)
+				continue
+			}
+
+			if (otherPropertyKeys.contains(key)) {
+				other.getDataOrThrow(key).combine(amount, getData(key), amount)
+				continue
+			}
+		}
+
+		amount += other.amount
+		other.amount = 0.0
 	}
 
 	companion object : PersistentDataType<PersistentDataContainer, FluidStack> {
@@ -77,6 +112,15 @@ class FluidStack(
 			pdc.set(NamespacedKeys.FLUID_AMOUNT, PersistentDataType.DOUBLE, complex.amount)
 			pdc.set(NamespacedKeys.FLUID_TYPE, FluidTypeKeys.serializer, complex.type.key)
 
+			val fluidComponents = context.newPersistentDataContainer()
+
+			for ((key: FluidPropertyKeys.FluidPropertyKey<out FluidProperty>, property: FluidProperty) in complex.dataComponents) {
+				val serialized = property.serialize(context)
+				fluidComponents.set(key.ionNapespacedKey, PersistentDataType.TAG_CONTAINER, serialized)
+			}
+
+			pdc.set(NamespacedKeys.FLUID_PROPERTY_COMPONENTS, PersistentDataType.TAG_CONTAINER, fluidComponents)
+
 			return pdc
 		}
 
@@ -84,10 +128,22 @@ class FluidStack(
 			primitive: PersistentDataContainer,
 			context: PersistentDataAdapterContext,
 		): FluidStack {
-			return FluidStack(
+			val dataKeys = primitive.get(NamespacedKeys.FLUID_PROPERTY_COMPONENTS, PersistentDataType.TAG_CONTAINER)!!
+
+			val stack = FluidStack(
 				primitive.get(NamespacedKeys.FLUID_TYPE, FluidTypeKeys.serializer)!!.getValue(),
 				primitive.get(NamespacedKeys.FLUID_AMOUNT, PersistentDataType.DOUBLE)!!
 			)
+
+			for (key in dataKeys.keys) {
+				val propertyKey = FluidPropertyKeys[key]
+				val data = dataKeys.get(key, PersistentDataType.TAG_CONTAINER) ?: continue
+				val deserialized = propertyKey.deserializer.invoke(data, context)
+
+				stack.setDataUnsafe(propertyKey, deserialized)
+			}
+
+			return stack
 		}
 	}
 

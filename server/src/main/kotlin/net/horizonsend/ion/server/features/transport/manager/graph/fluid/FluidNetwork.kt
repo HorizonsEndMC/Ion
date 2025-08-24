@@ -94,6 +94,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			networkContents.amount = volume
 		}
 
+		// Prevent very small amounts that are annoying to deal with by just deleting them
 		if (networkContents.amount.roundToHundredth() == 0.0) networkContents.amount = 0.0
 
 		val (inputs, outputs) = trackIO()
@@ -196,7 +197,10 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		val toRemove = minOf((getVolume() - networkContents.amount), storage.getContents().amount, flowMap.getOrDefault(location, 5.0) * delta)
 		val notRemoved = storage.removeAmount(toRemove)
 
-		networkContents.amount += (toRemove - notRemoved)
+		// Make a copy as the amount to be added, then combine with properties into the network
+		val combined = storageContents.asAmount(toRemove - notRemoved)
+		networkContents.combine(combined)
+
 		if (!storageContents.isEmpty()) networkContents.type = storageContents.type
 	}
 
@@ -212,8 +216,11 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		val toAdd = minOf((store.capacity - store.getContents().amount), networkContents.amount, flowMap.getOrDefault(location, 5.0) * delta)
 
-		store.setAmount(store.getContents().amount + toAdd)
 		store.setFluidType(networkContents.type)
+
+		val toCombine = networkContents.asAmount(toAdd)
+		store.getContents().combine(toCombine)
+
 		networkContents.amount -= toAdd
 	}
 
@@ -321,7 +328,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		if (!otherContents.isEmpty() && otherContents.type != networkContents.type) return
 
 		// Merge amounts if same type
-		otherContents.amount += networkContents.amount
+		otherContents.combine(networkContents)
 		otherContents.type = networkContents.type
 	}
 

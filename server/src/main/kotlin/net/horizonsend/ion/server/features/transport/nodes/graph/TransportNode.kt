@@ -37,7 +37,7 @@ interface TransportNode {
 	class NodePersistentDataType<T : TransportNode>(
 		val clazz: KClass<T>,
 		val additionalDataStore: PersistentDataContainer.(T) -> Unit,
-		val newInstance: (PersistentDataContainer) -> T,
+		val newInstance: (PersistentDataContainer, PersistentDataAdapterContext) -> T,
 	) : PersistentDataType<PersistentDataContainer, T> {
 		override fun getPrimitiveType(): Class<PersistentDataContainer> = PersistentDataContainer::class.java
 		override fun getComplexType(): Class<T> = clazz.java
@@ -53,17 +53,17 @@ interface TransportNode {
 		}
 
 		override fun fromPrimitive(primitive: PersistentDataContainer, context: PersistentDataAdapterContext): T {
-			return newInstance.invoke(primitive)
+			return newInstance.invoke(primitive, context)
 		}
 
 		companion object {
 			inline fun <reified T : FluidNode> simpleFluid() : NodePersistentDataType<T> = NodePersistentDataType(
 					T::class,
 					{ set(NamespacedKeys.CONTENTS, FluidStack, it.contents) },
-					{ T::class.primaryConstructor!!.call(it.get(NODE_POSITION, PersistentDataType.LONG)).apply { loadContents(it) } }
+					{ data, context -> T::class.primaryConstructor!!.call(data.get(NODE_POSITION, PersistentDataType.LONG)).apply { loadContents(data, context) } }
 				)
 
-			inline fun <reified T : TransportNode> simple() : NodePersistentDataType<T> = NodePersistentDataType(T::class, {}, { T::class.primaryConstructor!!.call(it.get(NODE_POSITION, PersistentDataType.LONG)) })
+			inline fun <reified T : TransportNode> simple() : NodePersistentDataType<T> = NodePersistentDataType(T::class, {}, { data, context ->  T::class.primaryConstructor!!.call(data.get(NODE_POSITION, PersistentDataType.LONG)) })
 		}
 	}
 }

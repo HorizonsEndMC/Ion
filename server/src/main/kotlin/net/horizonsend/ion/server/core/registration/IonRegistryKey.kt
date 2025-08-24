@@ -41,6 +41,25 @@ class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClas
 		if (!isBound()) error("Unbound registry key $this")
 	}
 
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (javaClass != other?.javaClass) return false
+
+		other as IonRegistryKey<*, *>
+
+		if (registry != other.registry) return false
+		if (clazz != other.clazz) return false
+		if (key != other.key) return false
+
+		return true
+	}
+
+	override fun hashCode(): Int {
+		var result = registry.hashCode()
+		result = 31 * result + clazz.hashCode()
+		return result
+	}
+
 	companion object : KSerializer<IonRegistryKey<*, *>> {
 		override val descriptor: SerialDescriptor = buildClassSerialDescriptor("ion.server.core.registries.IonRegistryKey") {
 			element<String>("registry")
