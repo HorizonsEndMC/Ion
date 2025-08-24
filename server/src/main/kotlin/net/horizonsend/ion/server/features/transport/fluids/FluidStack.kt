@@ -1,9 +1,10 @@
 package net.horizonsend.ion.server.features.transport.fluids
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
-import net.horizonsend.ion.server.features.transport.fluids.properties.FluidPropertyKeys
+import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -12,7 +13,7 @@ import org.bukkit.persistence.PersistentDataType
 class FluidStack(
 	type: FluidType,
 	amount: Double,
-	private val dataComponents: MutableMap<FluidPropertyKeys.FluidPropertyKey<out FluidProperty>, FluidProperty> = Object2ObjectOpenHashMap()
+	private val dataComponents: MutableMap<FluidPropertyType<*>, FluidProperty> = Object2ObjectOpenHashMap()
 ) {
 	var amount: Double = amount
 		@Synchronized
@@ -46,24 +47,24 @@ class FluidStack(
 		return FluidStack(type, amount, dataComponents)
 	}
 
-	fun <T : FluidProperty> setData(key: FluidPropertyKeys.FluidPropertyKey<T>, data: T) {
-		dataComponents[key] = data
+	fun <T : FluidProperty> setData(type: FluidPropertyType<T>, data: T) {
+		dataComponents[type] = data
 	}
 
-	private fun setDataUnsafe(key: FluidPropertyKeys.FluidPropertyKey<out FluidProperty>, data: FluidProperty) {
-		dataComponents[key] = data
+	private fun setDataUnsafe(type: FluidPropertyType<*>, data: FluidProperty) {
+		dataComponents[type] = data
 	}
 
-	fun <T : FluidProperty> getData(key: FluidPropertyKeys.FluidPropertyKey<T>) : T? {
-		return dataComponents[key]?.let(key::castUnsafe)
+	fun <T : FluidProperty> getData(type: FluidPropertyType<T>) : T? {
+		return dataComponents[type]?.let { type.castUnsafe(it) }
 	}
 
-	fun <T : FluidProperty> getDataOrThrow(key: FluidPropertyKeys.FluidPropertyKey<T>) : T {
-		return dataComponents[key]?.let(key::castUnsafe) ?: throw NullPointerException()
+	fun <T : FluidProperty> getDataOrThrow(type: FluidPropertyType<T>) : T {
+		return getData(type) ?: throw NullPointerException()
 	}
 
-	fun <T : FluidProperty> hasData(key: FluidPropertyKeys.FluidPropertyKey<T>) : Boolean {
-		return dataComponents.keys.contains(key)
+	fun <T : FluidProperty> hasData(type: FluidPropertyType<T>) : Boolean {
+		return dataComponents.keys.contains(type)
 	}
 
 	/**
@@ -81,16 +82,8 @@ class FluidStack(
 		val otherPropertyKeys = other.dataComponents.keys
 		val allPropertyKeys = existingPropertyKeys.plus(otherPropertyKeys)
 
-		for (key: FluidPropertyKeys.FluidPropertyKey<out FluidProperty> in allPropertyKeys) {
-			if (existingPropertyKeys.contains(key)) {
-				getDataOrThrow(key).combine(amount, other.getData(key), other.amount)
-				continue
-			}
-
-			if (otherPropertyKeys.contains(key)) {
-				other.getDataOrThrow(key).combine(amount, getData(key), amount)
-				continue
-			}
+		for (type: FluidPropertyType<*> in allPropertyKeys) {
+			type.handleCombination(this, other)
 		}
 
 		amount += other.amount
@@ -114,9 +107,10 @@ class FluidStack(
 
 			val fluidComponents = context.newPersistentDataContainer()
 
-			for ((key: FluidPropertyKeys.FluidPropertyKey<out FluidProperty>, property: FluidProperty) in complex.dataComponents) {
-				val serialized = property.serialize(context)
-				fluidComponents.set(key.ionNapespacedKey, PersistentDataType.TAG_CONTAINER, serialized)
+			for ((type, property: FluidProperty) in complex.dataComponents) {
+				val serialized = type.serializeUnsafe(property, context)
+
+				fluidComponents.set(type.key.ionNapespacedKey, PersistentDataType.TAG_CONTAINER, serialized)
 			}
 
 			pdc.set(NamespacedKeys.FLUID_PROPERTY_COMPONENTS, PersistentDataType.TAG_CONTAINER, fluidComponents)
@@ -136,11 +130,11 @@ class FluidStack(
 			)
 
 			for (key in dataKeys.keys) {
-				val propertyKey = FluidPropertyKeys[key]
+				val propertyKey = FluidPropertyTypeKeys[key]!!
 				val data = dataKeys.get(key, PersistentDataType.TAG_CONTAINER) ?: continue
-				val deserialized = propertyKey.deserializer.invoke(data, context)
+				val deserialized = propertyKey.getValue().deserialize(data, context)
 
-				stack.setDataUnsafe(propertyKey, deserialized)
+				stack.setDataUnsafe(propertyKey.getValue(), deserialized)
 			}
 
 			return stack

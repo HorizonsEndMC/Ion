@@ -1,49 +1,24 @@
 package net.horizonsend.ion.server.features.transport.fluids.properties
 
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
+import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import org.bukkit.persistence.PersistentDataAdapterContext
-import org.bukkit.persistence.PersistentDataContainer
-import org.bukkit.persistence.PersistentDataType
 
 interface FluidProperty {
+	val typeKey: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<*>>
+
 	data class Pressure(var value: Double) : FluidProperty {
-		override fun serialize(context: PersistentDataAdapterContext): PersistentDataContainer {
-			val pdc = context.newPersistentDataContainer()
-			pdc.set(PRESSURE, PersistentDataType.DOUBLE, value)
-			return pdc
-		}
-
-		override fun combine(thisAmount: Double, other: FluidProperty?, otherAmount: Double) {
-			other as Pressure?
-
-			val newVolume = thisAmount + otherAmount
-			val thisPortion = value * (thisAmount / newVolume)
-			val otherPortion = (other?.value ?: DEFAULT_PRESSURE) * (otherAmount / newVolume)
-
-			value = thisPortion + otherPortion
-		}
+		override val typeKey: IonRegistryKey<FluidPropertyType<*>, FluidPropertyType<Pressure>> = FluidPropertyTypeKeys.PRESSURE
 
 		companion object {
 			val PRESSURE = NamespacedKeys.key("pressure")
 			const val DEFAULT_PRESSURE = 0.0
 		}
 	}
+
 	data class Temperature(var value: Double) : FluidProperty {
-		override fun serialize(context: PersistentDataAdapterContext): PersistentDataContainer {
-			val pdc = context.newPersistentDataContainer()
-			pdc.set(TEMPERATURE, PersistentDataType.DOUBLE, value)
-			return pdc
-		}
-
-		override fun combine(thisAmount: Double, other: FluidProperty?, otherAmount: Double) {
-			other as Temperature?
-
-			val newVolume = thisAmount + otherAmount
-			val thisPortion = value * (thisAmount / newVolume)
-			val otherPortion = (other?.value ?: DEFAULT_TEMPERATURE) * (otherAmount / newVolume)
-
-			value = thisPortion + otherPortion
-		}
+		override val typeKey: IonRegistryKey<FluidPropertyType<*>, FluidPropertyType<Temperature>> = FluidPropertyTypeKeys.TEMPERATURE
 
 		companion object {
 			val TEMPERATURE = NamespacedKeys.key("temperature")
@@ -51,12 +26,12 @@ interface FluidProperty {
 		}
 	}
 
-	fun serialize(context: PersistentDataAdapterContext): PersistentDataContainer
-
 	/**
 	 * Combines this property with the given other property.
 	 *
 	 * The other property may be null if the fluid stack being merged does not contain this property
 	 **/
-	fun combine(thisAmount: Double, other: FluidProperty?, otherAmount: Double)
+	fun combine(thisAmount: Double, other: FluidProperty?, otherAmount: Double) {
+		typeKey.getValue().handleCombinationUnsafe(this, thisAmount, other, otherAmount)
+	}
 }

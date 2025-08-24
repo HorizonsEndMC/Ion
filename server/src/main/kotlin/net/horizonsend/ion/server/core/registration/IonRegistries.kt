@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.server.core.registration.registries.AtmosphericGasRegistry
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry
+import net.horizonsend.ion.server.core.registration.registries.FluidPropertyTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.FluidTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.ItemModRegistry
 import net.horizonsend.ion.server.core.registration.registries.Registry
@@ -30,6 +31,7 @@ object IonRegistries : IonComponent() {
 	val ITEM_MODIFICATIONS = register(ItemModRegistry())
 	val MULTIBLOCK_RECIPE = register(MultiblockRecipeRegistry())
 	val TRANSPORT_NETWORK_NODE_TYPE = register(TransportNetworkNodeTypeRegistry())
+	val FLUID_PROPERTY_TYPE = register(FluidPropertyTypeRegistry())
 
 	private fun <T : Registry<*>> register(registry: T): T {
 		byId[registry.id] = registry
