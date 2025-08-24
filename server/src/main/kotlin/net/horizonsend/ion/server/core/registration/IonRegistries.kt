@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistr
 import net.horizonsend.ion.server.core.registration.registries.FluidTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.ItemModRegistry
 import net.horizonsend.ion.server.core.registration.registries.Registry
+import net.horizonsend.ion.server.core.registration.registries.TransportNetworkNodeTypeRegistry
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
 
 object IonRegistries : IonComponent() {
@@ -28,6 +29,7 @@ object IonRegistries : IonComponent() {
 	val CUSTOM_BLOCKS = register(CustomBlockRegistry())
 	val ITEM_MODIFICATIONS = register(ItemModRegistry())
 	val MULTIBLOCK_RECIPE = register(MultiblockRecipeRegistry())
+	val TRANSPORT_NETWORK_NODE_TYPE = register(TransportNetworkNodeTypeRegistry())
 
 	private fun <T : Registry<*>> register(registry: T): T {
 		byId[registry.id] = registry

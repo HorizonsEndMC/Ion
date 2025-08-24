@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModif
 import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
+import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
 
 object RegistryKeys {
 	private val keys = mutableMapOf<String, RegistryId<*>>()
@@ -19,6 +20,7 @@ object RegistryKeys {
 	val CUSTOM_BLOCKS = registryId<CustomBlock>("CUSTOM_BLOCKS")
 	val ITEM_MODIFICATIONS = registryId<ItemModification>("ITEM_MODIFICATIONS")
 	val MULTIBLOCK_RECIPE = registryId<MultiblockRecipe<*>>("MULTIBLOCK_RECIPE")
+	val TRANSPORT_NETWORK_NODE_TYPE = registryId<TransportNodeType<*>>("TRANSPORT_NETWORK_NODE_TYPE")
 
 	fun <T: Any> registryId(key: String): RegistryId<T> {
 		val id = RegistryId<T>(key)
