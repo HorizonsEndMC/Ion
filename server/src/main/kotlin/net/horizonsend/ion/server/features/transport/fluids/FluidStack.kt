@@ -142,6 +142,6 @@ class FluidStack(
 	}
 
 	override fun toString(): String {
-		return "FluidStack[type=${type.key},amount=$amount]"
+		return "FluidStack[type=${type.key},amount=$amount,properties=${dataComponents.entries.joinToString { (key, value) -> "(${key.key}:$value)" }}]"
 	}
 }

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.storage
 
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
@@ -21,6 +22,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedM
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.BasicFluidStorageTankMultiblock.FluidTankMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.transport.inputs.IOData
@@ -32,11 +34,14 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Sign
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
+import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.persistence.PersistentDataAdapterContext
 
-object BasicFluidStorageTankMultiblock : Multiblock(), EntityMultiblock<FluidTankMultiblockEntity> {
+object BasicFluidStorageTankMultiblock : Multiblock(), EntityMultiblock<FluidTankMultiblockEntity>, InteractableMultiblock {
 	override val name: String = "basicfluidtank"
 	override val signText: Array<Component?> = createSignText(
 		ofChildren(Component.text("Fluid", NamedTextColor.GOLD), Component.text(" Tank", HEColorScheme.Companion.HE_MEDIUM_GRAY)),
@@ -121,6 +126,10 @@ object BasicFluidStorageTankMultiblock : Multiblock(), EntityMultiblock<FluidTan
 
 	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): FluidTankMultiblockEntity {
 		return FluidTankMultiblockEntity(data, manager, world, x, y, z, structureDirection)
+	}
+
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
+		getMultiblockEntity(sign, false)?.getStores()?.first()?.let { container -> player.information(container.getContents().toString()) }
 	}
 
 	class FluidTankMultiblockEntity(
