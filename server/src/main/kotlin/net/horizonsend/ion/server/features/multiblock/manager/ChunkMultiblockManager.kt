@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.manager
 
 import kotlinx.serialization.SerializationException
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
@@ -104,7 +105,12 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 
 			val multiblock = stored.type as EntityMultiblock<*>
 
-			val entity = MultiblockEntities.loadFromData(multiblock, this, stored)
+			val entity = try {
+				MultiblockEntities.loadFromData(multiblock, this, stored)
+			}
+			catch (e: Throwable) {
+				if (ConfigurationFiles.serverConfiguration().deleteInvalidMultiblockData) continue else throw e
+			}
 
 			// No need to save a load
 			addMultiblockEntity(entity, save = false, ensureSign = true)

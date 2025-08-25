@@ -73,6 +73,9 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 		override val type: TransportNodeType<*> = TransportNetworkNodeTypeKeys.FLUID_PORT.getValue()
 		override val flowCapacity = 50.0
 
+		val removalCapacity: Double get() = 50.0
+		val additionCapacity: Double get() = 5.0
+
 		override fun isIntact(): Boolean? {
 			val world = getNetwork().manager.transportManager.getWorld()
 			val globalVec3i = getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))

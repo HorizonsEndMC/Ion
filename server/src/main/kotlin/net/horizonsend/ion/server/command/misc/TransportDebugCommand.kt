@@ -422,6 +422,6 @@ object TransportDebugCommand : SLCommand() {
 
 		sender.sendMessage(menu)
 
-//		fluidManager.clear()
+		fluidManager.clear()
 	}
 }

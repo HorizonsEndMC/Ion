@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.graph.NetworkManager
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
+import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidPort
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
@@ -184,6 +185,9 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 	private fun depositToNetwork(location: BlockKey, input: IOPort.RegisteredMetaDataInput<FluidInputMetadata>, delta: Double) {
 		if (!input.metaData.outputAllowed) return
+		val node = nodeMirror[location] as? FluidPort ?: return
+
+		val removalRate = node.removalCapacity
 
 		var remainingRoom = maxOf(0.0, getVolume() - networkContents.amount)
 		if (remainingRoom <= 0.0) return
@@ -195,7 +199,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		if (!networkContents.isEmpty() && storageContents.type != networkContents.type) return
 
-		val toRemove = minOf((getVolume() - networkContents.amount), storage.getContents().amount, flowMap.getOrDefault(location, 5.0) * delta)
+		val toRemove = minOf(removalRate * delta, (getVolume() - networkContents.amount), storage.getContents().amount, flowMap.getOrDefault(location, 5.0) * delta)
 		val notRemoved = storage.removeAmount(toRemove)
 
 		// Make a copy as the amount to be added, then combine with properties into the network
@@ -209,13 +213,17 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		if (networkContents.isEmpty()) return
 		if (!ioPort.metaData.inputAllowed) return
 
+		val node = nodeMirror[location] as? FluidPort ?: return
+
+		val additionRate = node.additionCapacity
+
 		val store = ioPort.metaData.connectedStore
 
 		if (!store.canAdd(networkContents)) return
 
 		if (!store.getContents().isEmpty() && store.getContents().type != networkContents.type) return
 
-		val toAdd = minOf((store.capacity - store.getContents().amount), networkContents.amount, flowMap.getOrDefault(location, 5.0) * delta)
+		val toAdd = minOf((store.capacity - store.getContents().amount), networkContents.amount, flowMap.getOrDefault(location, 5.0) * delta, additionRate * delta)
 
 		store.setFluidType(networkContents.type)
 
