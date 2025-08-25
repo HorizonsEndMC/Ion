@@ -43,7 +43,7 @@ object Water : FluidType(FluidTypeKeys.WATER) {
 			))
 			else -> faceCenter.add(Vector(
 				(Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING) * leakingDirection.modZ) + (leakingDirection.modX * 0.05),
-				Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING),
+				Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING / 2),
 				(Random.nextDouble(-PIPE_INTERIOR_PADDING, PIPE_INTERIOR_PADDING) * leakingDirection.modX) + (leakingDirection.modZ * 0.05)
 			))
 		}
