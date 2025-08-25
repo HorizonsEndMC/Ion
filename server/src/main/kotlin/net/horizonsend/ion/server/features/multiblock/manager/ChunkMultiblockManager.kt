@@ -109,7 +109,10 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 				MultiblockEntities.loadFromData(multiblock, this, stored)
 			}
 			catch (e: Throwable) {
-				if (ConfigurationFiles.serverConfiguration().deleteInvalidMultiblockData) continue else throw e
+				if (ConfigurationFiles.serverConfiguration().deleteInvalidMultiblockData) {
+					log.warn("Removed invalid multiblock entity!", e)
+					continue
+				} else throw e
 			}
 
 			// No need to save a load
