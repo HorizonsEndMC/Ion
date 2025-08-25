@@ -109,6 +109,7 @@ object SetFluidCommand : SLCommand() {
 
 			if (property == FluidPropertyTypeKeys.PRESSURE) contents.setData(FluidPropertyTypeKeys.PRESSURE.getValue(), FluidProperty.Pressure(value))
 			if (property == FluidPropertyTypeKeys.TEMPERATURE) contents.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), FluidProperty.Temperature(value))
+			if (property == FluidPropertyTypeKeys.SALINITY) contents.setData(FluidPropertyTypeKeys.SALINITY.getValue(), FluidProperty.Salinity(value))
 
 			true
 		}

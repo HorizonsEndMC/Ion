@@ -43,4 +43,22 @@ interface FluidProperty {
 			return copy()
 		}
 	}
+
+	data class Salinity(val value: Double) : FluidProperty {
+		init {
+			check(value.isFinite()) { "Temperature must be finite!" }
+			check(value in 0.0..1.0) { "Salinity must be between 0.0 and 1.0!" }
+		}
+
+		override val typeKey: IonRegistryKey<FluidPropertyType<*>, FluidPropertyType<Salinity>> = FluidPropertyTypeKeys.SALINITY
+
+		companion object {
+			val SALINITY = NamespacedKeys.key("salinity")
+			const val DEFAULT_SALINITY = 0.0
+		}
+
+		override fun clone(): Salinity {
+			return copy()
+		}
+	}
 }

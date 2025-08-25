@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid
 
+import io.papermc.paper.registry.keys.BiomeKeys
+import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
+import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
@@ -13,24 +16,31 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidIn
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
-import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.PumpMultiblock.PumpMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
+import net.horizonsend.ion.server.features.starship.destruction.SinkAnimation
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
+import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.isWater
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.World
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
+import org.bukkit.block.data.Waterlogged
 import org.bukkit.block.data.type.Stairs
 import org.bukkit.persistence.PersistentDataAdapterContext
 
@@ -107,7 +117,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace
-	) : MultiblockEntity(manager, PumpMultiblock, world, x, y, z, structureDirection), DisplayMultiblockEntity, FluidStoringMultiblock, SyncTickingMultiblockEntity {
+	) : MultiblockEntity(manager, PumpMultiblock, world, x, y, z, structureDirection), DisplayMultiblockEntity, FluidStoringMultiblock, AsyncTickingMultiblockEntity {
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
 
 		override val ioData: IOData = IOData.Companion.builder(this)
@@ -133,37 +143,92 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 			saveStorageData(store)
 		}
 
-		override fun tick() {
+		override fun tickAsync() {
 			bootstrapNetwork()
 			tryPumpWater()
 		}
 
 		companion object {
 			private val TUBE_ORIGIN = Vec3i(0, -2, 1)
+
+			/** Pump rate, in liters per second **/
+			private const val PUMP_RATE = 1.0
+
+			/** The maximum depth of pumping where salinity is increased **/
+			private const val MAX_DEPTH_SALINITY_BONUS = 30
+
+			/** The maximum salinity achievable **/
+			private const val MAX_SALINITY = 0.05
+
+			private val OCEAN_BIOMES = setOf(
+				BiomeKeys.OCEAN,
+				BiomeKeys.DEEP_OCEAN,
+				BiomeKeys.WARM_OCEAN,
+				BiomeKeys.LUKEWARM_OCEAN,
+				BiomeKeys.DEEP_LUKEWARM_OCEAN,
+				BiomeKeys.COLD_OCEAN,
+				BiomeKeys.DEEP_COLD_OCEAN,
+				BiomeKeys.FROZEN_OCEAN,
+				BiomeKeys.DEEP_FROZEN_OCEAN,
+			).mapTo(mutableSetOf()) { it.key() }
 		}
 
 		private fun tryPumpWater() {
 			val delta = deltaTMS / 1000.0
 
-			val depth = getDepth()
+			val (surfaceDepth, fluidDepth) = getDepth()
 
-			println("$delta $depth")
+			if (fluidDepth <= 0) return
+
+			val stack = FluidStack(FluidTypeKeys.WATER.getValue(), 1.0 * delta)
+
+			val bottomBlock = getPumpOrigin().getRelative(BlockFace.DOWN, surfaceDepth + fluidDepth)
+			val biome = world.getBiome(bottomBlock.x, bottomBlock.y, bottomBlock.z)
+			if (OCEAN_BIOMES.contains(biome.key())) {
+				// Ramp up salinity to
+				val prog = minOf(fluidDepth, MAX_DEPTH_SALINITY_BONUS).toDouble() / MAX_DEPTH_SALINITY_BONUS.toDouble()
+				val salinity = SinkAnimation.blend(0.0, MAX_SALINITY, prog)
+
+				stack.setData(FluidPropertyTypeKeys.SALINITY.getValue(), FluidProperty.Salinity(salinity))
+			}
+
+			mainStorage.getContents().combine(stack, bottomBlock.location)
 		}
 
-		fun getDepth(): Int {
-			var depth = 0
-//			var block = getBlockRelative(TUBE_ORIGIN.x, TUBE_ORIGIN.y, TUBE_ORIGIN.z)
-//			val data = block.blockData
-////			debugAudience.highlightBlock(Vec3i(block.x, block.y, block.z), 20L)
-//
-//			while (data.material.isWater || (data is Waterlogged && data.isWaterlogged)) {
-////				debugAudience.highlightBlock(Vec3i(block.x, block.y, block.z), 20L)
-//
-//				depth++
-//				block = block.getRelative(BlockFace.DOWN)
-//			}
+		private fun getPumpOrigin(): Block = getBlockRelative(TUBE_ORIGIN.x, TUBE_ORIGIN.y, TUBE_ORIGIN.z)
 
-			return depth
+		/**
+		 * Returns the depth of fluid which is pumped
+		 *
+		 * Returns a pair of integers, the first being the water surface depth, or null if none is found, the second beind the depth of the water.
+		 **/
+		fun getDepth(): Pair<Int, Int> {
+			var fluidFound = false
+			var surfaceDepth = 0
+			var fluidDepth = 0
+
+			var block = getPumpOrigin()
+			var data = block.blockData
+
+			while (data.material == Material.LIGHTNING_ROD) {
+				// Return the depth if the block is in water & surrounded by water
+				if (data is Waterlogged && data.isWaterlogged) {
+					if (CARDINAL_BLOCK_FACES.all { face ->
+						val data = block.getRelative(face).blockData
+						data.material.isWater || (data is Waterlogged && data.isWaterlogged)
+					}) {
+						fluidFound = true
+						fluidDepth++
+					}
+				}
+
+				// If not, search deeper
+				block = block.getRelative(BlockFace.DOWN)
+				data = block.blockData
+				if (!fluidFound) surfaceDepth++
+			}
+
+			return surfaceDepth to fluidDepth
 		}
 	}
 }

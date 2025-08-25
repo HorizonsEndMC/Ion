@@ -172,3 +172,4 @@ object BasicFluidStorageTankMultiblock : Multiblock(), EntityMultiblock<FluidTan
 		}
 	}
 }
+
