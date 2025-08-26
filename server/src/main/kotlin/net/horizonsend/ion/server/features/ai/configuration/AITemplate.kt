@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.ai.configuration
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.configuration.util.IntegerAmount
 import net.horizonsend.ion.server.features.ai.reward.AICreditRewardProvider
+import net.horizonsend.ion.server.features.ai.reward.AIItemBagRewardProvider
 import net.horizonsend.ion.server.features.ai.reward.AIItemRewardProvider
 import net.horizonsend.ion.server.features.ai.reward.AIKillStreakRewardProvider
 import net.horizonsend.ion.server.features.ai.reward.AIXPRewardProvider
@@ -51,6 +52,19 @@ data class AITemplate(
 	) : AIRewardsProviderConfiguration {
 		override fun createRewardsProvider(starship: ActiveControlledStarship, template: AITemplate): RewardsProvider {
 			return AIItemRewardProvider(starship, this)
+		}
+	}
+
+	@Serializable
+	data class ItemBagRewardProviderConfiguration(
+		val items: List<WorldSettings.DroppedItem>,
+		/** Max bag size for a damager with 1.0 score (100% damage at hard)*/
+		val maxBagSize : Double,
+		/** How small the bag can be once the max bagsize is evaluated*/
+		val minBagModifier : Double,
+	) : AIRewardsProviderConfiguration {
+		override fun createRewardsProvider(starship: ActiveControlledStarship, template: AITemplate): RewardsProvider {
+			return AIItemBagRewardProvider(starship, this)
 		}
 	}
 
