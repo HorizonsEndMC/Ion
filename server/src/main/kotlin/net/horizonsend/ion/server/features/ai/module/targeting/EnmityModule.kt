@@ -242,13 +242,17 @@ open class EnmityModule(
 			if (it.damagerWeight >= config.initialAggroThreshold * 4) it.aggroed = true
 			if (it.aggroed && it.target.attack && fleet != null) propagateToFleet(it, fleet)
 		}
+		if (fleet == null) return
+		if (fleet.leader != starship.toFleetMember()) return
+		val topTarget = enmityList.firstOrNull { it.aggroed && it.target.attack } ?: return
+
+		if (!validateFleetAggro(topTarget, fleet)) propagateToFleet(topTarget,fleet)
 	}
 
 	private fun propagateToFleet(opponent: AIOpponent, fleet: Fleet) {
 		debugAudience.debug("propagating agro from ${starship.getDisplayNamePlain()} to fleet")
 		val aiFleetMembers = fleet.members.filterIsInstance<FleetMember.AIShipMember>().mapNotNull { it.shipRef.get() }
 		aiFleetMembers.forEach { starship ->
-			debugAudience.debug("propagating agro to ${starship.getDisplayNamePlain()}")
 			val enmityModule = (starship.controller as? AIController)?.getCoreModuleByType<EnmityModule>() ?: return
 			val otherList = enmityModule.enmityList
 			val index = otherList.indexOf(opponent)
@@ -258,6 +262,7 @@ open class EnmityModule(
 				otherList[index].baseWeight = max(config.initialAggroThreshold, opponent.baseWeight)
 				otherList[index].damagerWeight = max(otherList[index].damagerWeight, opponent.damagerWeight)
 			} else {
+				debugAudience.debug("propagating agro to ${starship.getDisplayNamePlain()}")
 				val newAIOpponent = AIOpponent(
 					opponent.target, baseWeight = config.initialAggroThreshold,
 					damagerWeight = opponent.damagerWeight,
@@ -267,6 +272,17 @@ open class EnmityModule(
 				otherList.add(newAIOpponent)
 			}
 
+		}
+	}
+
+	private fun validateFleetAggro(opponent: AIOpponent, fleet: Fleet) : Boolean {
+		val aiFleetMembers = fleet.members.filterIsInstance<FleetMember.AIShipMember>().mapNotNull { it.shipRef.get() }
+		return aiFleetMembers.all { starship ->
+			val enmityModule = (starship.controller as? AIController)?.getCoreModuleByType<EnmityModule>() ?: return true
+			val otherList = enmityModule.enmityList
+			val index = otherList.indexOf(opponent)
+
+			index != -1
 		}
 	}
 
