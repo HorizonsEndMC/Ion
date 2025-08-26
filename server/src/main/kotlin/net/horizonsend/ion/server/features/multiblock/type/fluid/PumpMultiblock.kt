@@ -266,20 +266,18 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 		 * Tries to pump lava by removing blocks. If a source block cannot be removed, it will not be pumped.
 		 **/
 		private fun tryPumpLava(pumpOriginBlock: Block, type: Material) {
+			val stack = FluidStack(FluidTypeKeys.LAVA, LITERS_IN_BLOCK)
+			stack.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), FluidProperty.Temperature(1000.0))
+
+			if (!mainStorage.canAdd(stack)) return
+			if (!mainStorage.hasRoomFor(stack)) return
+
 			val surfaceDepth = getLavaSurface(pumpOriginBlock, type) ?: return
 
 			val surfaceOrigin = pumpOriginBlock.getRelative(BlockFace.DOWN, surfaceDepth)
 
 			val planeBlocks = getSurfaceLayerBlocks(surfaceOrigin)
 			if (planeBlocks.isEmpty()) return
-
-			tickingManager.sleepForTicks(100)
-
-			val stack = FluidStack(FluidTypeKeys.LAVA, LITERS_IN_BLOCK)
-			stack.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), FluidProperty.Temperature(1000.0))
-
-			if (!mainStorage.canAdd(stack)) return
-
 			Tasks.sync {
 				val last = planeBlocks.reversed().firstOrNull { block -> block != pumpOriginBlock } ?: return@sync
 				debugAudience.highlightBlock(Vec3i(last.location), 30L)
