@@ -24,9 +24,9 @@ class ReinforcementSpawnerModule(
 		if (controller.getAverageShieldHealth() > activationAverageShieldHealth || triggered) return
 
 		triggered = true
+		sendMessage()
 		Tasks.syncDelay(delay) {
 			spawner.trigger(log, AISpawningManager.context)
-			sendMessage()
 		}
 	}
 
