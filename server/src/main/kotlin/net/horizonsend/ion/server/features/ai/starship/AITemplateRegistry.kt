@@ -256,9 +256,14 @@ object AITemplateRegistry {
 					delay = 100L,
 					broadcastMessage = "<italic><$吃饭人_STANDARD>You detect a cacophony of transmissions",
 				) {
+					val location = it.getCenter().toLocation(it.starship.world)
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 200.0, 300.0),
-						VariableIntegerAmount(4, 6),
+						formatLocationSupplier({location}, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							VariableIntegerAmount(4, 6),
+							location,
+							shipWeight = 0.15,
+							threshold = 4),
 						null,
 						null,
 						asBagSpawned(吃饭人.asSpawnedShip(MIANBAOZHA).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
@@ -358,9 +363,14 @@ object AITemplateRegistry {
 					delay = 100L,
 					broadcastMessage = "<italic><$吃饭人_STANDARD>You detect a cacophony of transmissions",
 				) {
+					val location = it.getCenter().toLocation(it.starship.world)
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 200.0, 300.0),
-						VariableIntegerAmount(5, 8),
+						formatLocationSupplier({location}, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							VariableIntegerAmount(5, 8),
+							location,
+							shipWeight = 0.2,
+							threshold = 5),
 						null,
 						null,
 						asBagSpawned(吃饭人.asSpawnedShip(MIANBAOZHA).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
@@ -368,13 +378,18 @@ object AITemplateRegistry {
 				})
 			.addAdditionalModule(
 				BehaviorConfiguration.AdvancedReinforcementInformation(
-					activationThreshold = 0.30,
+					activationThreshold = 0.40,
 					delay = 100L,
 					broadcastMessage = "<italic><$吃饭人_STANDARD>You detect a cacophony of transmissions",
 				) {
+					val location = it.getCenter().toLocation(it.starship.world)
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 200.0, 300.0),
-						VariableIntegerAmount(5, 8),
+						formatLocationSupplier({location}, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							VariableIntegerAmount(5, 8),
+							location,
+							shipWeight = 0.2,
+							threshold = 5),
 						null,
 						null,
 						asBagSpawned(吃饭人.asSpawnedShip(MIANBAOZHA).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
@@ -639,9 +654,14 @@ object AITemplateRegistry {
 					delay = 100L,
 					broadcastMessage = "<$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
 				) {
+					val location = it.getCenter().toLocation(it.starship.world)
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 200.0, 300.0),
-						VariableIntegerAmount(5, 8),
+						formatLocationSupplier({ location }, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							VariableIntegerAmount(5, 8),
+							location,
+							shipWeight = 0.2,
+							threshold = 5),
 						null,
 						null,
 						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
@@ -994,6 +1014,26 @@ object AITemplateRegistry {
 					reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE), 1.0))
 				)
 			)
+			.addAdditionalModule(
+				BehaviorConfiguration.AdvancedReinforcementInformation(
+					activationThreshold = 0.75,
+					delay = 150L,
+					broadcastMessage = null, // hidden extra backup for large fleets
+				) {
+					val location = it.getCenter().toLocation(it.starship.world)
+					BagSpawner.asReinforcement(
+						formatLocationSupplier({ location }, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							StaticIntegerAmount(0),
+							location,
+							shipWeight = 0.5,
+							threshold = 25),
+						null,
+						null,
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(200.0, 300.0, 0.0), 7),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE).withRandomRadialOffset(100.0, 200.0, 0.0), 10),
+					)(it)
+				})
 			.build()
 	)
 
@@ -1038,6 +1078,27 @@ object AITemplateRegistry {
 					reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 1.0))
 				)
 			)
+			.addAdditionalModule(
+				BehaviorConfiguration.AdvancedReinforcementInformation(
+					activationThreshold = 0.75,
+					delay = 150L,
+					broadcastMessage = null, //hidden extra backup
+				) {
+					val location = it.getCenter().toLocation(it.starship.world)
+					BagSpawner.asReinforcement(
+						formatLocationSupplier({ location }, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							StaticIntegerAmount(0),
+							location,
+							shipWeight = 0.2,
+							threshold = 8),
+						null,
+						null,
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(100.0, 200.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(75.0, 100.0, 0.0), 3),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(25.0, 50.0, 0.0), 5),
+					)(it)
+				})
 			.build()
 	)
 
@@ -1073,6 +1134,27 @@ object AITemplateRegistry {
 					reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 1.0))
 				)
 			)
+			.addAdditionalModule(
+				BehaviorConfiguration.AdvancedReinforcementInformation(
+					activationThreshold = 0.75,
+					delay = 150L,
+					broadcastMessage = null, //hidden extra backup
+				) {
+					val location = it.getCenter().toLocation(it.starship.world)
+					BagSpawner.asReinforcement(
+						formatLocationSupplier({ location }, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							StaticIntegerAmount(0),
+							location,
+							shipWeight = 0.15,
+							threshold = 8),
+						null,
+						null,
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(100.0, 200.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(75.0, 100.0, 0.0), 3),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(25.0, 50.0, 0.0), 5),
+					)(it)
+				})
 			.build()
 	)
 
@@ -1095,6 +1177,27 @@ object AITemplateRegistry {
 					reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 1.0))
 				)
 			)
+			.addAdditionalModule(
+				BehaviorConfiguration.AdvancedReinforcementInformation(
+					activationThreshold = 0.75,
+					delay = 150L,
+					broadcastMessage = null, //hidden extra backup
+				) {
+					val location = it.getCenter().toLocation(it.starship.world)
+					BagSpawner.asReinforcement(
+						formatLocationSupplier({ location }, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							StaticIntegerAmount(0),
+							location,
+							shipWeight = 0.10,
+							threshold = 6),
+						null,
+						null,
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(100.0, 200.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(75.0, 100.0, 0.0), 3),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(25.0, 50.0, 0.0), 5),
+					)(it)
+				})
 			.build()
 	)
 
@@ -1291,9 +1394,29 @@ object AITemplateRegistry {
 					activationThreshold = 0.85,
 					delay = 100L,
 					broadcastMessage = "<italic><red>Did you really think we would risk this ship without an escort fleet? We'll enjoy looting your corpse!",
-					reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RAIDER), 1.0))
+					reinforcementShips = listOf(spawnChance(TSAII_RAIDERS.asSpawnedShip(RAIDER), 1.0))
 				)
 			)
+			.addAdditionalModule(
+				BehaviorConfiguration.AdvancedReinforcementInformation(
+					activationThreshold = 0.70,
+					delay = 150L,
+					broadcastMessage = null, //hidden extra spawns
+				) {
+					val location = it.getCenter().toLocation(it.starship.world)
+					BagSpawner.asReinforcement(
+						formatLocationSupplier({ location }, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							StaticIntegerAmount(0),
+							location,
+							shipWeight = 0.25,
+							threshold = 8),
+						null,
+						null,
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE).withRandomRadialOffset(100.0, 200.0, 0.0), 3),
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 100.0, 0.0), 5),
+					)(it)
+				})
 			.build()
 	)
 
