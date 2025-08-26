@@ -17,6 +17,6 @@ class SimpleFluidDisplayModule(
 	relativeFace: RelativeFace
 ) : FluidDisplayModule(handler, storage, offsetLeft, offsetUp, offsetBack, scale, relativeFace) {
 	override fun buildText(): Component {
-		return ofChildren(formatFluid(), space(), container.getContents().type.displayName)
+		return ofChildren(formatFluid(), space(), container.getContents().type.getValue().displayName)
 	}
 }

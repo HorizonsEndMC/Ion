@@ -22,7 +22,7 @@ sealed interface FluidRestriction {
 
 	class FluidCategoryWhitelist(val allowedCategories: Set<FluidCategory>): FluidRestriction {
 		override fun canAdd(fluid: FluidStack): Boolean {
-			return allowedCategories.intersect(fluid.type.categories.toSet()).isNotEmpty()
+			return allowedCategories.intersect(fluid.type.getValue().categories.toSet()).isNotEmpty()
 		}
 
 		override fun canRemove(fluid: FluidStack): Boolean {
@@ -32,7 +32,7 @@ sealed interface FluidRestriction {
 
 	class FluidCategoryBlacklist(val disallowedCategories: Set<FluidCategory>): FluidRestriction {
 		override fun canAdd(fluid: FluidStack): Boolean {
-			return disallowedCategories.intersect(fluid.type.categories.toSet()).isEmpty()
+			return disallowedCategories.intersect(fluid.type.getValue().categories.toSet()).isEmpty()
 		}
 
 		override fun canRemove(fluid: FluidStack): Boolean {
@@ -42,7 +42,7 @@ sealed interface FluidRestriction {
 
 	class FluidTypeWhitelist(val allowedFluids: Set<IonRegistryKey<FluidType, out FluidType>>): FluidRestriction {
 		override fun canAdd(fluid: FluidStack): Boolean {
-			return allowedFluids.contains(fluid.type.key)
+			return allowedFluids.contains(fluid.type)
 		}
 
 		override fun canRemove(fluid: FluidStack): Boolean {
@@ -52,7 +52,7 @@ sealed interface FluidRestriction {
 
 	class FluidTypeBlacklist(val disallowedFluids: Set<IonRegistryKey<FluidType, out FluidType>>): FluidRestriction {
 		override fun canAdd(fluid: FluidStack): Boolean {
-			return !disallowedFluids.contains(fluid.type.key)
+			return !disallowedFluids.contains(fluid.type)
 		}
 
 		override fun canRemove(fluid: FluidStack): Boolean {

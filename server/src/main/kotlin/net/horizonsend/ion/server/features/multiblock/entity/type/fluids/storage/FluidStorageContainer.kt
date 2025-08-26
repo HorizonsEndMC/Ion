@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storag
 
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
-import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.kyori.adventure.text.Component
+import org.bukkit.Location
 import org.bukkit.NamespacedKey
 
 /**
@@ -46,17 +46,22 @@ class FluidStorageContainer private constructor(
 	fun canAdd(fluidStack: FluidStack): Boolean {
 		if (contentsUnsafe.isEmpty()) return true
 
-		if (!restriction.canAdd(fluidStack)) return false
+		if (contentsUnsafe.type != fluidStack.type) return false
 
+		return restriction.canAdd(fluidStack)
+	}
+
+	fun hasRoomFor(fluidStack: FluidStack): Boolean {
 		return fluidStack.amount + contentsUnsafe.amount <= capacity
 	}
 
-	fun canRemove(fluidStack: FluidStack): Boolean {
-		if (contentsUnsafe.isEmpty()) return false
+	fun addFluid(stack: FluidStack, location: Location?): Double {
+		val newQuantity = minOf(getRemainingRoom(), stack.amount)
+		val toAdd = stack.asAmount(newQuantity)
 
-		if (!restriction.canRemove(fluidStack)) return false
+		contentsUnsafe.combine(toAdd, location)
 
-		return fluidStack.amount - contentsUnsafe.amount >= 0.0
+		return stack.amount - newQuantity
 	}
 
 	fun setContents(fluidStack: FluidStack) {
@@ -72,11 +77,6 @@ class FluidStorageContainer private constructor(
 		return capacity - contentsUnsafe.amount
 	}
 
-	fun setAmount(amount: Double) {
-		contentsUnsafe.amount = amount
-		runUpdates()
-	}
-
 	/** Returns amount not removed */
 	fun removeAmount(amount: Double): Double {
 		val toRemove = minOf(amount, contentsUnsafe.amount)
@@ -87,22 +87,6 @@ class FluidStorageContainer private constructor(
 		runUpdates()
 
 		return notRemoved
-	}
-
-	/** Returns amount not removed */
-	fun addAmount(amount: Double): Double {
-		val toAdd = minOf(amount, getRemainingRoom())
-		val notAdded = amount - toAdd
-
-		contentsUnsafe.amount += (toAdd - notAdded)
-		runUpdates()
-
-		return notAdded
-	}
-
-	fun setFluidType(type: FluidType) {
-		contentsUnsafe.type = type
-		runUpdates()
 	}
 
 	fun clear() {

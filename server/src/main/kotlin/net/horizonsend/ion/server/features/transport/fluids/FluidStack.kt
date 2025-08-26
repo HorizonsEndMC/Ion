@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.fluids
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
@@ -12,7 +13,7 @@ import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 
 class FluidStack(
-	type: FluidType,
+	type: IonRegistryKey<FluidType, out FluidType>,
 	amount: Double,
 	private val dataComponents: MutableMap<FluidPropertyType<*>, FluidProperty> = Object2ObjectOpenHashMap()
 ) {
@@ -25,20 +26,20 @@ class FluidStack(
 			if (!value.isFinite()) throw IllegalArgumentException("Fluid stacks must have a rational amount!")
 
 			if (value == 0.0) {
-				type = FluidTypeKeys.EMPTY.getValue()
+				type = FluidTypeKeys.EMPTY
 				dataComponents.clear()
 			}
 
 			field = value
 		}
 
-	var type: FluidType = type
+	var type: IonRegistryKey<FluidType, out FluidType> = type
 		@Synchronized
 		get
 		@Synchronized
 		set
 
-	fun isEmpty(): Boolean = type.key == FluidTypeKeys.EMPTY || amount <= 0
+	fun isEmpty(): Boolean = type == FluidTypeKeys.EMPTY || amount <= 0
 
 	/**
 	 * Returns a copy of this fluid stack with the amount specified
@@ -98,7 +99,7 @@ class FluidStack(
 	}
 
 	companion object : PersistentDataType<PersistentDataContainer, FluidStack> {
-		fun empty() = FluidStack(FluidTypeKeys.EMPTY.getValue(), 0.0)
+		fun empty() = FluidStack(FluidTypeKeys.EMPTY, 0.0)
 
 		override fun getPrimitiveType(): Class<PersistentDataContainer> = PersistentDataContainer::class.java
 		override fun getComplexType(): Class<FluidStack> = FluidStack::class.java
@@ -110,7 +111,7 @@ class FluidStack(
 			val pdc = context.newPersistentDataContainer()
 
 			pdc.set(NamespacedKeys.FLUID_AMOUNT, PersistentDataType.DOUBLE, complex.amount)
-			pdc.set(NamespacedKeys.FLUID_TYPE, FluidTypeKeys.serializer, complex.type.key)
+			pdc.set(NamespacedKeys.FLUID_TYPE, FluidTypeKeys.serializer, complex.type)
 
 			val fluidComponents = context.newPersistentDataContainer()
 
@@ -132,7 +133,7 @@ class FluidStack(
 			val dataKeys = primitive.get(NamespacedKeys.FLUID_PROPERTY_COMPONENTS, PersistentDataType.TAG_CONTAINER)!!
 
 			val stack = FluidStack(
-				primitive.get(NamespacedKeys.FLUID_TYPE, FluidTypeKeys.serializer)!!.getValue(),
+				primitive.get(NamespacedKeys.FLUID_TYPE, FluidTypeKeys.serializer)!!,
 				primitive.get(NamespacedKeys.FLUID_AMOUNT, PersistentDataType.DOUBLE)!!
 			)
 
@@ -149,6 +150,6 @@ class FluidStack(
 	}
 
 	override fun toString(): String {
-		return "FluidStack[type=${type.key},amount=$amount,properties=${dataComponents.entries.joinToString { (key, value) -> "(${key.key}:$value)" }}]"
+		return "FluidStack{type=${type.key},amount=$amount,properties=[${dataComponents.entries.joinToString { (key, value) -> "(${key.key}:$value)" }}]}"
 	}
 }

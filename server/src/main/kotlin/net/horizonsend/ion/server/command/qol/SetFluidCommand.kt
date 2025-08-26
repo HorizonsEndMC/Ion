@@ -67,7 +67,7 @@ object SetFluidCommand : SLCommand() {
 			entities.add(entity)
 		}
 
-		val success = entities.count { entity -> entity.getNamedStorage(storeName)?.setContents(FluidStack(fluid, amount)) != null }
+		val success = entities.count { entity -> entity.getNamedStorage(storeName)?.setContents(FluidStack(fluid.key, amount)) != null }
 
 		if (success == 0) return sender.userError("No multiblocks set.")
 

@@ -141,13 +141,13 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			val connectedEdge = edges.first()
 			val direction = (connectedEdge as FluidGraphEdge).direction.oppositeFace
 
-			runCatching { type.playLeakEffects(manager.transportManager.getWorld(), node, direction) }.onFailure { exception -> exception.printStackTrace() }
+			runCatching { type.getValue().playLeakEffects(manager.transportManager.getWorld(), node, direction) }.onFailure { exception -> exception.printStackTrace() }
 
 			val removeAmount = (minOf(flowMap.getOrDefault(node.location, 5.0), node.leakRate, networkContents.amount) * delta)
 			networkContents.amount -= removeAmount
 
 			// Handle pollution
-			type.onLeak(manager.transportManager.getWorld(), toVec3i(node.location).getRelative(direction), removeAmount)
+			type.getValue().onLeak(manager.transportManager.getWorld(), toVec3i(node.location).getRelative(direction), removeAmount)
 		}
 
 		leakingPipes = leakingLocations
@@ -224,8 +224,6 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		if (!store.getContents().isEmpty() && store.getContents().type != networkContents.type) return
 
 		val toAdd = minOf((store.capacity - store.getContents().amount), networkContents.amount, flowMap.getOrDefault(location, 5.0) * delta, additionRate * delta)
-
-		store.setFluidType(networkContents.type)
 
 		val toCombine = networkContents.asAmount(toAdd)
 		store.getContents().combine(toCombine, Location(manager.transportManager.getWorld(), getX(location).toDouble(), getY(location).toDouble(), getZ(location).toDouble()))
@@ -316,7 +314,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 							(origin.z + childDirection.direction.z).coerceIn(getZ(parent.location) + PIPE_INTERIOR_PADDING..getZ(parent.location) + 1.0 - PIPE_INTERIOR_PADDING),
 						)
 
-					type.displayInPipe(world, origin, destination)
+					type.getValue().displayInPipe(world, origin, destination)
 				}
 			}
 		}

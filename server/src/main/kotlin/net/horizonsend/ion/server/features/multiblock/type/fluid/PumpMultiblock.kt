@@ -212,7 +212,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 
 			if (fluidDepth <= 0) return
 
-			val stack = FluidStack(FluidTypeKeys.WATER.getValue(), PUMP_RATE * delta)
+			val stack = FluidStack(FluidTypeKeys.WATER, PUMP_RATE * delta)
 
 			val bottomBlock = pumpOriginBlock.getRelative(BlockFace.DOWN, surfaceDepth + fluidDepth)
 			val biome = world.getBiome(bottomBlock.x, bottomBlock.y, bottomBlock.z)
@@ -280,7 +280,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 				last.type = Material.AIR
 
 				Tasks.async {
-					val stack = FluidStack(FluidTypeKeys.LAVA.getValue(), PUMP_RATE * delta)
+					val stack = FluidStack(FluidTypeKeys.LAVA, PUMP_RATE * delta)
 					stack.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), FluidProperty.Temperature(1000.0))
 
 					mainStorage.getContents().combine(stack, surfaceOrigin.location)

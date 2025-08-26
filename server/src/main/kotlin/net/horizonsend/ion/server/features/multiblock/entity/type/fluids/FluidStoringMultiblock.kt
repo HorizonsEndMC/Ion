@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.multiblock.entity.type.fluids
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
-import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.inputs.IOData.BuiltInputData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort.RegisteredMetaDataInput
@@ -20,18 +19,6 @@ interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
 
 	fun saveStorageData(destination: PersistentMultiblockData) {
 		getStores().forEach { store -> store.save(destination) }
-	}
-
-	fun canAdd(stack: FluidStack): Boolean {
-		return getStores().any { container -> container.canAdd(stack) }
-	}
-
-	fun canRemove(stack: FluidStack): Boolean {
-		return getStores().any { container -> container.canRemove(stack) }
-	}
-
-	fun canRemove(type: FluidType): Boolean {
-		return getStores().any { container -> !container.getContents().isEmpty() && container.getContents().type == type }
 	}
 
 	fun contains(type: FluidType): Boolean {

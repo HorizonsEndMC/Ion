@@ -16,6 +16,6 @@ class FluidRecipeRequirement<E: FluidMultiblockEnviornment>(
 	}
 
 	override fun ensureAvailable(resource: FluidStack): Boolean {
-		return resource.type.key == type && resource.amount >= amount
+		return resource.type == type && resource.amount >= amount
 	}
 }

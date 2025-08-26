@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMu
 import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.processing.automason.CenterType
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.kyori.adventure.sound.Sound
@@ -613,9 +614,9 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			itemRequirement = MaterialRequirement(Material.IRON_INGOT),
 			fluidRequirementOne = FluidRecipeRequirement("input1", FluidTypeKeys.OXYGEN, 10.0),
 			fluidRequirementTwo = FluidRecipeRequirement("input2", FluidTypeKeys.METHANE, 10.0),
-			fluidResultOne = FluidResult("output1", FluidTypeKeys.WATER, 10.0),
-			fluidResultTwo = FluidResult("output2", FluidTypeKeys.CARBON_DIOXIDE, 10.0),
-			fluidResultPollutionResult = FluidResult("pollution", FluidTypeKeys.CARBON_DIOXIDE, 1.0),
+			fluidResultOne = FluidResult("output1", FluidStack(FluidTypeKeys.WATER, 10.0)),
+			fluidResultTwo = FluidResult("output2", FluidStack(FluidTypeKeys.CARBON_DIOXIDE, 10.0)),
+			fluidResultPollutionResult = FluidResult("pollution", FluidStack(FluidTypeKeys.CARBON_DIOXIDE, 1.0)),
 			itemResult = ResultHolder.of(ItemResult.simpleResult(CustomItemKeys.CIRCUITRY.getValue().constructItemStack())),
 		))
 	}
