@@ -205,7 +205,7 @@ class NavigationModule(
 
 
 
-		val finalEngagementRage = if (targetModule.anchorOnly()) engageHyperdiveRange * 2 else engageHyperdiveRange
+		val finalEngagementRage = if (targetModule.anchorOnly()) engageHyperdiveRange * 5 else engageHyperdiveRange
 
 		if (dist >= finalEngagementRage && world.hasFlag(WorldFlag.SPACE_WORLD)) {
 			//starship.debug("target far away")
