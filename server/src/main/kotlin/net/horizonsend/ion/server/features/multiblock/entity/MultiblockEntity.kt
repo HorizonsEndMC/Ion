@@ -73,13 +73,17 @@ abstract class MultiblockEntity(
 	val localBlockKey: BlockKey get() = toBlockKey(localOffsetX, localOffsetY, localOffsetZ)
 	val globalBlockKey: BlockKey get() = toBlockKey(globalVec3i)
 
-	private var lastRetrieved = System.currentTimeMillis()
+	private var lastDeltaRetrieved = System.currentTimeMillis()
+
+	fun resetDelta() {
+		lastDeltaRetrieved = System.currentTimeMillis()
+	}
 
 	/** Gets the time since this value was last retrieved */
 	protected val deltaTMS: Long get() {
 		val time = System.currentTimeMillis()
-		val delta = time - lastRetrieved
-		lastRetrieved = time
+		val delta = time - lastDeltaRetrieved
+		lastDeltaRetrieved = time
 
 		return delta
 	}

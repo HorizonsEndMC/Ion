@@ -48,6 +48,7 @@ import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
+import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Levelled
 import org.bukkit.block.data.Waterlogged
 import org.bukkit.block.data.type.Stairs
@@ -183,6 +184,13 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 			).mapTo(mutableSetOf()) { it.key() }
 
 			private const val MAX_RANGE = 30
+
+			fun isFullLavaSource(data: BlockData): Boolean {
+				if (data.material != Material.LAVA) return false
+				if (data !is Levelled) return false
+				if (data.level != data.minimumLevel) return false
+				return true
+			}
 		}
 
 		private fun getPumpOrigin(): Block = getBlockRelative(TUBE_ORIGIN.x, TUBE_ORIGIN.y, TUBE_ORIGIN.z)
@@ -204,7 +212,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 
 			if (fluidDepth <= 0) return
 
-			val stack = FluidStack(FluidTypeKeys.WATER.getValue(), 1.0 * delta)
+			val stack = FluidStack(FluidTypeKeys.WATER.getValue(), PUMP_RATE * delta)
 
 			val bottomBlock = pumpOriginBlock.getRelative(BlockFace.DOWN, surfaceDepth + fluidDepth)
 			val biome = world.getBiome(bottomBlock.x, bottomBlock.y, bottomBlock.z)
@@ -222,7 +230,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 		/**
 		 * Returns the depth of fluid which is pumped
 		 *
-		 * Returns a pair of integers, the first being the water surface depth, or null if none is found, the second beind the depth of the water.
+		 * Returns a pair of integers, the first being the water surface depth, the second beind the depth of the water.
 		 **/
 		fun getWaterDepth(): Pair<Int, Int> {
 			var fluidFound = false
@@ -253,10 +261,11 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 			return surfaceDepth to fluidDepth
 		}
 
+		/**
+		 * Tries to pump lava by removing blocks. If a source block cannot be removed, it will not be pumped.
+		 **/
 		private fun tryPumpLava(pumpOriginBlock: Block, delta: Double, type: Material) {
-			val (surfaceDepth, fluidDepth) = getLavaDepth(pumpOriginBlock, type)
-
-			if (fluidDepth <= 0) return
+			val surfaceDepth = getLavaSurface(pumpOriginBlock, type) ?: return
 
 			val surfaceOrigin = pumpOriginBlock.getRelative(BlockFace.DOWN, surfaceDepth)
 
@@ -266,42 +275,44 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 			Tasks.sync {
 				val last = planeBlocks.reversed().firstOrNull { block -> block != pumpOriginBlock } ?: return@sync
 				debugAudience.highlightBlock(Vec3i(last.location), 30L)
+
+				if (!last.type.isLava) return@sync
 				last.type = Material.AIR
 
-				val stack = FluidStack(FluidTypeKeys.LAVA.getValue(), 1.0 * delta)
-				stack.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), FluidProperty.Temperature(1000.0))
+				Tasks.async {
+					val stack = FluidStack(FluidTypeKeys.LAVA.getValue(), PUMP_RATE * delta)
+					stack.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), FluidProperty.Temperature(1000.0))
 
-				mainStorage.getContents().combine(stack, surfaceOrigin.location)
+					mainStorage.getContents().combine(stack, surfaceOrigin.location)
+				}
 			}
 		}
 
 		/**
 		 * Returns the depth of fluid which is pumped
 		 *
-		 * Returns a pair of integers, the first being the water surface depth, or null if none is found, the second beind the depth of the water.
+		 * Returns the lava surface depth, or null if lava is never found
 		 **/
-		private fun getLavaDepth(pumpOriginBlock: Block, material: Material): Pair<Int, Int> {
-			var fluidFound = false
+		private fun getLavaSurface(pumpOriginBlock: Block, material: Material): Int? {
 			var surfaceDepth = 0
-			var fluidDepth = 0
 
 			var block = pumpOriginBlock
 			var data = block.blockData
 
 			while (data.material == material) {
-				// Return the depth if the block is in water & surrounded by water
-				if (CARDINAL_BLOCK_FACES.all { face -> block.getRelative(face).type.isLava }) {
-					fluidFound = true
-					fluidDepth++
+				// Return the depth if the block is adjacent to lava
+				// Since this isn't correlated to new water sources are being created, we only need one adjacent source
+				if (CARDINAL_BLOCK_FACES.any { face -> block.getRelativeIfLoaded(face)?.blockData?.let(::isFullLavaSource) == true }) {
+					return surfaceDepth
 				}
 
 				// If not, search deeper
 				block = block.getRelative(BlockFace.DOWN)
 				data = block.blockData
-				if (!fluidFound) surfaceDepth++
+				surfaceDepth++
 			}
 
-			return surfaceDepth to fluidDepth
+			return null
 		}
 
 		fun getSurfaceLayerBlocks(origin: Block): List<Block> {
@@ -329,9 +340,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 					if (abs(adjacent.x - origin.x) > MAX_RANGE || abs(adjacent.z - origin.z) > MAX_RANGE) continue
 
 					val adjacentData = adjacent.blockData
-					if (adjacentData.material != Material.LAVA) continue
-					if (adjacentData !is Levelled) continue
-					if (adjacentData.level != adjacentData.minimumLevel) continue
+					if (!isFullLavaSource(adjacentData)) continue
 
 					if (visitSet.add(toBlockKey(adjacent.x, adjacent.y, adjacent.z))) visitQueue.add(adjacent)
 				}
