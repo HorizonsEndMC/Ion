@@ -183,8 +183,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		outputs.forEach { entry -> depositToNetwork(entry.key, entry.value, delta) }
 	}
 
-	private fun depositToNetwork(location: BlockKey, input: IOPort.RegisteredMetaDataInput<FluidInputMetadata>, delta: Double) {
-		if (!input.metaData.outputAllowed) return
+	private fun depositToNetwork(location: BlockKey, port: IOPort.RegisteredMetaDataInput<FluidInputMetadata>, delta: Double) {
+		if (!port.metaData.outputAllowed) return
 		val node = nodeMirror[location] as? FluidPort ?: return
 
 		val removalRate = node.removalCapacity
@@ -192,7 +192,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		var remainingRoom = maxOf(0.0, getVolume() - networkContents.amount)
 		if (remainingRoom <= 0.0) return
 
-		val storage = input.metaData.connectedStore
+		val storage = port.metaData.connectedStore
 		val storageContents = storage.getContents()
 
 		if (storageContents.isEmpty()) return
@@ -226,7 +226,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		val toAdd = minOf((store.capacity - store.getContents().amount), networkContents.amount, flowMap.getOrDefault(location, 5.0) * delta, additionRate * delta)
 
 		val toCombine = networkContents.asAmount(toAdd)
-		store.getContents().combine(toCombine, Location(manager.transportManager.getWorld(), getX(location).toDouble(), getY(location).toDouble(), getZ(location).toDouble()))
+		store.addFluid(toCombine, Location(manager.transportManager.getWorld(), getX(location).toDouble(), getY(location).toDouble(), getZ(location).toDouble()))
 
 		networkContents.amount -= toAdd
 	}

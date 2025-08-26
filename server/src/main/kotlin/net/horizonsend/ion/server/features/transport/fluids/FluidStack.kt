@@ -92,7 +92,7 @@ class FluidStack(
 		}
 
 		amount += other.amount
-		if (type == FluidTypeKeys.EMPTY.getValue() && other.type != FluidTypeKeys.EMPTY.getValue()) {
+		if (type == FluidTypeKeys.EMPTY && other.type != FluidTypeKeys.EMPTY) {
 			type = other.type
 		}
 		other.amount = 0.0

@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.linkages.Multiblock
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
+import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork
 import net.horizonsend.ion.server.features.transport.nodes.cache.DestinationCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
@@ -416,12 +417,13 @@ object TransportDebugCommand : SLCommand() {
 			ofChildren(
 				Component.text("Grid [${grid.getGraphNodes().size}] "),
 				uuid,
-				highlight
+				highlight,
+				if (grid is FluidNetwork) grid.getVolume().toComponent() else Component.empty()
 			)
 		}
 
 		sender.sendMessage(menu)
 
-		fluidManager.clear()
+//		fluidManager.clear()
 	}
 }

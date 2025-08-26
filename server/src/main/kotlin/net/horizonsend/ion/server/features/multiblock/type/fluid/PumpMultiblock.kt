@@ -27,6 +27,7 @@ import net.horizonsend.ion.server.features.multiblock.type.fluid.PumpMultiblock.
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.destruction.SinkAnimation
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
+import net.horizonsend.ion.server.features.transport.fluids.LITERS_IN_BLOCK
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
@@ -203,7 +204,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 
 			when {
 				type == Material.LIGHTNING_ROD -> tryPumpWater(pumpOriginBlock, delta)
-				type.isChiseled -> tryPumpLava(pumpOriginBlock, delta, type)
+				type.isChiseled -> tryPumpLava(pumpOriginBlock, type)
 			}
 		}
 
@@ -224,7 +225,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 				stack.setData(FluidPropertyTypeKeys.SALINITY.getValue(), FluidProperty.Salinity(salinity))
 			}
 
-			mainStorage.getContents().combine(stack, bottomBlock.location)
+			mainStorage.addFluid(stack, bottomBlock.location)
 		}
 
 		/**
@@ -264,13 +265,20 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 		/**
 		 * Tries to pump lava by removing blocks. If a source block cannot be removed, it will not be pumped.
 		 **/
-		private fun tryPumpLava(pumpOriginBlock: Block, delta: Double, type: Material) {
+		private fun tryPumpLava(pumpOriginBlock: Block, type: Material) {
 			val surfaceDepth = getLavaSurface(pumpOriginBlock, type) ?: return
 
 			val surfaceOrigin = pumpOriginBlock.getRelative(BlockFace.DOWN, surfaceDepth)
 
 			val planeBlocks = getSurfaceLayerBlocks(surfaceOrigin)
 			if (planeBlocks.isEmpty()) return
+
+			tickingManager.sleepForTicks(100)
+
+			val stack = FluidStack(FluidTypeKeys.LAVA, LITERS_IN_BLOCK)
+			stack.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), FluidProperty.Temperature(1000.0))
+
+			if (!mainStorage.canAdd(stack)) return
 
 			Tasks.sync {
 				val last = planeBlocks.reversed().firstOrNull { block -> block != pumpOriginBlock } ?: return@sync
@@ -280,10 +288,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 				last.type = Material.AIR
 
 				Tasks.async {
-					val stack = FluidStack(FluidTypeKeys.LAVA, PUMP_RATE * delta)
-					stack.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), FluidProperty.Temperature(1000.0))
-
-					mainStorage.getContents().combine(stack, surfaceOrigin.location)
+					mainStorage.addFluid(stack, surfaceOrigin.location)
 				}
 			}
 		}
