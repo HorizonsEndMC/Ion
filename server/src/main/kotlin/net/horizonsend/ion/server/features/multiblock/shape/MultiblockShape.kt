@@ -461,7 +461,7 @@ class MultiblockShape {
 			Material.WAXED_OXIDIZED_COPPER_BULB,
 			alias = "any copper bulb",
 			edit = {
-				setExample(Material.COPPER_BULB)
+				setExample(Material.WAXED_COPPER_BULB)
 			}
 		)
 
