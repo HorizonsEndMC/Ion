@@ -339,6 +339,19 @@ object AITemplateRegistry {
 			.addRewardProvider(CreditRewardProviderConfiguration(20000.0))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(500.0))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemRegistry.SUPERCONDUCTOR.identifier, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+			.addRewardProvider(
+				AITemplate.ItemBagRewardProviderConfiguration(
+					maxBagSize = 1.0,
+					minBagModifier = 0.5,
+					items = listOf(
+						DroppedItem(
+							itemString = CustomItemRegistry.CIRCUIT_BOARD.identifier,
+							dropChance = 1.0f,
+							amount = StaticIntegerAmount(1)
+						)
+					)
+				)
+			)
 			.addAdditionalModule(
 				BehaviorConfiguration.AdvancedReinforcementInformation(
 					activationThreshold = 0.70,
@@ -950,6 +963,29 @@ object AITemplateRegistry {
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
 			.addRewardProvider(CreditRewardProviderConfiguration(50000.0))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
+			.addRewardProvider(
+				AITemplate.ItemBagRewardProviderConfiguration(
+					maxBagSize = 2.1,
+					minBagModifier = 0.5,
+					items = listOf(
+						DroppedItem(
+							itemString = CustomItemRegistry.REACTIVE_ASSEMBLY.identifier,
+							dropChance = 1.9f,
+							amount = StaticIntegerAmount(1)
+						),
+						DroppedItem(
+							itemString = CustomItemRegistry.REACTIVE_MEMBRANE.identifier,
+							dropChance = 1.5f,
+							amount = StaticIntegerAmount(1)
+						),
+						DroppedItem(
+							itemString = CustomItemRegistry.REACTIVE_CHASSIS.identifier,
+							dropChance = 1.0f,
+							amount = StaticIntegerAmount(1)
+						),
+					)
+				)
+			)
 			.addAdditionalModule(
 				BehaviorConfiguration.BasicReinforcementInformation(
 					activationThreshold = 0.75,
@@ -973,6 +1009,19 @@ object AITemplateRegistry {
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
 			.addRewardProvider(CreditRewardProviderConfiguration(16000.0))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
+			.addRewardProvider(
+				AITemplate.ItemBagRewardProviderConfiguration(
+					maxBagSize = 2.0,
+					minBagModifier = 0.7,
+					items = listOf(
+						DroppedItem(
+							itemString = CustomItemRegistry.REACTIVE_CHASSIS.identifier,
+							dropChance = 1.5f,
+							amount = StaticIntegerAmount(1)
+						),
+					)
+				)
+			)
 			.addAdditionalModule(
 				BehaviorConfiguration.BasicReinforcementInformation(
 					activationThreshold = 0.9,
@@ -1001,8 +1050,21 @@ object AITemplateRegistry {
 		)
 			.addFactionConfiguration(AIFaction.MINING_GUILD)
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
-			.addRewardProvider(CreditRewardProviderConfiguration(1200.0))
+			.addRewardProvider(CreditRewardProviderConfiguration(6000.0))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
+			.addRewardProvider(
+				AITemplate.ItemBagRewardProviderConfiguration(
+					maxBagSize = 2.0,
+					minBagModifier = 0.7,
+					items = listOf(
+						DroppedItem(
+							itemString = CustomItemRegistry.ENRICHED_URANIUM.identifier,
+							dropChance = 0.2f,
+							amount = StaticIntegerAmount(1)
+						),
+					)
+				)
+			)
 			.addAdditionalModule(
 				BehaviorConfiguration.BasicReinforcementInformation(
 					activationThreshold = 0.75,
