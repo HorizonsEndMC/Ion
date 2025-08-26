@@ -28,6 +28,20 @@ class DifficultyModule(
 			}
 		}
 
+	val maxFleeAttempts : Int
+		get() {
+			return when (internalDifficulty) {
+				0 -> 1
+				1 -> 1
+				2 -> 1
+				3 -> 2
+				4 -> 100
+				else -> {
+					1
+				}
+			}
+		}
+
 	val speedModifier: Double
 		get() {
 			return when (internalDifficulty) {
