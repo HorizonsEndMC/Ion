@@ -19,7 +19,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
-object Lava : FluidType(FluidTypeKeys.WATER) {
+object Lava : FluidType(FluidTypeKeys.LAVA) {
 	override val categories: Array<FluidCategory> = arrayOf()
 	override val displayName: Component = text("Lava", HE_LIGHT_ORANGE)
 

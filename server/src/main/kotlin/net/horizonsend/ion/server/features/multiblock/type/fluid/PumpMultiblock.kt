@@ -268,7 +268,6 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 				debugAudience.highlightBlock(Vec3i(last.location), 30L)
 				last.type = Material.AIR
 
-
 				val stack = FluidStack(FluidTypeKeys.LAVA.getValue(), 1.0 * delta)
 				stack.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), FluidProperty.Temperature(1000.0))
 
