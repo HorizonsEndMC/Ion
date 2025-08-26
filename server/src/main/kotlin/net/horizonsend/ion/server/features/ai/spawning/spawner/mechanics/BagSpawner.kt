@@ -100,12 +100,13 @@ class BagSpawner(
 
 		fun withFleetScaling(
 			baseSupplier : Supplier<Int>,
-			location : Location,
+			locationSupplier : Supplier<Location>,
 			shipWeight : Double = 1.0,
 			superCapitalWeight : Double = 3.0,
 			threshold: Int = 19,
 		) : Supplier<Int> {
 			val baseBudget = baseSupplier.get()
+			val location = locationSupplier.get()
 			//get all nearby starships TODO: make sure to grab also inactive ships
 			val ships = ActiveStarships.getInWorld(location.world).filter { it.controller is PlayerController
 				&& it.centerOfMass.toVector().distance(location.toVector()) <= 2000.0
