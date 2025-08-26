@@ -54,7 +54,7 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.BULWAR
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.CONTRACTOR
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAGGER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.DAYBREAK
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.FAGUN
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.FASHIGUN
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.FURIOUS
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.INFLICT
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.LOUMAI
@@ -289,7 +289,7 @@ object AISpawners : IonServerComponent(true) {
 						吃饭人.asSpawnedShip(LOUMAI),
 						吃饭人.asSpawnedShip(MIANBAO_REINFORCED),
 						吃饭人.asSpawnedShip(MALINGSHU_REINFORCED),
-						吃饭人.asSpawnedShip(FAGUN),
+						吃饭人.asSpawnedShip(FASHIGUN),
 					),
 					吃饭人LocusScheduler.spawnLocationProvider,
 					SpawnMessage.WorldMessage("<$吃饭人_STANDARD>Another signal registered".miniMessage()),
@@ -317,7 +317,7 @@ object AISpawners : IonServerComponent(true) {
 					fleetSupplier = { null },
 					asBagSpawned(吃饭人.asSpawnedShip(MIANBAOZHA).withRandomRadialOffset(100.0, 200.0, 0.0, 250.0), 3),
 					asBagSpawned(吃饭人.asSpawnedShip(LOUMAI).withRandomRadialOffset(50.0, 100.0, 0.0, 250.0), 5),
-					asBagSpawned(吃饭人.asSpawnedShip(FAGUN).withRandomRadialOffset(0.0, 50.0, 0.0, 250.0), 15),
+					asBagSpawned(吃饭人.asSpawnedShip(FASHIGUN).withRandomRadialOffset(0.0, 50.0, 0.0, 250.0), 15),
 				)
 			)
 		}
@@ -484,7 +484,7 @@ object AISpawners : IonServerComponent(true) {
 							spawnChance(吃饭人.asSpawnedShip(MIANBAO_REINFORCED), 0.5),
 							spawnChance(吃饭人.asSpawnedShip(MALINGSHU_REINFORCED), 0.5),
 							spawnChance(吃饭人.asSpawnedShip(LOUMAI), 0.1),
-							spawnChance(吃饭人.asSpawnedShip(FAGUN), 0.05),
+							spawnChance(吃饭人.asSpawnedShip(FASHIGUN), 0.05),
 						)
 					),
 					WorldSettings(
@@ -496,7 +496,7 @@ object AISpawners : IonServerComponent(true) {
 							spawnChance(吃饭人.asSpawnedShip(MIANBAO_REINFORCED), 0.5),
 							spawnChance(吃饭人.asSpawnedShip(MALINGSHU_REINFORCED), 0.5),
 							spawnChance(吃饭人.asSpawnedShip(LOUMAI), 0.1),
-							spawnChance(吃饭人.asSpawnedShip(FAGUN), 0.5),
+							spawnChance(吃饭人.asSpawnedShip(FASHIGUN), 0.5),
 						)
 					)
 				)
@@ -713,7 +713,7 @@ object AISpawners : IonServerComponent(true) {
 			maxDistanceFromPlayer = 3500.0,
 			templates = listOf(
 				spawnChance(PERSEUS_EXPLORERS.asSpawnedShip(AITemplateRegistry.WAYFINDER), 0.35),
-				spawnChance(PERSEUS_EXPLORERS.asSpawnedShip(AITemplateRegistry.STRIKER), 0.3),
+				spawnChance(PERSEUS_EXPLORERS.asSpawnedShip(AITemplateRegistry.SPARROW), 0.3),
 				spawnChance(PERSEUS_EXPLORERS.asSpawnedShip(AITemplateRegistry.NIMBLE), 0.2),
 				spawnChance(PERSEUS_EXPLORERS.asSpawnedShip(AITemplateRegistry.DESSLE), 0.2),
 				spawnChance(PERSEUS_EXPLORERS.asSpawnedShip(AITemplateRegistry.MINHAUL_CHETHERITE), 0.15),
@@ -767,7 +767,7 @@ object AISpawners : IonServerComponent(true) {
 				SingleSpawn(
 					RandomShipSupplier(
 						PERSEUS_EXPLORERS.asSpawnedShip(AITemplateRegistry.WAYFINDER),
-						PERSEUS_EXPLORERS.asSpawnedShip(AITemplateRegistry.STRIKER),
+						PERSEUS_EXPLORERS.asSpawnedShip(AITemplateRegistry.SPARROW),
 						PERSEUS_EXPLORERS.asSpawnedShip(AITemplateRegistry.NIMBLE),
 						PERSEUS_EXPLORERS.asSpawnedShip(AITemplateRegistry.DESSLE),
 						PERSEUS_EXPLORERS.asSpawnedShip(AITemplateRegistry.MINHAUL_CHETHERITE),
@@ -1249,7 +1249,7 @@ object AISpawners : IonServerComponent(true) {
 			mechanic = SingleSpawn(
 				RandomShipSupplier(
 					TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.BAIT_NIMBLE),
-					TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.BAIT_STRIKER),
+					TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.BAIT_SPARROW),
 					TSAII_RAIDERS.asSpawnedShip(AITemplateRegistry.BAIT_WAYFINDER)
 				),
 				Supplier {

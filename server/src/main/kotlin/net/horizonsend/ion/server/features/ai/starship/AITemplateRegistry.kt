@@ -333,10 +333,10 @@ object AITemplateRegistry {
 			.build()
 	)
 
-	val FAGUN = registerTemplate(
+	val FASHIGUN = registerTemplate(
 		builder(
-			identifier = "FAGUN",
-			template = StarshipTemplateRegistry.FAGUN,
+			identifier = "FASHIGUN",
+			template = StarshipTemplateRegistry.FASHIGUN,
 			controllerFactory = AIControllerFactories.destroyer,
 			engagementRange = 2500.0
 		)
@@ -830,10 +830,10 @@ object AITemplateRegistry {
 			.build()
 	)
 
-	val STRIKER = registerTemplate(
+	val SPARROW = registerTemplate(
 		builder(
-			identifier = "STRIKER",
-			template = StarshipTemplateRegistry.STRIKER,
+			identifier = "SPARROW",
+			template = StarshipTemplateRegistry.SPARROW,
 			controllerFactory = AIControllerFactories.passive_cruise,
 			engagementRange = 750.0
 		)
@@ -1453,10 +1453,10 @@ object AITemplateRegistry {
 			.build()
 	)
 
-	val BAIT_STRIKER = registerTemplate(
+	val BAIT_SPARROW = registerTemplate(
 		builder(
-			identifier = "BAIT_STRIKER",
-			template = StarshipTemplateRegistry.STRIKER,
+			identifier = "BAIT_SPARROW",
+			template = StarshipTemplateRegistry.SPARROW,
 			controllerFactory = AIControllerFactories.passive_cruise,
 			engagementRange = 750.0
 		)
