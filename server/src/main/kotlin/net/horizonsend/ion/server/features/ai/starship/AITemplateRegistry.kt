@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.PUMPKIN_GRENADE
 import net.horizonsend.ion.server.features.world.WorldSettings.DroppedItem
 import org.bukkit.Material
+import java.util.function.Supplier
 
 /**
  * Fully realized, spawnable, AI templates
@@ -256,12 +257,12 @@ object AITemplateRegistry {
 					delay = 100L,
 					broadcastMessage = "<italic><$吃饭人_STANDARD>You detect a cacophony of transmissions",
 				) {
-					val location = it.getCenter().toLocation(it.starship.world)
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({location}, 200.0, 300.0),
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
 						BagSpawner.withFleetScaling(
 							VariableIntegerAmount(4, 6),
-							location,
+							locationSupplier,
 							shipWeight = 0.15,
 							threshold = 4),
 						null,
@@ -363,12 +364,12 @@ object AITemplateRegistry {
 					delay = 100L,
 					broadcastMessage = "<italic><$吃饭人_STANDARD>You detect a cacophony of transmissions",
 				) {
-					val location = it.getCenter().toLocation(it.starship.world)
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({location}, 200.0, 300.0),
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
 						BagSpawner.withFleetScaling(
 							VariableIntegerAmount(5, 8),
-							location,
+							locationSupplier,
 							shipWeight = 0.2,
 							threshold = 5),
 						null,
@@ -382,12 +383,12 @@ object AITemplateRegistry {
 					delay = 100L,
 					broadcastMessage = "<italic><$吃饭人_STANDARD>You detect a cacophony of transmissions",
 				) {
-					val location = it.getCenter().toLocation(it.starship.world)
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({location}, 200.0, 300.0),
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
 						BagSpawner.withFleetScaling(
 							VariableIntegerAmount(5, 8),
-							location,
+							locationSupplier,
 							shipWeight = 0.2,
 							threshold = 5),
 						null,
@@ -654,12 +655,12 @@ object AITemplateRegistry {
 					delay = 100L,
 					broadcastMessage = "<$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
 				) {
-					val location = it.getCenter().toLocation(it.starship.world)
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({ location }, 200.0, 300.0),
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
 						BagSpawner.withFleetScaling(
 							VariableIntegerAmount(5, 8),
-							location,
+							locationSupplier,
 							shipWeight = 0.2,
 							threshold = 5),
 						null,
@@ -1020,12 +1021,12 @@ object AITemplateRegistry {
 					delay = 150L,
 					broadcastMessage = null, // hidden extra backup for large fleets
 				) {
-					val location = it.getCenter().toLocation(it.starship.world)
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({ location }, 200.0, 300.0),
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
 						BagSpawner.withFleetScaling(
 							StaticIntegerAmount(0),
-							location,
+							locationSupplier,
 							shipWeight = 0.5,
 							threshold = 25),
 						null,
@@ -1084,12 +1085,12 @@ object AITemplateRegistry {
 					delay = 150L,
 					broadcastMessage = null, //hidden extra backup
 				) {
-					val location = it.getCenter().toLocation(it.starship.world)
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({ location }, 200.0, 300.0),
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
 						BagSpawner.withFleetScaling(
 							StaticIntegerAmount(0),
-							location,
+							locationSupplier,
 							shipWeight = 0.2,
 							threshold = 8),
 						null,
@@ -1140,12 +1141,12 @@ object AITemplateRegistry {
 					delay = 150L,
 					broadcastMessage = null, //hidden extra backup
 				) {
-					val location = it.getCenter().toLocation(it.starship.world)
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({ location }, 200.0, 300.0),
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
 						BagSpawner.withFleetScaling(
 							StaticIntegerAmount(0),
-							location,
+							locationSupplier,
 							shipWeight = 0.15,
 							threshold = 8),
 						null,
@@ -1183,12 +1184,12 @@ object AITemplateRegistry {
 					delay = 150L,
 					broadcastMessage = null, //hidden extra backup
 				) {
-					val location = it.getCenter().toLocation(it.starship.world)
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({ location }, 200.0, 300.0),
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
 						BagSpawner.withFleetScaling(
 							StaticIntegerAmount(0),
-							location,
+							locationSupplier,
 							shipWeight = 0.10,
 							threshold = 6),
 						null,
@@ -1403,12 +1404,12 @@ object AITemplateRegistry {
 					delay = 150L,
 					broadcastMessage = null, //hidden extra spawns
 				) {
-					val location = it.getCenter().toLocation(it.starship.world)
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({ location }, 200.0, 300.0),
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
 						BagSpawner.withFleetScaling(
 							StaticIntegerAmount(0),
-							location,
+							locationSupplier,
 							shipWeight = 0.25,
 							threshold = 8),
 						null,
