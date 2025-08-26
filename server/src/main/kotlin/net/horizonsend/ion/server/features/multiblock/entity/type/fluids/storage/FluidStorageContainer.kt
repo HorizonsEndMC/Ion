@@ -61,6 +61,8 @@ class FluidStorageContainer private constructor(
 
 		contentsUnsafe.combine(toAdd, location)
 
+		runUpdates()
+
 		return stack.amount - newQuantity
 	}
 
