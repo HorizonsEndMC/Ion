@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid
 
 import io.papermc.paper.registry.keys.BiomeKeys
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
@@ -31,8 +33,14 @@ import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
+import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.isChiseled
+import net.horizonsend.ion.server.miscellaneous.utils.isLava
 import net.horizonsend.ion.server.miscellaneous.utils.isWater
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
@@ -40,9 +48,11 @@ import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
+import org.bukkit.block.data.Levelled
 import org.bukkit.block.data.Waterlogged
 import org.bukkit.block.data.type.Stairs
 import org.bukkit.persistence.PersistentDataAdapterContext
+import kotlin.math.abs
 
 object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 	override val name: String = "pump"
@@ -145,7 +155,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 
 		override fun tickAsync() {
 			bootstrapNetwork()
-			tryPumpWater()
+			tryPumpFluid()
 		}
 
 		companion object {
@@ -171,18 +181,32 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 				BiomeKeys.FROZEN_OCEAN,
 				BiomeKeys.DEEP_FROZEN_OCEAN,
 			).mapTo(mutableSetOf()) { it.key() }
+
+			private const val MAX_RANGE = 30
 		}
 
-		private fun tryPumpWater() {
+		private fun getPumpOrigin(): Block = getBlockRelative(TUBE_ORIGIN.x, TUBE_ORIGIN.y, TUBE_ORIGIN.z)
+
+		private fun tryPumpFluid() {
 			val delta = deltaTMS / 1000.0
 
-			val (surfaceDepth, fluidDepth) = getDepth()
+			val pumpOriginBlock = getPumpOrigin()
+			val type = pumpOriginBlock.type
+
+			when {
+				type == Material.LIGHTNING_ROD -> tryPumpWater(pumpOriginBlock, delta)
+				type.isChiseled -> tryPumpLava(pumpOriginBlock, delta, type)
+			}
+		}
+
+		fun tryPumpWater(pumpOriginBlock: Block, delta: Double) {
+			val (surfaceDepth, fluidDepth) = getWaterDepth()
 
 			if (fluidDepth <= 0) return
 
 			val stack = FluidStack(FluidTypeKeys.WATER.getValue(), 1.0 * delta)
 
-			val bottomBlock = getPumpOrigin().getRelative(BlockFace.DOWN, surfaceDepth + fluidDepth)
+			val bottomBlock = pumpOriginBlock.getRelative(BlockFace.DOWN, surfaceDepth + fluidDepth)
 			val biome = world.getBiome(bottomBlock.x, bottomBlock.y, bottomBlock.z)
 			if (OCEAN_BIOMES.contains(biome.key())) {
 				// Ramp up salinity to
@@ -195,14 +219,12 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 			mainStorage.getContents().combine(stack, bottomBlock.location)
 		}
 
-		private fun getPumpOrigin(): Block = getBlockRelative(TUBE_ORIGIN.x, TUBE_ORIGIN.y, TUBE_ORIGIN.z)
-
 		/**
 		 * Returns the depth of fluid which is pumped
 		 *
 		 * Returns a pair of integers, the first being the water surface depth, or null if none is found, the second beind the depth of the water.
 		 **/
-		fun getDepth(): Pair<Int, Int> {
+		fun getWaterDepth(): Pair<Int, Int> {
 			var fluidFound = false
 			var surfaceDepth = 0
 			var fluidDepth = 0
@@ -229,6 +251,94 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 			}
 
 			return surfaceDepth to fluidDepth
+		}
+
+		private fun tryPumpLava(pumpOriginBlock: Block, delta: Double, type: Material) {
+			val (surfaceDepth, fluidDepth) = getLavaDepth(pumpOriginBlock, type)
+
+			if (fluidDepth <= 0) return
+
+			val surfaceOrigin = pumpOriginBlock.getRelative(BlockFace.DOWN, surfaceDepth)
+
+			val planeBlocks = getSurfaceLayerBlocks(surfaceOrigin)
+			if (planeBlocks.isEmpty()) return
+
+			Tasks.sync {
+				val last = planeBlocks.reversed().firstOrNull { block -> block != pumpOriginBlock } ?: return@sync
+				debugAudience.highlightBlock(Vec3i(last.location), 30L)
+				last.type = Material.AIR
+
+
+				val stack = FluidStack(FluidTypeKeys.LAVA.getValue(), 1.0 * delta)
+				stack.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), FluidProperty.Temperature(1000.0))
+
+				mainStorage.getContents().combine(stack, surfaceOrigin.location)
+			}
+		}
+
+		/**
+		 * Returns the depth of fluid which is pumped
+		 *
+		 * Returns a pair of integers, the first being the water surface depth, or null if none is found, the second beind the depth of the water.
+		 **/
+		private fun getLavaDepth(pumpOriginBlock: Block, material: Material): Pair<Int, Int> {
+			var fluidFound = false
+			var surfaceDepth = 0
+			var fluidDepth = 0
+
+			var block = pumpOriginBlock
+			var data = block.blockData
+
+			while (data.material == material) {
+				// Return the depth if the block is in water & surrounded by water
+				if (CARDINAL_BLOCK_FACES.all { face -> block.getRelative(face).type.isLava }) {
+					fluidFound = true
+					fluidDepth++
+				}
+
+				// If not, search deeper
+				block = block.getRelative(BlockFace.DOWN)
+				data = block.blockData
+				if (!fluidFound) surfaceDepth++
+			}
+
+			return surfaceDepth to fluidDepth
+		}
+
+		fun getSurfaceLayerBlocks(origin: Block): List<Block> {
+			val visitQueue = ArrayDeque<Block>()
+			// A set is maintained to allow faster checks of
+			val visitSet = LongOpenHashSet()
+
+			visitQueue.add(origin)
+			visitSet.add(toBlockKey(origin.x, origin.y, origin.z))
+
+			val visited = mutableListOf<Block>()
+
+			var tick = 0
+
+			while (visitQueue.isNotEmpty() && tick < 10000 && isAlive) whileLoop@{
+				tick++
+				val block = visitQueue.removeFirst()
+
+				visited.add(block)
+
+				for (face in CARDINAL_BLOCK_FACES) {
+					val adjacent = block.getRelativeIfLoaded(face) ?: continue
+
+					// if within range
+					if (abs(adjacent.x - origin.x) > MAX_RANGE || abs(adjacent.z - origin.z) > MAX_RANGE) continue
+
+					val adjacentData = adjacent.blockData
+					if (adjacentData.material != Material.LAVA) continue
+					if (adjacentData !is Levelled) continue
+					if (adjacentData.level != adjacentData.minimumLevel) continue
+
+					if (visitSet.add(toBlockKey(adjacent.x, adjacent.y, adjacent.z))) visitQueue.add(adjacent)
+				}
+			}
+
+			return visited
 		}
 	}
 }
