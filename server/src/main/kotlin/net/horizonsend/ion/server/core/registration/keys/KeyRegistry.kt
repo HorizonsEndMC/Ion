@@ -17,7 +17,7 @@ abstract class KeyRegistry<T : Any>(private val registryId: IonBindableResourceK
 	protected val namespaced = Object2ObjectOpenHashMap<NamespacedKey, IonRegistryKey<T, out T>>()
 	protected val allKeys = ObjectOpenHashSet<IonRegistryKey<T, out T>>()
 
-	val serializer = IonRegistryKey.Serializer(this)
+	val serializer: IonRegistryKey.Serializer<T> = IonRegistryKey.Serializer(this)
 
 	protected inline fun <reified Z : T> registerTypedKey(key: String): IonRegistryKey<T, Z> {
 		val registryKey = registry.createKey(key, Z::class)

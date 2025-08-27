@@ -24,28 +24,28 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 	override fun getKeySet(): KeyRegistry<TransportNodeType<*>> = TransportNetworkNodeTypeKeys
 
 	override fun boostrap() {
-		register(FLUID_JUNCTION_REGULAR, object : TransportNodeType<RegularJunctionPipe>() {
+		register(FLUID_JUNCTION_REGULAR, object : TransportNodeType<RegularJunctionPipe>(FLUID_JUNCTION_REGULAR) {
 			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): RegularJunctionPipe {
 				val node = RegularJunctionPipe(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
 				node.loadContents(data, adapterContext)
 				return node
 			}
 
-			override fun serialize(complex: RegularJunctionPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(complex: RegularJunctionPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
 				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
 				pdc.set(CONTENTS, FluidStack, complex.contents)
 				return pdc
 			}
 		})
-		register(FLUID_LINEAR_REGULAR, object : TransportNodeType<RegularLinearPipe>() {
+		register(FLUID_LINEAR_REGULAR, object : TransportNodeType<RegularLinearPipe>(FLUID_LINEAR_REGULAR) {
 			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): RegularLinearPipe {
 				val node = RegularLinearPipe(data.get(NODE_POSITION, PersistentDataType.LONG)!!, data.get(NamespacedKeys.AXIS, axisType)!!)
 				node.loadContents(data, adapterContext)
 				return node
 			}
 
-			override fun serialize(complex: RegularLinearPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(complex: RegularLinearPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
 				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
 				pdc.set(CONTENTS, FluidStack, complex.contents)
@@ -53,13 +53,13 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return pdc
 			}
 		})
-		register(FLUID_PORT, object : TransportNodeType<FluidPort>() {
+		register(FLUID_PORT, object : TransportNodeType<FluidPort>(FLUID_PORT) {
 			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): FluidPort {
 				val node = FluidPort(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
 				return node
 			}
 
-			override fun serialize(complex: FluidPort, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(complex: FluidPort, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
 				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
 				return pdc

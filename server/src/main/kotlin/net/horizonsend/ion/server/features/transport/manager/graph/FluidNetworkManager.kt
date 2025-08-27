@@ -5,14 +5,18 @@ import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegist
 import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeBlock
 import net.horizonsend.ion.server.features.transport.manager.TransportHolder
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork
+import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork.Companion.key
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidPort
 import net.horizonsend.ion.server.features.transport.nodes.util.BlockBasedCacheFactory
 import org.bukkit.Material
+import org.bukkit.NamespacedKey
 import org.bukkit.block.data.MultipleFacing
 import java.util.UUID
 
 class FluidNetworkManager(manager: TransportHolder) : NetworkManager<FluidNode, TransportNetwork<FluidNode>>(manager) {
+	override val namespacedKey: NamespacedKey = key
+
 	override val cacheFactory: BlockBasedCacheFactory<FluidNode, NetworkManager<FluidNode, TransportNetwork<FluidNode>>> = BlockBasedCacheFactory.builder<FluidNode, NetworkManager<FluidNode, TransportNetwork<FluidNode>>>()
 		.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_PIPE_JUNCTION, Material.CHORUS_PLANT) { _, pos, holder ->
 			FluidNode.RegularJunctionPipe(pos)

@@ -111,6 +111,8 @@ object NamespacedKeys {
 	val SORTING_ORDER = key("sorting_order")
 
 	val NODE_TYPE = key("node_type")
+	val NODES = key("nodes")
+	val NODE_LOCATIONS = key("node_locations")
 
 	// Fluid storage
 	val FLUID_TYPE = key("fluid_type")

@@ -34,7 +34,6 @@ import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.chunkKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -399,7 +398,7 @@ object TransportDebugCommand : SLCommand() {
 
 //		sender.information("Grid ID at ${toVec3i(key)}: ${fluidManager.getGraphAtLocation(key)?.uuid}")
 
-		val grids = fluidManager.getAllGraphs().filter { network -> network.positions.any { nodeLocation -> chunkKey(getX(nodeLocation).shr(4), getZ(nodeLocation).shr(4)) == sender.chunk.chunkKey } }
+		val grids = fluidManager.getByChunkKey(sender.chunk.chunkKey).toList()
 		sender.information("Grids: ${grids.size}")
 
 		fluidManager.allLocations().forEach { t -> sender.highlightBlock(toVec3i(t), 50L) }

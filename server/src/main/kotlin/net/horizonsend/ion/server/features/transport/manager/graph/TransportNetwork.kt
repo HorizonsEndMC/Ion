@@ -4,9 +4,13 @@ import com.google.common.graph.MutableNetwork
 import com.google.common.graph.NetworkBuilder
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
+import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import org.bukkit.Chunk
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import java.util.UUID
@@ -32,7 +36,28 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 	/**
 	 * Keep track of nodes and their positions
 	 **/
-	val nodeMirror = ConcurrentHashMap<BlockKey, N>()
+	private val nodeMirror = ConcurrentHashMap<BlockKey, N>()
+	protected val chunkMap = ConcurrentHashMap<Long, ConcurrentHashMap<BlockKey, N>>()
+
+	fun getNodeAtLocation(location: BlockKey): N? = nodeMirror[location]
+
+	fun isNodePresent(location: BlockKey): Boolean = nodeMirror.containsKey(location)
+
+	fun getAllNodeLocations() = nodeMirror.keys
+
+	fun setNodeMirror(location: BlockKey, node: N) {
+		getChunkMirror(Chunk.getChunkKey(getX(location).shr(4), getZ(location).shr(4)))[location] = node
+		nodeMirror[location] = node
+	}
+
+	fun removeNodeMirror(location: BlockKey): N? {
+		getChunkMirror(Chunk.getChunkKey(getX(location).shr(4), getZ(location).shr(4))).remove(location)
+		return nodeMirror.remove(location)
+	}
+
+	fun getChunkMirror(chunkKey: Long): ConcurrentHashMap<BlockKey, N> {
+		return chunkMap.getOrPut(chunkKey) { ConcurrentHashMap<BlockKey, N>() }
+	}
 
 	val positions get() = nodeMirror.keys
 
@@ -53,12 +78,12 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 	fun getAdjacentNodes(node: N) = localLock.readLock().withLock { networkGraph.adjacentNodes(node) }
 
 	fun addNode(node: N) = localLock.writeLock().withLock {
-		if (nodeMirror.containsKey(node.location)) throw IllegalStateException("Node already exists at ${toVec3i(node.location)} in graph!")
+		if (isNodePresent(node.location)) throw IllegalStateException("Node already exists at ${toVec3i(node.location)} in graph!")
 		if (getGraphNodes().any { eixsting -> eixsting.location == node.location }) throw IllegalStateException("Node already exists at ${toVec3i(node.location)} in graph!")
 
 		manager.registerNode(node, this)
 
-		nodeMirror[node.location] = node
+		setNodeMirror(node.location, node)
 
 		networkGraph.addNode(node)
 
@@ -83,7 +108,7 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 	}
 
 	/** Gets all nodes adjacent to the provided node */
-	fun getAdjacent(from: N): Set<N> = from.getPipableDirections().mapNotNullTo(mutableSetOf<N>()) { face -> nodeMirror[getRelative(from.location, face)]?.takeIf { node -> node.getPipableDirections().contains(face.oppositeFace) } }
+	fun getAdjacent(from: N): Set<N> = from.getPipableDirections().mapNotNullTo(mutableSetOf<N>()) { face -> getNodeAtLocation(getRelative(from.location, face))?.takeIf { node -> node.getPipableDirections().contains(face.oppositeFace) } }
 
 	abstract fun createEdge(nodeOne: N, nodeTwo: N): GraphEdge
 
@@ -107,9 +132,10 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 	fun removeNode(node: N): NodeRemovalResult = localLock.writeLock().withLock {
 		networkGraph.removeNode(node)
 
-		manager.deRegisterNode(node)
+		// Remove from the mirror first so that the manager can check if any nodes are present in its chunk to verify the lookup
+		removeNodeMirror(node.location)
 
-		nodeMirror.remove(node.location)
+		manager.deRegisterNode(node, this)
 
 		if (networkGraph.nodes().isEmpty()) {
 			manager.removeNetwork(this)
@@ -124,6 +150,25 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 
 		NodeRemovalResult.Split
 	}
+
+	fun handleChunkUnload(chunk: IonChunk) {
+		val chunkMirror: ConcurrentHashMap<BlockKey, N> = getChunkMirror(chunk.locationKey)
+		if (chunkMirror.isEmpty()) return
+
+		for ((_, node) in chunkMirror) {
+			unloadNode(node)
+		}
+	}
+
+	fun unloadNode(node: N) {
+		handleNodeUnload(node)
+
+		removeNode(node)
+	}
+
+	open fun preSave() {}
+
+	open fun handleNodeUnload(node: N) {}
 
 	/**
 	 * Holds if the graph is currently executing a tick
@@ -147,6 +192,7 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 	protected abstract fun handleTick()
 
 	open fun onModified() {}
+	open fun onNodeAdded(node: N) {}
 	open fun onEdgeConnected(edge: GraphEdge) {}
 	open fun onSplit(children: Collection<TransportNetwork<N>>) {}
 	open fun onMergedInto(other: TransportNetwork<N>) {}

@@ -108,7 +108,7 @@ class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClas
 			primitive: String,
 			context: PersistentDataAdapterContext,
 		): IonRegistryKey<T, out T> {
-			return keyRegistry.get(primitive)!!
+			return keyRegistry[primitive]!!
 		}
 	}
 }

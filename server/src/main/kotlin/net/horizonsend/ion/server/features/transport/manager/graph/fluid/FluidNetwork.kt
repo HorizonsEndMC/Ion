@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.transport.manager.graph.NetworkManage
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidPort
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -71,6 +72,10 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 	override fun onModified() {
 		resetCachedVolume()
+	}
+
+	override fun preSave() {
+		getGraphNodes().forEach(FluidNode::populateContents)
 	}
 
 	private var lastStructureTick: Long = System.currentTimeMillis()
@@ -185,7 +190,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 	private fun depositToNetwork(location: BlockKey, port: IOPort.RegisteredMetaDataInput<FluidInputMetadata>, delta: Double) {
 		if (!port.metaData.outputAllowed) return
-		val node = nodeMirror[location] as? FluidPort ?: return
+		val node = getNodeAtLocation(location) as? FluidPort ?: return
 
 		val removalRate = node.removalCapacity
 
@@ -213,7 +218,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		if (networkContents.isEmpty()) return
 		if (!ioPort.metaData.inputAllowed) return
 
-		val node = nodeMirror[location] as? FluidPort ?: return
+		val node = getNodeAtLocation(location) as? FluidPort ?: return
 
 		val additionRate = node.additionCapacity
 
@@ -236,8 +241,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		// A set is maintained to allow faster checks of
 		val visitSet = LongOpenHashSet()
 
-		visitQueue.addAll(nodeMirror.keys)
-		visitSet.addAll(nodeMirror.keys)
+		visitQueue.addAll(getAllNodeLocations())
+		visitSet.addAll(getAllNodeLocations())
 
 		val visited = LongOpenHashSet()
 
@@ -246,7 +251,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		while (visitQueue.isNotEmpty() && tick < 10000 && isAlive) whileLoop@{
 			tick++
 			val key = visitQueue.removeFirst()
-			val node = nodeMirror[key] ?: continue
+			val node = getNodeAtLocation(key) ?: continue
 			visitSet.remove(key)
 
 			visited.add(key)
@@ -256,7 +261,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			for (face in node.getPipableDirections()) {
 				val adjacent = getRelative(key, face)
 
-				if (nodeMirror.containsKey(adjacent)) continue
+				if (isNodePresent(adjacent)) continue
 				if (visitSet.contains(adjacent) || visited.contains(adjacent)) continue
 
 				val discoveryResult = manager.discoverPosition(adjacent, face, this)
@@ -379,6 +384,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 	}
 
 	companion object {
+		val key = NamespacedKeys.key("fluid_transport")
+
 		const val PIPE_INTERIOR_PADDING = 0.215
 
 		private const val STRUCTURE_INTERVAL = 1000L
@@ -463,8 +470,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 				if (v == parentOfNode) break
 
-				val parentNode = nodeMirror[parentOfNode]
-				val node = nodeMirror[v]
+				val parentNode = getNodeAtLocation(parentOfNode)
+				val node = getNodeAtLocation(v)
 
 				if (parentNode != null && node != null) {
 					val edgeConnecting = getGraph().edgeConnecting(parentNode, node).getOrNull()

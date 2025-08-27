@@ -27,7 +27,13 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 		this.graph = graph as FluidNetwork
 	}
 
-	var contents = FluidStack.empty()
+	fun populateContents() {
+		val networkVolume = graph.getVolume()
+		val contribution = volume / networkVolume
+		contents = graph.networkContents.asAmount(graph.networkContents.amount * contribution)
+	}
+
+	var contents = FluidStack.empty(); private set
 
 	fun loadContents(saved: PersistentDataContainer, adapterContext: PersistentDataAdapterContext) {
 		contents = FluidStack.fromPrimitive(saved, adapterContext)
