@@ -638,7 +638,7 @@ object AISpawners : IonServerComponent(true) {
 			"<${HE_MEDIUM_GRAY}>Increased <$PIRATE_SATURATED_RED>Pirate<${HE_MEDIUM_GRAY}> activity has been noted in {0} at {1} {3}. <$PIRATE_SATURATED_RED>Please avoid the area.".miniMessage(),
 			"<$PIRATE_SATURATED_RED>Pirate<${HE_MEDIUM_GRAY}> activity has waned".miniMessage(),
 			radius = 1500.0,
-			spawnSeparation = { getRandomDuration(Duration.ofSeconds(15), Duration.ofSeconds(45)) },
+			spawnSeparation = { getRandomDuration(Duration.ofSeconds(10), Duration.ofSeconds(30)) },
 			listOf("Trench", "AU-0821", "Horizon")
 		)
 
@@ -673,7 +673,7 @@ object AISpawners : IonServerComponent(true) {
 			"<${HE_MEDIUM_GRAY}>Increased <$PIRATE_SATURATED_RED>Pirate<${HE_MEDIUM_GRAY}> disturbance has been noted in {0} at {1} {3}. <$PIRATE_SATURATED_RED>Please avoid the area.".miniMessage(),
 			"<$PIRATE_SATURATED_RED>Pirate<${HE_MEDIUM_GRAY}> disturbance has waned".miniMessage(),
 			radius = 500.0,
-			spawnSeparation = { getRandomDuration(Duration.ofSeconds(15), Duration.ofSeconds(45)) },
+			spawnSeparation = { getRandomDuration(Duration.ofSeconds(10), Duration.ofSeconds(30)) },
 			listOf("Asteri", "Sirius", "Regulus", "Ilios")
 		)
 
@@ -756,7 +756,7 @@ object AISpawners : IonServerComponent(true) {
 			"<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> are meeting in {0} at {1} {3}. <$EXPLORER_LIGHT_CYAN>Do not disturb.".miniMessage(),
 			"<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> meeting has ended".miniMessage(),
 			radius = 500.0,
-			spawnSeparation = { getRandomDuration(Duration.ofSeconds(15), Duration.ofSeconds(45)) },
+			spawnSeparation = { getRandomDuration(Duration.ofSeconds(10), Duration.ofSeconds(30)) },
 			listOf("Asteri", "Sirius", "Regulus", "Ilios")
 		)
 
@@ -1051,7 +1051,7 @@ object AISpawners : IonServerComponent(true) {
 			"<$PRIVATEER_LIGHT_TEAL>Privateer Naval Drills<${HE_MEDIUM_GRAY}> will be conducted in {0} at {1} {3}. Please avoid the area.".miniMessage(),
 			"<$PRIVATEER_LIGHT_TEAL>Privateer Naval Drills<${HE_MEDIUM_GRAY}> have ended".miniMessage(),
 			radius = 1500.0,
-			spawnSeparation = { getRandomDuration(Duration.ofSeconds(15), Duration.ofSeconds(45)) },
+			spawnSeparation = { getRandomDuration(Duration.ofSeconds(10), Duration.ofSeconds(30)) },
 			listOf("Trench", "AU-0821", "Horizon")
 		)
 
@@ -1093,7 +1093,7 @@ object AISpawners : IonServerComponent(true) {
 			"<$PRIVATEER_LIGHT_TEAL>Privateer Inspection<${HE_MEDIUM_GRAY}> will be conducted in {0} at {1} {3}. Please avoid the area.".miniMessage(),
 			"<$PRIVATEER_LIGHT_TEAL>Privateer Inspection<${HE_MEDIUM_GRAY}> have ended".miniMessage(),
 			radius = 500.0,
-			spawnSeparation = { getRandomDuration(Duration.ofSeconds(15), Duration.ofSeconds(45)) },
+			spawnSeparation = { getRandomDuration(Duration.ofSeconds(10), Duration.ofSeconds(30)) },
 			listOf("Asteri", "Sirius", "Regulus", "Ilios")
 		)
 
@@ -1131,7 +1131,7 @@ object AISpawners : IonServerComponent(true) {
 			"<$PRIVATEER_LIGHT_TEAL>Privateer Boot Camp<${HE_MEDIUM_GRAY}> will be conducted in {0} at {1} {3}. Please avoid the area.".miniMessage(),
 			"<$PRIVATEER_LIGHT_TEAL>Privateer Boot Camp<${HE_MEDIUM_GRAY}> have ended".miniMessage(),
 			radius = 500.0,
-			spawnSeparation = { getRandomDuration(Duration.ofSeconds(15), Duration.ofSeconds(45)) },
+			spawnSeparation = { getRandomDuration(Duration.ofSeconds(10), Duration.ofSeconds(30)) },
 			listOf("Asteri", "Sirius", "Regulus", "Ilios")
 		)
 
@@ -1218,7 +1218,7 @@ object AISpawners : IonServerComponent(true) {
 			"<${HE_MEDIUM_GRAY}>A <$TSAII_DARK_ORANGE>Tsaii Warband<${HE_MEDIUM_GRAY}> has been spotted in {0} at {1} {3}. <$TSAII_MEDIUM_ORANGE>Please avoid the area.".miniMessage(),
 			"<${HE_MEDIUM_GRAY}>The <$TSAII_DARK_ORANGE>Tsaii Warband<${HE_MEDIUM_GRAY}> has departed".miniMessage(),
 			radius = 1500.0,
-			spawnSeparation = { getRandomDuration(Duration.ofSeconds(15), Duration.ofSeconds(45)) },
+			spawnSeparation = { getRandomDuration(Duration.ofSeconds(10), Duration.ofSeconds(30)) },
 			listOf("Trench", "AU-0821", "Horizon")
 		)
 
