@@ -130,7 +130,7 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 
 	sealed interface NodeRegistrationResult {
 		data object Nothing : NodeRegistrationResult
-		data class CreatedNew(val new: TransportNode) : NodeRegistrationResult
+		data class CreatedNewNode(val new: TransportNode) : NodeRegistrationResult
 		data class CombinedGraphs(val graphs: Collection<TransportNetwork<*>>) : NodeRegistrationResult
 	}
 
@@ -185,15 +185,21 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 
 		return when {
 			adjacentGraphs.isEmpty() -> {
-				createNewNetwork(node)
-				NodeRegistrationResult.CreatedNew(node)
+				node.onLoadedIntoNetwork(createNewNetwork(node))
+
+				NodeRegistrationResult.CreatedNewNode(node)
 			}
 			adjacentGraphs.size == 1 -> {
-				adjacentGraphs.first().addNode(node)
-				NodeRegistrationResult.CreatedNew(node)
+				val adjacent = adjacentGraphs.first()
+				adjacent.addNode(node)
+				node.onLoadedIntoNetwork(adjacent)
+
+				NodeRegistrationResult.CreatedNewNode(node)
 			}
 			else -> {
-				combineGraphs(adjacentGraphs)
+				val new = combineGraphs(adjacentGraphs)
+				node.onLoadedIntoNetwork(new)
+
 				NodeRegistrationResult.CombinedGraphs(adjacentGraphs)
 			}
 		}

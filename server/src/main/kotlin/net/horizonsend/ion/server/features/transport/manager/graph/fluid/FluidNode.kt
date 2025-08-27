@@ -37,6 +37,13 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 		this.contents = newContents
 	}
 
+	override fun onLoadedIntoNetwork(network: TransportNetwork<*>) {
+		network as FluidNetwork
+
+		network.networkContents.combine(contents, getCenter().toLocation(network.manager.transportManager.getWorld()))
+		contents = FluidStack.empty()
+	}
+
 	class RegularJunctionPipe(override val location: BlockKey) : FluidNode(10.0) {
 		override val type: TransportNodeType<*> = TransportNetworkNodeTypeKeys.FLUID_JUNCTION_REGULAR.getValue()
 		override val flowCapacity: Double = 10.0

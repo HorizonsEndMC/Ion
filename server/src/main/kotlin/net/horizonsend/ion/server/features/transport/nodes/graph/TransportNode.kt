@@ -23,6 +23,8 @@ interface TransportNode {
 
 	fun getPipableDirections(): Set<BlockFace>
 
+	fun onLoadedIntoNetwork(network: TransportNetwork<*>) {}
+
 	companion object {
 		val NODE_POSITION = NamespacedKeys.key("node_position")
 	}

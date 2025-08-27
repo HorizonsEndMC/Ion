@@ -9,7 +9,7 @@ import io.papermc.paper.util.StacktraceDeobfuscator
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.button
 import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
-import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
@@ -413,12 +413,12 @@ object TransportDebugCommand : SLCommand() {
 			val uuid = button(Component.text("show uuid")) { it.sendMessage(grid.uuid.toComponent()) }
 			val highlight = button(Component.text("highlight")) { grid.getGraphNodes().forEach { t -> it.highlightBlock(toVec3i(t.location), 30L) } }
 
-			ofChildren(
-				Component.text("Grid [${grid.getGraphNodes().size}] "),
+			listOf<Component>(
+				Component.text("Grid $grid "),
 				uuid,
 				highlight,
 				if (grid is FluidNetwork) grid.getVolume().toComponent() else Component.empty()
-			)
+			).join(separator = Component.space())
 		}
 
 		sender.sendMessage(menu)
