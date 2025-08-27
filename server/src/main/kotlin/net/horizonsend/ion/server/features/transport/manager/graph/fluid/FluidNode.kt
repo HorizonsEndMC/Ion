@@ -14,8 +14,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.faces
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.Axis
 import org.bukkit.block.BlockFace
-import org.bukkit.persistence.PersistentDataAdapterContext
-import org.bukkit.persistence.PersistentDataContainer
 
 abstract class FluidNode(val volume: Double) : TransportNode {
 	private lateinit var graph: FluidNetwork
@@ -35,8 +33,8 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 
 	var contents = FluidStack.empty(); private set
 
-	fun loadContents(saved: PersistentDataContainer, adapterContext: PersistentDataAdapterContext) {
-		contents = FluidStack.fromPrimitive(saved, adapterContext)
+	fun loadContents(newContents: FluidStack) {
+		this.contents = newContents
 	}
 
 	class RegularJunctionPipe(override val location: BlockKey) : FluidNode(10.0) {

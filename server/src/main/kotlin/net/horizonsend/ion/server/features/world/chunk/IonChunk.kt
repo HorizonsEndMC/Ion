@@ -57,6 +57,7 @@ class IonChunk(val inner: Chunk) {
 	 **/
 	fun onLoad() {
 		transportNetwork.setup()
+		world.ion.transportManager.fluidGraphManager.onChunkLoad(this)
 	}
 
 	/**

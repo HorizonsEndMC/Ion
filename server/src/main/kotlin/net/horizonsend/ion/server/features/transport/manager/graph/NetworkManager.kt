@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.manager.graph
 
+import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys
 import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.transport.manager.TransportHolder
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
@@ -85,6 +86,7 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 
 		allNetworks.remove(network)
 		graphUUIDLookup.remove(network.uuid)
+
 		network.positions.forEach {
 			val found = graphLocationLookup.remove(it)
 			if (found != network) throw IllegalStateException("Removed network was not at position ${toVec3i(it)}! Expected ${network.uuid}, Found ${found?.uuid}")
@@ -159,9 +161,13 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 		if (node == null) return NodeRegistrationResult.Nothing
 		if (!check(node)) return NodeRegistrationResult.Nothing
 
+		return registerNewNode(node)
+	}
+
+	fun registerNewNode(node: N): NodeRegistrationResult {
 		// Check adjacent graphs to see if any are connected when this one is placed.
 		val adjacentGraphs = node.getPipableDirections().mapNotNullTo(mutableSetOf()) { offset ->
-			val position = getRelative(location, offset)
+			val position = getRelative(node.location, offset)
 
 			getByLocation(position)?.takeIf { adjacent ->
 				val node = adjacent.getNodeAtLocation(position) ?: return@takeIf false
@@ -339,6 +345,19 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 
 	fun tick() {
 		getAllGraphs().forEach { t -> t.tick() }
+	}
+
+	fun onChunkLoad(chunk: IonChunk) {
+		val data = chunk.inner.persistentDataContainer.get(namespacedKey, PersistentDataType.TAG_CONTAINER) ?: return
+		val nodes = data.get(NamespacedKeys.NODES, PersistentDataType.LIST.dataContainers()) ?: return
+
+		for (serializedNode in nodes) {
+			val type = serializedNode.get(NamespacedKeys.NODE_TYPE, TransportNetworkNodeTypeKeys.serializer)!!.getValue()
+			val deserialized = type.deserialize(serializedNode, serializedNode.adapterContext)
+
+			@Suppress("UNCHECKED_CAST")
+			registerNewNode(deserialized as N)
+		}
 	}
 }
 

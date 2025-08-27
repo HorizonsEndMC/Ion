@@ -27,7 +27,7 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 		register(FLUID_JUNCTION_REGULAR, object : TransportNodeType<RegularJunctionPipe>(FLUID_JUNCTION_REGULAR) {
 			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): RegularJunctionPipe {
 				val node = RegularJunctionPipe(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
-				node.loadContents(data, adapterContext)
+				node.loadContents(data.get(CONTENTS, FluidStack)!!)
 				return node
 			}
 
@@ -41,7 +41,7 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 		register(FLUID_LINEAR_REGULAR, object : TransportNodeType<RegularLinearPipe>(FLUID_LINEAR_REGULAR) {
 			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): RegularLinearPipe {
 				val node = RegularLinearPipe(data.get(NODE_POSITION, PersistentDataType.LONG)!!, data.get(NamespacedKeys.AXIS, axisType)!!)
-				node.loadContents(data, adapterContext)
+				node.loadContents(data.get(CONTENTS, FluidStack)!!)
 				return node
 			}
 
