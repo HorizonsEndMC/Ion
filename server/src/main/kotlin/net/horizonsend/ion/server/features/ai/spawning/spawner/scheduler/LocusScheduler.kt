@@ -33,6 +33,7 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.function.Supplier
+import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.reflect.KClass
 
@@ -134,7 +135,7 @@ class LocusScheduler(
 		if (interval < lastSpawnSeparation.toMillis()) return
 
 		spawnerLastExecuted = System.currentTimeMillis()
-		val multiplier = (MAX_TICK_MULTIPLIER - numberOccupied()).coerceAtLeast(1)
+		val multiplier = (MAX_TICK_MULTIPLIER - sqrt(numberOccupied().toDouble())).coerceAtLeast(1.0)
 		lastSpawnSeparation = spawnSeparation.get().multipliedBy(multiplier.toLong())
 		getSpawner().trigger(logger, AISpawningManager.context)
 	}
