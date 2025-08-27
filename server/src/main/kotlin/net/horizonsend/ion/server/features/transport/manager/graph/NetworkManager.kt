@@ -36,6 +36,7 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 		allNetworks.clear()
 		graphUUIDLookup.clear()
 		graphLocationLookup.clear()
+		graphChunkLookup.clear()
 	}
 
 	private val allNetworks = ConcurrentHashMap.newKeySet<T>()
@@ -84,15 +85,22 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 	fun removeNetwork(network: T) {
 		network.setRemoved()
 
-		allNetworks.remove(network)
-		graphUUIDLookup.remove(network.uuid)
+		removeNetworkRegistration(network)
 
 		network.positions.forEach {
 			val found = graphLocationLookup.remove(it)
-			if (found != network) throw IllegalStateException("Removed network was not at position ${toVec3i(it)}! Expected ${network.uuid}, Found ${found?.uuid}")
+			if (found != network) throw IllegalStateException("Removed network was not at position ${toVec3i(it)}! Expected $network, Found $found")
 		}
 	}
 
+	fun removeNetworkRegistration(network: T) {
+		allNetworks.remove(network)
+		graphUUIDLookup.remove(network.uuid)
+
+		for (chunk in network.getCoveredChunks()) {
+			getByChunkKey(chunk).remove(network)
+		}
+	}
 
 	fun createNode(block: Block): N? = cacheFactory.cache(block, this)
 	fun createNode(key: BlockKey): N? {
@@ -206,8 +214,7 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 
 			// Remove and de-register before trying to add its nodes to the merge target
 			toMerge.setRemoved()
-			allNetworks.remove(toMerge)
-			graphUUIDLookup.remove(toMerge.uuid)
+			removeNetworkRegistration(toMerge)
 
 			mergeTraget.intakeNodes(toMerge);
 			toMerge.onMergedInto(mergeTraget)

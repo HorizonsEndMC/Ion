@@ -539,4 +539,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		return visited.contains(SUPER_SINK)
 	}
+
+	override fun toString(): String {
+		return "FluidNetwork{id=$uuid,size=${getGraphNodes().size},contents=$networkContents}"
+	}
 }

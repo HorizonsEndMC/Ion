@@ -59,6 +59,8 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 		return chunkMap.getOrPut(chunkKey) { ConcurrentHashMap<BlockKey, N>() }
 	}
 
+	fun getCoveredChunks() = chunkMap.keys
+
 	val positions get() = nodeMirror.keys
 
 	/**
@@ -137,18 +139,35 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 
 		manager.deRegisterNode(node, this)
 
+		handleNodeRemoval()
+	}
+
+	fun removeNodes(nodes: Collection<N>) = localLock.writeLock().withLock {
+		for (node in nodes) {
+			networkGraph.removeNode(node)
+
+			// Remove from the mirror first so that the manager can check if any nodes are present in its chunk to verify the lookup
+			removeNodeMirror(node.location)
+
+			manager.deRegisterNode(node, this)
+		}
+
+		handleNodeRemoval()
+	}
+
+	private fun handleNodeRemoval(): NodeRemovalResult {
 		if (networkGraph.nodes().isEmpty()) {
 			manager.removeNetwork(this)
-			return@withLock NodeRemovalResult.RemovedNetwork
+			return NodeRemovalResult.RemovedNetwork
 		}
 
 		if (!manager.trySplitGraph(this)) {
 			// If the graph was not split, it was only modified
 			onModified()
-			return@withLock NodeRemovalResult.RemovedSingle
+			return NodeRemovalResult.RemovedSingle
 		}
 
-		NodeRemovalResult.Split
+		return NodeRemovalResult.Split
 	}
 
 	fun handleChunkUnload(chunk: IonChunk) {
@@ -156,14 +175,10 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 		if (chunkMirror.isEmpty()) return
 
 		for ((_, node) in chunkMirror) {
-			unloadNode(node)
+			handleNodeUnload(node)
 		}
-	}
 
-	fun unloadNode(node: N) {
-		handleNodeUnload(node)
-
-		removeNode(node)
+		removeNodes(chunkMirror.values)
 	}
 
 	open fun preSave() {}
