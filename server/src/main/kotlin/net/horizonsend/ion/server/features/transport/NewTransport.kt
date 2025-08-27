@@ -39,7 +39,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	private val transportManagers = ConcurrentHashMap.newKeySet<TransportHolder>()
 
 	private lateinit var extractorTickTimer: Timer
-	private lateinit var fluidTickTimer: Timer
+	private lateinit var graphTickTimer: Timer
 
 	private lateinit var executor: ExecutorService
 	private lateinit var monitor: TransportMonitorThread
@@ -63,9 +63,11 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		val extractorInterval: Long = configuration.extractorConfiguration.extractorTickIntervalMS
 		extractorTickTimer = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = extractorInterval, period = extractorInterval) { tickExtractors() }
 
-		if (::fluidTickTimer.isInitialized) fluidTickTimer.cancel()
-		val graphInterval: Long = configuration.graphBasedConfiguration.tickIntervalMS
-		fluidTickTimer = fixedRateTimer(name = "Graph Tick", daemon = true, initialDelay = graphInterval, period = graphInterval) { tickGraphNetworks() }
+		if (ConfigurationFiles.featureFlags().graphTransfer) {
+			if (::graphTickTimer.isInitialized) graphTickTimer.cancel()
+			val graphInterval: Long = configuration.graphBasedConfiguration.tickIntervalMS
+			graphTickTimer = fixedRateTimer(name = "Graph Tick", daemon = true, initialDelay = graphInterval, period = graphInterval) { tickGraphNetworks() }
+		}
 
 		if (::monitor.isInitialized) monitor.interrupt()
 		monitor = TransportMonitorThread()
@@ -82,7 +84,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	override fun onDisable() {
 		enabled = false
 		if (::extractorTickTimer.isInitialized) extractorTickTimer.cancel()
-		if (::fluidTickTimer.isInitialized) fluidTickTimer.cancel()
+		if (::graphTickTimer.isInitialized) graphTickTimer.cancel()
 		if (::executor.isInitialized) executor.shutdown()
 		if (::monitor.isInitialized) monitor.interrupt()
 
