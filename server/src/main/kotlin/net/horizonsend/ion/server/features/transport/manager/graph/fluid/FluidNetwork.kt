@@ -9,6 +9,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
+import net.horizonsend.ion.common.utils.miscellaneous.roundToTenThousanth
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
@@ -19,7 +20,6 @@ import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNo
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.associateWithNotNull
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
@@ -333,53 +333,33 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 	override fun onMergedInto(other: TransportNetwork<FluidNode>) {
 		if (networkContents.isEmpty()) return
-
 		other as FluidNetwork
 
 		val otherContents = other.networkContents
 		if (!otherContents.isEmpty() && otherContents.type != networkContents.type) return
 
+		// Grab a node to use as a location for default params
 		val node = getGraphNodes().firstOrNull() ?: other.getGraphNodes().firstOrNull()
 		val location = node?.getCenter()?.toLocation(manager.transportManager.getWorld())
 
 		// Merge amounts if same type
 		otherContents.combine(networkContents, location)
-		otherContents.type = networkContents.type
 	}
 
 	override fun onSplit(children: Collection<TransportNetwork<FluidNode>>) {
-		val availableAmount = networkContents.amount
 		val contents = networkContents.clone()
+		val availableAmount = contents.amount
 
-		// associate with share of remaining
-		val remainingChildRoom = children.associateWithNotNull { child: TransportNetwork<FluidNode> ->
-			if (child !is FluidNetwork) return@associateWithNotNull null
+		val volume = getVolume()
 
-			val childContents = child.networkContents
-			if (!childContents.isEmpty() && networkContents.type != childContents.type) return@associateWithNotNull null
+		for (child in children) {
+			val share = (child as FluidNetwork).getVolume() / volume
+			val due = availableAmount * share
+			val toMerge = contents.asAmount(due)
+			child.networkContents.combine(toMerge, null)
 
-			resetCachedVolume()
-
-			val childVolume = child.getVolume()
-
-			if (childVolume <= 0.0) {
-				return@associateWithNotNull 0.0
-			}
-
-			availableAmount / (child.getVolume() - childContents.amount)
-		}
-
-		if (remainingChildRoom.isEmpty()) return
-
-		var remaining = availableAmount
-
-		for ((child, share) in remainingChildRoom) {
-			child as FluidNetwork
-			val childDue = remaining * share
-
-			val splitContents = contents.asAmount(childDue)
-
-			child.networkContents = splitContents
+			contents.amount -= due.roundToTenThousanth() // Prevent float math weirdness
+			networkContents.amount -= due.roundToTenThousanth() // Prevent float math weirdness
 		}
 	}
 

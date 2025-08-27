@@ -222,7 +222,7 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 			toMerge.setRemoved()
 			removeNetworkRegistration(toMerge)
 
-			mergeTraget.intakeNodes(toMerge);
+			mergeTraget.intakeNodes(toMerge)
 			toMerge.onMergedInto(mergeTraget)
 		}
 
