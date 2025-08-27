@@ -422,7 +422,13 @@ object TransportDebugCommand : SLCommand() {
 		}
 
 		sender.sendMessage(menu)
+	}
 
-//		fluidManager.clear()
+	@Subcommand("network reset fluid")
+	fun networkReset(sender: Player) {
+		val transportManager = sender.world.ion.transportManager
+		val fluidManager = transportManager.fluidGraphManager
+		fluidManager.clear()
+		sender.information("Reset world's fluid grids")
 	}
 }
