@@ -172,7 +172,7 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 		return registerNewNode(node)
 	}
 
-	fun registerNewNode(node: N): NodeRegistrationResult {
+	fun registerNewNode(node: N, flag: Boolean = false): NodeRegistrationResult {
 		// Check adjacent graphs to see if any are connected when this one is placed.
 		val adjacentGraphs = node.getPipableDirections().mapNotNullTo(mutableSetOf()) { offset ->
 			val position = getRelative(node.location, offset)
@@ -198,6 +198,7 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 			}
 			else -> {
 				val new = combineGraphs(adjacentGraphs)
+				new.addNode(node)
 				node.onLoadedIntoNetwork(new)
 
 				NodeRegistrationResult.CombinedGraphs(adjacentGraphs)
@@ -363,6 +364,8 @@ abstract class NetworkManager<N : TransportNode, T: TransportNetwork<N>>(val tra
 	fun onChunkLoad(chunk: IonChunk) {
 		val data = chunk.inner.persistentDataContainer.get(namespacedKey, PersistentDataType.TAG_CONTAINER) ?: return
 		val nodes = data.get(NamespacedKeys.NODES, PersistentDataType.LIST.dataContainers()) ?: return
+
+		if (nodes.isEmpty()) return
 
 		for (serializedNode in nodes) {
 			val type = serializedNode.get(NamespacedKeys.NODE_TYPE, TransportNetworkNodeTypeKeys.serializer)!!.getValue()
