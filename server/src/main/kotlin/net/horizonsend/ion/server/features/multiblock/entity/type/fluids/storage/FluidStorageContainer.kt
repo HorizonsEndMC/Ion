@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
+import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
@@ -50,6 +52,13 @@ class FluidStorageContainer private constructor(
 		if (contentsUnsafe.type != fluidStack.type) return false
 
 		return restriction.canAdd(fluidStack)
+	}
+
+	fun canAdd(type: IonRegistryKey<FluidType, out FluidType>): Boolean {
+		if (contentsUnsafe.isEmpty()) return true
+		if (contentsUnsafe.type != type) return false
+
+		return restriction.canAdd(type)
 	}
 
 	fun hasRoomFor(fluidStack: FluidStack): Boolean {

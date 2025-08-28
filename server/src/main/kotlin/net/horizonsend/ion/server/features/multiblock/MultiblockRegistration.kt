@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.Har
 import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.type.fluid.CanisterUnloaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.CanisterVentMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.ChemicalProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
@@ -419,6 +420,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(ChemicalProcessorMultiblock)
 		registerMultiblock(BasicFluidStorageTankMultiblock)
 		registerMultiblock(PumpMultiblock)
+		registerMultiblock(CanisterUnloaderMultiblock)
 	}
 
 	private fun sortMultiblocks() {

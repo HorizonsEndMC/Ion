@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidIn
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
@@ -505,6 +506,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 	), DisplayMultiblockEntity,
         FluidStoringMultiblock,
         SyncTickingMultiblockEntity,
+        AsyncTickingMultiblockEntity,
         ProgressMultiblock,
         RecipeProcessingMultiblockEntity<ChemicalProcessorEnviornment>
 	{
@@ -611,12 +613,14 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 
 
 		override fun tick() {
-			bootstrapNetwork()
-
 			if (!tryProcessRecipe()) {
 				progressManager.reset()
 				return
 			}
+		}
+
+		override fun tickAsync() {
+			bootstrapNetwork()
 		}
 
 		override fun buildRecipeEnviornment(): ChemicalProcessorEnviornment = ChemicalProcessorEnviornment(

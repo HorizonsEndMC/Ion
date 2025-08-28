@@ -7,11 +7,15 @@ import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCate
 
 sealed interface FluidRestriction {
 	fun canAdd(fluid: FluidStack): Boolean
+	fun canAdd(type: IonRegistryKey<FluidType, out FluidType>): Boolean
 
 	fun canRemove(fluid: FluidStack): Boolean
 
 	data object Unlimited: FluidRestriction {
 		override fun canAdd(fluid: FluidStack): Boolean {
+			return true
+		}
+		override fun canAdd(type: IonRegistryKey<FluidType, out FluidType>): Boolean {
 			return true
 		}
 
@@ -24,6 +28,9 @@ sealed interface FluidRestriction {
 		override fun canAdd(fluid: FluidStack): Boolean {
 			return allowedCategories.intersect(fluid.type.getValue().categories.toSet()).isNotEmpty()
 		}
+		override fun canAdd(type: IonRegistryKey<FluidType, out FluidType>): Boolean {
+			return allowedCategories.intersect(type.getValue().categories.toSet()).isNotEmpty()
+		}
 
 		override fun canRemove(fluid: FluidStack): Boolean {
 			return true
@@ -33,6 +40,9 @@ sealed interface FluidRestriction {
 	class FluidCategoryBlacklist(val disallowedCategories: Set<FluidCategory>): FluidRestriction {
 		override fun canAdd(fluid: FluidStack): Boolean {
 			return disallowedCategories.intersect(fluid.type.getValue().categories.toSet()).isEmpty()
+		}
+		override fun canAdd(type: IonRegistryKey<FluidType, out FluidType>): Boolean {
+			return disallowedCategories.intersect(type.getValue().categories.toSet()).isEmpty()
 		}
 
 		override fun canRemove(fluid: FluidStack): Boolean {
@@ -44,6 +54,9 @@ sealed interface FluidRestriction {
 		override fun canAdd(fluid: FluidStack): Boolean {
 			return allowedFluids.contains(fluid.type)
 		}
+		override fun canAdd(type: IonRegistryKey<FluidType, out FluidType>): Boolean {
+			return allowedFluids.contains(type)
+		}
 
 		override fun canRemove(fluid: FluidStack): Boolean {
 			return true
@@ -53,6 +66,9 @@ sealed interface FluidRestriction {
 	class FluidTypeBlacklist(val disallowedFluids: Set<IonRegistryKey<FluidType, out FluidType>>): FluidRestriction {
 		override fun canAdd(fluid: FluidStack): Boolean {
 			return !disallowedFluids.contains(fluid.type)
+		}
+		override fun canAdd(type: IonRegistryKey<FluidType, out FluidType>): Boolean {
+			return !disallowedFluids.contains(type)
 		}
 
 		override fun canRemove(fluid: FluidStack): Boolean {
