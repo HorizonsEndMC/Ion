@@ -1444,10 +1444,10 @@ object AITemplateRegistry {
 						VariableIntegerAmount(10, 15),
 						null,
 						null,
-						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER), 1),
-						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
-						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
-						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER).withRandomRadialOffset(100.0, 200.0, 0.0), 1),
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE).withRandomRadialOffset(100.0, 200.0, 0.0), 3),
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 100.0, 0.0), 5),
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 50.0, 0.0), 10),
 					)(it)
 				})
 			.build()
