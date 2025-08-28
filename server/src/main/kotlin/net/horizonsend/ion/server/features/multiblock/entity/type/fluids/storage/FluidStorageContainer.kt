@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storag
 
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.NamespacedKey
@@ -107,7 +108,9 @@ class FluidStorageContainer private constructor(
 	}
 
 	fun runUpdates() {
-		updateListeners.forEach { t -> t.invoke(this) }
+		Tasks.async {
+			updateListeners.forEach { t -> t.invoke(this) }
+		}
 	}
 
 	companion object {
