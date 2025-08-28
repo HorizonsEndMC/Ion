@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.ai.reward
 
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component
@@ -28,7 +29,8 @@ object AIKillStreak : IonServerComponent() {
 
 	private fun decayHeat() {
 		playerHeatList.forEach {
-			it.score = (it.score - decay).coerceAtLeast(0)
+			val decayAmount = if (CombatTimer.isNpcCombatTagged(it.player)) decay else decay * 3
+			it.score = (it.score - decayAmount).coerceAtLeast(0)
 			if (calculateHeat(it.score) < it.currentHeat) {
 				it.currentHeat = calculateHeat(it.score)
 				it.player.sendMessage(
