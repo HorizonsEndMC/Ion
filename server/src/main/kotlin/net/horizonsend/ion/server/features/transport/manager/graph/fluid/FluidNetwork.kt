@@ -149,9 +149,11 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			val connectedEdge = edges.first()
 			val direction = (connectedEdge as FluidGraphEdge).direction.oppositeFace
 
+			val removeAmount = (minOf(flowMap.getOrDefault(node.location, 0.0), node.leakRate, networkContents.amount) * delta)
+			if (removeAmount <= 0) continue
+
 			runCatching { type.getValue().playLeakEffects(manager.transportManager.getWorld(), node, direction) }.onFailure { exception -> exception.printStackTrace() }
 
-			val removeAmount = (minOf(flowMap.getOrDefault(node.location, 5.0), node.leakRate, networkContents.amount) * delta)
 			networkContents.amount -= removeAmount
 
 			// Handle pollution
@@ -207,7 +209,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		if (!networkContents.isEmpty() && storageContents.type != networkContents.type) return
 
-		val toRemove = minOf(removalRate * delta, (getVolume() - networkContents.amount), storage.getContents().amount, flowMap.getOrDefault(location, 5.0) * delta)
+		val toRemove = minOf(removalRate * delta, (getVolume() - networkContents.amount), storage.getContents().amount, flowMap.getOrDefault(location, 0.0) * delta)
+		if (toRemove <= 0) return
 		val notRemoved = storage.removeAmount(toRemove)
 
 		// Make a copy as the amount to be added, then combine with properties into the network
@@ -390,7 +393,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		val sources = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.outputAllowed } }
 		val sinks: ObjectOpenHashSet<FluidNode> = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.inputAllowed } }
 
-		if (sinks.isEmpty() || sources.isEmpty()) return
+		if ((sinks.isEmpty() && leakingPipes.isEmpty()) || sources.isEmpty()) return
 
 		val valueGraph = getValueGraphRepresentation()
 
