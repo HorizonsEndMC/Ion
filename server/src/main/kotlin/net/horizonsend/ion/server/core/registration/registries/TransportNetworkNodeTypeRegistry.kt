@@ -7,9 +7,11 @@ import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTyp
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_JUNCTION_REGULAR
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_LINEAR_REGULAR
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_PORT
+import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_VALVE
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidPort
+import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidValve
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.RegularJunctionPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.RegularLinearPipe
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode.Companion.NODE_POSITION
@@ -60,6 +62,18 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 			}
 
 			override fun serializeData(complex: FluidPort, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+				val pdc = adapterContext.newPersistentDataContainer()
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
+				return pdc
+			}
+		})
+		register(FLUID_VALVE, object : TransportNodeType<FluidValve>(FLUID_VALVE) {
+			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): FluidValve {
+				val node = FluidValve(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
+				return node
+			}
+
+			override fun serializeData(complex: FluidValve, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
 				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
 				return pdc

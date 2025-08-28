@@ -261,6 +261,16 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 
 		register(CustomBlockKeys.FLUID_PIPE, FluidPipeBlock)
 		register(CustomBlockKeys.FLUID_PIPE_JUNCTION, FluidPipeJunctionBlock)
+
+		register(CustomBlockKeys.FLUID_VALVE, CustomBlock(
+			key = CustomBlockKeys.FLUID_VALVE,
+			blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.DOWN, BlockFace.WEST, BlockFace.EAST)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.FLUID_VALVE)
+			),
+			CustomItemKeys.FLUID_VALVE
+		))
 	}
 
 	override fun registerAdditional(key: IonRegistryKey<CustomBlock, *>, value: CustomBlock) {

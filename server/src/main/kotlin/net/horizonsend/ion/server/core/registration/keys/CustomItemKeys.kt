@@ -229,4 +229,5 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val FLUID_INPUT = registerTypedKey<CustomBlockItem>("FLUID_INPUT")
 	val FLUID_PIPE = registerTypedKey<CustomBlockItem>("FLUID_PIPE")
 	val FLUID_PIPE_JUNCTION = registerTypedKey<CustomBlockItem>("FLUID_PIPE_JUNCTION")
+	val FLUID_VALVE = registerTypedKey<CustomBlockItem>("FLUID_VALVE")
 }

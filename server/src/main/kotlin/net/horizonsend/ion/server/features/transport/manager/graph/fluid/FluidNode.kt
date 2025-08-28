@@ -9,6 +9,9 @@ import net.horizonsend.ion.server.features.transport.manager.graph.TransportNode
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.faces
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
@@ -93,6 +96,24 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 			val block = getBlockIfLoaded(world, globalVec3i.x, globalVec3i.y, globalVec3i.z) ?: return null
 
 			return block.blockData.customBlock?.key == CustomBlockKeys.FLUID_INPUT
+		}
+
+		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
+	}
+
+	class FluidValve(override val location: BlockKey) : FluidNode(0.0) {
+		override val type: TransportNodeType<*> = TransportNetworkNodeTypeKeys.FLUID_VALVE.getValue()
+		override val flowCapacity: Double get() {
+			val block = getBlockIfLoaded(getNetwork().manager.transportManager.getWorld(), getX(location), getY(location), getZ(location)) ?:  return 0.0
+			return if (block.isBlockPowered) Double.MAX_VALUE else 0.0
+		}
+
+		override fun isIntact(): Boolean? {
+			val world = getNetwork().manager.transportManager.getWorld()
+			val globalVec3i = getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))
+			val block = getBlockIfLoaded(world, globalVec3i.x, globalVec3i.y, globalVec3i.z) ?: return null
+
+			return block.blockData.customBlock?.key == CustomBlockKeys.FLUID_VALVE
 		}
 
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
