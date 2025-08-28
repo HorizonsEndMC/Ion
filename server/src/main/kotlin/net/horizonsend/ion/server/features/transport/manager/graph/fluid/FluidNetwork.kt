@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.roundToTenThousanth
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
@@ -26,6 +27,8 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
@@ -228,7 +231,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		if (!store.getContents().isEmpty() && store.getContents().type != networkContents.type) return
 
-		val toAdd = minOf((store.capacity - store.getContents().amount), networkContents.amount, flowMap.getOrDefault(location, 5.0) * delta, additionRate * delta)
+		val toAdd = minOf((store.capacity - store.getContents().amount), networkContents.amount, flowMap.getOrDefault(location, 0.0) * delta, additionRate * delta)
 
 		val toCombine = networkContents.asAmount(toAdd)
 		store.addFluid(toCombine, Location(manager.transportManager.getWorld(), getX(location).toDouble(), getY(location).toDouble(), getZ(location).toDouble()))
@@ -295,6 +298,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			val world = manager.transportManager.getWorld()
 
 			for (node in getGraphNodes()) {
+				debugAudience.sendText(node.getCenter().toLocation(manager.transportManager.getWorld()).add(0.0, 0.5, 0.0), Component.text(flowMap.getOrDefault(node.location, 0.0)), 20L)
+
 				if (node.location in outputs.keys) continue
 
 				val edge = getGraph().outEdges(node).maxByOrNull { edge -> (edge as FluidGraphEdge).netFlow } as? FluidGraphEdge ?: continue
