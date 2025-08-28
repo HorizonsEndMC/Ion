@@ -167,6 +167,7 @@ object CombatTimer : IonServerComponent() {
 					}
 				}
 			}
+			announceKillLog()
 		}
 
 		// Remove all combat tags on death
@@ -211,8 +212,6 @@ object CombatTimer : IonServerComponent() {
 				}
 			}
 		}
-
-		announceKillLog()
 	}
 
 
