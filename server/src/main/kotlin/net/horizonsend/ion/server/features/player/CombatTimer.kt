@@ -466,7 +466,7 @@ object CombatTimer : IonServerComponent() {
 				val name = damagerWithData.key.getDisplayName()
 				val pilot = (damagerWithData.key as? PlayerDamager)?.player ?: damagerWithData.key.getDisplayName()
 				val points = damagerWithData.value.points
-				val color = if (isDamager(player, topDamager.key)) HE_LIGHT_ORANGE
+				val color = if (damagerWithData.key == topDamager.key) HE_LIGHT_ORANGE
 					else if (isDamager(player,damagerWithData.key)) HE_LIGHT_BLUE else HE_MEDIUM_GRAY
 				template(
 					message = text("Damager: {0} piloted by {1} , Points: {2}\n", color),
