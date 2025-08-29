@@ -665,9 +665,11 @@ object AITemplateRegistry {
 							threshold = 5),
 						null,
 						null,
-						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
-						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
-						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(25.0, 100.0, 0.0), 3),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(100.0, 200.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 200.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(75.0, 100.0, 0.0), 3),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(0.0, 75.0, 0.0), 9),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(0.0, 75.0, 0.0), 10),
 					)(it)
 				})
 			.build()
