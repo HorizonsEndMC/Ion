@@ -47,6 +47,10 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 		contents = FluidStack.empty()
 	}
 
+	sealed interface LeakablePipe {
+		val leakRate: Double
+	}
+
 	class RegularJunctionPipe(override val location: BlockKey) : FluidNode(10.0) {
 		override val type: TransportNodeType<*> = TransportNetworkNodeTypeKeys.FLUID_JUNCTION_REGULAR.getValue()
 		override val flowCapacity: Double = 10.0
@@ -62,10 +66,6 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
 	}
 
-	sealed interface LeakablePipe {
-		val leakRate: Double
-	}
-
 	class RegularLinearPipe(override val location: BlockKey, val axis: Axis) : FluidNode(5.0), LeakablePipe {
 		override val type: TransportNodeType<*> = TransportNetworkNodeTypeKeys.FLUID_LINEAR_REGULAR.getValue()
 		override val flowCapacity: Double = 5.0
@@ -78,6 +78,38 @@ abstract class FluidNode(val volume: Double) : TransportNode {
 			val block = getBlockIfLoaded(world, globalVec3i.x, globalVec3i.y, globalVec3i.z) ?: return null
 
 			return block.blockData.customBlock?.key == CustomBlockKeys.FLUID_PIPE
+		}
+
+		override fun getPipableDirections(): Set<BlockFace> = setOf(axis.faces.first, axis.faces.second)
+	}
+
+	class ReinforcedJunctionPipe(override val location: BlockKey) : FluidNode(10.0) {
+		override val type: TransportNodeType<*> = TransportNetworkNodeTypeKeys.FLUID_JUNCTION_REINFORCED.getValue()
+		override val flowCapacity: Double = 30.0
+
+		override fun isIntact(): Boolean? {
+			val world = getNetwork().manager.transportManager.getWorld()
+			val globalVec3i = getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))
+			val block = getBlockIfLoaded(world, globalVec3i.x, globalVec3i.y, globalVec3i.z) ?: return null
+
+			return block.blockData.customBlock?.key == CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION
+		}
+
+		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
+	}
+
+	class ReinforcedLinearPipe(override val location: BlockKey, val axis: Axis) : FluidNode(5.0), LeakablePipe {
+		override val type: TransportNodeType<*> = TransportNetworkNodeTypeKeys.FLUID_LINEAR_REINFORCED.getValue()
+		override val flowCapacity: Double = 15.0
+
+		override val leakRate: Double = 1.0
+
+		override fun isIntact(): Boolean? {
+			val world = getNetwork().manager.transportManager.getWorld()
+			val globalVec3i = getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))
+			val block = getBlockIfLoaded(world, globalVec3i.x, globalVec3i.y, globalVec3i.z) ?: return null
+
+			return block.blockData.customBlock?.key == CustomBlockKeys.REINFORCED_FLUID_PIPE
 		}
 
 		override fun getPipableDirections(): Set<BlockFace> = setOf(axis.faces.first, axis.faces.second)

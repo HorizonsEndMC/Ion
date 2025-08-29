@@ -19,6 +19,8 @@ import net.horizonsend.ion.server.features.custom.blocks.misc.MultiblockWorkbenc
 import net.horizonsend.ion.server.features.custom.blocks.misc.OrientableCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeBlock
 import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeJunctionBlock
+import net.horizonsend.ion.server.features.custom.blocks.pipe.ReinforcedFluidPipeBlock
+import net.horizonsend.ion.server.features.custom.blocks.pipe.ReinforcedFluidPipeJunctionBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.space.encounters.SecondaryChest.Companion.random
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateBlockFace
@@ -271,6 +273,9 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 			),
 			CustomItemKeys.FLUID_VALVE
 		))
+
+		register(CustomBlockKeys.REINFORCED_FLUID_PIPE, ReinforcedFluidPipeBlock)
+		register(CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION, ReinforcedFluidPipeJunctionBlock)
 	}
 
 	override fun registerAdditional(key: IonRegistryKey<CustomBlock, *>, value: CustomBlock) {
