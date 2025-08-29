@@ -50,6 +50,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 	 **/
 	private var flowMap = Long2DoubleOpenHashMap()
 
+	fun getFlow(position: Long) = flowMap.getOrDefault(position, 0.0)
+
 	/**
 	 * The contents of the network, contained as a fluid stack
 	 **/

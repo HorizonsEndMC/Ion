@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.fluids.properties.type
 
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
@@ -48,7 +49,7 @@ object TemperatureProperty : FluidPropertyType<Temperature>() {
 	}
 
 	override fun formatValue(property: Temperature): Component {
-		return ofChildren(Component.text(property.value.roundToHundredth()), Component.space(), Component.text("C"))
+		return ofChildren(Component.text(property.value.roundToHundredth()), Component.space(), Component.text("C", HE_MEDIUM_GRAY))
 	}
 
 	override fun getDisplayName(): Component {

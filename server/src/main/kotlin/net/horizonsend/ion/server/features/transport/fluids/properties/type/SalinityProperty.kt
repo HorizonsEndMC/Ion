@@ -1,14 +1,15 @@
 package net.horizonsend.ion.server.features.transport.fluids.properties.type
 
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
-import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.Companion.formatProgress
+import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.Companion.formatProgressString
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Salinity
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Salinity.Companion.DEFAULT_SALINITY
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Salinity.Companion.SALINITY
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Location
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -48,10 +49,10 @@ object SalinityProperty : FluidPropertyType<Salinity>() {
 	}
 
 	override fun formatValue(property: Salinity): Component {
-		return ofChildren(formatProgress(NamedTextColor.AQUA, property.value), Component.space())
+		return ofChildren(text(formatProgressString(property.value)), text('%', HEColorScheme.HE_MEDIUM_GRAY))
 	}
 
 	override fun getDisplayName(): Component {
-		return Component.text("Salinity")
+		return text("Salinity")
 	}
 }

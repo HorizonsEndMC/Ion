@@ -1,6 +1,10 @@
 package net.horizonsend.ion.server.features.custom.items.misc
 
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
@@ -24,6 +28,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Color
 import org.bukkit.FluidCollisionMode
@@ -116,7 +121,14 @@ object Wrench : CustomItem(
 
 		val fluid = network.networkContents
 
-		val text = FluidUtils.formatFluidInfo(fluid)
+		val text = ofChildren(
+			FluidUtils.formatFluidInfo(fluid),
+			Component.newline(),
+			text(" • ", HE_MEDIUM_GRAY),
+			text("Flow Rate"),
+			text(": ", HE_DARK_GRAY),
+			text(network.getFlow(key).roundToHundredth()), text(" L/s", HE_MEDIUM_GRAY)
+		)
 
 		val projectedLocation = targetedLocation.add(player.location.direction.clone().multiply(-1)).toLocation(player.world).add(0.0, 0.3, 0.0)
 		val scale = maxOf(player.eyeLocation.distance(projectedLocation).roundToInt() * 0.2f, 0.5f)
