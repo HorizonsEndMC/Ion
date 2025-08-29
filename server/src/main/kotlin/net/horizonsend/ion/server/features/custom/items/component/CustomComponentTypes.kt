@@ -92,7 +92,7 @@ class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> pr
 		val LISTENER_ENTITY_SHOOT_BOW = newComponentType<Listener<EntityShootBowEvent, *>, AllowMultiple<Listener<EntityShootBowEvent, *>>>(ComponentType.ALLOW_MULTIPLE)
 
 		/**
-		 * Recieves ticks, idk what else to say
+		 * Recieves ticks, when held by a player
 		 **/
 		val TICK_RECIEVER = newComponentType<TickReceiverModule, AllowMultiple<TickReceiverModule>>(ComponentType.ALLOW_MULTIPLE)
 	}

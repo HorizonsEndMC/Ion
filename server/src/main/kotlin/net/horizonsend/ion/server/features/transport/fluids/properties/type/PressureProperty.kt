@@ -1,11 +1,13 @@
 package net.horizonsend.ion.server.features.transport.fluids.properties.type
 
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Pressure
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Pressure.Companion.DEFAULT_PRESSURE
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Pressure.Companion.PRESSURE
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -42,5 +44,13 @@ object PressureProperty : FluidPropertyType<Pressure>() {
 	override fun getDefaultProperty(location: Location?): Pressure {
 		//TODO
 		return Pressure(DEFAULT_PRESSURE)
+	}
+
+	override fun formatValue(property: Pressure): Component {
+		return ofChildren(Component.text(property.value.roundToHundredth()), Component.space(), Component.text("mb"))
+	}
+
+	override fun getDisplayName(): Component {
+		return Component.text("Pressure")
 	}
 }

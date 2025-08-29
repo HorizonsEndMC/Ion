@@ -427,6 +427,10 @@ object ClientDisplayEntities : IonServerComponent() {
 		location: Location,
 		text: Component,
 		durationTicks: Long,
+		scale: Float = 1.0f,
+		backgroundColor: Color = Color.fromARGB(0x00000000),
+		defaultBackground: Boolean = false,
+		seeThrough: Boolean = false,
 		highlight: Boolean = false
 	) {
 		val entity = CraftTextDisplay(IonServer.server as CraftServer, TextDisplay(EntityType.TEXT_DISPLAY, location.world.minecraft))
@@ -437,14 +441,19 @@ object ClientDisplayEntities : IonServerComponent() {
 		//entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
 		entity.brightness = Display.Brightness(15, 15)
 		entity.teleportDuration = 0
-		entity.backgroundColor = Color.fromARGB(0x00000000)
+
+		if (!defaultBackground) {
+			entity.backgroundColor = backgroundColor
+		} else entity.isDefaultBackground = true
+
 		entity.isGlowing = highlight
+		entity.isSeeThrough = seeThrough
 
 		// apply transformation
 		entity.transformation = Transformation(
 			Vector3f(),
 			rotateToFaceVector2d(Vector3f()),
-			Vector3f(1.0f),
+			Vector3f(scale),
 			Quaternionf()
 		)
 

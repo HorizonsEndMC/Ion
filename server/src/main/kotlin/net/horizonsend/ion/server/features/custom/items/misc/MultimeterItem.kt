@@ -78,14 +78,14 @@ object MultimeterItem : CustomItem(
 				val block = Material.GLASS.createBlockData()
 
 				sendEntityPacket(entity, displayBlock(entity.world.minecraft, block, Vector(location.x, location.y, location.z), 0.75f, Color.AQUA), 11L)
-				entity.sendText(location.toCenterLocation().subtract(0.0, 0.125, 0.0), text("Start", NamedTextColor.AQUA), 11L, true)
+				entity.sendText(location.toCenterLocation().subtract(0.0, 0.125, 0.0), text("Start", NamedTextColor.AQUA), 11L, highlight = true)
 			}
 			getSecondPoint(itemStack)?.let {
 				val location = it.toLocation(entity.world)
 				val block = Material.GLASS.createBlockData()
 
 				sendEntityPacket(entity, displayBlock(entity.world.minecraft, block, Vector(location.x, location.y, location.z), 0.75f, Color.RED), 11L)
-				entity.sendText(location.toCenterLocation().subtract(0.0, 0.125, 0.0), text("End", NamedTextColor.RED), 11L, true)
+				entity.sendText(location.toCenterLocation().subtract(0.0, 0.125, 0.0), text("End", NamedTextColor.RED), 11L, highlight = true)
 			}
 		})
 

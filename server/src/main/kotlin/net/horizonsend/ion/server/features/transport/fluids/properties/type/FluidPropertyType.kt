@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.fluids.properties.type
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -49,6 +50,13 @@ abstract class FluidPropertyType<T : FluidProperty> {
 			return
 		}
 	}
+
+	abstract fun getDisplayName(): Component
+
+	@Suppress("UNCHECKED_CAST")
+	fun formatValueUnsafe(property: FluidProperty): Component = formatValue(property as T)
+
+	abstract fun formatValue(property: T): Component
 
 	protected abstract fun getDefaultProperty(location: Location?): T
 }

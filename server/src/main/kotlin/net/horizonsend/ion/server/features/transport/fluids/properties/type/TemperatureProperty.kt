@@ -1,12 +1,14 @@
 package net.horizonsend.ion.server.features.transport.fluids.properties.type
 
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Pressure.Companion.DEFAULT_PRESSURE
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Temperature
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Temperature.Companion.DEFAULT_TEMPERATURE
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Temperature.Companion.TEMPERATURE
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -43,5 +45,13 @@ object TemperatureProperty : FluidPropertyType<Temperature>() {
 	override fun getDefaultProperty(location: Location?): Temperature {
 		//TODO
 		return Temperature(DEFAULT_PRESSURE)
+	}
+
+	override fun formatValue(property: Temperature): Component {
+		return ofChildren(Component.text(property.value.roundToHundredth()), Component.space(), Component.text("C"))
+	}
+
+	override fun getDisplayName(): Component {
+		return Component.text("Temperature")
 	}
 }

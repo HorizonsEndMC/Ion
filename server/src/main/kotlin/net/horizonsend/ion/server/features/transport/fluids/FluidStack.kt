@@ -70,6 +70,8 @@ class FluidStack(
 		return dataComponents.keys.contains(type)
 	}
 
+	fun getDataMap() = dataComponents.toMap()
+
 	/**
 	 * Returns if these FluidStacks are of the same type
 	 **/

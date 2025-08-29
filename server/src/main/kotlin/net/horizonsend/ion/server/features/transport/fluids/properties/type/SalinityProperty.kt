@@ -1,10 +1,14 @@
 package net.horizonsend.ion.server.features.transport.fluids.properties.type
 
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
+import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.Companion.formatProgress
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Salinity
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Salinity.Companion.DEFAULT_SALINITY
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Salinity.Companion.SALINITY
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -41,5 +45,13 @@ object SalinityProperty : FluidPropertyType<Salinity>() {
 	override fun getDefaultProperty(location: Location?): Salinity {
 		//TODO
 		return Salinity(DEFAULT_SALINITY)
+	}
+
+	override fun formatValue(property: Salinity): Component {
+		return ofChildren(formatProgress(NamedTextColor.AQUA, property.value), Component.space())
+	}
+
+	override fun getDisplayName(): Component {
+		return Component.text("Salinity")
 	}
 }

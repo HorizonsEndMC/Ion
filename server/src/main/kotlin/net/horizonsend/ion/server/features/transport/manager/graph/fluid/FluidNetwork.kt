@@ -209,7 +209,13 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		if (!networkContents.isEmpty() && storageContents.type != networkContents.type) return
 
-		val toRemove = minOf(removalRate * delta, (getVolume() - networkContents.amount), storage.getContents().amount, flowMap.getOrDefault(location, 0.0) * delta)
+		val toRemove = minOf(
+			removalRate * delta,
+			(getVolume() - networkContents.amount),
+			storage.getContents().amount,
+			flowMap.getOrDefault(location, 1.0) * delta // When no flow, still withdraw
+		)
+
 		if (toRemove <= 0) return
 		val notRemoved = storage.removeAmount(toRemove)
 

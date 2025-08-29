@@ -35,7 +35,7 @@ abstract class FluidDisplayModule(
 		container.registerUpdateListener(updateHandler)
 	}
 
-	private companion object {
+	companion object {
 		val format = DecimalFormat("##.##")
 	}
 
