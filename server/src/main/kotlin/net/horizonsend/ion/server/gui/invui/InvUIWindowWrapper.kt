@@ -142,9 +142,11 @@ abstract class InvUIWindowWrapper(val viewer: Player, val async: Boolean = false
 
 	/**
 	 * Builds a simple single window containing this GUI
+	 *
+	 * `viewerPlayer` is an optional argument that allows setting the inventory viewer to one not defined by `InvUIWindowWrapper`
 	 **/
-	fun normalWindow(gui: Gui): Window = Window.single()
-		.setViewer(viewer)
+	fun normalWindow(gui: Gui, viewerPlayer: Player = viewer): Window = Window.single()
+		.setViewer(viewerPlayer)
 		.setGui(gui)
 		.setTitle(buildTitle())
 		.build()

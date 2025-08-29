@@ -165,6 +165,7 @@ import org.bukkit.Material.FIREWORK_ROCKET
 import org.bukkit.Material.GILDED_BLACKSTONE
 import org.bukkit.Material.GLASS
 import org.bukkit.Material.GLASS_PANE
+import org.bukkit.Material.GLOWSTONE
 import org.bukkit.Material.GLOWSTONE_DUST
 import org.bukkit.Material.GOLD_BLOCK
 import org.bukkit.Material.GOLD_INGOT
@@ -285,6 +286,7 @@ object Crafting : IonServerComponent() {
 		shapedMaterial("cobweb", COBWEB, "s s", " s ", "s s", 's' to STRING)
 		shapedMaterial("small_dripleaf" , Material.SMALL_DRIPLEAF, shape1 = "xx ", shape2 = " y ", shape3 = "   ",'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
 		shapedMaterial("big_dripleaf" , Material.BIG_DRIPLEAF, shape1 = "xxx", shape2 = "  y", shape3 = "  y",'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
+		shapeless("glowstone_dust", ItemStack(GLOWSTONE_DUST, 4), GLOWSTONE)
 
 		Bukkit.removeRecipe(Material.ENDER_CHEST.key)
 		Bukkit.removeRecipe(Material.CHAIN.key)
