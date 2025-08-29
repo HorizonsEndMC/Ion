@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.starship.fleet.Fleet
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
@@ -54,6 +55,7 @@ abstract class MultiSpawner(
 			)
 		)
 
+		var delay = 0L
 		for (spawnedShip in ships) {
 			val offsets = spawnedShip.offsets
 
@@ -72,14 +74,17 @@ abstract class MultiSpawner(
 				spawnPoint.y = absoluteHeight
 			}
 
-			debugAudience.debug("Spawning ${spawnedShip.template.identifier} at $spawnPoint")
+			Tasks.asyncDelay(delay){
+				debugAudience.debug("Spawning ${spawnedShip.template.identifier} at $spawnPoint")
 
-			spawnedShip.spawn(logger, spawnPoint, difficulty, targetModeSupplier.get()) {
-				addUtilModule(AIFleetManageModule(this, aiFleet))
-				aiFleet.initalized = true
+				spawnedShip.spawn(logger, spawnPoint, difficulty, targetModeSupplier.get()) {
+					addUtilModule(AIFleetManageModule(this, aiFleet))
+					aiFleet.initalized = true
+				}
+
+				individualSpawnMessage?.broadcast(spawnPoint, spawnedShip.template)
 			}
-
-			individualSpawnMessage?.broadcast(spawnPoint, spawnedShip.template)
+			delay++
 		}
 
 		if (aiFleet.members.isNotEmpty() && groupMessage != null) {
