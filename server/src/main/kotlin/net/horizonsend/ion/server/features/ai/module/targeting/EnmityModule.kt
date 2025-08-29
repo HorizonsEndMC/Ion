@@ -405,10 +405,6 @@ open class EnmityModule(
 			when {
 				aiTarget is StarshipTarget && aiTarget.ship.controller is PlayerController -> {
 					if (targetMode == AITarget.TargetMode.AI_ONLY) return false
-					val player = (aiTarget.ship.controller as PlayerController).player
-					if (starship.world.ion.hasFlag(WorldFlag.NOT_SECURE)) return true //ignore prot in unsafe areas
-					if (!player.hasProtection()) return true // check for prot
-					if (starship.damagers.keys.any { (it as PlayerDamager).player == player }) return true //fire first
 				}
 
 				aiTarget is StarshipTarget && aiTarget.ship.controller is AIController -> {
@@ -444,6 +440,8 @@ open class EnmityModule(
 				if (target is PlayerTarget) {
 					val isSameFleet = fleet?.isMember(target.player.toFleetMember()) == true
 					if (isSameFleet || isCaravanProtected) return@FleetAwareTargetFilter false
+					val player = target.player
+					if (player.hasProtection() && !starship.world.ion.hasFlag(WorldFlag.NOT_SECURE) ) return@FleetAwareTargetFilter false //ignore prot in unsafe areas
 				}
 
 				if (target is StarshipTarget) {
@@ -454,6 +452,7 @@ open class EnmityModule(
 						val player = targetController.player
 						val isSameFleet = fleet?.isMember(player.toFleetMember()) == true
 						if (isSameFleet || isCaravanProtected) return@FleetAwareTargetFilter false
+						if (player.hasProtection() && !starship.world.ion.hasFlag(WorldFlag.NOT_SECURE) ) return@FleetAwareTargetFilter false //ignore prot in unsafe areas
 					}
 
 					// Block if it's an AI in the same fleet
@@ -479,6 +478,8 @@ open class EnmityModule(
 					val isSameFleet = fleet?.isMember(target.player.toFleetMember()) == true
 					val hasHighBounty = PlayerCache[target.player].bounty > 100000
 					if (isSameFleet || !hasHighBounty) return@FleetAwareTargetFilter false
+					val player = target.player
+					if (player.hasProtection() && !starship.world.ion.hasFlag(WorldFlag.NOT_SECURE) ) return@FleetAwareTargetFilter false //ignore prot in unsafe areas
 				}
 
 				if (target is StarshipTarget) {
@@ -490,6 +491,7 @@ open class EnmityModule(
 						val isSameFleet = fleet?.isMember(player.toFleetMember()) == true
 						val hasHighBounty = PlayerCache[targetController.player].bounty > 100000
 						if (isSameFleet || !hasHighBounty) return@FleetAwareTargetFilter false
+						if (player.hasProtection() && !starship.world.ion.hasFlag(WorldFlag.NOT_SECURE) ) return@FleetAwareTargetFilter false //ignore prot in unsafe areas
 					}
 
 					// Block if it's an AI in the same fleet

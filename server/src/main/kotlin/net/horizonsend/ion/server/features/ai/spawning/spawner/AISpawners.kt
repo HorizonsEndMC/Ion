@@ -77,7 +77,6 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VETERA
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.spawnChance
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
-import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag.ALLOW_AI_SPAWNS
@@ -200,7 +199,7 @@ object AISpawners : IonServerComponent(true) {
 						spawnChance(WATCHERS.asSpawnedShip(TERALITH), 0.20),
 						spawnChance(WATCHERS.asSpawnedShip(ARBOREALITH), 0.1)
 					),
-					formatLocationSupplier(it, 2500.0, 4500.0) { player -> !player.hasProtection() },
+					formatLocationSupplier(it, 2500.0, 4500.0),
 					SpawnMessage.WorldMessage("<$WATCHER_ACCENT>An unknown starship signature is being broadcast in {4} spawned at {1}, {3}".miniMessage()),
 					DifficultyModule::regularSpawnDifficultySupplier,
 					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY }
@@ -249,7 +248,7 @@ object AISpawners : IonServerComponent(true) {
 					pointThreshold = 20 * 60 * 7 * 5
 				),
 				BagSpawner(
-					locationProvider = formatLocationSupplier(it, 2500.0, 4500.0) { player -> !player.hasProtection() },
+					locationProvider = formatLocationSupplier(it, 2500.0, 4500.0),
 					budget = VariableIntegerAmount(10, 20),
 					groupMessage = text("An unusually strong alien signature has been detected in {3} at {0}, {2}", WATCHER_ACCENT),
 					individualSpawnMessage = null,
@@ -308,7 +307,7 @@ object AISpawners : IonServerComponent(true) {
 					pointThreshold = 20 * 60 * 7 * 5
 				),
 				BagSpawner(
-					locationProvider = formatLocationSupplier(it, 2500.0, 4500.0) { player -> !player.hasProtection() },
+					locationProvider = formatLocationSupplier(it, 2500.0, 4500.0),
 					budget = VariableIntegerAmount(15, 30),
 					groupMessage = text("An unusually strong alien signature has been detected in {3} at {0}, {2}", 吃饭人_STANDARD),
 					individualSpawnMessage = null,
@@ -1029,7 +1028,7 @@ object AISpawners : IonServerComponent(true) {
 					pointThreshold = 20 * 60 * 7 * 5
 				),
 				BagSpawner(
-					locationProvider = formatLocationSupplier(it, 1500.0, 2500.0) { player -> !player.hasProtection() },
+					locationProvider = formatLocationSupplier(it, 1500.0, 2500.0),
 					budget = VariableIntegerAmount(3, 5),
 					groupMessage = "<$PRIVATEER_LIGHT_TEAL>Privateer Dagger <${HE_MEDIUM_GRAY}>Flight Squadron has spawned at {0}, {2}, in {3}".miniMessage(),
 					individualSpawnMessage = null,
@@ -1166,7 +1165,7 @@ object AISpawners : IonServerComponent(true) {
 					pointThreshold = 20 * 60 * 7 * 10
 				),
 				BagSpawner(
-					locationProvider = formatLocationSupplier(it, 1500.0, 2500.0) { player -> !player.hasProtection() },
+					locationProvider = formatLocationSupplier(it, 1500.0, 2500.0),
 					budget = VariableIntegerAmount(30, 50),
 					groupMessage = "<$PRIVATEER_LIGHT_TEAL>Privateer <${HE_MEDIUM_GRAY}>Assault Force has been spotted engaging a target in {3}, at {0} {2}".miniMessage(),
 					individualSpawnMessage = null,
@@ -1193,7 +1192,7 @@ object AISpawners : IonServerComponent(true) {
 					pointChance = 0.5
 				),
 				BagSpawner(
-					locationProvider = formatLocationSupplier(it, 1000.0, 2000.0) { player -> !player.hasProtection() },
+					locationProvider = formatLocationSupplier(it, 1000.0, 2000.0),
 					budget = VariableIntegerAmount(10, 15),
 					groupMessage = "<${TSAII_DARK_ORANGE}>Dangerous Tsaii Raiders have been reported in the area of {0}, {2}, in {3}. <$TSAII_MEDIUM_ORANGE>Please avoid the sector until the threat has been cleared!".miniMessage(),
 					individualSpawnMessage = null,
@@ -1254,7 +1253,7 @@ object AISpawners : IonServerComponent(true) {
 				),
 				Supplier {
 					val occupiedWorld = IonServer.server.worlds.filter { isSystemOccupied(it) && it.ion.hasFlag(ALLOW_AI_SPAWNS) }.randomOrNull() ?: return@Supplier null
-					return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0) { player -> !player.hasProtection() }.get()
+					return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
 				},
 				spawnMessage = SpawnMessage.WorldMessage("<$EXPLORER_LIGHT_CYAN>Horizon Transit Ship<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage()),
 				{ _ -> Supplier { 0 } },
