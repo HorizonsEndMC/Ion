@@ -1035,6 +1035,7 @@ object AITemplateRegistry {
 						null,
 						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(200.0, 300.0, 0.0), 7),
 						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE).withRandomRadialOffset(100.0, 200.0, 0.0), 10),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE).withRandomRadialOffset(50.0, 100.0, 0.0), 10),
 					)(it)
 				})
 			.build()
