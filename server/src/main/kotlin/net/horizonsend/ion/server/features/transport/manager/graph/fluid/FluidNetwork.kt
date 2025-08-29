@@ -387,27 +387,34 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 	 * Runs a multi node and multi sink implementation of the Edmonds-Karp algorithm to determine flow direction and magnitude throughout the network
 	 **/
 	fun edmondsKarp() {
-		// Multimap of nodes to all nodes that connect to them
+		// Map of nodes to all nodes that connect to them
 		val parentRelationMap = Long2LongOpenHashMap()
 
-		val sources = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.outputAllowed } }
-		val sinks: ObjectOpenHashSet<FluidNode> = getGraphNodes().filterTo(ObjectOpenHashSet()) { node -> manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.inputAllowed } }
+		val sources = ObjectOpenHashSet<FluidNode>()
+		val sinks = ObjectOpenHashSet<FluidNode>()
+
+		getGraphNodes().forEach { node ->
+			if (manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.inputAllowed }) sinks.add(node)
+			if (manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input -> input.metaData.outputAllowed }) sources.add(node)
+		}
 
 		if ((sinks.isEmpty() && leakingPipes.isEmpty()) || sources.isEmpty()) return
 
 		val valueGraph = getValueGraphRepresentation()
 
+		// Connect all sources to a super source, with a maximum capcity between
 		for (source in sources) {
 			valueGraph.putEdgeValue(SUPER_SOURCE, source.location, Double.MAX_VALUE)
 		}
 
+		// Connect all sinks to a super sink, with a maximum capcity between
 		for (sink in sinks) {
 			valueGraph.putEdgeValue(sink.location, SUPER_SINK, Double.MAX_VALUE)
 		}
 
-		// Treat leaking pipes as sinks
+		// Treat leaking pipes as sinks, and connect them to the super sink
 		for (leaking in leakingPipes.iterator()) {
-			valueGraph.putEdgeValue(leaking, SUPER_SINK, Double.MAX_VALUE)
+			valueGraph.putEdgeValue(leaking, SUPER_SINK, 1.0)
 		}
 
 		var maxFlow = 0.0
@@ -418,16 +425,15 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		while (bfs(valueGraph, parentRelationMap))	{
 			iterations++
 
-			if (iterations > 7) break
+			if (iterations > 20) {
+				println("BFS took too long!")
+				break
+			}
 
 			var pathFlow = Double.MAX_VALUE
-
 			var node: BlockKey = SUPER_SINK
 
-			var iterations = 0L
-
 			while (node != SUPER_SOURCE) {
-				iterations++
 				var parentOfNode: Long = parentRelationMap.getOrDefault(node, null) ?: break
 
 				pathFlow = minOf(pathFlow, valueGraph.edgeValue(parentOfNode, node).get())
@@ -436,15 +442,15 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 			maxFlow += pathFlow
 
+			// Loop over nodes and decrement the flow values from the previous loop
 			var v: BlockKey = SUPER_SINK
 			while (v != SUPER_SOURCE) {
 				val parentOfNode: Long = parentRelationMap.getOrDefault(v, null) ?: break
 
 				if (v == parentOfNode) break
 
-				val u = parentOfNode
-				valueGraph.putEdgeValue(u, v, valueGraph.edgeValue(u, v).get() - pathFlow)
-				valueGraph.putEdgeValue(v, u, valueGraph.edgeValue(v, u).getOrDefault(0.0) + pathFlow)
+				valueGraph.putEdgeValue(parentOfNode, v, valueGraph.edgeValue(parentOfNode, v).get() - pathFlow)
+				valueGraph.putEdgeValue(v, parentOfNode, valueGraph.edgeValue(v, parentOfNode).getOrDefault(0.0) + pathFlow)
 
 				v = parentOfNode
 			}
@@ -479,7 +485,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		flowMap = endpointFlows
 	}
 
-	fun getValueGraphRepresentation(resetFlow: Boolean = true): MutableValueGraph<BlockKey, Double> {
+	fun getValueGraphRepresentation(): MutableValueGraph<BlockKey, Double> {
 		val copied = ValueGraphBuilder
 			.directed()
 			.allowsSelfLoops(false)
@@ -491,8 +497,12 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		}
 
 		for (edge in getGraphEdges()) {
-			if (resetFlow) (edge as FluidGraphEdge).netFlow = 0.0
-			copied.putEdgeValue(edge.nodeOne.location, edge.nodeTwo.location, (edge.nodeOne as FluidNode).flowCapacity)
+			var capacity = (edge.nodeOne as FluidNode).flowCapacity
+			if (leakingPipes.contains(edge.nodeOne.location)) {
+				capacity = 1.0
+			}
+
+			copied.putEdgeValue(edge.nodeOne.location, edge.nodeTwo.location, capacity)
 		}
 
 		return copied
