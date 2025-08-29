@@ -352,7 +352,7 @@ object AITemplateRegistry {
 					items = listOf(
 						DroppedItem(
 							itemString = CustomItemRegistry.CIRCUIT_BOARD.identifier,
-							dropChance = 1.0f,
+							dropChance = 0.9f,
 							amount = StaticIntegerAmount(1)
 						)
 					)
@@ -991,7 +991,7 @@ object AITemplateRegistry {
 					items = listOf(
 						DroppedItem(
 							itemString = CustomItemRegistry.REACTIVE_ASSEMBLY.identifier,
-							dropChance = 1.9f,
+							dropChance = 1.8f,
 							amount = StaticIntegerAmount(1)
 						),
 						DroppedItem(
