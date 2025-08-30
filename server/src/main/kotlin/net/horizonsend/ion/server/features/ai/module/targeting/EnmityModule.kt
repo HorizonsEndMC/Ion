@@ -404,7 +404,7 @@ open class EnmityModule(
 		fun targetFilter(starship: Starship, aiTarget: AITarget, targetMode: AITarget.TargetMode): Boolean {
 			when {
 				aiTarget is StarshipTarget && aiTarget.ship.controller is PlayerController -> {
-					if (targetMode == AITarget.TargetMode.AI_ONLY) return false
+					return targetMode != AITarget.TargetMode.AI_ONLY
 				}
 
 				aiTarget is StarshipTarget && aiTarget.ship.controller is AIController -> {
@@ -416,8 +416,7 @@ open class EnmityModule(
 				}
 
 				aiTarget is PlayerTarget && targetMode != AITarget.TargetMode.AI_ONLY -> {
-					if (starship.world.ion.hasFlag(WorldFlag.NOT_SECURE)) return true
-					return !aiTarget.player.hasProtection()
+					return true
 				}
 			}
 			return false

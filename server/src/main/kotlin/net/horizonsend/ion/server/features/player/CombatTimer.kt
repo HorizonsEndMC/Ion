@@ -463,8 +463,8 @@ object CombatTimer : IonServerComponent() {
 			val lastDamager = entry.second.entries.maxByOrNull { it.value.lastDamaged } ?: return
 
 			val breakdown = entry.second.entries.sortedBy { -it.value.points.get() }.map { damagerWithData ->
-				val name = damagerWithData.key.getDisplayName()
-				val pilot = (damagerWithData.key as? PlayerDamager)?.player ?: damagerWithData.key.getDisplayName()
+				val name = damagerWithData.key.starship?.getDisplayName() ?: damagerWithData.key.getDisplayName()
+				val pilot = damagerWithData.key.starship?.controller?.pilotName ?: damagerWithData.key.getDisplayName()
 				val points = damagerWithData.value.points
 				val color = if (damagerWithData.key == topDamager.key) HE_LIGHT_ORANGE
 					else if (isDamager(player,damagerWithData.key)) HE_LIGHT_BLUE else HE_MEDIUM_GRAY
@@ -478,10 +478,10 @@ object CombatTimer : IonServerComponent() {
 				)
 			}
 
-			val breakdownText = text("[Breakdown Hover]", HE_LIGHT_BLUE).hoverEvent(ofChildren(*breakdown.toTypedArray()))
+			val breakdownText = text("[Details]", HE_LIGHT_BLUE).hoverEvent(ofChildren(*breakdown.toTypedArray()))
 
 			val messageEntry = template(
-				message = text("{0} killed by: {1}, Top Damager: {2} {3}.", HE_MEDIUM_GRAY),
+				message = text("{0} killed by: {1}, Top: {2} {3}.", HE_MEDIUM_GRAY),
 				paramColor = HE_LIGHT_GRAY,
 				useQuotesAroundObjects = false,
 				entry.first,                      // {0}
