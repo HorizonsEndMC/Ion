@@ -367,7 +367,7 @@ enum class ChatChannel(
 			val message = formatChatMessage(this, event, messageColor)
 
 			for (fleetMember in fleet.playerMembers()) {
-				val other = Bukkit.getPlayer(fleetMember)!!
+				val other = Bukkit.getPlayer(fleetMember) ?: continue
 
 				other.sendMessage(message.buildChatComponent(
 					useLevelsPrefix = false,
