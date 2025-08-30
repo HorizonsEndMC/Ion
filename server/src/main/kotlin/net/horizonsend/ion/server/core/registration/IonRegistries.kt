@@ -53,6 +53,8 @@ object IonRegistries : IonComponent() {
 	val WRECK_STRUCTURES = register(WreckStructureRegistry())
 	val STARSHIP_STATUS_EFFECT = register(StarshipStatusEffectTypeRegistry())
 	val FRONTIER_NATION_BUFF_TYPE = register(FrontierNationBuffTypeRegistry())
+    val SIGNATURE_SPAWNERS = register(SignatureSpawnerRegistry())
+    val SIGNATURES = register(SignatureRegistry())
 
 	val SEQUENCE_PHASE = register(SequencePhaseRegistry())
 	val SEQUENCE = register(SequenceRegistry())
