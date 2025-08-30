@@ -350,7 +350,7 @@ object AITemplateRegistry {
 					minBagModifier = 0.5,
 					items = listOf(
 						DroppedItem(
-							itemString = CustomItemRegistry.CIRCUIT_BOARD.identifier,
+							itemString = CustomItemKeys.CIRCUIT_BOARD.key,
 							dropChance = 0.9f,
 							amount = StaticIntegerAmount(1)
 						)
@@ -991,17 +991,17 @@ object AITemplateRegistry {
 					minBagModifier = 0.5,
 					items = listOf(
 						DroppedItem(
-							itemString = CustomItemRegistry.REACTIVE_ASSEMBLY.identifier,
+							itemString = CustomItemKeys.REACTIVE_ASSEMBLY.key,
 							dropChance = 1.8f,
 							amount = StaticIntegerAmount(1)
 						),
 						DroppedItem(
-							itemString = CustomItemRegistry.REACTIVE_MEMBRANE.identifier,
+							itemString = CustomItemKeys.REACTIVE_MEMBRANE.key,
 							dropChance = 1.5f,
 							amount = StaticIntegerAmount(1)
 						),
 						DroppedItem(
-							itemString = CustomItemRegistry.REACTIVE_CHASSIS.identifier,
+							itemString = CustomItemKeys.REACTIVE_CHASSIS.key,
 							dropChance = 1.0f,
 							amount = StaticIntegerAmount(1)
 						),
@@ -1058,7 +1058,7 @@ object AITemplateRegistry {
 					minBagModifier = 0.7,
 					items = listOf(
 						DroppedItem(
-							itemString = CustomItemRegistry.REACTIVE_CHASSIS.identifier,
+							itemString = CustomItemKeys.REACTIVE_CHASSIS.key,
 							dropChance = 1.5f,
 							amount = StaticIntegerAmount(1)
 						),
@@ -1122,7 +1122,7 @@ object AITemplateRegistry {
 					minBagModifier = 0.7,
 					items = listOf(
 						DroppedItem(
-							itemString = CustomItemRegistry.ENRICHED_URANIUM.identifier,
+							itemString = CustomItemKeys.ENRICHED_URANIUM.key,
 							dropChance = 0.2f,
 							amount = StaticIntegerAmount(1)
 						),
