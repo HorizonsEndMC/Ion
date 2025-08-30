@@ -56,6 +56,7 @@ abstract class MultiSpawner(
 		)
 
 		var delay = 0L
+		var initalized = false
 		for (spawnedShip in ships) {
 			val offsets = spawnedShip.offsets
 
@@ -83,22 +84,22 @@ abstract class MultiSpawner(
 				}
 
 				individualSpawnMessage?.broadcast(spawnPoint, spawnedShip.template)
+				if (!initalized && groupMessage != null) {
+					IonServer.server.sendMessage(
+						template(
+							groupMessage,
+							paramColor = HEColorScheme.HE_LIGHT_GRAY,
+							useQuotesAroundObjects = false,
+							spawnOrigin.blockX,
+							spawnOrigin.blockY,
+							spawnOrigin.blockZ,
+							spawnOrigin.world.name
+						)
+					)
+				}
+				initalized = true
 			}
 			delay++
-		}
-
-		if (aiFleet.members.isNotEmpty() && groupMessage != null) {
-			IonServer.server.sendMessage(
-				template(
-					groupMessage,
-					paramColor = HEColorScheme.HE_LIGHT_GRAY,
-					useQuotesAroundObjects = false,
-					spawnOrigin.blockX,
-					spawnOrigin.blockY,
-					spawnOrigin.blockZ,
-					spawnOrigin.world.name
-				)
-			)
 		}
 	}
 }
