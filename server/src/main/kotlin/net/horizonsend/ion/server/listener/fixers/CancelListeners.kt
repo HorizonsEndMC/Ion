@@ -22,7 +22,6 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.trialspawner.PlayerDetector
 import net.minecraft.world.level.block.entity.vault.VaultConfig
-import net.minecraft.world.level.block.entity.vault.VaultServerData
 import net.minecraft.world.level.entity.EntityTypeTest
 import net.minecraft.world.phys.AABB
 import org.bukkit.Material
@@ -33,12 +32,14 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockDispenseEvent
+import org.bukkit.event.block.BlockDispenseLootEvent
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
 import org.bukkit.event.block.BlockPistonExtendEvent
 import org.bukkit.event.block.BlockPistonRetractEvent
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.block.VaultDisplayItemEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.PotionSplashEvent
@@ -50,7 +51,6 @@ import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.inventory.ItemStack
-import java.lang.reflect.Field
 import java.util.Optional
 import java.util.function.Predicate
 
@@ -246,13 +246,13 @@ class CancelListeners : SLEventListener() {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onTrialVaultPlacement(event: BlockPlaceEvent) {
 		Tasks.sync {
-			val state = event.block.state
+			val state = event.block.getState(false)
 			if (state !is CraftVault) return@sync
 
 			val entity = state.tileEntity
 
 			entity.config = disabledVaultConfig
-			vaultServerDataResumeField.set(entity.getServerData(), Long.MAX_VALUE)
+			state.nextStateUpdateTime = Long.MAX_VALUE
 		}
 	}
 
@@ -262,8 +262,6 @@ class CancelListeners : SLEventListener() {
 		if (entity !is FurnaceBasedMultiblockEntity) return
 		event.isCancelled = true
 	}
-
-	private val vaultServerDataResumeField: Field = VaultServerData::class.java.getDeclaredField("stateUpdatingResumesAt").apply { isAccessible = true }
 
 	private val emptyPlayerDetector = PlayerDetector { _, _, _, _, _ -> listOf() }
 	private val emptyEntitySelector = object : PlayerDetector.EntitySelector {
@@ -280,4 +278,18 @@ class CancelListeners : SLEventListener() {
 		emptyPlayerDetector,
 		emptyEntitySelector,
 	)
+
+	@EventHandler
+	fun onVaultDispense(event: BlockDispenseLootEvent) {
+		(event.block.getState(false) as? CraftVault)?.nextStateUpdateTime = Long.MAX_VALUE
+
+		event.isCancelled = true
+	}
+
+	@EventHandler
+	fun onVaultDisplay(event: VaultDisplayItemEvent) {
+		(event.block.getState(false) as? CraftVault)?.nextStateUpdateTime = Long.MAX_VALUE
+
+		event.isCancelled = true
+	}
 }
