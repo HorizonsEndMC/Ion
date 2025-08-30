@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics
 
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
@@ -67,6 +70,7 @@ class CompositeFleetSpawner(
 
 
 		var delay = 0L
+		var initalized = false
 		for (ship in allShips) {
 			val spawnPoint = spawnOrigin.clone()
 			for (offset in ship.offsets) spawnPoint.add(offset.get())
@@ -86,11 +90,13 @@ class CompositeFleetSpawner(
 				}
 
 				individualSpawnMessage?.broadcast(spawnPoint, ship.template)
+				if (!initalized && groupMessage != null) {
+					groupMessage.broadcast(spawnOrigin, null)
+				}
+				initalized = true
 			}
 			delay++
 		}
-
-		groupMessage?.broadcast(spawnOrigin, null)
 	}
 
 	private fun getShips(): List<SpawnedShip> = mechanics.flatMap { it.getAvailableShips() }
