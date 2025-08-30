@@ -230,7 +230,7 @@ object AISpawners : IonServerComponent(true) {
 					budget = VariableIntegerAmount(3, 5),
 					groupMessage = null,
 					individualSpawnMessage = null,
-					difficultySupplier = { _ -> Supplier { watcherLocusScheduler.difficulty } },
+					difficultySupplier = { _ -> Supplier { watcherLocusScheduler.difficulty!! } },
 					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY },
 					fleetSupplier = { null },
 					asBagSpawned(WATCHERS.asSpawnedShip(VERDOLITH_REINFORCED).withRandomRadialOffset(50.0, 100.0, 0.0), 1),
@@ -292,7 +292,7 @@ object AISpawners : IonServerComponent(true) {
 					),
 					吃饭人LocusScheduler.spawnLocationProvider,
 					SpawnMessage.WorldMessage("<$吃饭人_STANDARD>Another signal registered".miniMessage()),
-					{ _ -> Supplier { 吃饭人LocusScheduler.difficulty } },
+					{ _ -> Supplier { 吃饭人LocusScheduler.difficulty!! } },
 					{ AITarget.TargetMode.PLAYER_ONLY }
 				)
 			)
@@ -657,7 +657,7 @@ object AISpawners : IonServerComponent(true) {
 				),
 				pirateLocusScheduler.spawnLocationProvider,
 				SpawnMessage.WorldMessage("<$PIRATE_SATURATED_RED>More pirates spotted!".miniMessage()),
-				{ _ -> Supplier { pirateLocusScheduler.difficulty } },
+				{ _ -> Supplier { pirateLocusScheduler.difficulty!! } },
 				{ AITarget.TargetMode.PLAYER_ONLY }
 			)
 		))
@@ -700,7 +700,7 @@ object AISpawners : IonServerComponent(true) {
 					),
 					pirateSmallLocusScheduler.spawnLocationProvider,
 					SpawnMessage.WorldMessage("<$PIRATE_SATURATED_RED>More pirates spotted!".miniMessage()),
-					{ _ -> Supplier { pirateSmallLocusScheduler.difficulty } },
+					{ _ -> Supplier { pirateSmallLocusScheduler.difficulty!! } },
 					{ AITarget.TargetMode.PLAYER_ONLY }
 				)
 			))
@@ -779,7 +779,7 @@ object AISpawners : IonServerComponent(true) {
 					),
 					explorerScheduler.spawnLocationProvider,
 					SpawnMessage.WorldMessage("<$EXPLORER_LIGHT_CYAN>Incoming Ship".miniMessage()),
-					{ _ -> Supplier { explorerScheduler.difficulty } },
+					{ _ -> Supplier { explorerScheduler.difficulty!! } },
 					{ AITarget.TargetMode.PLAYER_ONLY }
 				)
 			))
@@ -1072,7 +1072,7 @@ object AISpawners : IonServerComponent(true) {
 				),
 				privateerLocusScheduler.spawnLocationProvider,
 				SpawnMessage.WorldMessage("<$PRIVATEER_LIGHT_TEAL>Privateer patrol <${HE_MEDIUM_GRAY}>operation vessel {0} spawned at {1}, {3}, in {4}".miniMessage()),
-				{ _ -> Supplier { privateerLocusScheduler.difficulty } },
+				{ _ -> Supplier { privateerLocusScheduler.difficulty!! } },
 				targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY }
 			)
 		))
@@ -1115,7 +1115,7 @@ object AISpawners : IonServerComponent(true) {
 					),
 					privateerSmallLocusScheduler.spawnLocationProvider,
 					SpawnMessage.WorldMessage("<$PRIVATEER_LIGHT_TEAL>Privateer patrol <${HE_MEDIUM_GRAY}>operation vessel {0} spawned at {1}, {3}, in {4}".miniMessage()),
-					{ _ -> Supplier { privateerSmallLocusScheduler.difficulty } },
+					{ _ -> Supplier { privateerSmallLocusScheduler.difficulty!! } },
 					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY }
 				)
 			))
@@ -1151,7 +1151,7 @@ object AISpawners : IonServerComponent(true) {
 					),
 					privateerEasyLocusScheduler.spawnLocationProvider,
 					SpawnMessage.WorldMessage("<$PRIVATEER_LIGHT_TEAL>Privateer rookie <${HE_MEDIUM_GRAY}>operation vessel {0} spawned at {1}, {3}, in {4}".miniMessage()),
-					{ _ -> Supplier { privateerEasyLocusScheduler.difficulty } },
+					{ _ -> Supplier { privateerEasyLocusScheduler.difficulty!! } },
 					targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY }
 				)
 			))
@@ -1234,7 +1234,7 @@ object AISpawners : IonServerComponent(true) {
 				),
 				tsaiiLocusScheduler.spawnLocationProvider,
 				SpawnMessage.WorldMessage("<${TSAII_DARK_ORANGE}>{0} has joined the raid {1}, {3}, in {4}.".miniMessage()),
-				{ _ -> Supplier { tsaiiLocusScheduler.difficulty } },
+				{ _ -> Supplier { tsaiiLocusScheduler.difficulty!! } },
 				targetModeSupplier = { AITarget.TargetMode.PLAYER_ONLY }
 			)
 		))
