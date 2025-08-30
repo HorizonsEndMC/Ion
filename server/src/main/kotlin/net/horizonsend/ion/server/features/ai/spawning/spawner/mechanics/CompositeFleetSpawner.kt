@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics
 
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
 import net.horizonsend.ion.server.features.ai.module.misc.AIFleetManageModule
@@ -11,6 +14,7 @@ import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.fleet.Fleet
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.Location
 import org.bukkit.World
@@ -64,6 +68,9 @@ class CompositeFleetSpawner(
 			return
 		}
 
+
+		var delay = 0L
+		var initalized = false
 		for (ship in allShips) {
 			val spawnPoint = spawnOrigin.clone()
 			for (offset in ship.offsets) spawnPoint.add(offset.get())
@@ -73,18 +80,23 @@ class CompositeFleetSpawner(
 			val difficulty = shipDifficultySupplier.get().coerceIn(minDifficulty, DifficultyModule.maxDifficulty)
 			logger.info("difficulty: $difficulty")
 
-			logger.info("Spawning ${ship.template.identifier} at $spawnPoint")
+			Tasks.asyncDelay(delay) {
+				logger.info("Spawning ${ship.template.identifier} at $spawnPoint")
 
-			ship.spawn(logger, spawnPoint, difficulty, targetModeSupplier.get()) {
-				addUtilModule(AIFleetManageModule(this, aiFleet))
-				controllerModifier(this@spawn)
-				aiFleet.initalized = true
+				ship.spawn(logger, spawnPoint, difficulty, targetModeSupplier.get()) {
+					addUtilModule(AIFleetManageModule(this, aiFleet))
+					controllerModifier(this@spawn)
+					aiFleet.initalized = true
+				}
+
+				individualSpawnMessage?.broadcast(spawnPoint, ship.template)
+				if (!initalized && groupMessage != null) {
+					groupMessage.broadcast(spawnOrigin, null)
+				}
+				initalized = true
 			}
-
-			individualSpawnMessage?.broadcast(spawnPoint, ship.template)
+			delay++
 		}
-
-		groupMessage?.broadcast(spawnOrigin, null)
 	}
 
 	private fun getShips(): List<SpawnedShip> = mechanics.flatMap { it.getAvailableShips() }

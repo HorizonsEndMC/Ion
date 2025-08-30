@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpaw
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpawner.Companion.asBagSpawned
 import net.horizonsend.ion.server.features.world.WorldSettings.DroppedItem
 import org.bukkit.Material
+import java.util.function.Supplier
 
 /**
  * Fully realized, spawnable, AI templates
@@ -101,7 +102,7 @@ object AITemplateRegistry {
 		)
 			.addFactionConfiguration(WATCHERS)
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
-			.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
+			.addRewardProvider(CreditRewardProviderConfiguration(10000.0))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(250.0))
 			.build()
@@ -116,7 +117,7 @@ object AITemplateRegistry {
 		)
 			.addFactionConfiguration(WATCHERS)
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
-			.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
+			.addRewardProvider(CreditRewardProviderConfiguration(10000.0))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(250.0))
 			.addAdditionalModule(
@@ -139,7 +140,7 @@ object AITemplateRegistry {
 		)
 			.addFactionConfiguration(WATCHERS)
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
-			.addRewardProvider(CreditRewardProviderConfiguration(18000.0))
+			.addRewardProvider(CreditRewardProviderConfiguration(15600.0))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(250.0))
 			.addAdditionalModule(
@@ -218,7 +219,7 @@ object AITemplateRegistry {
 		)
 			.addFactionConfiguration(吃饭人)
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
-			.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
+			.addRewardProvider(CreditRewardProviderConfiguration(7800.0))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(500.0))
 			.build()
@@ -233,7 +234,7 @@ object AITemplateRegistry {
 		)
 			.addFactionConfiguration(吃饭人)
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
-			.addRewardProvider(CreditRewardProviderConfiguration(4000.0))
+			.addRewardProvider(CreditRewardProviderConfiguration(3000.0))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(750.0))
 			.build()
 	)
@@ -255,9 +256,14 @@ object AITemplateRegistry {
 					delay = 100L,
 					broadcastMessage = "<italic><$吃饭人_STANDARD>You detect a cacophony of transmissions",
 				) {
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 200.0, 300.0),
-						VariableIntegerAmount(4, 6),
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							VariableIntegerAmount(4, 6),
+							locationSupplier,
+							shipWeight = 0.15,
+							threshold = 4),
 						null,
 						null,
 						asBagSpawned(吃饭人.asSpawnedShip(MIANBAOZHA).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
@@ -305,7 +311,7 @@ object AITemplateRegistry {
 		)
 			.addFactionConfiguration(吃饭人)
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.9))
-			.addRewardProvider(CreditRewardProviderConfiguration(9000.0))
+			.addRewardProvider(CreditRewardProviderConfiguration(7800.0))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(500.0))
 			.addAdditionalModule(
 				BehaviorConfiguration.BasicReinforcementInformation(
@@ -326,10 +332,10 @@ object AITemplateRegistry {
 			.build()
 	)
 
-	val FAGUN = registerTemplate(
+	val FASHIGUN = registerTemplate(
 		builder(
-			identifier = "FAGUN",
-			template = StarshipTemplateRegistry.FAGUN,
+			identifier = "FASHIGUN",
+			template = StarshipTemplateRegistry.FASHIGUN,
 			controllerFactory = AIControllerFactories.destroyer,
 			engagementRange = 2500.0
 		)
@@ -338,15 +344,33 @@ object AITemplateRegistry {
 			.addRewardProvider(CreditRewardProviderConfiguration(20000.0))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(500.0))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 1.0f, amount = StaticIntegerAmount(1)))))
+			.addRewardProvider(
+				AITemplate.ItemBagRewardProviderConfiguration(
+					maxBagSize = 1.0,
+					minBagModifier = 0.5,
+					items = listOf(
+						DroppedItem(
+							itemString = CustomItemRegistry.CIRCUIT_BOARD.identifier,
+							dropChance = 0.9f,
+							amount = StaticIntegerAmount(1)
+						)
+					)
+				)
+			)
 			.addAdditionalModule(
 				BehaviorConfiguration.AdvancedReinforcementInformation(
 					activationThreshold = 0.70,
 					delay = 100L,
 					broadcastMessage = "<italic><$吃饭人_STANDARD>You detect a cacophony of transmissions",
 				) {
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 200.0, 300.0),
-						VariableIntegerAmount(5, 8),
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							VariableIntegerAmount(5, 8),
+							locationSupplier,
+							shipWeight = 0.2,
+							threshold = 5),
 						null,
 						null,
 						asBagSpawned(吃饭人.asSpawnedShip(MIANBAOZHA).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
@@ -354,13 +378,18 @@ object AITemplateRegistry {
 				})
 			.addAdditionalModule(
 				BehaviorConfiguration.AdvancedReinforcementInformation(
-					activationThreshold = 0.30,
+					activationThreshold = 0.40,
 					delay = 100L,
 					broadcastMessage = "<italic><$吃饭人_STANDARD>You detect a cacophony of transmissions",
 				) {
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 200.0, 300.0),
-						VariableIntegerAmount(5, 8),
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							VariableIntegerAmount(5, 8),
+							locationSupplier,
+							shipWeight = 0.2,
+							threshold = 5),
 						null,
 						null,
 						asBagSpawned(吃饭人.asSpawnedShip(MIANBAOZHA).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
@@ -625,14 +654,21 @@ object AITemplateRegistry {
 					delay = 100L,
 					broadcastMessage = "<$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> backup request acknowledged. {0} responding at {1}, {3}, in {4}",
 				) {
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
 					BagSpawner.asReinforcement(
-						formatLocationSupplier({ it.getCenter().toLocation(it.starship.world) }, 200.0, 300.0),
-						VariableIntegerAmount(5, 8),
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							VariableIntegerAmount(5, 8),
+							locationSupplier,
+							shipWeight = 0.2,
+							threshold = 5),
 						null,
 						null,
-						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
-						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(55.0, 100.0, 0.0), 2),
-						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(25.0, 100.0, 0.0), 3),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(100.0, 200.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(TENETA).withRandomRadialOffset(100.0, 200.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(75.0, 100.0, 0.0), 3),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(0.0, 75.0, 0.0), 9),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(0.0, 75.0, 0.0), 10),
 					)(it)
 				})
 			.build()
@@ -795,10 +831,10 @@ object AITemplateRegistry {
 			.build()
 	)
 
-	val STRIKER = registerTemplate(
+	val SPARROW = registerTemplate(
 		builder(
-			identifier = "STRIKER",
-			template = StarshipTemplateRegistry.STRIKER,
+			identifier = "SPARROW",
+			template = StarshipTemplateRegistry.SPARROW,
 			controllerFactory = AIControllerFactories.passive_cruise,
 			engagementRange = 750.0
 		)
@@ -949,6 +985,29 @@ object AITemplateRegistry {
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
 			.addRewardProvider(CreditRewardProviderConfiguration(50000.0))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
+			.addRewardProvider(
+				AITemplate.ItemBagRewardProviderConfiguration(
+					maxBagSize = 2.1,
+					minBagModifier = 0.5,
+					items = listOf(
+						DroppedItem(
+							itemString = CustomItemRegistry.REACTIVE_ASSEMBLY.identifier,
+							dropChance = 1.8f,
+							amount = StaticIntegerAmount(1)
+						),
+						DroppedItem(
+							itemString = CustomItemRegistry.REACTIVE_MEMBRANE.identifier,
+							dropChance = 1.5f,
+							amount = StaticIntegerAmount(1)
+						),
+						DroppedItem(
+							itemString = CustomItemRegistry.REACTIVE_CHASSIS.identifier,
+							dropChance = 1.0f,
+							amount = StaticIntegerAmount(1)
+						),
+					)
+				)
+			)
 			.addAdditionalModule(
 				BehaviorConfiguration.BasicReinforcementInformation(
 					activationThreshold = 0.75,
@@ -957,6 +1016,27 @@ object AITemplateRegistry {
 					reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE), 1.0))
 				)
 			)
+			.addAdditionalModule(
+				BehaviorConfiguration.AdvancedReinforcementInformation(
+					activationThreshold = 0.75,
+					delay = 150L,
+					broadcastMessage = null, // hidden extra backup for large fleets
+				) {
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
+					BagSpawner.asReinforcement(
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							StaticIntegerAmount(0),
+							locationSupplier,
+							shipWeight = 0.5,
+							threshold = 25),
+						null,
+						null,
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(200.0, 300.0, 0.0), 7),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE).withRandomRadialOffset(100.0, 200.0, 0.0), 10),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE).withRandomRadialOffset(50.0, 100.0, 0.0), 10),
+					)(it)
+				})
 			.build()
 	)
 
@@ -972,6 +1052,19 @@ object AITemplateRegistry {
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
 			.addRewardProvider(CreditRewardProviderConfiguration(16000.0))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
+			.addRewardProvider(
+				AITemplate.ItemBagRewardProviderConfiguration(
+					maxBagSize = 2.0,
+					minBagModifier = 0.7,
+					items = listOf(
+						DroppedItem(
+							itemString = CustomItemRegistry.REACTIVE_CHASSIS.identifier,
+							dropChance = 1.5f,
+							amount = StaticIntegerAmount(1)
+						),
+					)
+				)
+			)
 			.addAdditionalModule(
 				BehaviorConfiguration.BasicReinforcementInformation(
 					activationThreshold = 0.9,
@@ -988,6 +1081,27 @@ object AITemplateRegistry {
 					reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 1.0))
 				)
 			)
+			.addAdditionalModule(
+				BehaviorConfiguration.AdvancedReinforcementInformation(
+					activationThreshold = 0.75,
+					delay = 150L,
+					broadcastMessage = null, //hidden extra backup
+				) {
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
+					BagSpawner.asReinforcement(
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							StaticIntegerAmount(0),
+							locationSupplier,
+							shipWeight = 0.2,
+							threshold = 8),
+						null,
+						null,
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(100.0, 200.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(75.0, 100.0, 0.0), 3),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(25.0, 50.0, 0.0), 5),
+					)(it)
+				})
 			.build()
 	)
 
@@ -1000,8 +1114,21 @@ object AITemplateRegistry {
 		)
 			.addFactionConfiguration(AIFaction.MINING_GUILD)
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.6))
-			.addRewardProvider(CreditRewardProviderConfiguration(1200.0))
+			.addRewardProvider(CreditRewardProviderConfiguration(6000.0))
 			.addRewardProvider(AITemplate.KillStreakRewardProviderConfiguration(1500.0))
+			.addRewardProvider(
+				AITemplate.ItemBagRewardProviderConfiguration(
+					maxBagSize = 2.0,
+					minBagModifier = 0.7,
+					items = listOf(
+						DroppedItem(
+							itemString = CustomItemRegistry.ENRICHED_URANIUM.identifier,
+							dropChance = 0.2f,
+							amount = StaticIntegerAmount(1)
+						),
+					)
+				)
+			)
 			.addAdditionalModule(
 				BehaviorConfiguration.BasicReinforcementInformation(
 					activationThreshold = 0.75,
@@ -1010,6 +1137,27 @@ object AITemplateRegistry {
 					reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 1.0))
 				)
 			)
+			.addAdditionalModule(
+				BehaviorConfiguration.AdvancedReinforcementInformation(
+					activationThreshold = 0.75,
+					delay = 150L,
+					broadcastMessage = null, //hidden extra backup
+				) {
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
+					BagSpawner.asReinforcement(
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							StaticIntegerAmount(0),
+							locationSupplier,
+							shipWeight = 0.15,
+							threshold = 8),
+						null,
+						null,
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(100.0, 200.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(75.0, 100.0, 0.0), 3),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(25.0, 50.0, 0.0), 5),
+					)(it)
+				})
 			.build()
 	)
 
@@ -1032,6 +1180,27 @@ object AITemplateRegistry {
 					reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK), 1.0))
 				)
 			)
+			.addAdditionalModule(
+				BehaviorConfiguration.AdvancedReinforcementInformation(
+					activationThreshold = 0.75,
+					delay = 150L,
+					broadcastMessage = null, //hidden extra backup
+				) {
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
+					BagSpawner.asReinforcement(
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							StaticIntegerAmount(0),
+							locationSupplier,
+							shipWeight = 0.10,
+							threshold = 6),
+						null,
+						null,
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(DAGGER).withRandomRadialOffset(100.0, 200.0, 0.0), 2),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(CONTRACTOR).withRandomRadialOffset(75.0, 100.0, 0.0), 3),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(25.0, 50.0, 0.0), 5),
+					)(it)
+				})
 			.build()
 	)
 
@@ -1228,9 +1397,29 @@ object AITemplateRegistry {
 					activationThreshold = 0.85,
 					delay = 100L,
 					broadcastMessage = "<italic><red>Did you really think we would risk this ship without an escort fleet? We'll enjoy looting your corpse!",
-					reinforcementShips = listOf(spawnChance(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RAIDER), 1.0))
+					reinforcementShips = listOf(spawnChance(TSAII_RAIDERS.asSpawnedShip(RAIDER), 1.0))
 				)
 			)
+			.addAdditionalModule(
+				BehaviorConfiguration.AdvancedReinforcementInformation(
+					activationThreshold = 0.70,
+					delay = 150L,
+					broadcastMessage = null, //hidden extra spawns
+				) {
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
+					BagSpawner.asReinforcement(
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							StaticIntegerAmount(0),
+							locationSupplier,
+							shipWeight = 0.25,
+							threshold = 8),
+						null,
+						null,
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE).withRandomRadialOffset(100.0, 200.0, 0.0), 3),
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 100.0, 0.0), 5),
+					)(it)
+				})
 			.build()
 	)
 
@@ -1257,19 +1446,19 @@ object AITemplateRegistry {
 						VariableIntegerAmount(10, 15),
 						null,
 						null,
-						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER), 1),
-						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE), 3),
-						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER), 5),
-						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER), 10),
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SWARMER).withRandomRadialOffset(100.0, 200.0, 0.0), 1),
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(SCYTHE).withRandomRadialOffset(100.0, 200.0, 0.0), 3),
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(RAIDER).withRandomRadialOffset(50.0, 100.0, 0.0), 5),
+						asBagSpawned(TSAII_RAIDERS.asSpawnedShip(REAVER).withRandomRadialOffset(0.0, 50.0, 0.0), 10),
 					)(it)
 				})
 			.build()
 	)
 
-	val BAIT_STRIKER = registerTemplate(
+	val BAIT_SPARROW = registerTemplate(
 		builder(
-			identifier = "BAIT_STRIKER",
-			template = StarshipTemplateRegistry.STRIKER,
+			identifier = "BAIT_SPARROW",
+			template = StarshipTemplateRegistry.SPARROW,
 			controllerFactory = AIControllerFactories.passive_cruise,
 			engagementRange = 750.0
 		)

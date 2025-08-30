@@ -31,7 +31,7 @@ class LegacyFactionSpawner(
 			val worldConfig = occupiedWorlds.weightedRandomOrNull { it.probability } ?: return@Supplier null
 			val bukkitWorld = worldConfig.getWorld() ?: return@Supplier null
 
-			return@Supplier formatLocationSupplier(bukkitWorld, worldConfig.minDistanceFromPlayer, worldConfig.maxDistanceFromPlayer) { player -> !player.hasProtection() }.get()
+			return@Supplier formatLocationSupplier(bukkitWorld, worldConfig.minDistanceFromPlayer, worldConfig.maxDistanceFromPlayer).get()
 		},
 		SpawnMessage.WorldMessage(spawnMessage),
 		DifficultyModule::regularSpawnDifficultySupplier,

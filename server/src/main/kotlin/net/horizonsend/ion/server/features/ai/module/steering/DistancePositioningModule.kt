@@ -26,18 +26,18 @@ class DistancePositioningModule(
 	private val startFleeing get() = config.startFleeing
 	private val stopFleeing get() = config.stopFleeing
 
-	var hasFled = false
+	var fledAttempts = 0
 
 	var isFleeing = false
 		set(value) {
-			if (value) hasFled = true
+			if (value) fledAttempts++
 			field = value
 		}
 
 	fun calcDistance(): Double {
 		if (!difficulty.doBackOff) return calcCombatDist()
 
-		if (controller.getMinimumShieldHealth() <= startFleeing && !hasFled) {
+		if (controller.getMinimumShieldHealth() <= startFleeing && fledAttempts < difficulty.maxFleeAttempts) {
 			val fleeChance = config.fleeChance
 			if (difficulty.fleeChance == 0.0) isFleeing = true
 			else if (randomDouble(0.0, difficulty.fleeChance) < fleeChance) isFleeing = true

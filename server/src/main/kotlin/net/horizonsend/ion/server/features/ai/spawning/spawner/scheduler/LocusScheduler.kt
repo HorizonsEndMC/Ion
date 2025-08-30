@@ -4,9 +4,11 @@ import kotlinx.serialization.Serializable
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawner
 import net.horizonsend.ion.server.features.ai.spawning.spawner.PersistentDataSpawnerComponent
@@ -20,6 +22,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getLocationNear
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
@@ -33,6 +36,7 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.function.Supplier
+import kotlin.math.sqrt
 import kotlin.random.Random
 import kotlin.reflect.KClass
 
@@ -54,6 +58,8 @@ class LocusScheduler(
 ) : SpawnerScheduler, TickedScheduler, StatusScheduler, PersistentDataSpawnerComponent<LocusPersistentData> {
 	private lateinit var spawner: AISpawner
 	val MAX_TICK_MULTIPLIER = 4
+	val ANNOUCE_WORLD = Duration.ofMinutes(30)
+	val ANNOUCE_DIFFICULTY = Duration.ofMillis(15)
 
 	override fun getSpawner(): AISpawner {
 		return spawner
@@ -65,8 +71,8 @@ class LocusScheduler(
 	}
 
 	var active: Boolean = false
-	lateinit var center: Location
-	var difficulty: Int = 2
+	var center: Location? = null
+	var difficulty: Int? = null
 
 	private var lastActiveTime = System.currentTimeMillis()
 	private var lastDuration: Duration = duration.get()
@@ -78,6 +84,10 @@ class LocusScheduler(
 		if (!active) {
 			// Interval from the end of the last one
 			val interval = System.currentTimeMillis() - (lastActiveTime + lastDuration.toMillis())
+			if (interval + ANNOUCE_WORLD.toMillis() > lastSeparation.toMillis() && center == null) center = calculateNewCenter()
+			if (interval + ANNOUCE_DIFFICULTY.toMillis() > lastSeparation.toMillis() && difficulty == null) {
+				difficulty = difficultySupplier(center!!.world).get()
+			}
 			// Start the locus if the separation has passed
 			if (interval > lastSeparation.toMillis()) start()
 		} else {
@@ -97,22 +107,21 @@ class LocusScheduler(
 	fun start() {
 		lastActiveTime = System.currentTimeMillis()
 		lastDuration = duration.get()
-
-		center = calculateNewCenter()
-		difficulty = difficultySupplier(center.world).get()
 		active = true
 		markDynmapZone()
 		addGravityWell()
+		if (center == null) center = calculateNewCenter()
+		if (difficulty == null) difficulty = difficultySupplier(center!!.world).get()
 
 		if (announcementMessage != null) Notify.chatAndGlobal(
 			template(
 				announcementMessage,
 				paramColor = HE_LIGHT_GRAY,
 				useQuotesAroundObjects = false,
-				center.world.name,
-				center.blockX,
-				center.blockY,
-				center.blockZ
+				center!!.world.name,
+				center!!.blockX,
+				center!!.blockY,
+				center!!.blockZ
 			)
 		)
 	}
@@ -123,6 +132,8 @@ class LocusScheduler(
 		removeGravityWell()
 		lastSeparation = separation.get()
 		if (endMessage != null) IonServer.server.sendMessage(endMessage)
+		difficulty = null
+		center = null
 	}
 
 	private var spawnerLastExecuted: Long = System.currentTimeMillis()
@@ -134,7 +145,7 @@ class LocusScheduler(
 		if (interval < lastSpawnSeparation.toMillis()) return
 
 		spawnerLastExecuted = System.currentTimeMillis()
-		val multiplier = (MAX_TICK_MULTIPLIER - numberOccupied()).coerceAtLeast(1)
+		val multiplier = (MAX_TICK_MULTIPLIER - sqrt(numberOccupied().toDouble())).coerceAtLeast(1.0)
 		lastSpawnSeparation = spawnSeparation.get().multipliedBy(multiplier.toLong())
 		getSpawner().trigger(logger, AISpawningManager.context)
 	}
@@ -181,18 +192,18 @@ class LocusScheduler(
 	val spawnLocationProvider: Supplier<Location?> = Supplier {
 		if (!active) return@Supplier null
 
-		center.getLocationNear(0.0, radius)
+		center!!.getLocationNear(0.0, radius)
 	}
 
 	private fun numberOccupied(): Int {
 		if (!active) return 0
-		val world = center.world
+		val world = center!!.world
 		val distSquared = radius * radius
 
 		return ActiveStarships.getInWorld(world).filter {
 			val loc = it.centerOfMass.toVector().setY(LOCUS_Y)
 
-			(distanceSquared(loc, center.toVector()) < distSquared) && (it.controller is PlayerController)
+			(distanceSquared(loc, center!!.toVector()) < distSquared) && (it.controller is PlayerController)
 		}.size
 	}
 
@@ -206,7 +217,7 @@ class LocusScheduler(
 		fun addLocus(locus: LocusScheduler) {
 			if (!dynmapLoaded) return
 
-			val loc = locus.center
+			val loc = locus.center!!
 
 			markerSet.layerPriority = 10
 			val marker = markerSet.createCircleMarker(
@@ -275,14 +286,29 @@ class LocusScheduler(
 				.plusMillis(lastSeparation.toMillis())      // plus the configured gap
 
 			val hoursLeft = (Duration.between(now, nextStartInstant).toMinutes().toDouble() / 60)
+			val worldInfo = center?.let {
+				template (
+				message = text("in: {0} ",HE_MEDIUM_GRAY),
+				paramColor = HE_LIGHT_GRAY,
+				useQuotesAroundObjects = false,
+				center!!.world?.name) } ?: empty()
+			val difficultyInfo = difficulty?.let {
+				template (
+					message = text("Difficulty: {0} ",HE_MEDIUM_GRAY),
+					paramColor = HE_LIGHT_GRAY,
+					useQuotesAroundObjects = false,
+					DifficultyModule.Companion.AIDifficulty.entries[difficulty!!].name
+				) } ?: empty()
 
 			template(
-				message = text("{0} starts at: {1} ({2} hours from now)", HEColorScheme.HE_MEDIUM_GRAY),
+				message = text("{0} starts at: {1} {3}{4}({2} hours from now)", HE_MEDIUM_GRAY),
 				paramColor = HE_LIGHT_GRAY,
 				useQuotesAroundObjects = false,
 				displayName,
 				UTC_TIME.format(nextStartInstant),// {1}
-				String.format("%.1f", hoursLeft)// {2}
+				String.format("%.1f", hoursLeft), // {2}
+				worldInfo,
+				difficultyInfo
 			)
 		}
 	}

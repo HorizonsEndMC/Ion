@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.starship.fleet.Fleet
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
@@ -54,6 +55,8 @@ abstract class MultiSpawner(
 			)
 		)
 
+		var delay = 0L
+		var initalized = false
 		for (spawnedShip in ships) {
 			val offsets = spawnedShip.offsets
 
@@ -72,28 +75,31 @@ abstract class MultiSpawner(
 				spawnPoint.y = absoluteHeight
 			}
 
-			debugAudience.debug("Spawning ${spawnedShip.template.identifier} at $spawnPoint")
+			Tasks.asyncDelay(delay){
+				debugAudience.debug("Spawning ${spawnedShip.template.identifier} at $spawnPoint")
 
-			spawnedShip.spawn(logger, spawnPoint, difficulty, targetModeSupplier.get()) {
-				addUtilModule(AIFleetManageModule(this, aiFleet))
-				aiFleet.initalized = true
+				spawnedShip.spawn(logger, spawnPoint, difficulty, targetModeSupplier.get()) {
+					addUtilModule(AIFleetManageModule(this, aiFleet))
+					aiFleet.initalized = true
+				}
+
+				individualSpawnMessage?.broadcast(spawnPoint, spawnedShip.template)
+				if (!initalized && groupMessage != null) {
+					IonServer.server.sendMessage(
+						template(
+							groupMessage,
+							paramColor = HEColorScheme.HE_LIGHT_GRAY,
+							useQuotesAroundObjects = false,
+							spawnOrigin.blockX,
+							spawnOrigin.blockY,
+							spawnOrigin.blockZ,
+							spawnOrigin.world.name
+						)
+					)
+				}
+				initalized = true
 			}
-
-			individualSpawnMessage?.broadcast(spawnPoint, spawnedShip.template)
-		}
-
-		if (aiFleet.members.isNotEmpty() && groupMessage != null) {
-			IonServer.server.sendMessage(
-				template(
-					groupMessage,
-					paramColor = HEColorScheme.HE_LIGHT_GRAY,
-					useQuotesAroundObjects = false,
-					spawnOrigin.blockX,
-					spawnOrigin.blockY,
-					spawnOrigin.blockZ,
-					spawnOrigin.world.name
-				)
-			)
+			delay++
 		}
 	}
 }

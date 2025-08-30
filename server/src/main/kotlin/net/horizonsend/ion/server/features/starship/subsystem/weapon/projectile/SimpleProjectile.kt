@@ -22,6 +22,7 @@ import net.kyori.adventure.key.Key.key
 import net.kyori.adventure.sound.Sound.Source
 import net.kyori.adventure.sound.Sound.sound
 import net.kyori.adventure.text.Component
+import org.bukkit.Color
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
@@ -200,17 +201,18 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 							}
 
 							// Heuristic scaling to mimic FLASH’s "big" presence
-							val particle = Particle.ELECTRIC_SPARK
+							val particle = Particle.DUST
 							val count = (base * 40.0).toInt()
 							val spread = base * 0.5
 							val particleSpeed = 0.5
+							val dustOptions = Particle.DustOptions(Color.WHITE, 0.7f)
 							player.spawnParticle(
 								particle,
 								newLoc.x, newLoc.y, newLoc.z,
 								count,
 								spread, spread, spread,
 								particleSpeed,
-								null,
+								dustOptions,
 								true
 							)
 						}

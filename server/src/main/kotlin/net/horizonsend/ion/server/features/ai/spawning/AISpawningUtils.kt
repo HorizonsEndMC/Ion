@@ -18,6 +18,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
 import net.horizonsend.ion.server.features.starship.modules.AISinkMessageFactory
 import net.horizonsend.ion.server.features.starship.subsystem.balancing.AdditionalOverridesManager
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -31,6 +33,7 @@ import org.bukkit.World
 import org.bukkit.entity.Player
 import org.slf4j.Logger
 import java.util.function.Supplier
+import kotlin.random.Random
 
 /** Handle any exceptions with spawning */
 fun handleException(logger: Logger, exception: SpawningException) {
@@ -192,13 +195,15 @@ fun formatLocationSupplier(world: World, minDistance: Double, maxDistance: Doubl
 	debugAudience.debug("World: $world")
 
 	val player = world.players
-		.filter { player -> PilotedStarships.isPiloting(player) }
 		.filter(playerFilter)
 		.randomOrNull()
 
 	if (player == null) {
 		debugAudience.debug("No player in world")
 		return@Supplier null
+	}
+	if (!PilotedStarships.isPiloting(player)) {
+		if (!world.hasFlag(WorldFlag.NOT_SECURE) || Random.nextDouble() <= 0.5) return@Supplier null
 	}
 
 	var iterations = 0

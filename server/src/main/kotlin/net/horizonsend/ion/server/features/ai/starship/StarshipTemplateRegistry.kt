@@ -267,11 +267,11 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		)
 	)
 
-	val FAGUN = registerTemplate(
+	val FASHIGUN = registerTemplate(
 		StarshipTemplate(
-			schematicName = "Fagun",
+			schematicName = "Fashigun",
 			type = AI_DESTROYER,
-			miniMessageName = text("Fagun", 吃饭人_STANDARD).serialize(miniMessage),
+			miniMessageName = text("Fashigun", 吃饭人_STANDARD).serialize(miniMessage),
 			manualWeaponSets = mutableSetOf(
 				WeaponSet(
 					name = "HL",
@@ -449,11 +449,11 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		)
 	)
 
-	val STRIKER = registerTemplate(
+	val SPARROW = registerTemplate(
 		StarshipTemplate(
-			schematicName = "Striker",
+			schematicName = "Sparrow",
 			type = AI_SHUTTLE,
-			miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Striker",
+			miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Sparrow",
 		)
 	)
 

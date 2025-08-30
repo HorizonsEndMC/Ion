@@ -40,7 +40,7 @@ import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.NIMBLE
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.OSTRICH
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.PATROLLER
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.RESOLUTE
-import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.STRIKER
+import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.SPARROW
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.TENETA
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.VETERAN
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry.WAYFINDER
@@ -96,7 +96,7 @@ object AIConvoyRegistry {
 				targetModeSupplier = targetMode,
 				fleetSupplier = { null },
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(WAYFINDER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
-				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(STRIKER).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
+				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(SPARROW).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(NIMBLE).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(DESSLE).withRandomRadialOffset(200.0, 225.0, 0.0, 250.0), 1),
 				asBagSpawned(PERSEUS_EXPLORERS.asSpawnedShip(MINHAUL_CHETHERITE).withRandomRadialOffset(175.0, 200.0, 0.0, 250.0), 3),
