@@ -9,11 +9,14 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import kotlin.math.ceil
+import kotlin.math.floor
 
 object AIKillStreak : IonServerComponent() {
 
 	private val playerHeatList: MutableList<PlayerHeat> = mutableListOf()
-	private val decay = 5
+	private val baseDecay = 5
+	private val additonalDecayPerLvl = 0.1
 	const val MAXLVLS = 60
 	const val MAXMULTIPLIER = 6.0
 
@@ -29,6 +32,7 @@ object AIKillStreak : IonServerComponent() {
 
 	private fun decayHeat() {
 		playerHeatList.forEach {
+			val decay = baseDecay + floor(additonalDecayPerLvl * it.score).toInt()
 			val decayAmount = if (CombatTimer.isNpcCombatTagged(it.player)) decay else decay * 3
 			it.score = (it.score - decayAmount).coerceAtLeast(0)
 			if (calculateHeat(it.score) < it.currentHeat) {
