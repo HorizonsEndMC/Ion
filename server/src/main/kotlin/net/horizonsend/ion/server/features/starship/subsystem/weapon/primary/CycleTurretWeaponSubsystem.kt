@@ -14,7 +14,7 @@ class CycleTurretWeaponSubsystem(
     face: BlockFace,
     override val multiblock: CycleTurretMultiblock
 ) : TurretWeaponSubsystem<CycleTurretBalancing, CycleTurretBalancing.CycleTurretProjectileBalancing>(ship, pos, face, ship.balancingManager.getWeaponSupplier(CycleTurretWeaponSubsystem::class)) {
-    override val inaccuracyRadians: Double get() = Math.toRadians(balancing.inaccuracyRadians)
+    override val inaccuracyRadians: Double get() = Math.toRadians(balancing.inaccuracyDegrees)
     override fun getMaxPerShot(): Int = balancing.maxPerShot
 
 	override fun getName(): Component {

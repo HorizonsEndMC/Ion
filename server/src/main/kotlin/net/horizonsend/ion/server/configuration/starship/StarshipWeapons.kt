@@ -260,7 +260,7 @@ data class TriTurretBalancing(
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(10),
 	override val firePowerConsumption: Int = 45000,
 	override val isForwardOnly: Boolean = false,
-	override val inaccuracyRadians: Double = 3.0,
+	override val inaccuracyDegrees: Double = 3.0,
 	override val range: Double= 500.0,
 	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(3),
 	override val maxPerShot: Int? = null,
@@ -298,7 +298,7 @@ data class LightTurretBalancing(
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override val firePowerConsumption: Int = 6000,
 	override val isForwardOnly: Boolean = false,
-	override val inaccuracyRadians: Double = 2.0,
+	override val inaccuracyDegrees: Double = 2.0,
 	override val range: Double = 200.0,
 	override val maxPerShot: Int? = null,
 	override val applyCooldownToAll: Boolean = true,
@@ -330,7 +330,7 @@ data class HeavyTurretBalancing(
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override val firePowerConsumption: Int = 8000,
 	override val isForwardOnly: Boolean = false,
-	override val inaccuracyRadians: Double = 2.0,
+	override val inaccuracyDegrees: Double = 2.0,
 	override val maxPerShot: Int? = null,
 	override val applyCooldownToAll: Boolean = true,
 
@@ -362,7 +362,7 @@ data class QuadTurretBalancing(
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
 	override val firePowerConsumption: Int = 3000,
 	override val isForwardOnly: Boolean = false,
-	override val inaccuracyRadians: Double = 2.0,
+	override val inaccuracyDegrees: Double = 2.0,
 	override val maxPerShot: Int = 3,
 	override val applyCooldownToAll: Boolean = true,
 
@@ -394,7 +394,7 @@ data class IonTurretBalancing(
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(1500),
 	override val firePowerConsumption: Int = 3000,
 	override val isForwardOnly: Boolean = false,
-	override val inaccuracyRadians: Double = 1.0,
+	override val inaccuracyDegrees: Double = 1.0,
 	override val maxPerShot: Int = 4,
 	override val applyCooldownToAll: Boolean = true,
 
@@ -679,7 +679,7 @@ data class LogisticsTurretBalancing(
 	override val maxPerShot: Int = 1,
 	override val applyCooldownToAll: Boolean = true,
 
-	override val inaccuracyRadians: Double = 0.5,
+	override val inaccuracyDegrees: Double = 0.5,
 
 	override val projectile: LogisticsTurretProjectileBalancing = LogisticsTurretProjectileBalancing(),
 ) : StarshipTurretWeaponBalancing<LogisticsTurretProjectileBalancing> {
@@ -744,7 +744,7 @@ data class CycleTurretBalancing(
 	override val firePowerConsumption: Int = 100,
 	override val isForwardOnly: Boolean = false,
 	override val maxPerShot: Int = 3,
-	override val inaccuracyRadians: Double = 0.5,
+	override val inaccuracyDegrees: Double = 0.5,
 	override val applyCooldownToAll: Boolean = true,
 
 	override val projectile: CycleTurretProjectileBalancing = CycleTurretProjectileBalancing()

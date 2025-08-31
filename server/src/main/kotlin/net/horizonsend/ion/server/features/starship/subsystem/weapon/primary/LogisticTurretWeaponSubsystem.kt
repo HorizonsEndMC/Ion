@@ -15,7 +15,7 @@ class LogisticTurretWeaponSubsystem(
     face: BlockFace,
     override val multiblock: LogisticTurretMultiblock
 ) : TurretWeaponSubsystem<LogisticsTurretBalancing, LogisticsTurretProjectileBalancing>(ship, pos, face, ship.balancingManager.getWeaponSupplier(LogisticTurretWeaponSubsystem::class)) {
-    override val inaccuracyRadians: Double get() = Math.toRadians(balancing.inaccuracyRadians)
+    override val inaccuracyRadians: Double get() = Math.toRadians(balancing.inaccuracyDegrees)
     override var fireCooldownNanos: Long = balancing.fireCooldownNanos
     override fun getMaxPerShot(): Int = balancing.maxPerShot
 

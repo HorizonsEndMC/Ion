@@ -23,7 +23,7 @@ abstract class TurretWeaponSubsystem<T : StarshipTurretWeaponBalancing<Z>, Z : S
 ) : WeaponSubsystem<T>(ship, pos, balancingSupplier), DirectionalSubsystem, ManualWeaponSubsystem {
 	private fun getSign() = starship.world.getBlockAt(pos.x, pos.y, pos.z).getState(false) as? Sign
 
-	protected open val inaccuracyRadians: Double get() = balancing.inaccuracyRadians
+	protected open val inaccuracyRadians: Double get() = Math.toRadians(balancing.inaccuracyDegrees)
 
 	protected abstract val multiblock: TurretMultiblock<Z>
 

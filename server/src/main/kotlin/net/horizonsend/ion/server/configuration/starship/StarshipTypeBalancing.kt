@@ -687,7 +687,7 @@ sealed interface StarshipHeavyWeaponBalancing<T : StarshipProjectileBalancing> :
 
 @Serializable
 sealed interface StarshipTurretWeaponBalancing<T : StarshipProjectileBalancing> : StarshipWeaponBalancing<T> {
-	val inaccuracyRadians: Double
+	val inaccuracyDegrees: Double
 }
 
 @Serializable
