@@ -70,17 +70,20 @@ object ChannelSelections : IonServerComponent() {
 				if (args.size > 1) {
 					localCache[playerID] = channel
 
-					try {
-						ServerMutesHook.checkMute(playerID).whenComplete { muted, exception ->
-							if (exception != null) throw exception
+					ServerMutesHook.checkMute(playerID).whenComplete { muted, exception ->
+						if (exception != null) throw exception
 
-							if (muted) return@whenComplete
+						if (muted) return@whenComplete
 
-							Tasks.sync { player.chat(message.removePrefix("/").removePrefix("$command ")) }
+						Tasks.sync {
+							try {
+								player.chat(message.removePrefix("/").removePrefix("$command "))
+							} finally {
+								localCache[playerID] = oldChannel
+							}
 						}
-					} finally {
-						localCache[playerID] = oldChannel
 					}
+
 					return@let
 				}
 
