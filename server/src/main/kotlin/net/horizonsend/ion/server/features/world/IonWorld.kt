@@ -156,7 +156,7 @@ class IonWorld private constructor(
 			ionWorld.configuration.environments.forEach { it.setup() }
 			Tasks.syncRepeat(10, 10, ionWorld::tickEnvironments)
 		}.onFailure {
-			log.error("There was an error loading an Ion World. The server will now shut down to prevent undefined behavior.")
+			log.error("There was an error loading an Ion World [${world.key}]. The server will now shut down to prevent undefined behavior.")
 			it.printStackTrace()
 			Bukkit.shutdown()
 		}
