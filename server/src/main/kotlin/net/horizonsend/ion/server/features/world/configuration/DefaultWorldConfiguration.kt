@@ -23,7 +23,7 @@ object DefaultWorldConfiguration {
 		return settings
 	}
 
-	val TEST = register("Chandra", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
+	val TEST = register("world", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
 		CollectedGas(AtmosphericGasKeys.HYDROGEN, ChildWeight(
 			parent = HeightRamp(
 				parent = StaticBase(amount = StaticIntegerAmount(85)),
