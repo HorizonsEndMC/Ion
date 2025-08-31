@@ -63,19 +63,17 @@ object ChannelSelections : IonServerComponent() {
 			ChatChannel.entries.firstOrNull { it.commandAliases.contains(command) }?.let { channel ->
 				event.isCancelled = true
 
-				val playerID: UUID = player.uniqueId
-
 				val oldChannel = get(player)
 
 				if (args.size > 1) {
-					localCache[playerID] = channel
-
+					val playerID: UUID = player.uniqueId
 					ServerMutesHook.checkMute(playerID).whenComplete { muted, exception ->
 						if (exception != null) throw exception
 
 						if (muted) return@whenComplete
 
 						Tasks.sync {
+							localCache[playerID] = channel
 							try {
 								player.chat(message.removePrefix("/").removePrefix("$command "))
 							} finally {
