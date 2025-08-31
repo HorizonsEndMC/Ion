@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.configuration.starship.LaserCannonBalancing.La
 import net.horizonsend.ion.server.configuration.starship.LightTurretBalancing.LightTurretProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.LogisticsTurretBalancing.LogisticsTurretProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.MiniPhaserBalancing.MiniPhaserProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.MiningLaserBalancing.MiningLaserProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.PhaserBalancing.PhaserProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.PlasmaCannonBalancing.PlasmaCannonProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.PointDefenseBalancing.PointDefenseProjectileBalancing
@@ -30,6 +31,7 @@ import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalan
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing.FireRestrictions
 import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriTurretProjectileBalancing
+import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.AbyssalGazeSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.CapitalBeamWeaponSubsystem
@@ -1064,6 +1066,37 @@ data class CapitalCannonBalancing(
 
 	@Serializable
 	data class CapitalCannonProjectileBalancing(
+        override val range: Double = 500.0,
+        override val speed: Double = PI * 50.0,
+        override val explosionPower: Float = 20f,
+        override val starshipShieldDamageMultiplier: Double = 2.0,
+        override val areaShieldDamageMultiplier: Double = 2.0,
+        override val entityDamage: EntityDamage = RegularDamage(20.0),
+        override val fireSoundNear: SoundInfo = SoundInfo(key = "entity.zombie_villager.converted"),
+        override val fireSoundFar: SoundInfo = SoundInfo(key = "entity.zombie_villager.converted"),
+        override val particleThickness: Double = 0.44,
+	) : StarshipParticleProjectileBalancing {
+		@Transient
+		override val clazz: KClass<out Projectile> = CapitalBeamCannonProjectile::class
+	}
+}
+
+@Serializable
+data class MiningLaserBalancing(
+	override val fireRestrictions: FireRestrictions = FireRestrictions(),
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
+	override val firePowerConsumption: Int = 120000,
+	override val isForwardOnly: Boolean = false,
+	override val maxPerShot: Int? = null,
+	override val applyCooldownToAll: Boolean = true,
+
+	override val projectile: MiningLaserProjectileBalancing = MiningLaserProjectileBalancing(),
+) : StarshipWeaponBalancing<MiningLaserProjectileBalancing> {
+	@Transient
+	override val clazz: KClass<out WeaponSubsystem<*>> = MiningLaserSubsystem::class
+
+	@Serializable
+	data class MiningLaserProjectileBalancing(
         override val range: Double = 500.0,
         override val speed: Double = PI * 50.0,
         override val explosionPower: Float = 20f,
