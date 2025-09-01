@@ -8,5 +8,4 @@ class FluidInputMetadata(
 
 	val inputAllowed: Boolean,
 	val outputAllowed: Boolean
-) : InputMetaData {
-}
+) : InputMetaData
