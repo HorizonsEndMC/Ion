@@ -612,12 +612,26 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 		register(MultiblockRecipeKeys.TEST_CHEMICAL_PROCESSOR, ChemicalProcessorRecipe(
 			key = MultiblockRecipeKeys.TEST_CHEMICAL_PROCESSOR,
 			itemRequirement = MaterialRequirement(Material.IRON_INGOT),
-			fluidRequirementOne = FluidRecipeRequirement("input1", FluidTypeKeys.OXYGEN, 10.0),
-			fluidRequirementTwo = FluidRecipeRequirement("input2", FluidTypeKeys.METHANE, 10.0),
-			fluidResultOne = FluidResult("output1", FluidStack(FluidTypeKeys.WATER, 10.0)),
-			fluidResultTwo = FluidResult("output2", FluidStack(FluidTypeKeys.CARBON_DIOXIDE, 10.0)),
+			fluidRequirementOne = FluidRecipeRequirement("primaryin", FluidTypeKeys.OXYGEN, 10.0),
+			fluidRequirementTwo = FluidRecipeRequirement("secondaryin", FluidTypeKeys.METHANE, 10.0),
+			fluidResultOne = FluidResult("primaryout", FluidStack(FluidTypeKeys.WATER, 10.0)),
+			fluidResultTwo = FluidResult("secondaryout", FluidStack(FluidTypeKeys.CARBON_DIOXIDE, 10.0)),
 			fluidResultPollutionResult = FluidResult("pollution", FluidStack(FluidTypeKeys.CARBON_DIOXIDE, 1.0)),
 			itemResult = ResultHolder.of(ItemResult.simpleResult(CustomItemKeys.CIRCUITRY.getValue().constructItemStack())),
+		))
+		register(MultiblockRecipeKeys.SABATIER_METHANE, ChemicalProcessorRecipe(
+			key = MultiblockRecipeKeys.SABATIER_METHANE,
+			itemRequirement = MaterialRequirement(Material.IRON_INGOT),
+
+			fluidRequirementOne = FluidRecipeRequirement("primaryin", FluidTypeKeys.CARBON_DIOXIDE, 10.0),
+			fluidRequirementTwo = FluidRecipeRequirement("secondaryin", FluidTypeKeys.HYDROGEN, 40.0),
+
+			fluidResultOne = FluidResult("primaryout", FluidStack(FluidTypeKeys.METHANE, 10.0)),
+			fluidResultTwo = FluidResult("secondaryout", FluidStack(FluidTypeKeys.WATER, 10.0)),
+
+			fluidResultPollutionResult = null,
+
+			itemResult = ResultHolder.of(ItemResult.simpleResult(Material.IRON_INGOT)),
 		))
 	}
 
