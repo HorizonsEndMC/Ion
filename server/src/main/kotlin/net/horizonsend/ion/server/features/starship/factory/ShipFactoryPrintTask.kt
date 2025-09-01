@@ -17,7 +17,7 @@ import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
@@ -352,7 +352,7 @@ class ShipFactoryPrintTask(
 			NewTransport.addExtractor(world, x, y, z)
 		}
 
-		CustomBlocks.getByBlockData(data)?.placeCallback(null, block)
+		data.customBlock?.placeCallback(null, block)
 
 		val state = block.state as? Sign
 		if (state != null) {
