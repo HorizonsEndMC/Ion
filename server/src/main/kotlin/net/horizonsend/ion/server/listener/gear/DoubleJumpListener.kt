@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
 import org.bukkit.FluidCollisionMode
 import org.bukkit.GameMode
+import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerMoveEvent
@@ -49,11 +50,20 @@ object DoubleJumpListener : SLEventListener() {
 	}
 
 	private fun isGrounded(player: Player): Boolean {
-		return player.world.rayTraceBlocks(
-			player.location,
-			Vector(0.0, -1.0, 0.0),
-			0.1,
-			FluidCollisionMode.ALWAYS
-		)?.hitBlock?.isCollidable == true
+		val points = mutableListOf<Location>()
+
+		points.add(Location(player.world, player.boundingBox.maxX, player.boundingBox.minY, player.boundingBox.minZ))
+		points.add(Location(player.world, player.boundingBox.minX, player.boundingBox.minY, player.boundingBox.minZ))
+		points.add(Location(player.world, player.boundingBox.minX, player.boundingBox.minY, player.boundingBox.maxZ))
+		points.add(Location(player.world, player.boundingBox.maxX, player.boundingBox.minY, player.boundingBox.maxZ))
+
+		return points.any { location ->
+			player.world.rayTraceBlocks(
+				location,
+				Vector(0.0, -1.0, 0.0),
+				0.1,
+				FluidCollisionMode.ALWAYS
+			)?.hitBlock?.isCollidable == true
+		}
 	}
 }
