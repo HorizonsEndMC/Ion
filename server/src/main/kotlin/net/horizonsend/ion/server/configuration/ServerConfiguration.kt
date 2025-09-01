@@ -29,6 +29,7 @@ data class ServerConfiguration(
 	val worldResetSettings: AutoWorldReset = AutoWorldReset(),
 	val rentalZoneCollectionDay: DayOfWeek = DayOfWeek.SUNDAY,
 	val deleteInvalidMultiblockData: Boolean = false,
+	val pastebinApiDevKey: String? = null,
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
