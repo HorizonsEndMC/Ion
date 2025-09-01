@@ -49,6 +49,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.player.PlayerTeleportEvent
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.bukkit.inventory.ItemStack
 import java.util.Optional
 import java.util.function.Predicate
@@ -290,5 +291,10 @@ class CancelListeners : SLEventListener() {
 		(event.block.getState(false) as? CraftVault)?.nextStateUpdateTime = Long.MAX_VALUE
 
 		event.isCancelled = true
+	}
+
+	@EventHandler
+	fun onPortalTeleport(event: PlayerTeleportEvent) {
+		if (event.cause == TeleportCause.END_PORTAL) event.isCancelled = true
 	}
 }
