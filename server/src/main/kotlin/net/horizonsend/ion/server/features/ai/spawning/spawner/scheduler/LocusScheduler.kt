@@ -59,7 +59,7 @@ class LocusScheduler(
 	private lateinit var spawner: AISpawner
 	val MAX_TICK_MULTIPLIER = 4
 	val ANNOUCE_WORLD = Duration.ofMinutes(30)
-	val ANNOUCE_DIFFICULTY = Duration.ofMillis(15)
+	val ANNOUCE_DIFFICULTY = Duration.ofMinutes(15)
 
 	override fun getSpawner(): AISpawner {
 		return spawner
