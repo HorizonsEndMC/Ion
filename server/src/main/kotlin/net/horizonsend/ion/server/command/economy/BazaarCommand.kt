@@ -292,7 +292,7 @@ object BazaarCommand : SLCommand() {
 
 			// Set new export cooldown
 			exportCooldown[sender.uniqueId] = System.currentTimeMillis()
-			sender.success("Exported bazaar sell order data as CSV: ")
+			sender.success("Exported bazaar sell order data as CSV (expires in 10 minutes): ")
 			val responseBody = response.body?.string() ?: "null"
 			sender.sendMessage(bracketed(formatLink(responseBody, responseBody)))
 		}
@@ -510,7 +510,7 @@ object BazaarCommand : SLCommand() {
 
 			// Set new export cooldown
 			exportCooldown[sender.uniqueId] = System.currentTimeMillis()
-			sender.success("Exported bazaar buy order data as CSV: ")
+			sender.success("Exported bazaar buy order data as CSV (expires in 10 minutes): ")
 			val responseBody = response.body?.string() ?: "null"
 			sender.sendMessage(bracketed(formatLink(responseBody, responseBody)))
 		}
