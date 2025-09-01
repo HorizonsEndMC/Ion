@@ -62,7 +62,10 @@ abstract class IOManager {
 		}
 
 		fun getAllHolders(location: BlockKey): ObjectOpenHashSet<T> {
-			return portLocations.get(location)?.getPorts() ?: ObjectOpenHashSet()
+			return portLocations
+				.get(location)
+				?.getPorts()
+				?: ObjectOpenHashSet()
 		}
 
 		fun removeAll(location: BlockKey) {

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSettings
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
@@ -228,8 +229,11 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 	 * Gets the powered entities accessible from this location, assuming it is an input
 	 * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
 	 **/
-	inline fun <reified T> getInputEntitiesTyped(location: BlockKey): Set<T> {
-		return holder.getInputManager().getPorts(IOType.POWER, location).filterIsInstanceTo(mutableSetOf())
+	inline fun <reified T : Any> getInputEntitiesTyped(location: BlockKey): Set<T> {
+		return holder
+			.getInputManager()
+			.getPorts(IOType.POWER, location)
+			.mapNotNullTo(ObjectOpenHashSet<T>()) { it.holder as? T }
 	}
 
 	inline fun <reified T> getExtractorSourceEntities(extractorLocation: BlockKey, filterNot: (T) -> Boolean): List<T> {
