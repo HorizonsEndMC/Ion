@@ -78,7 +78,7 @@ object BazaarCommand : SLCommand() {
 
 		manager.commandContexts.registerContext(TradeCityData::class.java) { c ->
 			val name = c.popFirstArg()
-			TradeCities.getAll().firstOrNull { it.displayName == name }
+			TradeCities.getAll().firstOrNull { it.displayName == name }  ?: throw InvalidCommandArgument("Trade city $name not found!")
 		}
 
 		registerAsyncCompletion(manager, "playerOrders") { c ->
@@ -346,9 +346,23 @@ object BazaarCommand : SLCommand() {
 
 	@Subcommand("order create")
 	@Description("Create a new buy order at this city")
-	@CommandCompletion("@anyItem")
+	@CommandCompletion("@anyItem 1|10|100 1.0|10.0|100.0 @nothing")
 	fun onOrderCreate(sender: Player, itemString: String, quantity: Int, pricePerItem: Double, @Optional priceConfirmation: Double?) = asyncCommand(sender) {
 		val territory: RegionTerritory = requireTerritoryIn(sender)
+		val realCost = quantity * pricePerItem
+
+		failIf(priceConfirmation != realCost) {
+			"You must acknowledge the cost of the listing to create it. The cost is ${realCost.toCreditsString()}. Run the command: /bazaar order create $itemString $quantity $pricePerItem $realCost"
+		}
+
+		Bazaars.createOrder(sender, territory, itemString, quantity, pricePerItem).sendReason(sender)
+	}
+
+	@Subcommand("order create")
+	@Description("Create a new buy order at this city")
+	@CommandCompletion("@anyItem @bazaarCities 1|10|100 1.0|10.0|100.0 @nothing")
+	fun onOrderCreate(sender: Player, itemString: String, city: TradeCityData, quantity: Int, pricePerItem: Double, @Optional priceConfirmation: Double?) = asyncCommand(sender) {
+		val territory: RegionTerritory = Regions[city.territoryId]
 		val realCost = quantity * pricePerItem
 
 		failIf(priceConfirmation != realCost) {
