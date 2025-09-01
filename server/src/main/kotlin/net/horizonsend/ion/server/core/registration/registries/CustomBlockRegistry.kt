@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.MultiblockWorkbench
 import net.horizonsend.ion.server.features.custom.blocks.misc.OrientableCustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.misc.WrenchRemovable
 import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeBlock
 import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeJunctionBlock
 import net.horizonsend.ion.server.features.custom.blocks.pipe.ReinforcedFluidPipeBlock
@@ -251,7 +252,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		register(CustomBlockKeys.ADVANCED_ITEM_EXTRACTOR, AdvancedItemExtractorBlock)
 		register(CustomBlockKeys.ITEM_FILTER, ItemFilterBlock)
 
-		register(CustomBlockKeys.FLUID_INPUT, CustomBlock(
+		register(CustomBlockKeys.FLUID_INPUT, object : CustomBlock(
 			key = CustomBlockKeys.FLUID_INPUT,
 			blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.DOWN, BlockFace.WEST, BlockFace.EAST)),
 			drops = BlockLoot(
@@ -259,12 +260,14 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 				drops = customItemDrop(CustomItemKeys.FLUID_INPUT)
 			),
 			CustomItemKeys.FLUID_INPUT
-		))
+		), WrenchRemovable {
+			override fun decorateItem(itemStack: ItemStack, block: Block) {}
+		})
 
 		register(CustomBlockKeys.FLUID_PIPE, FluidPipeBlock)
 		register(CustomBlockKeys.FLUID_PIPE_JUNCTION, FluidPipeJunctionBlock)
 
-		register(CustomBlockKeys.FLUID_VALVE, CustomBlock(
+		register(CustomBlockKeys.FLUID_VALVE, object : CustomBlock(
 			key = CustomBlockKeys.FLUID_VALVE,
 			blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.DOWN, BlockFace.WEST, BlockFace.EAST)),
 			drops = BlockLoot(
@@ -272,7 +275,9 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 				drops = customItemDrop(CustomItemKeys.FLUID_VALVE)
 			),
 			CustomItemKeys.FLUID_VALVE
-		))
+		), WrenchRemovable {
+			override fun decorateItem(itemStack: ItemStack, block: Block) {}
+		})
 
 		register(CustomBlockKeys.REINFORCED_FLUID_PIPE, ReinforcedFluidPipeBlock)
 		register(CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION, ReinforcedFluidPipeJunctionBlock)

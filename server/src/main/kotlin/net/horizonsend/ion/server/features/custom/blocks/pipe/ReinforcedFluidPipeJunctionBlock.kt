@@ -6,7 +6,10 @@ import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegist
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customItemDrop
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.misc.WrenchRemovable
+import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import org.bukkit.inventory.ItemStack
 
 object ReinforcedFluidPipeJunctionBlock : CustomBlock(
 	key = CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION,
@@ -16,4 +19,7 @@ object ReinforcedFluidPipeJunctionBlock : CustomBlock(
 		drops = customItemDrop(CustomItemKeys.REINFORCED_FLUID_PIPE_JUNCTION)
 	),
 	customBlockItem = CustomItemKeys.REINFORCED_FLUID_PIPE_JUNCTION
-)
+), WrenchRemovable {
+	override fun decorateItem(itemStack: ItemStack, block: Block) {}
+}
+
