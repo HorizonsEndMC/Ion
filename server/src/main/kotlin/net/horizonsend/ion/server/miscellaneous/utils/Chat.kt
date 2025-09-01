@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 import net.md_5.bungee.api.ChatColor
 import net.md_5.bungee.api.chat.TextComponent
 import org.bukkit.Bukkit
@@ -76,24 +78,24 @@ fun yellow(s: String) = s.style(SLTextStyle.YELLOW)
 
 @Suppress("Unused")
 @Deprecated("Use Ion MiniMessage Extension Functions")
-enum class SLTextStyle(val wrappedColor: ChatColor) {
-	BLACK(ChatColor.BLACK),
-	DARK_GREEN(ChatColor.DARK_GREEN),
-	DARK_AQUA(ChatColor.DARK_AQUA),
-	DARK_RED(ChatColor.DARK_RED),
-	DARK_PURPLE(ChatColor.DARK_PURPLE),
-	GOLD(ChatColor.GOLD),
-	GRAY(ChatColor.GRAY),
-	DARK_GRAY(ChatColor.DARK_GRAY),
-	BLUE(ChatColor.BLUE),
-	GREEN(ChatColor.GREEN),
-	AQUA(ChatColor.AQUA),
-	RED(ChatColor.RED),
-	LIGHT_PURPLE(ChatColor.LIGHT_PURPLE),
-	YELLOW(ChatColor.YELLOW),
-	WHITE(ChatColor.WHITE),
-	OBFUSCATED(ChatColor.MAGIC),
-	RESET(ChatColor.RESET);
+enum class SLTextStyle(val wrappedColor: ChatColor, val textColor: TextColor?) {
+	BLACK(ChatColor.BLACK, NamedTextColor.BLACK),
+	DARK_GREEN(ChatColor.DARK_GREEN, NamedTextColor.DARK_GREEN),
+	DARK_AQUA(ChatColor.DARK_AQUA, NamedTextColor.DARK_AQUA),
+	DARK_RED(ChatColor.DARK_RED, NamedTextColor.DARK_RED),
+	DARK_PURPLE(ChatColor.DARK_PURPLE, NamedTextColor.DARK_PURPLE),
+	GOLD(ChatColor.GOLD, NamedTextColor.GOLD),
+	GRAY(ChatColor.GRAY, NamedTextColor.GRAY),
+	DARK_GRAY(ChatColor.DARK_GRAY, NamedTextColor.DARK_GRAY),
+	BLUE(ChatColor.BLUE, NamedTextColor.BLUE),
+	GREEN(ChatColor.GREEN, NamedTextColor.GREEN),
+	AQUA(ChatColor.AQUA, NamedTextColor.AQUA),
+	RED(ChatColor.RED, NamedTextColor.RED),
+	LIGHT_PURPLE(ChatColor.LIGHT_PURPLE, NamedTextColor.LIGHT_PURPLE),
+	YELLOW(ChatColor.YELLOW, NamedTextColor.YELLOW),
+	WHITE(ChatColor.WHITE, NamedTextColor.WHITE),
+	OBFUSCATED(ChatColor.MAGIC, null),
+	RESET(ChatColor.RESET, null);
 
 	override fun toString() = wrappedColor.toString()
 }
