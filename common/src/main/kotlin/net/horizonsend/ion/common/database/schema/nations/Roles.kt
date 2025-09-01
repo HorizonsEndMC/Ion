@@ -45,8 +45,6 @@ sealed class Role<Parent : DbObject, Permission : Enum<Permission>> :
 	abstract var weight: Int
 	abstract val permissions: MutableSet<Permission>
 	abstract val members: MutableSet<SLPlayerId>
-
-	val coloredName get() = "$color$name"
 }
 
 abstract class RoleCompanion<Parent: DbObject, Permission : Enum<Permission>, T : Role<Parent, Permission>>(

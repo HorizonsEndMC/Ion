@@ -15,6 +15,6 @@ open class CustomBlock(
 ) : Keyed<CustomBlock> {
 	val customItem get() = customBlockItem.getValue()
 
-	open fun placeCallback(placedItem: ItemStack, block: Block) {}
+	open fun placeCallback(placedItem: ItemStack?, block: Block) {}
 	open fun removeCallback(block: Block) {}
 }

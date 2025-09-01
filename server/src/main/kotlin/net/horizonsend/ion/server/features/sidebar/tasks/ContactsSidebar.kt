@@ -410,7 +410,7 @@ object ContactsSidebar {
 
             val fleet = Fleets.findByMember(player)
             val otherPlayer = if (otherController is ActivePlayerController) otherController.player else null
-            val inFleet = otherPlayer?.let { fleet?.get(it) } ?: false
+            val inFleet = otherPlayer?.let { fleet?.contains(it) } ?: false
 
             contactsList.add(
                 ContactsData(
