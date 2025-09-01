@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFac
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.audience.Audience
@@ -190,7 +191,10 @@ object ClientDisplayEntities : IonServerComponent() {
     fun Audience.highlightBlock(pos: Vec3i, duration: Long) {
 		@Suppress("OverrideOnly")
 		when (this) {
-			is Player -> sendEntityPacket(this, highlightBlock(this.world.minecraft, pos), duration)
+			is Player -> {
+				if (distanceSquared(Vec3i(this.location), pos) >= 240 * 240) return
+				sendEntityPacket(this, highlightBlock(this.world.minecraft, pos), duration)
+			}
 			is ForwardingAudience -> for (player in audiences().filterIsInstance<Player>()) {
 				sendEntityPacket(player, highlightBlock(player.world.minecraft, pos), duration)
 			}
