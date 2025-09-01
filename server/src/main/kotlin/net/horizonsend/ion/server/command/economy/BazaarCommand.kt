@@ -239,9 +239,16 @@ object BazaarCommand : SLCommand() {
 	}
 
 	@Suppress("Unused")
-	@Subcommand("list menu|list gui")
+	@Subcommand("list menu")
 	@Description("List the items you're selling at this city")
 	fun onListMenu(sender: Player) = asyncCommand(sender) {
+		ListListingManagementMenu(sender).openGui()
+	}
+
+	@Suppress("Unused")
+	@Subcommand("list gui")
+	@Description("List the items you're selling at this city")
+	fun onListGui(sender: Player) = asyncCommand(sender) {
 		ListListingManagementMenu(sender).openGui()
 	}
 
