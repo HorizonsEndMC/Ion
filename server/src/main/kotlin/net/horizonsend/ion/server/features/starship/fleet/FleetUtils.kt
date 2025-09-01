@@ -11,7 +11,7 @@ abstract class FleetLogic(val fleet: Fleet) {
 }
 
 sealed class FleetMember {
-	data class PlayerMember(val uuid: UUID) : FleetMember() {
+	data class PlayerMember(val uuid: UUID, val name: String) : FleetMember() {
 		override fun equals(other: Any?): Boolean {
 			if (this === other) return true
 			if (javaClass != other?.javaClass) return false
@@ -42,6 +42,6 @@ sealed class FleetMember {
 	}
 }
 
-fun Player.toFleetMember() = FleetMember.PlayerMember(uniqueId)
+fun Player.toFleetMember() = FleetMember.PlayerMember(uniqueId, name)
 
 fun Starship.toFleetMember() = FleetMember.AIShipMember(WeakReference(this))

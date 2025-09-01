@@ -26,7 +26,6 @@ import net.kyori.adventure.title.Title
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.Player
-import java.util.UUID
 
 class Fleet(var leader: FleetMember?, var initalized : Boolean = true) : ForwardingAudience {
 	val createdAt = System.currentTimeMillis()
@@ -52,9 +51,7 @@ class Fleet(var leader: FleetMember?, var initalized : Boolean = true) : Forward
 		}
 	}
 
-    private fun get(playerId: UUID) = members.contains(FleetMember.PlayerMember(playerId))
-
-    fun get(player: Player) = get(player.uniqueId)
+    fun contains(player: Player) = members.any { member -> member is FleetMember.PlayerMember && member.uuid == player.uniqueId }
 
 	fun invite(member: FleetMember) = invited.add(member)
 
@@ -170,7 +167,7 @@ class Fleet(var leader: FleetMember?, var initalized : Boolean = true) : Forward
 							player.location.world.name
 						)
 					} else {
-						text("Offline player (${member.uuid})", HE_MEDIUM_GRAY)
+						text("Offline Player (${member.name})", HE_MEDIUM_GRAY)
 					}
 				}
 

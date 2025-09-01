@@ -22,7 +22,7 @@ object Fleets : IonServerComponent() {
 
     private val fleetList = mutableListOf<Fleet>()
 
-    fun findByMember(player: Player) = fleetList.find { it.get(player) }
+    fun findByMember(player: Player) = fleetList.find { it.contains(player) }
 
     fun findInvitesByMember(player: Player) = fleetList.filter { it.isInvited(player.toFleetMember()) }
 
