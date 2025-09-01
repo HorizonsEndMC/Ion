@@ -36,6 +36,7 @@ import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
+import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
@@ -260,6 +261,11 @@ object CombatTimer : IonServerComponent() {
 			refreshPvpTimer(attacker, reason)
 			return
 		}
+
+		val attackerFleet = Fleets.findByMember(attacker)
+		val defenderFleet = Fleets.findByMember(defender)
+
+		if (attackerFleet != null && attackerFleet == defenderFleet ) return
 
 		val attackerData = PlayerCache[attacker]
 		val attackerNation = attackerData.nationOid
