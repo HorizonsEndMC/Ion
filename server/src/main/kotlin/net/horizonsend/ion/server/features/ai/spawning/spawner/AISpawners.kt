@@ -1320,7 +1320,7 @@ object AISpawners : IonServerComponent(true) {
 		val deepSpaceConvoyScheduler = ConvoyScheduler(
 			storageKey = "DEEP_SPACE_CONVOY",
 			displayName = "$miningGuildMini<GOLD><bold> Deep Space Mining Convoy</bold>".miniMessage(),
-			separation = { getRandomDuration(Duration.ofHours(12), Duration.ofHours(60)) }
+			separation = { getRandomDuration(Duration.ofHours(24), Duration.ofHours(72)) }
 		)
 
 		/* GLOBAL (any world) ------------------------------------------------- */
