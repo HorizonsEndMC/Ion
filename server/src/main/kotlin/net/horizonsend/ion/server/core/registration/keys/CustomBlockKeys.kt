@@ -44,4 +44,6 @@ object CustomBlockKeys : KeyRegistry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS, Cu
 	val FLUID_PIPE_JUNCTION = registerTypedKey<FluidPipeJunctionBlock>("FLUID_PIPE_JUNCTION")
 	val REINFORCED_FLUID_PIPE = registerTypedKey<ReinforcedFluidPipeBlock>("REINFORCED_FLUID_PIPE")
 	val REINFORCED_FLUID_PIPE_JUNCTION = registerTypedKey<ReinforcedFluidPipeJunctionBlock>("REINFORCED_FLUID_PIPE_JUNCTION")
+
+	val E2_PORT = registerKey("E2_PORT")
 }

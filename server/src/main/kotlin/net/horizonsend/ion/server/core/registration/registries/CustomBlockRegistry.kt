@@ -281,6 +281,18 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 
 		register(CustomBlockKeys.REINFORCED_FLUID_PIPE, ReinforcedFluidPipeBlock)
 		register(CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION, ReinforcedFluidPipeJunctionBlock)
+
+		register(CustomBlockKeys.E2_PORT, object : CustomBlock(
+			key = CustomBlockKeys.E2_PORT,
+			blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.DOWN, BlockFace.WEST, BlockFace.NORTH)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.E2_PORT)
+			),
+			CustomItemKeys.E2_PORT
+		), WrenchRemovable {
+			override fun decorateItem(itemStack: ItemStack, block: Block) {}
+		})
 	}
 
 	override fun registerAdditional(key: IonRegistryKey<CustomBlock, *>, value: CustomBlock) {

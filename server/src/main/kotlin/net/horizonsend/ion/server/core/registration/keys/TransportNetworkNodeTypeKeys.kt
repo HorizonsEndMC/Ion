@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.core.registration.keys
 
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys.TRANSPORT_NETWORK_NODE_TYPE
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
+import net.horizonsend.ion.server.features.transport.manager.graph.e2.E2Node.E2Port
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidPort
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidValve
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.RegularJunctionPipe
@@ -16,4 +17,6 @@ object TransportNetworkNodeTypeKeys : KeyRegistry<TransportNodeType<*>>(TRANSPOR
 	val FLUID_LINEAR_REINFORCED = registerTypedKey<TransportNodeType<ReinforcedLinearPipe>>("FLUID_LINEAR_REINFORCED")
 	val FLUID_PORT = registerTypedKey<TransportNodeType<FluidPort>>("FLUID_PORT")
 	val FLUID_VALVE = registerTypedKey<TransportNodeType<FluidValve>>("FLUID_VALVE")
+
+	val E2_PORT = registerTypedKey<TransportNodeType<E2Port>>("E2_PORT")
 }

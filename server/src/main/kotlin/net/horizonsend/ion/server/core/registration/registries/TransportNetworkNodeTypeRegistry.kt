@@ -4,6 +4,7 @@ import com.manya.pdc.base.EnumDataType
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys
+import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.E2_PORT
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_JUNCTION_REGULAR
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_JUNCTION_REINFORCED
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_LINEAR_REGULAR
@@ -12,6 +13,7 @@ import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTyp
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_VALVE
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
+import net.horizonsend.ion.server.features.transport.manager.graph.e2.E2Node.E2Port
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidPort
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidValve
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.RegularJunctionPipe
@@ -109,6 +111,18 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
 				pdc.set(CONTENTS, FluidStack, complex.contents)
 				pdc.set(NamespacedKeys.AXIS, axisType, complex.axis)
+				return pdc
+			}
+		})
+		register(E2_PORT, object : TransportNodeType<E2Port>(E2_PORT) {
+			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): E2Port {
+				val node = E2Port(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
+				return node
+			}
+
+			override fun serializeData(complex: E2Port, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+				val pdc = adapterContext.newPersistentDataContainer()
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
 				return pdc
 			}
 		})

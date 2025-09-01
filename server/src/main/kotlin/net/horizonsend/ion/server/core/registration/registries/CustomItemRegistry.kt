@@ -66,6 +66,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerIndustry()
 		registerShipCores()
 		registerPipes()
+		registerE2Wires()
 		registerGasCanisters()
 		registerTools()
 		registerModificationItems()
@@ -343,6 +344,10 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		customBlockItem(CustomItemKeys.FLUID_PIPE_JUNCTION, "pipe/fluid_pipe_junction", Component.text("Fluid Pipe Junction").itemName, CustomBlockKeys.FLUID_PIPE_JUNCTION)
 		customBlockItem(CustomItemKeys.REINFORCED_FLUID_PIPE, "pipe/reinforced_fluid_pipe", Component.text("Reinforced Fluid Pipe").itemName, CustomBlockKeys.REINFORCED_FLUID_PIPE)
 		customBlockItem(CustomItemKeys.REINFORCED_FLUID_PIPE_JUNCTION, "pipe/reinforced_fluid_pipe_junction", Component.text("Reinforced Fluid Pipe Junction").itemName, CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION)
+	}
+
+	fun registerE2Wires() {
+		customBlockItem(CustomItemKeys.E2_PORT, "pipe/e2_port", Component.text("E2 Port").itemName, CustomBlockKeys.E2_PORT)
 	}
 
 	private fun registerGasCanisters() {
