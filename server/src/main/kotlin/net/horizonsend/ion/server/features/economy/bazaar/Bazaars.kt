@@ -642,7 +642,7 @@ object Bazaars : IonServerComponent() {
 		val result = FutureInputResult()
 
 		Tasks.sync {
-			val count = takePlayerItemsOfType(inventory, itemReference, limit)
+			val count = takePlayerItemsOfType(inventory, itemReference, minOf(orderDocument.stock, limit))
 
 			if (count == 0) {
 				result.complete(
