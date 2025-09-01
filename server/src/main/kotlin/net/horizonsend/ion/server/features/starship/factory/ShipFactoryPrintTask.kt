@@ -17,6 +17,7 @@ import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
@@ -35,6 +36,9 @@ import net.horizonsend.ion.server.features.transport.manager.extractors.Extracto
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
 import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
@@ -53,6 +57,8 @@ import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Waterlogged
 import org.bukkit.entity.Player
+import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -296,6 +302,22 @@ class ShipFactoryPrintTask(
 			val blockData = blockMap.remove(entry) ?: continue
 			val signData = signMap.remove(entry)
 
+			val block = entity.world.getBlockAt(getX(entry), getY(entry), getZ(entry))
+
+			val event = BlockPlaceEvent(
+				block,
+				block.getState(false),
+				block,
+				player.activeItem,
+				player,
+				true,
+				EquipmentSlot.HAND
+			)
+
+			if (!event.callEvent()) {
+				continue
+			}
+
 			val price = ShipFactoryMaterialCosts.getPrice(blockData)
 			if (!player.hasEnoughMoney(consumedMoney + price) && ConfigurationFiles.featureFlags().economy) continue
 			consumedMoney += price
@@ -329,6 +351,8 @@ class ShipFactoryPrintTask(
 		if (ExtractorManager.isExtractorData(data)) {
 			NewTransport.addExtractor(world, x, y, z)
 		}
+
+		CustomBlocks.getByBlockData(data)?.placeCallback(null, block)
 
 		val state = block.state as? Sign
 		if (state != null) {

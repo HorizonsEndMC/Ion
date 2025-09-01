@@ -292,7 +292,7 @@ open class CustomBlock(
 ) {
 	val customItem get() = customBlockItem.get()
 
-	open fun placeCallback(placedItem: ItemStack, block: Block) {}
+	open fun placeCallback(placedItem: ItemStack?, block: Block) {}
 	open fun removeCallback(block: Block) {}
 }
 

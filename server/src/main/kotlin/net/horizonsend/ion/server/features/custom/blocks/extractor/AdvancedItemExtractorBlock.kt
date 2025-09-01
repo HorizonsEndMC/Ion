@@ -53,8 +53,8 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 		AdvancedItemExtractorGUI(player, block, extractorData).openGui()
 	}
 
-	override fun placeCallback(placedItem: ItemStack, block: Block) {
-		val extractorData = placedItem.persistentDataContainer.get(NamespacedKeys.COMPLEX_EXTRACTORS, MetaDataContainer) ?: return
+	override fun placeCallback(placedItem: ItemStack?, block: Block) {
+		val extractorData = placedItem?.persistentDataContainer?.get(NamespacedKeys.COMPLEX_EXTRACTORS, MetaDataContainer) ?: return
 
 		val state = block.state
 		if (state !is TileState) return

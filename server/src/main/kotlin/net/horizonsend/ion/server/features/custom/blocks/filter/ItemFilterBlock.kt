@@ -88,15 +88,15 @@ object ItemFilterBlock : DirectionalCustomBlock(
 		return ItemFilterGui(player, filterData, tileState)
 	}
 
-	override fun placeCallback(placedItem: ItemStack, block: Block) {
-		val storedFilterData = placedItem.persistentDataContainer.get(NamespacedKeys.FILTER_DATA, FilterData) ?: return
-
+	override fun placeCallback(placedItem: ItemStack?, block: Block) {
 		val state = block.state
 		if (state !is VaultState) return
 		state as CraftVault
 
-		state.persistentDataContainer.set(NamespacedKeys.FILTER_DATA, FilterData, storedFilterData)
 		state.nextStateUpdateTime = Long.MAX_VALUE
+
+		val storedFilterData = placedItem?.persistentDataContainer?.get(NamespacedKeys.FILTER_DATA, FilterData)
+		if (storedFilterData != null) state.persistentDataContainer.set(NamespacedKeys.FILTER_DATA, FilterData, storedFilterData)
 
 		state.update()
 	}
