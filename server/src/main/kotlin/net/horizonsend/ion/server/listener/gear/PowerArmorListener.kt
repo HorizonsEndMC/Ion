@@ -78,7 +78,7 @@ object PowerArmorListener : SLEventListener() {
 		for (item in player.inventory.armorContents) {
 			val customItem = item?.customItem ?: continue
 			if (customItem !is PowerArmorItem) continue
-			if (customItem.hasComponent(POWER_STORAGE)) return continue
+			if (!customItem.hasComponent(POWER_STORAGE)) return continue
 			val powerStorage = customItem.getComponent(POWER_STORAGE)
 			val power = powerStorage.getPower(item)
 
