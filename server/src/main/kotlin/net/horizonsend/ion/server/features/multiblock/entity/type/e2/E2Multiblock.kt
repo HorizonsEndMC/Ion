@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.transport.inputs.IOData.BuiltInputDat
 import net.horizonsend.ion.server.features.transport.inputs.IOPort.RegisteredMetaDataInput
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.graph.e2.E2Network
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import java.time.Duration
@@ -19,6 +20,22 @@ interface E2Multiblock : AsyncTickingMultiblockEntity {
 		var lastPowerAvailability: Double = 0.0
 		var activeConsumption = 0.0
 		var activeDurationEnd: Long = 0L
+
+		private val updateListeners: MutableList<(E2Multiblock) -> Unit> = mutableListOf()
+
+		fun registerUpdateListener(listener: (E2Multiblock) -> Unit) {
+			updateListeners.add(listener)
+		}
+
+		fun deregisterUpdateListener(listener: (E2Multiblock) -> Unit) {
+			updateListeners.remove(listener)
+		}
+
+		fun runUpdates() {
+			Tasks.async {
+				updateListeners.forEach { t -> t.invoke(multiblock) }
+			}
+		}
 	}
 
 	/** Returns the amount of power provided to the e2 network */
@@ -33,6 +50,7 @@ interface E2Multiblock : AsyncTickingMultiblockEntity {
 
 	fun setActiveE2Consumption(consumption: Double) {
 		e2Manager.activeConsumption = consumption
+		e2Manager.runUpdates()
 	}
 
 	fun getPassiveE2Consumption() = 0.0

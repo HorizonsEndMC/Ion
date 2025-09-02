@@ -151,7 +151,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 			{ SplitFluidDisplayModule(handler = it, storage = mainStorage, offsetLeft = 0.0, offsetUp = getLinePos(4), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
 		)
 
-		override fun getE2Output(): Double = 50.0
+		override fun getE2Output(): Double = 150.0
 
 		override fun getStores(): List<FluidStorageContainer> {
 			return listOf(mainStorage)

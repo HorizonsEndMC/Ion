@@ -4,6 +4,9 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
+import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
+import net.horizonsend.ion.server.features.client.display.modular.display.POWER_TEXT_LINE
+import net.horizonsend.ion.server.features.client.display.modular.display.e2.E2ConsumptionDisplay
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.crafting.input.ChemicalProcessorEnviornment
@@ -596,6 +599,17 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
                     scale = 0.7f,
                     relativeFace = RelativeFace.LEFT
                 )
+            },
+			{
+                E2ConsumptionDisplay(
+                    handler = it,
+					multiblock = this,
+                    offsetLeft = 0.0,
+                    offsetUp = POWER_TEXT_LINE,
+                    offsetBack = 0.0,
+                    scale = MATCH_SIGN_FONT_SIZE,
+                    relativeFace = RelativeFace.FORWARD
+                )
             }
 		)
 
@@ -624,7 +638,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		}
 
 		override fun getPassiveE2Consumption(): Double {
-			return 5.0
+			return 10.0
 		}
 
 		override fun tickAsync() {

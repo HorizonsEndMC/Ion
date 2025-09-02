@@ -116,6 +116,10 @@ class FluidStorageContainer private constructor(
 		updateListeners.add(listener)
 	}
 
+	fun deregisterUpdateListener(listener: (FluidStorageContainer) -> Unit) {
+		updateListeners.remove(listener)
+	}
+
 	fun runUpdates() {
 		Tasks.async {
 			updateListeners.forEach { t -> t.invoke(this) }
