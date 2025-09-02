@@ -7,13 +7,13 @@ import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedBooleanToggle
 import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedEnumCycle
-import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedIntCycle
 import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedIntegerInput
 import net.horizonsend.ion.server.features.gui.custom.settings.button.permission.PermissionBooleanToggle
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSettingsCommand.CruiseIndicatorSounds
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.ContactsColoring
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.ContactsSorting
+import net.horizonsend.ion.server.miscellaneous.AudioRange
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
@@ -96,7 +96,10 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 		createSettingsPage(player, "Sound Settings",
 			DBCachedBooleanToggle(text("Enable Additional Sounds"), "", GuiItem.SOUND, true, PlayerSettings::enableAdditionalSounds),
 			DBCachedEnumCycle(CruiseIndicatorSounds::class.java, text("Cruise Indicator Sound"), "Click to Cycle", GuiItem.SOUND, 0, PlayerSettings::soundCruiseIndicator),
-			DBCachedBooleanToggle(text("Hitmarker On Hull"), "", GuiItem.SOUND, true, PlayerSettings::hitmarkerOnHull)
+			DBCachedBooleanToggle(text("Hitmarker On Hull"), "An indicator plays if you damage a starship's hull", GuiItem.SOUND, true, PlayerSettings::hitmarkerOnHull),
+			DBCachedBooleanToggle(text("Hitmarker On Shield"), "An indicator plays if you damage a starship's shields", GuiItem.SOUND, true, PlayerSettings::hitmarkerOnHull),
+			DBCachedEnumCycle(AudioRange::class.java, text("Nearby Weapon Sounds"), "Enables nearby weapon sounds", GuiItem.SOUND, 0, PlayerSettings::nearbyWeaponSounds),
+			DBCachedEnumCycle(AudioRange::class.java, text("Far Weapon Sounds"), "Enables far weapon sounds", GuiItem.SOUND, 0, PlayerSettings::farWeaponSounds),
 		),
 		createSettingsPage(player, "Other Settings",
 			DBCachedBooleanToggle(text("Enable Combat Timer Alerts"), "", GuiItem.LIST, true, PlayerSettings::enableCombatTimerAlerts),

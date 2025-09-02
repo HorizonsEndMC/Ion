@@ -61,6 +61,7 @@ data class PlayerSettings(
 	var soundCruiseIndicator: Int = 0,
 	var enableCombatTimerAlerts: Boolean = true,
 	var hitmarkerOnHull: Boolean = true,
+	var hitmarkerOnShield: Boolean = true,
 	var flareTime: Int = 5,
 	var useAlternateShieldHitParticle : Boolean = false,
 
@@ -84,6 +85,8 @@ data class PlayerSettings(
 	var bazaarOrderManageFilters: String = "{}",
 
 	var displayEntityVisibility: Int = 0,
+	var nearbyWeaponSounds: Int = 0,
+	var farWeaponSounds: Int = 0,
 ) : DbObject {
 	companion object : DbObjectCompanion<PlayerSettings, StringId<PlayerSettings>>(PlayerSettings::class, setup = {}) {
 		fun create(id: StringId<PlayerSettings>): InsertOneResult = trx { session ->
