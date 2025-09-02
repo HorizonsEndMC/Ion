@@ -34,7 +34,7 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 	/**
 	 * Readwritelock for reading / modifying node configuration
 	 **/
-	private val localLock = ReentrantReadWriteLock()
+	protected val localLock = ReentrantReadWriteLock()
 
 	/**
 	 * Keep track of nodes and their positions
@@ -232,11 +232,13 @@ abstract class TransportNetwork<N: TransportNode>(val uuid: UUID, open val manag
 	fun ensureNodeIntegrity() {
 		val missing = mutableSetOf<N>()
 
-		for (node in getGraphNodes()) {
-			val intact = node.isIntact() ?: continue
-			if (intact) continue
+		localLock.readLock().withLock {
+			for (node in getGraphNodes()) {
+				val intact = node.isIntact() ?: continue
+				if (intact) continue
 
-			missing.add(node)
+				missing.add(node)
+			}
 		}
 
 		for (node in missing) {

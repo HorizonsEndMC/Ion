@@ -35,6 +35,7 @@ import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.util.Vector
 import java.util.UUID
+import kotlin.concurrent.withLock
 import kotlin.jvm.optionals.getOrDefault
 import kotlin.jvm.optionals.getOrNull
 import kotlin.random.Random
@@ -135,29 +136,31 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		val leakingLocations = LongOpenHashSet()
 
-		for (node in getGraphNodes()) {
-			if (node !is FluidNode.LeakablePipe) continue
+		localLock.readLock().withLock {
+			for (node in getGraphNodes()) {
+				if (node !is FluidNode.LeakablePipe) continue
 
-			val edges = getGraph().outEdges(node)
+				val edges = getGraph().outEdges(node)
 
-			if (edges.isEmpty()) continue
+				if (edges.isEmpty()) continue
 
-			if (edges.size >= 2) continue
+				if (edges.size >= 2) continue
 
-			leakingLocations.add(node.location)
+				leakingLocations.add(node.location)
 
-			val connectedEdge = edges.first()
-			val direction = (connectedEdge as FluidGraphEdge).direction.oppositeFace
+				val connectedEdge = edges.first()
+				val direction = (connectedEdge as FluidGraphEdge).direction.oppositeFace
 
-			val removeAmount = (minOf(flowMap.getOrDefault(node.location, 0.0), node.leakRate, networkContents.amount) * delta)
-			if (removeAmount <= 0) continue
+				val removeAmount = (minOf(flowMap.getOrDefault(node.location, 0.0), node.leakRate, networkContents.amount) * delta)
+				if (removeAmount <= 0) continue
 
-			runCatching { type.getValue().playLeakEffects(manager.transportManager.getWorld(), node, direction) }.onFailure { exception -> exception.printStackTrace() }
+				runCatching { type.getValue().playLeakEffects(manager.transportManager.getWorld(), node, direction) }.onFailure { exception -> exception.printStackTrace() }
 
-			networkContents.amount -= removeAmount
+				networkContents.amount -= removeAmount
 
-			// Handle pollution
-			type.getValue().onLeak(manager.transportManager.getWorld(), toVec3i(node.location).getRelative(direction), removeAmount)
+				// Handle pollution
+				type.getValue().onLeak(manager.transportManager.getWorld(), toVec3i(node.location).getRelative(direction), removeAmount)
+			}
 		}
 
 		leakingPipes = leakingLocations
