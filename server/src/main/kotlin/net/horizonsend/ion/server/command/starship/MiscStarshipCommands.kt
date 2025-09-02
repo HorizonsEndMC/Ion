@@ -113,10 +113,10 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			val starship = ActiveStarships.getByIdentifier(target)
 			if (starship != null) return@registerContext AutoTurretTargeting.target(starship)
 
-			val entityType = EntityType.entries.firstOrNull { type -> type.name == target } ?: return@registerContext null
-			if (!Enemy::class.java.isAssignableFrom(entityType::class.java)) return@registerContext null
-
-			AutoTurretTargeting.target(entityType)
+			val entityType = EntityType.entries.firstOrNull { type -> type.name.lowercase() == target.lowercase() } ?: return@registerContext null
+			val entityClass = entityType.entityClass ?: return@registerContext null
+			if (!Enemy::class.java.isAssignableFrom(entityClass)) return@registerContext null
+			else return@registerContext AutoTurretTargeting.target(entityType)
 		}
 
 		manager.commandCompletions.registerAsyncCompletion("autoTurretTargets") { context ->
