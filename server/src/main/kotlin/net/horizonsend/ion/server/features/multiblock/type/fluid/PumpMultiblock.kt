@@ -85,11 +85,11 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 		}
 		z(1) {
 			y(-1) {
-				x(2).fluidInput()
+				x(2).fluidPort()
 				x(1).redstoneBlock()
 				x(0).anyCopperGrate()
 				x(-1).redstoneBlock()
-				x(-2).fluidInput()
+				x(-2).fluidPort()
 			}
 			y(0) {
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))

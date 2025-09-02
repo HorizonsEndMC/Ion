@@ -191,8 +191,8 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
-				x(-4).fluidInput()
-				x(4).fluidInput()
+				x(-4).fluidPort()
+				x(4).fluidPort()
 			}
 			y(1) {
 				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
@@ -310,8 +310,8 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
-				x(-4).fluidInput()
-				x(4).fluidInput()
+				x(-4).fluidPort()
+				x(4).fluidPort()
 			}
 			y(1) {
 				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
@@ -417,7 +417,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 			}
 			y(9) {
 				x(-1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-				x(0).fluidInput()
+				x(0).fluidPort()
 				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 			}
 			y(10) {

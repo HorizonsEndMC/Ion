@@ -41,7 +41,7 @@ class FluidNetworkManager(manager: TransportHolder) : NetworkManager<FluidNode, 
 				val axis = (data.customBlock as ReinforcedFluidPipeBlock).getFace(data)
 				FluidNode.ReinforcedLinearPipe(pos, axis)
 			}
-			.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_INPUT, Material.BROWN_MUSHROOM_BLOCK) { _, pos, holder -> FluidPort(pos) }
+			.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_PORT, Material.BROWN_MUSHROOM_BLOCK) { _, pos, holder -> FluidPort(pos) }
 			.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_VALVE, Material.BROWN_MUSHROOM_BLOCK) { _, pos, holder -> FluidValve(pos) }
 			.build()
 	}

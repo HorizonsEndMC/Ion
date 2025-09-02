@@ -226,7 +226,7 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val DEBUG_LINE_BLUE = registerKey("DEBUG_LINE_BLUE")
 	val DEBUG_LINE = registerKey("DEBUG_LINE")
 
-	val FLUID_INPUT = registerTypedKey<CustomBlockItem>("FLUID_INPUT")
+	val FLUID_PORT = registerTypedKey<CustomBlockItem>("FLUID_INPUT")
 	val FLUID_VALVE = registerTypedKey<CustomBlockItem>("FLUID_VALVE")
 	val FLUID_PIPE = registerTypedKey<CustomBlockItem>("FLUID_PIPE")
 	val FLUID_PIPE_JUNCTION = registerTypedKey<CustomBlockItem>("FLUID_PIPE_JUNCTION")

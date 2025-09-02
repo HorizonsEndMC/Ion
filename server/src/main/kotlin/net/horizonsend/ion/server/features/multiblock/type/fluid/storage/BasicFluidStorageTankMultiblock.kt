@@ -102,9 +102,9 @@ object BasicFluidStorageTankMultiblock : Multiblock(), EntityMultiblock<FluidTan
 		z(0) {
 			y(-1) {
 				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-				x(-1).fluidInput()
+				x(-1).fluidPort()
 				x(0).anyCopperGrate()
-				x(1).fluidInput()
+				x(1).fluidPort()
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {

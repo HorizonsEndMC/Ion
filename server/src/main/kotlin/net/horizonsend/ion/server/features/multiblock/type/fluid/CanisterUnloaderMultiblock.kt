@@ -60,7 +60,7 @@ object CanisterUnloaderMultiblock : Multiblock(), EntityMultiblock<CanisterUnloa
 		z(2) {
 			y(-1) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-				x(0).fluidInput()
+				x(0).fluidPort()
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
