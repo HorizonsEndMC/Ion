@@ -11,5 +11,6 @@ class E2Requirement<T: E2Enviornment>(val amount: Double, val threshold: Double 
 
 	override fun consume(enviornment: T) {
 		(enviornment.multiblock as E2Multiblock).setActiveDuration(duration)
+		(enviornment.multiblock as E2Multiblock).setActiveE2Consumption(amount)
 	}
 }
