@@ -641,6 +641,8 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 					}
 
 					return
+				} else {
+					setStatus(Component.empty())
 				}
 			} catch (e: Throwable) {
 				tickActivePower()

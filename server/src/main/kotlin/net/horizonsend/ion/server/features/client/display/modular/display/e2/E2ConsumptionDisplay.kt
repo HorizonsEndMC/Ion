@@ -41,7 +41,7 @@ class E2ConsumptionDisplay(
 	companion object {
 		val format = DecimalFormat("##.##")
 		private const val BOLT_CHARACTER = '⚡'
-		private val BOLT_TEXT = text(BOLT_CHARACTER, NamedTextColor.GOLD)
+		private val BOLT_TEXT = text(BOLT_CHARACTER, NamedTextColor.YELLOW)
 	}
 
 	private fun formatPower(): Component {
