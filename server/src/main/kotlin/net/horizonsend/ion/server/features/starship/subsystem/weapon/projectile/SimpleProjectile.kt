@@ -242,12 +242,20 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 		for (otherStarship in ActiveStarships.getInWorld(world)) {
 			if (otherStarship == (source as? StarshipProjectileSource)?.starship || !otherStarship.contains(x, y, z)) continue
 
+			val player = shooter.starship?.playerPilot?.player
+
+			// plays hitmarker sound if the shot did shield damage (if player setting is enabled)
+			if (player != null && player.getSetting(PlayerSettings::hitmarkerOnShield)) {
+				player.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.PLAYER, 20f, 1.0f))
+			}
+
 			// plays hitmarker sound if the shot did hull damage (assumes the hit block was part of a starship)
 			if (explosionOccurred) {
-				val player = shooter.starship?.playerPilot?.player
-				if (player != null && player.getSetting(PlayerSettings::hitmarkerOnHull))
+				if (player != null && player.getSetting(PlayerSettings::hitmarkerOnHull)) {
 					player.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.PLAYER, 20f, 0.5f))
+				}
 			}
+
 			otherStarship.damagers.getOrPut(shooter) {
 				ShipKillXP.ShipDamageData()
 			}.incrementPoints(points)
