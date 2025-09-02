@@ -611,8 +611,6 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
             }
 		)
 
-		override fun getE2Consumption(): Double = 100.0
-
 		override fun getStores(): List<FluidStorageContainer> {
 			return listOf(primaryInput, secondaryInput, primaryOutput, secondaryOutput, pollutionOutput)
 		}
@@ -622,12 +620,26 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 			saveStorageData(store)
 		}
 
+		private var isActive: Boolean = false
 
 		override fun tick() {
-			if (!tryProcessRecipe()) {
-				progressManager.reset()
-				return
+			try {
+				if (!tryProcessRecipe()) {
+					progressManager.reset()
+					isActive = false
+					return
+				}
+
+				isActive = true
+			} catch (e: Throwable) {
+				isActive = false
+				throw e
 			}
+		}
+
+		override fun getE2Consumption(): Double {
+			if (isActive) return 100.0
+			return 0.0
 		}
 
 		override fun tickAsync() {
