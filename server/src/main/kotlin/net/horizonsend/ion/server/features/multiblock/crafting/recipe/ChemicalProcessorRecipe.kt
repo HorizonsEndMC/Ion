@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.crafting.recipe
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.multiblock.crafting.input.ChemicalProcessorEnviornment
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.E2Requirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.FluidRecipeRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.RequirementHolder
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.RequirementHolder.Companion.anySlot
@@ -20,13 +21,14 @@ class ChemicalProcessorRecipe(
 	itemRequirement: ItemRequirement?,
 	val fluidRequirementOne: FluidRecipeRequirement<ChemicalProcessorEnviornment>?,
 	val fluidRequirementTwo: FluidRecipeRequirement<ChemicalProcessorEnviornment>?,
+	val e2Requirement: E2Requirement<ChemicalProcessorEnviornment>?,
 
 	val fluidResultOne: FluidResult<ChemicalProcessorEnviornment>?,
 	val fluidResultTwo: FluidResult<ChemicalProcessorEnviornment>?,
 	val fluidResultPollutionResult: FluidResult<ChemicalProcessorEnviornment>?,
 	val itemResult: ResultHolder<ChemicalProcessorEnviornment, ItemResult<ChemicalProcessorEnviornment>>?,
-
-	) : MultiblockRecipe<ChemicalProcessorEnviornment>(key, ChemicalProcessorEntity::class) {
+	val resultSleepTicks: Int
+) : MultiblockRecipe<ChemicalProcessorEnviornment>(key, ChemicalProcessorEntity::class) {
 	override val requirements: Collection<RequirementHolder<ChemicalProcessorEnviornment, *, *>> = listOfNotNull(
 		// Input item requirement
 		itemRequirement?.let(::anySlot),
@@ -44,6 +46,14 @@ class ChemicalProcessorRecipe(
 			RequirementHolder.simpleConsumable(
 				{ it.fluidStore.getNamedStorage(fluidRequirementTwo.storeName)?.getContents() ?: FluidStack.empty() },
 				fluidRequirementTwo
+			)
+		},
+
+		// Fluid two
+		e2Requirement?.let {
+			RequirementHolder.simpleConsumable(
+				{ it.getAvailablePower(e2Requirement.amount) },
+				e2Requirement
 			)
 		}
 	)
@@ -74,5 +84,6 @@ class ChemicalProcessorRecipe(
 		// Once ingredients have been sucessfully consumed, execute the result
 		val executionResult = resultEnviornment.executeResult()
 		itemResult?.executeCallbacks(enviornment, executionResult)
+		enviornment.multiblock.tickingManager.sleepForTicks(resultSleepTicks)
 	}
 }

@@ -35,10 +35,14 @@ class E2Network(uuid: UUID, override val manager: NetworkManager<E2Node, Transpo
 			discoverNetwork()
 		}
 
+		reCalculatePower()
+	}
+
+	fun reCalculatePower(): Double {
 		val (inputs, outputs) = trackIO()
 
 		val availableInput = getNetworkInputPower(outputs)
-		checkPowerConsumption(inputs, availableInput)
+		return checkPowerConsumption(inputs, availableInput)
 	}
 
 	private fun getNetworkInputPower(multiblockOutputs: ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<E2PortMetaData>>): Double {
@@ -58,7 +62,7 @@ class E2Network(uuid: UUID, override val manager: NetworkManager<E2Node, Transpo
 		return provided
 	}
 
-	private fun checkPowerConsumption(multiblockInputs: ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<E2PortMetaData>>, availablePower: Double) {
+	private fun checkPowerConsumption(multiblockInputs: ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<E2PortMetaData>>, availablePower: Double): Double {
 		val checkedEntities = ObjectOpenHashSet<E2Multiblock>()
 
 		var consumed = 0.0
@@ -69,7 +73,7 @@ class E2Network(uuid: UUID, override val manager: NetworkManager<E2Node, Transpo
 			if (checkedEntities.contains(entity)) continue
 			checkedEntities.add(entity)
 
-			consumed += entity.getE2Consumption()
+			consumed += entity.getTotalE2Consumption()
 		}
 
 		val availablePercentage = availablePower / consumed
@@ -77,6 +81,8 @@ class E2Network(uuid: UUID, override val manager: NetworkManager<E2Node, Transpo
 		for (entity in checkedEntities) {
 			entity.markPowerShortage(availablePercentage)
 		}
+
+		return availablePercentage
 	}
 
 	override fun save(adapterContext: PersistentDataAdapterContext): PersistentDataContainer {

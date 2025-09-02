@@ -243,7 +243,11 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		if (!store.getContents().isEmpty() && store.getContents().type != networkContents.type) return
 
-		val toAdd = minOf((store.capacity - store.getContents().amount), networkContents.amount, flowMap.getOrDefault(location, 0.0) * delta, additionRate * delta)
+		val room = store.capacity - store.getContents().amount
+		val availableToMove = networkContents.amount
+		val flowLimit = flowMap.getOrDefault(location, 0.0) * delta
+		val additionLimit = additionRate * delta
+		val toAdd = minOf(room, availableToMove, flowLimit, additionLimit)
 
 		val toCombine = networkContents.asAmount(toAdd)
 		store.addFluid(toCombine, Location(manager.transportManager.getWorld(), getX(location).toDouble(), getY(location).toDouble(), getZ(location).toDouble()))

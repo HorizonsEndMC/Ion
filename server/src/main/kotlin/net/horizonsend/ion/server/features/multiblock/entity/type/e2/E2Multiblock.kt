@@ -6,8 +6,10 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTi
 import net.horizonsend.ion.server.features.transport.inputs.IOData.BuiltInputData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort.RegisteredMetaDataInput
 import net.horizonsend.ion.server.features.transport.inputs.IOType
+import net.horizonsend.ion.server.features.transport.manager.graph.e2.E2Network
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import java.time.Duration
 
 interface E2Multiblock : AsyncTickingMultiblockEntity {
 	val e2Manager: E2Manager
@@ -15,13 +17,25 @@ interface E2Multiblock : AsyncTickingMultiblockEntity {
 	/** Stores values for E2 ticking */
 	class E2Manager(private val multiblock: E2Multiblock) {
 		var lastPowerAvailability: Double = 0.0
+		var activeConsumption = 0.0
+		var activeDurationEnd: Long = 0L
 	}
 
 	/** Returns the amount of power provided to the e2 network */
 	fun getE2Output(): Double = 0.0
 
 	/** Returns the amount of power required from the e2 network */
-	fun getE2Consumption(): Double = 0.0
+	fun getTotalE2Consumption(): Double {
+		return getActiveE2Consumption() + getPassiveE2Consumption()
+	}
+
+	fun getActiveE2Consumption(): Double = e2Manager.activeConsumption
+
+	fun setActiveE2Consumption(consumption: Double) {
+		e2Manager.activeConsumption = consumption
+	}
+
+	fun getPassiveE2Consumption() = 0.0
 
 	/** For usage by e2 networks only. Marks a shortage during ticking of the network */
 	fun markPowerShortage(availabilityFactor: Double) {
@@ -59,7 +73,26 @@ interface E2Multiblock : AsyncTickingMultiblockEntity {
 		}
 	}
 
+	fun getConnectedNetworks(): Set<E2Network> {
+		return getE2Inputs().mapNotNullTo(ObjectOpenHashSet()) { data ->
+			val portLocation = data.getRealPos(this as MultiblockEntity)
+			val localPosition = toBlockKey((this as MultiblockEntity).manager.getTransportManager().getLocalCoordinate(toVec3i(portLocation)))
+
+			(this as MultiblockEntity).manager.getTransportManager().getE2GraphTransportManager().getByLocation(localPosition) as E2Network?
+		}
+	}
+
 	override fun tickAsync() {
 		bootstrapE2Network()
+	}
+
+	fun tickActivePower() {
+		if (System.currentTimeMillis() > e2Manager.activeDurationEnd) {
+			setActiveE2Consumption(0.0)
+		}
+	}
+
+	fun setActiveDuration(duration: Duration) {
+		e2Manager.activeDurationEnd = System.currentTimeMillis() + duration.toMillis()
 	}
 }

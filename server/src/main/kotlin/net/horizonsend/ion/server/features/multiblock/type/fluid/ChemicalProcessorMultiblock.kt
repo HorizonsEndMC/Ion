@@ -515,40 +515,28 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		override var hasTicked: Boolean = false
 
 		override val progressManager: ProgressMultiblock.ProgressManager = ProgressMultiblock.ProgressManager(data)
-		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
+		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(4)
 		override val e2Manager: E2Multiblock.E2Manager = E2Multiblock.E2Manager(this)
 
 		override val ioData: IOData = IOData.Companion.builder(this)
 			// Inputs
 			.addPort(IOType.FLUID, -4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = primaryInput, inputAllowed = true, outputAllowed = false)) }
 			.addPort(IOType.FLUID, -4, 0, 5) {
-                IOPort.RegisteredMetaDataInput<FluidInputMetadata>(
-                    this,
-                    FluidInputMetadata(connectedStore = secondaryInput, inputAllowed = true, outputAllowed = false)
-                )
+                IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = secondaryInput, inputAllowed = true, outputAllowed = false))
             }
 
 			// Outputs
 			.addPort(IOType.FLUID, 4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = primaryOutput, inputAllowed = false, outputAllowed = true)) }
 			.addPort(IOType.FLUID, 4, 0, 5) {
-                IOPort.RegisteredMetaDataInput<FluidInputMetadata>(
-                    this,
-                    FluidInputMetadata(connectedStore = secondaryOutput, inputAllowed = false, outputAllowed = true)
-                )
+                IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = secondaryOutput, inputAllowed = false, outputAllowed = true))
             }
 
 			.addPort(IOType.FLUID, 0, 9, 6) {
-                IOPort.RegisteredMetaDataInput<FluidInputMetadata>(
-                    this,
-                    FluidInputMetadata(connectedStore = pollutionOutput, inputAllowed = false, outputAllowed = true)
-                )
+                IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = pollutionOutput, inputAllowed = false, outputAllowed = true))
             }
 
 			.addPort(IOType.E2, 0, -1, 0) {
-                IOPort.RegisteredMetaDataInput<E2PortMetaData>(
-                    this,
-					E2PortMetaData(inputAllowed = true, outputAllowed = false)
-                )
+                IOPort.RegisteredMetaDataInput<E2PortMetaData>(this, E2PortMetaData(inputAllowed = true, outputAllowed = false))
             }
 
 			.build()
@@ -620,32 +608,30 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 			saveStorageData(store)
 		}
 
-		private var isActive: Boolean = false
-
 		override fun tick() {
 			try {
 				if (!tryProcessRecipe()) {
 					progressManager.reset()
-					isActive = false
+					tickActivePower()
+
 					return
 				}
-
-				isActive = true
 			} catch (e: Throwable) {
-				isActive = false
+				tickActivePower()
+
 				throw e
 			}
 		}
 
-		override fun getE2Consumption(): Double {
-			if (isActive) return 100.0
-			return 0.0
+		override fun getPassiveE2Consumption(): Double {
+			return 5.0
 		}
 
 		override fun tickAsync() {
 			bootstrapE2Network()
 			bootstrapFluidNetwork()
 			println(getAvailablePowerPercentage())
+//			println(getTotalE2Consumption())
 		}
 
 		override fun buildRecipeEnviornment(): ChemicalProcessorEnviornment = ChemicalProcessorEnviornment(
