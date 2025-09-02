@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.command.misc
 
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
@@ -392,9 +393,14 @@ object TransportDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("get chunk grids")
-	fun getChunkGrids(sender: Player, @Optional pageNumber: Int?) {
+	@CommandCompletion("FLUID|E2")
+	fun getChunkGrids(sender: Player, type: String, @Optional pageNumber: Int?) {
 		val transportManager = sender.world.ion.transportManager
-		val fluidManager = transportManager.fluidGraphManager
+		val fluidManager = when (type.uppercase()) {
+			"FLUID" -> transportManager.fluidGraphManager
+			"E2" -> transportManager.e2GraphManager
+			else -> fail { "Unknown network type $type" }
+		}
 
 //		sender.information("Grid ID at ${toVec3i(key)}: ${fluidManager.getGraphAtLocation(key)?.uuid}")
 

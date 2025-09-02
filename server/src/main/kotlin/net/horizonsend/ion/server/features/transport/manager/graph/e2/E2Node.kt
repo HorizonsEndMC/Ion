@@ -20,7 +20,7 @@ abstract class E2Node(location: BlockKey, type: TransportNodeType<*>) : Transpor
 
 	class E2Port(location: BlockKey) : E2Node(location, TransportNetworkNodeTypeKeys.E2_PORT.getValue()) {
 		override fun isIntact(): Boolean? {
-			return getBlock()?.blockData?.customBlock?.key == CustomBlockKeys.FLUID_PIPE_JUNCTION
+			return getBlock()?.blockData?.customBlock?.key == CustomBlockKeys.E2_PORT
 		}
 
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES

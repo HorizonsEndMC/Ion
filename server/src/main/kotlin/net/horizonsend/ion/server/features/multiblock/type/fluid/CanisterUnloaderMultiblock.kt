@@ -199,7 +199,7 @@ object CanisterUnloaderMultiblock : Multiblock(), EntityMultiblock<CanisterUnloa
 		}
 
 		override fun tickAsync() {
-			bootstrapNetwork()
+			bootstrapFluidNetwork()
 		}
 	}
 }

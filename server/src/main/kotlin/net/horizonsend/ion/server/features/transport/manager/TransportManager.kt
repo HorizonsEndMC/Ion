@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
+import net.horizonsend.ion.server.features.transport.manager.graph.E2GraphManager
 import net.horizonsend.ion.server.features.transport.manager.graph.FluidNetworkManager
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
@@ -21,7 +22,8 @@ abstract class TransportManager<T: CacheHolder<*>> : TransportHolder {
 	abstract val cacheHolders: Array<T>
 	abstract val tickedHolders: Array<T>
 
-	abstract fun getGraphTransportManager(): FluidNetworkManager
+	abstract fun getFluidGraphTransportManager(): FluidNetworkManager
+	abstract fun getE2GraphTransportManager(): E2GraphManager
 
 	fun markReady() {
 		for (cacheHolder in cacheHolders) {

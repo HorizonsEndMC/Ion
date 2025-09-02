@@ -20,7 +20,6 @@ import net.horizonsend.ion.server.features.transport.manager.graph.NetworkManage
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidPort
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
-import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -43,8 +42,6 @@ import kotlin.random.Random
 @Suppress("UnstableApiUsage")
 class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, TransportNetwork<FluidNode>>) : TransportNetwork<FluidNode>(uuid, manager) {
 	override fun createEdge(nodeOne: FluidNode, nodeTwo: FluidNode): GraphEdge = FluidGraphEdge(nodeOne, nodeTwo)
-
-	var isAlive: Boolean = true; private set
 
 	/**
 	 * A map of each node location to the maximum flow achievable at that node
@@ -251,52 +248,6 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		networkContents.amount -= toAdd
 	}
 
-	private fun discoverNetwork() {
-		val visitQueue = ArrayDeque<BlockKey>()
-		// A set is maintained to allow faster checks of
-		val visitSet = LongOpenHashSet()
-
-		visitQueue.addAll(getAllNodeLocations())
-		visitSet.addAll(getAllNodeLocations())
-
-		val visited = LongOpenHashSet()
-
-		var tick = 0
-
-		while (visitQueue.isNotEmpty() && tick < 10000 && isAlive) whileLoop@{
-			tick++
-			val key = visitQueue.removeFirst()
-			val node = getNodeAtLocation(key) ?: continue
-			visitSet.remove(key)
-
-			visited.add(key)
-
-			var toBreak = false
-
-			for (face in node.getPipableDirections()) {
-				val adjacent = getRelative(key, face)
-
-				if (isNodePresent(adjacent)) continue
-				if (visitSet.contains(adjacent) || visited.contains(adjacent)) continue
-
-				val discoveryResult = manager.discoverPosition(adjacent, face, this)
-
-				// Check the node here
-				if (discoveryResult is NetworkManager.NodeRegistrationResult.Nothing) continue
-				if (discoveryResult is NetworkManager.NodeRegistrationResult.CombinedGraphs) {
-					toBreak = true
-					break
-				}
-
-				visitQueue.add(adjacent)
-			}
-
-			if (toBreak) {
-				break
-			}
-		}
-	}
-
 	fun displayFluid(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidInputMetadata>>) {
 		val contents = networkContents
 
@@ -381,8 +332,6 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 	}
 
 	companion object {
-		val key = NamespacedKeys.key("fluid_transport")
-
 		const val PIPE_INTERIOR_PADDING = 0.215
 
 		private const val STRUCTURE_INTERVAL = 1000L

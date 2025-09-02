@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.features.transport.inputs.ShipIOManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ShipExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
+import net.horizonsend.ion.server.features.transport.manager.graph.E2GraphManager
 import net.horizonsend.ion.server.features.transport.manager.graph.FluidNetworkManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ShipCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
@@ -99,7 +100,12 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 
 	override fun tickGraphs() {}
 
-	override fun getGraphTransportManager(): FluidNetworkManager {
+	override fun getFluidGraphTransportManager(): FluidNetworkManager {
+		TODO()
+//		return getWorld().ion.transportManager.fluidGraphManager
+	}
+
+	override fun getE2GraphTransportManager(): E2GraphManager {
 		TODO()
 //		return getWorld().ion.transportManager.fluidGraphManager
 	}

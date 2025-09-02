@@ -22,7 +22,19 @@ class E2Network(uuid: UUID, override val manager: NetworkManager<E2Node, Transpo
 		return FluidGraphEdge(nodeOne, nodeTwo)
 	}
 
+	private var lastStructureTick: Long = System.currentTimeMillis()
+	private var lastDisplayTick: Long = System.currentTimeMillis()
+
 	override fun handleTick() {
+		val now = System.currentTimeMillis()
+
+		if (now - lastStructureTick > STRUCTURE_INTERVAL) {
+			lastStructureTick = now
+
+			// Discover any strucural changes and check integrity of the network
+			discoverNetwork()
+		}
+
 		val (inputs, outputs) = trackIO()
 
 		val availableInput = getNetworkInputPower(outputs)
@@ -89,5 +101,10 @@ class E2Network(uuid: UUID, override val manager: NetworkManager<E2Node, Transpo
 		}
 
 		return inputs to outputs
+	}
+
+	companion object {
+		private const val STRUCTURE_INTERVAL = 1000L
+		private const val DISPLAY_INTERVAL = 250L
 	}
 }

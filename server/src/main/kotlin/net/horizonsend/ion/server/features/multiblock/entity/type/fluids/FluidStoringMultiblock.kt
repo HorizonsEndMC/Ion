@@ -35,10 +35,10 @@ interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
 
 	fun getNamedStorage(name: String) = getStores().find { container -> container.name == name }
 
-	fun bootstrapNetwork() {
+	fun bootstrapFluidNetwork() {
 		this as MultiblockEntity
 
-		val fluidManager = manager.getTransportManager().getGraphTransportManager()
+		val fluidManager = manager.getTransportManager().getFluidGraphTransportManager()
 
 		for (portLocation: BuiltInputData<RegisteredMetaDataInput<FluidInputMetadata>> in ioData.getOfType(IOType.FLUID)) {
 			val localPosition = toBlockKey(fluidManager.transportManager.getLocalCoordinate(toVec3i(portLocation.getRealPos(this))))

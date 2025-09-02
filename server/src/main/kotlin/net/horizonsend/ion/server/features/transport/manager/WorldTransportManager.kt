@@ -37,6 +37,7 @@ class WorldTransportManager(val world: IonWorld) : TransportHolder {
 	override fun tickGraphs() {
 		try {
 			fluidGraphManager.tick()
+			e2GraphManager.tick()
 		} catch (e: Throwable) {
 			e.printStackTrace()
 		}

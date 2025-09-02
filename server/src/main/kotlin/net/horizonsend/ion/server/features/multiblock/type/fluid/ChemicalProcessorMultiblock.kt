@@ -13,11 +13,12 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.e2.E2Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.type.e2.E2PortMetaData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
-import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
@@ -54,7 +55,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		z(0) {
 			y(-1) {
 				x(-1).ironBlock()
-				x(0).powerInput()
+				x(0).e2Port()
 				x(1).ironBlock()
 			}
 			y(0) {
@@ -506,15 +507,16 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 	), DisplayMultiblockEntity,
         FluidStoringMultiblock,
         SyncTickingMultiblockEntity,
-        AsyncTickingMultiblockEntity,
         ProgressMultiblock,
-        RecipeProcessingMultiblockEntity<ChemicalProcessorEnviornment>
+        RecipeProcessingMultiblockEntity<ChemicalProcessorEnviornment>,
+		E2Multiblock
 	{
 		override var lastRecipe: MultiblockRecipe<ChemicalProcessorEnviornment>? = null
 		override var hasTicked: Boolean = false
 
 		override val progressManager: ProgressMultiblock.ProgressManager = ProgressMultiblock.ProgressManager(data)
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(20)
+		override val e2Manager: E2Multiblock.E2Manager = E2Multiblock.E2Manager(this)
 
 		override val ioData: IOData = IOData.Companion.builder(this)
 			// Inputs
@@ -539,6 +541,13 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
                 IOPort.RegisteredMetaDataInput<FluidInputMetadata>(
                     this,
                     FluidInputMetadata(connectedStore = pollutionOutput, inputAllowed = false, outputAllowed = true)
+                )
+            }
+
+			.addPort(IOType.E2, 0, -1, 0) {
+                IOPort.RegisteredMetaDataInput<E2PortMetaData>(
+                    this,
+					E2PortMetaData(inputAllowed = true, outputAllowed = false)
                 )
             }
 
@@ -602,6 +611,8 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
             }
 		)
 
+		override fun getE2Consumption(): Double = 100.0
+
 		override fun getStores(): List<FluidStorageContainer> {
 			return listOf(primaryInput, secondaryInput, primaryOutput, secondaryOutput, pollutionOutput)
 		}
@@ -620,7 +631,9 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		}
 
 		override fun tickAsync() {
-			bootstrapNetwork()
+			bootstrapE2Network()
+			bootstrapFluidNetwork()
+			println(getAvailablePowerPercentage())
 		}
 
 		override fun buildRecipeEnviornment(): ChemicalProcessorEnviornment = ChemicalProcessorEnviornment(
