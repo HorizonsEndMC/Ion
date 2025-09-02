@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
 import net.horizonsend.ion.server.features.client.display.modular.display.POWER_TEXT_LINE
+import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.e2.E2ConsumptionDisplay
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
 import net.horizonsend.ion.server.features.multiblock.Multiblock
@@ -16,12 +17,14 @@ import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultibloc
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.e2.E2Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.e2.E2PortMetaData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
+import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
@@ -512,7 +515,8 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
         SyncTickingMultiblockEntity,
         ProgressMultiblock,
         RecipeProcessingMultiblockEntity<ChemicalProcessorEnviornment>,
-		E2Multiblock
+		E2Multiblock,
+		StatusTickedMultiblockEntity
 	{
 		override var lastRecipe: MultiblockRecipe<ChemicalProcessorEnviornment>? = null
 		override var hasTicked: Boolean = false
@@ -520,6 +524,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		override val progressManager: ProgressMultiblock.ProgressManager = ProgressMultiblock.ProgressManager(data)
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(4)
 		override val e2Manager: E2Multiblock.E2Manager = E2Multiblock.E2Manager(this)
+		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
 		override val ioData: IOData = IOData.Companion.builder(this)
 			// Inputs
@@ -610,7 +615,8 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
                     scale = MATCH_SIGN_FONT_SIZE,
                     relativeFace = RelativeFace.FORWARD
                 )
-            }
+            },
+			{ StatusDisplayModule(it, statusManager) }
 		)
 
 		override fun getStores(): List<FluidStorageContainer> {
@@ -627,6 +633,12 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				if (!tryProcessRecipe()) {
 					progressManager.reset()
 					tickActivePower()
+
+					if (getAvailablePowerPercentage() < 1.0) {
+						setStatus(Component.text("Insufficient E2", NamedTextColor.RED))
+					} else {
+						setStatus(Component.empty())
+					}
 
 					return
 				}

@@ -14,6 +14,6 @@ interface E2Enviornment : RecipeEnviornment {
 
 	fun getAvailablePower(amount: Double): Double {
 		(multiblock as E2Multiblock).setActiveE2Consumption(amount)
-		return getConnectedNetworks().maxOf { network -> network.reCalculatePower() }
+		return getConnectedNetworks().maxOfOrNull { network -> network.reCalculatePower() } ?: 0.0
 	}
 }
