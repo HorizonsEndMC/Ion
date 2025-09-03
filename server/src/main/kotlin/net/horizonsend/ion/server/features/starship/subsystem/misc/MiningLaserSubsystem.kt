@@ -10,7 +10,6 @@ import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
-import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblock
@@ -21,7 +20,7 @@ import net.horizonsend.ion.server.features.starship.destruction.SinkAnimation.Si
 import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlockEvent
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.MultiblockEntitySubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
@@ -30,7 +29,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
-import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.FluidCollisionMode
@@ -49,10 +47,9 @@ import kotlin.random.Random
 class MiningLaserSubsystem(
     override val starship: ActiveControlledStarship,
 	override val entity: MiningLaserMultiblock.MiningLaserMultiblockEntity,
-) : WeaponSubsystem<StarshipWeaponBalancing<*>>(
+) : FiredSubsystem(
 	starship,
 	toVec3i(entity.getSignKey()),
-	starship.balancingManager.getWeaponSupplier(MiningLaserSubsystem::class)
 ), ManualWeaponSubsystem, DirectionalSubsystem, MultiblockEntitySubsystem {
 
 	val multiblock = entity.multiblock
@@ -326,12 +323,6 @@ class MiningLaserSubsystem(
 		private const val BEAM_CORRECTION_FACTOR = 0.125
 	}
 
-	override val firePowerConsumption: Int = 0
-
-	override fun getName(): Component {
-		return text("Mining Laser [how]")
-	}
-
 	inner class BrokenBlockAnimation(
 		length: Long,
 		origin: Vector,
@@ -372,4 +363,6 @@ class MiningLaserSubsystem(
 
 		fun schedule() = runTaskTimerAsynchronously(IonServer, 1L, 1L)
 	}
+
+	override fun getMaxPerShot(): Int? = null
 }

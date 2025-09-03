@@ -8,7 +8,7 @@ import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.giveOrDropItems
 import net.horizonsend.ion.server.features.economy.bazaar.PlayerFilters
@@ -148,7 +148,7 @@ object BazaarGUIs {
 	}
 
 	fun openListingManageMenu(player: Player, previous: CommonGuiWrapper?) {
-		val defaultList = player.getSetting(PlayerSettings::listingManageDefaultListView)
+		val defaultList = player.getSettingOrThrow(PlayerSettings::listingManageDefaultListView)
 		if (defaultList) openListingManageListMenu(player, previous)
 		else openListingManageGridMenu(player, previous)
 	}
@@ -185,7 +185,7 @@ object BazaarGUIs {
 	}
 
 	fun openBuyOrderManageMenu(player: Player, previous: CommonGuiWrapper?, handleListingClick: AbstractOrderManagementMenu.(Oid<BazaarOrder>) -> Unit = { openBuyOrderEditorMenu(viewer, it, this) }) {
-		val defaultList = player.getSetting(PlayerSettings::orderManageDefaultListView)
+		val defaultList = player.getSettingOrThrow(PlayerSettings::orderManageDefaultListView)
 
 		if (defaultList) ListOrderManagementMenu(player, handleListingClick).openGui(previous)
 		else GridOrderManagementWindow(player, handleListingClick).openGui(previous)

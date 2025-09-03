@@ -4,7 +4,7 @@ import net.horizonsend.ion.server.configuration.starship.CapitalCannonBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CapitalBeamStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.CapitalBeamCannonProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
@@ -18,7 +18,7 @@ import org.bukkit.util.Vector
 class CapitalBeamWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
-) : WeaponSubsystem<CapitalCannonBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(CapitalBeamWeaponSubsystem::class)),
+) : BalancedWeaponSubsystem<CapitalCannonBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(CapitalBeamWeaponSubsystem::class)),
 	ManualWeaponSubsystem,
 	HeavyWeaponSubsystem,
 	PermissionWeaponSubsystem {

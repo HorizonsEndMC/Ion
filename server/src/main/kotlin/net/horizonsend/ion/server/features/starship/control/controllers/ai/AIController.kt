@@ -263,7 +263,7 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 			val weapons = starship.weaponSets[name]
 			if (weapons.any { it is AutoWeaponSubsystem }) {
 				debugAudience.alert("weaponset has auto weapons, is this okay?")
-				debugAudience.alert(weapons.joinToString { it.name })
+				debugAudience.alert(weapons.joinToString { it.javaClass.simpleName })
 			}
 		}
 		debugAudience.information("Auto Weaponsets:")
@@ -277,7 +277,7 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 			val weapons = starship.weaponSets[name]
 			if (weapons.any { it !is AutoWeaponSubsystem }) {
 				debugAudience.alert("weaponset has manual weapons!")
-				debugAudience.alert(weapons.joinToString { it.name })
+				debugAudience.alert(weapons.joinToString { it.javaClass.simpleName })
 			}
 		}
 	}

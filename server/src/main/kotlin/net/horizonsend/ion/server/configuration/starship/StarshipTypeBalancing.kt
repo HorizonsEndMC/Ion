@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeRea
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.Projectile
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
@@ -64,8 +64,6 @@ data class NewStarshipBalancing(
 			MiniPhaserBalancing(),
 			CthulhuBeamBalancing(),
 			CapitalCannonBalancing(),
-
-			MiningLaserBalancing()
 		)
 	)
 
@@ -640,7 +638,7 @@ sealed interface StarshipWaveProjectileBalancing : StarshipParticleProjectileBal
 
 @Serializable
 sealed interface StarshipWeaponBalancing<T : StarshipProjectileBalancing> {
-	val clazz: KClass<out WeaponSubsystem<*>>
+	val clazz: KClass<out BalancedWeaponSubsystem<*>>
 	val projectile: T
 
 	/** Controls for which ships can fire this weapon **/

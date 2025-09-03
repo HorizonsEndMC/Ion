@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.ComponentMessageException
 import net.horizonsend.ion.server.features.starship.Mass
 import net.horizonsend.ion.server.features.starship.StarshipDetection.OVERSIZE_MODIFIER
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -157,7 +158,7 @@ object ActiveStarshipFactory {
 				continue
 			}
 
-			if (!weapon.isForwardOnly()) {
+			if (weapon is BalancedWeaponSubsystem<*> && !weapon.isForwardOnly()) {
 				continue
 			}
 

@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.miscellaneous
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getEnumSetting
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
@@ -8,6 +10,12 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import kotlin.math.min
+
+enum class AudioRange {
+    ON,
+    REDUCED,
+    OFF
+}
 
 fun nearSoundVolumeMod(distance: Double, cutoff: Double): Float {
     val normalized = distance / cutoff
@@ -41,27 +49,43 @@ fun playDirectionalStarshipSound(origin: Location, player: Player, nearSound: So
     val offsetDistance = min(distance, 16.0)
     val soundLoc = player.location.add(dir.normalize().multiply(offsetDistance))
 
-    nearSound?.let { player.playSound(
-        Sound.sound(
-            Key.key(nearSound.key),
-            nearSound.source,
-            nearSound.volume * nearSoundVolumeMod(distance, cutoff),
-            nearSound.pitch
-        ),
-        soundLoc.x,
-        soundLoc.y,
-        soundLoc.z,
-    ) }
+    val nearPlayerSettingFactor = when (player.getEnumSetting<AudioRange>(PlayerSettings::nearbyWeaponSounds) ?: return) {
+        AudioRange.ON -> 1.0f
+        AudioRange.REDUCED -> 0.25f
+        AudioRange.OFF -> 0.0f
+    }
 
-    farSound?.let { player.playSound(
-        Sound.sound(
-            Key.key(farSound.key),
-            farSound.source,
-            farSound.volume * farSoundVolumeMod(distance, cutoff),
-            farSound.pitch
-        ),
-        soundLoc.x,
-        soundLoc.y,
-        soundLoc.z,
-    ) }
+    nearSound?.let {
+        player.playSound(
+            Sound.sound(
+                Key.key(nearSound.key),
+                nearSound.source,
+                nearSound.volume * nearSoundVolumeMod(distance, cutoff) * nearPlayerSettingFactor,
+                nearSound.pitch
+            ),
+            soundLoc.x,
+            soundLoc.y,
+            soundLoc.z,
+        )
+    }
+
+    val farPlayerSettingFactor = when (player.getEnumSetting<AudioRange>(PlayerSettings::farWeaponSounds) ?: return) {
+        AudioRange.ON -> 1.0f
+        AudioRange.REDUCED -> 0.25f
+        AudioRange.OFF -> 0.0f
+    }
+
+    farSound?.let {
+        player.playSound(
+            Sound.sound(
+                Key.key(farSound.key),
+                farSound.source,
+                farSound.volume * farSoundVolumeMod(distance, cutoff) * farPlayerSettingFactor,
+                farSound.pitch
+            ),
+            soundLoc.x,
+            soundLoc.y,
+            soundLoc.z,
+        )
+    }
 }

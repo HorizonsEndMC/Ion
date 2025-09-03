@@ -71,8 +71,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSub
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustData
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.CustomTurretSubsystem
 import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld
@@ -463,7 +463,7 @@ class Starship(
 
 	lateinit var reactor: ReactorSubsystem
 	val shields = LinkedList<ShieldSubsystem>()
-	val weapons = LinkedList<WeaponSubsystem<*>>()
+	val weapons = LinkedList<FiredSubsystem>()
 	val turrets = LinkedList<TurretWeaponSubsystem<*, *>>()
 	val hyperdrives = LinkedList<HyperdriveSubsystem>()
 	val navComps = LinkedList<NavCompSubsystem>()
@@ -476,7 +476,7 @@ class Starship(
 
 	val shieldBars = mutableMapOf<String, BossBar>()
 
-	val weaponSets: HashMultimap<String, WeaponSubsystem<*>> = HashMultimap.create()
+	val weaponSets: HashMultimap<String, FiredSubsystem> = HashMultimap.create()
 	val weaponSetSelections: HashBiMap<UUID, String> = HashBiMap.create()
 
 	val autoTurretTargets = mutableMapOf<String, AutoTurretTargeting.AutoTurretTarget<*>>()

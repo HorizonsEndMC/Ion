@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.CombatTimer
@@ -182,9 +183,9 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 
 						// Send per-player so each user’s setting applies
 						toPlayersInRadius(newLoc, /* visibility radius */ 500.0) { player ->
-							val useAlt = player.getSetting(PlayerSettings::useAlternateShieldHitParticle)
+							val useAlt = player.getSetting(PlayerSettings::useAlternateShieldHitParticle) ?: return@toPlayersInRadius
 
-							if (!useAlt) {
+							if (useAlt == true) {
 								// Original behavior (large single flash)
 								player.spawnParticle(
 									Particle.FLASH,
@@ -242,12 +243,20 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 		for (otherStarship in ActiveStarships.getInWorld(world)) {
 			if (otherStarship == (source as? StarshipProjectileSource)?.starship || !otherStarship.contains(x, y, z)) continue
 
+			val player = shooter.starship?.playerPilot?.player
+
+			// plays hitmarker sound if the shot did shield damage (if player setting is enabled)
+			if (player != null && player.getSettingOrThrow(PlayerSettings::hitmarkerOnShield)) {
+				player.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.PLAYER, 20f, 1.0f))
+			}
+
 			// plays hitmarker sound if the shot did hull damage (assumes the hit block was part of a starship)
 			if (explosionOccurred) {
-				val player = shooter.starship?.playerPilot?.player
-				if (player != null && player.getSetting(PlayerSettings::hitmarkerOnHull))
+				if (player != null && player.getSettingOrThrow(PlayerSettings::hitmarkerOnHull)) {
 					player.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.PLAYER, 20f, 0.5f))
+				}
 			}
+
 			otherStarship.damagers.getOrPut(shooter) {
 				ShipKillXP.ShipDamageData()
 			}.incrementPoints(points)

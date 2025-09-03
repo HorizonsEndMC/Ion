@@ -24,7 +24,7 @@ abstract class CannonWeaponSubsystem<T : StarshipCannonWeaponBalancing<*>>(
 	pos: Vec3i,
 	override var face: BlockFace,
 	balancingSupplier: Supplier<T>
-) : WeaponSubsystem<T>(starship, pos, balancingSupplier), ManualWeaponSubsystem, DirectionalSubsystem {
+) : BalancedWeaponSubsystem<T>(starship, pos, balancingSupplier), ManualWeaponSubsystem, DirectionalSubsystem {
 
 	/**  The length of the cannon's multiblock. Used for placing the shot's origin. */
 	protected abstract val length: Int
@@ -36,10 +36,10 @@ abstract class CannonWeaponSubsystem<T : StarshipCannonWeaponBalancing<*>>(
 	protected open val extraDistance: Int get() = balancing.projectileSpawnDistance
 
 	/** Controls the aiming cone. **/
-	protected open val angleRadiansHorizontal: Double  get() = balancing.angleRadiansHorizontal
+	protected open val angleRadiansHorizontal: Double  get() = Math.toRadians(balancing.angleRadiansHorizontal)
 
 	/** Controls the aiming cone. **/
-	protected open val angleRadiansVertical: Double  get() = balancing.angleRadiansVertical
+	protected open val angleRadiansVertical: Double  get() = Math.toRadians(balancing.angleRadiansVertical)
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
 		return this.face == face
