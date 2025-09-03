@@ -36,10 +36,10 @@ abstract class CannonWeaponSubsystem<T : StarshipCannonWeaponBalancing<*>>(
 	protected open val extraDistance: Int get() = balancing.projectileSpawnDistance
 
 	/** Controls the aiming cone. **/
-	protected open val angleRadiansHorizontal: Double  get() = balancing.angleRadiansHorizontal
+	protected open val angleRadiansHorizontal: Double  get() = Math.toRadians(balancing.angleRadiansHorizontal)
 
 	/** Controls the aiming cone. **/
-	protected open val angleRadiansVertical: Double  get() = balancing.angleRadiansVertical
+	protected open val angleRadiansVertical: Double  get() = Math.toRadians(balancing.angleRadiansVertical)
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {
 		return this.face == face
