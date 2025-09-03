@@ -207,7 +207,7 @@ data class PhaserBalancing(
 	@Serializable
 	data class PhaserProjectileBalancing(
 		override val range: Double = 140.0,
-		override val speed: Double = 1.0,
+		override val speed: Double = 1000.0,
 		override val explosionPower: Float = 2f,
 		override val starshipShieldDamageMultiplier: Double = 55.0,
 		override val areaShieldDamageMultiplier: Double = 5.0,
