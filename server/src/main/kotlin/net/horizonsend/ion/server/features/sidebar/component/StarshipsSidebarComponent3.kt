@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.sidebar.component
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.sidebar.tasks.StarshipsSidebar
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.kyori.adventure.text.Component
@@ -20,7 +20,7 @@ class StarshipsSidebarComponent3(starship: ActiveControlledStarship, player: Pla
     private val pmWeapon = starship.reactor.powerDistributor.weaponPortion.times(100).toInt()
     private val pmThruster = starship.reactor.powerDistributor.thrusterPortion.times(100).toInt()
     private val compassComponent = StarshipsSidebar.compassComponent(starship, player)
-    private val advancedStarshipInfo = player.getSetting(PlayerSettings::advancedStarshipInfo)
+    private val advancedStarshipInfo = player.getSettingOrThrow(PlayerSettings::advancedStarshipInfo)
 
     private fun displayPowerMode() : TextComponent {
         return if (advancedStarshipInfo) {

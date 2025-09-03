@@ -4,7 +4,7 @@ import co.aikar.commands.annotation.CommandAlias
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import org.bukkit.entity.Player
 
@@ -13,7 +13,7 @@ object EnableProtectionMessagesCommand : SLCommand() {
     fun defaultCase(
         sender: Player
     ) {
-        val protectionMessagesEnabled = !sender.getSetting(PlayerSettings::protectionMessagesEnabled)
+        val protectionMessagesEnabled = !sender.getSettingOrThrow(PlayerSettings::protectionMessagesEnabled)
 		sender.setSetting(PlayerSettings::protectionMessagesEnabled, protectionMessagesEnabled)
 
         sender.success("Changed protection message visibility to $protectionMessagesEnabled")

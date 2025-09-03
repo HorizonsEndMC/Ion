@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.lpHasPermission
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionSettlementZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -210,7 +210,7 @@ object ProtectionListener : SLEventListener() {
 				player action "&eBypassed ${region.javaClass.simpleName.removePrefix("Region")} protection in dutymode"
 				break // only show one message, they will bypass anything else anyway
 			} else {
-				if (!denied && player.getSetting(PlayerSettings::protectionMessagesEnabled)) { // only if no other region has already reached this, in order to maintain the priority of region messages
+				if (!denied && player.getSettingOrThrow(PlayerSettings::protectionMessagesEnabled)) { // only if no other region has already reached this, in order to maintain the priority of region messages
 					// Send them the detailed message
 					player.sendTitle("", "&e$message".colorize(), 5, 20, 5)
 					player.sendActionBar("&cThis place is claimed! Find an unclaimed territory with the map (https://survival.horizonsend.net)".colorize())

@@ -3,10 +3,10 @@ package net.horizonsend.ion.server.features.starship.subsystem.shield
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.server.command.admin.debugRed
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.features.starship.Starship
-import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -322,7 +322,7 @@ object StarshipShields : IonServerComponent() {
 
 		Tasks.async {
 			// Lifetime: use the max preference among nearby players
-			val lifetime = interested.maxOf { it.getSetting(PlayerSettings::flareTime).toLong() }
+			val lifetime = interested.maxOf { it.getSettingOrThrow(PlayerSettings::flareTime).toLong() }
 
 			// Throttle number of displays per hit to keep it light
 			val maxFlares = 20
