@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.CustomTurretBaseMultiblock
@@ -13,8 +12,8 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovementExc
 import net.horizonsend.ion.server.features.starship.movement.TranslationAccessor
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -30,7 +29,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
-import net.kyori.adventure.text.Component
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Directional
@@ -38,18 +36,15 @@ import org.bukkit.util.Vector
 import java.util.ArrayDeque
 import java.util.LinkedList
 
-class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace, val multiblock: CustomTurretBaseMultiblock) : WeaponSubsystem<StarshipWeaponBalancing<*>>(
+class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace, val multiblock: CustomTurretBaseMultiblock) : FiredSubsystem(
 	starship,
 	pos,
-	starship.balancingManager.getWeaponSupplier(CustomTurretSubsystem::class)
 ), DirectionalSubsystem {
 	init {
 		val furnacePos = pos.plus(multiblock.furnaceOffset)
 	    val furnaceBlock = starship.world.getBlockAtKey(furnacePos.toBlockKey()).blockData as? Directional
 		if (furnaceBlock != null) face = furnaceBlock.facing
 	}
-
-	override fun getName(): Component = Component.text("Custom Turret")
 
 	override fun canFire(dir: Vector, target: Vector): Boolean = true
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector = dir
@@ -246,4 +241,6 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		// Rotate back to home position
 		moveBlocks(360 - (totalRotation % 360))
 	}
+
+	override fun getMaxPerShot(): Int? = null
 }

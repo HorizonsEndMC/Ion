@@ -24,7 +24,7 @@ abstract class CannonWeaponSubsystem<T : StarshipCannonWeaponBalancing<*>>(
 	pos: Vec3i,
 	override var face: BlockFace,
 	balancingSupplier: Supplier<T>
-) : WeaponSubsystem<T>(starship, pos, balancingSupplier), ManualWeaponSubsystem, DirectionalSubsystem {
+) : BalancedWeaponSubsystem<T>(starship, pos, balancingSupplier), ManualWeaponSubsystem, DirectionalSubsystem {
 
 	/**  The length of the cannon's multiblock. Used for placing the shot's origin. */
 	protected abstract val length: Int
