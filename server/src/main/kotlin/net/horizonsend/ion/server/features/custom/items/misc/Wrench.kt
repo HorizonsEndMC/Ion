@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.command.misc.MultiblockCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.rotateToFaceVector2d
 import net.horizonsend.ion.server.features.client.display.HudIcons.FLUID_INFO_ID
@@ -147,6 +148,8 @@ object Wrench : CustomItem(
 		else updateHudEntity(player, projectedLocation, text, scale)
 
 		Tasks.asyncDelay(FLUID_TICK_INTERVAL.toLong()) async2@{
+			if (player.inventory.itemInMainHand.customItem?.key != CustomItemKeys.WRENCH) return@async2 removeEntity(player)
+
 			val hitResult: RayTraceResult? = player.rayTraceBlocks(7.0, FluidCollisionMode.NEVER)
 			val targeted = hitResult?.hitBlock ?: return@async2 removeEntity(player)
 			val key = toBlockKey(targeted.x, targeted.y, targeted.z)
