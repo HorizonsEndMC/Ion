@@ -4,16 +4,17 @@ import io.papermc.paper.registry.keys.BiomeKeys
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
+import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SplitFluidDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.getLinePos
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.e2.E2Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.e2.E2PortMetaData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
@@ -40,12 +41,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.isChiseled
 import net.horizonsend.ion.server.miscellaneous.utils.isLava
 import net.horizonsend.ion.server.miscellaneous.utils.isWater
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -131,9 +132,18 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace
-	) : MultiblockEntity(manager, PumpMultiblock, world, x, y, z, structureDirection), DisplayMultiblockEntity, FluidStoringMultiblock, AsyncTickingMultiblockEntity, E2Multiblock {
+	) : MultiblockEntity(
+		manager,
+		PumpMultiblock,
+		world,
+		x,
+		y,
+		z,
+		structureDirection
+	), DisplayMultiblockEntity, FluidStoringMultiblock, AsyncTickingMultiblockEntity, E2Multiblock, StatusMultiblockEntity {
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(5)
 		override val e2Manager: E2Multiblock.E2Manager = E2Multiblock.E2Manager(this)
+		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
 		override val ioData: IOData = IOData.Companion.builder(this)
 			// Input
@@ -148,7 +158,8 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
-			{ SplitFluidDisplayModule(handler = it, storage = mainStorage, offsetLeft = 0.0, offsetUp = getLinePos(4), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
+			{ SplitFluidDisplayModule(handler = it, storage = mainStorage, offsetLeft = 0.0, offsetUp = getLinePos(3), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
+			{ StatusDisplayModule(it, statusManager) },
 		)
 
 		override fun getE2Output(): Double = 150.0
@@ -212,15 +223,20 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 			when {
 				type == Material.LIGHTNING_ROD -> tryPumpWater(pumpOriginBlock, delta)
 				type.isChiseled -> tryPumpLava(pumpOriginBlock, type)
+				else -> {
+					setStatus(Component.text("Invalid Intake Type", NamedTextColor.RED))
+				}
 			}
 		}
 
 		fun tryPumpWater(pumpOriginBlock: Block, delta: Double) {
 			val (surfaceDepth, fluidDepth) = getWaterDepth()
 
-			if (fluidDepth <= 0) return
+			if (fluidDepth <= 0) return setStatus(Component.text("Nothing to Pump", NamedTextColor.RED))
 
 			val stack = FluidStack(FluidTypeKeys.WATER, PUMP_RATE * delta)
+
+			if (!mainStorage.hasRoomFor(stack)) return setStatus(Component.text("Storage Full", NamedTextColor.RED))
 
 			val bottomBlock = pumpOriginBlock.getRelative(BlockFace.DOWN, surfaceDepth + fluidDepth)
 			val biome = world.getBiome(bottomBlock.x, bottomBlock.y, bottomBlock.z)
@@ -232,6 +248,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 				stack.setData(FluidPropertyTypeKeys.SALINITY.getValue(), FluidProperty.Salinity(salinity))
 			}
 
+			setStatus(Component.text("Pumping Water", NamedTextColor.GREEN))
 			mainStorage.addFluid(stack, bottomBlock.location)
 		}
 
@@ -276,23 +293,27 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 			val stack = FluidStack(FluidTypeKeys.LAVA, LITERS_IN_BLOCK)
 			stack.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), FluidProperty.Temperature(1000.0))
 
-			if (!mainStorage.canAdd(stack)) return
-			if (!mainStorage.hasRoomFor(stack)) return
+			if (!mainStorage.canAdd(stack)) return setStatus(Component.text("Storage Full", NamedTextColor.RED))
+			if (!mainStorage.hasRoomFor(stack)) return setStatus(Component.text("Storage Full", NamedTextColor.RED))
 
-			val surfaceDepth = getLavaSurface(pumpOriginBlock, type) ?: return
+			val surfaceDepth = getLavaSurface(pumpOriginBlock, type) ?: return setStatus(Component.text("Nothing to Pump", NamedTextColor.RED))
 
 			val surfaceOrigin = pumpOriginBlock.getRelative(BlockFace.DOWN, surfaceDepth)
 
 			val planeBlocks = getSurfaceLayerBlocks(surfaceOrigin)
-			if (planeBlocks.isEmpty()) return
-			Tasks.sync {
-				val last = planeBlocks.reversed().firstOrNull { block -> block != pumpOriginBlock } ?: return@sync
-				debugAudience.highlightBlock(Vec3i(last.location), 30L)
+			if (planeBlocks.isEmpty()) {
+				setStatus(Component.text("Nothing to Pump", NamedTextColor.RED))
+				return
+			}
 
+			val last = planeBlocks.reversed().firstOrNull { block -> block != pumpOriginBlock } ?: return
+
+			Tasks.sync {
 				if (!last.type.isLava) return@sync
 				last.type = Material.AIR
 
 				Tasks.async {
+					setStatus(Component.text("Pumping Lava", NamedTextColor.GREEN))
 					mainStorage.addFluid(stack, surfaceOrigin.location)
 				}
 			}
