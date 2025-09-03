@@ -8,7 +8,8 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
-import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SplitFluidDisplayModule
+import net.horizonsend.ion.server.features.client.display.modular.display.e2.E2ConsumptionDisplay
+import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SimpleFluidDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.getLinePos
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
@@ -158,7 +159,8 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
-			{ SplitFluidDisplayModule(handler = it, storage = mainStorage, offsetLeft = 0.0, offsetUp = getLinePos(3), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
+			{ SimpleFluidDisplayModule(handler = it, storage = mainStorage, offsetLeft = 0.0, offsetUp = getLinePos(2), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
+			{ E2ConsumptionDisplay(handler = it, multiblock = this, offsetLeft = 0.0, offsetUp = getLinePos(3), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
 			{ StatusDisplayModule(it, statusManager) },
 		)
 
