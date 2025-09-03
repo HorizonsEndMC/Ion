@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AmmoConsumingWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
@@ -26,7 +26,7 @@ class RocketWeaponSubsystem(
     pos: Vec3i,
     override var face: BlockFace,
     private val multiblock: RocketStarshipWeaponMultiblock
-) : WeaponSubsystem<RocketBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(RocketWeaponSubsystem::class)),
+) : BalancedWeaponSubsystem<RocketBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(RocketWeaponSubsystem::class)),
 	HeavyWeaponSubsystem,
 	DirectionalSubsystem,
 	ManualWeaponSubsystem,

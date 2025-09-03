@@ -15,19 +15,20 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import org.bukkit.util.Vector
 import java.util.concurrent.ThreadLocalRandom
+import kotlin.reflect.KClass
 
 object StarshipWeapons {
 	interface QueuedShot {
-		val weapon: WeaponSubsystem<*>
+		val weapon: FiredSubsystem
 
 		fun shoot()
 	}
 
 	data class ManualQueuedShot(
-        override val weapon: WeaponSubsystem<*>,
-        val shooter: Damager,
-        val direction: Vector,
-        val target: Vector
+		override val weapon: FiredSubsystem,
+		val shooter: Damager,
+		val direction: Vector,
+		val target: Vector
 	) : QueuedShot {
 		override fun shoot() {
 			check(weapon is ManualWeaponSubsystem)
@@ -37,7 +38,7 @@ object StarshipWeapons {
 	}
 
 	data class AutoQueuedShot(
-		override val weapon: WeaponSubsystem<*>,
+		override val weapon: FiredSubsystem,
 		val target: AutoTurretTargeting.AutoTurretTarget<*>,
 		val dir: Vector,
 	) : QueuedShot {
@@ -55,7 +56,7 @@ object StarshipWeapons {
 		if (queuedShots.any { it.weapon is HeavyWeaponSubsystem }) {
 			ship.debug("we have heavy weapons")
 
-			val heavyWeaponTypes = queuedShots.filter { it.weapon is HeavyWeaponSubsystem }.map { it.weapon.name }.distinct()
+			val heavyWeaponTypes = queuedShots.filter { it.weapon is HeavyWeaponSubsystem }.map { it.javaClass.simpleName }.distinct()
 
 			ship.debug("heavyWeaponTypes = ${heavyWeaponTypes.joinToString(", ")}")
 
@@ -66,10 +67,9 @@ object StarshipWeapons {
 					Types: ${heavyWeaponTypes.joinToString()}
 					""".trimIndent()
 				)
+
 				ship.onlinePassengers.forEach { player ->
-					player.userErrorActionMessage(
-						"You can only fire one type of heavy weapon at a time!"
-					)
+					player.userErrorActionMessage("You can only fire one type of heavy weapon at a time!")
 				}
 
 				return
@@ -87,10 +87,12 @@ object StarshipWeapons {
 			boostPower.set(output)
 		}
 
-		val firedCounts = HashMultimap.create<String, WeaponSubsystem<*>>()
+		val firedCounts = HashMultimap.create<KClass<out FiredSubsystem>, FiredSubsystem>()
 
 		for (shot in queuedShots.shuffled(ThreadLocalRandom.current())) {
-			if (shot.weapon.balancing.applyCooldownToAll) {
+			val weapon = shot.weapon
+
+			if (weapon is BalancedWeaponSubsystem<*> && weapon.balancing.applyCooldownToAll) {
 				val clazz = shot.weapon::class.java
 
 				for (subsystem in ship.subsystems.filterIsInstance(clazz)) {
@@ -98,12 +100,10 @@ object StarshipWeapons {
 				}
 			}
 
-			val weapon = shot.weapon
-
 			val maxPerShot = weapon.getMaxPerShot()
 			ship.debug("iterating shots, $weapon, $maxPerShot")
 
-			val firedSet = firedCounts[weapon.name]
+			val firedSet = firedCounts[weapon::class]
 			ship.debug("have we fired those already?")
 			if (maxPerShot != null && firedSet.size >= maxPerShot) {
 				ship.debug("we did, goodbye (${firedSet.size}, $maxPerShot)")
@@ -131,10 +131,13 @@ object StarshipWeapons {
 	}
 
 	private fun resourcesUnavailable(
-		weapon: WeaponSubsystem<*>,
+		weapon: FiredSubsystem,
 		ship: ActiveStarship,
 		boostPower: AtomicDouble
 	): Boolean {
+		// Don't check resources on unbalanced weapons, they will have their own implementation of checks
+		if (weapon !is BalancedWeaponSubsystem<*>) return false
+
 		if (weapon is AmmoConsumingWeaponSubsystem && ship.magazines.none { it.isAmmoAvailable(weapon) }) {
 			ship.onlinePassengers.forEach { player ->
 				player.alertActionMessage(
@@ -154,7 +157,7 @@ object StarshipWeapons {
 	}
 
 	private fun consumeResources(
-		weapon: WeaponSubsystem<*>,
+		weapon: FiredSubsystem,
 		boostPower: AtomicDouble,
 		ship: ActiveStarship
 	) {
@@ -165,7 +168,7 @@ object StarshipWeapons {
 		}
 	}
 
-	private fun isPowerAvailable(weapon: WeaponSubsystem<*>, boostPower: AtomicDouble): Boolean {
+	private fun isPowerAvailable(weapon: BalancedWeaponSubsystem<*>, boostPower: AtomicDouble): Boolean {
 		val reactor = weapon.starship.reactor
 		val powerUsage = weapon.firePowerConsumption.toDouble()
 		return when (weapon) {
@@ -174,7 +177,10 @@ object StarshipWeapons {
 		}
 	}
 
-	private fun tryConsumePower(weapon: WeaponSubsystem<*>, boostPower: AtomicDouble): Boolean {
+	private fun tryConsumePower(weapon: FiredSubsystem, boostPower: AtomicDouble): Boolean {
+		// Don't check resources on unbalanced weapons, they will have their own implementation of checks
+		if (weapon !is BalancedWeaponSubsystem<*>) return true
+
 		val reactor = weapon.starship.reactor
 
 		val powerUsage = weapon.firePowerConsumption.toDouble()

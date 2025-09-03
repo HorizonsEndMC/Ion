@@ -17,7 +17,6 @@ import net.horizonsend.ion.server.configuration.starship.LaserCannonBalancing.La
 import net.horizonsend.ion.server.configuration.starship.LightTurretBalancing.LightTurretProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.LogisticsTurretBalancing.LogisticsTurretProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.MiniPhaserBalancing.MiniPhaserProjectileBalancing
-import net.horizonsend.ion.server.configuration.starship.MiningLaserBalancing.MiningLaserProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.PhaserBalancing.PhaserProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.PlasmaCannonBalancing.PlasmaCannonProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.PointDefenseBalancing.PointDefenseProjectileBalancing
@@ -31,8 +30,7 @@ import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalan
 import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing.FireRestrictions
 import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriTurretProjectileBalancing
-import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.AbyssalGazeSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.CapitalBeamWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.FlamethrowerWeaponSubsystem
@@ -123,7 +121,7 @@ data class TorpedoBalancing(
 	StarshipHeavyWeaponBalancing<TorpedoBalancing.TorpedoProjectileBalancing>,
 	StarshipTrackingWeaponBalancing<TorpedoBalancing.TorpedoProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = TorpedoWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = TorpedoWeaponSubsystem::class
 
 	@Serializable
 	data class TorpedoProjectileBalancing(
@@ -165,7 +163,7 @@ data class HeavyLaserBalancing(
 	StarshipHeavyWeaponBalancing<HeavyLaserProjectileBalancing>,
 	StarshipTrackingWeaponBalancing<HeavyLaserProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = HeavyLaserWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = HeavyLaserWeaponSubsystem::class
 
 	@Serializable
 	data class HeavyLaserProjectileBalancing(
@@ -204,7 +202,7 @@ data class PhaserBalancing(
 	override val projectile: PhaserProjectileBalancing = PhaserProjectileBalancing()
 ) : StarshipCannonWeaponBalancing<PhaserProjectileBalancing>, StarshipHeavyWeaponBalancing<PhaserProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = PhaserWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = PhaserWeaponSubsystem::class
 
 	@Serializable
 	data class PhaserProjectileBalancing(
@@ -236,7 +234,7 @@ data class ArsenalRocketBalancing(
 	override val projectile: ArsenalRocketProjectileBalancing = ArsenalRocketProjectileBalancing()
 ) : StarshipHeavyWeaponBalancing<ArsenalRocketProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = ArsenalRocketStarshipWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = ArsenalRocketStarshipWeaponSubsystem::class
 
 	@Serializable
 	data class ArsenalRocketProjectileBalancing(
@@ -269,7 +267,7 @@ data class TriTurretBalancing(
 	override val projectile: TriTurretProjectileBalancing = TriTurretProjectileBalancing()
 ) : StarshipTurretWeaponBalancing<TriTurretProjectileBalancing>, StarshipAutoWeaponBalancing<TriTurretProjectileBalancing>, StarshipHeavyWeaponBalancing<TriTurretProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = TriTurretWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = TriTurretWeaponSubsystem::class
 
 	@Serializable
 	data class TriTurretProjectileBalancing(
@@ -305,7 +303,7 @@ data class LightTurretBalancing(
 	override val projectile: LightTurretProjectileBalancing = LightTurretProjectileBalancing()
 ) : StarshipTurretWeaponBalancing<LightTurretProjectileBalancing>, StarshipAutoWeaponBalancing<LightTurretProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = LightTurretWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = LightTurretWeaponSubsystem::class
 
 	@Serializable
 	data class LightTurretProjectileBalancing(
@@ -337,7 +335,7 @@ data class HeavyTurretBalancing(
 	override val projectile: HeavyTurretProjectileBalancing = HeavyTurretProjectileBalancing()
 ) : StarshipTurretWeaponBalancing<HeavyTurretProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = HeavyTurretWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = HeavyTurretWeaponSubsystem::class
 
 	@Serializable
 	data class HeavyTurretProjectileBalancing(
@@ -369,7 +367,7 @@ data class QuadTurretBalancing(
 	override val projectile: QuadTurretProjectileBalancing = QuadTurretProjectileBalancing()
 ) : StarshipTurretWeaponBalancing<QuadTurretProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = QuadTurretWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = QuadTurretWeaponSubsystem::class
 
 	@Serializable
 	data class QuadTurretProjectileBalancing(
@@ -401,7 +399,7 @@ data class IonTurretBalancing(
 	override val projectile: IonTurretProjectileBalancing = IonTurretProjectileBalancing()
 ) : StarshipTurretWeaponBalancing<IonTurretProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = IonTurretWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = IonTurretWeaponSubsystem::class
 
 	@Serializable
 	data class IonTurretProjectileBalancing(
@@ -433,7 +431,7 @@ data class PointDefenseBalancing(
 	override val projectile: PointDefenseProjectileBalancing = PointDefenseProjectileBalancing()
 ) : StarshipWeaponBalancing<PointDefenseProjectileBalancing>, StarshipAutoWeaponBalancing<PointDefenseProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = PointDefenseSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = PointDefenseSubsystem::class
 
 	@Serializable
 	data class PointDefenseProjectileBalancing(
@@ -469,7 +467,7 @@ data class PulseCannonBalancing(
 	override val projectile: PulseCannonProjectileBalancing = PulseCannonProjectileBalancing()
 ) : StarshipCannonWeaponBalancing<PulseCannonProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = PulseCannonWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = PulseCannonWeaponSubsystem::class
 
 	@Serializable
 	data class PulseCannonProjectileBalancing(
@@ -505,7 +503,7 @@ data class PlasmaCannonBalancing(
 	override val projectile: PlasmaCannonProjectileBalancing = PlasmaCannonProjectileBalancing()
 ) : StarshipCannonWeaponBalancing<PlasmaCannonProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = PlasmaCannonWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = PlasmaCannonWeaponSubsystem::class
 
 	@Serializable
 	data class PlasmaCannonProjectileBalancing(
@@ -541,7 +539,7 @@ data class LaserCannonBalancing(
 	override val projectile: LaserCannonProjectileBalancing = LaserCannonProjectileBalancing()
 ) : StarshipCannonWeaponBalancing<LaserCannonProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = LaserCannonWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = LaserCannonWeaponSubsystem::class
 
 	@Serializable
 	data class LaserCannonProjectileBalancing(
@@ -577,7 +575,7 @@ data class InterceptorCannonBalancing(
 	override val projectile: IncterceptorCannonProjectileBalancing = IncterceptorCannonProjectileBalancing()
 ) : StarshipCannonWeaponBalancing<IncterceptorCannonProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = InterceptorCannonWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = InterceptorCannonWeaponSubsystem::class
 
 	@Serializable
 	data class IncterceptorCannonProjectileBalancing(
@@ -615,7 +613,7 @@ data class DoomsdayDeviceBalancing(
 	override val projectile: DoomsdayDeviceProjectileBalancing = DoomsdayDeviceProjectileBalancing(),
 ) : StarshipCannonWeaponBalancing<DoomsdayDeviceProjectileBalancing>, StarshipHeavyWeaponBalancing<DoomsdayDeviceProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = DoomsdayDeviceWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = DoomsdayDeviceWeaponSubsystem::class
 
 	@Serializable
 	data class DoomsdayDeviceProjectileBalancing(
@@ -652,7 +650,7 @@ data class RocketBalancing(
 	override val projectile: RocketProjectileBalancing = RocketProjectileBalancing(),
 ) : StarshipCannonWeaponBalancing<RocketProjectileBalancing>, StarshipHeavyWeaponBalancing<RocketProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = RocketWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = RocketWeaponSubsystem::class
 
 	@Serializable
 	data class RocketProjectileBalancing(
@@ -684,7 +682,7 @@ data class LogisticsTurretBalancing(
 	override val projectile: LogisticsTurretProjectileBalancing = LogisticsTurretProjectileBalancing(),
 ) : StarshipTurretWeaponBalancing<LogisticsTurretProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = LogisticTurretWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = LogisticTurretWeaponSubsystem::class
 
 	@Serializable
 	data class LogisticsTurretProjectileBalancing(
@@ -718,7 +716,7 @@ data class DisintegratorBeamBalancing(
 	override val projectile: DisintegratorBeamProjectileBalancing = DisintegratorBeamProjectileBalancing(),
 ) : StarshipWeaponBalancing<DisintegratorBeamProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = DisintegratorBeamWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = DisintegratorBeamWeaponSubsystem::class
 
 	@Serializable
 	data class DisintegratorBeamProjectileBalancing(
@@ -750,7 +748,7 @@ data class CycleTurretBalancing(
 	override val projectile: CycleTurretProjectileBalancing = CycleTurretProjectileBalancing()
 ) : StarshipTurretWeaponBalancing<CycleTurretProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = CycleTurretWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = CycleTurretWeaponSubsystem::class
 
 	@Serializable
 	data class CycleTurretProjectileBalancing(
@@ -791,7 +789,7 @@ data class AbyssalGazeBalancing(
 	override val projectile: AbyssalGazeProjectileBalancing = AbyssalGazeProjectileBalancing()
 ) : StarshipCannonWeaponBalancing<AbyssalGazeProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = AbyssalGazeSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = AbyssalGazeSubsystem::class
 
 	@Serializable
 	data class AbyssalGazeProjectileBalancing(
@@ -833,7 +831,7 @@ data class SonicMissileBalancing(
 	override val projectile: SonicMissileProjectileBalancing = SonicMissileProjectileBalancing(),
 ) : StarshipCannonWeaponBalancing<SonicMissileProjectileBalancing>, StarshipHeavyWeaponBalancing<SonicMissileProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = SonicMissileWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = SonicMissileWeaponSubsystem::class
 
 	@Serializable
 	data class SonicMissileProjectileBalancing(
@@ -868,7 +866,7 @@ data class PumpkinCannonBalancing(
 	override val projectile: PumpkinCannonProjectileBalancing = PumpkinCannonProjectileBalancing(),
 ) : StarshipWeaponBalancing<PumpkinCannonProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = PumpkinCannonWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = PumpkinCannonWeaponSubsystem::class
 
 	@Serializable
 	data class PumpkinCannonProjectileBalancing(
@@ -908,7 +906,7 @@ data class FlamingSkullCannonBalancing(
 	override val projectile: FlamingSkullCannonProjectileBalancing,
 ) : StarshipCannonWeaponBalancing<FlamingSkullCannonProjectileBalancing>, StarshipHeavyWeaponBalancing<FlamingSkullCannonProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = FlamingSkullCannonWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = FlamingSkullCannonWeaponSubsystem::class
 
 	@Serializable
 	data class FlamingSkullCannonProjectileBalancing(
@@ -949,7 +947,7 @@ data class FlamethrowerCannonBalancing(
 	override val projectile: FlamethrowerCannonProjectileBalancing = FlamethrowerCannonProjectileBalancing(),
 ) : StarshipCannonWeaponBalancing<FlamethrowerCannonProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = FlamethrowerWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = FlamethrowerWeaponSubsystem::class
 
 	@Serializable
 	data class FlamethrowerCannonProjectileBalancing(
@@ -991,7 +989,7 @@ data class MiniPhaserBalancing(
 	override val projectile: MiniPhaserProjectileBalancing = MiniPhaserProjectileBalancing(),
 ) : StarshipCannonWeaponBalancing<MiniPhaserProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = MiniPhaserWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = MiniPhaserWeaponSubsystem::class
 
 	@Serializable
 	data class MiniPhaserProjectileBalancing(
@@ -1027,7 +1025,7 @@ data class CthulhuBeamBalancing(
 	override val projectile: CthulhuBeamProjectileBalancing = CthulhuBeamProjectileBalancing(),
 ) : StarshipAutoWeaponBalancing<CthulhuBeamBalancing.CthulhuBeamProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = FlamingSkullCannonWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = FlamingSkullCannonWeaponSubsystem::class
 
 	@Serializable
 	data class CthulhuBeamProjectileBalancing(
@@ -1062,7 +1060,7 @@ data class CapitalCannonBalancing(
 	override val projectile: CapitalCannonProjectileBalancing = CapitalCannonProjectileBalancing(),
 ) : StarshipHeavyWeaponBalancing<CapitalCannonBalancing.CapitalCannonProjectileBalancing> {
 	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = CapitalBeamWeaponSubsystem::class
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = CapitalBeamWeaponSubsystem::class
 
 	@Serializable
 	data class CapitalCannonProjectileBalancing(
@@ -1081,34 +1079,4 @@ data class CapitalCannonBalancing(
 	}
 }
 
-@Serializable
-data class MiningLaserBalancing(
-	override val fireRestrictions: FireRestrictions = FireRestrictions(),
-	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
-	override val firePowerConsumption: Int = 120000,
-	override val isForwardOnly: Boolean = false,
-	override val maxPerShot: Int? = null,
-	override val applyCooldownToAll: Boolean = true,
-
-	override val projectile: MiningLaserProjectileBalancing = MiningLaserProjectileBalancing(),
-) : StarshipWeaponBalancing<MiningLaserProjectileBalancing> {
-	@Transient
-	override val clazz: KClass<out WeaponSubsystem<*>> = MiningLaserSubsystem::class
-
-	@Serializable
-	data class MiningLaserProjectileBalancing(
-        override val range: Double = 500.0,
-        override val speed: Double = PI * 50.0,
-        override val explosionPower: Float = 20f,
-        override val starshipShieldDamageMultiplier: Double = 2.0,
-        override val areaShieldDamageMultiplier: Double = 2.0,
-        override val entityDamage: EntityDamage = RegularDamage(20.0),
-        override val fireSoundNear: SoundInfo = SoundInfo(key = "entity.zombie_villager.converted"),
-        override val fireSoundFar: SoundInfo = SoundInfo(key = "entity.zombie_villager.converted"),
-        override val particleThickness: Double = 0.44,
-	) : StarshipParticleProjectileBalancing {
-		@Transient
-		override val clazz: KClass<out Projectile> = CapitalBeamCannonProjectile::class
-	}
-}
 // End Event Weapons

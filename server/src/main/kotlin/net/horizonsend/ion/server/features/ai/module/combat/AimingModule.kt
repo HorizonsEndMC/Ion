@@ -8,8 +8,9 @@ import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementForecast.forecast
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PhaserProjectile
@@ -45,20 +46,25 @@ class AimingModule(
 		val shipPos = targetShip.centerOfMass.toVector()
 		if (difficulty.aimAdjust < 0.1) return shipPos
 
-		val predicate = { it: WeaponSubsystem<*> ->
-			((it is HeavyWeaponSubsystem) xor leftClick)
+		val predicate = { it: FiredSubsystem ->
+			(it is HeavyWeaponSubsystem) xor leftClick
 				&& ((it is AutoWeaponSubsystem) xor manual)
 				&& it !is MiningLaserSubsystem // because screw you
 				&& it.isIntact()
 				&& it.canFire(getDirection(origin, targetShip.centerOfMass).normalize(), shipPos)// this is a shortcut
-		} //reduce the amount of different weapon types as much as possible
-		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet.name.lowercase()]).shuffled(
-			ThreadLocalRandom.current()
-		).filter(predicate)
+		}
+		//reduce the amount of different weapon types as much as possible
+
+		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet.name.lowercase()])
+			.shuffled(ThreadLocalRandom.current())
+			.filter(predicate)
+
 		if (weapons.isEmpty()) return shipPos //nothing to aim
 		val weapon = weapons.first()
 
-		if (weapon is TargetTrackingCannonWeaponSubsystem) return shipPos //for tracking to work cant lead
+		if (weapon !is BalancedWeaponSubsystem<*>) return shipPos
+
+		if (weapon is TargetTrackingCannonWeaponSubsystem<*>) return shipPos //for tracking to work cant lead
 
 		var forecast = shipPos
 		for (i in 0.until(if (difficulty.doubleEstimateAim) 2 else 1)) {

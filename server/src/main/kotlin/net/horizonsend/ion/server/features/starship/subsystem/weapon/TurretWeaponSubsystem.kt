@@ -20,7 +20,7 @@ abstract class TurretWeaponSubsystem<T : StarshipTurretWeaponBalancing<Z>, Z : S
     pos: Vec3i,
     override var face: BlockFace,
 	balancingSupplier: Supplier<T>
-) : WeaponSubsystem<T>(ship, pos, balancingSupplier), DirectionalSubsystem, ManualWeaponSubsystem {
+) : BalancedWeaponSubsystem<T>(ship, pos, balancingSupplier), DirectionalSubsystem, ManualWeaponSubsystem {
 	private fun getSign() = starship.world.getBlockAt(pos.x, pos.y, pos.z).getState(false) as? Sign
 
 	protected open val inaccuracyRadians: Double get() = Math.toRadians(balancing.inaccuracyDegrees)

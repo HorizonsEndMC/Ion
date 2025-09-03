@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeRea
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FauxReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.AutoQueuedShot
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.fireQueuedShots
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -102,7 +103,7 @@ object ActiveStarshipMechanics : IonServerComponent() {
 				val dir = weapon.getAdjustedDir(direct, targetVec)
 
 				if (weapon is TurretWeaponSubsystem<*, *> && !weapon.ensureOriented(dir)) continue
-				if (!weapon.isCooledDown()) continue
+				if (weapon is BalancedWeaponSubsystem<*> && !weapon.isCooledDown()) continue
 				if (!weapon.canFire(dir, targetVec)) continue
 
 				queuedShots.add(AutoQueuedShot(weapon, target, dir))
