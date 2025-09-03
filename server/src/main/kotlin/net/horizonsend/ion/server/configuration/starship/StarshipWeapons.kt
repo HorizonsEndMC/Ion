@@ -185,7 +185,7 @@ data class HeavyLaserBalancing(
 
 @Serializable
 data class PhaserBalancing(
-	override val fireRestrictions: FireRestrictions = FireRestrictions(minBlockCount = 12000),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(maxBlockCount = 12000),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(10),
 	override val firePowerConsumption: Int = 50000,
 	override val isForwardOnly: Boolean = false,
