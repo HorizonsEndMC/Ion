@@ -25,6 +25,7 @@ class E2GraphManager(manager: TransportHolder) : NetworkManager<E2Node, Transpor
 		@JvmStatic
 		val cache: BlockBasedCacheFactory<E2Node, NetworkManager<E2Node, TransportNetwork<E2Node>>> = BlockBasedCacheFactory.builder<E2Node, NetworkManager<E2Node, TransportNetwork<E2Node>>>()
 			.addDataHandler<MultipleFacing>(CustomBlockKeys.E2_PORT, Material.BROWN_MUSHROOM_BLOCK) { _, pos, holder -> E2Node.E2Port(pos) }
+			.addSimpleNode(Material.SPONGE) { pos, _, holder -> E2Node.E2Junction(pos) }
 			.build()
 	}
 }

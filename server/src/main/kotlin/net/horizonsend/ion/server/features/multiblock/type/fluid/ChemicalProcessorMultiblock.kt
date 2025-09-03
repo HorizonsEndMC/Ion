@@ -733,8 +733,6 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		override fun tickAsync() {
 			bootstrapE2Network()
 			bootstrapFluidNetwork()
-			println(getAvailablePowerPercentage())
-//			println(getTotalE2Consumption())
 		}
 
 		override fun buildRecipeEnviornment(): ChemicalProcessorEnviornment = ChemicalProcessorEnviornment(
