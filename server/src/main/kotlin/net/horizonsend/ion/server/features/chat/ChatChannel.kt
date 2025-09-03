@@ -23,7 +23,7 @@ import net.horizonsend.ion.server.command.misc.GToggleCommand
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.chat.messages.NationsChatMessage
 import net.horizonsend.ion.server.features.chat.messages.NormalChatMessage
 import net.horizonsend.ion.server.features.progression.Levels
@@ -135,8 +135,8 @@ enum class ChatChannel(
 				other.sendMessage(message.buildChatComponent(
 					useChannelPrefix = true,
 					useLevelsPrefix = true,
-					useShortenedPrefix = player.getSetting(PlayerSettings::shortenChatChannels),
-					showLuckPermsPrefix = !player.getSetting(PlayerSettings::hideGlobalPrefixes)
+					useShortenedPrefix = player.getSettingOrThrow(PlayerSettings::shortenChatChannels),
+					showLuckPermsPrefix = !player.getSettingOrThrow(PlayerSettings::hideGlobalPrefixes)
 				))
 			}
 		}
@@ -165,8 +165,8 @@ enum class ChatChannel(
 				other.sendMessage(message.buildChatComponent(
 					useLevelsPrefix = true,
 					useChannelPrefix = true,
-					useShortenedPrefix = player.getSetting(PlayerSettings::shortenChatChannels),
-					showLuckPermsPrefix = !player.getSetting(PlayerSettings::hideGlobalPrefixes)
+					useShortenedPrefix = player.getSettingOrThrow(PlayerSettings::shortenChatChannels),
+					showLuckPermsPrefix = !player.getSettingOrThrow(PlayerSettings::hideGlobalPrefixes)
 				))
 			}
 		}
@@ -211,8 +211,8 @@ enum class ChatChannel(
 				other.sendMessage(message.buildChatComponent(
 					useLevelsPrefix = true,
 					useChannelPrefix = true,
-					useShortenedPrefix = player.getSetting(PlayerSettings::shortenChatChannels),
-					showLuckPermsPrefix = !player.getSetting(PlayerSettings::hideGlobalPrefixes)
+					useShortenedPrefix = player.getSettingOrThrow(PlayerSettings::shortenChatChannels),
+					showLuckPermsPrefix = !player.getSettingOrThrow(PlayerSettings::hideGlobalPrefixes)
 				))
 			}
 		}
@@ -343,7 +343,7 @@ enum class ChatChannel(
 				useLevelsPrefix = false,
 				useChannelPrefix = false,
 				useShortenedPrefix = false,
-				showLuckPermsPrefix = !player.getSetting(PlayerSettings::hideGlobalPrefixes)
+				showLuckPermsPrefix = !player.getSettingOrThrow(PlayerSettings::hideGlobalPrefixes)
 			)
 
 			for (passenger in starship.onlinePassengers) {
@@ -372,9 +372,9 @@ enum class ChatChannel(
 				other.sendMessage(message.buildChatComponent(
 					useLevelsPrefix = false,
 					useChannelPrefix = true,
-					useShortenedPrefix = player.getSetting(PlayerSettings::shortenChatChannels),
+					useShortenedPrefix = player.getSettingOrThrow(PlayerSettings::shortenChatChannels),
 					additionalPrefix = leaderPrefix.takeIf { component -> fleet.leader == player.toFleetMember() },
-					showLuckPermsPrefix = !player.getSetting(PlayerSettings::hideGlobalPrefixes)
+					showLuckPermsPrefix = !player.getSettingOrThrow(PlayerSettings::hideGlobalPrefixes)
 				))
 			}
 		}
@@ -486,7 +486,7 @@ enum class ChatChannel(
 					useLevelsPrefix = true,
 					useChannelPrefix = false,
 					useShortenedPrefix = false,
-					showLuckPermsPrefix = !player.getSetting(PlayerSettings::hideGlobalPrefixes)
+					showLuckPermsPrefix = !player.getSettingOrThrow(PlayerSettings::hideGlobalPrefixes)
 				))
 			}
 		}.registerRedisAction("chat-global", runSync = false)
@@ -501,8 +501,8 @@ enum class ChatChannel(
 				player.sendMessage(message.buildChatComponent(
 					useLevelsPrefix = false,
 					useChannelPrefix = true,
-					useShortenedPrefix = player.getSetting(PlayerSettings::shortenChatChannels),
-					showLuckPermsPrefix = !player.getSetting(PlayerSettings::hideUserPrefixes)
+					useShortenedPrefix = player.getSettingOrThrow(PlayerSettings::shortenChatChannels),
+					showLuckPermsPrefix = !player.getSettingOrThrow(PlayerSettings::hideUserPrefixes)
 				))
 			}
 		}.registerRedisAction("chat-$name", runSync = false)
@@ -527,12 +527,12 @@ enum class ChatChannel(
 				player.sendMessage(message.buildChatComponent(
 					useLevelsPrefix = false,
 					useChannelPrefix = true,
-					useShortenedPrefix = player.getSetting(PlayerSettings::shortenChatChannels),
+					useShortenedPrefix = player.getSettingOrThrow(PlayerSettings::shortenChatChannels),
 					showSettlementNamePrefix = false,
-					showSettlementRolePrefix = !player.getSetting(PlayerSettings::hideUserPrefixes),
+					showSettlementRolePrefix = !player.getSettingOrThrow(PlayerSettings::hideUserPrefixes),
 					showNationNamePrefix = false,
 					showNationRolePrefix = false,
-					showLuckPermsPrefix = !player.getSetting(PlayerSettings::hideUserPrefixes)
+					showLuckPermsPrefix = !player.getSettingOrThrow(PlayerSettings::hideUserPrefixes)
 				))
 			}
 		}.registerRedisAction("nations-chat-msg-settlement", runSync = false)
@@ -544,12 +544,12 @@ enum class ChatChannel(
 				player.sendMessage(message.buildChatComponent(
 					useLevelsPrefix = false,
 					useChannelPrefix = true,
-					useShortenedPrefix = player.getSetting(PlayerSettings::shortenChatChannels),
+					useShortenedPrefix = player.getSettingOrThrow(PlayerSettings::shortenChatChannels),
 					showSettlementNamePrefix = true,
 					showSettlementRolePrefix = false,
 					showNationNamePrefix = false,
-					showNationRolePrefix = !player.getSetting(PlayerSettings::hideUserPrefixes),
-					showLuckPermsPrefix = !player.getSetting(PlayerSettings::hideUserPrefixes)
+					showNationRolePrefix = !player.getSettingOrThrow(PlayerSettings::hideUserPrefixes),
+					showLuckPermsPrefix = !player.getSettingOrThrow(PlayerSettings::hideUserPrefixes)
 				))
 			}
 		}.registerRedisAction("nations-chat-msg-nation", runSync = false)
@@ -562,12 +562,12 @@ enum class ChatChannel(
 				player.sendMessage(message.buildChatComponent(
 					useLevelsPrefix = false,
 					useChannelPrefix = true,
-					useShortenedPrefix = player.getSetting(PlayerSettings::shortenChatChannels),
+					useShortenedPrefix = player.getSettingOrThrow(PlayerSettings::shortenChatChannels),
 					showSettlementNamePrefix = false,
 					showSettlementRolePrefix = false,
 					showNationNamePrefix = true,
-					showNationRolePrefix = !player.getSetting(PlayerSettings::hideUserPrefixes),
-					showLuckPermsPrefix = !player.getSetting(PlayerSettings::hideUserPrefixes)
+					showNationRolePrefix = !player.getSettingOrThrow(PlayerSettings::hideUserPrefixes),
+					showLuckPermsPrefix = !player.getSettingOrThrow(PlayerSettings::hideUserPrefixes)
 				))
 			}
 		}.registerRedisAction("nations-chat-msg-ally", runSync = false)

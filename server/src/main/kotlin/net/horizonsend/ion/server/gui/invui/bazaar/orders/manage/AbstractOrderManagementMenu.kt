@@ -8,7 +8,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.gui.GuiItem
@@ -119,7 +119,7 @@ abstract class AbstractOrderManagementMenu(
 		)
 	}
 
-	private var sortingMethod: Int = viewer.getSetting(PlayerSettings::orderManageSort)
+	private var sortingMethod: Int = viewer.getSettingOrThrow(PlayerSettings::orderManageSort)
 
 	protected val sortButton = CollectionScrollButton(
 		entries = SORTING_METHODS,

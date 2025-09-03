@@ -49,7 +49,7 @@ fun playDirectionalStarshipSound(origin: Location, player: Player, nearSound: So
     val offsetDistance = min(distance, 16.0)
     val soundLoc = player.location.add(dir.normalize().multiply(offsetDistance))
 
-    val nearPlayerSettingFactor = when (player.getEnumSetting<AudioRange>(PlayerSettings::nearbyWeaponSounds)) {
+    val nearPlayerSettingFactor = when (player.getEnumSetting<AudioRange>(PlayerSettings::nearbyWeaponSounds) ?: return) {
         AudioRange.ON -> 1.0f
         AudioRange.REDUCED -> 0.25f
         AudioRange.OFF -> 0.0f
@@ -69,7 +69,7 @@ fun playDirectionalStarshipSound(origin: Location, player: Player, nearSound: So
         )
     }
 
-    val farPlayerSettingFactor = when (player.getEnumSetting<AudioRange>(PlayerSettings::farWeaponSounds)) {
+    val farPlayerSettingFactor = when (player.getEnumSetting<AudioRange>(PlayerSettings::farWeaponSounds) ?: return) {
         AudioRange.ON -> 1.0f
         AudioRange.REDUCED -> 0.25f
         AudioRange.OFF -> 0.0f

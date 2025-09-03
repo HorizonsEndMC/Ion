@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
@@ -63,7 +63,7 @@ object SidebarContactsCommand : SLCommand() {
 
 	@Subcommand("contacts sortOrder")
 	fun onChangeContactsSortOrder(sender: Player) {
-		val currentSetting = sender.getSetting(PlayerSettings::contactsSort)
+		val currentSetting = sender.getSettingOrThrow(PlayerSettings::contactsSort)
 
 		// Keep newSetting in the range of the number of sort options
 		val newSetting = if (currentSetting < ContactsSidebar.ContactsSorting.entries.size - 1) currentSetting + 1 else 0
@@ -74,7 +74,7 @@ object SidebarContactsCommand : SLCommand() {
 
 	@Subcommand("contacts coloring")
 	fun onChangeContactsColoring(sender: Player) {
-		val currentSetting = sender.getSetting(PlayerSettings::contactsColoring)
+		val currentSetting = sender.getSettingOrThrow(PlayerSettings::contactsColoring)
 
 		// Keep newSetting in the range of the number of sort options
 		val newSetting = if (currentSetting < ContactsSidebar.ContactsColoring.entries.size - 1) currentSetting + 1 else 0
@@ -88,7 +88,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val contactsStarships = toggle ?: !sender.getSetting(PlayerSettings::contactsStarships)
+		val contactsStarships = toggle ?: !sender.getSettingOrThrow(PlayerSettings::contactsStarships)
 
 		sender.setSetting(PlayerSettings::contactsStarships, contactsStarships)
 		sender.success("Changed starship visibility to $contactsStarships")
@@ -99,7 +99,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val contactsLastStarship = toggle ?: !sender.getSetting(PlayerSettings::lastStarshipEnabled)
+		val contactsLastStarship = toggle ?: !sender.getSettingOrThrow(PlayerSettings::lastStarshipEnabled)
 
 		sender.setSetting(PlayerSettings::lastStarshipEnabled, contactsLastStarship)
 		sender.success("Changed last starship visibility to $contactsLastStarship")
@@ -110,7 +110,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val contactsPlanets = toggle ?: !sender.getSetting(PlayerSettings::planetsEnabled)
+		val contactsPlanets = toggle ?: !sender.getSettingOrThrow(PlayerSettings::planetsEnabled)
 
 		sender.setSetting(PlayerSettings::planetsEnabled, contactsPlanets)
 		sender.success("Changed planet visibility to $contactsPlanets")
@@ -121,7 +121,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val starsEnabled = toggle ?: !sender.getSetting(PlayerSettings::starsEnabled)
+		val starsEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::starsEnabled)
 
 		sender.setSetting(PlayerSettings::starsEnabled, starsEnabled)
 		sender.success("Changed star visibility to $starsEnabled")
@@ -132,7 +132,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val beaconsEnabled = toggle ?: !sender.getSetting(PlayerSettings::beaconsEnabled)
+		val beaconsEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::beaconsEnabled)
 
 		sender.setSetting(PlayerSettings::beaconsEnabled, beaconsEnabled)
 		sender.success("Changed beacon visibility to $beaconsEnabled")
@@ -143,7 +143,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val stationsEnabled = toggle ?: !sender.getSetting(PlayerSettings::stationsEnabled)
+		val stationsEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::stationsEnabled)
 
 		sender.setSetting(PlayerSettings::stationsEnabled, stationsEnabled)
 		sender.success("Changed station visibility to $stationsEnabled")
@@ -154,7 +154,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val bookmarksEnabled = toggle ?: !sender.getSetting(PlayerSettings::bookmarksEnabled)
+		val bookmarksEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::bookmarksEnabled)
 
 		sender.setSetting(PlayerSettings::bookmarksEnabled, bookmarksEnabled)
 		sender.success("Changed bookmark visibility to $bookmarksEnabled")
@@ -165,7 +165,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val aiEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationAiEnabled)
+		val aiEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationAiEnabled)
 
 		sender.setSetting(PlayerSettings::relationAiEnabled, aiEnabled)
 		sender.success("Changed AI starship visibility to $aiEnabled")
@@ -176,7 +176,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val noneEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationNoneEnabled)
+		val noneEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationNoneEnabled)
 
 		sender.setSetting(PlayerSettings::relationNoneEnabled, noneEnabled)
 		sender.success("Changed no relation starship visibility to $noneEnabled")
@@ -187,7 +187,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val enemyEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationEnemyEnabled)
+		val enemyEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationEnemyEnabled)
 
 		sender.setSetting(PlayerSettings::relationEnemyEnabled, enemyEnabled)
 		sender.success("Changed enemy starship visibility to $enemyEnabled")
@@ -198,7 +198,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val unfriendlyEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationUnfriendlyEnabled)
+		val unfriendlyEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationUnfriendlyEnabled)
 
 		sender.setSetting(PlayerSettings::relationUnfriendlyEnabled, unfriendlyEnabled)
 		sender.success("Changed unfriendly starship visibility to $unfriendlyEnabled")
@@ -209,7 +209,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val neutralEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationNeutralEnabled)
+		val neutralEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationNeutralEnabled)
 
 		sender.setSetting(PlayerSettings::relationNeutralEnabled, neutralEnabled)
 		sender.success("Changed neutral starship visibility to $neutralEnabled")
@@ -220,7 +220,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val friendlyEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationFriendlyEnabled)
+		val friendlyEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationFriendlyEnabled)
 
 		sender.setSetting(PlayerSettings::relationFriendlyEnabled, friendlyEnabled)
 		sender.success("Changed friendly starship visibility to $friendlyEnabled")
@@ -231,7 +231,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val allyEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationAllyEnabled)
+		val allyEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationAllyEnabled)
 
 		sender.setSetting(PlayerSettings::relationAllyEnabled, allyEnabled)
 		sender.success("Changed ally starship visibility to $allyEnabled")
@@ -242,7 +242,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val nationEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationNationEnabled)
+		val nationEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationNationEnabled)
 
 		sender.setSetting(PlayerSettings::relationNationEnabled, nationEnabled)
 		sender.success("Changed nation starship visibility to $nationEnabled")
@@ -253,7 +253,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val aiStationEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationAiEnabled)
+		val aiStationEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationAiEnabled)
 
 		sender.setSetting(PlayerSettings::relationAiStationEnabled, aiStationEnabled)
 		sender.success("Changed AI station visibility to $aiStationEnabled")
@@ -264,7 +264,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val noneStationEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationNoneEnabled)
+		val noneStationEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationNoneEnabled)
 
 		sender.setSetting(PlayerSettings::relationNoneStationEnabled, noneStationEnabled)
 		sender.success("Changed no relation station visibility to $noneStationEnabled")
@@ -275,7 +275,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val enemyStationEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationEnemyEnabled)
+		val enemyStationEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationEnemyEnabled)
 
 		sender.setSetting(PlayerSettings::relationEnemyStationEnabled, enemyStationEnabled)
 		sender.success("Changed enemy station visibility to $enemyStationEnabled")
@@ -286,7 +286,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val unfriendlyStationEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationUnfriendlyEnabled)
+		val unfriendlyStationEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationUnfriendlyEnabled)
 
 		sender.setSetting(PlayerSettings::relationUnfriendlyStationEnabled, unfriendlyStationEnabled)
 		sender.success("Changed unfriendly station visibility to $unfriendlyStationEnabled")
@@ -297,7 +297,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val neutralStationEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationNeutralEnabled)
+		val neutralStationEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationNeutralEnabled)
 
 		sender.setSetting(PlayerSettings::relationNeutralStationEnabled, neutralStationEnabled)
 		sender.success("Changed neutral station visibility to $neutralStationEnabled")
@@ -308,7 +308,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val friendlyStationEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationFriendlyEnabled)
+		val friendlyStationEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationFriendlyEnabled)
 
 		sender.setSetting(PlayerSettings::relationFriendlyStationEnabled, friendlyStationEnabled)
 		sender.success("Changed friendly station visibility to $friendlyStationEnabled")
@@ -319,7 +319,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val allyStationEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationAllyEnabled)
+		val allyStationEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationAllyEnabled)
 
 		sender.setSetting(PlayerSettings::relationAllyStationEnabled, allyStationEnabled)
 		sender.success("Changed ally station visibility to $allyStationEnabled")
@@ -330,7 +330,7 @@ object SidebarContactsCommand : SLCommand() {
 		sender: Player,
 		@Optional toggle: Boolean?
 	) {
-		val nationStationEnabled = toggle ?: !sender.getSetting(PlayerSettings::relationNationEnabled)
+		val nationStationEnabled = toggle ?: !sender.getSettingOrThrow(PlayerSettings::relationNationEnabled)
 
 		sender.setSetting(PlayerSettings::relationNationStationEnabled, nationStationEnabled)
 		sender.success("Changed nation station visibility to $nationStationEnabled")

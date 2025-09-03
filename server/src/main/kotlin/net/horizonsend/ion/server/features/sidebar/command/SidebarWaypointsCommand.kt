@@ -8,7 +8,7 @@ import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import org.bukkit.entity.Player
 
@@ -44,7 +44,7 @@ object SidebarWaypointsCommand : SLCommand() {
         sender: Player,
         @Optional toggle: Boolean?
     ) {
-        val waypointsCompactWaypoints = toggle ?: !sender.getSetting(PlayerSettings::compactWaypoints)
+        val waypointsCompactWaypoints = toggle ?: !sender.getSettingOrThrow(PlayerSettings::compactWaypoints)
 		sender.setSetting(PlayerSettings::compactWaypoints, waypointsCompactWaypoints)
 
 		sender.success("Changed compact waypoints visibility to $waypointsCompactWaypoints")

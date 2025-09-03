@@ -10,7 +10,7 @@ import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.misc.CachedCapturableStation
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.sidebar.Sidebar.fontKey
@@ -73,7 +73,7 @@ import kotlin.math.abs
 
 object ContactsSidebar {
     private fun getContactsDistanceSq(player: Player): Int {
-        return player.takeIf { it.isOnline }?.getSetting(PlayerSettings::contactsDistance)?.squared() ?: 0
+        return player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::contactsDistance)?.squared() ?: 0
     }
 
     private fun priorityColorChange(): Boolean {
@@ -92,14 +92,14 @@ object ContactsSidebar {
     }
 
     private fun isRelationEnabled(player: Player, otherController: Controller): Boolean {
-        val relationAiEnabled = player.getSetting(PlayerSettings::relationAiEnabled)
-        val relationNoneEnabled = player.getSetting(PlayerSettings::relationNoneEnabled)
-        val relationEnemyEnabled = player.getSetting(PlayerSettings::relationEnemyEnabled)
-        val relationUnfriendlyEnabled = player.getSetting(PlayerSettings::relationUnfriendlyEnabled)
-        val relationNeutralEnabled = player.getSetting(PlayerSettings::relationNeutralEnabled)
-        val relationFriendlyEnabled = player.getSetting(PlayerSettings::relationFriendlyEnabled)
-        val relationAllyEnabled = player.getSetting(PlayerSettings::relationAllyEnabled)
-        val relationNationEnabled = player.getSetting(PlayerSettings::relationNationEnabled)
+        val relationAiEnabled = player.getSettingOrThrow(PlayerSettings::relationAiEnabled)
+        val relationNoneEnabled = player.getSettingOrThrow(PlayerSettings::relationNoneEnabled)
+        val relationEnemyEnabled = player.getSettingOrThrow(PlayerSettings::relationEnemyEnabled)
+        val relationUnfriendlyEnabled = player.getSettingOrThrow(PlayerSettings::relationUnfriendlyEnabled)
+        val relationNeutralEnabled = player.getSettingOrThrow(PlayerSettings::relationNeutralEnabled)
+        val relationFriendlyEnabled = player.getSettingOrThrow(PlayerSettings::relationFriendlyEnabled)
+        val relationAllyEnabled = player.getSettingOrThrow(PlayerSettings::relationAllyEnabled)
+        val relationNationEnabled = player.getSettingOrThrow(PlayerSettings::relationNationEnabled)
 
         when (otherController) {
             is NoOpController -> return relationNoneEnabled
@@ -149,13 +149,13 @@ object ContactsSidebar {
 
     private fun isStationRelationEnabled(player: Player, station: CachedSpaceStation<*, *, *>): Boolean {
         // val relationAiStationEnabled = player.getSetting(PlayerSettings::relationAiStationEnabled
-        val relationNoneStationEnabled = player.getSetting(PlayerSettings::relationNoneStationEnabled)
-        val relationEnemyStationEnabled = player.getSetting(PlayerSettings::relationEnemyStationEnabled)
-        val relationUnfriendlyStationEnabled = player.getSetting(PlayerSettings::relationUnfriendlyStationEnabled)
-        val relationNeutralStationEnabled = player.getSetting(PlayerSettings::relationNeutralStationEnabled)
-        val relationFriendlyStationEnabled = player.getSetting(PlayerSettings::relationFriendlyStationEnabled)
-        val relationAllyStationEnabled = player.getSetting(PlayerSettings::relationAllyStationEnabled)
-        val relationNationStationEnabled = player.getSetting(PlayerSettings::relationNationStationEnabled)
+        val relationNoneStationEnabled = player.getSettingOrThrow(PlayerSettings::relationNoneStationEnabled)
+        val relationEnemyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationEnemyStationEnabled)
+        val relationUnfriendlyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationUnfriendlyStationEnabled)
+        val relationNeutralStationEnabled = player.getSettingOrThrow(PlayerSettings::relationNeutralStationEnabled)
+        val relationFriendlyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationFriendlyStationEnabled)
+        val relationAllyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationAllyStationEnabled)
+        val relationNationStationEnabled = player.getSettingOrThrow(PlayerSettings::relationNationStationEnabled)
 
         when (station) {
             is CachedPlayerSpaceStation -> return if (station.hasOwnershipContext(player.slPlayerId))
@@ -207,13 +207,13 @@ object ContactsSidebar {
 
     private fun isCapturableStationRelationEnabled(player: Player, station: CachedCapturableStation): Boolean {
         // val relationAiStationEnabled = player.getSetting(PlayerSettings::relationAiStationEnabled
-        val relationNoneStationEnabled = player.getSetting(PlayerSettings::relationNoneStationEnabled)
-        val relationEnemyStationEnabled = player.getSetting(PlayerSettings::relationEnemyStationEnabled)
-        val relationUnfriendlyStationEnabled = player.getSetting(PlayerSettings::relationUnfriendlyStationEnabled)
-        val relationNeutralStationEnabled = player.getSetting(PlayerSettings::relationNeutralStationEnabled)
-        val relationFriendlyStationEnabled = player.getSetting(PlayerSettings::relationFriendlyStationEnabled)
-        val relationAllyStationEnabled = player.getSetting(PlayerSettings::relationAllyStationEnabled)
-        val relationNationStationEnabled = player.getSetting(PlayerSettings::relationNationStationEnabled)
+        val relationNoneStationEnabled = player.getSettingOrThrow(PlayerSettings::relationNoneStationEnabled)
+        val relationEnemyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationEnemyStationEnabled)
+        val relationUnfriendlyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationUnfriendlyStationEnabled)
+        val relationNeutralStationEnabled = player.getSettingOrThrow(PlayerSettings::relationNeutralStationEnabled)
+        val relationFriendlyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationFriendlyStationEnabled)
+        val relationAllyStationEnabled = player.getSettingOrThrow(PlayerSettings::relationAllyStationEnabled)
+        val relationNationStationEnabled = player.getSettingOrThrow(PlayerSettings::relationNationStationEnabled)
 
         val viewerNation = PlayerCache.getIfOnline(player)?.nationOid ?: return relationNoneStationEnabled
         val otherNation = station.nation ?: return relationNoneStationEnabled
@@ -259,13 +259,13 @@ object ContactsSidebar {
         val sourceVector = PilotedStarships[player]?.centerOfMass?.toVector() ?: player.location.toVector()
         val playerVector = player.location.toVector()
 
-        val starshipsEnabled = player.takeIf { it.isOnline }?.getSetting(PlayerSettings::contactsStarships) ?: true
-        val lastStarshipEnabled = player.takeIf { it.isOnline }?.getSetting(PlayerSettings::lastStarshipEnabled) ?: true
-        val planetsEnabled = player.takeIf { it.isOnline }?.getSetting(PlayerSettings::planetsEnabled) ?: true
-        val starsEnabled = player.takeIf { it.isOnline }?.getSetting(PlayerSettings::starsEnabled) ?: true
-        val beaconsEnabled = player.takeIf { it.isOnline }?.getSetting(PlayerSettings::beaconsEnabled) ?: true
-        val stationsEnabled = player.takeIf { it.isOnline }?.getSetting(PlayerSettings::stationsEnabled) ?: true
-        val bookmarksEnabled = player.takeIf { it.isOnline }?.getSetting(PlayerSettings::bookmarksEnabled) ?: true
+        val starshipsEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::contactsStarships) ?: true
+        val lastStarshipEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::lastStarshipEnabled) ?: true
+        val planetsEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::planetsEnabled) ?: true
+        val starsEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::starsEnabled) ?: true
+        val beaconsEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::beaconsEnabled) ?: true
+        val stationsEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::stationsEnabled) ?: true
+        val bookmarksEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::bookmarksEnabled) ?: true
 
         // identify contacts that should be displayed (enabled and in range)
         val starships: List<ActiveStarship> = if (starshipsEnabled) {
@@ -371,8 +371,8 @@ object ContactsSidebar {
     ) {
         val currentStarship = PilotedStarships[player]
         val interdictionLocation = currentStarship?.centerOfMass?.toVector() ?: playerVector
-        val maxLength = player.getSetting(PlayerSettings::contactsMaxNameLength)
-        val colorSetting = player.getSetting(PlayerSettings::contactsColoring)
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         for (starship in starships) {
             val otherController = starship.controller
@@ -465,8 +465,8 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>
     ) {
         val lastStarship = LastPilotedStarship.map[player.uniqueId]
-        val maxLength = player.getSetting(PlayerSettings::contactsMaxNameLength)
-        val colorSetting = player.getSetting(PlayerSettings::contactsColoring)
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         if (lastStarship != null &&
             lastStarship.world == player.world &&
@@ -523,8 +523,8 @@ object ContactsSidebar {
 		contactsList: MutableList<ContactsData>,
 		player: Player
     ) {
-        val maxLength = player.getSetting(PlayerSettings::contactsMaxNameLength)
-        val colorSetting = player.getSetting(PlayerSettings::contactsColoring)
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         for (planet in planets) {
             val vector = planet.location.toVector()
@@ -584,8 +584,8 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
-        val maxLength = player.getSetting(PlayerSettings::contactsMaxNameLength)
-        val colorSetting = player.getSetting(PlayerSettings::contactsColoring)
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         for (star in stars) {
             val vector = star.location.toVector()
@@ -645,8 +645,8 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
-        val maxLength = player.getSetting(PlayerSettings::contactsMaxNameLength)
-        val colorSetting = player.getSetting(PlayerSettings::contactsColoring)
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         for (beacon in beacons) {
             val vector = beacon.spaceLocation.toVector()
@@ -700,8 +700,8 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
-        val maxLength = player.getSetting(PlayerSettings::contactsMaxNameLength)
-        val colorSetting = player.getSetting(PlayerSettings::contactsColoring)
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         for (station in stations) {
             val vector = Vector(station.x, 192, station.z)
@@ -755,8 +755,8 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
-        val maxLength = player.getSetting(PlayerSettings::contactsMaxNameLength)
-        val colorSetting = player.getSetting(PlayerSettings::contactsColoring)
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         for (station in capturableStations) {
             val vector = station.loc.toVector()
@@ -810,8 +810,8 @@ object ContactsSidebar {
         contactsList: MutableList<ContactsData>,
         player: Player
     ) {
-        val maxLength = player.getSetting(PlayerSettings::contactsMaxNameLength)
-        val colorSetting = player.getSetting(PlayerSettings::contactsColoring)
+        val maxLength = player.getSettingOrThrow(PlayerSettings::contactsMaxNameLength)
+        val colorSetting = player.getSettingOrThrow(PlayerSettings::contactsColoring)
 
         for (bookmark in bookmarks) {
             val vector = Vector(bookmark.x, bookmark.y, bookmark.z)
@@ -950,7 +950,7 @@ object ContactsSidebar {
 
 
     private fun sortContacts(contactsList: MutableList<ContactsData>, player: Player) {
-        val sortOrder = ContactsSorting.entries[player.getSetting(PlayerSettings::contactsSort)]
+        val sortOrder = ContactsSorting.entries[player.getSettingOrThrow(PlayerSettings::contactsSort)]
 
         when (sortOrder) {
             // Sort by distance ascending
