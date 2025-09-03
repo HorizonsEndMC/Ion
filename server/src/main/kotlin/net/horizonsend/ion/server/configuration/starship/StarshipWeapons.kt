@@ -326,7 +326,7 @@ data class LightTurretBalancing(
 data class HeavyTurretBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = true, minBlockCount = 6500, maxBlockCount = 12000),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
-	override val firePowerConsumption: Int = 8000,
+	override val firePowerConsumption: Int = 2667,
 	override val isForwardOnly: Boolean = false,
 	override val inaccuracyDegrees: Double = 2.0,
 	override val maxPerShot: Int? = null,
