@@ -272,8 +272,12 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 				if (node.location in outputs.keys) continue
 
 				val edge = getGraph().outEdges(node).maxByOrNull { edge -> (edge as FluidGraphEdge).netFlow } as? FluidGraphEdge ?: continue
+
 				var childDirection = edge.direction
-				if (edge.netFlow == 0.0) childDirection = BlockFace.SELF
+
+				if (getFlow(node.location) <= 0 || edge.netFlow == 0.0) {
+					childDirection = BlockFace.SELF
+				}
 
 				// Flow from parent
 				val parent = edge.nodeOne as FluidNode
