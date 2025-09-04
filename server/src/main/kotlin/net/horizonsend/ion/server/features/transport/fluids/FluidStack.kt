@@ -40,6 +40,7 @@ class FluidStack(
 		set
 
 	fun isEmpty(): Boolean = type == FluidTypeKeys.EMPTY || amount <= 0
+	fun isNotEmpty(): Boolean = type != FluidTypeKeys.EMPTY && amount > 0
 
 	/**
 	 * Returns a copy of this fluid stack with the amount specified
