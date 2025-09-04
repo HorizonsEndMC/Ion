@@ -66,7 +66,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerIndustry()
 		registerShipCores()
 		registerPipes()
-		registerE2Wires()
+		registerGridEnergyWires()
 		registerGasCanisters()
 		registerTools()
 		registerModificationItems()
@@ -346,8 +346,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		customBlockItem(CustomItemKeys.REINFORCED_FLUID_PIPE_JUNCTION, "pipe/reinforced_fluid_pipe_junction", Component.text("Reinforced Fluid Pipe Junction").itemName, CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION)
 	}
 
-	fun registerE2Wires() {
-		customBlockItem(CustomItemKeys.E2_PORT, "pipe/e2_port", Component.text("E2 Port").itemName, CustomBlockKeys.E2_PORT)
+	fun registerGridEnergyWires() {
+		customBlockItem(CustomItemKeys.GRID_ENERGY_PORT, "pipe/grid_energy_port", Component.text("Grid Energy Port").itemName, CustomBlockKeys.GRID_ENERGY_PORT)
 	}
 
 	private fun registerGasCanisters() {

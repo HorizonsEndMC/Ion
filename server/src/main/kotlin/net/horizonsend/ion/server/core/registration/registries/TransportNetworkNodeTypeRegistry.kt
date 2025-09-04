@@ -4,24 +4,24 @@ import com.manya.pdc.base.EnumDataType
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys
-import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.E2_JUNCTION
-import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.E2_PORT
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_JUNCTION_REGULAR
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_JUNCTION_REINFORCED
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_LINEAR_REGULAR
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_LINEAR_REINFORCED
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_PORT
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_VALVE
+import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.GRID_ENERGY_JUNCTION
+import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.GRID_ENERGY_PORT
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
-import net.horizonsend.ion.server.features.transport.manager.graph.e2.E2Node.E2Junction
-import net.horizonsend.ion.server.features.transport.manager.graph.e2.E2Node.E2Port
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidPort
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidValve
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.RegularJunctionPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.RegularLinearPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedJunctionPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedLinearPipe
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyJunction
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyPort
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode.Companion.NODE_POSITION
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CONTENTS
@@ -116,25 +116,25 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return pdc
 			}
 		})
-		register(E2_PORT, object : TransportNodeType<E2Port>(E2_PORT) {
-			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): E2Port {
-				val node = E2Port(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
+		register(GRID_ENERGY_PORT, object : TransportNodeType<GridEnergyPort>(GRID_ENERGY_PORT) {
+			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): GridEnergyPort {
+				val node = GridEnergyPort(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
 				return node
 			}
 
-			override fun serializeData(complex: E2Port, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(complex: GridEnergyPort, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
 				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
 				return pdc
 			}
 		})
-		register(E2_JUNCTION, object : TransportNodeType<E2Junction>(E2_JUNCTION) {
-			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): E2Junction {
-				val node = E2Junction(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
+		register(GRID_ENERGY_JUNCTION, object : TransportNodeType<GridEnergyJunction>(GRID_ENERGY_JUNCTION) {
+			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): GridEnergyJunction {
+				val node = GridEnergyJunction(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
 				return node
 			}
 
-			override fun serializeData(complex: E2Junction, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(complex: GridEnergyJunction, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
 				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
 				return pdc

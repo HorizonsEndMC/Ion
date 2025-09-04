@@ -5,8 +5,8 @@ import net.horizonsend.ion.server.features.transport.filters.manager.ChunkFilter
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
 import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ChunkExtractorManager
-import net.horizonsend.ion.server.features.transport.manager.graph.E2GraphManager
 import net.horizonsend.ion.server.features.transport.manager.graph.FluidNetworkManager
+import net.horizonsend.ion.server.features.transport.manager.graph.GridEnergyGraphManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ChunkCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
@@ -89,7 +89,7 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHo
 		return getWorld().ion.transportManager.fluidGraphManager
 	}
 
-	override fun getE2GraphTransportManager(): E2GraphManager {
-		return getWorld().ion.transportManager.e2GraphManager
+	override fun getGridEnergyGraphTransportManager(): GridEnergyGraphManager {
+		return getWorld().ion.transportManager.gridEnergyGraphManager
 	}
 }

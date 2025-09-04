@@ -3,8 +3,8 @@ package net.horizonsend.ion.server.features.transport.manager
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.NewTransport.registerTransportManager
 import net.horizonsend.ion.server.features.transport.inputs.IOManager
-import net.horizonsend.ion.server.features.transport.manager.graph.E2GraphManager
 import net.horizonsend.ion.server.features.transport.manager.graph.FluidNetworkManager
+import net.horizonsend.ion.server.features.transport.manager.graph.GridEnergyGraphManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import org.bukkit.World
 import org.bukkit.persistence.PersistentDataContainer
@@ -12,7 +12,7 @@ import java.util.function.Consumer
 
 class WorldTransportManager(val world: IonWorld) : TransportHolder {
 	val fluidGraphManager = FluidNetworkManager(this)
-	val e2GraphManager = E2GraphManager(this)
+	val gridEnergyGraphManager = GridEnergyGraphManager(this)
 
 	override fun getInputProvider(): IOManager {
 		return world.inputManager
@@ -37,7 +37,7 @@ class WorldTransportManager(val world: IonWorld) : TransportHolder {
 	override fun tickGraphs() {
 		try {
 			fluidGraphManager.tick()
-			e2GraphManager.tick()
+			gridEnergyGraphManager.tick()
 		} catch (e: Throwable) {
 			e.printStackTrace()
 		}

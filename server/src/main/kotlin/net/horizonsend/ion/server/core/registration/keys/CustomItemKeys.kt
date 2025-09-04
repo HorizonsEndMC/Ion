@@ -233,5 +233,5 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val REINFORCED_FLUID_PIPE = registerTypedKey<CustomBlockItem>("REINFORCED_FLUID_PIPE")
 	val REINFORCED_FLUID_PIPE_JUNCTION = registerTypedKey<CustomBlockItem>("REINFORCED_FLUID_PIPE_JUNCTION")
 
-	val E2_PORT = registerTypedKey<CustomBlockItem>("E2_PORT")
+	val GRID_ENERGY_PORT = registerTypedKey<CustomBlockItem>("GRID_ENERGY_PORT")
 }

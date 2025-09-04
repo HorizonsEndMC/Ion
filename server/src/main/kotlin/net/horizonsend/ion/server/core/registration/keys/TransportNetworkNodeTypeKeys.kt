@@ -2,14 +2,14 @@ package net.horizonsend.ion.server.core.registration.keys
 
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys.TRANSPORT_NETWORK_NODE_TYPE
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
-import net.horizonsend.ion.server.features.transport.manager.graph.e2.E2Node.E2Junction
-import net.horizonsend.ion.server.features.transport.manager.graph.e2.E2Node.E2Port
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidPort
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidValve
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.RegularJunctionPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.RegularLinearPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedJunctionPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedLinearPipe
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyJunction
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyPort
 
 object TransportNetworkNodeTypeKeys : KeyRegistry<TransportNodeType<*>>(TRANSPORT_NETWORK_NODE_TYPE, TransportNodeType::class) {
 	val FLUID_JUNCTION_REGULAR = registerTypedKey<TransportNodeType<RegularJunctionPipe>>("FLUID_JUNCTION_REGULAR")
@@ -19,6 +19,6 @@ object TransportNetworkNodeTypeKeys : KeyRegistry<TransportNodeType<*>>(TRANSPOR
 	val FLUID_PORT = registerTypedKey<TransportNodeType<FluidPort>>("FLUID_PORT")
 	val FLUID_VALVE = registerTypedKey<TransportNodeType<FluidValve>>("FLUID_VALVE")
 
-	val E2_PORT = registerTypedKey<TransportNodeType<E2Port>>("E2_PORT")
-	val E2_JUNCTION = registerTypedKey<TransportNodeType<E2Junction>>("E2_JUNCTION")
+	val GRID_ENERGY_PORT = registerTypedKey<TransportNodeType<GridEnergyPort>>("GRID_ENERGY_PORT")
+	val GRID_ENERGY_JUNCTION = registerTypedKey<TransportNodeType<GridEnergyJunction>>("GRID_ENERGY_JUNCTION")
 }

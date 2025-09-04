@@ -282,14 +282,14 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		register(CustomBlockKeys.REINFORCED_FLUID_PIPE, ReinforcedFluidPipeBlock)
 		register(CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION, ReinforcedFluidPipeJunctionBlock)
 
-		register(CustomBlockKeys.E2_PORT, object : CustomBlock(
-			key = CustomBlockKeys.E2_PORT,
+		register(CustomBlockKeys.GRID_ENERGY_PORT, object : CustomBlock(
+			key = CustomBlockKeys.GRID_ENERGY_PORT,
 			blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.DOWN, BlockFace.WEST, BlockFace.NORTH)),
 			drops = BlockLoot(
 				requiredTool = null,
-				drops = customItemDrop(CustomItemKeys.E2_PORT)
+				drops = customItemDrop(CustomItemKeys.GRID_ENERGY_PORT)
 			),
-			CustomItemKeys.E2_PORT
+			CustomItemKeys.GRID_ENERGY_PORT
 		), WrenchRemovable {
 			override fun decorateItem(itemStack: ItemStack, block: Block) {}
 		})

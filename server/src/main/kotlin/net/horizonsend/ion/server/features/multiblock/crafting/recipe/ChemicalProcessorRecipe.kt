@@ -4,8 +4,8 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.multiblock.crafting.input.ChemicalProcessorEnviornment
-import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.E2Requirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.FluidRecipeRequirement
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.GridEnergyRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.RequirementHolder
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.RequirementHolder.Companion.anySlot
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement
@@ -24,7 +24,7 @@ class ChemicalProcessorRecipe(
 	val itemRequirement: ItemRequirement?,
 	val fluidRequirementOne: FluidRecipeRequirement<ChemicalProcessorEnviornment>?,
 	val fluidRequirementTwo: FluidRecipeRequirement<ChemicalProcessorEnviornment>?,
-	val e2Requirement: E2Requirement<ChemicalProcessorEnviornment>?,
+	val gridEnergyRequirement: GridEnergyRequirement<ChemicalProcessorEnviornment>?,
 
 	val fluidResultOne: FluidResult<ChemicalProcessorEnviornment>?,
 	val fluidResultTwo: FluidResult<ChemicalProcessorEnviornment>?,
@@ -55,11 +55,11 @@ class ChemicalProcessorRecipe(
 		},
 
 		// Fluid two
-		e2Requirement?.let {
+		gridEnergyRequirement?.let {
 			RequirementHolder.simpleConsumable(
-				{ it.getAvailablePower(e2Requirement.amount) },
-				e2Requirement,
-				Component.text("Insufficient E2", NamedTextColor.RED)
+				{ it.getAvailablePower(gridEnergyRequirement.amount) },
+				gridEnergyRequirement,
+				Component.text("Insufficient Energy", NamedTextColor.RED)
 			)
 		}
 	)

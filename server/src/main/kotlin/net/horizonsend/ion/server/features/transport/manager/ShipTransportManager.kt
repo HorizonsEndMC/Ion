@@ -8,8 +8,8 @@ import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.features.transport.inputs.ShipIOManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ShipExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
-import net.horizonsend.ion.server.features.transport.manager.graph.E2GraphManager
 import net.horizonsend.ion.server.features.transport.manager.graph.FluidNetworkManager
+import net.horizonsend.ion.server.features.transport.manager.graph.GridEnergyGraphManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ShipCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
@@ -105,7 +105,7 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 //		return getWorld().ion.transportManager.fluidGraphManager
 	}
 
-	override fun getE2GraphTransportManager(): E2GraphManager {
+	override fun getGridEnergyGraphTransportManager(): GridEnergyGraphManager {
 		TODO()
 //		return getWorld().ion.transportManager.fluidGraphManager
 	}

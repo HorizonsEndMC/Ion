@@ -1,9 +1,9 @@
-package net.horizonsend.ion.server.features.client.display.modular.display.e2
+package net.horizonsend.ion.server.features.client.display.modular.display.gridenergy
 
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.DisplayModule
-import net.horizonsend.ion.server.features.multiblock.entity.type.e2.E2Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock
 import net.horizonsend.ion.server.features.starship.destruction.SinkAnimation
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
@@ -14,28 +14,28 @@ import org.bukkit.Bukkit.getPlayer
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
-class E2ConsumptionDisplay(
-	handler: TextDisplayHandler,
-	val multiblock: E2Multiblock,
-	offsetLeft: Double,
-	offsetUp: Double,
-	offsetBack: Double,
-	scale: Float,
-	relativeFace: RelativeFace = RelativeFace.FORWARD,
+class GridEnergyConsumptionDisplay(
+    handler: TextDisplayHandler,
+    val multiblock: GridEnergyMultiblock,
+    offsetLeft: Double,
+    offsetUp: Double,
+    offsetBack: Double,
+    scale: Float,
+    relativeFace: RelativeFace = RelativeFace.FORWARD,
 ) : DisplayModule(handler, offsetLeft, offsetUp, offsetBack, scale, relativeFace, updateRateProvider = provider@{
 	val nearbyViewers = (getPossibleViewers(true) ?: return@provider 1000L).mapNotNull(::getPlayer).any { player -> player.location.distance(it) < 10 }
 	if (nearbyViewers) 100L else 1000L
 }) {
-	private val updateHandler: (E2Multiblock) -> Unit = {
+	private val updateHandler: (GridEnergyMultiblock) -> Unit = {
 		runUpdates()
 	}
 
 	override fun register() {
-		multiblock.e2Manager.registerUpdateListener(updateHandler)
+		multiblock.gridEnergyManager.registerUpdateListener(updateHandler)
 	}
 
 	override fun deRegister() {
-		multiblock.e2Manager.deregisterUpdateListener(updateHandler)
+		multiblock.gridEnergyManager.deregisterUpdateListener(updateHandler)
 	}
 
 	companion object {
@@ -45,7 +45,7 @@ class E2ConsumptionDisplay(
 	}
 
 	private fun formatPower(): Component {
-		var amount = multiblock.getTotalE2Consumption()
+		var amount = multiblock.getTotalGridEnergyConsumption()
 
 		var unit = "W"
 

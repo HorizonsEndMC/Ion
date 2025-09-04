@@ -8,20 +8,20 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
-import net.horizonsend.ion.server.features.client.display.modular.display.e2.E2ConsumptionDisplay
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SimpleFluidDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.getLinePos
+import net.horizonsend.ion.server.features.client.display.modular.display.gridenergy.GridEnergyConsumptionDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.e2.E2Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.type.e2.E2PortMetaData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
+import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock
+import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyPortMetaData
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
@@ -107,7 +107,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 			y(-1) {
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 				x(1).titaniumBlock()
-				x(0).e2Port()
+				x(0).gridEnergyPort()
 				x(-1).titaniumBlock()
 				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
@@ -141,9 +141,9 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 		y,
 		z,
 		structureDirection
-	), DisplayMultiblockEntity, FluidStoringMultiblock, AsyncTickingMultiblockEntity, E2Multiblock, StatusMultiblockEntity {
+	), DisplayMultiblockEntity, FluidStoringMultiblock, AsyncTickingMultiblockEntity, GridEnergyMultiblock, StatusMultiblockEntity {
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(5)
-		override val e2Manager: E2Multiblock.E2Manager = E2Multiblock.E2Manager(this)
+		override val gridEnergyManager: GridEnergyMultiblock.MultiblockGridEnergyManager = GridEnergyMultiblock.MultiblockGridEnergyManager(this)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
 		override val ioData: IOData = IOData.Companion.builder(this)
@@ -152,7 +152,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 			// Output
 			.addPort(IOType.FLUID, 2, -1, 1) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
 			.addPort(IOType.FLUID, -2, -1, 1) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
-			.addPort(IOType.E2, 0, -1, 0) { IOPort.RegisteredMetaDataInput<E2PortMetaData>(this, E2PortMetaData(inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.GRID_ENERGY, 0, -1, 0) { IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>(this, GridEnergyPortMetaData(inputAllowed = false, outputAllowed = true)) }
 			.build()
 
 		val mainStorage = FluidStorageContainer(data, "main_storage", Component.text("Main Storage"), NamespacedKeys.MAIN_STORAGE, 1_000.0, FluidRestriction.Unlimited)
@@ -160,11 +160,11 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
 			{ SimpleFluidDisplayModule(handler = it, storage = mainStorage, offsetLeft = 0.0, offsetUp = getLinePos(2), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
-			{ E2ConsumptionDisplay(handler = it, multiblock = this, offsetLeft = 0.0, offsetUp = getLinePos(3), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
+			{ GridEnergyConsumptionDisplay(handler = it, multiblock = this, offsetLeft = 0.0, offsetUp = getLinePos(3), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
 			{ StatusDisplayModule(it, statusManager) },
 		)
 
-		override fun getE2Output(): Double = 150.0
+		override fun getGridEnergyOutput(): Double = 150.0
 
 		override fun getStores(): List<FluidStorageContainer> {
 			return listOf(mainStorage)
@@ -175,7 +175,7 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 		}
 
 		override fun tickAsync() {
-			bootstrapE2Network()
+			bootstrapGridEnergyNetwork()
 			bootstrapFluidNetwork()
 			tryPumpFluid()
 		}

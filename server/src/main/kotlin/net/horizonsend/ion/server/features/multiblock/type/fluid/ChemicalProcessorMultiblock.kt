@@ -10,8 +10,8 @@ import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHan
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
 import net.horizonsend.ion.server.features.client.display.modular.display.POWER_TEXT_LINE
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
-import net.horizonsend.ion.server.features.client.display.modular.display.e2.E2ConsumptionDisplay
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
+import net.horizonsend.ion.server.features.client.display.modular.display.gridenergy.GridEnergyConsumptionDisplay
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
 import net.horizonsend.ion.server.features.gui.custom.settings.button.ArbitraryButton
@@ -27,12 +27,12 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultib
 import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity.MultiblockRecipeManager
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.e2.E2Multiblock
-import net.horizonsend.ion.server.features.multiblock.entity.type.e2.E2PortMetaData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
+import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock
+import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyPortMetaData
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.StatusTickedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
@@ -78,7 +78,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		z(0) {
 			y(-1) {
 				x(-1).ironBlock()
-				x(0).e2Port()
+				x(0).gridEnergyPort()
 				x(1).ironBlock()
 			}
 			y(0) {
@@ -536,14 +536,14 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
         SyncTickingMultiblockEntity,
         ProgressMultiblock,
         RecipeProcessingMultiblockEntity<ChemicalProcessorEnviornment>,
-		E2Multiblock,
+		GridEnergyMultiblock,
 		StatusTickedMultiblockEntity
 	{
 		override val recipeManager: MultiblockRecipeManager<ChemicalProcessorEnviornment> = MultiblockRecipeManager()
 
 		override val progressManager: ProgressMultiblock.ProgressManager = ProgressMultiblock.ProgressManager(data)
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(4)
-		override val e2Manager: E2Multiblock.E2Manager = E2Multiblock.E2Manager(this)
+		override val gridEnergyManager: GridEnergyMultiblock.MultiblockGridEnergyManager = GridEnergyMultiblock.MultiblockGridEnergyManager(this)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
 		override val ioData: IOData = IOData.Companion.builder(this)
@@ -563,8 +563,8 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
                 IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = pollutionOutput, inputAllowed = false, outputAllowed = true))
             }
 
-			.addPort(IOType.E2, 0, -1, 0) {
-                IOPort.RegisteredMetaDataInput<E2PortMetaData>(this, E2PortMetaData(inputAllowed = true, outputAllowed = false))
+			.addPort(IOType.GRID_ENERGY, 0, -1, 0) {
+                IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>(this, GridEnergyPortMetaData(inputAllowed = true, outputAllowed = false))
             }
 
 			.build()
@@ -680,7 +680,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
                 )
             },
 			{
-                E2ConsumptionDisplay(
+                GridEnergyConsumptionDisplay(
                     handler = it,
 					multiblock = this,
                     offsetLeft = 0.0,
@@ -710,7 +710,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 					tickActivePower()
 
 					if (getAvailablePowerPercentage() < 1.0) {
-						setStatus(Component.text("Insufficient E2", NamedTextColor.RED))
+						setStatus(Component.text("Insufficient Energy", NamedTextColor.RED))
 					} else {
 						clearStatus()
 					}
@@ -726,12 +726,12 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 			}
 		}
 
-		override fun getPassiveE2Consumption(): Double {
+		override fun getPassiveGridEnergyConsumption(): Double {
 			return 10.0
 		}
 
 		override fun tickAsync() {
-			bootstrapE2Network()
+			bootstrapGridEnergyNetwork()
 			bootstrapFluidNetwork()
 		}
 

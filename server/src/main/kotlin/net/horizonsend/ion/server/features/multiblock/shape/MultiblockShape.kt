@@ -482,7 +482,7 @@ class MultiblockShape {
 		)
 
 		fun fluidPort() = customBlock(CustomBlockKeys.FLUID_PORT.getValue())
-		fun e2Port() = customBlock(CustomBlockKeys.E2_PORT.getValue())
+		fun gridEnergyPort() = customBlock(CustomBlockKeys.GRID_ENERGY_PORT.getValue())
 		fun powerInput() = type(Material.NOTE_BLOCK)
 		fun extractor() = type(STANDARD_EXTRACTOR_TYPE)
 

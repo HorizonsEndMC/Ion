@@ -15,8 +15,8 @@ import net.horizonsend.ion.server.features.multiblock.crafting.recipe.AutoMasonR
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.ChemicalProcessorRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.FurnaceMultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
-import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.E2Requirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.FluidRecipeRequirement
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.GridEnergyRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.PowerRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.GasCanisterRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement
@@ -615,7 +615,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			itemRequirement = MaterialRequirement(Material.IRON_INGOT),
 			fluidRequirementOne = FluidRecipeRequirement("primaryin", FluidTypeKeys.OXYGEN, 10.0),
 			fluidRequirementTwo = FluidRecipeRequirement("secondaryin", FluidTypeKeys.METHANE, 10.0),
-			e2Requirement = E2Requirement(300.0, 1.0, Duration.ofSeconds(2)),
+			gridEnergyRequirement = GridEnergyRequirement(300.0, 1.0, Duration.ofSeconds(2)),
 			fluidResultOne = FluidResult("primaryout", FluidStack(FluidTypeKeys.WATER, 10.0)),
 			fluidResultTwo = FluidResult("secondaryout", FluidStack(FluidTypeKeys.CARBON_DIOXIDE, 10.0)),
 			fluidResultPollutionResult = FluidResult("pollution", FluidStack(FluidTypeKeys.CARBON_DIOXIDE, 1.0)),
@@ -627,7 +627,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 			itemRequirement = MaterialRequirement(Material.IRON_INGOT),
 			fluidRequirementOne = FluidRecipeRequirement("primaryin", FluidTypeKeys.CARBON_DIOXIDE, 1.0),
 			fluidRequirementTwo = FluidRecipeRequirement("secondaryin", FluidTypeKeys.HYDROGEN, 4.0),
-			e2Requirement = E2Requirement(300.0, 1.0, Duration.ofSeconds(2)),
+			gridEnergyRequirement = GridEnergyRequirement(300.0, 1.0, Duration.ofSeconds(2)),
 
 			fluidResultOne = FluidResult("primaryout", FluidStack(FluidTypeKeys.METHANE, 1.0)),
 			fluidResultTwo = FluidResult("secondaryout", FluidStack(FluidTypeKeys.WATER, 1.0)),

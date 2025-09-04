@@ -108,7 +108,7 @@ object StructureCreator : SLCommand() {
 			CustomBlockKeys.ENRICHED_URANIUM_BLOCK -> ".enrichedUraniumBlock()"
 			CustomBlockKeys.NETHERITE_CASING -> ".netheriteCasing()"
 			CustomBlockKeys.FLUID_PORT -> ".fluidPort()"
-			CustomBlockKeys.E2_PORT -> ".e2Port()"
+			CustomBlockKeys.GRID_ENERGY_PORT -> ".gridEnergyPort()"
 			else -> ".customBlock(CustomBlocksKeys.${registryKey.key}.getValue())"
 		}
 

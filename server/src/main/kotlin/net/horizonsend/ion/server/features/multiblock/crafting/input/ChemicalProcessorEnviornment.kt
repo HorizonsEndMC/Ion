@@ -18,7 +18,7 @@ class ChemicalProcessorEnviornment(
 	val fluidOutputTwo: FluidStorageContainer,
 
 	val pollutionContainer: FluidStorageContainer
-) : RecipeEnviornment, InventoryResultEnviornment, FluidMultiblockEnviornment, E2Enviornment, StatusRecipeEnvironment {
+) : RecipeEnviornment, InventoryResultEnviornment, FluidMultiblockEnviornment, GridEnergyEnviornment, StatusRecipeEnvironment {
 	override fun getInputItemSize(): Int {
 		return 0
 	}

@@ -393,12 +393,12 @@ object TransportDebugCommand : SLCommand() {
 	}
 
 	@Subcommand("get chunk grids")
-	@CommandCompletion("FLUID|E2")
+	@CommandCompletion("FLUID|GRID_ENERGY")
 	fun getChunkGrids(sender: Player, type: String, @Optional pageNumber: Int?) {
 		val transportManager = sender.world.ion.transportManager
 		val fluidManager = when (type.uppercase()) {
 			"FLUID" -> transportManager.fluidGraphManager
-			"E2" -> transportManager.e2GraphManager
+			"GRID_ENERGY" -> transportManager.gridEnergyGraphManager
 			else -> fail { "Unknown network type $type" }
 		}
 
