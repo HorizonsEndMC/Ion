@@ -12,7 +12,6 @@ import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.roundToTenThousanth
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
@@ -360,13 +359,17 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		getGraphNodes().forEach { node ->
 			if (manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input ->
-				val holder = input.holder as FluidStoringMultiblock
-				input.metaData.inputAllowed && holder.getStores().any { container -> container.getContents().canCombine(networkContents) && container.getRemainingRoom() > 0.0 }
+				val container = input.metaData.connectedStore
+
+				// If the port can have input, has a fluid that can be combined with the network, and has room for more fluid, add to sinks.
+				input.metaData.inputAllowed && input.metaData.connectedStore.getContents().canCombine(networkContents) && container.getRemainingRoom() > 0.0
 			}) sinks.add(node)
 
 			if (manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input ->
-				val holder = input.holder as FluidStoringMultiblock
-				input.metaData.outputAllowed && holder.getRemovable().any { container -> networkContents.canCombine(container.getContents()) }
+				val container = input.metaData.connectedStore
+
+				// If the port can output, has a fluid that can be combined, and is not empty, add to sources.
+				input.metaData.outputAllowed && container.getContents().canCombine(container.getContents()) && container.getContents().amount > 0.0
 			}) sources.add(node)
 		}
 
