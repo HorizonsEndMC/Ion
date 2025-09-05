@@ -377,7 +377,17 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			}) sources.add(node)
 		}
 
-		if ((sinks.isEmpty() && leakingPipes.isEmpty()) || sources.isEmpty()) return
+		if ((sinks.isEmpty() && leakingPipes.isEmpty())) return
+
+		if (sources.isEmpty()) {
+			for (node in sinks) {
+				flowMap[node.location] = node.flowCapacity
+			}
+			for (node in leakingPipes.iterator()) {
+				flowMap[node] = 1.0
+			}
+			return
+		}
 
 		val valueGraph = getValueGraphRepresentation()
 
