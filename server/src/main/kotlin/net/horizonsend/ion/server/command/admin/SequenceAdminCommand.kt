@@ -30,6 +30,12 @@ object SequenceAdminCommand : SLCommand() {
 		SequenceManager.startPhase(sender, sequence.key, sequence.firstPhase)
 	}
 
+	@Subcommand("sequence end")
+	fun end(sender: Player, sequence: Sequence) {
+		sender.information("Starting ${sequence.key}")
+		SequenceManager.endSequence(sender, sequence)
+	}
+
 	@Subcommand("phase start")
 	fun start(sender: Player, phase: SequencePhase) {
 		sender.information("Starting ${phase.phaseKey.key}")
