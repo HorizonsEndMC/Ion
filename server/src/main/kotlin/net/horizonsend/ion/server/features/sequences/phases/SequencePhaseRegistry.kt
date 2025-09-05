@@ -21,6 +21,8 @@ import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendMessage
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_DYNMAP
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_LOOK_OUTSIDE
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_MULTIBLOCKS
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_NAVIGATION
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_SHIP_COMPUTER
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BROKEN_ELEVATOR
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.CREW_QUARTERS
@@ -279,14 +281,48 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					type = SequenceTriggerTypes.PLAYER_MOVEMENT,
 					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(91, 351, 24, 95, 354, 24))),
 					triggerResult = SequenceTrigger.startPhase(GET_CHETHERITE)
-                )
+                ),
+				SequenceTrigger(
+					SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(
+						// If looking out window
+						SequenceTrigger(
+							SequenceTriggerTypes.PLAYER_MOVEMENT,
+							MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(90, 351, 48, 84, 356, 43), distance = 10.0)),
+							triggerResult = SequenceTrigger.startPhase(BRANCH_NAVIGATION)
+						),
+						// Only trigger this branch if first time
+						SequenceTrigger(
+							SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_navigation") { it != true },
+							triggerResult = SequenceTrigger.startPhase(BRANCH_NAVIGATION)
+						)
+					), triggerResult = SequenceTrigger.startPhase(BRANCH_NAVIGATION)
+				),
+				SequenceTrigger(
+					SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(
+						// If looking out window
+						SequenceTrigger(
+							SequenceTriggerTypes.PLAYER_MOVEMENT,
+							MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(96, 351, 51, 100, 356, 41), distance = 10.0)),
+							triggerResult = SequenceTrigger.startPhase(BRANCH_MULTIBLOCKS)
+						),
+						// Only trigger this branch if first time
+						SequenceTrigger(
+							SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_multiblocks") { it != true },
+							triggerResult = SequenceTrigger.startPhase(BRANCH_MULTIBLOCKS)
+						)
+					), triggerResult = SequenceTrigger.startPhase(BRANCH_MULTIBLOCKS)
+				)
             ),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
-                NEXT_PHASE_SOUND,
-                SendMessage(Component.empty(), EffectTiming.START),
-                SendMessage(text("The ship's gravity generators have failed in the attack! Fly over the obstacle!", GRAY, ITALIC), EffectTiming.START),
-                SendMessage(Component.empty(), EffectTiming.START),
+
+				ifPreviousPhase(
+					CREW_QUARTERS, EffectTiming.START,
+					NEXT_PHASE_SOUND,
+					SendMessage(Component.empty(), EffectTiming.START),
+					SendMessage(text("The ship's gravity generators have failed in the attack! Fly over the obstacle!", GRAY, ITALIC), EffectTiming.START),
+					SendMessage(Component.empty(), EffectTiming.START),
+				)
             )
         )
 
@@ -375,6 +411,40 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SequencePhaseEffect.SetSequenceData("seen_ship_computer", true, Boolean::class, EffectTiming.END),
             )
         )
+
+		bootstrapPhase(
+			phaseKey = BRANCH_NAVIGATION,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			triggers = listOf(),
+			effects = listOf(
+				RANDOM_EXPLOSION_SOUND,
+				NEXT_PHASE_SOUND,
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(text(/*TODO*/ "These are navigation machines.", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
+
+				GoToPreviousPhase(EffectTiming.START),
+
+				SequencePhaseEffect.SetSequenceData("seen_navigation", true, Boolean::class, EffectTiming.END),
+			)
+		)
+
+		bootstrapPhase(
+			phaseKey = BRANCH_MULTIBLOCKS,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			triggers = listOf(),
+			effects = listOf(
+				RANDOM_EXPLOSION_SOUND,
+				NEXT_PHASE_SOUND,
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(text(/*TODO*/ "These are multiblocks", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
+
+				GoToPreviousPhase(EffectTiming.START),
+
+				SequencePhaseEffect.SetSequenceData("seen_multiblocks", true, Boolean::class, EffectTiming.END),
+			)
+		)
     }
 
 	private fun fullBoundingBox(x1: Int, y1: Int, z1: Int, x2: Int, y2: Int, z2: Int): BoundingBox {
