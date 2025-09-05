@@ -35,7 +35,7 @@ object ChatListener : SLEventListener() {
 
 			val channel = when {
 				plainText.startsWith("!") -> ChatChannel.GLOBAL
-				else -> ChannelSelections[event.player]
+				else -> ChannelSelections.consumeTemporaryChannel(event.player.uniqueId) ?: ChannelSelections[event.player]
 			}
 
 			// For some reason the replace function returns a copy, no other adventure method does this

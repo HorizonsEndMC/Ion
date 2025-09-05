@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
+import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.action
 import net.horizonsend.ion.server.miscellaneous.utils.colorize
@@ -57,6 +58,7 @@ import org.bukkit.event.player.PlayerBucketFillEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.InventoryHolder
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 object ProtectionListener : SLEventListener() {
 	val orbitBreakEnable = mutableSetOf<UUID>()
@@ -141,6 +143,7 @@ object ProtectionListener : SLEventListener() {
 	@EventHandler
 	fun onBucketEmpty(event: PlayerBucketEmptyEvent) = onBlockEdit(event, event.block.location, event.player)
 
+	val orbitBreakWarning = PerPlayerCooldown(10, TimeUnit.SECONDS)
 	/** Called on block break etc. GriefPrevention check should be done first.
 	 *  Loops through protected regions at location, checks each one for access message
 	 *  @return true if the event should be cancelled, false if it should stay the same. */
@@ -168,8 +171,10 @@ object ProtectionListener : SLEventListener() {
 			}
 			else if (event is BlockBreakEvent) {
 				return if (!orbitBreakEnable.contains(player.uniqueId)) {
-					player.hint("Did you want to break blocks in the orbit of a planet? Click to enable")
-					player.sendRichMessage("<green><italic><hover:show_text:'<gray>/orbitbreak'><click:run_command:/orbitbreak>Enable</click>")
+					orbitBreakWarning.tryExec(player) {
+						player.hint("Did you want to break blocks in the orbit of a planet? Click to enable")
+						player.sendRichMessage("<green><italic><hover:show_text:'<gray>/orbitbreak'><click:run_command:/orbitbreak>Enable</click>")
+					}
 					true
 				} else false
 			}

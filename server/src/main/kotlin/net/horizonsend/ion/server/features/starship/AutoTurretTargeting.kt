@@ -33,7 +33,8 @@ object AutoTurretTargeting : IonServerComponent() {
 		data object HostileMobTarget: TargetType<ActiveStarship>({ ship, identifier ->
 			val type = EntityType.valueOf(identifier)
 
-			ship.world.getNearbyEntitiesByType(type.entityClass, ship.centerOfMass.toLocation(ship.world), 100.0).firstOrNull()?.location
+            ship.world.getNearbyEntitiesByType(type.entityClass, ship.centerOfMass.toLocation(ship.world), 100.0).minByOrNull {
+				entity -> ship.centerOfMass.toCenterVector().distance(entity.location.toVector()) }?.location
 		})
 	}
 

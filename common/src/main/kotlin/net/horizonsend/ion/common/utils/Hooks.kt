@@ -49,8 +49,17 @@ abstract class Mutes: IonComponent() {
 			}
 		)
 
-	fun checkMute(playerId: UUID): CompletableFuture<Boolean> = CompletableFuture.supplyAsync { muteCache[playerId] }
-	fun checkBan(playerId: UUID): CompletableFuture<Boolean> = CompletableFuture.supplyAsync { banCache[playerId] }
+	fun checkMute(playerId: UUID): CompletableFuture<Boolean> {
+		val presentValue = muteCache.getIfPresent(playerId)
+		if (presentValue != null) return CompletableFuture.completedFuture(presentValue)
+		return CompletableFuture.supplyAsync { muteCache[playerId] }
+	}
+
+	fun checkBan(playerId: UUID): CompletableFuture<Boolean> {
+		val presentValue = banCache.getIfPresent(playerId)
+		if (presentValue != null) return CompletableFuture.completedFuture(presentValue)
+		return CompletableFuture.supplyAsync { banCache[playerId] }
+	}
 
 	private fun playerIsMuted(playerId: UUID): Boolean = liteBansDatabase.isPlayerMuted(playerId, null)
 	private fun playerIsBanned(playerId: UUID): Boolean = liteBansDatabase.isPlayerBanned(playerId, null)

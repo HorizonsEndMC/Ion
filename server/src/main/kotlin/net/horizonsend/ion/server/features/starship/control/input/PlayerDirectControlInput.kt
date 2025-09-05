@@ -47,6 +47,8 @@ class PlayerDirectControlInput(override val controller: PlayerController
 		controller.sendMessage(message)
 
 		player.walkSpeed = 0.009f
+		player.flySpeed = 0.0009f
+		player.isFlying = true
 
 		val playerLoc = player.location
 		val newCenter = playerLoc.toBlockLocation().add(0.5, playerLoc.y.rem(1)+0.001, 0.5)
@@ -59,6 +61,7 @@ class PlayerDirectControlInput(override val controller: PlayerController
 		controller.sendMessage(ofChildren(text("Direct Control: ", GRAY), text("OFF ", NamedTextColor.RED), text("[Use /dc to turn it on]", YELLOW)))
 
 		player.walkSpeed = 0.2f // default
+		player.isFlying = false
 	}
 
 	override fun handlePlayerHoldItem(event: PlayerItemHeldEvent) {
@@ -131,6 +134,8 @@ class PlayerDirectControlInput(override val controller: PlayerController
 		internalTick++
 		if (internalTick % catchCooldown != 0) return cachedState // reduce teleports to make it non hyper sensitive
 		internalTick = 0
+
+		player.isFlying = true
 
 		// If player moved, teleport them back to dc center
 		if (vector.x != 0.0 || vector.z != 0.0) {
