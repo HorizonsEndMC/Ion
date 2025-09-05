@@ -9,8 +9,8 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.colors.PIRATE_SATURATED_RED
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.TypeCategory
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController

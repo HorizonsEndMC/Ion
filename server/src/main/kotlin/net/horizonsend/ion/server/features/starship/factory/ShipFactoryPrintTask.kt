@@ -9,10 +9,15 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
-import net.horizonsend.ion.common.utils.text.*
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.common.utils.text.toComponent
+import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
@@ -29,19 +34,31 @@ import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
-import net.horizonsend.ion.server.miscellaneous.utils.*
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
+import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
+import net.horizonsend.ion.server.miscellaneous.utils.setNMSBlockData
+import net.horizonsend.ion.server.miscellaneous.utils.withdrawMoney
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.NamedTextColor.*
+import net.kyori.adventure.text.format.NamedTextColor.DARK_GRAY
+import net.kyori.adventure.text.format.NamedTextColor.GREEN
+import net.kyori.adventure.text.format.NamedTextColor.RED
+import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import net.starlegacy.javautil.SignUtils.SignData
 import org.bukkit.Material
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Waterlogged
 import org.bukkit.entity.Player
+import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -285,6 +302,22 @@ class ShipFactoryPrintTask(
 			val blockData = blockMap.remove(entry) ?: continue
 			val signData = signMap.remove(entry)
 
+			val block = entity.world.getBlockAt(getX(entry), getY(entry), getZ(entry))
+
+			val event = BlockPlaceEvent(
+				block,
+				block.getState(false),
+				block,
+				player.activeItem,
+				player,
+				true,
+				EquipmentSlot.HAND
+			)
+
+			if (!event.callEvent()) {
+				continue
+			}
+
 			val price = ShipFactoryMaterialCosts.getPrice(blockData)
 			if (!player.hasEnoughMoney(consumedMoney + price) && ConfigurationFiles.featureFlags().economy) continue
 			consumedMoney += price
@@ -318,6 +351,8 @@ class ShipFactoryPrintTask(
 		if (ExtractorManager.isExtractorData(data)) {
 			NewTransport.addExtractor(world, x, y, z)
 		}
+
+		data.customBlock?.placeCallback(null, block)
 
 		val state = block.state as? Sign
 		if (state != null) {
@@ -438,13 +473,13 @@ class ShipFactoryPrintTask(
 			val missing = requiredAmount - resourceInformation.amount.get()
 
 			// Try and make a partial purchase with the missing amount
-			if (integration.any { it.canAddTransaction(printItem, printPosition, requiredAmount) }) {
+			if (!integration.any { it.canAddTransaction(printItem, printPosition, requiredAmount) }) {
 				markItemMissing(printItem, missing)
 				return false
 			} else {
 				resourceInformation.amount.addAndGet(-resourceInformation.amount.get())
 
-				val missingFromInventories = consumeItemFromReferences(resourceInformation.references, missing)
+				val missingFromInventories = consumeItemFromReferences(resourceInformation.references, minOf(availableItems[printItem]?.amount?.get() ?: missing, missing))
 
 				if (missingFromInventories == 0) return true
 				else {

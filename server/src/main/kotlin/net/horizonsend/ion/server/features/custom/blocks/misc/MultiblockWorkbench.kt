@@ -7,11 +7,12 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customItemDrop
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI
@@ -51,13 +52,13 @@ import org.bukkit.inventory.ItemStack
 import java.util.concurrent.TimeUnit
 
 object MultiblockWorkbench : CustomBlock(
-	identifier = "MULTIBLOCK_WORKBENCH",
-	blockData = CustomBlocks.mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.DOWN, BlockFace.EAST)),
+	key = CustomBlockKeys.MULTIBLOCK_WORKBENCH,
+	blockData = CustomBlockRegistry.mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.DOWN, BlockFace.EAST)),
 	drops = BlockLoot(
 		requiredTool = null,
-		drops = customItemDrop(CustomItemRegistry::MULTIBLOCK_WORKBENCH, 1)
+		drops = customItemDrop(CustomItemKeys.MULTIBLOCK_WORKBENCH, 1)
 	),
-	customBlockItem = { CustomItemRegistry.MULTIBLOCK_WORKBENCH }
+	customBlockItem = CustomItemKeys.MULTIBLOCK_WORKBENCH
 ), InteractableCustomBlock {
 	private val cooldown = PerPlayerCooldown(5L, TimeUnit.MILLISECONDS)
 

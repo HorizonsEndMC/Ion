@@ -12,6 +12,8 @@ import com.sk89q.worldedit.extent.clipboard.Clipboard
 import com.sk89q.worldedit.math.BlockVector3
 import com.sk89q.worldedit.world.block.BlockState
 import net.horizonsend.ion.common.database.cache.nations.NationCache
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.slPlayerId
@@ -52,7 +54,7 @@ import java.util.LinkedList
 import java.util.Locale
 import java.util.UUID
 
-@CommandAlias("blueprint")
+@CommandAlias("blueprint|bp")
 object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		registerAsyncCompletion(manager, "blueprints") { c ->
@@ -107,7 +109,9 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			Blueprint.create(slPlayerId, name, starship.data.starshipType, pilotLoc, starship.initialBlockCount, data)
 			sender.success("Saved blueprint $name")
 		} else {
-			val blueprint = getBlueprint(sender, name)
+			val target = sender.slPlayerId
+
+			val blueprint = getBlueprint(target, name)
 
 			blueprint.blockData = data
 			blueprint.pilotLoc = pilotLoc
@@ -123,8 +127,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 		}
 	}
 
-	private fun getBlueprint(sender: Player, name: String): Blueprint {
-		return Blueprint.find(and(Blueprint::owner eq sender.slPlayerId, Blueprint::name eq name)).first()
+	private fun getBlueprint(sender: SLPlayerId, name: String): Blueprint {
+		return Blueprint.find(and(Blueprint::owner eq sender, Blueprint::name eq name)).first()
 			?: fail { "You don't have a blueprint named $name." }
 	}
 
@@ -135,10 +139,29 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("delete")
 	@CommandCompletion("@blueprints")
 	fun onDelete(sender: Player, name: String) = asyncCommand(sender) {
-		val blueprint = getBlueprint(sender, name)
+		val target = sender.slPlayerId
+
+		val blueprint = getBlueprint(target, name)
 		// TODO: confirm menu
 		Blueprint.delete(blueprint._id)
 		sender.success("Deleted blueprint ${blueprint.name}")
+	}
+
+	@Subcommand("delete other")
+	@CommandPermission("starships.blueprint.delete.other")
+	@CommandCompletion("@players blueprintName")
+	fun onDeleteOther(sender: Player, player: String, blueprint: String) = asyncCommand(sender) {
+		val target = SLPlayer[player]?._id // Database lookup so it works when the player is offline
+
+		if (target == null) {
+			sender.userError("Player $player not found or not online.")
+			return@asyncCommand
+		}
+
+		val blueprint = getBlueprint(target, blueprint)
+
+		Blueprint.delete(blueprint._id)
+		sender.success("Deleted blueprint ${blueprint.name} from $player")
 	}
 
 	fun blueprintInfo(blueprint: Blueprint): List<String> {
@@ -171,7 +194,7 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 
 		Tasks.async {
 			failIf(!Blueprint.any(Blueprint::owner eq slPlayerId)) {
-				"You have no blueprints"
+				sender.userError("You have no blueprints!").toString()
 			}
 
 			BlueprintMenu(sender) { blueprint, player ->
@@ -182,10 +205,30 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Suppress("Unused")
+	@Subcommand("list other")
+	@CommandPermission("starships.blueprint.list.other")
+	@CommandCompletion("@players")
+	fun onListOther(sender: Player, player: String) {
+		val target = SLPlayer[player] ?: throw InvalidCommandArgument("Player $player not found or not online.") // Database lookup so it works when the player is offline
+
+		Tasks.async {
+			failIf(!Blueprint.any(Blueprint::owner eq target._id)) {
+				sender.userError("${target.lastKnownName} has no blueprints!").toString()
+			}
+
+			BlueprintMenu(sender, target._id) { blueprint, player ->
+				sender.closeInventory()
+				Tasks.async { showMaterials(sender, blueprint) }
+			}.openGui()
+		}
+	}
+
+	@Suppress("Unused")
 	@Subcommand("info")
 	@CommandCompletion("@blueprints")
 	fun onInfo(sender: Player, name: String) = asyncCommand(sender) {
-		val blueprint = getBlueprint(sender, name)
+		val target = sender.slPlayerId
+		val blueprint = getBlueprint(target, name)
 		sender.sendRichMessage(blueprintInfo(blueprint).joinToString("\n"))
 	}
 
@@ -193,7 +236,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("materials")
 	@CommandCompletion("@blueprints")
 	fun onMaterials(sender: Player, name: String) = asyncCommand(sender) {
-		val blueprint = getBlueprint(sender, name)
+		val target = sender.slPlayerId
+		val blueprint = getBlueprint(target, name)
 		showMaterials(sender, blueprint)
 	}
 
@@ -202,7 +246,27 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandPermission("starships.blueprint.load")
 	@CommandCompletion("@blueprints")
 	fun onLoad(sender: Player, name: String) = asyncCommand(sender) {
-		val blueprint = getBlueprint(sender, name)
+		val target = sender.slPlayerId
+		val blueprint = getBlueprint(target, name)
+		val schematic: Clipboard = blueprint.loadClipboard()
+		val pilotLoc = blueprint.pilotLoc
+
+		Tasks.syncBlocking {
+			checkObstruction(sender.location, schematic, Vec3i(pilotLoc))
+
+			loadSchematic(sender.location, schematic, Vec3i(pilotLoc)) { origin ->
+				tryPilot(sender, origin, blueprint.type.actualType, blueprint.name)
+			}
+		}
+	}
+
+	@Suppress("Unused")
+	@Subcommand("load other")
+	@CommandPermission("starships.blueprint.load.other")
+	@CommandCompletion("@players blueprintName")
+	fun onLoadOther(sender: Player, player: String, blueprint: String) = asyncCommand(sender) {
+		val target = SLPlayer[player]?._id ?: return@asyncCommand // Database lookup so it works when the player is offline
+		val blueprint = getBlueprint(target, blueprint)
 		val schematic: Clipboard = blueprint.loadClipboard()
 		val pilotLoc = blueprint.pilotLoc
 
@@ -220,7 +284,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@CommandPermission("starships.blueprint.load")
 	@CommandCompletion("@blueprints")
 	fun onFix(sender: Player, name: String) = asyncCommand(sender) {
-		val blueprint = getBlueprint(sender, name)
+		val target = sender.slPlayerId
+		val blueprint = getBlueprint(target, name)
 		val schematic: Clipboard = blueprint.loadClipboard()
 		val pilotLoc = blueprint.pilotLoc
 
@@ -271,11 +336,11 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	fun tryPilot(
-        sender: Player,
-        origin: Vec3i,
-        type: StarshipType,
-        name: String,
-        callback: (Starship) -> Unit = {}
+		sender: Player,
+		origin: Vec3i,
+		type: StarshipType,
+		name: String,
+		callback: (Starship) -> Unit = {}
 	) {
 		val block = sender.world.getBlockAtKey(origin.toBlockKey())
 
@@ -330,7 +395,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("trust player")
 	@CommandCompletion("@blueprints @players")
 	fun onTrustPlayer(sender: Player, name: String, player: String) {
-		val blueprint = getBlueprint(sender, name)
+		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
+		val blueprint = getBlueprint(target, name)
 		val playerId: UUID = resolveOfflinePlayer(player)
 		val slPlayerId = playerId.slPlayerId
 		failIf(blueprint.trustedPlayers.contains(slPlayerId)) {
@@ -346,7 +412,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("untrust player")
 	@CommandCompletion("@blueprints @players")
 	fun onUntrustPlayer(sender: Player, name: String, player: String) {
-		val blueprint = getBlueprint(sender, name)
+		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
+		val blueprint = getBlueprint(target, name)
 		val playerId: UUID = resolveOfflinePlayer(player)
 		val slPlayerId = playerId.slPlayerId
 		failIf(!blueprint.trustedPlayers.contains(slPlayerId)) {
@@ -362,7 +429,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("trust nation")
 	@CommandCompletion("@blueprints @nations")
 	fun onTrustNation(sender: Player, name: String, nation: String) {
-		val blueprint = getBlueprint(sender, name)
+		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
+		val blueprint = getBlueprint(target, name)
 		val nationId = resolveNation(nation)
 		failIf(blueprint.trustedNations.contains(nationId)) {
 			"$nation is already trusted, you might be looking for /blueprint untrust nation $name $nation"
@@ -376,7 +444,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("untrust nation")
 	@CommandCompletion("@blueprints @nations")
 	fun onUntrustNation(sender: Player, name: String, nation: String) {
-		val blueprint = getBlueprint(sender, name)
+		val target = SLPlayer[sender.uniqueId]?._id ?: return // Silently fail if SLPlayer is somehow null
+		val blueprint = getBlueprint(target, name)
 		val nationId = resolveNation(nation)
 		failIf(!blueprint.trustedNations.contains(nationId)) {
 			"$nation is not trusted, you might be looking for /blueprint trust nation $name $nation"
@@ -389,6 +458,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 	@Subcommand("rename")
 	@CommandCompletion("@blueprints newName")
 	fun onRename(sender: Player, oldName: String, newName: String) = asyncCommand(sender) {
+		validateName(newName)
+
 		val createNew = Blueprint.none(and(Blueprint::owner eq sender.slPlayerId, Blueprint::name eq newName))
 
 		if (!createNew) {
@@ -396,7 +467,8 @@ object BlueprintCommand : net.horizonsend.ion.server.command.SLCommand() {
 			return@asyncCommand
 		}
 
-		val blueprint = getBlueprint(sender, oldName)
+		val target = SLPlayer[sender.uniqueId]?._id ?: return@asyncCommand // Silently fail if SLPlayer is somehow null
+		val blueprint = getBlueprint(target, oldName)
 		blueprint.name = newName
 		saveBlueprint(blueprint)
 		sender.success("Renamed '$oldName' to '$newName'")

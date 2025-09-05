@@ -10,5 +10,7 @@ data class FeatureFlags(
 	val combatNPCs: Boolean = true,
 	val combatTimers: Boolean = true,
 	val aiSpawns: Boolean = true,
-	val customTurrets: Boolean = false
+	val customTurrets: Boolean = false,
+	val miningLaserAnimation: Boolean = false,
+	val graphTransfer: Boolean = false,
 )

@@ -99,7 +99,13 @@ class HyperspaceWarmup(
 
 		if (useFuel) {
 			require(drive != null) {"No hyperdrive to pull fuel from (null state)"}
-			require(drive.hasFuel()) { "Hyperdrive doesn't have fuel!" }
+
+			if (!drive.hasFuel()) {
+				ship.userError("Hyperdrive doesn't have fuel!")
+				cancel()
+				return
+			}
+
 			drive.useFuel()
 		}
 

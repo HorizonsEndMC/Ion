@@ -18,7 +18,6 @@ class DistancePositioningModule(
 	val generalTarget: Supplier<AITarget?>,
 	val configSupplier: Supplier<AISteeringConfiguration.DistanceConfiguration>
 ) : AIModule(controller) {
-	val ship get() = controller.starship
 	val config: AISteeringConfiguration.DistanceConfiguration get() = configSupplier.get()
 	private val minDist get() = config.minDist
 	private val maxDist get() = config.maxDist
@@ -27,15 +26,23 @@ class DistancePositioningModule(
 	private val startFleeing get() = config.startFleeing
 	private val stopFleeing get() = config.stopFleeing
 
+	var fledAttempts = 0
+
 	var isFleeing = false
+		set(value) {
+			if (value) fledAttempts++
+			field = value
+		}
 
 	fun calcDistance(): Double {
 		if (!difficulty.doBackOff) return calcCombatDist()
 
-		if (controller.getMinimumShieldHealth() <= startFleeing) {
-			val fleeChance = config.fleeChance * difficulty.fleeChance
-			if (randomDouble(0.0, 1.0) < fleeChance) isFleeing = true
+		if (controller.getMinimumShieldHealth() <= startFleeing && fledAttempts < difficulty.maxFleeAttempts) {
+			val fleeChance = config.fleeChance
+			if (difficulty.fleeChance == 0.0) isFleeing = true
+			else if (randomDouble(0.0, difficulty.fleeChance) < fleeChance) isFleeing = true
 		}
+
 		if (controller.getMinimumShieldHealth() >= stopFleeing) {
 			isFleeing = false
 		}
@@ -61,6 +68,10 @@ class DistancePositioningModule(
 	}
 
 	private fun distanceFromRatio(r: Double, dMin: Double, dOpt: Double, dMax: Double): Double {
+		require(!r.isNaN()) { "r is NaN" }
+		require(!dMin.isNaN()) { "dMin is NaN" }
+		require(!dOpt.isNaN()) { "dOpt is NaN" }
+		require(!dMax.isNaN()) { "dMax is NaN" }
 		// Clamp ratio within valid range to avoid log errors
 		val rMin = 0.025
 		val rMax = 40.0

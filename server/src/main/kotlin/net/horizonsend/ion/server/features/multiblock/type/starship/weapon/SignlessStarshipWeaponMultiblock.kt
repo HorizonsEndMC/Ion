@@ -6,14 +6,14 @@ import io.papermc.paper.registry.TypedKey
 import io.papermc.paper.registry.keys.DamageTypeKeys
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.SubsystemMultiblock
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.text.Component
 import org.bukkit.block.Sign
 import org.bukkit.damage.DamageType
 
 // TODO: Make signless multiblocks an actual thing
-abstract class SignlessStarshipWeaponMultiblock<TSubsystem : WeaponSubsystem> : Multiblock(), SubsystemMultiblock<TSubsystem> {
+abstract class SignlessStarshipWeaponMultiblock<TSubsystem : BalancedWeaponSubsystem<*>> : Multiblock(), SubsystemMultiblock<TSubsystem> {
 	abstract val key: String
 	val damageTypeKey: TypedKey<DamageType> by lazy { DamageTypeKeys.create(Key.key("hoizonsend", key)) }
 	val damageType: DamageType by lazy { RegistryAccess.registryAccess().getRegistry(RegistryKey.DAMAGE_TYPE).getOrThrow(damageTypeKey) }

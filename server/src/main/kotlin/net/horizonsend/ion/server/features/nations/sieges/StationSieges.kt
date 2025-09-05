@@ -19,8 +19,8 @@ import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdownString
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE

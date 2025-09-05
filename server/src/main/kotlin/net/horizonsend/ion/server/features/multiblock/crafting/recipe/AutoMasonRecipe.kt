@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.recipe
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.multiblock.crafting.input.AutoMasonRecipeEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.CenterBlockRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.PowerRequirement
@@ -14,12 +15,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import org.bukkit.Material
 
 class AutoMasonRecipe(
-	identifier: String,
+	key: IonRegistryKey<MultiblockRecipe<*>, AutoMasonRecipe>,
 	inputItem: ItemRequirement,
 	centerCheck: (Material?) -> Boolean,
 	power: PowerRequirement<AutoMasonRecipeEnviornment>,
 	val result: ResultHolder<AutoMasonRecipeEnviornment, ItemResult<AutoMasonRecipeEnviornment>>
-) : MultiblockRecipe<AutoMasonRecipeEnviornment>(identifier, AutoMasonMultiblockEntity::class) {
+) : MultiblockRecipe<AutoMasonRecipeEnviornment>(key, AutoMasonMultiblockEntity::class) {
 	override val requirements: Collection<RequirementHolder<AutoMasonRecipeEnviornment, *, *>> = listOf(
 		// Input item
 		RequirementHolder.anySlot(
@@ -31,6 +32,7 @@ class AutoMasonRecipe(
 			power
 		),
 		// Center Block requirement
+		@Suppress("UNCHECKED_CAST")
 		RequirementHolder(
 			dataTypeClass = Material::class.java as Class<Material?>,
 			getter = { it.getCenterBlock()?.getTypeSafe() },
@@ -44,7 +46,7 @@ class AutoMasonRecipe(
 		try {
 			requirements.forEach { requirement -> requirement.consume(enviornment) }
 		} catch (e: Throwable) {
-			IonServer.slF4JLogger.error("There was an error executing multiblock recipe $identifier: ${e.message}")
+			IonServer.slF4JLogger.error("There was an error executing multiblock recipe ${this@AutoMasonRecipe.key}: ${e.message}")
 			e.printStackTrace()
 			return
 		}
@@ -61,7 +63,7 @@ class AutoMasonRecipe(
 		try {
 			resultEnviornment.requirements.forEach { requirement -> requirement.consume(enviornment) }
 		} catch (e: Throwable) {
-			IonServer.slF4JLogger.error("There was an error executing multiblock recipe $identifier: ${e.message}")
+			IonServer.slF4JLogger.error("There was an error executing multiblock recipe ${this@AutoMasonRecipe.key}: ${e.message}")
 			e.printStackTrace()
 			return
 		}

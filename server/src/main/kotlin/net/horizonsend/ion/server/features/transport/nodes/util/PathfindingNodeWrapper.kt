@@ -51,9 +51,7 @@ class PathfindingNodeWrapper private constructor(val node: NodePositionData, par
 		while (current?.parent != null) {
 			current = current.parent!!
 
-			if (current.node.type is TrackedNode) {
-				list.add(current.node.position to current.node.type)
-			}
+			list.add(current.node.position to current.node.type)
 		}
 
 		return Path(depth, list.toTypedArray())

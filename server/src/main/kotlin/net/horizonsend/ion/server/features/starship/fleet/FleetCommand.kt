@@ -74,7 +74,7 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        if (!fleet.get(player)) {
+        if (!fleet.contains(player)) {
             sender.userError("Player ${player.name} is not in this fleet")
             return
         }
@@ -105,7 +105,7 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        if (!fleet.get(player)) {
+        if (!fleet.contains(player)) {
             sender.userError("Player ${player.name} is not in this fleet")
             return
         }
@@ -135,7 +135,7 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        if (fleet.get(player)) {
+        if (fleet.contains(player)) {
             sender.userError("Player ${player.name} is already in this fleet")
             return
         }
@@ -162,7 +162,7 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        if (fleet.get(player)) {
+        if (fleet.contains(player)) {
             sender.userError("Player ${player.name} is already in this fleet")
             return
         }

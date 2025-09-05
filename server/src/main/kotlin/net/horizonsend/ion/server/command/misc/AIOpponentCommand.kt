@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.ai.AIControllerFactories
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
+import net.horizonsend.ion.server.features.ai.module.misc.ReinforcementSpawnerModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
@@ -60,14 +61,14 @@ object AIOpponentCommand : SLCommand() {
 		sender: Player,
 		template: AITemplate,
 		@Optional difficulty : DifficultyModule.Companion.AIDifficulty?,
-		@Optional targetMode : String?) {
+		@Optional targetMode : String?
+	) {
 		val world = sender.world
 		failIf(!world.ion.hasFlag(WorldFlag.AI_ARENA)) { "AI Opponents may only be spawned in arena worlds!" }
 
 		sender.hint("Spawning ${template.starshipInfo.miniMessageName}")
 
-		summonShip(sender, template, null, difficulty?.ordinal,
-			targetMode?.let { AITarget.TargetMode.valueOf(it) } ?: AITarget.TargetMode.PLAYER_ONLY)
+		summonShip(sender, template, null, difficulty?.ordinal, targetMode?.let { AITarget.TargetMode.valueOf(it) } ?: AITarget.TargetMode.PLAYER_ONLY)
 	}
 
 	@Subcommand("summon")
@@ -77,7 +78,8 @@ object AIOpponentCommand : SLCommand() {
 		template: AITemplate,
 		x: Int, y: Int, z: Int,
 		@Optional difficulty : DifficultyModule.Companion.AIDifficulty?,
-		@Optional targetMode : String?) {
+		@Optional targetMode : String?
+	) {
 		val world = sender.world
 		failIf(!world.ion.hasFlag(WorldFlag.AI_ARENA)) { "AI Opponents may only be spawned in arena worlds!" }
 
@@ -94,7 +96,8 @@ object AIOpponentCommand : SLCommand() {
 		sender: Player,
 		template: AITemplate,
 		@Optional difficulty : DifficultyModule.Companion.AIDifficulty?,
-		@Optional targetMode : String?) {
+		@Optional targetMode : String?
+	) {
 		val world = sender.world
 		failIf(!world.ion.hasFlag(WorldFlag.AI_ARENA)) { "AI Opponents may only be spawned in arena worlds!" }
 		//failIf((difficulty != null) && (difficulty > 5 || difficulty < 0)) {"Difficulty must be b/w 0 and 5"}
@@ -113,7 +116,8 @@ object AIOpponentCommand : SLCommand() {
 		template: AITemplate,
 		x: Int, y: Int, z: Int,
 		@Optional difficulty : DifficultyModule.Companion.AIDifficulty?,
-		@Optional targetMode : String?) {
+		@Optional targetMode : String?
+	) {
 		val world = sender.world
 		failIf(!world.ion.hasFlag(WorldFlag.AI_ARENA)) { "AI Opponents may only be spawned in arena worlds!" }
 
@@ -135,10 +139,10 @@ object AIOpponentCommand : SLCommand() {
 
 				AISpawningManager.context.launch {
 					createAIShipFromTemplate(
-						log,
-						template,
-						location,
-						{ starship ->
+						logger = log,
+						template = template,
+						location = location,
+						createController = { starship ->
 							val factory = AIControllerFactories[template.behaviorInformation.controllerFactory]
 							val controller = factory.invoke(
 								starship,
@@ -150,18 +154,23 @@ object AIOpponentCommand : SLCommand() {
 							)
 
 							processController(summoner, controller)
-							controller.validateWeaponSets()
 							controller
 						},
-						"✦".repeat((difficulty ?: template.difficulty.get())+1)
-					) {
-						summoner.success("Summoned ${template.starshipInfo.miniMessageName}")
-					}
+						suffix = "✦".repeat((difficulty ?: template.difficulty.get())+1),
+						callback = { starship ->
+							summoner.success("Summoned ${template.starshipInfo.miniMessageName}")
+
+							val reinforcementModules = (starship.controller as? AIController)?.getAllModules()?.filterIsInstance<ReinforcementSpawnerModule>().orEmpty()
+
+							reinforcementModules.forEach { module ->
+								module.controllerModifiers.add { summonedController -> processController(summoner, summonedController) }
+							}
+						}
+					)
 				}
 				} catch (e: Throwable) {
 					summoner.serverError("There was an error spawning ${template.identifier}: ${e.message}")
 				}
-
 			}
 		}
 	}

@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
+import org.bukkit.World
 import java.util.function.Supplier
 
 /**
@@ -15,7 +16,7 @@ class GroupSpawner(
 	private val ships: MutableList<SpawnedShip>,
 	groupMessage: Component?,
 	individualSpawnMessage: SpawnMessage?,
-	difficultySupplier: (String) -> Supplier<Int>,
+	difficultySupplier: (World) -> Supplier<Int>,
 ) : MultiSpawner(
 	locationProvider,
 	groupMessage,

@@ -19,9 +19,9 @@ import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.serialize
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.ai.configuration.WeaponSet
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_BARGE
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_BATTLECRUISER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_CORVETTE
@@ -30,11 +30,12 @@ import net.horizonsend.ion.server.features.starship.StarshipType.AI_DESTROYER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_FRIGATE
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_GUNSHIP
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_HEAVY_FREIGHTER
+import net.horizonsend.ion.server.features.starship.StarshipType.AI_INTERCEPTOR
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_LIGHT_FREIGHTER
+import net.horizonsend.ion.server.features.starship.StarshipType.AI_MEDIUM_FREIGHTER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_SHUTTLE
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_STARFIGHTER
 import net.horizonsend.ion.server.features.starship.StarshipType.AI_TRANSPORT
-import net.horizonsend.ion.server.features.starship.StarshipType.MEDIUM_FREIGHTER
 import net.horizonsend.ion.server.features.starship.StarshipType.UNIDENTIFIEDSHIP
 import net.kyori.adventure.text.Component.text
 
@@ -173,6 +174,11 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 					name = "auto",
 					engagementRangeMin = 250.0,
 					engagementRangeMax = 550.0
+				),
+				WeaponSet(
+					name = "tt",
+					engagementRangeMin = 250.0,
+					engagementRangeMax = 550.0
 				)
 			)
 
@@ -181,6 +187,36 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 
 	// END_WATCHERS
 	//START 吃饭人
+
+	val MIANBAOZHA = registerTemplate(
+		StarshipTemplate(
+			schematicName = "Mianbaozha",
+			type = AI_STARFIGHTER,
+			miniMessageName = text("Mianbaozha", 吃饭人_STANDARD).serialize(miniMessage),
+		)
+	)
+
+	val LOUMAI = registerTemplate(
+		StarshipTemplate(
+			schematicName = "Loumai",
+			type = AI_GUNSHIP,
+			miniMessageName = text("Loumai", 吃饭人_STANDARD).serialize(miniMessage),
+			manualWeaponSets = mutableSetOf(
+				WeaponSet(
+					name = "manual",
+					engagementRangeMin = 0.0,
+					engagementRangeMax = 550.0
+				)
+			),
+			autoWeaponSets = mutableSetOf(
+				WeaponSet(
+					name = "auto",
+					engagementRangeMin = 0.0,
+					engagementRangeMax = 550.0
+				)
+			)
+		)
+	)
 
 	val MIANBAO = registerTemplate(
 		StarshipTemplate(
@@ -225,6 +261,43 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 				WeaponSet(
 					name = "TT",
 					engagementRangeMin = 250.0,
+					engagementRangeMax = 550.0
+				)
+			)
+		)
+	)
+
+	val FASHIGUN = registerTemplate(
+		StarshipTemplate(
+			schematicName = "Fashigun",
+			type = AI_DESTROYER,
+			miniMessageName = text("Fashigun", 吃饭人_STANDARD).serialize(miniMessage),
+			manualWeaponSets = mutableSetOf(
+				WeaponSet(
+					name = "HL",
+					engagementRangeMin = 0.0,
+					engagementRangeMax = 500.0
+				),
+				WeaponSet(
+					name = "HLs",
+					engagementRangeMin = 200.0,
+					engagementRangeMax = 300.0
+				),
+				WeaponSet(
+					name = "PH",
+					engagementRangeMin = 0.0,
+					engagementRangeMax = 200.0
+				)
+			),
+			autoWeaponSets = mutableSetOf(
+				WeaponSet(
+					name = "LT",
+					engagementRangeMin = 0.0,
+					engagementRangeMax = 250.0
+				),
+				WeaponSet(
+					name = "TT",
+					engagementRangeMin = 300.0,
 					engagementRangeMax = 550.0
 				)
 			)
@@ -311,8 +384,6 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 			schematicName = "Vendetta",
 			type = AI_GUNSHIP,
 			miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Vendetta",
-			manualWeaponSets = mutableSetOf(WeaponSet(name = "Manual", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
-			autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 		)
 	)
 
@@ -321,8 +392,6 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 			schematicName = "Cormorant",
 			type = AI_GUNSHIP,
 			miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Cormorant",
-			manualWeaponSets = mutableSetOf(WeaponSet(name = "Main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
-			autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 		)
 	)
 
@@ -332,7 +401,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 			type = AI_GUNSHIP,
 			miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Mantis",
 			manualWeaponSets = mutableSetOf(WeaponSet(name = "Main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
-			autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
+			autoWeaponSets = mutableSetOf(WeaponSet(name = "lts", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 		)
 	)
 
@@ -340,7 +409,9 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		StarshipTemplate(
 			schematicName = "Hernstein",
 			type = AI_GUNSHIP,
-			miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Hernstein"
+			miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Hernstein",
+			manualWeaponSets = mutableSetOf(WeaponSet(name = "main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
+			autoWeaponSets = mutableSetOf(WeaponSet(name = "lts", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 		)
 	)
 
@@ -349,8 +420,6 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 			schematicName = "Fyr",
 			type = AI_GUNSHIP,
 			miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Fyr",
-			manualWeaponSets = mutableSetOf(WeaponSet(name = "Main", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
-			autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
 		)
 	)
 
@@ -359,8 +428,13 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 			schematicName = "Bloodstar",
 			type = AI_CORVETTE,
 			miniMessageName = "<${PIRATE_SATURATED_RED.asHexString()}>Bloodstar",
-			manualWeaponSets = mutableSetOf(WeaponSet(name = "manual", engagementRangeMin = 0.0, engagementRangeMax = 500.0)),
-			autoWeaponSets = mutableSetOf(WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
+			manualWeaponSets = mutableSetOf(
+				WeaponSet(name = "Manual", engagementRangeMin = 0.0, engagementRangeMax = 500.0),
+				WeaponSet(name = "hl", engagementRangeMin = 0.0, engagementRangeMax = 200.0)
+			),
+			autoWeaponSets = mutableSetOf(
+				WeaponSet(name = "tt", engagementRangeMin = 200.0, engagementRangeMax = 500.0),
+				WeaponSet(name = "lts", engagementRangeMin = 0.0, engagementRangeMax = 250.0),)
 		)
 	)
 
@@ -375,11 +449,11 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		)
 	)
 
-	val STRIKER = registerTemplate(
+	val SPARROW = registerTemplate(
 		StarshipTemplate(
-			schematicName = "Striker",
+			schematicName = "Sparrow",
 			type = AI_SHUTTLE,
-			miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Striker",
+			miniMessageName = "<${EXPLORER_MEDIUM_CYAN.asHexString()}>Sparrow",
 		)
 	)
 
@@ -481,7 +555,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 				WeaponSet(name = "Manual", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
 			),
 			autoWeaponSets = mutableSetOf(
-				WeaponSet(name = "auto", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
+				WeaponSet(name = "auto", engagementRangeMin = 220.0, engagementRangeMax = 550.0)
 			)
 		)
 	)
@@ -513,6 +587,12 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 			schematicName = "Daybreak",
 			type = AI_CORVETTE,
 			miniMessageName = "<$PRIVATEER_LIGHT_TEAL>Daybreak",
+			manualWeaponSets = mutableSetOf(
+				WeaponSet(name = "Manual", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
+			),
+			autoWeaponSets = mutableSetOf(
+				WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 550.0)
+			)
 		)
 	)
 
@@ -528,7 +608,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		StarshipTemplate(
 			schematicName = "Protector",
 			type = AI_GUNSHIP,
-			miniMessageName = "<$PRIVATEER_LIGHT_TEAL>Patroller",
+			miniMessageName = "<$PRIVATEER_LIGHT_TEAL>Protector",
 		)
 	)
 
@@ -564,6 +644,14 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 		)
 	)
 
+	val PIONEER = registerTemplate(
+		StarshipTemplate(
+			schematicName = "Pioneer",
+			type = AI_INTERCEPTOR,
+			miniMessageName = "<$PRIVATEER_LIGHT_TEAL>Pioneer",
+		)
+	)
+
 	// END_PRIVATEER
 	// START_MINING_GUILD
 
@@ -593,7 +681,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 	val GROUPER = registerTemplate(
 		StarshipTemplate(
 			schematicName = "Grouper",
-			type = MEDIUM_FREIGHTER,
+			type = AI_MEDIUM_FREIGHTER,
 			miniMessageName = "<$MINING_CORP_LIGHT_ORANGE>Grouper",
 			autoWeaponSets = mutableSetOf(WeaponSet(name = "lt", engagementRangeMin = 0.0, engagementRangeMax = 250.0)),
 			manualWeaponSets = mutableSetOf(WeaponSet(name = "weapons", engagementRangeMin = 0.0, engagementRangeMax = 500.0))
@@ -605,12 +693,18 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 			schematicName = "Ostrich",
 			type = AI_LIGHT_FREIGHTER,
 			miniMessageName = "<$MINING_CORP_DARK_ORANGE>Ostrich",
+			autoWeaponSets = mutableSetOf(
+				WeaponSet(name = "lts", engagementRangeMin = 0.0, engagementRangeMax = 250.0),
+				WeaponSet(name = "tt", engagementRangeMin = 300.0, engagementRangeMax = 500.0)),
+			manualWeaponSets = mutableSetOf(
+				WeaponSet(name = "manual", engagementRangeMin = 0.0, engagementRangeMax = 500.0),
+				WeaponSet(name = "hl", engagementRangeMin = 0.0, engagementRangeMax = 300.0))
 		)
 	)
 
 	val WOODPECKER = registerTemplate(
 		StarshipTemplate(
-			schematicName = "Ostrich",
+			schematicName = "Woodpecker",
 			type = AI_SHUTTLE,
 			miniMessageName = "<$MINING_CORP_LIGHT_ORANGE>Woodpecker",
 		)
@@ -672,7 +766,7 @@ object StarshipTemplateRegistry : IonServerComponent(true) {
 
 	val SCYTHE = registerTemplate(
 		StarshipTemplate(
-			schematicName = "Swarmer",
+			schematicName = "Scythe",
 			type = AI_STARFIGHTER,
 			miniMessageName = "<$TSAII_DARK_ORANGE>Scythe",
 		)

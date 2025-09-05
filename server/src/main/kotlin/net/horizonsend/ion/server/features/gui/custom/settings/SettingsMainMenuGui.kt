@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.gui.custom.settings
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.command.misc.IonSitCommand.sitStateNode
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.custom.settings.button.database.DBCachedBooleanToggle
@@ -12,6 +13,7 @@ import net.horizonsend.ion.server.features.gui.custom.settings.commands.SoundSet
 import net.horizonsend.ion.server.features.sidebar.MainSidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.ContactsColoring
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar.ContactsSorting
+import net.horizonsend.ion.server.miscellaneous.AudioRange
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.entity.Player
@@ -28,8 +30,8 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
     override val buttonsList = listOf(
 		createSettingsPage(player, "Control Settings",
 			DBCachedBooleanToggle(text("DC Overrides Cruise"), "", GuiItem.GUNSHIP, false, PlayerSettings::useAlternateDCCruise),
-			DBCachedIntegerInput(1_000_000,-1, text("DC Refresh Rate"),
-				"\"How frequently DC responds to your movement and teleports you, a value of -1 means that refresh is entirely ping driven. High values means more forging feedback but less responsive", GuiItem.GUNSHIP, 1, PlayerSettings::dcRefreshRate)
+			DBCachedIntegerInput(-1,1_000_000, text("DC Refresh Rate"),
+				"\"How frequently DC responds to your movement and teleports you, a value of -1 means that refresh is entirely ping driven. High values means more forging feedback but less responsive", GuiItem.GUNSHIP, -1, PlayerSettings::dcRefreshRate)
 		),
 		createSettingsPage(player, "Sidebar Settings",
 			createSettingsPage(player, "Combat Timer Settings",
@@ -75,7 +77,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 				DBCachedBooleanToggle(text("Route Segments Enabled"), "", GuiItem.LIST, true, PlayerSettings::compactWaypoints)
 			)
 		),
-		createSettingsPage(player, "HUD Settings",
+		createSettingsPage(player, "Graphics Settings",
 			createSettingsPage(player, "HUD Icon Settings",
 				DBCachedBooleanToggle(text("Toggle Planet Selector"), "", GuiItem.COMPASS_NEEDLE, true, PlayerSettings::hudPlanetsSelector),
 				DBCachedBooleanToggle(text("Toggle Planet Visibility"), "", GuiItem.PLANET, true, PlayerSettings::hudPlanetsImage),
@@ -84,11 +86,20 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 				DBCachedBooleanToggle(text("Toggle Station Visibility"), "", GuiItem.STATION, false, PlayerSettings::hudIconStations),
 				DBCachedBooleanToggle(text("Toggle Bookmark Visibility"), "", GuiItem.BOOKMARK, false, PlayerSettings::hudIconBookmarks),
 			),
+			createSettingsPage(player, "Effects Settings",
+				DBCachedEnumCycle(ClientDisplayEntities.Visibility::class.java, text("Display Entities"), "Changes the visibility of display entity effects", GuiItem.LIST, 0, PlayerSettings::displayEntityVisibility),
+				DBCachedBooleanToggle(text("Toggle Alternative Shield Impact Particles"), "", GuiItem.BOOKMARK, false, PlayerSettings::useAlternateShieldHitParticle),
+				DBCachedIntegerInput(1,100, text("Flare Duration"),
+					"\"How long flares from hitting shields should last in ticks", GuiItem.BOOKMARK, 5, PlayerSettings::flareTime)
+			),
 		),
 		createSettingsPage(player, "Sound Settings",
 			DBCachedBooleanToggle(text("Enable Additional Sounds"), "", GuiItem.SOUND, true, PlayerSettings::enableAdditionalSounds),
 			DBCachedEnumCycle(CruiseIndicatorSounds::class.java, text("Cruise Indicator Sound"), "Click to Cycle", GuiItem.SOUND, 0, PlayerSettings::soundCruiseIndicator),
-			DBCachedBooleanToggle(text("Hitmarker On Hull"), "", GuiItem.SOUND, true, PlayerSettings::hitmarkerOnHull)
+			DBCachedBooleanToggle(text("Hitmarker On Hull"), "An indicator plays if you damage a starship's hull", GuiItem.SOUND, true, PlayerSettings::hitmarkerOnHull),
+			DBCachedBooleanToggle(text("Hitmarker On Shield"), "An indicator plays if you damage a starship's shields", GuiItem.SOUND, true, PlayerSettings::hitmarkerOnHull),
+			DBCachedEnumCycle(AudioRange::class.java, text("Nearby Weapon Sounds"), "Enables nearby weapon sounds", GuiItem.SOUND, 0, PlayerSettings::nearbyWeaponSounds),
+			DBCachedEnumCycle(AudioRange::class.java, text("Far Weapon Sounds"), "Enables far weapon sounds", GuiItem.SOUND, 0, PlayerSettings::farWeaponSounds),
 		),
 		createSettingsPage(player, "Other Settings",
 			DBCachedBooleanToggle(text("Enable Combat Timer Alerts"), "", GuiItem.LIST, true, PlayerSettings::enableCombatTimerAlerts),

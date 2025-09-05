@@ -4,6 +4,7 @@ import com.mojang.math.Transformation
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
+import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.miscellaneous.utils.getChunkAtIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
@@ -18,6 +19,7 @@ import org.bukkit.World
 import org.bukkit.craftbukkit.CraftServer
 import org.bukkit.craftbukkit.entity.CraftItemDisplay
 import org.bukkit.craftbukkit.inventory.CraftItemStack
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import org.joml.Quaternionf
@@ -29,7 +31,9 @@ class ItemDisplayContainer(
     initScale: Float,
     initPosition: Vector,
     initHeading: Vector,
-    item: ItemStack
+    item: ItemStack,
+	val interpolation: Int = 3,
+	val playerFilter: (Player) -> Boolean = { true }
 ) : DisplayWrapper {
 	private var shownPlayers = mutableSetOf<UUID>()
 
@@ -43,7 +47,7 @@ class ItemDisplayContainer(
 				value.z
 			)
 
-			entity.transformationInterpolationDuration = 3
+			entity.transformationInterpolationDuration = interpolation
 
 			shownPlayers.map(Bukkit::getPlayer).forEach {
 				it?.minecraft?.connection?.send(ClientboundTeleportEntityPacket.teleport(entity.id, PositionMoveRotation.of(entity), setOf<Relative>(), entity.onGround))
@@ -63,7 +67,7 @@ class ItemDisplayContainer(
 				)
             )
 
-			entity.transformationInterpolationDuration = 3
+			entity.transformationInterpolationDuration = interpolation
 		}
 
 	override var scale: Vector = Vector(initScale, initScale, initScale)
@@ -79,7 +83,7 @@ class ItemDisplayContainer(
 				)
             )
 
-			entity.transformationInterpolationDuration = 3
+			entity.transformationInterpolationDuration = interpolation
 		}
 
 	override var offset: Vector = Vector(0.0, 0.0, 0.0)
@@ -95,7 +99,7 @@ class ItemDisplayContainer(
 				)
             )
 
-			entity.transformationInterpolationDuration = 3
+			entity.transformationInterpolationDuration = interpolation
 		}
 
 	var itemStack: ItemStack = item
@@ -110,7 +114,7 @@ class ItemDisplayContainer(
 		position.z
 	)
 
-	private fun createEntity(): CraftItemDisplay =  CraftItemDisplay(
+	private fun createEntity(): CraftItemDisplay = CraftItemDisplay(
         IonServer.server as CraftServer,
         Display.ItemDisplay(EntityType.ITEM_DISPLAY, world.minecraft)
     ).apply {
@@ -165,6 +169,12 @@ class ItemDisplayContainer(
 	}
 
 	private fun broadcast(player: ServerPlayer) {
+		val bukkit = player.bukkitEntity
+
+		if (bukkit.isNPC) return
+
+		if (!playerFilter.invoke(bukkit)) return
+
 		ClientDisplayEntities.sendEntityPacket(player.bukkitEntity, entity)
 		shownPlayers.add(player.uuid)
 	}

@@ -21,13 +21,8 @@ class LazyWorldSpawner(
 	scheduler,
 	/* temporary dummy – we replace it the moment trigger() runs */
 	object : SpawnerMechanic() {
-		override suspend fun trigger(logger: Logger) {
-
-		}
-
-		override fun getAvailableShips(draw: Boolean): Collection<SpawnedShip> {
-			return emptyList()
-		}
+		override fun trigger(logger: Logger) {}
+		override fun getAvailableShips(draw: Boolean): Collection<SpawnedShip> = listOf()
 	}
 ) {
 

@@ -2,8 +2,8 @@ package net.horizonsend.ion.server.features.space
 
 import net.horizonsend.ion.common.utils.text.createHtmlLink
 import net.horizonsend.ion.common.utils.text.wrapStyle
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.space.body.OrbitingCelestialBody
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
@@ -154,6 +154,7 @@ object SpaceMap : IonServerComponent(true) {
 			)
 		}
 
+		/**
 		// TODO: REMOVE THIS; FOR DEBUG USES ONLY
 		for (waypoint in WaypointManager.mainGraph.vertexSet()) {
 			debugWaypointMarkerSet.createMarker(
@@ -184,6 +185,7 @@ object SpaceMap : IonServerComponent(true) {
 				)
 			}
 		}
+		*/
 	}
 
 }

@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
+import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.event.ImpactStarshipEvent
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.kyori.adventure.audience.Audience
@@ -116,7 +117,10 @@ open class NoOpDamager : Damager {
 	override fun audiences(): MutableIterable<Audience> = mutableListOf(Audience.empty())
 }
 
-class AIShipDamager(override val starship: ActiveStarship, override val color: Color = Color.RED): Damager {
+class AIShipDamager(override val starship: ActiveStarship): Damager {
+	override val color: Color
+		get() = starship.controller.getColor()
+
 	override fun getDisplayName(): Component = starship.getDisplayName()
 	override fun rewardMoney(credits: Double) {}
 	override fun rewardXP(xp: Int) {}

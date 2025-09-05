@@ -14,6 +14,7 @@ import org.bukkit.util.Vector
 import java.util.Collections
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.math.abs
+import kotlin.math.roundToInt
 import kotlin.math.sign
 
 class DirectControlHandler(controller: Controller, override val input: DirectControlInput) : MovementHandler(controller, "Direct Control") {
@@ -84,12 +85,12 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 
 		if (data.isBoosting) {
 			// Initialize forward movement
-			dx += (targetSpeed * direction.modX * 2).toInt()
-			dz += (targetSpeed * direction.modZ * 2 ).toInt()
+			dx += (targetSpeed * direction.modX * 2).roundToInt()
+			dz += (targetSpeed * direction.modZ * 2 ).roundToInt()
 		} else {
 			// Initialize forward movement
-			dx += (targetSpeed * direction.modX).toInt()
-			dz += (targetSpeed * direction.modZ).toInt()
+			dx += (targetSpeed * direction.modX).roundToInt()
+			dz += (targetSpeed * direction.modZ).roundToInt()
 		}
 
 
@@ -151,7 +152,7 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 	}
 
 	companion object {
-		private const val DIRECT_CONTROL_DIVISOR = 14.0 / 7.0
+		private const val DIRECT_CONTROL_DIVISOR = 1.75
 
 		fun calculateSpeed(selectedSlot: Double) = if (selectedSlot == 0.0) -1.0 else ((selectedSlot -1) / DIRECT_CONTROL_DIVISOR).toDouble()
 		fun calculateCooldown(movementCooldown: Long, heldItemSlot: Double) = movementCooldown - (heldItemSlot * 8)

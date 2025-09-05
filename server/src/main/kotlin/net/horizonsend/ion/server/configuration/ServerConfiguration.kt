@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.configuration
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.common.utils.NavigationObject
-import net.horizonsend.ion.server.configuration.ServerConfiguration.AsteroidConfig.Palette
 import net.horizonsend.ion.server.configuration.util.Pos
 import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
 import net.horizonsend.ion.server.features.world.WorldSettings
@@ -28,7 +27,9 @@ data class ServerConfiguration(
 	val restartHour: Int = 8,
 	val globalCustomSpawns: List<WorldSettings.SpawnedMob> = listOf(),
 	val worldResetSettings: AutoWorldReset = AutoWorldReset(),
-	val rentalZoneCollectionDay: DayOfWeek = DayOfWeek.SUNDAY
+	val rentalZoneCollectionDay: DayOfWeek = DayOfWeek.SUNDAY,
+	val deleteInvalidMultiblockData: Boolean = false,
+	val pastebinApiDevKey: String? = null,
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk

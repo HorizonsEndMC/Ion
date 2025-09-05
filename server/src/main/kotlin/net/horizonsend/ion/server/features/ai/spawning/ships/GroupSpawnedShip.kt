@@ -38,7 +38,6 @@ data class GroupSpawnedShip(
 		)
 
 		controllerModifier.invoke(controller)
-		controller.validateWeaponSets()
 
 		return controller
 	}

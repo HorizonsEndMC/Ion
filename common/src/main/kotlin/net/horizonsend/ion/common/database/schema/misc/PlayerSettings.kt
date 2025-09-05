@@ -56,11 +56,14 @@ data class PlayerSettings(
 	var showItemSearchItem: Boolean = true,
 	var protectionMessagesEnabled: Boolean = true,
 	var useAlternateDCCruise: Boolean = false,
-	var dcRefreshRate: Int = -1,
+	var dcRefreshRate: Int = 1,
 	var enableAdditionalSounds: Boolean = true,
 	var soundCruiseIndicator: Int = 0,
 	var enableCombatTimerAlerts: Boolean = true,
 	var hitmarkerOnHull: Boolean = true,
+	var hitmarkerOnShield: Boolean = true,
+	var flareTime: Int = 5,
+	var useAlternateShieldHitParticle : Boolean = false,
 
 	var shortenChatChannels: Boolean = false,
 
@@ -80,6 +83,10 @@ data class PlayerSettings(
 	var bazaarSellManageFilters: String = "{}",
 	var bazaarOrderBrowseFilters: String = "{}",
 	var bazaarOrderManageFilters: String = "{}",
+
+	var displayEntityVisibility: Int = 0,
+	var nearbyWeaponSounds: Int = 0,
+	var farWeaponSounds: Int = 0,
 ) : DbObject {
 	companion object : DbObjectCompanion<PlayerSettings, StringId<PlayerSettings>>(PlayerSettings::class, setup = {}) {
 		fun create(id: StringId<PlayerSettings>): InsertOneResult = trx { session ->

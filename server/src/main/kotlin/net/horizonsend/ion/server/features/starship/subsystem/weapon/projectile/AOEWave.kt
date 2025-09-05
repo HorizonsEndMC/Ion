@@ -1,15 +1,22 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.features.starship.Starship
+import net.horizonsend.ion.server.configuration.starship.StarshipWaveProjectileBalancing
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import org.bukkit.Location
 import org.bukkit.util.Vector
 import kotlin.math.PI
 
-abstract class AOEWave(starship: Starship, shooter: Damager, val firePos: Location) : Projectile(starship, shooter) {
-	protected abstract val speed: Double
-	protected abstract val separation: Double
-	protected abstract val range: Double
+abstract class AOEWave<T: StarshipWaveProjectileBalancing>(
+	val source: ProjectileSource,
+	shooter: Damager,
+	val firePos: Location,
+) : Projectile(shooter) {
+	protected open val balancing: T get() = TODO()
+
+	protected  val speed: Double get() = balancing.speed
+	protected  val separation: Double get() = balancing.separation
+	protected  val range: Double get() = balancing.range
 
 	protected var lastTick: Long = -1
 	protected var delta: Double = 0.0

@@ -4,7 +4,6 @@ import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectRBTreeMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.TransportTask
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
@@ -13,9 +12,8 @@ import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
 import net.horizonsend.ion.server.features.transport.nodes.types.ComplexNode
 import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
-import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
+import net.horizonsend.ion.server.features.transport.nodes.util.BlockBasedCacheFactory
 import net.horizonsend.ion.server.features.transport.nodes.util.CacheState
-import net.horizonsend.ion.server.features.transport.nodes.util.NodeCacheFactory
 import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
@@ -45,10 +43,10 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 	 * Cache containing a cache state at their corresponding block position.
 	 * The state can either be empty, or present. Empty key / value pairs have not been cached.
 	 **/
-	private val nodeCache: ConcurrentHashMap<BlockKey, CacheState> = ConcurrentHashMap(16, 0.5f, 16)
+	private val nodeCache: ConcurrentHashMap<BlockKey, CacheState<Node>> = ConcurrentHashMap(16, 0.5f, 16)
 
 	abstract val type: CacheType
-	private val nodeFactory: NodeCacheFactory get() = type.nodeCacheFactory
+	private val nodeFactory: BlockBasedCacheFactory<Node, CacheHolder<*>> get() = type.nodeCacheFactory
 
 	abstract fun tickExtractor(
 		location: BlockKey,
@@ -78,7 +76,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 
 		return nodeCache.computeIfAbsent(location) { _ ->
 			val type = nodeFactory.cache(block, this.holder)
-			return@computeIfAbsent if (type == null) CacheState.Empty else CacheState.Present(type)
+			return@computeIfAbsent if (type == null) CacheState.Empty() else CacheState.Present(type)
 		}.get()
 	}
 
@@ -121,40 +119,6 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		}
 	}
 
-	/**
-	 * Gets the powered entities accessible from this location, assuming it is an input
-	 * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
-	 **/
-	fun getInputEntities(location: BlockKey): Set<MultiblockEntity> {
-		return holder.getInputManager().getHolders(type, location)
-	}
-
-	/**
-	 * Gets the powered entities accessible from this location, assuming it is an input
-	 * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
-	 **/
-	inline fun <reified T> getInputEntitiesTyped(location: BlockKey): Set<T> {
-		return holder.getInputManager().getHolders(type, location).filterIsInstanceTo(mutableSetOf())
-	}
-
-	inline fun <reified T> getExtractorSourceEntities(extractorLocation: BlockKey, filterNot: (T) -> Boolean): List<T> {
-		val sources = mutableListOf<T>()
-
-		for (face in ADJACENT_BLOCK_FACES) {
-			val inputLocation = getRelative(extractorLocation, face)
-			if (holder.getOrCacheGlobalNode(inputLocation) !is PowerNode.PowerInputNode) continue
-			val entities = getInputEntities(inputLocation)
-
-			for (entity in entities) {
-				if (entity !is T) continue
-				if (filterNot.invoke(entity)) continue
-				sources.add(entity)
-			}
-		}
-
-		return sources
-	}
-
 	inline fun <reified T: Node> getOrCacheNetworkDestinations(
 		task: TransportTask,
 		originPos: BlockKey,
@@ -171,7 +135,17 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		val cachedEntry = cacheGetter.get()
 		if (cachedEntry != null) return cachedEntry
 
-		val destinations = getNetworkDestinations(task, T::class, originPos, originNode, retainFullPath, destinationCheck, pathfindingFilter, null, nextNodeProvider)
+		val destinations = getNetworkDestinations(
+			task = task,
+			destinationTypeClass = T::class,
+			originPos = originPos,
+			originNode = originNode,
+			retainFullPath = retainFullPath,
+			destinationCheck = destinationCheck,
+			pathfindingFilter = pathfindingFilter,
+			debug = null,
+			nextNodeProvider = nextNodeProvider
+		)
 		cachingFunction.accept(destinations)
 
 		return destinations
@@ -228,11 +202,11 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		// Populate array with original nodes
 		computeNextNodes(
 			current = PathfindingNodeWrapper.newPath(NodePositionData(
-					originNode,
-					holder.getWorld(),
-					originPos,
-					BlockFace.SELF,
-					this
+				originNode,
+				holder.getWorld(),
+				originPos,
+				BlockFace.SELF,
+				this
 			)),
 			nextNodeProvider = nextNodeProvider,
 			visitQueue = visitQueue,
@@ -264,7 +238,7 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 			if (destinationTypeClass.isInstance(current.node.type) && (destinationCheck?.invoke(current.node) != false)) {
 				destinations.add(PathfindResult(
 					current.node.position,
-					current.buildPath(retainFullPath)
+					current.buildPath(retainfull = retainFullPath)
 				))
 			}
 
@@ -290,14 +264,10 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		for (next in nextNodes) {
 			if (!canVisit(next)) continue
 
-			val wrapped = PathfindingNodeWrapper.fromParent(
-				node = next,
-				parent = current
-			)
-
 			if (visitQueue.contains(next.position)) {
 				continue
 			} else {
+				val wrapped = PathfindingNodeWrapper.fromParent(node = next, parent = current)
 				visitQueue.put(next.position, wrapped)
 			}
 		}

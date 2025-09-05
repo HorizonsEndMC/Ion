@@ -32,6 +32,9 @@ dependencies:
   - name: dynmap
     required: false
 
+  - name: LiteBans
+    required: false
+
 load-after:
   - name: WorldEdit
   - name: Citizens

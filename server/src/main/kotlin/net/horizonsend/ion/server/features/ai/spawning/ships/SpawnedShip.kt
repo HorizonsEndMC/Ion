@@ -1,8 +1,6 @@
 package net.horizonsend.ion.server.features.ai.spawning.ships
 
-import kotlinx.coroutines.currentCoroutineContext
 import net.horizonsend.ion.server.features.ai.configuration.AITemplate
-import net.horizonsend.ion.server.features.ai.spawning.PostSpawnBehaviorContext
 import net.horizonsend.ion.server.features.ai.spawning.createAIShipFromTemplate
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -48,26 +46,24 @@ interface SpawnedShip {
 	}
 }
 
-suspend fun SpawnedShip.spawn(
+fun SpawnedShip.spawn(
 	logger: Logger,
 	location: Location,
 	difficulty: Int,
 	targetMode: AITarget.TargetMode,
 	modifyController: AIController.() -> Unit = {}
 ) {
-	val context = currentCoroutineContext()
 	createAIShipFromTemplate(
-		logger,
-		template,
-		location,
-		{
+		logger = logger,
+		template = template,
+		location = location,
+		createController = {
 			val controller = createController(logger, it, difficulty, targetMode)
 
 			modifyController.invoke(controller)
-			context[PostSpawnBehaviorContext]?.hook?.invoke(controller)
 
 			controller
 		},
-		getSuffix(difficulty)
+		suffix = getSuffix(difficulty)
 	)
 }

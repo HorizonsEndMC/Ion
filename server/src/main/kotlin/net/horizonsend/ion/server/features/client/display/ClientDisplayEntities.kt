@@ -1,29 +1,40 @@
 package net.horizonsend.ion.server.features.client.display
 
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createBlockDisplay
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.createItemDisplay
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
+import net.kyori.adventure.text.Component
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.entity.Display.BlockDisplay
+import net.minecraft.world.entity.Display.DATA_POS_ROT_INTERPOLATION_DURATION_ID
+import net.minecraft.world.entity.Display.ItemDisplay
+import net.minecraft.world.entity.Display.TextDisplay
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.PositionMoveRotation
 import net.minecraft.world.entity.Relative
 import net.minecraft.world.entity.monster.Slime
 import net.minecraft.world.phys.Vec3
 import org.bukkit.Bukkit
+import org.bukkit.Color
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.type.Chest
+import org.bukkit.craftbukkit.CraftServer
+import org.bukkit.craftbukkit.entity.CraftTextDisplay
 import org.bukkit.entity.Display
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -180,7 +191,10 @@ object ClientDisplayEntities : IonServerComponent() {
     fun Audience.highlightBlock(pos: Vec3i, duration: Long) {
 		@Suppress("OverrideOnly")
 		when (this) {
-			is Player -> sendEntityPacket(this, highlightBlock(this.world.minecraft, pos), duration)
+			is Player -> {
+				if (distanceSquared(Vec3i(this.location), pos) >= 240 * 240) return
+				sendEntityPacket(this, highlightBlock(this.world.minecraft, pos), duration)
+			}
 			is ForwardingAudience -> for (player in audiences().filterIsInstance<Player>()) {
 				sendEntityPacket(player, highlightBlock(player.world.minecraft, pos), duration)
 			}
@@ -209,13 +223,16 @@ object ClientDisplayEntities : IonServerComponent() {
 		blockData: BlockData,
 		pos: Vector,
 		scale: Float = 1.0f,
-		glow: Boolean = false,
-	): net.minecraft.world.entity.Display.BlockDisplay {
+		glowColor: Color? = null,
+	): BlockDisplay {
 
         val block = createBlockDisplay(level)
         val offset = (-scale / 2) + 0.5
         block.block = blockData
-        block.isGlowing = glow
+        if (glowColor != null) {
+			block.glowColorOverride = glowColor
+			block.isGlowing = true
+		}
 		block.brightness = Display.Brightness(0, 15)
         block.transformation = Transformation(Vector3f(0f), Quaternionf(), Vector3f(scale), Quaternionf())
 
@@ -233,7 +250,7 @@ object ClientDisplayEntities : IonServerComponent() {
 		level: ServerLevel,
 		pos: Vector,
 		scale: Float = 0.75f,
-	): net.minecraft.world.entity.Display.BlockDisplay {
+	): BlockDisplay {
 
 		val block = createBlockDisplay(level)
 		val offset = (-scale / 2) + 0.5
@@ -263,7 +280,7 @@ object ClientDisplayEntities : IonServerComponent() {
 		item: ItemStack,
 		pos: Vector,
 		scale: Float = 0.75f,
-	): net.minecraft.world.entity.Display.ItemDisplay {
+	): ItemDisplay {
 		val block = createItemDisplay(player)
 		block.setItemStack(item)
 		block.isGlowing = true
@@ -403,4 +420,64 @@ object ClientDisplayEntities : IonServerComponent() {
 			entity.yHeadRot.toDouble()
 		)
 	}
+
+    enum class Visibility {
+        ON,
+        REDUCED,
+        OFF
+    }
+
+	fun Audience.sendText(
+		location: Location,
+		text: Component,
+		durationTicks: Long,
+		scale: Float = 1.0f,
+		backgroundColor: Color = Color.fromARGB(0x00000000),
+		defaultBackground: Boolean = false,
+		seeThrough: Boolean = false,
+		highlight: Boolean = false
+	) {
+		val entity = CraftTextDisplay(IonServer.server as CraftServer, TextDisplay(EntityType.TEXT_DISPLAY, location.world.minecraft))
+
+		entity.text(text)
+		entity.billboard = Display.Billboard.CENTER
+		entity.viewRange = 5.0f
+		//entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
+		entity.brightness = Display.Brightness(15, 15)
+		entity.teleportDuration = 0
+
+		if (!defaultBackground) {
+			entity.backgroundColor = backgroundColor
+		} else entity.isDefaultBackground = true
+
+		entity.isGlowing = highlight
+		entity.isSeeThrough = seeThrough
+
+		// apply transformation
+		entity.transformation = Transformation(
+			Vector3f(),
+			rotateToFaceVector2d(Vector3f()),
+			Vector3f(scale),
+			Quaternionf()
+		)
+
+		// position needs to be assigned immediately or else the entity gets culled as it's not in a loaded chunk
+		val nmsEntity = entity.getNMSData(location.x, location.y, location.z)
+
+		@Suppress("OverrideOnly")
+		when (this) {
+			is Player -> {
+				sendEntityPacket(this, nmsEntity, durationTicks)
+			}
+			is ForwardingAudience -> audiences().filterIsInstance<Player>().forEach { sendEntityPacket(it, nmsEntity, durationTicks) }
+		}
+	}
 }
+
+var net.minecraft.world.entity.Display.teleportDuration: Int
+	get() {
+		return entityData.get<Int>(DATA_POS_ROT_INTERPOLATION_DURATION_ID)
+	}
+	set(field) {
+		entityData.set(DATA_POS_ROT_INTERPOLATION_DURATION_ID, field)
+	}

@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.globalGassesConfiguration
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
-import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -14,7 +14,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -80,9 +80,9 @@ object CanisterVentMultiblock : Multiblock(), EntityMultiblock<CanisterVentMulti
 			if (customItem !is GasCanister) return
 
 			furnaceInventory.fuel = null
-			furnaceInventory.result = Gasses.EMPTY_CANISTER
+			furnaceInventory.result = CustomItemKeys.GAS_CANISTER_EMPTY.getValue().constructItemStack()
 		}
 
-		override val inputsData: InputsData = none()
+		override val ioData: IOData = none()
 	}
 }

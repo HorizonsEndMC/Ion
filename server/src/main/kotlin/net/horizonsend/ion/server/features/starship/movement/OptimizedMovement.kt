@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.movement
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import it.unimi.dsi.fastutil.shorts.ShortOpenHashSet
 import it.unimi.dsi.fastutil.shorts.ShortSet
@@ -52,11 +53,12 @@ object OptimizedMovement {
 
 	fun moveStarship(
 		executionCheck: () -> Boolean,
-		world1: World,
-		world2: World,
+		currentWorld: World,
+		newWorld: World,
 		oldPositionArray: LongArray,
 		newPositionArray: LongArray,
 		blockStateTransform: (BlockState) -> BlockState,
+		chunkCache: ChunkCache = Object2ObjectOpenHashMap(),
 		callback: () -> Unit
 	) {
 		val oldChunkMap = getChunkMap(oldPositionArray)
@@ -64,8 +66,8 @@ object OptimizedMovement {
 		val collisionChunkMap = getCollisionChunkMap(oldChunkMap, newChunkMap)
 
 		val n = oldPositionArray.size
-		val capturedStates = arrayOfNulls<BlockState>(n) as Array<BlockState>
-		val capturedTiles = Int2ObjectOpenHashMap<Pair<BlockState, CompoundTag>>()
+		val capturedStates = java.lang.reflect.Array.newInstance(BlockState::class.java, n) as Array<BlockState>
+		val capturedTiles = mutableMapOf<Int, Pair<BlockState, CompoundTag>>()
 		val hangars = LinkedList<Long>()
 
 		try {
@@ -74,26 +76,22 @@ object OptimizedMovement {
 					return@syncBlocking
 				}
 
-				val chunkCache = Long2ObjectOpenHashMap<LevelChunk>()
-
-				checkForCollision(world2, collisionChunkMap, chunkCache, hangars, newPositionArray)
+				checkForCollision(newWorld, collisionChunkMap, chunkCache, hangars, newPositionArray)
 
 				processOldBlocks(
 					oldChunkMap,
-					world1,
-					world2,
+					currentWorld,
 					chunkCache,
 					capturedStates,
 					capturedTiles
 				)
 
-				dissipateHangarBlocks(world2, hangars)
+				dissipateHangarBlocks(newWorld, hangars)
 
 				processNewBlocks(
 					newPositionArray,
 					newChunkMap,
-					world1,
-					world2,
+					newWorld,
 					chunkCache,
 					capturedStates,
 					capturedTiles,
@@ -102,7 +100,7 @@ object OptimizedMovement {
 
 				callback()
 
-				sendChunkUpdatesToPlayers(world1, world2, chunkCache, oldChunkMap, newChunkMap)
+				sendChunkUpdatesToPlayers(currentWorld, newWorld, chunkCache, oldChunkMap, newChunkMap)
 			}
 		} catch (e: ExecutionException) {
 			throw e.cause ?: e
@@ -112,12 +110,12 @@ object OptimizedMovement {
 	private fun checkForCollision(
 		world: World,
 		collisionChunkMap: ChunkMap,
-		chunkCache: Long2ObjectOpenHashMap<LevelChunk>,
+		chunkCache: ChunkCache,
 		hangars: LinkedList<Long>,
 		newPositionArray: LongArray
 	) {
 		for ((chunkKey, sectionMap) in collisionChunkMap) {
-			val nmsChunk = getNMSChunk(chunkCache, world, chunkKey)
+			val nmsChunk = getNMSChunk(world, chunkKey, chunkCache)
 
 			for ((sectionKey, positionMap) in sectionMap) {
 				val section = nmsChunk.sections[sectionKey]
@@ -148,23 +146,23 @@ object OptimizedMovement {
 	}
 
 	private fun isHangar(newBlockData: BlockState) =
-		newBlockData.block is StainedGlassBlock ||
-			newBlockData.block is NetherPortalBlock ||
-			newBlockData.block is LiquidBlock ||
-			newBlockData.block is BushBlock || // most types of crop/grass blocks
-			newBlockData.block is VineBlock || // normal vines
-			newBlockData.block is GrowingPlantBlock || // twisted vines on Luxiterna, kelp, etc.
-			newBlockData.block is LeavesBlock ||
-			newBlockData.block is BaseCoralPlantTypeBlock ||
-			newBlockData.block is BambooSaplingBlock ||
-			newBlockData.block is BambooStalkBlock ||
-			newBlockData.block is FungusBlock ||
-			newBlockData.block is DoublePlantBlock ||
-			newBlockData.block is GlowLichenBlock
+		newBlockData.block is StainedGlassBlock
+		|| newBlockData.block is NetherPortalBlock
+		|| newBlockData.block is LiquidBlock
+		|| newBlockData.block is BushBlock // most types of crop/grass blocks
+		|| newBlockData.block is VineBlock // normal vines
+		|| newBlockData.block is GrowingPlantBlock // twisted vines on Luxiterna, kelp, etc.
+		|| newBlockData.block is LeavesBlock
+		|| newBlockData.block is BaseCoralPlantTypeBlock
+		|| newBlockData.block is BambooSaplingBlock
+		|| newBlockData.block is BambooStalkBlock
+		|| newBlockData.block is FungusBlock
+		|| newBlockData.block is DoublePlantBlock
+		|| newBlockData.block is GlowLichenBlock
 
-	private fun dissipateHangarBlocks(world2: World, hangars: LinkedList<Long>) {
+	private fun dissipateHangarBlocks(newWorld: World, hangars: LinkedList<Long>) {
 		for (blockKey in hangars.iterator()) {
-			Hangars.dissipateBlock(world2, blockKey)
+			Hangars.dissipateBlock(newWorld, blockKey)
 		}
 	}
 
@@ -172,17 +170,16 @@ object OptimizedMovement {
 
 	private fun processOldBlocks(
 		oldChunkMap: ChunkMap,
-		world1: World,
-		world2: World,
-		chunkCache: Long2ObjectOpenHashMap<LevelChunk>,
+		currentWorld: World,
+		chunkCache: ChunkCache,
 		capturedStates: Array<BlockState>,
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>
 	) {
-		val lightModule = world1.minecraft.lightEngine
+		val lightModule = currentWorld.minecraft.lightEngine
 		val relightChunks = ObjectOpenHashSet<ChunkPos>()
 
 		for ((chunkKey, sectionMap) in oldChunkMap) {
-			val nmsChunk = getNMSChunk(chunkCache, world1, chunkKey)
+			val nmsChunk = getNMSChunk(currentWorld, chunkKey, chunkCache)
 			relightChunks.add(nmsChunk.pos)
 
 			for ((sectionKey, positionMap) in sectionMap) {
@@ -225,18 +222,17 @@ object OptimizedMovement {
 	private fun processNewBlocks(
 		newPositionArray: LongArray,
 		newChunkMap: ChunkMap,
-		world1: World,
-		world2: World,
-		chunkCache: Long2ObjectOpenHashMap<LevelChunk>,
+		newWorld: World,
+		chunkCache: ChunkCache,
 		capturedStates: Array<BlockState>,
 		capturedTiles: MutableMap<Int, Pair<BlockState, CompoundTag>>,
 		blockDataTransform: (BlockState) -> BlockState
 	) {
-		val lightModule = world2.minecraft.lightEngine
+		val lightModule = newWorld.minecraft.lightEngine
 		val relightChunks = ObjectOpenHashSet<ChunkPos>()
 
 		for ((chunkKey, sectionMap) in newChunkMap) {
-			val nmsChunk = getNMSChunk(chunkCache, world2, chunkKey)
+			val nmsChunk = getNMSChunk(newWorld, chunkKey, chunkCache)
 			relightChunks.add(nmsChunk.pos)
 
 			for ((sectionKey, positionMap) in sectionMap) {
@@ -278,13 +274,12 @@ object OptimizedMovement {
 			val z = blockKeyZ(blockKey)
 
 			val newPos = BlockPos(x, y, z)
+			val chunk = newWorld.getChunkAt(x shr 4, z shr 4)
 
 			val data = blockDataTransform(tile.first)
 
-			val blockEntity = BlockEntity.loadStatic(newPos, data, tile.second, world2.minecraft.registryAccess()) ?: continue
-
-			val nmsChunk = getNMSChunk(chunkCache, world2, chunkKey(x shr 4, z shr 4))
-			nmsChunk.addAndRegisterBlockEntity(blockEntity)
+			val blockEntity = BlockEntity.loadStatic(newPos, data, tile.second, newWorld.minecraft.registryAccess()) ?: continue
+			chunk.minecraft.addAndRegisterBlockEntity(blockEntity)
 		}
 	}
 
@@ -350,15 +345,15 @@ object OptimizedMovement {
 	}
 
 	fun sendChunkUpdatesToPlayers(
-		world1: World,
-		world2: World,
-		chunkCache: Long2ObjectOpenHashMap<LevelChunk>,
+		currentWorld: World,
+		newWorld: World,
+		chunkCache: ChunkCache,
 		oldChunkMap: ChunkMap,
 		newChunkMap: ChunkMap,
 	) {
-		for ((chunkMap, world) in listOf(oldChunkMap to world1.uid, newChunkMap to world2.uid)) {
+		for ((chunkMap, world) in listOf(oldChunkMap to currentWorld.uid, newChunkMap to newWorld.uid)) {
 			for ((chunkKey, _) in chunkMap) {
-				val nmsChunk = getNMSChunk(chunkCache, Bukkit.getWorld(world)!!, chunkKey)
+				val nmsChunk = getNMSChunk(Bukkit.getWorld(world)!!, chunkKey, chunkCache)
 				nmsChunk.`moonrise$getChunkAndHolder`().holder.broadcastChanges(nmsChunk)
 			}
 		}
@@ -380,9 +375,11 @@ object OptimizedMovement {
 		changedBlockSets[sectionIndex]?.add(SectionPos.sectionRelativePos(blockPos))
 	}
 
-	private fun getNMSChunk(chunkCache: Long2ObjectOpenHashMap<LevelChunk>, world: World, chunkKey: Long): LevelChunk {
-		return chunkCache.getOrPut(chunkKey) { world.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft }
+	private fun getNMSChunk(world: World, chunkKey: Long, chunkCache: ChunkCache): LevelChunk {
+		val worldCaches = chunkCache.getOrPut(world) { Long2ObjectOpenHashMap<LevelChunk>() }
+		return worldCaches.getOrPut(chunkKey) { world.getChunkAt(chunkKeyX(chunkKey), chunkKeyZ(chunkKey)).minecraft }
 	}
 }
 
 private typealias ChunkMap = Map<Long, Map<Int, Map<Long, Int>>>
+private typealias ChunkCache = MutableMap<World, Long2ObjectOpenHashMap<LevelChunk>>

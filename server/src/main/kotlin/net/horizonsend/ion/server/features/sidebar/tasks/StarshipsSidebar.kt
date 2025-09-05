@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.sidebar.tasks
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.INTERDICTION_ICON
@@ -141,7 +141,7 @@ object StarshipsSidebar {
     fun compassComponent(starship: ActiveControlledStarship, player: Player): MutableList<MutableList<Component>> {
         val cruiseData = starship.cruiseData
         val vec = cruiseData.velocity
-        val rotateCompass = player.getSetting(PlayerSettings::rotateCompass)
+        val rotateCompass = player.getSettingOrThrow(PlayerSettings::rotateCompass)
         val targetVec = cruiseData.targetDir
 
         val compass = mutableListOf<MutableList<Component>>(

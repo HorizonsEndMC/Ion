@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.world.data
 
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.data.fixers.multiblock.MultiblockEntityInitializer

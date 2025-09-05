@@ -10,8 +10,8 @@ import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory

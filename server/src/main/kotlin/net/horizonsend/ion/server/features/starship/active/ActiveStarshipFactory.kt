@@ -6,7 +6,9 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.ComponentMessageException
 import net.horizonsend.ion.server.features.starship.Mass
+import net.horizonsend.ion.server.features.starship.StarshipDetection.OVERSIZE_MODIFIER
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -35,7 +37,7 @@ object ActiveStarshipFactory {
 		if (blocks.isEmpty()) return null
 
 		val type = data.starshipType.actualType
-		if (blocks.size < type.minSize || blocks.size > type.maxSize) throw StarshipActivationException("Starship size out of bounds, please redetect.")
+		if (blocks.size < type.minSize || blocks.size > (type.maxSize * OVERSIZE_MODIFIER)) throw StarshipActivationException("Starship size out of bounds, please redetect.")
 
 		val starship = createStarship(data, blocks, carriedShips)
 
@@ -115,12 +117,17 @@ object ActiveStarshipFactory {
 	}
 
 	private fun determineForward(starship: ActiveStarship) {
-		starship.forward = starship.thrusterMap.entries
+		starship.forward = if (starship.forwardOverride != null) {
+			starship.forwardOverride ?: starship.forward
+		}
+		else starship.thrusterMap.entries
 			.maxByOrNull { it.value.maxSpeed }
 			?.key
 			?: starship.forward
 
 		starship.multiblockManager.referenceForward = starship.forward
+		// forwardOverride should only be used on initial starship pilot
+		starship.forwardOverride = null
 	}
 
 	private fun prepareShields(starship: ActiveControlledStarship) {
@@ -151,7 +158,7 @@ object ActiveStarshipFactory {
 				continue
 			}
 
-			if (!weapon.isForwardOnly()) {
+			if (weapon is BalancedWeaponSubsystem<*> && !weapon.isForwardOnly()) {
 				continue
 			}
 

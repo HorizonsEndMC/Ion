@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.ReinforcementSpaw
 import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.SpawnerMechanic
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.kyori.adventure.text.minimessage.MiniMessage
+import java.util.function.Consumer
 
 @Serializable
 class BehaviorConfiguration(
@@ -34,6 +35,9 @@ class BehaviorConfiguration(
 		fun createModule(controller: AIController): AIModule
 	}
 
+	/**
+	 * Replacement params: 0: world, 1: x, 2: y, z: 3
+	 **/
 	@Serializable
 	data class SmackInformation(
 		val prefix: String,
@@ -114,14 +118,17 @@ class BehaviorConfiguration(
 		override val name: String = "reinforcement"
 
 		override fun createModule(controller: AIController): ReinforcementSpawnerModule {
-			val spawner = ReinforcementSpawner(controller, reinforcementShips)
+			val list = mutableListOf<Consumer<AIController>>()
+
+			val spawner = ReinforcementSpawner(controller, reinforcementShips, list)
 
 			return ReinforcementSpawnerModule(
-				controller,
-				spawner,
-				activationThreshold,
-				broadcastMessage?.let { message -> MiniMessage.miniMessage().deserialize(message) },
+				controller = controller,
+				spawner = spawner,
+				activationAverageShieldHealth = activationThreshold,
+				spawnBroadCastMessage = broadcastMessage?.let { message -> MiniMessage.miniMessage().deserialize(message) },
 				delay = delay,
+				controllerModifiers = list
 			)
 		}
 	}
@@ -135,14 +142,17 @@ class BehaviorConfiguration(
 		override val name: String = "reinforcement"
 
 		override fun createModule(controller: AIController): ReinforcementSpawnerModule {
-			val spawner = ReinforcementSpawner(controller, providedSpawner.invoke(controller))
+			val list = mutableListOf<Consumer<AIController>>()
+
+			val spawner = ReinforcementSpawner(controller, providedSpawner.invoke(controller), list)
 
 			return ReinforcementSpawnerModule(
-				controller,
-				spawner,
-				activationThreshold,
-				broadcastMessage?.let { message -> MiniMessage.miniMessage().deserialize(message) },
+				controller = controller,
+				spawner = spawner,
+				activationAverageShieldHealth = activationThreshold,
+				spawnBroadCastMessage = broadcastMessage?.let { message -> MiniMessage.miniMessage().deserialize(message) },
 				delay = delay,
+				controllerModifiers = list
 			)
 		}
 	}

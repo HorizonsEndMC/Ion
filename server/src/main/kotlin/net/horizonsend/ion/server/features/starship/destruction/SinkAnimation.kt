@@ -4,7 +4,10 @@ import io.netty.util.internal.ThreadLocalRandom
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.DyedItemColor
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getEnumSettingOrThrow
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.modular.DisplayWrapper
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.features.starship.Starship
@@ -18,10 +21,15 @@ import net.minecraft.util.Brightness
 import org.bukkit.Color
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Vector
-import kotlin.math.*
+import kotlin.math.cbrt
+import kotlin.math.min
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 class SinkAnimation(
@@ -64,7 +72,7 @@ class SinkAnimation(
 			val originHeading = Vector(Random.nextDouble(-1.0, 1.0), Random.nextDouble(-1.0, 1.0), Random.nextDouble(-1.0, 1.0))
 			val (_, _) = originHeading.orthogonalVectors()
 
-			val displayContainer = ItemDisplayContainer(world = world, initScale = 1.0f, initPosition = origin, initHeading = originHeading, item = item)
+			val displayContainer = ItemDisplayContainer(world = world, initScale = 1.0f, initPosition = origin, initHeading = originHeading, item = item, playerFilter = playerFilter)
 			displayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
 
 			blockWrappers.add(ColoredSinkAnimationBlock(
@@ -94,7 +102,7 @@ class SinkAnimation(
 			val vector = BlockFace.NORTH.direction.rotateAroundY(Math.toRadians(degrees)).normalize().multiply(3).multiply(scale)
 
 			val item = DYEABLE_CUBE_MONO.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(Color.GRAY, false)) }
-			val displayContainer = ItemDisplayContainer(world, 1.0f, origin.toCenterVector(), Vector.getRandom(), item)
+			val displayContainer = ItemDisplayContainer(world, 1.0f, origin.toCenterVector(), Vector.getRandom(), item, playerFilter = playerFilter)
 			displayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
 
 			blockWrappers.add(ColoredSinkAnimationBlock(
@@ -139,7 +147,8 @@ class SinkAnimation(
 				initPosition = position,
 				initHeading = direction,
 				initScale = 1.0f,
-				item = ItemStack(blockData.material)
+				item = ItemStack(blockData.material),
+				playerFilter = playerFilter
 			)
 
 			displayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
@@ -190,12 +199,22 @@ class SinkAnimation(
 		fun blend(original: Number, final: Number, phase: Double): Double {
 			return original.toDouble() + phase * (final.toDouble() - original.toDouble())
 		}
+
+		private val playerFilter = { player: Player ->
+			val playerSetting = player.getEnumSettingOrThrow<ClientDisplayEntities.Visibility>(PlayerSettings::displayEntityVisibility)
+
+			when (playerSetting) {
+				ClientDisplayEntities.Visibility.ON -> true
+				ClientDisplayEntities.Visibility.REDUCED -> Random.nextBoolean()
+				ClientDisplayEntities.Visibility.OFF -> false
+			}
+		}
 	}
 
 	open class SinkAnimationBlock(
 		val duration: Long,
 		open val wrapper: DisplayWrapper,
-		val direction: Vector,
+		var direction: Vector,
 		val initialScale: Double,
 		val finalScale: Double,
 		val rotationAxis: Vector,

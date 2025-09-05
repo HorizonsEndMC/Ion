@@ -15,10 +15,10 @@ import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
 import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.city.TradeCityData
@@ -61,7 +61,7 @@ object Bazaars : IonServerComponent() {
 
 	private fun buildStrings() {
 		strings.addAll(MATERIALS.filter { it.isItem && !it.isLegacy && !it.isAir }.map { it.name })
-		strings.addAll(CustomItemRegistry.identifiers)
+		strings.addAll(CustomItemKeys.allStrings())
 		strings.addAll(MultiblockRegistration.getAllMultiblocks().map { "MULTIBLOCK_TOKEN[multiblock=\"${it.javaClass.simpleName}\"]" })
 		strings.remove("MULTIBLOCK_TOKEN")
 		strings.remove("PACKAGED_MULTIBLOCK")
@@ -642,7 +642,7 @@ object Bazaars : IonServerComponent() {
 		val result = FutureInputResult()
 
 		Tasks.sync {
-			val count = takePlayerItemsOfType(inventory, itemReference, limit)
+			val count = takePlayerItemsOfType(inventory, itemReference, minOf(orderDocument.requestedQuantity - orderDocument.fulfilledQuantity, limit))
 
 			if (count == 0) {
 				result.complete(

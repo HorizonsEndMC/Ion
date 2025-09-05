@@ -36,7 +36,7 @@ import org.litote.kmongo.and
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.id.WrappedObjectId
-import java.util.*
+import java.util.UUID
 
 abstract class ShipFactoryEntity(
 	data: PersistentMultiblockData,

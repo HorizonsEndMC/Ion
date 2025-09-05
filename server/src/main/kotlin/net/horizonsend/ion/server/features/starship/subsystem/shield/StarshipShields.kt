@@ -1,30 +1,22 @@
 package net.horizonsend.ion.server.features.starship.subsystem.shield
 
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.miscellaneous.d
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.admin.debugRed
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
+import net.horizonsend.ion.server.features.nations.utils.isNPC
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.event.StarshipActivatedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipDeactivatedEvent
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
-import net.horizonsend.ion.server.miscellaneous.utils.PerWorld
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
-import net.horizonsend.ion.server.miscellaneous.utils.nms
-import net.minecraft.core.BlockPos
-import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
-import net.minecraft.world.level.Level
-import net.minecraft.world.level.block.BaseEntityBlock
-import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Sound
@@ -191,27 +183,15 @@ object StarshipShields : IonServerComponent() {
 
 	private fun formatPercent(percent: Double): Double = (percent * 1000).toInt().toDouble() / 10.0
 
-	private val flaringBlocks = PerWorld { LongOpenHashSet() }
-	private val flaringChunks = PerWorld { LongOpenHashSet() }
-
 	private fun onShieldImpact(location: Location, blockList: MutableList<Block>, power: Double) {
 		LAST_EXPLOSION_ABSORBED = false
 
 		val world: World = location.world
-		val nmsWorld = world.minecraft
-		val chunkKey: Long = location.chunk.chunkKey
 		val size: Int = blockList.size
 
 		if (blockList.isEmpty()) {
 			return
 		}
-
-		val flaringBlocks: LongOpenHashSet = flaringBlocks[world]
-		val flaringChunks: LongOpenHashSet = flaringChunks[world]
-
-		val canFlare = !flaringChunks.contains(chunkKey)
-
-		val flaredBlocks = LongOpenHashSet()
 
 		val protectedBlocks = HashSet<Block>()
 		for (starship in ActiveStarships.getInWorld(world)) {
@@ -223,14 +203,8 @@ object StarshipShields : IonServerComponent() {
 				size,
 				power,
 				protectedBlocks,
-				canFlare,
-				flaringBlocks,
-				flaredBlocks,
-				nmsWorld
 			)
 		}
-
-		scheduleUnflare(canFlare, flaredBlocks, flaringChunks, chunkKey, flaringBlocks, world, nmsWorld)
 
 		blockList.removeAll(protectedBlocks)
 
@@ -248,10 +222,6 @@ object StarshipShields : IonServerComponent() {
 		size: Int,
 		radius: Double,
 		protectedBlocks: HashSet<Block>,
-		canFlare: Boolean,
-		flaringBlocks: LongOpenHashSet,
-		flaredBlocks: LongOpenHashSet,
-		nmsLevel: Level
 	) {
 		// ignore if it's over 500 blocks away
 		if (starship.centerOfMass.toLocation(world).distanceSquared(location) > 250_000) {
@@ -274,10 +244,6 @@ object StarshipShields : IonServerComponent() {
 				protectedBlocks,
 				blocks,
 				damagedPercent,
-				canFlare,
-				flaringBlocks,
-				flaredBlocks,
-				nmsLevel,
 				starship
 			)
 		}
@@ -289,10 +255,6 @@ object StarshipShields : IonServerComponent() {
 		protectedBlocks: HashSet<Block>,
 		blocks: List<Block>,
 		damagedPercent: Float,
-		canFlare: Boolean,
-		flaringBlocks: LongOpenHashSet,
-		flaredBlocks: LongOpenHashSet,
-		nmsLevel: Level,
 		starship: ActiveStarship
 	): Boolean {
 		val containedBlocks = blocks.filter { shield.containsBlock(it) }
@@ -330,8 +292,13 @@ object StarshipShields : IonServerComponent() {
 		// protection check passed; add all blocks in shield to list
 		protectedBlocks.addAll(containedBlocks)
 
-		if (canFlare && protectedBlocks.isNotEmpty() && percent > 0.01f) {
-			addFlare(containedBlocks, shield, flaringBlocks, flaredBlocks, nmsLevel)
+		if (protectedBlocks.isNotEmpty() && percent > 0.01f) {
+			spawnShieldDisplayFlares(
+				starship = starship,
+				blocks = containedBlocks,
+				percent = percent,
+				reinforced = shield.isReinforcementActive()
+			)
 		}
 
 		if (usage > 0) {
@@ -341,77 +308,45 @@ object StarshipShields : IonServerComponent() {
 		return true
 	}
 
-	private fun addFlare(
-		containedBlocks: List<Block>,
-		shield: ShieldSubsystem,
-		flaringBlocks: LongOpenHashSet,
-		flaredBlocks: LongOpenHashSet,
-		nmsLevel: Level
+	private fun spawnShieldDisplayFlares(
+		starship: Starship,
+		blocks: List<Block>,
+		percent: Double,
+		reinforced: Boolean
 	) {
-		val percent = shield.powerRatio
+		val sample = blocks.firstOrNull()?.location?.toCenterLocation() ?: return
 
-		val flare: BlockState = when {
-			shield.isReinforcementActive() -> Material.MAGENTA_STAINED_GLASS
-			percent <= 0.05 -> Material.RED_STAINED_GLASS
-			percent <= 0.10 -> Material.ORANGE_STAINED_GLASS
-			percent <= 0.25 -> Material.YELLOW_STAINED_GLASS
-			percent <= 0.40 -> Material.LIME_STAINED_GLASS
-			percent <= 0.55 -> Material.GREEN_STAINED_GLASS
-			percent <= 0.70 -> Material.CYAN_STAINED_GLASS
-			percent <= 0.85 -> Material.LIGHT_BLUE_STAINED_GLASS
-			else -> Material.BLUE_STAINED_GLASS
-		}.createBlockData().nms
+		// Only spawn if at least one nearby player
+		val interested = sample.getNearbyPlayers(500.0) { !it.isNPC }
+		if (interested.isEmpty()) return
 
-		for (block in containedBlocks) {
-			val bx = block.x
-			val by = block.y
-			val bz = block.z
+		Tasks.async {
+			// Lifetime: use the max preference among nearby players
+			val lifetime = interested.maxOf { it.getSettingOrThrow(PlayerSettings::flareTime).toLong() }
 
-			val blockKey: Long = block.blockKey
+			// Throttle number of displays per hit to keep it light
+			val maxFlares = 20
+			val chosen = if (blocks.size > maxFlares) blocks.shuffled().take(maxFlares) else blocks
 
-			if (!flaringBlocks.add(blockKey) || !flaredBlocks.add(blockKey)) {
-				continue
+			val mat = shieldMaterialFor(percent, reinforced)
+
+			for (b in chosen) {
+				val local = starship.getLocalCoordinate(Vec3i(b.x, b.y, b.z))
+
+				ShieldFlareDisplay(starship = starship, local = local, colorItem = mat, lifetime = lifetime).schedule()
 			}
-
-			val pos = BlockPos(bx, by, bz)
-			val packet = ClientboundBlockUpdatePacket(pos, flare)
-			nmsLevel.getChunkAt(pos).`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false).forEach { it.connection.send(packet) }
 		}
 	}
 
-	private fun scheduleUnflare(
-		canFlare: Boolean,
-		flaredBlocks: LongOpenHashSet,
-		flaringChunks: LongOpenHashSet,
-		chunkKey: Long,
-		flaringBlocks: LongOpenHashSet,
-		world: World,
-		nmsLevel: Level
-	) {
-		if (!canFlare || flaredBlocks.isEmpty()) {
-			return
-		}
-
-		flaringChunks.add(chunkKey)
-		flaringBlocks.addAll(flaredBlocks)
-
-		Tasks.syncDelay(3) {
-			flaringChunks.remove(chunkKey)
-
-			for (key: Long in flaredBlocks.iterator()) {
-				flaringBlocks.remove(key)
-
-				val data = world.getBlockAtKey(key).blockData.nms
-
-				if (data.block is BaseEntityBlock) {
-					world.getBlockAtKey(key).state.update(false, false)
-					continue
-				}
-
-				val pos = BlockPos(blockKeyX(key), blockKeyY(key), blockKeyZ(key))
-				val packet = ClientboundBlockUpdatePacket(pos, data)
-				nmsLevel.getChunkAt(pos).`moonrise$getChunkAndHolder`().holder.`moonrise$getPlayers`(false).forEach { it.connection.send(packet) }
-			}
-		}
+	private fun shieldMaterialFor(percent: Double, reinforced: Boolean): Material = when {
+		reinforced          -> Material.MAGENTA_STAINED_GLASS
+		percent <= 0.05     -> Material.RED_STAINED_GLASS
+		percent <= 0.10     -> Material.ORANGE_STAINED_GLASS
+		percent <= 0.25     -> Material.YELLOW_STAINED_GLASS
+		percent <= 0.40     -> Material.LIME_STAINED_GLASS
+		percent <= 0.55     -> Material.GREEN_STAINED_GLASS
+		percent <= 0.70     -> Material.LIGHT_BLUE_STAINED_GLASS // close to CYAN tier
+		percent <= 0.85     -> Material.LIGHT_BLUE_STAINED_GLASS
+		else                -> Material.BLUE_STAINED_GLASS
 	}
 }

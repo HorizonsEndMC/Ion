@@ -10,6 +10,7 @@ import net.horizonsend.ion.proxy.features.discord.Discord
 import net.horizonsend.ion.proxy.features.messaging.PlayerTracking
 import net.horizonsend.ion.proxy.features.misc.ProxyInbox
 import net.horizonsend.ion.proxy.features.misc.ServerMessaging
+import net.horizonsend.ion.proxy.utils.ProxyMutes
 
 val components = listOf(
 	DBManager,
@@ -21,5 +22,6 @@ val components = listOf(
 	ReminderManager,
 	Discord,
 	ServerMessaging,
-	ProxyInbox
+	ProxyInbox,
+	ProxyMutes
 )

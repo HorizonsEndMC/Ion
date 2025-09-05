@@ -108,8 +108,8 @@ abstract class StarshipMovement(val starship: ActiveStarship) : TransformationAc
 
 		OptimizedMovement.moveStarship(
 			executionCheck = { ActiveStarships.isActive(starship) },
-			world1 = world1,
-			world2 = world2,
+			currentWorld = world1,
+			newWorld = world2,
 			oldPositionArray = oldLocationArray,
 			newPositionArray = newLocationArray,
 			blockStateTransform = this::blockStateTransform

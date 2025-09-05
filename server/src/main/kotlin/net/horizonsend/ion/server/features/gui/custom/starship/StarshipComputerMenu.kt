@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.extensions.serverErrorActionMessage
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.toText
+import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
@@ -53,7 +54,7 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 	fun open() {
 		val state: StarshipState? = DeactivatedPlayerStarships.getSavedState(data)
 		val title = if (state != null)
-			(data as? PlayerStarshipData)?.name?.miniMessage() ?: data.starshipType.actualType.displayNameComponent
+			data.name?.miniMessage() ?: data.starshipType.actualType.displayNameComponent
 			else text("Starship Computer")
 
 		Window.single()
@@ -196,6 +197,8 @@ class StarshipComputerMenu(val player: Player, val data: PlayerStarshipData) {
 				} catch (e: Exception) {
 					e.printStackTrace()
 					player.serverErrorActionMessage("An error occurred while detecting")
+					player.sendMessage(formatException(e))
+
 					future.complete(DetectionResult(listOf(
 						text("There was an unknown error during detection.").itemName
 							.hoverEvent(text(e.message ?: "NULL")),

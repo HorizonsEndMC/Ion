@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.ores.OldOreData
 import net.horizonsend.ion.server.features.ores.generation.PlanetOreSettings.Companion.STAR_BALANCE
 import net.horizonsend.ion.server.features.ores.storage.OreData

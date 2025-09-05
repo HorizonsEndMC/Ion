@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
+import kotlin.math.cbrt
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -17,7 +18,7 @@ class ReactorSubsystem(
 	}
 
 	val output: Double =
-		Math.cbrt(starship.initialBlockCount.coerceAtLeast(500).toDouble()) * 3000.0 * (starship.type.powerOverrider) * powerModifier
+		cbrt(starship.initialBlockCount.coerceAtLeast(500).toDouble()) * 3000.0 * (starship.type.powerOverrider) * powerModifier
 	val powerDistributor = PowerDistributor()
 	val weaponCapacitor = WeaponCapacitor(this)
 	val heavyWeaponBooster = HeavyWeaponBooster(this)

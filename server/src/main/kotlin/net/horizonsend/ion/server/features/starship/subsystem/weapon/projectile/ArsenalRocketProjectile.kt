@@ -3,12 +3,12 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 import com.mojang.math.Transformation
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.miscellaneous.randomInt
-import net.horizonsend.ion.server.configuration.StarshipSounds
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.ArsenalRocketBalancing
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.getAddEntityPacket
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockPos
 import net.horizonsend.ion.server.miscellaneous.utils.gayColors
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -36,53 +36,42 @@ import org.joml.Quaternionf
 import org.joml.Vector3f
 
 class ArsenalRocketProjectile(
-	starship: ActiveStarship?,
+	source: ProjectileSource,
 	name: Component,
 	loc: Location,
-	dir: Vector,
+	direction: Vector,
 	shooter: Damager,
 	var face: BlockFace, //Up = true, down = false
 	damageType: DamageType
-) : SimpleProjectile(starship, name, loc, dir, shooter, damageType), DisplayEntityProjectile {
-	override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.arsenalMissile!!
-	override val range: Double = balancing.range
-	override val speed: Double = balancing.speed
-	override val starshipShieldDamageMultiplier = balancing.starshipShieldDamageMultiplier
-	override val areaShieldDamageMultiplier: Double = balancing.areaShieldDamageMultiplier
-	override val explosionPower: Float = balancing.explosionPower
-	override val volume: Int = balancing.volume
-	override val pitch: Float = balancing.pitch
-	override val soundName: String = balancing.soundName
-	override val nearSound: StarshipSounds.SoundInfo = balancing.soundFireNear
-	override val farSound: StarshipSounds.SoundInfo = balancing.soundFireFar
+) : SimpleProjectile<ArsenalRocketBalancing.ArsenalRocketProjectileBalancing>(source, name, loc, direction, shooter, damageType), DisplayEntityProjectile {
 	override var displayEntities: MutableMap<Player, ItemDisplay?> = mutableMapOf()
 	override val originLocation: Location = loc
 	private var age: Int = 0 //Ticks
-	private var initialVelocity = this.dir
-	private var hasSwitchedToNormalDirection = false
+	private var initialVelocity = this.direction
+	private var hasSwitchedToNormaldirectionection = false
 	override val scale: Vector3f = Vector3f(3f,3f,3f)
 	override fun tick() {
 		delta = (System.nanoTime() - lastTick) / 1_000_000_000.0 // Convert to seconds
 		/*Age is increased by 1 every tick. Between 10-15 ticks, the missile move straight up, to "escape" the silo and the ship
-		after the set period of time, it switches to a normal direction,
-		normal direction refers to it not moving straight up anymore
+		after the set period of time, it switches to a normal directionection,
+		normal directionection refers to it not moving straight up anymore
 		 */
 		age++
-		if (age< randomInt(10,15) && !hasSwitchedToNormalDirection) {
-			if (face == BlockFace.UP) dir = Vector(0,1,0).multiply(dir.length()) //move it up
-			else dir = Vector(0,-1,0).multiply(dir.length()) //move it down
+		if (age< randomInt(10,15) && !hasSwitchedToNormaldirectionection) {
+			if (face == BlockFace.UP) direction = Vector(0,1,0).multiply(direction.length()) //move it up
+			else direction = Vector(0,-1,0).multiply(direction.length()) //move it down
 			val yFactor = when(face) {
 				BlockFace.UP-> 1
 				BlockFace.DOWN-> -1
 				else -> 1
 			}
-			val predictedNewLoc = loc.clone().add(0.0, delta * speed/2 * yFactor, 0.0)
+			val predictedNewLoc = location.clone().add(0.0, delta * speed/2 * yFactor, 0.0)
 			//We're not doing any impact stuff as we dont want the projectile to be able to hit stuff at this stage
-			val travel = loc.distance(predictedNewLoc)
+			val travel = location.distance(predictedNewLoc)
 
-			moveVisually(loc, predictedNewLoc, travel)
+			moveVisually(location, predictedNewLoc, travel)
 
-			loc = predictedNewLoc
+			location = predictedNewLoc
 
 			distance += travel
 
@@ -96,10 +85,10 @@ class ArsenalRocketProjectile(
 			return
 		}
 		else {
-			if (!hasSwitchedToNormalDirection) {
-				if (starship != null) {
-					for (nearbyPlayer in starship.world.getNearbyPlayers(
-						starship.centerOfMass.toLocation(starship.world),
+			if (!hasSwitchedToNormaldirectionection) {
+				if (source is StarshipProjectileSource) {
+					for (nearbyPlayer in source.starship.world.getNearbyPlayers(
+						source.starship.centerOfMass.toLocation(source.starship.world),
 						250.0
 					)) {
 						nearbyPlayer.playSound(
@@ -113,16 +102,16 @@ class ArsenalRocketProjectile(
 					}
 				}
 				//1 is for up, -1 is for down
-				if (face == BlockFace.UP) this.dir = initialVelocity.clone().setY(1).normalize()
-				else this.dir = initialVelocity.clone().setY(-1).normalize()
+				if (face == BlockFace.UP) this.direction = initialVelocity.clone().setY(1).normalize()
+				else this.direction = initialVelocity.clone().setY(-1).normalize()
 			}
-			hasSwitchedToNormalDirection = true
-			val predictedNewLoc = loc.clone().add(dir.clone().multiply(delta * speed))
-			val result: RayTraceResult? = loc.world.rayTrace(loc, dir, delta * speed, FluidCollisionMode.NEVER, true, 0.1) { it.type != org.bukkit.entity.EntityType.ITEM_DISPLAY }
-			val newLoc = result?.hitPosition?.toLocation(loc.world) ?: predictedNewLoc
-			val travel = loc.distance(newLoc)
+			hasSwitchedToNormaldirectionection = true
+			val predictedNewLoc = location.clone().add(direction.clone().multiply(delta * speed))
+			val result: RayTraceResult? = location.world.rayTrace(location, direction, delta * speed, FluidCollisionMode.NEVER, true, 0.1) { it.type != org.bukkit.entity.EntityType.ITEM_DISPLAY }
+			val newLoc = result?.hitPosition?.toLocation(location.world) ?: predictedNewLoc
+			val travel = location.distance(newLoc)
 
-			moveVisually(loc, newLoc, travel)
+			moveVisually(location, newLoc, travel)
 
 			var impacted = false
 
@@ -130,7 +119,7 @@ class ArsenalRocketProjectile(
 				impacted = tryImpact(result, newLoc)
 			}
 
-			loc = newLoc
+			location = newLoc
 
 			distance += travel
 
@@ -149,32 +138,33 @@ class ArsenalRocketProjectile(
 		}
 		//lerp-to code
 		//Desired vector is the vector straight to the target
-		val desiredVector = starship?.targetedPosition?.clone()?.subtract(loc.clone())?.toVector() ?: return
+		val desiredVector = (source as? StarshipProjectileSource)?.starship?.targetedPosition?.clone()?.subtract(location.clone())?.toVector() ?: return
 		desiredVector.normalize()
-		//this is the current direction of the projectile, written as a Vector3f
-		val dirAsVec3f = dir.clone().toVector3f().normalize()
-		//0.05f is a tolerance of 5 for each lerp, so the dir will lerp only 5% every tick towards the desiredVector
+		//this is the current directionection of the projectile, written as a Vector3f
+		val directionAsVec3f = direction.clone().toVector3f().normalize()
+		//0.05f is a tolerance of 5 for each lerp, so the direction will lerp only 5% every tick towards the desiredVector
 		var tolerance = .1f
 		if (age>35) tolerance = 0.25f
 		if (age>55) tolerance = 0.01f
-		dirAsVec3f.lerp(desiredVector.toVector3f(), tolerance).normalize()
-		this.dir = Vector(dirAsVec3f.x, dirAsVec3f.y, dirAsVec3f.z)
+		directionAsVec3f.lerp(desiredVector.toVector3f(), tolerance).normalize()
+		this.direction = Vector(directionAsVec3f.x, directionAsVec3f.y, directionAsVec3f.z)
 	}
 
 	override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
-		val color: Color = if (starship?.rainbowToggle == true) gayColors.random() else Color.GRAY
+		val color: Color = if ((source as? StarshipProjectileSource)?.starship?.rainbowToggle == true) gayColors.random() else Color.GRAY
 		newLocation.world.spawnParticle(Particle.DUST, newLocation.x, newLocation.y, newLocation.z, 2,0.0,0.0,0.0, 0.0,DustOptions(color, 3f), true)
 		newLocation.world.spawnParticle(Particle.SOUL_FIRE_FLAME,newLocation, 3)
-		updateDisplayEntity(newLocation, dir.clone().normalize().multiply(speed))
+		updateDisplayEntity(newLocation, direction.clone().normalize().multiply(speed))
 	}
 
 	override fun fire() {
+		val starship = (source as? StarshipProjectileSource)?.starship
 		if (starship == null) return
 		if (starship.targetedPosition == null) {
 			starship.audiences().forEach { it.userError("Error: Arsenal Missiles need a targeted position to fire, do /targetposition x y z to target a Position!") }
 			return
 		}
-		initialVelocity = starship.targetedPosition?.clone()?.subtract(loc.clone())?.toVector()?.normalize() ?: return
+		initialVelocity = starship.targetedPosition?.clone()?.subtract(location.clone())?.toVector()?.normalize() ?: return
 		makeDisplayEntities()
 		super.fire()
 	}
@@ -190,11 +180,11 @@ class ArsenalRocketProjectile(
 	}
 
 	override fun makeDisplayEntities() {
-		for (playerBukkit in Bukkit.getServer().onlinePlayers.filter { it.world == this.loc.world }) {
+		for (playerBukkit in Bukkit.getServer().onlinePlayers.filter { it.world == this.location.world }) {
 			val player = (playerBukkit as CraftPlayer)
 			val connection = player.handle.connection
 			val itemDisplay = ItemDisplay(EntityType.ITEM_DISPLAY, player.minecraft.level()).apply {
-				this.itemStack = CraftItemStack.asNMSCopy(CustomItemRegistry.ACTIVATED_ARSENAL_MISSILE.constructItemStack())
+				this.itemStack = CraftItemStack.asNMSCopy(CustomItemKeys.ACTIVATED_ARSENAL_MISSILE.getValue().constructItemStack())
 				setPos(player.location.toBlockPos().center)
 				val translation = originLocation.toVector().subtract(Vector(this.x, this.y, this.z)).toVector3f()
 				val transformation = Transformation(
@@ -220,7 +210,7 @@ class ArsenalRocketProjectile(
 		val nmsPlayer = (player as CraftPlayer)
 		val connection = nmsPlayer.handle.connection
 		val itemDisplay = ItemDisplay(EntityType.ITEM_DISPLAY, nmsPlayer.minecraft.level()).apply {
-			this.itemStack = CraftItemStack.asNMSCopy(CustomItemRegistry.ACTIVATED_ARSENAL_MISSILE.constructItemStack())
+			this.itemStack = CraftItemStack.asNMSCopy(CustomItemKeys.ACTIVATED_ARSENAL_MISSILE.getValue().constructItemStack())
 			setPos(nmsPlayer.location.toBlockPos().center)
 			val translation = originLocation.toVector().subtract(Vector(this.x, this.y, this.z)).toVector3f()
 			val transformation = Transformation(

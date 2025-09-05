@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.HudIcons
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.MultiBlockDisplay
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.type.weapon.sword.SwordListener
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
@@ -28,7 +27,6 @@ import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.collectors.CollectionMissions
 import net.horizonsend.ion.server.features.economy.collectors.Collectors
 import net.horizonsend.ion.server.features.economy.misc.StationRentalZones
-import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.machine.AntiAirCannons
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.misc.AutoRestart
@@ -41,7 +39,6 @@ import net.horizonsend.ion.server.features.misc.UnusedSoldShipPurge
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
-import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
 import net.horizonsend.ion.server.features.nations.NationsBalancing
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.NationsMasterTasks
@@ -58,6 +55,7 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.DutyModeMonitor
 import net.horizonsend.ion.server.features.player.EventLogger
 import net.horizonsend.ion.server.features.player.NMSAchievements
+import net.horizonsend.ion.server.features.player.ServerMutesHook
 import net.horizonsend.ion.server.features.progression.Bounties
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
@@ -93,7 +91,6 @@ import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCoold
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.FilterType
-import net.horizonsend.ion.server.features.transport.fluids.FluidRegistry
 import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld
@@ -124,7 +121,6 @@ val components: List<IonComponent> = listOf(
 	NPCTraits,
 	CombatNPCs,
 
-	CustomItemRegistry,
 	DataMigrators,
 	CustomRecipes,
 	Crafting,
@@ -158,9 +154,6 @@ val components: List<IonComponent> = listOf(
 	ShipmentBalancing,
 	ShipmentGenerator,
 	ShipmentManager,
-
-	Gasses,
-	FluidRegistry,
 
 	Bazaars,
 	Merchants,
@@ -232,7 +225,7 @@ val components: List<IonComponent> = listOf(
 	DisplayHandlers,
 	PlanetTeleportCooldown,
 	MultiBlockDisplay,
-	MultiblockRecipeRegistry,
 	StationRentalZones,
-	ServerInboxes
+	ServerInboxes,
+	ServerMutesHook,
 )

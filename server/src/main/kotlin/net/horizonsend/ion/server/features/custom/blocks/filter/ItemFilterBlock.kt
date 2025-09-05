@@ -1,12 +1,13 @@
 package net.horizonsend.ion.server.features.custom.blocks.filter
 
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customItemDrop
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
 import net.horizonsend.ion.server.features.custom.blocks.filter.CustomFilterBlock.Companion.filterInteractCooldown
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.gui.custom.filter.ItemFilterGui
 import net.horizonsend.ion.server.features.transport.filters.FilterData
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta.ItemFilterMeta
@@ -21,16 +22,16 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.TileState
-import org.bukkit.block.Vault as VaultState
-import org.bukkit.block.data.type.Vault as VaultData
 import org.bukkit.craftbukkit.block.CraftVault
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
+import org.bukkit.block.Vault as VaultState
+import org.bukkit.block.data.type.Vault as VaultData
 
 object ItemFilterBlock : DirectionalCustomBlock(
-	identifier = "ITEM_FILTER",
+	identifier = CustomBlockKeys.ITEM_FILTER,
 	faceData = mapOf(
 		BlockFace.NORTH to Material.VAULT.createBlockData { t ->
 			t as VaultData
@@ -71,9 +72,9 @@ object ItemFilterBlock : DirectionalCustomBlock(
 	),
 	drops = BlockLoot(
 		requiredTool = { BlockLoot.Tool.PICKAXE },
-		drops = customItemDrop(CustomItemRegistry::ITEM_FILTER)
+		drops = customItemDrop(CustomItemKeys.ITEM_FILTER)
 	),
-	customBlockItem = CustomItemRegistry::ITEM_FILTER,
+	customBlockItem = CustomItemKeys.ITEM_FILTER,
 ), CustomFilterBlock<ItemStack, ItemFilterMeta> {
 	override fun createData(pos: BlockKey): FilterData<ItemStack, ItemFilterMeta> {
 		return FilterData(pos, FilterType.ItemType)
@@ -88,15 +89,15 @@ object ItemFilterBlock : DirectionalCustomBlock(
 		return ItemFilterGui(player, filterData, tileState)
 	}
 
-	override fun placeCallback(placedItem: ItemStack, block: Block) {
-		val storedFilterData = placedItem.persistentDataContainer.get(NamespacedKeys.FILTER_DATA, FilterData) ?: return
-
+	override fun placeCallback(placedItem: ItemStack?, block: Block) {
 		val state = block.state
 		if (state !is VaultState) return
 		state as CraftVault
 
-		state.persistentDataContainer.set(NamespacedKeys.FILTER_DATA, FilterData, storedFilterData)
-		state.tileEntity.sharedData
+		state.nextStateUpdateTime = Long.MAX_VALUE
+
+		val storedFilterData = placedItem?.persistentDataContainer?.get(NamespacedKeys.FILTER_DATA, FilterData)
+		if (storedFilterData != null) state.persistentDataContainer.set(NamespacedKeys.FILTER_DATA, FilterData, storedFilterData)
 
 		state.update()
 	}
@@ -116,8 +117,8 @@ object ItemFilterBlock : DirectionalCustomBlock(
 		@Suppress("UNCHECKED_CAST")
 		val filterData = (filterManager.getFilter(key) ?: filterManager.registerFilter(key, this)) as FilterData<ItemStack, ItemFilterMeta>
 
-		if (!event.player.isSneaking && clickedItem != null) {
-			if (clickedItem.customItem == CustomItemRegistry.WRENCH) return // Being removed
+		if (event.player.isSneaking && clickedItem != null) {
+			if (clickedItem.customItem == CustomItemKeys.WRENCH) return // Being removed
 
 			val filtered = filterData.matchesFilter(clickedItem)
 			event.player.information("Item passes filter: $filtered")

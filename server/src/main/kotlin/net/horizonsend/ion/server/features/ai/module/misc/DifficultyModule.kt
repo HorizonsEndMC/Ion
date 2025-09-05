@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.ai.module.misc
 
-import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import org.bukkit.World
 import java.util.function.Supplier
 
 class DifficultyModule(
@@ -16,13 +17,27 @@ class DifficultyModule(
 	val fleeChance: Double
 		get() {
 			return when (internalDifficulty) {
-				0 -> 0.0
-				1 -> 0.0
+				0 -> 1.0
+				1 -> 1.0
 				2 -> 1.0
 				3 -> 0.3
 				4 -> 0.0
 				else -> {
 					1.0
+				}
+			}
+		}
+
+	val maxFleeAttempts : Int
+		get() {
+			return when (internalDifficulty) {
+				0 -> 1
+				1 -> 1
+				2 -> 1
+				3 -> 2
+				4 -> 100
+				else -> {
+					1
 				}
 			}
 		}
@@ -85,7 +100,7 @@ class DifficultyModule(
 	val doubleEstimateAim get() = internalDifficulty >= 4
 
 	/** crazy clickers vs trackpad users rip */
-	val combatTickCooldown: Long
+	val combatTickCooldownNanos: Long
 		get() {
 			return when (internalDifficulty) {
 				0 -> 250
@@ -129,6 +144,18 @@ class DifficultyModule(
 	val targetLowestShield get() = internalDifficulty >= 4
 
 	val powerModeSwitch get() = internalDifficulty >= 2
+	val powerModeDelayMulti : Double
+		get() {
+			return when (internalDifficulty) {
+				0 -> 1.0
+				1 -> 1.0
+				2 -> 1.0
+				3 -> 0.5
+				4 -> 0.2
+				else -> 1.0
+			}
+		}
+
 	val useSpecialPowerModes get() = internalDifficulty >= 4
 
 	val rewardMultiplier: Double
@@ -137,90 +164,18 @@ class DifficultyModule(
 				0 -> 0.7
 				1 -> 0.9
 				2 -> 1.0
-				3 -> 1.15
-				4 -> 1.3
+				3 -> 1.25
+				4 -> 1.5
 				else -> 1.0
 			}
 		}
 
 
 	companion object {
-
 		val maxDifficulty = 4
 		val minDifficulty = 0
 
-		fun regularSpawnDifficultySupplier(world: String): Supplier<Int> {
-			//println(world)
-			return when (world) {
-				"Trench" -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.15),
-						Pair(1, 0.35),
-						Pair(2, 0.35),
-						Pair(3, 0.10)
-					)
-				)
-
-				"AU-0821" -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.0),
-						Pair(1, 0.1),
-						Pair(2, 0.55),
-						Pair(3, 0.25),
-						Pair(4, 0.1),
-					)
-				)
-
-				"Horizon" -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.2),
-						Pair(1, 0.35),
-						Pair(2, 0.4),
-						Pair(3, 0.05),
-					)
-				)
-
-				"Asteri" -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.5),
-						Pair(1, 0.35),
-						Pair(2, 0.15)
-					)
-				)
-
-				"Ilios" -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.5),
-						Pair(1, 0.35),
-						Pair(2, 0.15)
-					)
-				)
-
-				"Sirius" -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.5),
-						Pair(1, 0.35),
-						Pair(2, 0.15)
-					)
-				)
-
-				"Regulus" -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.5),
-						Pair(1, 0.35),
-						Pair(2, 0.15)
-					)
-				)
-
-				else -> WeightedIntegerAmount(
-					setOf(
-						Pair(0, 0.3),
-						Pair(1, 0.4),
-						Pair(2, 0.4)
-					)
-				)
-			}
-		}
+		fun regularSpawnDifficultySupplier(world: World): Supplier<Int> = world.ion.configuration.aiDifficulty
 
 		enum class AIDifficulty {
 			EASY,

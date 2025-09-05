@@ -165,7 +165,6 @@ val commands: List<SLCommand> = listOf(
 	CheckProtectionCommand,
 	FixExtractorsCommand,
 	SetPowerCommand,
-	SetFluidCommand,
 	RegenerateCommand,
 	RemoveGhostShipCommand,
 	DisplayShieldsCommand,
@@ -200,5 +199,6 @@ val commands: List<SLCommand> = listOf(
 	DisplayDebug,
 	ChatCommand,
 	IonNPCCommand,
-	EnableOrbitBreakingCommand
+	EnableOrbitBreakingCommand,
+	SetFluidCommand
 )

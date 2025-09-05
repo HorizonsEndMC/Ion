@@ -6,11 +6,19 @@ import net.horizonsend.ion.server.features.multiblock.entity.linkages.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
-import net.horizonsend.ion.server.miscellaneous.utils.*
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.*
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
+import net.horizonsend.ion.server.miscellaneous.utils.getFacing
+import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.isBlockLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.rightFace
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -65,13 +73,17 @@ abstract class MultiblockEntity(
 	val localBlockKey: BlockKey get() = toBlockKey(localOffsetX, localOffsetY, localOffsetZ)
 	val globalBlockKey: BlockKey get() = toBlockKey(globalVec3i)
 
-	private var lastRetrieved = System.currentTimeMillis()
+	private var lastDeltaRetrieved = System.currentTimeMillis()
+
+	fun resetDelta() {
+		lastDeltaRetrieved = System.currentTimeMillis()
+	}
 
 	/** Gets the time since this value was last retrieved */
 	protected val deltaTMS: Long get() {
 		val time = System.currentTimeMillis()
-		val delta = time - lastRetrieved
-		lastRetrieved = time
+		val delta = time - lastDeltaRetrieved
+		lastDeltaRetrieved = time
 
 		return delta
 	}
@@ -200,6 +212,7 @@ abstract class MultiblockEntity(
 		return world.getBlockAt(x, y, z)
 	}
 
+	/** Returns a global coordinate offset from the origin with the provided transform */
 	fun getPosRelative(right: Int, up: Int, forward: Int): Vec3i {
 		return getRelative(globalVec3i, structureDirection, right = right, up = up, forward = forward)
 	}
@@ -319,18 +332,18 @@ abstract class MultiblockEntity(
 	}
 
 	// Section inputs
-	abstract val inputsData: InputsData
+	abstract val ioData: IOData
 
 	fun registerInputs() {
-		inputsData.registerInputs()
+		ioData.registerInputs()
 	}
 
 	fun releaseInputs() {
-		inputsData.releaseInputs()
+		ioData.releaseInputs()
 	}
 
 	// Util
-	protected fun none(): InputsData = InputsData.builder(this).build()
+	protected fun none(): IOData = IOData.builder(this).build()
 
 	val linkages = mutableListOf<MultiblockLinkageHolder>()
 

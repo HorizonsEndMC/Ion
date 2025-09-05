@@ -4,8 +4,9 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
-import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
+import net.horizonsend.ion.server.features.ai.configuration.WeaponSet
 import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
@@ -43,16 +44,18 @@ import kotlin.reflect.KClass
  **/
 class AIController private constructor(starship: ActiveStarship, damager: Damager) : Controller(damager, starship, "AIController") {
 	override var pilotName: Component = text("AI Controller")
-	private var color: Color = super.getColor()
+	private var _color: Color = super.getColor()
 	override var movementHandler: MovementHandler = ShiftFlightHandler(this,AIShiftFlightInput(this))
 		set(value) {
 			field.destroy()
 			field = value
 			value.create()
-			information("Updated AI control mode to ${value.name}")
 		}
 
-	fun setColor(color: Color) { this.color = color }
+	override fun getColor(): Color {
+		return _color
+	}
+	fun setColor(color: Color) { this._color = color }
 
 	/** Build the controller using a module builder */
 	constructor(
@@ -66,6 +69,9 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 	) : this(starship, damager) {
 		this.coreModules.putAll(setupCoreModules(this).build())
 		this.utilModules.addAll(setupUtilModules(this))
+		if (AIDebugModule.visualDebug) {
+			this.addUtilModule(AIDebugModule(this))
+		}
 
 		this.pilotName = pilotName
 
@@ -257,7 +263,7 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 			val weapons = starship.weaponSets[name]
 			if (weapons.any { it is AutoWeaponSubsystem }) {
 				debugAudience.alert("weaponset has auto weapons, is this okay?")
-				debugAudience.alert(weapons.joinToString { it.name })
+				debugAudience.alert(weapons.joinToString { it.javaClass.simpleName })
 			}
 		}
 		debugAudience.information("Auto Weaponsets:")
@@ -271,7 +277,7 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 			val weapons = starship.weaponSets[name]
 			if (weapons.any { it !is AutoWeaponSubsystem }) {
 				debugAudience.alert("weaponset has manual weapons!")
-				debugAudience.alert(weapons.joinToString { it.name })
+				debugAudience.alert(weapons.joinToString { it.javaClass.simpleName })
 			}
 		}
 	}

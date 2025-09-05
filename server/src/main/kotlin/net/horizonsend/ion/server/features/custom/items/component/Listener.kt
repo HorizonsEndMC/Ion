@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.custom.items.component
 
 import io.papermc.paper.event.block.BlockPreDispenseEvent
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import org.bukkit.entity.LivingEntity
 import org.bukkit.event.Event

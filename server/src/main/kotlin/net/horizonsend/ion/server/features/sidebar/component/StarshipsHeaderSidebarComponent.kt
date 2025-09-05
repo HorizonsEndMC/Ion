@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.sidebar.component
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.COMPASS_NEEDLE_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.LIST_ICON
@@ -24,8 +24,8 @@ import org.bukkit.entity.Player
 class StarshipsHeaderSidebarComponent(starship: ActiveControlledStarship, player: Player) : SidebarComponent {
     private val starshipName = starship.getDisplayNamePlain()
     private val starshipIcon = starship.type.icon
-    private val advancedStarshipInfo = player.getSetting(PlayerSettings::advancedStarshipInfo)
-    private val rotateCompass = player.getSetting(PlayerSettings::rotateCompass)
+    private val advancedStarshipInfo = player.getSettingOrThrow(PlayerSettings::advancedStarshipInfo)
+    private val rotateCompass = player.getSettingOrThrow(PlayerSettings::rotateCompass)
 
     private fun getColor(enabled: Boolean) : NamedTextColor {
         return if (enabled) AQUA else GRAY

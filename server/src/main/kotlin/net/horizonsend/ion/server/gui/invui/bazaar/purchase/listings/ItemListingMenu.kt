@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.EnumScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarGUIs
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.IndividualBrowseGui
@@ -56,7 +57,7 @@ abstract class ItemListingMenu(viewer: Player, protected val itemString: String)
 
 	override fun createItem(entry: BazaarItem): Item = formatItem(entry)
 
-	override fun onClickDisplayedItem(entry: BazaarItem) {
+	override fun onClickDisplayedItem(entry: BazaarItem, clickedFrom: CommonGuiWrapper) {
 		BazaarGUIs.openBrowsePurchaseMenu(player = viewer, item = entry, backButtonHandler = { openGui() })
 	}
 

@@ -6,14 +6,12 @@ import net.horizonsend.ion.server.features.custom.items.util.StoredValues
 import net.horizonsend.ion.server.features.custom.items.util.serialization.SerializationManager
 import net.horizonsend.ion.server.features.custom.items.util.serialization.token.IntegerToken
 import net.horizonsend.ion.server.features.custom.items.util.updateDurability
-import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.kyori.adventure.text.Component
 import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
-import java.util.function.Supplier
 
-class GasStorage(private val maxStored: Int, private val displayDurability: Boolean, val storedType: Supplier<Gas>) : CustomItemComponent, LoreManager {
+class GasStorage(private val maxStored: Int, private val displayDurability: Boolean) : CustomItemComponent, LoreManager {
 	override fun decorateBase(baseItem: ItemStack, customItem: CustomItem) {
 		setFill(baseItem, customItem, maxStored)
 	}

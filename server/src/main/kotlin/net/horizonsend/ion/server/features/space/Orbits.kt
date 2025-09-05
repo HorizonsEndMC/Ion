@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.space
 
 import net.horizonsend.ion.common.database.schema.space.Planet
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.blockplacement.BlockPlacement
 import java.util.concurrent.TimeUnit

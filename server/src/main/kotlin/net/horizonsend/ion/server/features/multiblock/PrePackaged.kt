@@ -3,10 +3,10 @@ package net.horizonsend.ion.server.features.multiblock
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemContainerContents
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.loadFromData
@@ -36,6 +36,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component.text
+import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -301,7 +302,7 @@ object PrePackaged : SLEventListener() {
 		var structureDirection = sign.getFacing().oppositeFace
 		val structureOrigin = multiblockType.getOriginBlock(sign)
 
-		if (multiblockType is TurretMultiblock) {
+		if (multiblockType is TurretMultiblock<*>) {
 			val newFace = multiblockType.getFacingSafe(sign)
 			if (newFace == null) {
 				player.userError("Turret not intact!")
@@ -312,7 +313,7 @@ object PrePackaged : SLEventListener() {
 		}
 
 		// Structure already checked to get the face if turret
-		if (multiblockType !is TurretMultiblock && !multiblockType.shape.checkRequirements(structureOrigin, structureDirection, false)) {
+		if (multiblockType !is TurretMultiblock<*> && !multiblockType.shape.checkRequirements(structureOrigin, structureDirection, false)) {
 			player.userError("Structure not intact!")
 			return
 		}
@@ -403,7 +404,7 @@ object PrePackaged : SLEventListener() {
 		if (contents.size != 1) return
 
 		val item = contents.first() ?: return
-		if (item.customItem != CustomItemRegistry.PACKAGED_MULTIBLOCK) return
+		if (item.customItem != CustomItemKeys.PACKAGED_MULTIBLOCK) return
 
 		val multiblock = getTokenData(item) ?: return
 		event.inventory.result = MultiblockToken.constructFor(multiblock)
@@ -412,7 +413,7 @@ object PrePackaged : SLEventListener() {
 	fun tryPreview(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
 		if (livingEntity !is Player) return
 
-		val packagedData = getTokenData(itemStack) ?: run {
+		val packagedData = PrePackaged.getTokenData(itemStack) ?: run {
 			livingEntity.userError("The packaged multiblock has no data!")
 			return
 		}
@@ -437,7 +438,7 @@ object PrePackaged : SLEventListener() {
 			if (!requirementMet) {
 				val (xx, yy, zz) = Vec3i(relative.location)
 
-				sendEntityPacket(livingEntity, displayBlock(livingEntity.world.minecraft, requirement.getExample(face), Vector(xx, yy, zz), 0.5f, true), 10 * 20L)
+				sendEntityPacket(livingEntity, displayBlock(livingEntity.world.minecraft, requirement.getExample(face), Vector(xx, yy, zz), 0.5f, Color.WHITE), 10 * 20L)
 			}
 		}
 	}

@@ -337,6 +337,33 @@ class AIFaction private constructor(
 				text("\uD83E\uDD68马铃薯\uD83E\uDD68", 吃饭人_STANDARD),
 				text("\uD83E\uDD68薯叶\uD83E\uDD68", 吃饭人_STANDARD),
 			)
+			.addSmackMessages(
+				"<white>\uD83C\uDF50\uD83D\uDC4B\uD83E\uDEF5\uD83D\uDC12‼",
+				"<white>\uD83E\uDEF5\uD83D\uDC80\uD83D\uDC49\uD83C\uDFC6➕\uD83D\uDE80",
+				"<white>\uD83E\uDEB5\uD83E\uDEF5\uD83D\uDC93⬇\uD83D\uDE42↕\uD83D\uDC1C",
+				"<white>\uD83D\uDC1D\uD83D\uDEB61\uD83E\uDDD9♀\uD83D\uDC65\uD83C\uDF5E®⬇",
+				"<white>\uD83E\uDEF5\uD83D\uDDA5\uD83D\uDC4E",
+				"<white>\uD83D\uDCC5\uD83E\uDEF5\uD83E\uDEA1\uD83E\uDDC0\uD83D\uDDA4\uD83D\uDC49\uD83C\uDF77",
+				"<white>\uD83D\uDC41\uD83D\uDC93\uD83C\uDFBB\uD83D\uDCA4",
+				"<white>⏮\uD83C\uDF50➡\uD83D\uDCA4\uD83D\uDD8B",
+				"<white>\uD83C\uDF66⬇\uD83D\uDE21",
+			)
+			.addFleeMessages(
+				"<white>\uD83C\uDFC3➡\uD83E\uDEA12\uD83D\uDD01\uD83E\uDEAB" to true,
+				"<white>\uD83E\uDEA1➡\uD83C\uDFC3➡\uD83D\uDEAB\uD83C\uDF50\uD83D\uDC4B" to true,
+				"<white>\uD83E\uDD5A\uD83E\uDDA0\uD83D\uDC1C\uD83D\uDEE1\uD83D\uDD12\uD83C\uDFB6⬇" to false,
+				"<white>\uD83D\uDC41\uD83D\uDC1C❤\uD83E\uDE79⌚\uD83D\uDD01\uD83D\uDC8D\uD83C\uDFB6" to false,
+			)
+			.addEnmityMessages(
+				"notice" to (0.1 to "<gray>..."),
+				"warn" to (0.5 to "<white>\uD83D\uDC41\uD83C\uDF0A\uD83E\uDEF5")
+			)
+			.addAggroMessage("aggro" to "<white>\uD83D\uDC12\uD83D\uDD2D\uD83D\uDD12\uD83C\uDFB6&⏮\uD83C\uDF50\uD83C\uDFB6\uD83E\uDEAE\uD83E\uDD87")
+			.addFriendlyFireMessages(
+				"suspect" to "<gray>\uD83D\uDCA6\uD83E\uDEF5\uD83D\uDDD3\uD83C\uDFB6⁉",
+				"warn_friendly" to "<white>\uD83D\uDED1\uD83E\uDD3A\uD83C\uDF5E®⬇",
+				"betrayal" to "\uD83D\uDC1D\uD83D\uDCE4⁉\uD83C\uDF5E®⬇\uD83E\uDD40©\uD83D\uDE37\uD83E\uDEF5‼"
+			)
 			.addDifficultySuffix(0, "✦")
 			.addDifficultySuffix(1, "✦✦")
 			.addDifficultySuffix(2, "🥖")
@@ -487,7 +514,7 @@ class AIFaction private constructor(
 				"<white>Please no, I've done nothing wrong!",
 				"<white>Spare me; this ship is all I have!",
 				"<white>My friends will avenge me!",
-				"<white>I'm calling the [current system name] Defense Patrol! ",
+				"<white>I'm calling the {0} Defense Patrol! ",
 				"<white>Shields are down!",
 				"<white>Hull integrity critical!",
 				"<white>Engines compromised!"
@@ -503,6 +530,7 @@ class AIFaction private constructor(
 			.addDifficultySuffix(4, "🌍")
 			.build()
 
+		val privateerMini = "<$PRIVATEER_MEDIUM_TEAL>System Defense <$PRIVATEER_LIGHT_TEAL> Forces"
 		val SYSTEM_DEFENSE_FORCES = builder("SYSTEM_DEFENSE_FORCES", PRIVATEER_LIGHT_TEAL.value())
 			.setMessagePrefix("<${HEColorScheme.HE_MEDIUM_GRAY}>Receiving transmission from <$PRIVATEER_LIGHT_TEAL>privateer</$PRIVATEER_LIGHT_TEAL> vessel")
 			.addNames(
@@ -555,10 +583,11 @@ class AIFaction private constructor(
 				"<white>Once I breach your shields, there's no going back.",
 				"<white>Ha, you call those weapons?",
 				"<white>Flanking right!",
-				"<white>Flanking left!"
+				"<white>Flanking left!",
+				"<white>System command, hostile contact is taking severe shield damage."
 			)
 			.addFleeMessages(
-				"<white>System command, hostile contact is taking severe shield damage." to true,
+				"<white>System command, shields critical, disengaging" to true,
 				"<white>System command, shield stabilized reengaging." to false,
 			)
 			.addDifficultySuffix(0, "✦")

@@ -1,10 +1,10 @@
 package net.horizonsend.ion.server.features.ai.module.debug
 
 
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.steering.BasicSteeringModule
 import net.horizonsend.ion.server.features.ai.module.steering.context.ContextMap
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import org.bukkit.Color
@@ -26,7 +26,9 @@ class AIDebugModule(controller: AIController) : AIModule(controller) {
 			"shipDanger",
 			"borderDanger",
 			"worldBlockDanger",
-			"obstructionDanger"
+			"obstructionDanger",
+			"incomingFire",
+			"commitment"
 		)
 
 		val shownContexts = mutableListOf(
@@ -39,6 +41,7 @@ class AIDebugModule(controller: AIController) : AIModule(controller) {
 
 		enum class DebugColor { WHITE, RED, BLUE, GREEN }
 
+		var visualDebug = false
 		var canShipsMove = true
 		var canShipsRotate = true
 		var showAims = false
@@ -127,12 +130,10 @@ class AIDebugModule(controller: AIController) : AIModule(controller) {
 
 	private fun mapColor(color: DebugColor): ItemStack {
 		return when (color) {
-			DebugColor.RED -> CustomItemRegistry.DEBUG_LINE_RED.constructItemStack()
-			DebugColor.GREEN -> CustomItemRegistry.DEBUG_LINE_GREEN.constructItemStack()
-			DebugColor.BLUE -> CustomItemRegistry.DEBUG_LINE_BLUE.constructItemStack()
-			DebugColor.WHITE -> CustomItemRegistry.DEBUG_LINE.constructItemStack()
+			DebugColor.RED -> CustomItemKeys.DEBUG_LINE_RED.getValue().constructItemStack()
+			DebugColor.GREEN -> CustomItemKeys.DEBUG_LINE_GREEN.getValue().constructItemStack()
+			DebugColor.BLUE -> CustomItemKeys.DEBUG_LINE_BLUE.getValue().constructItemStack()
+			DebugColor.WHITE -> CustomItemKeys.DEBUG_LINE.getValue().constructItemStack()
 		}
 	}
-
-
 }

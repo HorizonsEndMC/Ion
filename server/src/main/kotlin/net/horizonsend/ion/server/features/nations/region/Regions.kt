@@ -23,7 +23,7 @@ import net.horizonsend.ion.common.database.schema.nations.spacestation.Settlemen
 import net.horizonsend.ion.common.database.slPlayerId
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.types.Region

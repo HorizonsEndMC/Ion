@@ -1,17 +1,22 @@
 package net.horizonsend.ion.server.command.qol
 
-import co.aikar.commands.annotation.*
+import co.aikar.commands.annotation.CommandAlias
+import co.aikar.commands.annotation.CommandCompletion
+import co.aikar.commands.annotation.CommandPermission
+import co.aikar.commands.annotation.Default
+import co.aikar.commands.annotation.Optional
+import co.aikar.commands.annotation.Subcommand
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayCurrentBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayItem
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
@@ -80,7 +85,7 @@ object SearchCommand : SLCommand() {
 
 	@Subcommand("_toggle")
 	fun itemSearchToggle(player: Player, @Optional toggle: Boolean?) {
-		val showItemDisplay = toggle ?: !player.getSetting(PlayerSettings::showItemSearchItem)
+		val showItemDisplay = toggle ?: !player.getSettingOrThrow(PlayerSettings::showItemSearchItem)
 		player.setSetting(PlayerSettings::protectionMessagesEnabled, showItemDisplay)
 
 		player.success("Changed showing searched item to $showItemDisplay")
@@ -98,7 +103,7 @@ object SearchCommand : SLCommand() {
 			if ((twoOrMoreMatches(player, inventories.elementAt(block.index), strList)) || // if container has 2+ of the searched items
 				(item.type.isBlock && item.type.isSolid) || // Billboarding blocks looks so messed up, so this mostly prevents that
 				item.type == Material.AIR || // display if item is air, otherwise it would show up as an invisible item
-				!player.getSetting(PlayerSettings::showItemSearchItem)
+				!player.getSettingOrThrow(PlayerSettings::showItemSearchItem)
 			) // toggleable setting
 			{
 				sendEntityPacket(player, displayCurrentBlock(player.world.minecraft, loc), 10 * 20) // show block

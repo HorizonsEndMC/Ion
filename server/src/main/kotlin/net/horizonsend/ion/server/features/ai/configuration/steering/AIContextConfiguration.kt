@@ -8,6 +8,10 @@ data class AIContextConfiguration(
 	val defaultWanderContext: WanderContextConfiguration = WanderContextConfiguration(),
 
 	val defaultCommitmentContext: CommitmentContextConfiguration = CommitmentContextConfiguration(),
+	val gunshipCommitmentContext: CommitmentContextConfiguration =
+		CommitmentContextConfiguration(weight = 0.2),
+	val capitalCommitmentContext: CommitmentContextConfiguration =
+		CommitmentContextConfiguration(weight = 1.0, hist = 0.99),
 
 	val defaultMomentumContextConfiguration: MomentumContextConfiguration = MomentumContextConfiguration(),
 
@@ -15,7 +19,7 @@ data class AIContextConfiguration(
 	val starfighterOffsetSeekContextConfiguration: OffsetSeekContextConfiguration =
 		OffsetSeekContextConfiguration(maxHeightDiff = 10.0),
 	val capitalOffsetSeekContextConfiguration: OffsetSeekContextConfiguration =
-		OffsetSeekContextConfiguration(maxHeightDiff = 40.0),
+		OffsetSeekContextConfiguration(maxHeightDiff = 15.0),
 
 	val defaultFaceSeekContextConfiguration: FaceSeekContextConfiguration = FaceSeekContextConfiguration(),
 	val starfighterFaceSeekContextConfiguration: FaceSeekContextConfiguration =
@@ -43,13 +47,16 @@ data class AIContextConfiguration(
 	@Serializable
 	data class WanderContextConfiguration(
 		val weight: Double = 0.5,
-		val jitterRate: Double = 1000000.0,
+		val jitterRate: Double = 20000.0,
 		val sizeFactor: Double = 100.0,
+		val verticalWeight : Double = 0.75,
+		val verticalJitterMod : Double = 10.0
 	)
 
 	@Serializable
 	data class CommitmentContextConfiguration(
 		val weight: Double = 0.0,
+		val dotShift : Double = 0.1,
 		val hist: Double = 0.95
 	)
 
@@ -66,7 +73,7 @@ data class AIContextConfiguration(
 		val weight: Double = 1.0,
 		val dotShift: Double = 0.0,
 		val defaultOffsetDist: Double = 100.0,
-		val maxHeightDiff: Double = 20.0
+		val maxHeightDiff: Double = 25.0
 	)
 
 	@Serializable
@@ -98,6 +105,8 @@ data class AIContextConfiguration(
 		val histDecay: Double = 0.98,
 		val verticalDamp: Double = 0.3,
 		val damageSensitivity: Double = 100.0,
+		val incomingFireWeight: Double = 2.0,
+		val geomWhitening : Double = 0.5
 	)
 
 	@Serializable
@@ -111,20 +120,21 @@ data class AIContextConfiguration(
 	@Serializable
 	data class BorderDangerContextConfiguration(
 		val falloff: Double = 10.0,
-		val verticalFalloff: Double = 20.0,
+		val verticalFalloff: Double = 5.0,
 		val dotShift: Double = 0.2
 	)
 
 	@Serializable
 	data class WorldBlockDangerContextConfiguration(
-		val falloff: Double = 2.0,
+		val falloff: Double = 10.0,
 		val dotPower: Double = 3.0,
-		val maxDist: Double = 200.0
+		val maxDist: Double = 200.0,
+		val sizeFactor: Double = 0.5
 	)
 
 	@Serializable
 	data class ObstructionDangerContextConfiguration(
-		val falloff: Double = 4.0,
+		val falloff: Double = 20.0,
 		val dotShift: Double = 0.3,
 		val dotPower: Double = 1.0,
 		val expireTime: Int = 5 * 1000,

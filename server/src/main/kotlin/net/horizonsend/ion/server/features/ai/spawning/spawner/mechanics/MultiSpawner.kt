@@ -13,9 +13,11 @@ import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.starship.fleet.Fleet
 import net.horizonsend.ion.server.features.starship.fleet.Fleets
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
+import org.bukkit.World
 import org.slf4j.Logger
 import java.util.function.Supplier
 
@@ -23,13 +25,13 @@ abstract class MultiSpawner(
 	private val locationProvider: Supplier<Location?>,
 	private val groupMessage: Component?,
 	private val individualSpawnMessage: SpawnMessage?,
-	private val difficultySupplier: (String) -> Supplier<Int>,
+	private val difficultySupplier: (World) -> Supplier<Int>,
 	private val targetModeSupplier: Supplier<AITarget.TargetMode>,
 	private val fleetSupplier: Supplier<Fleet?>
 ) : SpawnerMechanic() {
 	abstract fun getShips(): List<SpawnedShip>
 
-	override suspend fun trigger(logger: Logger) {
+	override fun trigger(logger: Logger) {
 		val ships = getShips()
 		if (ships.isEmpty()) {
 			debugAudience.debug("Multi spawner didn't get any ships to spawn!")
@@ -44,7 +46,7 @@ abstract class MultiSpawner(
 		}
 
 		val aiFleet = if (fleetSupplier.get() == null) Fleets.createAIFleet() else fleetSupplier.get()!!
-		val fleetDifficulty = difficultySupplier(spawnOrigin.world.name).get()
+		val fleetDifficulty = difficultySupplier(spawnOrigin.world).get()
 		val shipDifficultySupplier = WeightedIntegerAmount(
 			setOf(
 				Pair(fleetDifficulty - 1, 0.05),
@@ -53,6 +55,8 @@ abstract class MultiSpawner(
 			)
 		)
 
+		var delay = 0L
+		var initalized = false
 		for (spawnedShip in ships) {
 			val offsets = spawnedShip.offsets
 
@@ -71,26 +75,31 @@ abstract class MultiSpawner(
 				spawnPoint.y = absoluteHeight
 			}
 
-			debugAudience.debug("Spawning ${spawnedShip.template.identifier} at $spawnPoint")
+			Tasks.asyncDelay(delay){
+				debugAudience.debug("Spawning ${spawnedShip.template.identifier} at $spawnPoint")
 
-			spawnedShip.spawn(logger, spawnPoint, difficulty, targetModeSupplier.get()) { addUtilModule(AIFleetManageModule(this, aiFleet)) }
+				spawnedShip.spawn(logger, spawnPoint, difficulty, targetModeSupplier.get()) {
+					addUtilModule(AIFleetManageModule(this, aiFleet))
+					aiFleet.initalized = true
+				}
 
-			individualSpawnMessage?.broadcast(spawnPoint, spawnedShip.template)
-		}
-		aiFleet.initalized = true
-
-		if (aiFleet.members.isNotEmpty() && groupMessage != null) {
-			IonServer.server.sendMessage(
-				template(
-					groupMessage,
-					paramColor = HEColorScheme.HE_LIGHT_GRAY,
-					useQuotesAroundObjects = false,
-					spawnOrigin.blockX,
-					spawnOrigin.blockY,
-					spawnOrigin.blockZ,
-					spawnOrigin.world.name
-				)
-			)
+				individualSpawnMessage?.broadcast(spawnPoint, spawnedShip.template)
+				if (!initalized && groupMessage != null) {
+					IonServer.server.sendMessage(
+						template(
+							groupMessage,
+							paramColor = HEColorScheme.HE_LIGHT_GRAY,
+							useQuotesAroundObjects = false,
+							spawnOrigin.blockX,
+							spawnOrigin.blockY,
+							spawnOrigin.blockZ,
+							spawnOrigin.world.name
+						)
+					)
+				}
+				initalized = true
+			}
+			delay++
 		}
 	}
 }

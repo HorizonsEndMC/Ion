@@ -6,8 +6,8 @@ import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.getMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.removeMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
@@ -275,7 +275,7 @@ object MultiblockAccess : IonServerComponent() {
 
 	@EventHandler
 	fun onPlayerInteract(event: PlayerInteractEvent) {
-		if (event.hand != EquipmentSlot.HAND || event.action != Action.RIGHT_CLICK_BLOCK) return
+		if (event.hand != EquipmentSlot.HAND || (event.action != Action.RIGHT_CLICK_BLOCK && event.action != Action.LEFT_CLICK_BLOCK)) return
 
 		val clickedBlock = event.clickedBlock ?: return
 		val sign = clickedBlock.state as? Sign ?: return

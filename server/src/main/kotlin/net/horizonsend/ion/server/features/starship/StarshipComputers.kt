@@ -17,7 +17,7 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorActionMessage
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.gui.custom.starship.StarshipComputerMenu
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -36,6 +36,7 @@ import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.Block
+import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -52,15 +53,20 @@ object StarshipComputers : IonServerComponent() {
 	@EventHandler
 	fun onInteract(event: PlayerInteractEvent) {
 		val player = event.player
-		val block = event.clickedBlock ?: return
+		var block = event.clickedBlock ?: return
 
 		if (event.hand != EquipmentSlot.HAND) {
 			return // it can fire with both hands
 		}
 
-		if (block.type != COMPUTER_TYPE) {
+		if (block.type != COMPUTER_TYPE && block.type != Material.LECTERN) {
 			return
+		} else if (block.type == Material.LECTERN) {
+			val below = block.getRelative(BlockFace.DOWN)
+			if (below.type != COMPUTER_TYPE) return
+			block = below
 		}
+		// if the block is COMPUTER_TYPE, it falls through
 
 		if (!isHoldingController(player)) {
 			player.userError("Not holding starship controller, ignoring computer click")

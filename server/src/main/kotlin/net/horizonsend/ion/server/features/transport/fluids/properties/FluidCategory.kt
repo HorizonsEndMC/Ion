@@ -2,16 +2,16 @@ package net.horizonsend.ion.server.features.transport.fluids.properties
 
 import com.manya.pdc.DataTypes
 import com.manya.pdc.base.EnumDataType
-import net.horizonsend.ion.server.features.transport.fluids.Fluid
+import net.horizonsend.ion.server.features.transport.fluids.FluidType
 
 enum class FluidCategory {
 	GAS;
 
-	private val members = mutableListOf<Fluid>()
+	private val members = mutableListOf<FluidType>()
 
-	fun getMembers(): List<Fluid> = members
+	fun getMembers(): List<FluidType> = members
 
-	fun addMember(fluid: Fluid) = members.add(fluid)
+	fun addMember(fluidType: FluidType) = members.add(fluidType)
 
 	companion object {
 		val persistentDataType = EnumDataType(FluidCategory::class.java)

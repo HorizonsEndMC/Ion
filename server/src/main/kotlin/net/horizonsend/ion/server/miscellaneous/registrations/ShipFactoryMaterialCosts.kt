@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.miscellaneous.registrations
 
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.miscellaneous.utils.isConcrete
 import net.horizonsend.ion.server.miscellaneous.utils.isGlass
 import net.horizonsend.ion.server.miscellaneous.utils.isGlassPane
@@ -321,14 +322,19 @@ object ShipFactoryMaterialCosts {
 	)
 
 	fun getPrice(data: BlockData): Double {
+		val customBlockKey = data.customBlock?.key
+
+		when (customBlockKey) {
+			CustomBlockKeys.TITANIUM_BLOCK -> return 200.0
+			CustomBlockKeys.URANIUM_BLOCK -> return 50.0
+			CustomBlockKeys.CHETHERITE_BLOCK -> return 100.0
+			CustomBlockKeys.ALUMINUM_BLOCK -> return 100.0
+			CustomBlockKeys.RAW_ALUMINUM_BLOCK -> return 30.0
+			CustomBlockKeys.RAW_TITANIUM_BLOCK -> return 30.0
+			CustomBlockKeys.RAW_URANIUM_BLOCK -> return 30.0
+		}
+
 		return when (data) {
-			CustomBlocks.TITANIUM_BLOCK.blockData -> 200.0
-			CustomBlocks.URANIUM_BLOCK.blockData -> 50.0
-			CustomBlocks.CHETHERITE_BLOCK.blockData -> 100.0
-			CustomBlocks.ALUMINUM_BLOCK.blockData -> 100.0
-			CustomBlocks.RAW_ALUMINUM_BLOCK.blockData -> 30.0
-			CustomBlocks.RAW_TITANIUM_BLOCK.blockData -> 30.0
-			CustomBlocks.RAW_URANIUM_BLOCK.blockData -> 30.0
 			else ->
 				if (data.material.isGlass) {
 					0.1

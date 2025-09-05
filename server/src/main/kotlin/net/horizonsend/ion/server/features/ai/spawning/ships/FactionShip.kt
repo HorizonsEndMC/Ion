@@ -37,7 +37,6 @@ class FactionShip(
 		)
 
 		faction.controllerModifier.invoke(controller)
-		controller.validateWeaponSets()
 
 		return controller
 	}

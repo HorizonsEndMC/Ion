@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.custom.items.type.throwables
 
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.Throwables.ThrowableBalancing
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
@@ -20,14 +21,14 @@ import org.bukkit.util.Vector
 import java.util.function.Supplier
 
 abstract class ThrowableCustomItem(
-	identifier: String,
+	key: IonRegistryKey<CustomItem, out CustomItem>,
 
 	customModel: String,
 	displayName: Component,
 
 	private val balancingSupplier: Supplier<ThrowableBalancing>
 ) : CustomItem(
-	identifier,
+	key,
 	displayName,
 	ItemFactory.unStackableCustomItem(customModel)
 ) {

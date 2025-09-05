@@ -64,8 +64,11 @@ object PlayerSettingsCache : AbstractPlayerSettingsCache() {
 	operator fun <T : Any> set(player: Player, settingProperty: KMutableProperty1<PlayerSettings, T>, newValue: T) = updateSetting(player.slPlayerId, settingProperty, newValue)
 	operator fun <T : Enum<T>> set(player: Player, settingProperty: KMutableProperty1<PlayerSettings, Int>, newValue: T) = updateEnumSetting(player.slPlayerId, settingProperty, newValue)
 
-	fun <T : Any>  Player.getSetting(settingProperty: KMutableProperty1<PlayerSettings, T>) = get(this, settingProperty)
-	inline fun <reified T : Enum<T>>  Player.getEnumSetting(settingProperty: KMutableProperty1<PlayerSettings, Int>) = get<T>(this, settingProperty)
+	fun <T : Any>  Player.getSettingOrThrow(settingProperty: KMutableProperty1<PlayerSettings, T>) = getSettingOrThrow(this.slPlayerId, settingProperty)
+	fun <T : Any>  Player.getSetting(settingProperty: KMutableProperty1<PlayerSettings, T>) = getIfOnline(this.slPlayerId, settingProperty)
+
+	inline fun <reified T : Enum<T>>  Player.getEnumSettingOrThrow(settingProperty: KMutableProperty1<PlayerSettings, Int>) = get<T>(this, settingProperty)
+	inline fun <reified T : Enum<T>>  Player.getEnumSetting(settingProperty: KMutableProperty1<PlayerSettings, Int>) = getEnumSetting<T>(this.slPlayerId, settingProperty)
 
 	fun <T : Any>  Player.setSetting(settingProperty: KMutableProperty1<PlayerSettings, T>, newValue: T) = set(this, settingProperty, newValue)
 	inline fun <reified T : Enum<T>>  Player.setEnumSetting(settingProperty: KMutableProperty1<PlayerSettings, Int>, newValue: T) = set(this, settingProperty, newValue)

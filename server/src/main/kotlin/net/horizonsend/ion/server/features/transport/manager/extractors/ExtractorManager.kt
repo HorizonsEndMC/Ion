@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.manager.extractors
 
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.blocks.extractor.CustomExtractorBlock
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorData
@@ -42,12 +42,12 @@ abstract class ExtractorManager {
 
 	companion object {
 		val STANDARD_EXTRACTOR_TYPE = Material.CRAFTING_TABLE
-		fun isExtractorData(data: BlockData): Boolean = data.material == STANDARD_EXTRACTOR_TYPE || CustomBlocks.getByBlockData(data) is CustomExtractorBlock<*>
+		fun isExtractorData(data: BlockData): Boolean = data.material == STANDARD_EXTRACTOR_TYPE || data.customBlock is CustomExtractorBlock<*>
 
 		fun getExtractorData(data: BlockData, pos: BlockKey, world: World): ExtractorData? {
 			if (data.material == STANDARD_EXTRACTOR_TYPE) return ExtractorData.StandardExtractorData(pos)
 
-			val customBlock = CustomBlocks.getByBlockData(data)
+			val customBlock = data.customBlock
 			if (customBlock is CustomExtractorBlock<*>) {
 				val pdc = getPersistentDataContainer(pos, world)
 				val stored = pdc?.get(NamespacedKeys.COMPLEX_EXTRACTORS, MetaDataContainer)

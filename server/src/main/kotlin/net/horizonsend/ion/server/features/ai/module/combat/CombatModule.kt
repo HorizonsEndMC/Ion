@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.ai.module.combat
 
 import net.horizonsend.ion.server.command.admin.debug
-import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
+import net.horizonsend.ion.server.features.ai.configuration.WeaponSet
 import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
@@ -68,7 +68,7 @@ abstract class CombatModule<T>(
 		val distance = (target.getLocation().toVector().distance(origin.toVector()) - fudgeFactor).coerceAtLeast(1.0)
 		starship.debug("Distance manual: $distance (fudged)")
 
-		val weaponSets: List<AIStarshipTemplate.WeaponSet?> = controller.getManualSetsInRange(distance) ?: listOf(null)
+		val weaponSets: List<WeaponSet?> = controller.getManualSetsInRange(distance) ?: listOf(null)
 		if (weaponSets.isEmpty()) return //there are no valid weaponsets in range
 
 		for (weaponSet in weaponSets) {
@@ -80,7 +80,7 @@ abstract class CombatModule<T>(
 			//println("weaponset: ${weaponSet?.name?.lowercase()}")
 			correctedHeavyTarget.add(targetOffset.toVector())
 			//println("correctedHeavyTarget : $correctedHeavyTarget")
-			val heavyDirection = aiming.sampleDirection(correctedHeavyTarget.clone().subtract(origin.toVector()).normalize())
+			val heavyDirection = aiming.sampleDirection(correctedHeavyTarget.clone().subtract(origin.toVector()).normalize(), distance)
 
 			val correctedLightTarget = if (target is StarshipTarget) {
 				aiming.adjustAim(target.ship, origin, weaponSet, true, true)
@@ -89,7 +89,7 @@ abstract class CombatModule<T>(
 			}
 			//println("correctedLightTarget : $correctedLightTarget")
 			correctedLightTarget.add(targetOffset.toVector())
-			val lightDirection = aiming.sampleDirection(correctedLightTarget.clone().subtract(origin.toVector()).normalize())
+			val lightDirection = aiming.sampleDirection(correctedLightTarget.clone().subtract(origin.toVector()).normalize(), distance)
 			//println("lightDirection : $lightDirection")
 			Tasks.sync {
 				starship.debug("Firing manual weapons: Set: ${weaponSet?.name?.lowercase()}")
@@ -125,12 +125,12 @@ abstract class CombatModule<T>(
 		val fudgeFactor = target.getFudgeFactor()
 		val distance = (target.getLocation().toVector().distance(origin.toVector()) - fudgeFactor).coerceAtLeast(1.0)
 		starship.debug("Distance auto: $distance (fudged)")
-		var weaponSets: Set<AIStarshipTemplate.WeaponSet?> = controller.getAutoSetsInRange(distance)
+		var weaponSets: Set<WeaponSet?> = controller.getAutoSetsInRange(distance)
 		if (weaponSets.isEmpty()) weaponSets = setOf(null)
 		weaponSets.forEach { handleAutoWeapon(it, origin, target) }
 	}
 
-	private fun handleAutoWeapon(weaponSet: AIStarshipTemplate.WeaponSet?, origin: Vec3i, target: AITarget) {
+	private fun handleAutoWeapon(weaponSet: WeaponSet?, origin: Vec3i, target: AITarget) {
 
 		if (!AIDebugModule.showAims && !AIDebugModule.fireWeapons) {
 			AIControlUtils.unSetAllWeapons(controller)
@@ -146,6 +146,10 @@ abstract class CombatModule<T>(
 			return
 		}
 		//since we are aiming everything we treat auto weapons as manual weapons
+
+		val fudgeFactor = target.getFudgeFactor()
+		val distance = (target.getLocation().toVector().distance(origin.toVector()) - fudgeFactor).coerceAtLeast(1.0)
+
 		val dummy: AutoTurretTargeting.AutoTurretTarget<*>? = null
 		AIControlUtils.setAutoWeapons(controller, weaponSet.name.lowercase(), dummy)
 
@@ -158,7 +162,7 @@ abstract class CombatModule<T>(
 			targetPos.toVector()
 		}
 		correctedHeavyTarget.add(targetOffset.toVector())
-		val heavyDirection = aiming.sampleDirection(correctedHeavyTarget.clone().subtract(origin.toVector()).normalize())
+		val heavyDirection = aiming.sampleDirection(correctedHeavyTarget.clone().subtract(origin.toVector()).normalize(), distance)
 
 		val correctedLightTarget = if (target is StarshipTarget) {
 			aiming.adjustAim(target.ship, origin, weaponSet, true, false)
@@ -166,7 +170,7 @@ abstract class CombatModule<T>(
 			targetPos.toVector()
 		}
 		correctedLightTarget.add(targetOffset.toVector())
-		val lightDirection = aiming.sampleDirection(correctedLightTarget.clone().subtract(origin.toVector()).normalize())
+		val lightDirection = aiming.sampleDirection(correctedLightTarget.clone().subtract(origin.toVector()).normalize(), distance)
 
 		Tasks.sync {
 			starship.debug("Firing auto weapons: Set: ${weaponSet?.name?.lowercase()}")
@@ -177,7 +181,7 @@ abstract class CombatModule<T>(
 
 	private fun shouldTick(): Boolean {
 		if (System.nanoTime() - starship.lastRotation < difficulty.actionPenalty) return false
-		return System.nanoTime() - lastFire >= difficulty.combatTickCooldown
+		return System.nanoTime() - lastFire >= difficulty.combatTickCooldownNanos
 	}
 }
 

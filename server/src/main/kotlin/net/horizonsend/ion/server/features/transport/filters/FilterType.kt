@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.transport.filters
 
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.transport.filters.FilterMeta.ItemFilterMeta
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDataContainer

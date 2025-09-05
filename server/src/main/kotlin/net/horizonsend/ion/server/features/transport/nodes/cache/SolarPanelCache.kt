@@ -103,11 +103,11 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 
 	private fun getSolarPanelExtractors(origin: BlockKey): Array<PathfindResult> {
 		return powerCache.getNetworkDestinations(
-			TransportTask(origin, holder.getWorld(), {}, 1000, IonServer.slF4JLogger),
-			PowerNode.PowerExtractorNode::class,
-			origin,
-			PowerNode.PowerExtractorNode,
-			false,
+			task = TransportTask(origin, holder.getWorld(), {}, 1000, IonServer.slF4JLogger),
+			destinationTypeClass = PowerNode.PowerExtractorNode::class,
+			originPos = origin,
+			originNode = PowerNode.PowerExtractorNode,
+			retainFullPath = false,
 			destinationCheck = { !combinedSolarPanelPositions.containsKey(it.position) && isSolarPanel(it.position) },
 			nextNodeProvider = { combinedSolarPanelProvider(this) }
 		)

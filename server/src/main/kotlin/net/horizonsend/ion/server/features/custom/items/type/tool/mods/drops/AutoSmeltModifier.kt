@@ -4,7 +4,10 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
 import net.horizonsend.ion.common.utils.text.miniMessage
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
+import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.attribute.AdditionalPowerConsumption
 import net.horizonsend.ion.server.features.custom.items.attribute.CustomItemAttribute
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
@@ -12,7 +15,6 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ApplicationPredicate
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
-import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ModificationItem
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextDecoration
@@ -24,13 +26,12 @@ import org.bukkit.Bukkit
 import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.inventory.ItemStack
 import java.util.Optional
-import java.util.function.Supplier
 import kotlin.jvm.optionals.getOrNull
 import kotlin.reflect.KClass
 
 object AutoSmeltModifier : ItemModification, DropModifier {
+	override val key = ItemModKeys.AUTO_SMELT
 	override val displayName: Component = "<gradient:red:yellow>Auto Smelt".miniMessage().decoration(TextDecoration.ITALIC, false)
-	override val identifier: String = "AUTO_SMELT"
 
 	override val crouchingDisables: Boolean = false
 
@@ -41,7 +42,7 @@ object AutoSmeltModifier : ItemModification, DropModifier {
 	)
 	override val incompatibleWithMods: Array<KClass<out ItemModification>> = arrayOf(AutoSmeltModifier::class)
 
-	override val modItem: Supplier<ModificationItem?> = Supplier { CustomItemRegistry.AUTO_SMELT }
+	override val modItem: IonRegistryKey<CustomItem, out CustomItem> = CustomItemKeys.TOOL_MODIFICATION_AUTO_SMELT
 
 	override val priority: Int = 1
 

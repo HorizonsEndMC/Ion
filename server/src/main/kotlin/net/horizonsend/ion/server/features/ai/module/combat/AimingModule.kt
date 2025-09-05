@@ -1,15 +1,16 @@
 package net.horizonsend.ion.server.features.ai.module.combat
 
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
-import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
+import net.horizonsend.ion.server.features.ai.configuration.WeaponSet
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementForecast.forecast
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PhaserProjectile
@@ -40,25 +41,30 @@ class AimingModule(
 	 * Guess the weapon being fired and adjust the target for a leading shot */
 	fun adjustAim(
 		targetShip: Starship, origin: Vec3i,
-		weaponSet: AIStarshipTemplate.WeaponSet?, leftClick: Boolean, manual: Boolean
+		weaponSet: WeaponSet?, leftClick: Boolean, manual: Boolean
 	): Vector {
 		val shipPos = targetShip.centerOfMass.toVector()
 		if (difficulty.aimAdjust < 0.1) return shipPos
 
-		val predicate = { it: WeaponSubsystem ->
-			((it is HeavyWeaponSubsystem) xor leftClick)
+		val predicate = { it: FiredSubsystem ->
+			(it is HeavyWeaponSubsystem) xor leftClick
 				&& ((it is AutoWeaponSubsystem) xor manual)
-				&& !(it is MiningLaserSubsystem) // because screw you
+				&& it !is MiningLaserSubsystem // because screw you
 				&& it.isIntact()
 				&& it.canFire(getDirection(origin, targetShip.centerOfMass).normalize(), shipPos)// this is a shortcut
-		} //reduce the amount of different weapon types as much as possible
-		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet.name.lowercase()]).shuffled(
-			ThreadLocalRandom.current()
-		).filter(predicate)
+		}
+		//reduce the amount of different weapon types as much as possible
+
+		val weapons = (if (weaponSet == null) starship.weapons else starship.weaponSets[weaponSet.name.lowercase()])
+			.shuffled(ThreadLocalRandom.current())
+			.filter(predicate)
+
 		if (weapons.isEmpty()) return shipPos //nothing to aim
 		val weapon = weapons.first()
 
-		if (weapon is TargetTrackingCannonWeaponSubsystem) return shipPos //for tracking to work cant lead
+		if (weapon !is BalancedWeaponSubsystem<*>) return shipPos
+
+		if (weapon is TargetTrackingCannonWeaponSubsystem<*>) return shipPos //for tracking to work cant lead
 
 		var forecast = shipPos
 		for (i in 0.until(if (difficulty.doubleEstimateAim) 2 else 1)) {
@@ -68,7 +74,7 @@ class AimingModule(
 				(distance / PhaserProjectile.speedUpSpeed
 					+ TimeUnit.NANOSECONDS.toMillis(PhaserProjectile.speedUpTime).toDouble() / 1000).coerceAtMost(4.0)
 			} else {
-				(distance / weapon.balancing.speed).coerceAtMost(4.0)
+				(distance / weapon.balancing.projectile.speed).coerceAtMost(4.0)
 			}
 			forecast = forecast(targetShip, System.currentTimeMillis() + (travelTime * 1000).toLong(), 0)
 		}
@@ -77,12 +83,12 @@ class AimingModule(
 	}
 
 
-	fun sampleDirection(direction: Vector): Vector {
+	fun sampleDirection(direction: Vector, distance: Double): Vector {
 		// Step 1: Generate a random azimuthal angle φ ∈ [0, 2π]
 		val phi = randomDouble(0.0, 2 * Math.PI)
 
 		// Step 2: Generate a random inclination angle θ' for uniform solid angle sampling
-		val cosThetaPrime = 1 - randomDouble(0.0, 1 - cos(shotDeviation))
+		val cosThetaPrime = 1 - randomDouble(0.0, 1 - cos(evaluateTheta(distance)))
 		val sinThetaPrime = sqrt(1 - cosThetaPrime * cosThetaPrime)
 
 		// Step 3: Construct the local coordinate frame (T, B, N)
@@ -106,6 +112,11 @@ class AimingModule(
 			.add(direction.multiply(cosThetaPrime))
 
 		return sampledVector.normalize() // Ensure it remains a unit vector
+	}
+
+	private fun evaluateTheta(distance :Double) : Double{
+		val multiplier = ((distance - 250.0) / 75.0 + 1.0).coerceAtLeast(1.0)
+		return shotDeviation * multiplier
 	}
 
 	companion object {

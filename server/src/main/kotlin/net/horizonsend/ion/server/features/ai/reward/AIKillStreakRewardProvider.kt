@@ -9,6 +9,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.cbrt
+import kotlin.math.sqrt
 
 class AIKillStreakRewardProvider(override val starship: ActiveStarship, val configuration: AITemplate.KillStreakRewardProviderConfiguration) : AIRewardsProvider {
 	override val log: Logger = LoggerFactory.getLogger(javaClass)
@@ -24,9 +25,8 @@ class AIKillStreakRewardProvider(override val starship: ActiveStarship, val conf
 		val ratio = (cbrt(killedSize) / cbrt(damagerSize)).coerceAtMost(3.0)
 		val difficultyMultiplier = (starship.controller as? AIController)?.getCoreModuleByType<DifficultyModule>()?.rewardMultiplier ?: 1.0
 		val topPercent = topDamagerPoints.get().toDouble() / pointsSum.toDouble()
-		val killStreakBonus = AIKillStreak.getHeatMultiplier(damager.player)
 		val percent = points.get().toDouble() / pointsSum.toDouble()
-		val score = (ratio * (percent / topPercent) * configuration.streakMultiplier * difficultyMultiplier * killStreakBonus).toInt()
+		val score = (ratio * (percent / topPercent) * configuration.streakMultiplier * difficultyMultiplier).toInt()
 
 		if (score <= 0) return
 

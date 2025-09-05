@@ -9,10 +9,8 @@ interface RecipeEnviornment {
 
 	fun getInputItems(): List<ItemStack?>
 
-	fun getItemSize(): Int
-	fun getItem(index: Int): ItemStack?
-
-	fun isEmpty(): Boolean
+	fun getInputItemSize(): Int
+	fun getInputItem(index: Int): ItemStack?
 
 	fun playSound(sound: Sound)
 }

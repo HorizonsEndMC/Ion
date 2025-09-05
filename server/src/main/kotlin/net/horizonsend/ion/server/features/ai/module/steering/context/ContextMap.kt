@@ -268,4 +268,20 @@ abstract class ContextMap {
 		if (output.length() < 1e-5) output = Vector(0.0, 0.0, 1.0)
 		return output
 	}
+
+	/**
+	 * Returns the index in `bindir` whose direction is closest to `v`.
+	 */
+	fun nearestBin(v: Vector): Int {
+		var bestIdx = 0
+		var bestDot = Double.NEGATIVE_INFINITY          // lowest possible
+		for (i in 0 until NUMBINS) {
+			val dot = v.dot(bindir[i])
+			if (dot > bestDot) {
+				bestDot = dot
+				bestIdx = i
+			}
+		}
+		return bestIdx
+	}
 }
