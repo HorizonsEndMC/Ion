@@ -17,7 +17,7 @@ class QuadTurretWeaponSubsystem(
 	pos: Vec3i,
 	face: BlockFace,
 	override val multiblock: QuadTurretMultiblock
-) : TurretWeaponSubsystem<QuadTurretBalancing, QuadTurretBalancing.QuadTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()), PermissionWeaponSubsystem, AmmoConsumingWeaponSubsystem {
+) : TurretWeaponSubsystem<QuadTurretBalancing, QuadTurretBalancing.QuadTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(QuadTurretWeaponSubsystem::class)), PermissionWeaponSubsystem, AmmoConsumingWeaponSubsystem {
 	override val permission: String = "ion.multiblock.quadturret"
 
 	override fun getName(): Component {

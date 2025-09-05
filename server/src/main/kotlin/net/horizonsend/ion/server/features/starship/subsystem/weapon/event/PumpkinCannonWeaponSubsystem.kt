@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.PumpkinCannonProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
@@ -22,7 +22,7 @@ class PumpkinCannonWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     override var face: BlockFace
-) : WeaponSubsystem<PumpkinCannonBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier()),
+) : BalancedWeaponSubsystem<PumpkinCannonBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(PumpkinCannonWeaponSubsystem::class)),
 	ManualWeaponSubsystem,
 	DirectionalSubsystem,
 	PermissionWeaponSubsystem {

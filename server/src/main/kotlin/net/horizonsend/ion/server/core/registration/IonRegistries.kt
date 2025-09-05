@@ -5,16 +5,18 @@ import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.server.core.registration.registries.AtmosphericGasRegistry
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry
+import net.horizonsend.ion.server.core.registration.registries.FluidPropertyTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.FluidTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.ItemModRegistry
 import net.horizonsend.ion.server.core.registration.registries.Registry
+import net.horizonsend.ion.server.core.registration.registries.TransportNetworkNodeTypeRegistry
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
 import net.horizonsend.ion.server.features.sequences.SequenceRegistry
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseRegistry
 
 object IonRegistries : IonComponent() {
 	private val allRegistries = mutableListOf<Registry<*>>()
-	private val byId = Object2ObjectOpenHashMap<IonResourceKey<out Registry<*>>, Registry<*>>()
+	private val byId = Object2ObjectOpenHashMap<IonBindableResourceKey<out Registry<*>>, Registry<*>>()
 
 	override fun onEnable() {
 		allRegistries.forEach { registry ->
@@ -30,6 +32,8 @@ object IonRegistries : IonComponent() {
 	val CUSTOM_BLOCKS = register(CustomBlockRegistry())
 	val ITEM_MODIFICATIONS = register(ItemModRegistry())
 	val MULTIBLOCK_RECIPE = register(MultiblockRecipeRegistry())
+	val TRANSPORT_NETWORK_NODE_TYPE = register(TransportNetworkNodeTypeRegistry())
+	val FLUID_PROPERTY_TYPE = register(FluidPropertyTypeRegistry())
 
 	val SEQUENCE_PHASE = register(SequencePhaseRegistry())
 	val SEQUENCE = register(SequenceRegistry())
@@ -40,5 +44,5 @@ object IonRegistries : IonComponent() {
 		return registry
 	}
 
-	operator fun get(registryID: IonResourceKey<out Registry<*>>): Registry<*> = byId[registryID]!!
+	operator fun get(registryID: IonBindableResourceKey<out Registry<*>>): Registry<*> = byId[registryID]!!
 }

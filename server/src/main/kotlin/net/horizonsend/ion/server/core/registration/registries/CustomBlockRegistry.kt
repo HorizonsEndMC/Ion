@@ -16,12 +16,19 @@ import net.horizonsend.ion.server.features.custom.blocks.extractor.AdvancedItemE
 import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.MultiblockWorkbench
+import net.horizonsend.ion.server.features.custom.blocks.misc.OrientableCustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.misc.WrenchRemovable
+import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeBlock
+import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeJunctionBlock
+import net.horizonsend.ion.server.features.custom.blocks.pipe.ReinforcedFluidPipeBlock
+import net.horizonsend.ion.server.features.custom.blocks.pipe.ReinforcedFluidPipeJunctionBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.space.encounters.SecondaryChest.Companion.random
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.Rotation
 import net.minecraft.world.level.block.state.BlockState
+import org.bukkit.Axis
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -33,6 +40,7 @@ import org.bukkit.inventory.ItemStack
 class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 	override fun getKeySet(): KeyRegistry<CustomBlock> = CustomBlockKeys
 	private val directionalCustomBlocksData = HashBasedTable.create<BlockState, CustomBlock, BlockFace>()
+	private val orientableCustomBlocksData = HashBasedTable.create<BlockState, CustomBlock, Axis>()
 	private val customBlocksData = Object2ObjectOpenHashMap<BlockState, CustomBlock>()
 
 	override fun boostrap() {
@@ -243,6 +251,36 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		register(CustomBlockKeys.MULTIBLOCK_WORKBENCH, MultiblockWorkbench)
 		register(CustomBlockKeys.ADVANCED_ITEM_EXTRACTOR, AdvancedItemExtractorBlock)
 		register(CustomBlockKeys.ITEM_FILTER, ItemFilterBlock)
+
+		register(CustomBlockKeys.FLUID_INPUT, object : CustomBlock(
+			key = CustomBlockKeys.FLUID_INPUT,
+			blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.DOWN, BlockFace.WEST, BlockFace.EAST)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.FLUID_INPUT)
+			),
+			CustomItemKeys.FLUID_INPUT
+		), WrenchRemovable {
+			override fun decorateItem(itemStack: ItemStack, block: Block) {}
+		})
+
+		register(CustomBlockKeys.FLUID_PIPE, FluidPipeBlock)
+		register(CustomBlockKeys.FLUID_PIPE_JUNCTION, FluidPipeJunctionBlock)
+
+		register(CustomBlockKeys.FLUID_VALVE, object : CustomBlock(
+			key = CustomBlockKeys.FLUID_VALVE,
+			blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.DOWN, BlockFace.WEST, BlockFace.EAST)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.FLUID_VALVE)
+			),
+			CustomItemKeys.FLUID_VALVE
+		), WrenchRemovable {
+			override fun decorateItem(itemStack: ItemStack, block: Block) {}
+		})
+
+		register(CustomBlockKeys.REINFORCED_FLUID_PIPE, ReinforcedFluidPipeBlock)
+		register(CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION, ReinforcedFluidPipeJunctionBlock)
 	}
 
 	override fun registerAdditional(key: IonRegistryKey<CustomBlock, *>, value: CustomBlock) {
@@ -251,6 +289,13 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		if (value is DirectionalCustomBlock) {
 			for ((data, face) in value.bukkitFaceLookup) {
 				directionalCustomBlocksData[data.nms, value] = face
+				customBlocksData[data.nms] = value
+			}
+		}
+
+		if (value is OrientableCustomBlock) {
+			for ((data, axis) in value.bukkitAxisLookup) {
+				orientableCustomBlocksData[data.nms, value] = axis
 				customBlocksData[data.nms] = value
 			}
 		}
@@ -271,6 +316,14 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 
 		fun mushroomBlockData(faces: Set<BlockFace>) : BlockData {
 			return Material.BROWN_MUSHROOM_BLOCK.createBlockData { data ->
+				for (face in (data as MultipleFacing).allowedFaces) {
+					data.setFace(face, faces.contains(face))
+				}
+			}
+		}
+
+		fun chorusPlantData(faces: Set<BlockFace>) : BlockData {
+			return Material.CHORUS_PLANT.createBlockData { data ->
 				for (face in (data as MultipleFacing).allowedFaces) {
 					data.setFace(face, faces.contains(face))
 				}

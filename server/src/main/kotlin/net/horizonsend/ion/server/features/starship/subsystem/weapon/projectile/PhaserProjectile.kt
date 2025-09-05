@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.server.configuration.starship.PhaserBalancing.PhaserProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.PhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -8,8 +9,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.iterateVector
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lightning
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
-import net.kyori.adventure.key.Key
-import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
@@ -17,6 +16,7 @@ import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.entity.Entity
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
 
 class PhaserProjectile(
 	source: ProjectileSource,
@@ -35,6 +35,11 @@ class PhaserProjectile(
 
 	private val generations = 3
 	private val maxOffset = 0.5
+
+	companion object {
+		val speedUpTime = TimeUnit.MILLISECONDS.toNanos(500L)
+		val speedUpSpeed = 1000.0
+	}
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 		val origin = Location(location.world, x, y, z)
@@ -63,15 +68,15 @@ class PhaserProjectile(
 	override fun impact(newLoc: Location, block: Block?, entity: Entity?) {
 		super.impact(newLoc, block, entity)
 
-		val rayEnds = newLoc.spherePoints(1.0, 2)
+		val rayEnds = newLoc.spherePoints(3.0, 3)
 		for (rayEnd in rayEnds) {
-			val lightningPoints = lightning(newLoc, rayEnd, 3, 0.5, 0.7)
+			val lightningPoints = lightning(newLoc, rayEnd, generations, maxOffset, 0.7)
 			for (lightningPoint in lightningPoints) {
 				lightningPoint.world.spawnParticle(Particle.SOUL_FIRE_FLAME, lightningPoint.x, lightningPoint.y, lightningPoint.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 			}
 		}
 
-		for (point in newLoc.spherePoints(1.5, 5)) {
+		for (point in newLoc.spherePoints(2.5, 5)) {
 			newLoc.iterateVector(Vector(point.x - newLoc.x, point.y - newLoc.y, point.z - newLoc.z), 5) { pointAlong, _ ->
 				pointAlong.world.spawnParticle(
 					Particle.DUST_COLOR_TRANSITION,
@@ -105,13 +110,8 @@ class PhaserProjectile(
 	}
 
 	override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
-		playCustomSound(impactLocation, Sound.sound(
-			Key.key("minecraft:entity.firework_rocket.twinkle"),
-			Sound.Source.PLAYER,
-			12f,
-			0.5f
-		))
+		impactLocation.world.playSound(impactLocation, "minecraft:entity.firework_rocket.twinkle", 12f, 0.5f)
 	}
 
-	override fun playCustomSound(loc: Location, sound: Sound) {}
+	override fun playCustomSound(loc: Location, nearSound: SoundInfo, farSound: SoundInfo) { /* Do nothing */ }
 }

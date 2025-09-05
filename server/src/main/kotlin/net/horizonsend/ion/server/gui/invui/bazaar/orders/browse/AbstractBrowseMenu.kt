@@ -9,7 +9,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.gui.GuiBorder
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.economy.city.TradeCities
@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.CollectionScrollButton
 import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.BazaarSort
 import net.horizonsend.ion.server.gui.invui.bazaar.getBazaarSettingsButton
@@ -108,7 +109,7 @@ abstract class AbstractBrowseMenu(viewer: Player, private val fullfillmentHandle
 		)
 	}
 
-	override fun onClickDisplayedItem(entry: BazaarOrder) {
+	override fun onClickDisplayedItem(entry: BazaarOrder, clickedFrom: CommonGuiWrapper) {
 		fullfillmentHandler.invoke(this, entry)
 	}
 
@@ -133,7 +134,7 @@ abstract class AbstractBrowseMenu(viewer: Player, private val fullfillmentHandle
 		)
 	}
 
-	private var sortingMethod: Int = viewer.getSetting(PlayerSettings::orderBrowseSort)
+	private var sortingMethod: Int = viewer.getSettingOrThrow(PlayerSettings::orderBrowseSort)
 
 	private val sortButton = CollectionScrollButton(
 		entries = SORTING_METHODS,

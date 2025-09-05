@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.economy.city.TradeCityData
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
+import net.horizonsend.ion.server.features.gui.item.AsyncItem.Companion.loadingItem
 import net.horizonsend.ion.server.features.nations.gui.skullItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -71,7 +72,7 @@ class TextInputMenu<T : Any>(
 			.setGui(gui)
 			.addRenameHandler { string ->
 				currentInput = string
-				confirmButton.notifyWindows()
+				confirmButton.update()
 			}
 			.build()
 	}
@@ -138,7 +139,7 @@ class TextInputMenu<T : Any>(
 						.plus(
 							if (more) template(
                             	text("{0} more results", NamedTextColor.WHITE),
-                            	bracketed(text(result.results.size - 5, NamedTextColor.AQUA))
+                            	bracketed(text(result.results.size - 5, AQUA))
                         	)
 							else empty()
                         )
@@ -163,18 +164,36 @@ class TextInputMenu<T : Any>(
 			return base.updateLore(result.message)
 		}
 
-		override fun getItemProvider(): ItemProvider = ItemProvider {
-			when (val result = parent.inputValidator.isValid(parent.currentInput)) {
-				is ValidatorResult.ValidatorSuccess -> getSuccessState(result)
-				is ValidatorResult.FailureResult -> getFailureState(result)
-			}
-		}
+		private var provider = loadingItem
+		private var loaded: Boolean = false
+
+		override fun getItemProvider(): ItemProvider = provider
 
 		override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+			if (!loaded) return
+
 			val result = parent.inputValidator.isValid(parent.currentInput)
 			if (result !is ValidatorResult.ValidatorSuccess<T>) return notifyWindows()
 			parent.successfulInputHandler.invoke(this, clickType, result)
 			parent.refreshTitle()
+		}
+
+		fun update() {
+			provider = loadingItem
+			loaded = false
+			notifyWindows()
+
+			Tasks.async {
+				val item = when (val result = parent.inputValidator.isValid(parent.currentInput)) {
+					is ValidatorResult.ValidatorSuccess -> getSuccessState(result)
+					is ValidatorResult.FailureResult -> getFailureState(result)
+				}
+
+				provider = ItemProvider { item }
+
+				loaded = true
+				Tasks.sync { notifyWindows() }
+			}
 		}
 	}
 

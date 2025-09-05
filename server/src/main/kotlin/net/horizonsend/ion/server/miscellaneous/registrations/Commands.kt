@@ -28,7 +28,7 @@ import net.horizonsend.ion.server.command.misc.BountyCommand
 import net.horizonsend.ion.server.command.misc.ChatCommand
 import net.horizonsend.ion.server.command.misc.CombatTimerCommand
 import net.horizonsend.ion.server.command.misc.DyeCommand
-import net.horizonsend.ion.server.command.misc.EnableProtectionMessagesCommand
+import net.horizonsend.ion.server.command.misc.EncounterStatusCommand
 import net.horizonsend.ion.server.command.misc.GToggleCommand
 import net.horizonsend.ion.server.command.misc.GlobalGameRuleCommand
 import net.horizonsend.ion.server.command.misc.IonBroadcastCommand
@@ -70,6 +70,7 @@ import net.horizonsend.ion.server.command.qol.EnableOrbitBreakingCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.command.qol.PersonalTransporterCommand
 import net.horizonsend.ion.server.command.qol.SearchCommand
+import net.horizonsend.ion.server.command.qol.SetFluidCommand
 import net.horizonsend.ion.server.command.qol.SetPowerCommand
 import net.horizonsend.ion.server.command.space.PlanetCommand
 import net.horizonsend.ion.server.command.space.SpaceGenCommand
@@ -83,17 +84,12 @@ import net.horizonsend.ion.server.command.starship.StarshipDebugCommand
 import net.horizonsend.ion.server.command.starship.StarshipsCommand
 import net.horizonsend.ion.server.command.starship.ai.AIDebugCommand
 import net.horizonsend.ion.server.configuration.ConfigurationCommands
-import net.horizonsend.ion.server.features.client.commands.HudCommand
-import net.horizonsend.ion.server.features.gui.custom.settings.commands.ControlSettingsCommand
 import net.horizonsend.ion.server.features.gui.custom.settings.commands.SettingsCommand
 import net.horizonsend.ion.server.features.multiblock.ModelCreator
 import net.horizonsend.ion.server.features.player.NewPlayerProtection
 import net.horizonsend.ion.server.features.progression.achievements.AchievementsCommand
 import net.horizonsend.ion.server.features.sidebar.command.BookmarkCommand
 import net.horizonsend.ion.server.features.sidebar.command.SidebarCommand
-import net.horizonsend.ion.server.features.sidebar.command.SidebarContactsCommand
-import net.horizonsend.ion.server.features.sidebar.command.SidebarStarshipsCommand
-import net.horizonsend.ion.server.features.sidebar.command.SidebarWaypointsCommand
 import net.horizonsend.ion.server.features.starship.fleet.FleetCommand
 import net.horizonsend.ion.server.features.waypoint.command.WaypointCommand
 
@@ -149,6 +145,7 @@ val commands: List<SLCommand> = listOf(
 	StarshipDebugCommand,
 	AIDebugCommand,
 	AIOpponentCommand,
+	EncounterStatusCommand,
 	StarshipCommand,
 
 	StarshipsCommand,
@@ -176,12 +173,8 @@ val commands: List<SLCommand> = listOf(
 	AchievementsCommand,
 	BlockStatsCommand,
 	SidebarCommand,
-	SidebarContactsCommand,
-	SidebarWaypointsCommand,
-	SidebarStarshipsCommand,
 	BookmarkCommand,
 	WaypointCommand,
-	HudCommand,
     BountyCommand,
 	BountyAdminCommand,
 
@@ -189,7 +182,6 @@ val commands: List<SLCommand> = listOf(
 	BlockCommand,
 	ShipFactoryCommand,
 	SettingsCommand,
-	ControlSettingsCommand,
 	FleetCommand,
 	LocatorCommands,
 	ItemDebugCommand,
@@ -200,7 +192,6 @@ val commands: List<SLCommand> = listOf(
 	PersonalTransporterCommand,
 	CombatTimerCommand,
     ForbiddenBlocksCommand,
-	EnableProtectionMessagesCommand,
 	IonSitCommand,
 	SuicideCommand,
 	StructureCreator,
@@ -210,5 +201,6 @@ val commands: List<SLCommand> = listOf(
 	ChatCommand,
 	IonNPCCommand,
 	EnableOrbitBreakingCommand,
-	SequenceAdminCommand
+	SequenceAdminCommand,
+	SetFluidCommand
 )

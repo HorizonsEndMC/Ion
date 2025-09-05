@@ -53,6 +53,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GUN_BARR
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ITEM_FILTER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MOTHERBOARD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MULTIBLOCK_WORKBENCH
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MULTIMETER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.NETHERITE_CASING
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.PISTOL_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.POWER_ARMOR_BOOTS
@@ -128,7 +129,6 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_ROD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.WRENCH
 import net.horizonsend.ion.server.features.custom.items.CustomItem
-import net.horizonsend.ion.server.miscellaneous.registrations.Crafting.shaped
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.ALL_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
@@ -165,6 +165,7 @@ import org.bukkit.Material.FIREWORK_ROCKET
 import org.bukkit.Material.GILDED_BLACKSTONE
 import org.bukkit.Material.GLASS
 import org.bukkit.Material.GLASS_PANE
+import org.bukkit.Material.GLOWSTONE
 import org.bukkit.Material.GLOWSTONE_DUST
 import org.bukkit.Material.GOLD_BLOCK
 import org.bukkit.Material.GOLD_INGOT
@@ -216,8 +217,8 @@ import org.bukkit.Material.STRING
 import org.bukkit.Material.TRIPWIRE_HOOK
 import org.bukkit.Material.TURTLE_EGG
 import org.bukkit.Material.VERDANT_FROGLIGHT
+import org.bukkit.Material.YELLOW_CONCRETE
 import org.bukkit.NamespacedKey
-import org.bukkit.craftbukkit.legacy.MaterialRerouting.setIngredient
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.BlastingRecipe
 import org.bukkit.inventory.FurnaceRecipe
@@ -285,6 +286,7 @@ object Crafting : IonServerComponent() {
 		shapedMaterial("cobweb", COBWEB, "s s", " s ", "s s", 's' to STRING)
 		shapedMaterial("small_dripleaf" , Material.SMALL_DRIPLEAF, shape1 = "xx ", shape2 = " y ", shape3 = "   ",'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
 		shapedMaterial("big_dripleaf" , Material.BIG_DRIPLEAF, shape1 = "xxx", shape2 = "  y", shape3 = "  y",'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
+		shapeless("glowstone_dust", ItemStack(GLOWSTONE_DUST, 4), GLOWSTONE)
 
 		Bukkit.removeRecipe(Material.ENDER_CHEST.key)
 		Bukkit.removeRecipe(Material.CHAIN.key)
@@ -865,6 +867,13 @@ object Crafting : IonServerComponent() {
 		shaped("wrench", WRENCH) {
 			shape("a a", " a ", " a ")
 			setIngredient('a', IRON_INGOT)
+		}
+		shaped("multimeter", MULTIMETER) {
+			shape("yry", "ycy", "yiy")
+			setIngredient('y', YELLOW_CONCRETE)
+			setIngredient('r', REDSTONE)
+			setIngredient('c', CIRCUITRY)
+			setIngredient('i', COPPER_INGOT)
 		}
 	}
 

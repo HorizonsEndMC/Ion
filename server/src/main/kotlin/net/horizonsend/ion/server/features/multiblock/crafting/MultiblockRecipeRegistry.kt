@@ -4,6 +4,7 @@ import io.papermc.paper.util.Tick
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.MultiblockRecipeKeys
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
@@ -11,12 +12,15 @@ import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.input.RecipeEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.AutoMasonRecipe
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.ChemicalProcessorRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.FurnaceMultiblockRecipe
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.FluidRecipeRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.PowerRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.GasCanisterRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement.MaterialRequirement
+import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.FluidResult
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ItemResult
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.ResultHolder
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.result.WarmupResult
@@ -30,6 +34,7 @@ import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMu
 import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.processing.automason.CenterType
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import net.kyori.adventure.sound.Sound
@@ -48,8 +53,6 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 	}
 
 	override fun boostrap() {
-		registerAutoMasonRecipes()
-
 		register(MultiblockRecipeKeys.URANIUM_ENRICHMENT, FurnaceMultiblockRecipe(
 			key = MultiblockRecipeKeys.URANIUM_ENRICHMENT,
 			clazz = CentrifugeMultiblock.CentrifugeMultiblockEntity::class,
@@ -214,13 +217,15 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 		))
 
 		registerGasFurnaceRecipes()
+		registerAutoMasonRecipes()
+		registerChemicalProcessorRecipes()
 	}
 
 	private fun registerGasFurnaceRecipes() {
 		register(MultiblockRecipeKeys.STEEL_PRODUCTION, FurnaceMultiblockRecipe(
 			key = MultiblockRecipeKeys.STEEL_PRODUCTION,
 			clazz = GasFurnaceMultiblock.GasFurnaceMultiblockEntity::class,
-			smeltingItem = ItemRequirement.MaterialRequirement(Material.IRON_INGOT),
+			smeltingItem = MaterialRequirement(Material.IRON_INGOT),
 			fuelItem = GasCanisterRequirement(AtmosphericGasKeys.OXYGEN.getValue(), 5),
 			power = PowerRequirement(10),
 			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
@@ -601,6 +606,33 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 		)
 
 		recipeMap.forEach { it.boostrap(this) }
+	}
+
+	fun registerChemicalProcessorRecipes() {
+		register(MultiblockRecipeKeys.TEST_CHEMICAL_PROCESSOR, ChemicalProcessorRecipe(
+			key = MultiblockRecipeKeys.TEST_CHEMICAL_PROCESSOR,
+			itemRequirement = MaterialRequirement(Material.IRON_INGOT),
+			fluidRequirementOne = FluidRecipeRequirement("primaryin", FluidTypeKeys.OXYGEN, 10.0),
+			fluidRequirementTwo = FluidRecipeRequirement("secondaryin", FluidTypeKeys.METHANE, 10.0),
+			fluidResultOne = FluidResult("primaryout", FluidStack(FluidTypeKeys.WATER, 10.0)),
+			fluidResultTwo = FluidResult("secondaryout", FluidStack(FluidTypeKeys.CARBON_DIOXIDE, 10.0)),
+			fluidResultPollutionResult = FluidResult("pollution", FluidStack(FluidTypeKeys.CARBON_DIOXIDE, 1.0)),
+			itemResult = ResultHolder.of(ItemResult.simpleResult(CustomItemKeys.CIRCUITRY.getValue().constructItemStack())),
+		))
+		register(MultiblockRecipeKeys.SABATIER_METHANE, ChemicalProcessorRecipe(
+			key = MultiblockRecipeKeys.SABATIER_METHANE,
+			itemRequirement = MaterialRequirement(Material.IRON_INGOT),
+
+			fluidRequirementOne = FluidRecipeRequirement("primaryin", FluidTypeKeys.CARBON_DIOXIDE, 10.0),
+			fluidRequirementTwo = FluidRecipeRequirement("secondaryin", FluidTypeKeys.HYDROGEN, 40.0),
+
+			fluidResultOne = FluidResult("primaryout", FluidStack(FluidTypeKeys.METHANE, 10.0)),
+			fluidResultTwo = FluidResult("secondaryout", FluidStack(FluidTypeKeys.WATER, 10.0)),
+
+			fluidResultPollutionResult = null,
+
+			itemResult = ResultHolder.of(ItemResult.simpleResult(Material.IRON_INGOT)),
+		))
 	}
 
 	fun <E: RecipeEnviornment> getRecipesFor(entity: RecipeProcessingMultiblockEntity<E>): Collection<MultiblockRecipe<E>> {

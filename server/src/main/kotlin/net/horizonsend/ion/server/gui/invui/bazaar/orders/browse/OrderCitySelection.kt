@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.REMOTE_WARINING
 import net.horizonsend.ion.server.gui.invui.bazaar.getBazaarSettingsButton
@@ -115,7 +116,7 @@ class OrderCitySelection(viewer: Player) : ListInvUIWindow<TradeCityData>(viewer
 	)
 
 	override fun getItemLore(entry: BazaarOrder): List<Component> = listOf()
-	override fun onClickDisplayedItem(entry: BazaarOrder) {}
+	override fun onClickDisplayedItem(entry: BazaarOrder, clickedFrom: CommonGuiWrapper) {}
 
 	override fun getSearchTerms(entry: BazaarOrder): List<String> {
 		TODO("Not yet implemented")

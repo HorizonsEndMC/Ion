@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
+import net.horizonsend.ion.server.features.ai.module.misc.DespawnModule
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -27,7 +27,9 @@ object AISpawningManager : IonServerComponent(true) {
 	val context = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
 	override fun onEnable() {
-		if (ConfigurationFiles.featureFlags().aiSpawns) { Tasks.syncRepeat(0L, 0L, AISpawningManager::tickSpawners) }
+		if (ConfigurationFiles.featureFlags().aiSpawns) {
+			Tasks.syncRepeat(0L, 0L, AISpawningManager::tickSpawners)
+		}
 		Tasks.syncRepeat(60L, 60L, AISpawningManager::despawnOldAIShips)
 	}
 
@@ -39,15 +41,12 @@ object AISpawningManager : IonServerComponent(true) {
 		}
 	}
 
-	// The templates, matched to their identifiers
-	val templates: MutableMap<String, AIStarshipTemplate> = mutableMapOf()
-
 	val schematicCache: LoadingCache<File, Optional<Clipboard>> = CacheBuilder.newBuilder().build(
 		CacheLoader.from { schematicFile ->
-				val clipboard = readSchematic(schematicFile) ?: return@from Optional.empty<Clipboard>()
-				return@from Optional.of(clipboard)
-			}
-		)
+			val clipboard = readSchematic(schematicFile) ?: return@from Optional.empty<Clipboard>()
+			return@from Optional.of(clipboard)
+		}
+	)
 
 	/** Ticks all the spawners, increasing points and maybe triggering an execution */
 	private fun tickSpawners() {
@@ -66,6 +65,7 @@ object AISpawningManager : IonServerComponent(true) {
 
 	// The AI ship must be at least 30 minutes old
 	val timeLivedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(30)
+
 	// And not damaged within the last 15 minutes
 	val lastDamagedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(7)
 
@@ -77,6 +77,9 @@ object AISpawningManager : IonServerComponent(true) {
 		val mostRecentDamager = starship.damagers.entries.minByOrNull { it.value.lastDamaged }
 
 		if (mostRecentDamager != null && mostRecentDamager.value.lastDamaged > lastDamagedRequirement) return false
+
+		val despawnControl = controller.getUtilModule(DespawnModule::class.java)
+		if (despawnControl != null) return despawnControl.evaluateDespawn()
 
 		return starship.creationTime <= timeLivedRequirement
 	}

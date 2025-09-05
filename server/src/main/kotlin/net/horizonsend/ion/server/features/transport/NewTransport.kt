@@ -8,7 +8,8 @@ import net.horizonsend.ion.server.features.custom.blocks.filter.CustomFilterBloc
 import net.horizonsend.ion.server.features.starship.event.build.StarshipBreakBlockEvent
 import net.horizonsend.ion.server.features.starship.event.build.StarshipPlaceBlockEvent
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
-import net.horizonsend.ion.server.features.transport.manager.TransportManager
+import net.horizonsend.ion.server.features.transport.manager.ChunkTransportManager
+import net.horizonsend.ion.server.features.transport.manager.TransportHolder
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.isExtractorData
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
@@ -35,9 +36,11 @@ import kotlin.concurrent.fixedRateTimer
 
 object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick to wait on the full server startup. */) {
 	var enabled: Boolean = false; private set
-	private val transportManagers = ConcurrentHashMap.newKeySet<TransportManager<*>>()
+	private val transportManagers = ConcurrentHashMap.newKeySet<TransportHolder>()
 
-	private lateinit var timer: Timer
+	private lateinit var extractorTickTimer: Timer
+	private lateinit var graphTickTimer: Timer
+
 	private lateinit var executor: ExecutorService
 	private lateinit var monitor: TransportMonitorThread
 
@@ -56,9 +59,15 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		}
 		executor = Executors.newFixedThreadPool(configuration.transportThreadCount, Tasks.namedThreadFactory("wire-transport"))
 
-		if (::timer.isInitialized) timer.cancel()
-		val interval: Long = configuration.extractorConfiguration.extractorTickIntervalMS
-		timer = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = interval, period = interval) { tickExtractors() }
+		if (::extractorTickTimer.isInitialized) extractorTickTimer.cancel()
+		val extractorInterval: Long = configuration.extractorConfiguration.extractorTickIntervalMS
+		extractorTickTimer = fixedRateTimer(name = "Extractor Tick", daemon = true, initialDelay = extractorInterval, period = extractorInterval) { tickExtractors() }
+
+		if (ConfigurationFiles.featureFlags().graphTransfer) {
+			if (::graphTickTimer.isInitialized) graphTickTimer.cancel()
+			val graphInterval: Long = configuration.graphBasedConfiguration.tickIntervalMS
+			graphTickTimer = fixedRateTimer(name = "Graph Tick", daemon = true, initialDelay = graphInterval, period = graphInterval) { tickGraphNetworks() }
+		}
 
 		if (::monitor.isInitialized) monitor.interrupt()
 		monitor = TransportMonitorThread()
@@ -74,7 +83,8 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 	override fun onDisable() {
 		enabled = false
-		if (::timer.isInitialized) timer.cancel()
+		if (::extractorTickTimer.isInitialized) extractorTickTimer.cancel()
+		if (::graphTickTimer.isInitialized) graphTickTimer.cancel()
 		if (::executor.isInitialized) executor.shutdown()
 		if (::monitor.isInitialized) monitor.interrupt()
 
@@ -94,18 +104,29 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		if (!enabled) return
 		transportManagers.forEach {
 			try {
-				it.tick()
+				it.tickExtractors()
 			} catch (exception: Exception) {
 				exception.printStackTrace()
 			}
 		}
 	}
 
-	fun registerTransportManager(manager: TransportManager<*>) {
+	private fun tickGraphNetworks() {
+		if (!enabled) return
+		transportManagers.forEach {
+			try {
+				it.tickGraphs()
+			} catch (exception: Exception) {
+				exception.printStackTrace()
+			}
+		}
+	}
+
+	fun registerTransportManager(manager: TransportHolder) {
 		transportManagers.add(manager)
 	}
 
-	fun removeTransportManager(manager: TransportManager<*>) {
+	fun removeTransportManager(manager: TransportHolder) {
 		transportManagers.remove(manager)
 	}
 
@@ -251,6 +272,7 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 
 	fun saveExtractors() {
 		transportManagers.forEach {
+			if (it !is ChunkTransportManager) return@forEach
 			it.extractorManager.save()
 		}
 	}

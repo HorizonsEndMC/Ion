@@ -13,7 +13,7 @@ class HeavyTurretWeaponSubsystem(
 	pos: Vec3i,
 	face: BlockFace,
 	override val multiblock: HeavyTurretMultiblock
-) : TurretWeaponSubsystem<HeavyTurretBalancing, HeavyTurretBalancing.HeavyTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()) {
+) : TurretWeaponSubsystem<HeavyTurretBalancing, HeavyTurretBalancing.HeavyTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(HeavyTurretWeaponSubsystem::class)) {
 
 	override fun getName(): Component {
 		return Component.text("Heavy Turret")

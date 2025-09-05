@@ -12,11 +12,12 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayCurrentBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayItem
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
+import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import org.bukkit.Location
@@ -35,21 +36,21 @@ import org.bukkit.util.Vector
 object SearchCommand : SLCommand() {
 	@Default
 	@CommandCompletion("@anyItem")
-	fun default( player: Player, vararg itemStrings: String) {
+	fun default(player: Player, vararg itemStrings: String) {
 		// key: <Block> (for location)
 		// value: <Inventory> (for inventory contents)
 		val containers = mutableMapOf<Block, Inventory>()
 
 		val stringList = itemStrings.toList()
 
-		if(stringList.isEmpty()) {
+		if (stringList.isEmpty()) {
 			val item = player.inventory.itemInMainHand
 			val str = GlobalCompletions.toItemString(item)
-			containers.putAll(findContainers(player.world,player.location,item,str))
+			containers.putAll(findContainers(player, player.world, player.location, item, str))
 		} else {
-			for(str in stringList) {
+			for (str in stringList) {
 				val item = GlobalCompletions.stringToItem(str) ?: continue
-				containers.putAll(findContainers(player.world,player.location,item,str))
+				containers.putAll(findContainers(player, player.world, player.location, item, str))
 			}
 		}
 		val blocks = containers.keys
@@ -71,7 +72,7 @@ object SearchCommand : SLCommand() {
 				}
 			}
 
-			if (inventories.size == 0) {
+			if (inventories.isEmpty()) {
 				player.userError("Couldn't find any item in a 20 block range.")
 			} else {
 				player.sendRichMessage(
@@ -84,7 +85,7 @@ object SearchCommand : SLCommand() {
 
 	@Subcommand("_toggle")
 	fun itemSearchToggle(player: Player, @Optional toggle: Boolean?) {
-		val showItemDisplay = toggle ?: !player.getSetting(PlayerSettings::showItemSearchItem)
+		val showItemDisplay = toggle ?: !player.getSettingOrThrow(PlayerSettings::showItemSearchItem)
 		player.setSetting(PlayerSettings::protectionMessagesEnabled, showItemDisplay)
 
 		player.success("Changed showing searched item to $showItemDisplay")
@@ -97,12 +98,13 @@ object SearchCommand : SLCommand() {
 		for (block in blocks.withIndex()) {
 			val loc = Vector(block.value.x.toDouble(), block.value.y.toDouble(), block.value.z.toDouble())
 
-			if(!containsItem(inventories.elementAt(block.index), item)) continue //necessary check for multi-item searches to prevent false positives
+			if (!containsItem(player, inventories.elementAt(block.index), item)) continue //necessary check for multi-item searches to prevent false positives
 
-			if ( (twoOrMoreMatches(inventories.elementAt(block.index), strList)) || // if container has 2+ of the searched items
+			if ((twoOrMoreMatches(player, inventories.elementAt(block.index), strList)) || // if container has 2+ of the searched items
 				(item.type.isBlock && item.type.isSolid) || // Billboarding blocks looks so messed up, so this mostly prevents that
 				item.type == Material.AIR || // display if item is air, otherwise it would show up as an invisible item
-				!player.getSetting(PlayerSettings::showItemSearchItem)) // toggleable setting
+				!player.getSettingOrThrow(PlayerSettings::showItemSearchItem)
+			) // toggleable setting
 			{
 				sendEntityPacket(player, displayCurrentBlock(player.world.minecraft, loc), 10 * 20) // show block
 			} else {
@@ -115,6 +117,7 @@ object SearchCommand : SLCommand() {
 	 * Finds all inventories that are holding the specified item, in a specified distance around a center point.
 	 */
 	private fun findContainers(
+		searcher: Player,
 		world: World,
 		loc: Location,
 		item: ItemStack,
@@ -122,17 +125,17 @@ object SearchCommand : SLCommand() {
 		dist: Int = 20
 	): MutableMap<Block, Inventory> {
 		val map = mutableMapOf<Block, Inventory>()
-		for(x in loc.x.toInt() - dist..loc.x.toInt() + dist) {
-			for(y in loc.y.toInt() - dist..loc.y.toInt() + dist) {
-				for(z in loc.z.toInt() - dist..loc.z.toInt() + dist) {
+		for (x in loc.x.toInt() - dist..loc.x.toInt() + dist) {
+			for (y in loc.y.toInt() - dist..loc.y.toInt() + dist) {
+				for (z in loc.z.toInt() - dist..loc.z.toInt() + dist) {
 					val block = world.getBlockAt(x, y, z)
 					val inv = (block.state as? InventoryHolder)?.inventory ?: continue
-					if(block.type == Material.CHEST) { // one of the blocks of a double chest
+					if (block.type == Material.CHEST) { // one of the blocks of a double chest
 						val data = (block.blockData as Chest).type
-						if(chestContainsItem(inv, item, data) || (itemStr == "AIR" && containsAir(inv))) {
+						if (chestContainsItem(searcher, inv, item, data) || (itemStr == "AIR" && containsAir(inv))) {
 							map[block] = inv
 						}
-					} else if( containsItem(inv, item) || (itemStr == "AIR" && containsAir(inv))) {
+					} else if (containsItem(searcher, inv, item) || (itemStr == "AIR" && containsAir(inv))) {
 						map[block] = inv
 					}
 				}
@@ -156,25 +159,27 @@ object SearchCommand : SLCommand() {
 	 * Determines if a Chest contains a specified item
 	 * Also handles logic for double chests, returning the proper half
 	 */
-	private fun chestContainsItem(inventory: Inventory, item: ItemStack, type: Chest.Type): Boolean {
+	private fun chestContainsItem(searcher: Player, inventory: Inventory, item: ItemStack, type: Chest.Type): Boolean {
 		val startIndex: Int
 		val stopIndex: Int
-		when(type) {
+		when (type) {
 			Chest.Type.RIGHT -> {
 				startIndex = 0
 				stopIndex = 26
 			}
+
 			Chest.Type.LEFT -> {
 				startIndex = 27
 				stopIndex = 53
 			}
+
 			else -> {
-				return containsItem(inventory, item)
+				return containsItem(searcher, inventory, item)
 			}
 		}
-		for(i in startIndex..stopIndex){
+		for (i in startIndex..stopIndex) {
 			val invItem = inventory.getItem(i) ?: continue
-			if(itemsMatch(invItem, item)) return true
+			if (itemsMatch(invItem, item)) return true
 		}
 		return false
 	}
@@ -183,10 +188,14 @@ object SearchCommand : SLCommand() {
 	 * Function that compares the specified item's Material and Custom Model Data with every item in a searched inventory
 	 * (because comparing custom item stacks to modified custom items [like PA vs. PA with modules] will not work)
 	 */
-	private fun containsItem(inventory: Inventory, itemStack: ItemStack): Boolean {
-		for(item in inventory){
-			if(item == null) continue
-			if(itemsMatch(item, itemStack)) return true
+	private fun containsItem(player: Player, inventory: Inventory, itemStack: ItemStack): Boolean {
+		for (item in inventory) {
+			if (item == null) continue
+
+			val loc = inventory.location ?: continue // If location is null, then it is a virtual inventory and shouldn't be searched anyways
+			if (ProtectionListener.isRegionDenied(player, loc)) continue
+
+			if (itemsMatch(item, itemStack)) return true
 		}
 		return false
 	}
@@ -205,11 +214,11 @@ object SearchCommand : SLCommand() {
 	/**
 	 * Returns true if two or more items in the list of strings exist within the inventory
 	 */
-	private fun twoOrMoreMatches(inventory: Inventory, strList: List<String>): Boolean {
+	private fun twoOrMoreMatches(searcher: Player, inventory: Inventory, strList: List<String>): Boolean {
 		var counter = 0
-		for(str in strList){
+		for (str in strList) {
 			val itemStack = GlobalCompletions.stringToItem(str) ?: continue
-			if(containsItem(inventory, itemStack)){
+			if (containsItem(searcher, inventory, itemStack)) {
 				counter++
 			}
 		}

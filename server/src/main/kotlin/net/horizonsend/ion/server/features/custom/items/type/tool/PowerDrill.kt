@@ -17,12 +17,11 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.Powe
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toLocation
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getNMSBlockData
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
-import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.BaseFireBlock
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.IceBlock
@@ -96,7 +95,7 @@ class PowerDrill(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: C
 		val collectorPresent = mods.contains(ItemModKeys.COLLECTOR)
 
 		for ((dropLocation, items) in drops) {
-			val location = BlockPos.of(dropLocation).toLocation(origin.world)
+			val location = toVec3i(dropLocation).toLocation(origin.world).toCenterLocation()
 			items.forEach {
 				if (collectorPresent) Bazaars.giveOrDropItems(it, it.amount, player.inventory, location)
 				else origin.world.dropItemNaturally(location, it)

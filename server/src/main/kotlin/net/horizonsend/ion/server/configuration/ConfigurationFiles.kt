@@ -1,11 +1,17 @@
 package net.horizonsend.ion.server.configuration
 
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing
+import net.horizonsend.ion.server.features.ai.configuration.AIEmities
+import net.horizonsend.ion.server.features.ai.configuration.AIPowerModes
+import net.horizonsend.ion.server.features.ai.configuration.steering.AIContextConfiguration
+import net.horizonsend.ion.server.features.ai.configuration.steering.AISteeringConfiguration
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.TransportConfiguration
 import net.horizonsend.ion.server.miscellaneous.LegacyConfig
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import java.io.File
 
 object ConfigurationFiles {
@@ -27,6 +33,14 @@ object ConfigurationFiles {
 	val globalGassesConfiguration = defineConfigurationFile<GlobalGassesConfiguration>(configurationFolder, "gasses")
 
 	val tradeConfiguration = defineConfigurationFile<TradeConfiguration>(configurationFolder, "trade")
+
+	val aiSteeringConfiguration = defineConfigurationFile<AISteeringConfiguration>(configurationFolder, "aiSteering") { debugAudience.information("reloded aiSteering")}
+
+	val aiEmityConfiguration = defineConfigurationFile<AIEmities>(configurationFolder, "aiEmities") { debugAudience.information("reloded aiEmities")}
+
+	val aiPowerModeConfiguration = defineConfigurationFile<AIPowerModes>(configurationFolder,"aiPowerModes") { debugAudience.information("reloded aiPowerModes")}
+
+	val aiContextConfiguration = defineConfigurationFile<AIContextConfiguration>(configurationFolder, "aiContexts") { debugAudience.information("reloded aiContexts")}
 
 	val discordSettings = defineConfigurationFile<DiscordConfiguration>(configurationFolder, "discord")
 

@@ -65,21 +65,28 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerMinerals()
 		registerIndustry()
 		registerShipCores()
+		registerPipes()
 		registerGasCanisters()
 		registerTools()
 		registerModificationItems()
 		registerEnergySwords()
 		registerPlanetIcons()
+
+		unStackable(CustomItemKeys.DEBUG_LINE, displayName = Component.text("DEBUG_LINE"), model = "debug/debug_line")
+		unStackable(CustomItemKeys.DEBUG_LINE_GREEN, displayName = Component.text("DEBUG_LINE_GREEN"), model = "debug/debug_line_green")
+		unStackable(CustomItemKeys.DEBUG_LINE_RED, displayName = Component.text("DEBUG_LINE_RED"), model = "debug/debug_line_red")
+		unStackable(CustomItemKeys.DEBUG_LINE_BLUE, displayName = Component.text("DEBUG_LINE_BLUE"), model = "debug/debug_line_blue")
+
         CustomItemListeners.sortCustomItemListeners()
 	}
 
 	private fun registerThrowables() {
 		fun registerThrowable(
-            key: IonRegistryKey<CustomItem, out CustomItem>,
-            customModel: String,
-            displayName: Component,
-            balancing: Supplier<PVPBalancingConfiguration.Throwables.ThrowableBalancing>,
-            thrown: (Item, Int, Entity?) -> ThrownCustomItem
+			key: IonRegistryKey<CustomItem, out CustomItem>,
+			customModel: String,
+			displayName: Component,
+			balancing: Supplier<PVPBalancingConfiguration.Throwables.ThrowableBalancing>,
+			thrown: (Item, Int, Entity?) -> ThrownCustomItem
 		) = register(key, object : ThrowableCustomItem(key = key, customModel = customModel, displayName = displayName, balancingSupplier = balancing) {
 			override fun constructThrownRunnable(item: Item, maxTicks: Int, damageSource: Entity?): ThrownCustomItem = thrown.invoke(item, maxTicks, damageSource)
 		})
@@ -327,6 +334,15 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
             NamedTextColor.WHITE,
             TextDecoration.BOLD
         ), customBlock = CustomBlockKeys.CRUISER_REACTOR_CORE)
+	}
+
+	fun registerPipes() {
+		customBlockItem(CustomItemKeys.FLUID_INPUT, "pipe/fluid_input", Component.text("Fluid Port").itemName, CustomBlockKeys.FLUID_INPUT)
+		customBlockItem(CustomItemKeys.FLUID_VALVE, "pipe/fluid_valve", Component.text("Fluid Valve").itemName, CustomBlockKeys.FLUID_VALVE)
+		customBlockItem(CustomItemKeys.FLUID_PIPE, "pipe/fluid_pipe", Component.text("Fluid Pipe").itemName, CustomBlockKeys.FLUID_PIPE)
+		customBlockItem(CustomItemKeys.FLUID_PIPE_JUNCTION, "pipe/fluid_pipe_junction", Component.text("Fluid Pipe Junction").itemName, CustomBlockKeys.FLUID_PIPE_JUNCTION)
+		customBlockItem(CustomItemKeys.REINFORCED_FLUID_PIPE, "pipe/reinforced_fluid_pipe", Component.text("Reinforced Fluid Pipe").itemName, CustomBlockKeys.REINFORCED_FLUID_PIPE)
+		customBlockItem(CustomItemKeys.REINFORCED_FLUID_PIPE_JUNCTION, "pipe/reinforced_fluid_pipe_junction", Component.text("Reinforced Fluid Pipe Junction").itemName, CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION)
 	}
 
 	private fun registerGasCanisters() {

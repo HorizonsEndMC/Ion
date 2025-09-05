@@ -1,68 +1,57 @@
 package net.horizonsend.ion.server.features.ai
 
-import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
+import net.horizonsend.ion.server.features.ai.configuration.WeaponSet
+import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.kyori.adventure.text.Component
-import java.util.function.Supplier
+import kotlin.reflect.KClass
 
 class AIControllerFactory private constructor(
 	val identifier: String,
-	private val name: String,
-	private val modules: (AIController) -> Builder.ModuleBuilder
+	private val coreModules: (AIController, Int, AITarget.TargetMode) -> Builder.ModuleBuilder,
+	private val utilModules: (AIController) -> Set<AIModule>
 ) {
 	/** Build the controller */
 	operator fun invoke(
 		starship: ActiveStarship,
 		pilotName: Component,
 		autoSets: Set<WeaponSet>,
-		manualSets: Set<WeaponSet>
-	) : AIController {
+		manualSets: Set<WeaponSet>,
+		difficulty: Int,
+		targetMode: AITarget.TargetMode = AITarget.TargetMode.PLAYER_ONLY
+	): AIController {
 		return AIController(
 			starship = starship,
-			name = name,
 			damager = AIShipDamager(starship),
 			pilotName = pilotName,
-			manualWeaponSets = autoSets,
-			autoWeaponSets = manualSets,
-			createModules = modules
+			setupCoreModules = { coreModules.invoke(it, difficulty, targetMode) },
+			setupUtilModules = utilModules,
+			manualWeaponSets = manualSets,
+			autoWeaponSets = autoSets,
 		)
 	}
 
-	operator fun invoke(starship: ActiveStarship, pilotName: Component) = invoke(starship, pilotName, setOf(), setOf())
-
 	class Builder(val identifier: String) {
-		private var name: String = "AI_Controller"
-		private var modules: (AIController) -> ModuleBuilder = { ModuleBuilder() }
+		private var coreModules: (AIController, Int, AITarget.TargetMode) -> ModuleBuilder = { _, _, _ -> ModuleBuilder() }
+		private var utilModules: MutableSet<(AIController) -> AIModule> = mutableSetOf()
 
-		constructor(identifier: String, factory: AIControllerFactory) : this(identifier) {
-			name = factory.name
-			modules = factory.modules
-		}
+		fun setCoreModuleBuilder(moduleBuilder: (AIController, Int, AITarget.TargetMode) -> ModuleBuilder) = apply { coreModules = moduleBuilder }
+		fun addUtilModule(builder: (AIController) -> AIModule) = utilModules.add(builder)
 
-		fun setControllerTypeName(name: String) = apply { this.name = name }
-
-		fun setModuleBuilder(moduleBuilder: (AIController) -> ModuleBuilder) = apply { modules = moduleBuilder }
-
-		fun build(): AIControllerFactory = AIControllerFactory(identifier, name, modules)
+		fun build(): AIControllerFactory = AIControllerFactory(identifier, coreModules = coreModules) { controller -> this.utilModules.mapTo(mutableSetOf()) { it.invoke(controller) } }
 
 		class ModuleBuilder {
-			private val modules: MutableMap<String, net.horizonsend.ion.server.features.ai.module.AIModule> = mutableMapOf()
+			private val modules: MutableMap<KClass<out AIModule>, AIModule> = mutableMapOf()
 
-			fun <T: net.horizonsend.ion.server.features.ai.module.AIModule> suppliedModule(identifier: String, modification: (T) -> T = { it }): Supplier<T> = Supplier {
-				@Suppress("UNCHECKED_CAST") // Up to the user to make sure of that
-				val module = modules[identifier] as T
-
-				modification(module)
-			}
-
-			fun <T: net.horizonsend.ion.server.features.ai.module.AIModule> addModule(name: String, module: T): T {
-				modules[name] = module
+			fun <T : AIModule> addModule(identifier: KClass<out AIModule>, module: T): T {
+				modules[identifier] = module
 				return module
 			}
 
-			fun build(): Map<String, net.horizonsend.ion.server.features.ai.module.AIModule> = modules
+			fun build(): Map<KClass<out AIModule>, AIModule> = modules
 		}
 	}
 }

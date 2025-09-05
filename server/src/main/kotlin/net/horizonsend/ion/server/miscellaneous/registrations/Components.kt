@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.DBManager
 import net.horizonsend.ion.common.redis.RedisActions
 import net.horizonsend.ion.server.data.migrator.DataMigrators
+import net.horizonsend.ion.server.features.ai.reward.AIKillStreak
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.cache.Caches
@@ -53,6 +54,7 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.DutyModeMonitor
 import net.horizonsend.ion.server.features.player.EventLogger
 import net.horizonsend.ion.server.features.player.NMSAchievements
+import net.horizonsend.ion.server.features.player.ServerMutesHook
 import net.horizonsend.ion.server.features.progression.Bounties
 import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
@@ -213,6 +215,7 @@ val components: List<IonComponent> = listOf(
 	ClientDisplayEntities,
 	HudIcons,
 	Fleets,
+	AIKillStreak,
 	ContactsJammingSidebar,
 	CombatTimer,
 	WorldEditListener,
@@ -222,4 +225,5 @@ val components: List<IonComponent> = listOf(
 	StationRentalZones,
 	ServerInboxes,
 	SequenceManager,
+	ServerMutesHook,
 )

@@ -17,7 +17,7 @@ abstract class TargetTrackingCannonWeaponSubsystem<T : StarshipTrackingWeaponBal
 	override val angleRadiansHorizontal: Double = 180.0
 	override val angleRadiansVertical: Double = 180.0
 
-	protected open val aimDistance: Int = balancing.aimDistance
+	protected open val aimDistance: Int get() = balancing.aimDistance
 
 	override fun canFire(dir: Vector, target: Vector): Boolean {
 		return !isTargetObstructed(target) && isPathObstructed(dir)

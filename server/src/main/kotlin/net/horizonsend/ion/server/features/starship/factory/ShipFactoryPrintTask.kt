@@ -17,9 +17,12 @@ import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.task.MultiblockEntityTask
+import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultiblock.Companion.formatProgress
+import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock.InventoryReference
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.AdvancedShipFactoryParent
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactoryEntity
@@ -27,10 +30,15 @@ import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFacto
 import net.horizonsend.ion.server.features.multiblock.type.shipfactory.ShipFactorySettings
 import net.horizonsend.ion.server.features.starship.factory.StarshipFactories.missingMaterialsCache
 import net.horizonsend.ion.server.features.starship.factory.integration.ShipFactoryIntegration
+import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
+import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getMoneyBalance
 import net.horizonsend.ion.server.miscellaneous.utils.hasEnoughMoney
@@ -49,6 +57,8 @@ import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.block.data.Waterlogged
 import org.bukkit.entity.Player
+import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.inventory.ItemStack
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -169,7 +179,7 @@ class ShipFactoryPrintTask(
 			val requiredAmount = StarshipFactories.getRequiredAmount(blockData)
 
 			// Check if the position is obstructed, if it is, skip the block and try the next.
-			if (checkObstruction(printItem, blockData, requiredAmount)) {
+			if (!checkObstruction(printItem = printItem, worldBlockData = worldBlockData, requiredAmount = requiredAmount)) {
 				skippedBlocks++
 				continue
 			}
@@ -265,25 +275,22 @@ class ShipFactoryPrintTask(
 		val isAllowedWater = worldBlockData.material == Material.WATER && settings.placeBlocksUnderwater
 
 		// If it is air then it can be placed.
+		if (worldBlockData.material.isAir) return true
+
+		// Air is replacable, so the check should only be done if it is not air
+		if (isAllowedWater || isAllowedReplaceable) return true
+
 		// If it is not air, AND not replaceable (if replaceables are marked as obstructing), OR in water (if water placement is not allowed)
 		// then placement is obstructed
-		if (!worldBlockData.material.isAir) {
-			// Air is replacable, so the check should only be done if it is not air
-			if (!isAllowedReplaceable && !isAllowedWater) {
-				// Continue if it should just be marked as complete, not missing
-				if (settings.markObstrcutedBlocksAsComplete) {
-					return false
-				}
-
-				// Mark missing
-				markItemMissing(printItem, requiredAmount)
-
-				// Move onto next block
-				return false
-			}
+		if (settings.markObstrcutedBlocksAsComplete) {
+			return false
 		}
 
-		return true
+		// Mark missing
+		markItemMissing(printItem, requiredAmount)
+
+		// Move onto next block
+		return false
 	}
 
 	private fun printBlocks(blocks: List<BlockKey>) {
@@ -294,6 +301,22 @@ class ShipFactoryPrintTask(
 			blockQueue.remove(entry)
 			val blockData = blockMap.remove(entry) ?: continue
 			val signData = signMap.remove(entry)
+
+			val block = entity.world.getBlockAt(getX(entry), getY(entry), getZ(entry))
+
+			val event = BlockPlaceEvent(
+				block,
+				block.getState(false),
+				block,
+				player.activeItem,
+				player,
+				true,
+				EquipmentSlot.HAND
+			)
+
+			if (!event.callEvent()) {
+				continue
+			}
 
 			val price = ShipFactoryMaterialCosts.getPrice(blockData)
 			if (!player.hasEnoughMoney(consumedMoney + price) && ConfigurationFiles.featureFlags().economy) continue
@@ -325,11 +348,21 @@ class ShipFactoryPrintTask(
 
 		world.setNMSBlockData(x, y, z, getRotatedBlockData(placedData))
 
+		if (ExtractorManager.isExtractorData(data)) {
+			NewTransport.addExtractor(world, x, y, z)
+		}
+
+		data.customBlock?.placeCallback(null, block)
+
 		val state = block.state as? Sign
 		if (state != null) {
 			signData?.applyTo(state)
-			Tasks.sync {
-				MultiblockEntities.loadFromSign(state)
+			Tasks.syncDelay(2L) {
+				val placed = MultiblockEntities.loadFromSign(state)
+
+				if (placed is LegacyMultiblockEntity) placed.resetSign()
+
+				if (placed is PoweredMultiblockEntity) placed.powerStorage.setPower(0)
 			}
 		}
 	}
@@ -440,13 +473,13 @@ class ShipFactoryPrintTask(
 			val missing = requiredAmount - resourceInformation.amount.get()
 
 			// Try and make a partial purchase with the missing amount
-			if (integration.any { it.canAddTransaction(printItem, printPosition, requiredAmount) }) {
+			if (!integration.any { it.canAddTransaction(printItem, printPosition, requiredAmount) }) {
 				markItemMissing(printItem, missing)
 				return false
 			} else {
 				resourceInformation.amount.addAndGet(-resourceInformation.amount.get())
 
-				val missingFromInventories = consumeItemFromReferences(resourceInformation.references, missing)
+				val missingFromInventories = consumeItemFromReferences(resourceInformation.references, minOf(availableItems[printItem]?.amount?.get() ?: missing, missing))
 
 				if (missingFromInventories == 0) return true
 				else {

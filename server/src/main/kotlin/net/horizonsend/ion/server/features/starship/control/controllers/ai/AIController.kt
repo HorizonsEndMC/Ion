@@ -1,18 +1,27 @@
 package net.horizonsend.ion.server.features.starship.control.controllers.ai
 
+import net.horizonsend.ion.common.extensions.alert
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.features.ai.AIControllerFactory
-import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate.WeaponSet
+import net.horizonsend.ion.server.features.ai.configuration.WeaponSet
+import net.horizonsend.ion.server.features.ai.module.AIModule
+import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.Controller
+import net.horizonsend.ion.server.features.starship.control.input.AIShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.movement.MovementHandler
+import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.sortedByValue
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -20,59 +29,84 @@ import org.bukkit.Color
 import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockState
+import java.util.Deque
+import java.util.LinkedList
 import java.util.concurrent.TimeUnit
+import java.util.function.Supplier
+import kotlin.reflect.KClass
 
 /**
  * AI Controller.
  * This class can be used to control a starship. It is ticked along with the world it is in.
  *
  * @param starship The starship this controller controls.
- * @param name The name of the controller.
  * @param damager The damager of this starship. If transferring to a new controller, preserve this value, otherwise duplicate entries may appear on damage trackers.
  **/
-class AIController private constructor(
-	starship: ActiveStarship,
-	name: String,
-	damager: Damager
-) : Controller(damager, starship, name) {
+class AIController private constructor(starship: ActiveStarship, damager: Damager) : Controller(damager, starship, "AIController") {
+	override var pilotName: Component = text("AI Controller")
+	private var _color: Color = super.getColor()
+	override var movementHandler: MovementHandler = ShiftFlightHandler(this,AIShiftFlightInput(this))
+		set(value) {
+			field.destroy()
+			field = value
+			value.create()
+		}
+
+	override fun getColor(): Color {
+		return _color
+	}
+	fun setColor(color: Color) { this._color = color }
+
 	/** Build the controller using a module builder */
 	constructor(
 		starship: ActiveStarship,
-		name: String,
 		damager: Damager,
 		pilotName: Component,
-		manualWeaponSets: Set<WeaponSet>,
-		autoWeaponSets: Set<WeaponSet>,
-		createModules: (AIController) -> AIControllerFactory.Builder.ModuleBuilder
-	) : this(starship, name, damager) {
-		modules.putAll(createModules(this).build())
-		setPilotName(pilotName)
-		manualWeaponSets.forEach(::addManualWeaponSet)
-		autoWeaponSets.forEach(::addAutoWeaponSet)
+		setupCoreModules: (AIController) -> AIControllerFactory.Builder.ModuleBuilder,
+		setupUtilModules: (AIController) -> Set<AIModule>,
+		manualWeaponSets: Set<WeaponSet> = setOf(),
+		autoWeaponSets: Set<WeaponSet> = setOf(),
+	) : this(starship, damager) {
+		this.coreModules.putAll(setupCoreModules(this).build())
+		this.utilModules.addAll(setupUtilModules(this))
+		if (AIDebugModule.visualDebug) {
+			this.addUtilModule(AIDebugModule(this))
+		}
+
+		this.pilotName = pilotName
+
+		this.manualWeaponSets.addAll(manualWeaponSets)
+		this.autoWeaponSets.addAll(autoWeaponSets)
 	}
-
-	var sneakMovements: Int = 0
-
 	/** AI modules are a collection of classes that are ticked along with the starship. These can control movement, positioning, pathfinding, or more. */
-	val modules: MutableMap<String, net.horizonsend.ion.server.features.ai.module.AIModule> = mutableMapOf()
+	val coreModules: MutableMap<KClass<out AIModule>, AIModule> = mutableMapOf()
 
-	override var pitch: Float = 0f
-	override var yaw: Float = 0f
+	/** use only in special cases */
+	fun addCoreModule(module: AIModule) = run { coreModules[module::class] = module }
 
-	override var selectedDirectControlSpeed: Int = 1
+
+	/** Util modules provide less heavy-duty functions like the glow and don't need to be accessed often. */
+	private val utilModules: MutableSet<AIModule> = mutableSetOf()
+
+	/**
+	 * Transient key-value context storage for spawn-time or temporary state.
+	 * Not persisted or lifecycle-managed. Use this to share data between spawn/behavior phases.
+	 */
+	val metadata: MutableMap<String, Any> = mutableMapOf()
+
+	fun addUtilModule(module: AIModule) = utilModules.add(module)
+
+	fun <T: AIModule> getUtilModule(clazz: Class<T>) = utilModules.filterIsInstance(clazz).firstOrNull()
 
 	var lastRotation: Long = 0L
-
 
 	// Disallow mining lasers and other block placement / destroying things for now
 	override fun canDestroyBlock(block: Block): Boolean = false
 	override fun canPlaceBlock(block: Block, newState: BlockState, placedAgainst: Block): Boolean = false
 
-
 	// Pass through functions for starship information
 	fun getCenter(): Vec3i = starship.centerOfMass
 	fun getWorld(): World = starship.world
-
 
 	// Shield Health indicators
 	fun getShields() = starship.shields
@@ -80,71 +114,93 @@ class AIController private constructor(
 	fun getAverageShieldHealth() = (getShields().sumOf { it.powerRatio }) / getShieldCount().toDouble()
 	fun getMinimumShieldHealth() = (getShields().minOfOrNull { it.powerRatio } ?: 0.0)
 
-
-	// Control variables
-	private var isShiftFlying: Boolean = false
-	override fun isSneakFlying(): Boolean = isShiftFlying
-	fun setShiftFlying(value: Boolean) { isShiftFlying = value }
-
-
-	// The variable color, settable
-	private var color: Color = super.getColor()
-	fun setColor(value: Color) { color = value }
-	override fun getColor(): Color = color
-
-
-	// Settable name
-	private var pilotName: Component = text("AI Controller")
-	override fun getPilotName(): Component = pilotName
-	fun setPilotName(value: Component) { pilotName = value }
-
-
 	// Weapon sets
 	private val manualWeaponSets: MutableSet<WeaponSet> = mutableSetOf()
-	fun addManualWeaponSet(set: WeaponSet) = manualWeaponSets.add(set)
-	fun getAllManualSets() = manualWeaponSets
+
 	/** Returns the weapon set that's range contains the specified distance */
 	fun getManualSetInRange(distance: Double): WeaponSet? {
 		return manualWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }
 	}
 
-	private val autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf()
-	fun addAutoWeaponSet(set: WeaponSet) = autoWeaponSets.add(set)
-	fun getAllAutoSets() = autoWeaponSets
-	/** Returns the weapon set that's range contains the specified distance */
-	fun getAutoSetInRange(distance: Double): WeaponSet? {
-		return autoWeaponSets.firstOrNull { it.engagementRange.containsDouble(distance) }
+	/** Returns the weapon set that's range contains the specified distance
+	 * if no manual sets are define, return null*/
+	fun getManualSetsInRange(distance: Double): List<WeaponSet>? {
+		if (manualWeaponSets.isEmpty()) return null
+		return manualWeaponSets.filter { it.engagementRange.containsDouble(distance) }
 	}
 
-	inline fun <reified T> getModuleByType(): T? = modules.values.filterIsInstance<T>().firstOrNull()
+	fun addManualSet(name: String, minRange: Double, maxRange: Double) {
+		manualWeaponSets.add(WeaponSet(name,minRange,maxRange))
+	}
 
-	//Functionality
+	private val autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf()
+
+	/** Returns the weapon set that's range contains the specified distance */
+	fun getAutoSetsInRange(distance: Double): Set<WeaponSet> {
+		return autoWeaponSets.filter { it.engagementRange.containsDouble(distance) }.toSet()
+	}
+
+	fun addAutoSet(name: String, minRange: Double, maxRange: Double) {
+		autoWeaponSets.add(WeaponSet(name,minRange,maxRange))
+	}
+
+	private val specialWeaponSets: MutableSet<WeaponSet> = mutableSetOf()
+
+	fun addSpecialSet(name: String, minRange: Double, maxRange: Double) {
+		specialWeaponSets.add(WeaponSet(name,minRange,maxRange))
+	}
+
+	inline fun <reified T> getCoreModuleByType(): T? = coreModules.values.filterIsInstance<T>().firstOrNull()
+
+	/** please consider other getters first */
+	fun getAllModules() : Set<AIModule>{
+		return coreModules.values.union(utilModules)
+	}
+
+	// Functionality
 	override fun tick() {
-		for ((_, module) in modules) {
+		for ((_, module) in coreModules) {
 			module.tick()
 		}
+		if (!starship.isTeleporting) movementHandler.tick()
+		for (module in utilModules) {
+			module.tick()
+		}
+		speedTracker.addSpeed(starship.velocity.length())
 	}
 
 	override fun destroy() {
-		for ((_, module) in modules) {
+		for ((_, module) in coreModules) {
+			module.shutDown()
+		}
+
+		for (module in utilModules) {
 			module.shutDown()
 		}
 	}
 
 	override fun onDamaged(damager: Damager) {
-		for ((_, module) in modules) {
+		for ((_, module) in coreModules) {
+			module.onDamaged(damager)
+		}
+
+		for (module in utilModules) {
 			module.onDamaged(damager)
 		}
 	}
 
 	override fun onMove(movement: StarshipMovement) {
-		for ((_, module) in modules) {
+		for ((_, module) in coreModules) {
+			module.onMove(movement)
+		}
+
+		for (module in utilModules) {
 			module.onMove(movement)
 		}
 	}
 
 	override fun onBlocked(movement: StarshipMovement, reason: StarshipMovementException, location: Vec3i?) {
-		for ((_, module) in modules) {
+		for ((_, module) in coreModules) {
 			module.onBlocked(movement, reason, location)
 		}
 	}
@@ -173,7 +229,94 @@ class AIController private constructor(
 		return targets
 	}
 
+	fun validateWeaponSets() {
+		val starShipWeaponSets = starship.weaponSets.keySet()
+		val union = (starShipWeaponSets
+			union manualWeaponSets.map { it.name.lowercase() }
+			union autoWeaponSets.map { it.name.lowercase() }
+			union specialWeaponSets.map { it.name.lowercase() })
+		debugAudience.information("starShipWeaponSets : ${starShipWeaponSets.joinToString { it }}")
+		debugAudience.information("union : ${union.joinToString { it }}")
+		var difference = union subtract starShipWeaponSets
+		if (difference.isNotEmpty()) {
+			debugAudience.alert("Weaponsets in the template not present on the starship! :")
+			debugAudience.alert(difference.joinToString { it })
+		}
+
+		difference = (union
+			subtract manualWeaponSets.map { it.name }.toSet()
+			subtract autoWeaponSets.map { it.name }.toSet()
+			subtract specialWeaponSets.map { it.name }.toSet())
+		if (difference.isNotEmpty()) {
+			debugAudience.alert("Weaponsets in the Starship not accounted for in the template! :")
+			debugAudience.alert(difference.joinToString { it })
+		}
+
+		debugAudience.information("Manual Weaponsets:")
+		for (weaponSet in manualWeaponSets) {
+			val name = weaponSet.name.lowercase()
+			if (!starShipWeaponSets.contains(name)) {
+				debugAudience.alert(weaponSet.toString())
+				continue
+			}
+			debugAudience.information(weaponSet.toString())
+			val weapons = starship.weaponSets[name]
+			if (weapons.any { it is AutoWeaponSubsystem }) {
+				debugAudience.alert("weaponset has auto weapons, is this okay?")
+				debugAudience.alert(weapons.joinToString { it.javaClass.simpleName })
+			}
+		}
+		debugAudience.information("Auto Weaponsets:")
+		for (weaponSet in autoWeaponSets) {
+			val name = weaponSet.name.lowercase()
+			if (!starShipWeaponSets.contains(name)) {
+				debugAudience.alert(weaponSet.toString())
+				continue
+			}
+			debugAudience.information(weaponSet.toString())
+			val weapons = starship.weaponSets[name]
+			if (weapons.any { it !is AutoWeaponSubsystem }) {
+				debugAudience.alert("weaponset has manual weapons!")
+				debugAudience.alert(weapons.joinToString { it.javaClass.simpleName })
+			}
+		}
+	}
+
+	val maxSpeed get() = speedTracker.getMaxSpeed()
+
+	private val speedTracker = object  {
+		private val deque: Deque<Pair<Long, Double>> = LinkedList()
+		private val windowSizeMillis = 60_000L  // 10 seconds in milliseconds
+
+		fun addSpeed(speed: Double) {
+			val currentTime = System.currentTimeMillis()
+
+			// Remove elements outside the 10-second window
+			while (deque.isNotEmpty() && deque.first.first <= currentTime - windowSizeMillis) {
+				deque.removeFirst()
+			}
+
+			// Remove smaller elements from the back of the deque
+			while (deque.isNotEmpty() && deque.last.second < speed) {
+				deque.removeLast()
+			}
+
+			// Add new element to the back
+			deque.addLast(Pair(currentTime, speed))
+		}
+
+		fun getMaxSpeed(): Double {
+			return (if (deque.isNotEmpty()) deque.first.second else 0.0) + 1e-4
+		}
+	}
+
+
 	override fun toString(): String {
 		return "AI Controller[Display Name: ${pilotName.plainText()} Starship: ${starship.identifier}]"
+	}
+
+	fun <T: AIModule> getCoreModuleSupplier(identifier: KClass<out AIModule>): Supplier<T> = Supplier {
+		@Suppress("UNCHECKED_CAST")
+		coreModules[identifier] as T
 	}
 }

@@ -1,9 +1,11 @@
 package net.horizonsend.ion.server.features.starship.subsystem.balancing
 
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.starship.StarshipType
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.SimpleProjectile
 import kotlin.reflect.KClass
 
 class AdditionalOverridesManager(private val type: StarshipType, private val weaponOverrides: List<StarshipWeaponBalancing<*>>) : StarshipWeaponBalancingManager() {
@@ -14,8 +16,20 @@ class AdditionalOverridesManager(private val type: StarshipType, private val wea
 			putAll(weaponOverrides.associateBy { it.clazz })
 		}
 
-	override fun <Z : StarshipWeaponBalancing<*>, T : WeaponSubsystem<Z>> getWeapon(clazz: KClass<T>): Z {
+	val projectiles = ConfigurationFiles.starshipBalancing().weaponDefaults.weapons.map { balancing -> balancing.projectile }
+		.associateByTo(mutableMapOf()) { it.clazz }
+		.apply {
+			putAll(type.balancing.weaponOverrides.map { balancing -> balancing.projectile }.associateBy { it.clazz })
+			putAll(weaponOverrides.map { balancing -> balancing.projectile }.associateBy { it.clazz })
+		}
+
+	override fun <Z : StarshipWeaponBalancing<*>, T : BalancedWeaponSubsystem<out Z>> getWeapon(clazz: KClass<T>): Z {
 		@Suppress("UNCHECKED_CAST")
 		return weaponsRaw[clazz] as Z
+	}
+
+	override fun <Z : StarshipProjectileBalancing, T : SimpleProjectile<Z>> getProjectile(clazz: KClass<T>): Z {
+		@Suppress("UNCHECKED_CAST")
+		return projectiles[clazz] as Z
 	}
 }

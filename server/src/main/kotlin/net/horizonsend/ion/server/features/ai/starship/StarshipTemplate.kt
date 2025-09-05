@@ -6,7 +6,7 @@ import kotlinx.serialization.Transient
 import net.horizonsend.ion.common.utils.text.miniMessage
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
-import net.horizonsend.ion.server.features.ai.configuration.AIStarshipTemplate
+import net.horizonsend.ion.server.features.ai.configuration.WeaponSet
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.kyori.adventure.text.Component
@@ -19,8 +19,8 @@ data class StarshipTemplate(
 	val type: StarshipType,
 	val miniMessageName: String,
 
-	val manualWeaponSets: MutableSet<AIStarshipTemplate.WeaponSet> = mutableSetOf(),
-	val autoWeaponSets: MutableSet<AIStarshipTemplate.WeaponSet> = mutableSetOf(),
+	val manualWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
+	val autoWeaponSets: MutableSet<WeaponSet> = mutableSetOf(),
 
 	val balancingOverrides: List<StarshipWeaponBalancing<*>> = listOf()
 ) {

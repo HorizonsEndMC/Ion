@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.configuration.starship.PhaserBalancing
+import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.CannonWeaponSubsystem
@@ -9,10 +10,9 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PhaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
+import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.kyori.adventure.key.Key
-import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Material
@@ -27,7 +27,7 @@ class PhaserWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace
-) : CannonWeaponSubsystem<PhaserBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()), HeavyWeaponSubsystem, AmmoConsumingWeaponSubsystem {
+) : CannonWeaponSubsystem<PhaserBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(PhaserWeaponSubsystem::class)), HeavyWeaponSubsystem, AmmoConsumingWeaponSubsystem {
 	override val length: Int = 8
 
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
@@ -44,10 +44,8 @@ class PhaserWeaponSubsystem(
 			return
 		}
 
-		loc.world.players.forEach {
-			if (it.location.distance(loc) < balancing.projectile.range) {
-				shooter.playSound(Sound.sound(Key.key("horizonsend:starship.weapon.plasma_cannon.shoot"), Sound.Source.PLAYER, 1.0f, 2.0f))
-			}
+		toPlayersInRadius(loc, balancing.projectile.range * 20.0) { player ->
+			playDirectionalStarshipSound(loc, player, balancing.projectile.fireSoundNear, balancing.projectile.fireSoundNear, balancing.projectile.range)
 		}
 
 		fixDirections(loc)

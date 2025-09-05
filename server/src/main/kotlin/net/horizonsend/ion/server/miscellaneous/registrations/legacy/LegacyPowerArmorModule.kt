@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModif
 import java.util.Locale
 
 enum class LegacyPowerArmorModule(
-    val modern: IonRegistryKey<ItemModification, out ItemModification>,
+	val modern: IonRegistryKey<ItemModification, out ItemModification>,
 ) {
 	ROCKET_BOOSTING(ItemModKeys.ROCKET_BOOSTING),
 	SPEED_BOOSTING(ItemModKeys.SPEED_BOOSTING),

@@ -22,13 +22,13 @@ import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.TileState
-import org.bukkit.block.Vault as VaultState
-import org.bukkit.block.data.type.Vault as VaultData
 import org.bukkit.craftbukkit.block.CraftVault
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 import java.util.function.Supplier
+import org.bukkit.block.Vault as VaultState
+import org.bukkit.block.data.type.Vault as VaultData
 
 object ItemFilterBlock : DirectionalCustomBlock(
 	identifier = CustomBlockKeys.ITEM_FILTER,
@@ -89,15 +89,15 @@ object ItemFilterBlock : DirectionalCustomBlock(
 		return ItemFilterGui(player, filterData, tileState)
 	}
 
-	override fun placeCallback(placedItem: ItemStack, block: Block) {
-		val storedFilterData = placedItem.persistentDataContainer.get(NamespacedKeys.FILTER_DATA, FilterData) ?: return
-
+	override fun placeCallback(placedItem: ItemStack?, block: Block) {
 		val state = block.state
 		if (state !is VaultState) return
 		state as CraftVault
 
-		state.persistentDataContainer.set(NamespacedKeys.FILTER_DATA, FilterData, storedFilterData)
-		state.tileEntity.sharedData
+		state.nextStateUpdateTime = Long.MAX_VALUE
+
+		val storedFilterData = placedItem?.persistentDataContainer?.get(NamespacedKeys.FILTER_DATA, FilterData)
+		if (storedFilterData != null) state.persistentDataContainer.set(NamespacedKeys.FILTER_DATA, FilterData, storedFilterData)
 
 		state.update()
 	}

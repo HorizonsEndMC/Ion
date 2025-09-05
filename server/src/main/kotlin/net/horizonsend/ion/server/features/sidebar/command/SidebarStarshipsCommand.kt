@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import org.bukkit.entity.Player
 
@@ -43,7 +43,7 @@ object SidebarStarshipsCommand : SLCommand() {
         sender: Player,
         @Optional toggle: Boolean?
     ) {
-        val advancedStarshipInfo = toggle ?: !sender.getSetting(PlayerSettings::advancedStarshipInfo)
+        val advancedStarshipInfo = toggle ?: !sender.getSettingOrThrow(PlayerSettings::advancedStarshipInfo)
 		sender.setSetting(PlayerSettings::advancedStarshipInfo, advancedStarshipInfo)
 
 		sender.success("Changed advanced starship info to $advancedStarshipInfo")
@@ -54,7 +54,7 @@ object SidebarStarshipsCommand : SLCommand() {
         sender: Player,
         @Optional toggle: Boolean?
     ) {
-        val rotateCompass = toggle ?: !sender.getSetting(PlayerSettings::rotateCompass)
+        val rotateCompass = toggle ?: !sender.getSettingOrThrow(PlayerSettings::rotateCompass)
 		sender.setSetting(PlayerSettings::rotateCompass, rotateCompass)
 
 		sender.success("Changed rotating compass to $rotateCompass")

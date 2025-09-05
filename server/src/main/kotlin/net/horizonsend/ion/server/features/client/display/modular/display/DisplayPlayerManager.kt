@@ -9,9 +9,10 @@ import net.minecraft.server.level.ServerPlayer
 import net.minecraft.world.entity.PositionMoveRotation
 import net.minecraft.world.entity.Relative
 import org.bukkit.Bukkit.getPlayer
+import org.bukkit.Location
 import java.util.UUID
 
-class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display, private val updateInvervalMS: Long = 1000L, private val playerFilter: (ServerPlayer) -> Boolean = { true }) {
+class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display, private val updateRateProvider: DisplayPlayerManager.(Location) -> Long = { 1000L }, private val playerFilter: (ServerPlayer) -> Boolean = { true }) {
 	private var lastUpdate = 0L
 	private var shownPlayers = mutableSetOf<UUID>()
 
@@ -52,7 +53,7 @@ class DisplayPlayerManager(val entity: net.minecraft.world.entity.Display, priva
 		if (lost.isNotEmpty()) sendRemove(lost)
 
 		val all = retained.union(new)
-		if (all.isNotEmpty() && System.currentTimeMillis() - lastUpdate > updateInvervalMS) {
+		if (all.isNotEmpty() && System.currentTimeMillis() - lastUpdate > updateRateProvider.invoke(this, Location(entity.level().world, entity.x, entity.y, entity.z))) {
 			lastUpdate = System.currentTimeMillis()
 			all.mapNotNull(::getPlayer).forEach { bukkitPlayer -> entity.refreshEntityData(bukkitPlayer.minecraft) }
 		}

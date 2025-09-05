@@ -22,7 +22,7 @@ import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilbloc
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
@@ -136,7 +136,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 		override val userManager: UserManager = UserManager(data, persistent = true)
 		override val displayHandler: TextDisplayHandler = standardPowerDisplay(this)
 
-		override val inputsData: InputsData = InputsData.builder(this)
+		override val ioData: IOData = IOData.builder(this)
 			.registerSignInputs()
 			.addPowerInput(if (multiblock.mirrored) -1 else 1, 0, 0)
 			.build()
@@ -189,19 +189,19 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 			val maxBroken = if (!inSpace) 10 else 1
 
 			val broken = breakBlocks(
-				maxBroken,
-				toDestroy,
-				getInventory(if (multiblock.mirrored) +1 else -1, 0, 0) ?: return run {
+				maxBroken = maxBroken,
+				toDestroy = toDestroy,
+				output = getInventory(if (multiblock.mirrored) +1 else -1, 0, 0) ?: return run {
 					player.userError("Drill output inventory destroyed")
 					disable()
 				},
-				{
+				canBuild = {
 					val testEvent = BlockBreakEvent(it, player)
 					testEvent.isDropItems = false
 
 					return@breakBlocks testEvent.callEvent()
 				},
-				{
+				cancel = {
 					player.userErrorSubtitle("Not enough space.")
 					disable()
 				}
@@ -274,10 +274,11 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 
 		fun breakBlocks(
 			maxBroken: Int,
-			toDestroy: MutableList<Block>,
+			toDestroy: Collection<Block>,
 			output: Inventory,
 			canBuild: (Block) -> Boolean,
-			cancel: () -> Unit
+			cancel: () -> Unit,
+			blockDropConsumer: (Block, Collection<ItemStack>) -> Unit = { _, _ -> }
 		): Int {
 			var broken = 0
 
@@ -302,6 +303,7 @@ abstract class DrillMultiblock(val tierText: String, val tierMaterial: Material)
 						return broken
 					}
 
+					blockDropConsumer.invoke(block, drops)
 					LegacyItemUtils.addToInventory(output, item)
 				}
 

@@ -53,9 +53,9 @@ abstract class AbstractDisposalMultiblock : Multiblock(), EntityMultiblock<Abstr
 			}
 			z(+1) {
 				y(-1) {
-					x(-1).anyTerracotta()
+					x(-1).terracottaOrDoubleSlab()
 					x(+0).sponge()
-					x(+1).anyTerracotta()
+					x(+1).terracottaOrDoubleSlab()
 				}
 				y(+0) {
 					x(-1).anyGlassPane()

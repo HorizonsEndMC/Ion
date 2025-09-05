@@ -136,7 +136,7 @@ class PowerChainsaw(
 			val collectorPresent = mods.contains(ItemModKeys.COLLECTOR)
 
 			for ((dropLocation, items) in drops) {
-				val location = BlockPos.of(dropLocation).toLocation(origin.world)
+				val location = BlockPos.of(dropLocation).toLocation(origin.world).toCenterLocation()
 				items.forEach {
 					if (collectorPresent) Bazaars.giveOrDropItems(it, it.amount, player.inventory, location)
 					else origin.world.dropItemNaturally(location, it)

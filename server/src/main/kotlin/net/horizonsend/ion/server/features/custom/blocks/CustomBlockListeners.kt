@@ -5,9 +5,11 @@ import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegist
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.InteractableCustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.misc.OrientableCustomBlock
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
 import net.minecraft.server.network.ServerGamePacketListenerImpl
 import org.bukkit.GameMode
@@ -48,6 +50,23 @@ object CustomBlockListeners : SLEventListener() {
 				block.faceData.containsKey(faceVertical) -> block.faceData[faceVertical]!!
 				block.faceData.containsKey(faceHorizontal) -> block.faceData[faceHorizontal]!!
 				block.faceData.containsKey(placedAgainst) -> block.faceData[placedAgainst]!!
+				else -> block.blockData
+			}
+
+			event.block.location.block.setBlockData(data, true)
+		} else {
+			event.block.location.block.setBlockData(block.blockData, true)
+		}
+
+		if (block is OrientableCustomBlock) {
+			val placedAgainst = BlockFace.entries.first {
+				it.modX == (event.blockAgainst.x - event.blockPlaced.x) &&
+				it.modY == (event.blockAgainst.y - event.blockPlaced.y) &&
+				it.modZ == (event.blockAgainst.z - event.blockPlaced.z)
+			}.axis
+
+			val data = when {
+				block.axisData.containsKey(placedAgainst) -> block.axisData[placedAgainst]!!
 				else -> block.blockData
 			}
 
@@ -137,6 +156,7 @@ object CustomBlockListeners : SLEventListener() {
 			} else {
 				event.isCancelled = true
 				event.player.inventory.setItem(event.targetSlot, customBlockItem)
+				event.player.inventory.heldItemSlot = event.targetSlot
 			}
 		}
 

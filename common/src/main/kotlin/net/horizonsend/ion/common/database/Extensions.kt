@@ -17,20 +17,12 @@ import org.bson.BsonDocument
 import org.bson.BsonValue
 import org.bson.Document
 import org.bson.conversions.Bson
-import org.litote.kmongo.EMPTY_BSON
-import org.litote.kmongo.Id
-import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.findOneById
+import org.litote.kmongo.*
 import org.litote.kmongo.id.IdTransformer
 import org.litote.kmongo.id.WrappedObjectId
-import org.litote.kmongo.json
-import org.litote.kmongo.path
-import org.litote.kmongo.projection
 import org.litote.kmongo.util.KMongoUtil
 import org.litote.kmongo.util.KMongoUtil.idFilterQuery
-import org.litote.kmongo.withDocumentClass
-import java.util.UUID
-import kotlin.reflect.KClass
+import java.util.*
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.isSubclassOf
 
@@ -142,32 +134,17 @@ class ProjectedResults(document: Document, vararg properties: KProperty<*>) {
 		}
 	}
 
-	operator fun <R : Any> get(clazz: KClass<out R>, path: String): R {
-		require(map.contains(path)) { "Property $path not in collection $map" }
+	inline operator fun <reified Z, reified R : Collection<Z>> get(path: String): List<Z> {
+		val unwrapped = get<R>(path) as Collection<Z>
 
-		val value: Any? = map[path]
-
-		if (clazz.isInstance(value)) {
+		if (Z::class.isSubclassOf(Id::class) ) {
 			@Suppress("UNCHECKED_CAST")
-			return value as R
+			unwrapped as java.util.Collection<String>
+
+			return unwrapped.map { any -> IdTransformer.wrapId(any) as Z }
 		}
 
-		if (clazz.isSubclassOf(Id::class) && value != null) {
-			@Suppress("UNCHECKED_CAST")
-			return IdTransformer.wrapId(value) as R
-		}
-
-		try {
-			return when (value) {
-				is Document -> DBManager.decode(clazz, value)
-				else -> Gson().fromJson(value?.json, clazz.java)
-			}
-		} catch (exception: Exception) {
-			throw Exception(
-				"Failed to parse for path $path. \nValue: ${value?.json} \nProjected Results: $map",
-				exception
-			)
-		}
+		return unwrapped.toList()
 	}
 
 	inline operator fun <reified R> get(path: String): R {
@@ -183,8 +160,6 @@ class ProjectedResults(document: Document, vararg properties: KProperty<*>) {
 			return IdTransformer.wrapId(value) as R
 		}
 
-		//TODO handle collections of IDs
-
 		try {
 			return when (value) {
 				is Document -> DBManager.decode(value)
@@ -198,9 +173,8 @@ class ProjectedResults(document: Document, vararg properties: KProperty<*>) {
 		}
 	}
 
-	inline operator fun <reified R> get(property: KProperty<R>): R = get(property.path())
-
-	operator fun <R : Any> get(clazz: KClass<R>, property: KProperty<R>): R = get(clazz, property.path())
+	inline operator fun <reified Z, reified R : Collection<Z>> get(property: KProperty<R>): List<Z> = get<Z, R>(property.path())
+	inline operator fun <reified R> get(property: KProperty<R>): R = get<R>(property.path())
 
 	inline fun <reified I, reified R> convertProperty(path: String, convert: (I) -> R): R {
 		require(map.contains(path)) { "Property $path not in collection $map" }

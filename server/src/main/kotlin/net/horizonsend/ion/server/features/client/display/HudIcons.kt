@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
@@ -38,7 +38,7 @@ import kotlin.math.min
 
 object HudIcons : IonServerComponent() {
     // How often the planet display entities should update in ticks
-    private const val UPDATE_RATE = 10L
+    private const val UPDATE_RATE = 2L
 
     // The threshold for "hovering" over a planet, in radians
     private const val SELECTOR_ANGLE_THRESHOLD = 5.0 / 180.0 * PI
@@ -98,7 +98,7 @@ object HudIcons : IonServerComponent() {
         entity.setItemStack(getItemStack(identifier))
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
-        //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
+        //entity.interpolationDuration = UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
         entity.teleportDuration = 0
 
@@ -211,7 +211,7 @@ object HudIcons : IonServerComponent() {
         entity.setItemStack(CustomItemKeys.PLANET_SELECTOR.getValue().constructItemStack())
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
-        //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
+        //entity.interpolationDuration = UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
         entity.teleportDuration = 0
 
@@ -309,7 +309,7 @@ object HudIcons : IonServerComponent() {
         )
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
-        //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
+        //entity.interpolationDuration = UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
         entity.teleportDuration = 0
         entity.backgroundColor = Color.fromARGB(0x00000000)
@@ -517,12 +517,12 @@ object HudIcons : IonServerComponent() {
         // Reset planet selector information
         lowestAngleMap[player.uniqueId] = Float.MAX_VALUE
 
-        val hudSelectorEnabled = player.getSetting(PlayerSettings::hudPlanetsSelector)
-        val hudPlanetsEnabled = player.getSetting(PlayerSettings::hudPlanetsImage)
-        val hudStarsEnabled = player.getSetting(PlayerSettings::hudIconStars)
-        val hudBeaconsEnabled = player.getSetting(PlayerSettings::hudIconBeacons)
-        val hudStationsEnabled = player.getSetting(PlayerSettings::hudIconStations)
-        val hudBookmarksEnabled = player.getSetting(PlayerSettings::hudIconBookmarks)
+        val hudSelectorEnabled = player.getSettingOrThrow(PlayerSettings::hudPlanetsSelector)
+        val hudPlanetsEnabled = player.getSettingOrThrow(PlayerSettings::hudPlanetsImage)
+        val hudStarsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconStars)
+        val hudBeaconsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconBeacons)
+        val hudStationsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconStations)
+        val hudBookmarksEnabled = player.getSettingOrThrow(PlayerSettings::hudIconBookmarks)
 
         // Rendering planets
         for (planet in planetList) {

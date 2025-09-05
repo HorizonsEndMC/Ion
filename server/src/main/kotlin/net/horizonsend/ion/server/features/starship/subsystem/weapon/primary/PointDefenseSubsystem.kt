@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.configuration.starship.PointDefenseBalancing
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting.AutoTurretTarget
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PointDefenseLaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
@@ -20,7 +20,7 @@ class PointDefenseSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	override var face: BlockFace,
-) : WeaponSubsystem<PointDefenseBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier()), DirectionalSubsystem, AutoWeaponSubsystem {
+) : BalancedWeaponSubsystem<PointDefenseBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(PointDefenseSubsystem::class)), DirectionalSubsystem, AutoWeaponSubsystem {
 	override val range: Double get() = balancing.range
 
 	override fun getMaxPerShot(): Int {

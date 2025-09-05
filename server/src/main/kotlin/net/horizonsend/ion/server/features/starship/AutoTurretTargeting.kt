@@ -26,14 +26,15 @@ object AutoTurretTargeting : IonServerComponent() {
 			}
 		})
 		data object StarshipTarget: TargetType<ActiveStarship>({ _, identifier ->
-			val starship = ActiveStarships[identifier]
+			val starship = ActiveStarships.getByIdentifier(identifier)
 
 			starship?.blocks?.random()?.let { Vec3i(it).toLocation(starship.world) }
 		})
 		data object HostileMobTarget: TargetType<ActiveStarship>({ ship, identifier ->
 			val type = EntityType.valueOf(identifier)
 
-			ship.world.getNearbyEntitiesByType(type.entityClass, ship.centerOfMass.toLocation(ship.world), 100.0).firstOrNull()?.location
+            ship.world.getNearbyEntitiesByType(type.entityClass, ship.centerOfMass.toLocation(ship.world), 100.0).minByOrNull {
+				entity -> ship.centerOfMass.toCenterVector().distance(entity.location.toVector()) }?.location
 		})
 	}
 
@@ -44,7 +45,7 @@ object AutoTurretTargeting : IonServerComponent() {
 		fun location(starship: ActiveStarship) = type.get(starship, identifier)
 	}
 
-	fun target(starship: ActiveStarship): AutoTurretTarget<*> = AutoTurretTarget(TargetType.StarshipTarget, starship.charIdentifier)
+	fun target(starship: ActiveStarship): AutoTurretTarget<*> = AutoTurretTarget(TargetType.StarshipTarget, starship.identifier)
 	fun target(entityType: EntityType): AutoTurretTarget<*> = AutoTurretTarget(TargetType.HostileMobTarget, entityType.toString())
 	fun target(player: Player): AutoTurretTarget<*> = AutoTurretTarget(TargetType.PlayerTarget, player.name)
 

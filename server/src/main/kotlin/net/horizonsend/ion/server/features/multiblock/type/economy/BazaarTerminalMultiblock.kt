@@ -7,8 +7,6 @@ import com.manya.util.MapCollectors
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.input.InputResult
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.economy.city.CityNPCs.BAZAAR_CITY_TERRITORIES
 import net.horizonsend.ion.server.features.economy.city.TradeCities
@@ -31,7 +29,6 @@ import net.horizonsend.ion.server.gui.invui.bazaar.terminal.BazaarTerminalMainMe
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.horizonsend.ion.server.miscellaneous.utils.persistence.SettingsContainer
 import net.horizonsend.ion.server.miscellaneous.utils.persistence.SettingsContainer.SettingsProperty
 import net.kyori.adventure.text.Component
@@ -54,7 +51,6 @@ import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.persistence.PersistentDataType.BOOLEAN
 import org.bukkit.persistence.PersistentDataType.DOUBLE
-import org.bukkit.util.Vector
 import java.nio.charset.Charset
 import java.util.UUID
 
@@ -390,20 +386,6 @@ sealed class BazaarTerminalMultiblock(private val mergeEnabled: Boolean) : Multi
 			if (owner == null) {
 				owner = player.uniqueId
 				player.information("You claimed ownership of this multiblock!")
-			}
-
-			for (reference in getOutputInventories()) {
-				val location = reference.inventory.location ?: continue
-
-				val block = Material.GREEN_CONCRETE.createBlockData()
-				sendEntityPacket(player, displayBlock(world.minecraft, block, Vector(location.x, location.y, location.z), 1.5f, true), 10 * 20L)
-			}
-
-			for (reference in getInputInventories()) {
-				val location = reference.inventory.location ?: continue
-
-				val block = Material.RED_CONCRETE.createBlockData()
-				sendEntityPacket(player, displayBlock(world.minecraft, block, Vector(location.x, location.y, location.z), 1.5f, true), 10 * 20L)
 			}
 
 			BazaarTerminalMainMenu(player, this).openGui()

@@ -428,7 +428,10 @@ class MultiblockShape {
 			Material.WAXED_EXPOSED_COPPER_GRATE,
 			Material.WAXED_WEATHERED_COPPER_GRATE,
 			Material.WAXED_OXIDIZED_COPPER_GRATE,
-			alias = "any copper grate"
+			alias = "any copper grate",
+			edit = {
+				setExample(Material.WAXED_COPPER_GRATE)
+			}
 		)
 
 		fun anyUnwaxedCopperGrate() = anyType(
@@ -456,7 +459,10 @@ class MultiblockShape {
 			Material.WAXED_EXPOSED_COPPER_BULB,
 			Material.WAXED_WEATHERED_COPPER_BULB,
 			Material.WAXED_OXIDIZED_COPPER_BULB,
-			alias = "any copper bulb"
+			alias = "any copper bulb",
+			edit = {
+				setExample(Material.WAXED_COPPER_BULB)
+			}
 		)
 
 		fun anyWaxedCopperBulb() = anyType(
@@ -475,7 +481,7 @@ class MultiblockShape {
 			alias = "any unwaxed copper bulb"
 		)
 
-		fun fluidInput() = type(Material.FLETCHING_TABLE)
+		fun fluidInput() = customBlock(CustomBlockKeys.FLUID_INPUT.getValue())
 		fun powerInput() = type(Material.NOTE_BLOCK)
 		fun extractor() = type(STANDARD_EXTRACTOR_TYPE)
 
@@ -513,6 +519,7 @@ class MultiblockShape {
 			Material.REDSTONE_LAMP,
 			Material.MAGMA_BLOCK,
 			Material.SEA_LANTERN,
+			Material.SHROOMLIGHT,
 			alias = "any light block"
 		)
 

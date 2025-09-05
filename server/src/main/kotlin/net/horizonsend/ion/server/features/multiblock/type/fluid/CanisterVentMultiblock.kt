@@ -14,7 +14,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -83,6 +83,6 @@ object CanisterVentMultiblock : Multiblock(), EntityMultiblock<CanisterVentMulti
 			furnaceInventory.result = CustomItemKeys.GAS_CANISTER_EMPTY.getValue().constructItemStack()
 		}
 
-		override val inputsData: InputsData = none()
+		override val ioData: IOData = none()
 	}
 }

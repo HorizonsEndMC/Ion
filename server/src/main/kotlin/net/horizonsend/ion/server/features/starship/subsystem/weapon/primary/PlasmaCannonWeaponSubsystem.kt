@@ -17,7 +17,7 @@ class PlasmaCannonWeaponSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	face: BlockFace,
-) : CannonWeaponSubsystem<PlasmaCannonBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier()) {
+) : CannonWeaponSubsystem<PlasmaCannonBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(PlasmaCannonWeaponSubsystem::class)) {
 	override val length: Int = 3
 
 	override fun isAcceptableDirection(face: BlockFace): Boolean {

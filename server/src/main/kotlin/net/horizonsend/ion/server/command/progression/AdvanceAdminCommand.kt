@@ -23,7 +23,7 @@ import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.progression.SLXP
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
-import java.util.*
+import java.util.UUID
 import kotlin.math.abs
 import kotlin.math.min
 

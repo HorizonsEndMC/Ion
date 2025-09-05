@@ -7,7 +7,7 @@ import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.entity.Player
@@ -18,7 +18,7 @@ object ControlSettingsCommand : SLCommand() {
     @CommandAlias("enableAlternateDCCruise")
     @CommandCompletion("true|false")
     fun onUseAlternateDCCruise(sender: Player, @Optional toggle: Boolean?) {
-        val useAlternateDcCruise = toggle ?: !sender.getSetting(PlayerSettings::useAlternateDCCruise)
+        val useAlternateDcCruise = toggle ?: !sender.getSettingOrThrow(PlayerSettings::useAlternateDCCruise)
 		sender.setSetting(PlayerSettings::useAlternateDCCruise, useAlternateDcCruise)
 
         sender.success("Changed alternate DC cruise to $useAlternateDcCruise")
@@ -32,11 +32,11 @@ object ControlSettingsCommand : SLCommand() {
 
     @CommandAlias("dcSpeedModifier")
     fun onChangeDcModifier(sender: Player) {
-        val currentSetting = sender.getSetting(PlayerSettings::dcSpeedModifier)
+        val currentSetting = sender.getSettingOrThrow(PlayerSettings::dcRefreshRate)
 
         val newSetting = if (currentSetting < 3) currentSetting + 1 else 1
-        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::dcSpeedModifier, newSetting))
-		sender.setSetting(PlayerSettings::dcSpeedModifier, newSetting)
+        SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::dcRefreshRate, newSetting))
+		sender.setSetting(PlayerSettings::dcRefreshRate, newSetting)
         sender.success("Changed DC speed modifier to $newSetting")
     }
 }

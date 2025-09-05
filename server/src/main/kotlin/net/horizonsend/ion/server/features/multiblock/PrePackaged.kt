@@ -36,6 +36,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component.text
+import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -437,7 +438,7 @@ object PrePackaged : SLEventListener() {
 			if (!requirementMet) {
 				val (xx, yy, zz) = Vec3i(relative.location)
 
-				sendEntityPacket(livingEntity, displayBlock(livingEntity.world.minecraft, requirement.getExample(face), Vector(xx, yy, zz), 0.5f, true), 10 * 20L)
+				sendEntityPacket(livingEntity, displayBlock(livingEntity.world.minecraft, requirement.getExample(face), Vector(xx, yy, zz), 0.5f, Color.WHITE), 10 * 20L)
 			}
 		}
 	}

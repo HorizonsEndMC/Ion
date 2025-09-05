@@ -31,13 +31,13 @@ class FurnaceMultiblockRecipe(
 	override val requirements: Collection<RequirementHolder<FurnaceEnviornment, *, *>> = listOf(
 		// Furnace smelting item
 		RequirementHolder.itemConsumable(
-			getter = { it.getItem(0) },
+			getter = { it.getInputItem(0) },
 			requirement = smeltingItem ?: ItemRequirement.legacy(),
 			{ SlotModificationWrapper.furnaceSmelting(it.furnaceInventory) }
 		),
 		// Furnace fuel item
 		RequirementHolder.itemConsumable(
-			getter = { it.getItem(1) },
+			getter = { it.getInputItem(1) },
 			requirement = fuelItem ?: ItemRequirement.legacy(),
 			{ SlotModificationWrapper.furnaceFuel(it.furnaceInventory) }
 		),

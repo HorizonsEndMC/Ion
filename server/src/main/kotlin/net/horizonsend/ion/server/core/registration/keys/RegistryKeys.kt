@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.core.registration.keys
 
+import net.horizonsend.ion.server.core.registration.IonBindableResourceKey
 import net.horizonsend.ion.server.core.registration.IonRegistries
-import net.horizonsend.ion.server.core.registration.IonResourceKey
 import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
@@ -11,6 +11,8 @@ import net.horizonsend.ion.server.features.multiblock.crafting.recipe.Multiblock
 import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
+import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
+import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
 
 object RegistryKeys {
 	private val keys = mutableMapOf<String, RegistryId<*>>()
@@ -23,6 +25,8 @@ object RegistryKeys {
 	val MULTIBLOCK_RECIPE = registryId<MultiblockRecipe<*>>("MULTIBLOCK_RECIPE")
 	val SEQUENCE_PHASE = registryId<SequencePhase>("SEQUENCE_PHASE")
 	val SEQUENCE = registryId<Sequence>("SEQUENCE")
+	val TRANSPORT_NETWORK_NODE_TYPE = registryId<TransportNodeType<*>>("TRANSPORT_NETWORK_NODE_TYPE")
+	val FLUID_PROPERTY_TYPE = registryId<FluidPropertyType<*>>("FLUID_PROPERTY_TYPE")
 
 	fun <T: Any> registryId(key: String): RegistryId<T> {
 		val id = RegistryId<T>(key)
@@ -30,7 +34,7 @@ object RegistryKeys {
 		return id
 	}
 
-	class RegistryId<T: Any>(key: String) : IonResourceKey<Registry<T>>(key) {
+	class RegistryId<T: Any>(key: String) : IonBindableResourceKey<Registry<T>>(key) {
 		@Suppress("UNCHECKED_CAST")
 		override fun getValue(): Registry<T> = IonRegistries[this] as Registry<T>
 	}

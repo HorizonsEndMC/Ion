@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.multiblock.type.economy.BazaarTerminalMultiblock
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.bazaar.ItemBrowseGui
 import net.horizonsend.ion.server.gui.invui.bazaar.REMOTE_WARINING
@@ -105,7 +106,7 @@ class TerminalCitySelection(viewer: Player, val entity: BazaarTerminalMultiblock
 	}
 	override fun getItemString(entry: TradeCityData): String = ""
 
-	override fun onClickDisplayedItem(entry: TradeCityData) {
+	override fun onClickDisplayedItem(entry: TradeCityData, clickedFrom: CommonGuiWrapper) {
 		TerminalCityBrowse(viewer, entity, entry).openGui(this)
 	}
 

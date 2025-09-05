@@ -73,7 +73,7 @@ object MassShadows {
 					text()
 						.append(interdictingShipName)
 						.append(text(" piloted by "))
-						.append(interdictingShip?.controller?.getPilotName() ?: text("none"))
+						.append(interdictingShip?.controller?.pilotName ?: text("none"))
 						.build(),
 					otherX,
 					otherZ,
@@ -86,7 +86,7 @@ object MassShadows {
 
 		for (locusScheduler in AISpawners.getAllSpawners().mapNotNull { it.scheduler as? LocusScheduler }) {
 			if (!locusScheduler.active) continue
-			val center = locusScheduler.center
+			val center = locusScheduler.center ?: continue
 
 			if (center.world.uid != realWorld.uid) continue
 

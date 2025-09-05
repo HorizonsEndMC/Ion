@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.core.registration
 
-abstract class IonResourceKey<T : Any>(val key: String) {
-	abstract fun getValue(): T
+import net.horizonsend.ion.server.IonServer
+import org.bukkit.NamespacedKey
+
+open class IonResourceKey<T: Any>(val key: String) {
+	val ionNapespacedKey = NamespacedKey(IonServer, key)
 }

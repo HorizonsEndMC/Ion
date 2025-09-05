@@ -19,9 +19,12 @@ import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
-import net.horizonsend.ion.server.features.starship.control.input.DirectControlHandler
-import net.horizonsend.ion.server.features.starship.control.input.DirecterControlHandler
-import net.horizonsend.ion.server.features.starship.control.input.ShiftFlightHandler
+import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectControlInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerDirecterControlInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
+import net.horizonsend.ion.server.features.starship.control.movement.DirecterControlHandler
+import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.movement.StarshipTeleportation
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VariableVisualProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
@@ -80,8 +83,7 @@ object StarshipDebugCommand : SLCommand() {
 	@Subcommand("release")
 	@CommandCompletion("@autoTurretTargets")
 	fun release(sender: CommandSender, identifier: String) {
-		val formatted = if (identifier.contains(":".toRegex())) identifier.substringAfter(":") else identifier
-		val starship = ActiveStarships[formatted] ?: fail { "Could not find target $identifier" }
+		val starship = ActiveStarships.getByIdentifier(identifier) ?: fail { "Could not find target $identifier" }
 
 		DeactivatedPlayerStarships.deactivateNow(starship)
 		sender.success("Released $identifier")
@@ -190,12 +192,11 @@ object StarshipDebugCommand : SLCommand() {
 	@Subcommand("dump controller")
 	@CommandCompletion("@autoTurretTargets")
 	fun listController(sender: Player, shipIdentifier: String) {
-		val formatted = if (shipIdentifier.contains(":".toRegex())) shipIdentifier.substringAfter(":") else shipIdentifier
+		val ship = ActiveStarships.getByIdentifier(shipIdentifier) ?: fail { "$shipIdentifier is not a starship" }
 
-		val ship = ActiveStarships[formatted] ?: fail { "$shipIdentifier is not a starship" }
 		sender.information(ship.controller.toString())
 
-		(ship.controller as? AIController)?.let { sender.userError("Target: ${(it.modules["targeting"] as? TargetingModule)?.findTarget()}") }
+		(ship.controller as? AIController)?.let { sender.userError("Target: ${(it.coreModules[TargetingModule::class] as? TargetingModule)?.findTarget()}") }
 	}
 
 	@Subcommand("purge now")
@@ -214,17 +215,17 @@ object StarshipDebugCommand : SLCommand() {
 	enum class MovementType {
 		SHIFT_FLIGHT {
 			override fun apply(controller: ActivePlayerController) {
-				controller.inputHandler = ShiftFlightHandler(controller)
+				controller.movementHandler = ShiftFlightHandler(controller, PlayerShiftFlightInput(controller))
 			}
 		},
 		DIRECT_CONTROL {
 			override fun apply(controller: ActivePlayerController) {
-				controller.inputHandler = DirectControlHandler(controller)
+				controller.movementHandler = DirectControlHandler(controller, PlayerDirectControlInput(controller))
 			}
 		},
 		DIRECTER_CONTROL {
 			override fun apply(controller: ActivePlayerController) {
-				controller.inputHandler = DirecterControlHandler(controller)
+				controller.movementHandler = DirecterControlHandler(controller, PlayerDirecterControlInput(controller))
 			}
 		},
 
@@ -240,6 +241,26 @@ object StarshipDebugCommand : SLCommand() {
 		for ((name, subsystems) in starship.weaponSets.entries().groupBy { entry -> entry.key }) {
 			sender.information("[$name]={${subsystems.joinToString { it.value.javaClass.simpleName }}}")
 		}
+	}
+
+	@Suppress("Unused")
+	@Subcommand("togglestats")
+	@CommandCompletion("@autoTurretTargets")
+	fun toggleStats(sender: Player, shipIdentifier: String) {
+		val ship = ActiveStarships.getByIdentifier(shipIdentifier) ?: fail { "$shipIdentifier is not a starship" }
+
+		ship.statsEnabled = !ship.statsEnabled
+		sender.information("Toggled stats for $shipIdentifier to ${ship.statsEnabled}")
+	}
+
+	@Suppress("Unused")
+	@Subcommand("toggleforecast")
+	@CommandCompletion("@autoTurretTargets")
+	fun toggleForecast(sender: Player, shipIdentifier: String) {
+		val ship = ActiveStarships.getByIdentifier(shipIdentifier) ?: fail { "$shipIdentifier is not a starship" }
+
+		ship.forecastEnabled = !ship.forecastEnabled
+		sender.information("Toggled forecast for $shipIdentifier to ${ship.forecastEnabled}")
 	}
 
 	@Subcommand("tutorialTest")

@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualStyle
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.litote.kmongo.addToSet
@@ -129,7 +130,7 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 				guiButton(Material.PAPER) {
 					playerClicker.performCommand("$name edit $roleName")
-				}.name(role.coloredName).lore(
+				}.name(Component.text(role.name, role.color.actualStyle.textColor)).lore(
 					"Weight: ${role.weight}",
 					"Color: ${role.color.actualStyle.name}",
 					"Members: ${role.members.size}",
@@ -312,6 +313,6 @@ internal abstract class RoleCommand<Parent : DbObject, Permission : Enum<Permiss
 
 		failIf(result.matchedCount <= 0) { "$player doesn't have role ${roleData.name}." }
 
-		sender.success("Took role ${roleData.coloredName} from $player")
+		sender.success("Took role {0} from $player", Component.text(roleData.name, roleData.color.actualStyle.textColor))
 	}
 }

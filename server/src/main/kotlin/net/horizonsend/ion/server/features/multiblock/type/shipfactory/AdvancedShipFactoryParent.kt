@@ -22,7 +22,7 @@ import net.horizonsend.ion.server.features.starship.factory.ShipFactoryPrintTask
 import net.horizonsend.ion.server.features.starship.factory.integration.AutoMasonIntegration
 import net.horizonsend.ion.server.features.starship.factory.integration.BazaarTerminalIntegration
 import net.horizonsend.ion.server.features.starship.factory.integration.ShipFactoryIntegration
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.BACKWARD
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace.FORWARD
@@ -366,7 +366,7 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 			{ StatusDisplayModule(it, statusManager) }
 		).register()
 
-		override val inputsData: InputsData = InputsData.Builder(this)
+		override val ioData: IOData = IOData.Builder(this)
 			.addPowerInput(0, -1, 0)
 			.registerSignInputs()
 			.build()

@@ -9,15 +9,16 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.encoding.decodeStructure
 import kotlinx.serialization.encoding.encodeStructure
-import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.core.registration.registries.Registry
-import org.bukkit.NamespacedKey
+import org.bukkit.persistence.PersistentDataAdapterContext
+import org.bukkit.persistence.PersistentDataType
 import kotlin.reflect.KClass
 
-class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClass<out Z>, key: String) : IonResourceKey<Z>(key) {
+class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClass<out Z>, key: String) : IonBindableResourceKey<Z>(key) {
 	override fun toString(): String {
-		return "RegistryKey[${registry.id}:$key]"
+		return "RegistryKey[${registry.id.key}:$key]"
 	}
 
 	override fun getValue(): Z {
@@ -40,7 +41,24 @@ class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClas
 		if (!isBound()) error("Unbound registry key $this")
 	}
 
-	val ionNapespacedKey = NamespacedKey(IonServer, key)
+	override fun equals(other: Any?): Boolean {
+		if (this === other) return true
+		if (javaClass != other?.javaClass) return false
+
+		other as IonRegistryKey<*, *>
+
+		if (registry != other.registry) return false
+		if (clazz != other.clazz) return false
+		if (key != other.key) return false
+
+		return true
+	}
+
+	override fun hashCode(): Int {
+		var result = registry.hashCode()
+		result = 31 * result + clazz.hashCode()
+		return result
+	}
 
 	companion object : KSerializer<IonRegistryKey<*, *>> {
 		override val descriptor: SerialDescriptor = buildClassSerialDescriptor("ion.server.core.registries.IonRegistryKey") {
@@ -71,6 +89,26 @@ class IonRegistryKey<T : Any, Z : T>(val registry: Registry<T>, val clazz: KClas
 
 				RegistryKeys[registryId]!!.getValue().getKeySet().getOrTrow(registryKey)
 			}
+		}
+	}
+
+	class Serializer<T : Any>(val keyRegistry: KeyRegistry<T>) : PersistentDataType<String, IonRegistryKey<T, out T>> {
+		override fun getPrimitiveType(): Class<String> = String::class.java
+		@Suppress("UNCHECKED_CAST")
+		override fun getComplexType(): Class<IonRegistryKey<T, out T>> = IonRegistryKey::class.java as Class<IonRegistryKey<T, out T>>
+
+		override fun toPrimitive(
+			complex: IonRegistryKey<T, out T>,
+			context: PersistentDataAdapterContext,
+		): String {
+			return complex.key
+		}
+
+		override fun fromPrimitive(
+			primitive: String,
+			context: PersistentDataAdapterContext,
+		): IonRegistryKey<T, out T> {
+			return keyRegistry[primitive]!!
 		}
 	}
 }

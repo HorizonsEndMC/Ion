@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turre
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DisintegratorBeamProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
@@ -21,7 +21,7 @@ class DisintegratorBeamWeaponSubsystem(
     pos: Vec3i,
     override var face: BlockFace,
     val multiblock: DisintegratorBeamWeaponMultiblock
-) : WeaponSubsystem<DisintegratorBeamBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier()), DirectionalSubsystem, ManualWeaponSubsystem {
+) : BalancedWeaponSubsystem<DisintegratorBeamBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(DisintegratorBeamWeaponSubsystem::class)), DirectionalSubsystem, ManualWeaponSubsystem {
 
     companion object {
         private const val MIN_STACKS = 1

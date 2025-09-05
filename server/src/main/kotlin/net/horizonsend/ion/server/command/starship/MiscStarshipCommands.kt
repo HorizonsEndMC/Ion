@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.command.starship
 
-import co.aikar.commands.InvalidCommandArgument
 import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
@@ -75,6 +74,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -106,16 +106,17 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 		manager.commandContexts.registerContext(AutoTurretTargeting.AutoTurretTarget::class.java) { context ->
 			val target = context.popFirstArg()
-			val formatted = if (target.contains(":".toRegex())) target.substringAfter(":") else target
 
-			Bukkit.getPlayer(formatted)?.let { AutoTurretTargeting.target(it) } ?:
-				ActiveStarships[formatted]?.let { AutoTurretTargeting.target(it) } ?:
-				runCatching {
-					val type = EntityType.valueOf(formatted)
-					val instance = type.entityClass?.let { Enemy::class.java.isAssignableFrom(it) }
-					return@runCatching type.takeIf { instance ?: false }
-				}.getOrNull()?.let { AutoTurretTargeting.target(it) } ?:
-				throw InvalidCommandArgument("Target $target could not be found!")
+			val player = Bukkit.getPlayer(target)
+			if (player != null) return@registerContext AutoTurretTargeting.target(player)
+
+			val starship = ActiveStarships.getByIdentifier(target)
+			if (starship != null) return@registerContext AutoTurretTargeting.target(starship)
+
+			val entityType = EntityType.entries.firstOrNull { type -> type.name.lowercase() == target.lowercase() } ?: return@registerContext null
+			val entityClass = entityType.entityClass ?: return@registerContext null
+			if (!Enemy::class.java.isAssignableFrom(entityClass)) return@registerContext null
+			else return@registerContext AutoTurretTargeting.target(entityType)
 		}
 
 		manager.commandCompletions.registerAsyncCompletion("autoTurretTargets") { context ->
@@ -153,7 +154,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	fun onStopRiding(sender: Player) {
 		val starship = getStarshipRiding(sender)
 
-		failIf(starship is ActiveControlledStarship && starship.playerPilot == sender) {
+		failIf(starship.playerPilot == sender) {
 			"You can't stop riding if you're the pilot. Use /release or /unpilot."
 		}
 
@@ -628,8 +629,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			val size: Int = starship.initialBlockCount
 			totalBlocks += size
 
-			var worldName = starship.world.key.toString().substringAfterLast(":")
-				.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+			var worldName = starship.world.key.toString().substringAfterLast(":").replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
 			if (worldName == "Overworld") {
 				worldName = starship.world.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
@@ -640,14 +640,12 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 					val player = controller.player
 					val pilotNation = PlayerCache.getIfOnline(player)?.nationOid
 
-					val color = if (pilotNation != null && senderNation != null) {
-						RelationCache[senderNation, pilotNation].color
-					} else WHITE
+					val color = if (pilotNation != null && senderNation != null) RelationCache[senderNation, pilotNation].color else WHITE
 
-					controller.getPilotName().color(color)
+					text(controller.player.name, color)
 				}
 
-				else -> controller.getPilotName()
+				else -> controller.pilotName
 			}
 
 			val line = template(
@@ -655,7 +653,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				color = HE_LIGHT_GRAY,
 				paramColor = WHITE,
 				useQuotesAroundObjects = true,
-				if (pilot?.hasProtection() == true) text(" ★", NamedTextColor.GOLD) else Component.empty(),
+				if (pilot?.hasProtection() == true) text(" ★", GOLD) else Component.empty(),
 				starship.getDisplayName(),
 				name,
 				bracketed(text(starship.initialBlockCount, WHITE)),
@@ -725,16 +723,18 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	@Description("Try to pilot the ship you're standing on")
 	fun onPilot(sender: Player) {
 		val world = sender.world
-		val (x, y, z) = Vec3i(sender.location)
+		val (x, _, z) = Vec3i(sender.location)
 
-		val starshipData = DeactivatedPlayerStarships.getContaining(world, x, y - 1, z)
+		// If they're standing in a slab, check the slab block, but if they're on a full block, check the full block
+		val y = (sender.location.y - 0.02).toInt()
 
-		if (starshipData == null) {
-			sender.userError("Could not find starship. Is it detected?")
-			return
-		}
+		val starshipData = DeactivatedPlayerStarships.getContaining(world, x, y, z)
+		val unpiloted = ActiveStarships.findByBlock(world, x, y, z)
 
-		PilotedStarships.tryPilot(sender, starshipData)
+		val data = starshipData ?: unpiloted?.data ?: return sender.userError("Could not find starship. Is it detected?")
+
+		PilotedStarships.tryPilot(sender, data)
+		return
 	}
 
 	private val uploadCooldown = object : PerPlayerCooldown(5L, TimeUnit.SECONDS, bypassPermission = "ion.starship.bypassdownloadlimit") {

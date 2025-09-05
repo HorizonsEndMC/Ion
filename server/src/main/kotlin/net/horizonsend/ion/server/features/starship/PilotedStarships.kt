@@ -19,7 +19,6 @@ import net.horizonsend.ion.common.utils.configuration.redis
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.ai.spawning.SpawningException
 import net.horizonsend.ion.server.features.cache.PlayerCache
-import net.horizonsend.ion.server.features.nations.utils.playSoundInRadius
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
@@ -43,6 +42,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsy
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
 import net.horizonsend.ion.server.miscellaneous.utils.bukkitWorld
@@ -452,7 +452,7 @@ object PilotedStarships : IonServerComponent() {
 				)
 			}
 
-			val pilotSound = data.starshipType.actualType.balancing.standardSounds.pilot.sound
+			val pilotSound = data.starshipType.actualType.balancing.shipSounds.pilot.sound
 			if (activePlayerStarship.rewardsProviders.filterIsInstance<StandardRewardsProvider>().isEmpty()) {
 				activePlayerStarship.rewardsProviders.add(StandardRewardsProvider(activePlayerStarship))
 			}
@@ -492,7 +492,7 @@ object PilotedStarships : IonServerComponent() {
 		playSoundInRadius(
 			starship.centerOfMass.toLocation(starship.world),
 			10_000.0,
-			starship.balancing.standardSounds.release.sound
+			starship.balancing.shipSounds.release.sound
 		)
 
 		controller.successActionMessage("Released ${starship.getDisplayNameMiniMessage()}")

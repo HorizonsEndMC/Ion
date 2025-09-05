@@ -4,8 +4,11 @@ import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.command.admin.GracePeriod
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipSounds.SoundInfo
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.machine.AreaShields
+import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -15,11 +18,12 @@ import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShi
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
+import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
 import net.kyori.adventure.key.Key.key
-import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.sound.Sound.Source
 import net.kyori.adventure.sound.Sound.sound
 import net.kyori.adventure.text.Component
+import org.bukkit.Color
 import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.Material
@@ -46,7 +50,7 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 	shooter: Damager,
 	private val damageType: DamageType
 ) : Projectile(shooter) {
-	protected open val balancing: B get() = source.getBalancing()
+	protected open val balancing: B get() = source.getBalancing(this::class)
 
 	val range: Double get() = balancing.range
 	open val speed: Double get() = balancing.speed
@@ -61,16 +65,21 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 	protected var delta: Double = 0.0
 	private var hasHit: Boolean = false
 
+	val nearSound: SoundInfo get() = balancing.fireSoundNear
+	val farSound: SoundInfo get() = balancing.fireSoundFar
+
 	override fun fire() {
 		firedAtNanos = System.nanoTime()
 		lastTick = firedAtNanos
 
 		super.fire()
-		playCustomSound(location, balancing.fireSound.sound)
+		playCustomSound(location, nearSound, farSound)
 	}
 
-	protected open fun playCustomSound(loc: Location, sound: Sound) {
-		loc.getNearbyPlayers(range).forEach { player -> player.playSound(sound) }
+	protected open fun playCustomSound(loc: Location, nearSound: SoundInfo, farSound: SoundInfo) {
+		toPlayersInRadius(loc, range * 20.0) { player ->
+			playDirectionalStarshipSound(loc, player, nearSound, farSound, range)
+		}
 	}
 
 	override fun tick() {
@@ -170,19 +179,44 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 					explosionOccurred = world.createExplosion(newLoc, explosionPower)
 
 					if (explosionPower > 0) {
-						world.spawnParticle(
-							Particle.FLASH,
-							newLoc.x,
-							newLoc.y,
-							newLoc.z,
-							explosionPower.toInt(),
-							explosionPower.toDouble() / 2,
-							explosionPower.toDouble() / 2,
-							explosionPower.toDouble() / 2,
-							0.0,
-							null,
-							true
-						)
+						val base = explosionPower.coerceAtLeast(1f)
+
+						// Send per-player so each user’s setting applies
+						toPlayersInRadius(newLoc, /* visibility radius */ 500.0) { player ->
+							val useAlt = player.getSetting(PlayerSettings::useAlternateShieldHitParticle) ?: return@toPlayersInRadius
+
+							if (useAlt == true) {
+								// Original behavior (large single flash)
+								player.spawnParticle(
+									Particle.FLASH,
+									newLoc.x, newLoc.y, newLoc.z,
+									base.toInt(),                 // count ~ explosionPower
+									(base / 2.0),
+									(base / 2.0),
+									(base / 2.0),
+									0.0,
+									null,
+									true
+								)
+								return@toPlayersInRadius
+							}
+
+							// Heuristic scaling to mimic FLASH’s "big" presence
+							val particle = Particle.DUST
+							val count = (base * 40.0).toInt()
+							val spread = base * 0.5
+							val particleSpeed = 0.5
+							val dustOptions = Particle.DustOptions(Color.WHITE, 0.7f)
+							player.spawnParticle(
+								particle,
+								newLoc.x, newLoc.y, newLoc.z,
+								count,
+								spread, spread, spread,
+								particleSpeed,
+								dustOptions,
+								true
+							)
+						}
 					}
 
 					hasHit = true
@@ -209,12 +243,20 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 		for (otherStarship in ActiveStarships.getInWorld(world)) {
 			if (otherStarship == (source as? StarshipProjectileSource)?.starship || !otherStarship.contains(x, y, z)) continue
 
+			val player = shooter.starship?.playerPilot?.player
+
+			// plays hitmarker sound if the shot did shield damage (if player setting is enabled)
+			if (player != null && player.getSettingOrThrow(PlayerSettings::hitmarkerOnShield)) {
+				player.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.PLAYER, 20f, 1.0f))
+			}
+
 			// plays hitmarker sound if the shot did hull damage (assumes the hit block was part of a starship)
 			if (explosionOccurred) {
-				val player = shooter.starship?.playerPilot?.player
-				if (player != null && player.getSetting(PlayerSettings::hitmarkerOnHull))
+				if (player != null && player.getSettingOrThrow(PlayerSettings::hitmarkerOnHull)) {
 					player.playSound(sound(key("horizonsend:blaster.hitmarker.standard"), Source.PLAYER, 20f, 0.5f))
+				}
 			}
+
 			otherStarship.damagers.getOrPut(shooter) {
 				ShipKillXP.ShipDamageData()
 			}.incrementPoints(points)

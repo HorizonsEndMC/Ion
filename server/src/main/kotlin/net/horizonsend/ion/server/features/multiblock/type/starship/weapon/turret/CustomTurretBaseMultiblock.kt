@@ -32,21 +32,21 @@ sealed class CustomTurretBaseMultiblock : Multiblock(), SubsystemMultiblock<Cust
 
 		override fun MultiblockShape.buildStructure() {
 			z(1) {
-				y(1) {
+				y(2) {
 					x(-1).titaniumBlock()
 					x(0).titaniumBlock()
 					x(1).titaniumBlock()
 				}
 			}
 			z(0) {
-				y(1) {
+				y(2) {
 					x(-1).titaniumBlock()
 					x(0).type(Material.BLAST_FURNACE)
 					x(1).titaniumBlock()
 				}
 			}
 			z(-1) {
-				y(1) {
+				y(2) {
 					x(-1).titaniumBlock()
 					x(0).titaniumBlock()
 					x(1).titaniumBlock()
@@ -61,21 +61,21 @@ sealed class CustomTurretBaseMultiblock : Multiblock(), SubsystemMultiblock<Cust
 
 		override fun MultiblockShape.buildStructure() {
 			z(1) {
-				y(-1) {
+				y(-2) {
 					x(-1).titaniumBlock()
 					x(0).titaniumBlock()
 					x(1).titaniumBlock()
 				}
 			}
 			z(0) {
-				y(-1) {
+				y(-2) {
 					x(-1).titaniumBlock()
 					x(0).type(Material.BLAST_FURNACE)
 					x(1).titaniumBlock()
 				}
 			}
 			z(-1) {
-				y(-1) {
+				y(-2) {
 					x(-1).titaniumBlock()
 					x(0).titaniumBlock()
 					x(1).titaniumBlock()

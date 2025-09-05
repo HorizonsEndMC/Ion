@@ -41,6 +41,7 @@ class AsyncItem(
 
 	fun update() {
 		provider = loadingItem
+		loaded = false
 		notifyWindows()
 
 		Tasks.async {

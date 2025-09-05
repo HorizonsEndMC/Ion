@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.gui.invui.bazaar
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.item.AsyncItem
+import net.horizonsend.ion.server.gui.CommonGuiWrapper
 import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -19,7 +20,7 @@ interface ItemBrowseGui<T : Any> : BrowseGui {
 	fun formatItem(entry: T): Item {
 		return AsyncItem(
 			resultProvider = { formatItemStack(entry) },
-			handleClick = { _ -> onClickDisplayedItem(entry) }
+			handleClick = { _ -> onClickDisplayedItem(entry, this) }
 		)
 	}
 
@@ -27,7 +28,7 @@ interface ItemBrowseGui<T : Any> : BrowseGui {
 
 	fun getItemLore(entry: T): List<Component>
 
-	fun onClickDisplayedItem(entry: T)
+	fun onClickDisplayedItem(entry: T, clickedFrom: CommonGuiWrapper)
 
 	fun getSearchTerms(entry: T): List<String>
 
@@ -42,7 +43,7 @@ interface ItemBrowseGui<T : Any> : BrowseGui {
 			backButtonHandler = { openGui() },
 			componentTransformer = { entry: T ->  fromItemString(getItemString(entry)).displayNameComponent },
 			itemTransformer = { entry: T ->  formatItemStack(entry) },
-		) { _: ClickType, result: T -> onClickDisplayedItem(result) }
+		) { _: ClickType, result: T -> onClickDisplayedItem(result, this) }
 	}
 
 	val searchButton get() = GuiItem.MAGNIFYING_GLASS.makeItem(text("Search entries")).makeGuiButton { _, viewer ->

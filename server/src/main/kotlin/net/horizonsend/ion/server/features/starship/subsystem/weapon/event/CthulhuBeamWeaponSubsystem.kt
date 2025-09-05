@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveControlledStars
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.CthulhuBeamProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
@@ -24,7 +24,7 @@ class CthulhuBeamSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	override var face: BlockFace,
-) : WeaponSubsystem<CthulhuBeamBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier()), DirectionalSubsystem, AutoWeaponSubsystem, PermissionWeaponSubsystem, ManualWeaponSubsystem {
+) : BalancedWeaponSubsystem<CthulhuBeamBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(CthulhuBeamSubsystem::class)), DirectionalSubsystem, AutoWeaponSubsystem, PermissionWeaponSubsystem, ManualWeaponSubsystem {
 	override val permission: String = "ioncore.eventweapon"
 
 	override val range: Double get() = balancing.range

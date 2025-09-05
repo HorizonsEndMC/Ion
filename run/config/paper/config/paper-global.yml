@@ -6,3 +6,6 @@ proxies:
     enabled: true
     online-mode: true
     secret: test
+block-updates:
+  disable-chorus-plant-updates: false
+  disable-mushroom-block-updates: true

@@ -25,9 +25,13 @@ import net.horizonsend.ion.server.features.multiblock.type.farming.harvester.Har
 import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier1
 import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier2
 import net.horizonsend.ion.server.features.multiblock.type.farming.planter.PlanterMultiblockTier3
+import net.horizonsend.ion.server.features.multiblock.type.fluid.CanisterUnloaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.CanisterVentMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.ChemicalProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.PumpMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.BasicFluidStorageTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
@@ -97,6 +101,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.OdometerMult
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BargeReactorMultiBlock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BattleCruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.CruiserReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.FauxReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.AmplifiedGravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.StandardGravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass1
@@ -349,6 +354,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(SkullThrowerStarshipWeaponMultiblock)
 
 		// Starship utilities
+		registerMultiblock(FauxReactorMultiblock)
 		registerMultiblock(BattleCruiserReactorMultiblock)
 		registerMultiblock(CruiserReactorMultiblock)
 		registerMultiblock(BargeReactorMultiBlock)
@@ -410,6 +416,11 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableLeft)
 
 		registerMultiblock(AntiAirCannonBaseMultiblock)
+
+		registerMultiblock(ChemicalProcessorMultiblock)
+		registerMultiblock(BasicFluidStorageTankMultiblock)
+		registerMultiblock(PumpMultiblock)
+		registerMultiblock(CanisterUnloaderMultiblock)
 	}
 
 	private fun sortMultiblocks() {
