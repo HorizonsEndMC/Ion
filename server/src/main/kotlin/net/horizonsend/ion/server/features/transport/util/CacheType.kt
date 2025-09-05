@@ -93,31 +93,6 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 			return ship.transportManager.solarPanelManager.cache
 		}
 	},
-//	FLUID(NamespacedKeys.FLUID_TRANSPORT, FluidNode.FluidInputNode::class) {
-//		override val nodeCacheFactory: NodeCacheFactory = NodeCacheFactory.builder()
-//			.addDataHandler<CraftLightningRod>(Material.LIGHTNING_ROD) { data, _, _ -> FluidNode.LightningRodNode(data.facing.axis) }
-//			.addSimpleNode(WAXED_CHISELED_COPPER) { _, _ -> FluidNode.FluidJunctionNode(WAXED_CHISELED_COPPER) }
-//			.addSimpleNode(WAXED_EXPOSED_CHISELED_COPPER) { _, _ -> FluidNode.FluidJunctionNode(WAXED_EXPOSED_CHISELED_COPPER) }
-//			.addSimpleNode(WAXED_WEATHERED_CHISELED_COPPER) { _, _ -> FluidNode.FluidJunctionNode(WAXED_WEATHERED_CHISELED_COPPER) }
-//			.addSimpleNode(WAXED_OXIDIZED_COPPER) { _, _ -> FluidNode.FluidJunctionNode(WAXED_OXIDIZED_COPPER) }
-//			.addSimpleNode(UNWAXED_CHISELED_COPPER_TYPES) { _, _, _ -> FluidNode.FluidJunctionNode(CRAFTING_TABLE) } // All unwaxed chiseled are a single channel
-//			.addSimpleNode(CRAFTING_TABLE, FluidNode.FluidExtractorNode)
-//			.addSimpleNode(FLETCHING_TABLE, FluidNode.FluidInputNode)
-//			.addSimpleNode(REDSTONE_BLOCK, FluidNode.FluidMergeNode)
-//			.addSimpleNode(IRON_BLOCK, FluidNode.FluidMergeNode)
-//			.addSimpleNode(LAPIS_BLOCK, FluidNode.FluidInvertedMergeNode)
-//			.build()
-//
-//		override fun get(chunk: IonChunk): FluidTransportCache {
-//			TODO("Fluid is disabled")
-////			return chunk.transportNetwork.fluidNodeManager.cache
-//		}
-//
-//		override fun get(ship: ActiveStarship): FluidTransportCache {
-//			TODO("Fluid is disabled")
-////			return ship.transportManager.fluidNodeManager.cache
-//		}
-//	},
 	ITEMS(NamespacedKeys.ITEM_TRANSPORT) {
 		override val nodeCacheFactory: BlockBasedCacheFactory<Node, CacheHolder<*>> = BlockBasedCacheFactory.builder<Node, CacheHolder<*>>()
 			.addSimpleNode(CRAFTING_TABLE, ItemNode.ItemExtractorNode)
