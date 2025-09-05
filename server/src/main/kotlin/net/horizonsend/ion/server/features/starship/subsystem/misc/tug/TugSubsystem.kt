@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.starship.subsystem.misc.tug
 
 import io.papermc.paper.raytracing.RayTraceTarget
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TugMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
@@ -12,7 +11,7 @@ import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
@@ -24,7 +23,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
-import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.block.Block
@@ -34,20 +32,13 @@ import org.bukkit.util.Vector
 import java.util.concurrent.CompletableFuture
 import kotlin.math.roundToInt
 
-class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace, val multiblock: TugMultiblock) : WeaponSubsystem(starship, pos), DirectionalSubsystem, ManualWeaponSubsystem {
-	override val balancing = ConfigurationFiles.starshipBalancing().platformBalancing.weapons.aiHeavyLaser
-
-	override val powerUsage: Int = 0
+class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace, val multiblock: TugMultiblock) : FiredSubsystem(starship, pos), DirectionalSubsystem, ManualWeaponSubsystem {
 
 	private var controlMode: TugControlMode = TugControlMode.FOLLOW
 	var towState: TowState = TowState.Empty; private set
 
 	override fun canFire(dir: Vector, target: Vector): Boolean {
 		return towState.canStartDiscovery()
-	}
-
-	override fun getName(): Component {
-		return Component.text("Tug")
 	}
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
@@ -164,4 +155,8 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 	}
 
 	fun getTowed(): TowedBlocks? = (towState as? TowState.Full)?.blocks
+
+	override fun getMaxPerShot(): Int? {
+		return 1
+	}
 }
