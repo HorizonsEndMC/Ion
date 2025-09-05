@@ -128,4 +128,8 @@ object SequenceManager : IonServerComponent() {
 		endPhase(player, sequenceKey)
 		phaseMap[player.uniqueId, sequenceKey] = phase
 	}
+
+	fun endSequence(player: Player, sequence: Sequence) {
+		phaseMap.remove(player.uniqueId, sequence.key)
+	}
 }
