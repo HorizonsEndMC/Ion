@@ -46,7 +46,6 @@ import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Sound
 import org.bukkit.util.BoundingBox
-import org.bukkit.util.Vector
 
 class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHASE) {
     override fun getKeySet(): KeyRegistry<SequencePhase> = SequencePhaseKeys
@@ -87,7 +86,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
                     type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-                    settings = MovementTriggerSettings(inBoundingBox(box = BoundingBox.of(Vector(84.0, 358.0, 26.0), Vector(86.0, 360.0, 27.0),))),
+                    settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(84, 358, 26, 85, 360, 26))),
                     triggerResult = SequenceTrigger.startPhase(EXIT_CRYOPOD_ROOM)
                 )
             ),
@@ -105,7 +104,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
                     SequenceTriggerTypes.PLAYER_MOVEMENT,
-                    MovementTriggerSettings(lookingAtBoundingBox(box = BoundingBox.of(Vector(92.0, 357.0, 13.0), Vector(94.0, 362.0, 10.0),), distance = 4.5)),
+                    MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(92, 357, 13, 94, 362, 10), distance = 4.5)),
                     triggerResult = SequenceTrigger.startPhase(BROKEN_ELEVATOR)
                 ),
                 SequenceTrigger(
@@ -146,7 +145,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
                     SequenceTriggerTypes.PLAYER_MOVEMENT,
-                    MovementTriggerSettings(lookingAtBoundingBox(box = BoundingBox.of(Vector(96.0, 357.0, 62.0), Vector(98.0, 362.0, 64.0),), distance = 3.5)),
+                    MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(96, 357, 62, 98, 362, 64), distance = 3.5)),
                     triggerResult = SequenceTrigger.startPhase(LOOK_AT_TRACTOR)
                 ),
                 SequenceTrigger(
@@ -154,7 +153,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         // If looking out window
                         SequenceTrigger(
                             SequenceTriggerTypes.PLAYER_MOVEMENT,
-                            MovementTriggerSettings(lookingAtBoundingBox(box = BoundingBox.of(Vec3i(96, 358, 69).toVector(), Vec3i(96, 361, 72).toVector()), distance = 5.0)),
+                            MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(96, 358, 69, 96, 361, 72), distance = 5.0)),
                             triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
                         ),
                         // Only trigger this branch if first time
@@ -170,7 +169,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         // If looking out window
                         SequenceTrigger(
                             SequenceTriggerTypes.PLAYER_MOVEMENT,
-                            MovementTriggerSettings(lookingAtBoundingBox(box = BoundingBox.of(Vec3i(96, 358, 78).toVector(), Vec3i(88, 363, 87).toVector()), distance = 3.0)),
+                            MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(96, 358, 78, 88, 363, 87), distance = 3.0)),
                             triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
                         ),
                         // Only trigger this branch if first time
@@ -209,7 +208,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     // If looking out window
                     SequenceTrigger(
                         SequenceTriggerTypes.PLAYER_MOVEMENT,
-                        MovementTriggerSettings(lookingAtBoundingBox(box = BoundingBox.of(Vec3i(96, 358, 69).toVector(), Vec3i(96, 361, 72).toVector()), distance = 5.0)),
+                        MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(96, 358, 69, 96, 361, 72), distance = 5.0)),
                         triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
                     ),
                     // Only trigger this branch if first time
@@ -223,7 +222,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         // If looking out window
                         SequenceTrigger(
                             SequenceTriggerTypes.PLAYER_MOVEMENT,
-                            MovementTriggerSettings(lookingAtBoundingBox(box = BoundingBox.of(Vec3i(96, 358, 78).toVector(), Vec3i(88, 363, 87).toVector()), distance = 3.0)),
+                            MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(96, 358, 78, 88, 363, 87), distance = 3.0)),
                             triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
                         ),
                         // Only trigger this branch if first time
@@ -255,7 +254,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
 					type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-					settings = MovementTriggerSettings(inBoundingBox(box = BoundingBox.of(Vector(94.0, 355.0, 61.0), Vector(95.0, 352.0, 65.0),))),
+					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(94, 355, 61, 95, 352, 65))),
 					triggerResult = SequenceTrigger.startPhase(FIRE_OBSTACLE)
                 )
             ),
@@ -278,7 +277,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
 					type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-					settings = MovementTriggerSettings(inBoundingBox(box = BoundingBox.of(Vector(91.0, 351.0, 25.0), Vector(95.0, 354.0, 23.0),))),
+					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(91, 351, 24, 95, 354, 24))),
 					triggerResult = SequenceTrigger.startPhase(GET_CHETHERITE)
                 )
             ),
@@ -377,4 +376,15 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             )
         )
     }
+
+	private fun fullBoundingBox(x1: Int, y1: Int, z1: Int, x2: Int, y2: Int, z2: Int): BoundingBox {
+		val minX: Double = (minOf(x1, x2)).toDouble()
+		val minY: Double = (minOf(y1, y2)).toDouble()
+		val minZ: Double = (minOf(z1, z2)).toDouble()
+		val maxX: Double = (maxOf(x1, x2) + 1).toDouble()
+		val maxY: Double = (maxOf(y1, y2) + 1).toDouble()
+		val maxZ: Double = (maxOf(z1, z2) + 1).toDouble()
+
+		return BoundingBox(minX, minY, minZ, maxX, maxY, maxZ)
+	}
 }
