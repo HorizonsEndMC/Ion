@@ -27,7 +27,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ProgressMultib
 import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.RecipeProcessingMultiblockEntity.MultiblockRecipeManager
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
@@ -548,19 +548,19 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 
 		override val ioData: IOData = IOData.Companion.builder(this)
 			// Inputs
-			.addPort(IOType.FLUID, -4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = primaryInput, inputAllowed = true, outputAllowed = false)) }
+			.addPort(IOType.FLUID, -4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = primaryInput, inputAllowed = true, outputAllowed = false)) }
 			.addPort(IOType.FLUID, -4, 0, 5) {
-                IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = secondaryInput, inputAllowed = true, outputAllowed = false))
+                IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = secondaryInput, inputAllowed = true, outputAllowed = false))
             }
 
 			// Outputs
-			.addPort(IOType.FLUID, 4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = primaryOutput, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = primaryOutput, inputAllowed = false, outputAllowed = true)) }
 			.addPort(IOType.FLUID, 4, 0, 5) {
-                IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = secondaryOutput, inputAllowed = false, outputAllowed = true))
+                IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = secondaryOutput, inputAllowed = false, outputAllowed = true))
             }
 
 			.addPort(IOType.FLUID, 0, 9, 6) {
-                IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = pollutionOutput, inputAllowed = false, outputAllowed = true))
+                IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = pollutionOutput, inputAllowed = false, outputAllowed = true))
             }
 
 			.addPort(IOType.GRID_ENERGY, 0, -1, 0) {

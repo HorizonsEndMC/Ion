@@ -16,7 +16,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
@@ -150,8 +150,8 @@ object PumpMultiblock : Multiblock(), EntityMultiblock<PumpMultiblockEntity> {
 			// Input
 			.addPowerInput(0, -1, 0)
 			// Output
-			.addPort(IOType.FLUID, 2, -1, 1) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
-			.addPort(IOType.FLUID, -2, -1, 1) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 2, -1, 1) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, -2, -1, 1) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
 			.addPort(IOType.GRID_ENERGY, 0, -1, 0) { IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>(this, GridEnergyPortMetaData(inputAllowed = false, outputAllowed = true)) }
 			.build()
 

@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
@@ -123,7 +123,7 @@ object CanisterUnloaderMultiblock : Multiblock(), EntityMultiblock<CanisterUnloa
 			// Input
 			.addPowerInput(0, -1, 0)
 			// Output
-			.addPort(IOType.FLUID, 0, -1, 2) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 0, -1, 2) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
 			.build()
 
 		val mainStorage = FluidStorageContainer(data, "main_storage", Component.text("Main Storage"), NamespacedKeys.MAIN_STORAGE, 1000.0, FluidRestriction.Unlimited)
