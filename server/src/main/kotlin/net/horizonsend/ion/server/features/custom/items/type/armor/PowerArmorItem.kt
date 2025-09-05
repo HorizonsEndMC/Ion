@@ -4,6 +4,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.Equippable
 import io.papermc.paper.datacomponent.item.ItemAttributeModifiers
 import io.papermc.paper.datacomponent.item.Unbreakable
+import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
@@ -156,7 +157,11 @@ class PowerArmorItem(
 			}
 		}
 
-		entity.world.spawnParticle(Particle.SMOKE, entity.location, 5)
+		val footDir = entity.location.direction.normalize().multiply(-1)
+			.rotateAroundX(randomDouble(0.20, 0.40))
+			.rotateAroundY(randomDouble(0.20, 0.40))
+			.rotateAroundZ(randomDouble(0.20, 0.40))
+		entity.world.spawnParticle(Particle.SMOKE, entity.location, 0, footDir.x, footDir.y, footDir.z, 0.05)
 
 		if (!entity.world.hasFlag(WorldFlag.ARENA) && entity.gameMode != GameMode.CREATIVE) {
 			powerManager.removePower(itemStack, this, 5)
