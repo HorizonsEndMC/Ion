@@ -254,7 +254,8 @@ object BazaarCommand : SLCommand() {
 
 	@Subcommand("export")
 	@Description("Export sell orders in CSV format (copies to clipboard)")
-	fun onExport(sender: Player) = asyncCommand(sender) {
+	@CommandCompletion("@bazaarCities")
+	fun onExport(sender: Player, city: TradeCityData) = asyncCommand(sender) {
 		// Prevent users from spamming API requests
 		val cooldownMillis = exportCooldown[sender.uniqueId] ?: 0
 		failIf(exportOnCooldown(sender)) {
@@ -262,10 +263,9 @@ object BazaarCommand : SLCommand() {
 					"(current time left: ${TIME_BETWEEN_EXPORTS_MIN - (Duration.ofMillis(System.currentTimeMillis() - cooldownMillis).toMinutes())})"
 		}
 
+		val items = BazaarItem.find(BazaarItem::cityTerritory eq city.territoryId).toList()
 
-		val items = BazaarItem.find(BazaarItem::seller eq sender.slPlayerId).toList()
-
-		if (items.isEmpty()) return@asyncCommand sender.userError("You do not have any items listed on the bazaar.")
+		if (items.isEmpty()) return@asyncCommand sender.userError("This city does not have any items listed on the bazaar.")
 
 		// Construct CSV string
 		val stringBuilder: StringBuilder = StringBuilder("Seller,Trade City,Item,Price,Stock,Balance").appendLine()
@@ -471,7 +471,8 @@ object BazaarCommand : SLCommand() {
 
 	@Subcommand("order export")
 	@Description("Export buy orders in CSV format (copies to clipboard)")
-	fun onOrderExport(sender: Player) = asyncCommand(sender) {
+	@CommandCompletion("@bazaarCities")
+	fun onOrderExport(sender: Player, city: TradeCityData) = asyncCommand(sender) {
 		// Prevent users from spamming API requests
 		val cooldownMillis = exportCooldown[sender.uniqueId] ?: 0
 		failIf(exportOnCooldown(sender)) {
@@ -479,9 +480,9 @@ object BazaarCommand : SLCommand() {
 					"(current time left: ${TIME_BETWEEN_EXPORTS_MIN - (Duration.ofMillis(System.currentTimeMillis() - cooldownMillis).toMinutes())})"
 		}
 
-		val items = BazaarOrder.find(BazaarOrder::player eq sender.slPlayerId).toList()
+		val items = BazaarOrder.find(BazaarOrder::cityTerritory eq city.territoryId).toList()
 
-		if (items.isEmpty()) return@asyncCommand sender.userError("You do not have any orders on the bazaar.")
+		if (items.isEmpty()) return@asyncCommand sender.userError("This city does not have any orders on the bazaar.")
 
 		// Construct CSV string
 		val stringBuilder: StringBuilder = StringBuilder("Buyer,Trade City,Item,Price,Balance,Requested Quantity,Fulfilled Quantity,Stock").appendLine()
