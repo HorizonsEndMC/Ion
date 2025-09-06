@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.input
 
+import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.admin.debug
@@ -46,8 +47,8 @@ class PlayerDirectControlInput(override val controller: PlayerController
 
 		controller.sendMessage(message)
 
-		player.walkSpeed = 0.009f
-		player.flySpeed = 0.0009f
+		player.walkSpeed = 0f
+		player.flySpeed = 0f
 		player.isFlying = true
 
 		val playerLoc = player.location
@@ -61,6 +62,7 @@ class PlayerDirectControlInput(override val controller: PlayerController
 		controller.sendMessage(ofChildren(text("Direct Control: ", GRAY), text("OFF ", NamedTextColor.RED), text("[Use /dc to turn it on]", YELLOW)))
 
 		player.walkSpeed = 0.2f // default
+		player.flySpeed = 0.06f
 		player.isFlying = false
 	}
 
@@ -158,5 +160,9 @@ class PlayerDirectControlInput(override val controller: PlayerController
 		}
 		starship.debug(cachedState.toString())
 		return cachedState
+	}
+
+	override fun handleJump(event: PlayerJumpEvent) {
+		event.isCancelled = true
 	}
 }
