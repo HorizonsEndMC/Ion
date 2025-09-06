@@ -22,7 +22,7 @@ open class ValueScrollButton(
 		val range = valueRange.last - valueRange.first
 
 		val formatted = if (wrap) {
-			val floorModResult = Math.floorMod(nextValueRaw - valueRange.first, (range + 1))
+			val floorModResult = Math.floorMod(nextValueRaw - valueRange.first, range)
 			floorModResult + valueRange.first
 		} else nextValueRaw
 
