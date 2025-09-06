@@ -34,6 +34,10 @@ object ChannelSelections : IonServerComponent() {
 		}
 	}
 
+	private val temporaryChannelSelections: MutableMap<UUID, ChatChannel> = mutableMapOf()
+
+	fun consumeTemporaryChannel(playerID: UUID): ChatChannel? = temporaryChannelSelections.remove(playerID)
+
 	override fun onEnable() {
 		listen<AsyncPlayerPreLoginEvent>(EventPriority.MONITOR, ignoreCancelled = true) { event ->
 			refreshCache(event.uniqueId)
@@ -74,6 +78,7 @@ object ChannelSelections : IonServerComponent() {
 
 						Tasks.sync {
 							localCache[playerID] = channel
+							temporaryChannelSelections[playerID] = channel
 							try {
 								player.chat(message.removePrefix("/").removePrefix("$command "))
 							} finally {
