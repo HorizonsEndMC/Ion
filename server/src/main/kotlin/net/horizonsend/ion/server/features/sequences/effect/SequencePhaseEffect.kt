@@ -107,6 +107,10 @@ abstract class SequencePhaseEffect(val timing: EffectTiming?) {
 		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { player.highlightBlock(position, duration) }
 	}
 
+	class RunCode(val block: (player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) -> Unit, timing: EffectTiming?) : SequencePhaseEffect(timing) {
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) = block.invoke(player, sequenceKey)
+	}
+
 	companion object {
 		fun ifPreviousPhase(phase: IonRegistryKey<SequencePhase, SequencePhase>, timing: EffectTiming, vararg effects: SequencePhaseEffect): DataConditionalEffects<IonRegistryKey<SequencePhase, SequencePhase>> {
 			return DataConditionalEffects("last_phase", { it.getOrNull() == phase }, timing, *effects)

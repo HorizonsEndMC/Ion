@@ -4,6 +4,7 @@ import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.util.StaticFloatAmount
 import net.horizonsend.ion.server.configuration.util.VariableFloatAmount
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
@@ -26,6 +27,7 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BR
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_SHIP_COMPUTER
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BROKEN_ELEVATOR
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.CREW_QUARTERS
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.ENTERED_ESCAPE_POD
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.EXIT_CRYOPOD_ROOM
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FIRE_OBSTACLE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GET_CHETHERITE
@@ -41,6 +43,8 @@ import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigg
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
 import net.horizonsend.ion.server.features.sequences.trigger.UsedTractorBeamTrigger.TractorBeamTriggerSettings
+import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
+import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -132,8 +136,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     NEXT_PHASE_SOUND,
                     SendMessage(Component.empty(), null),
                     SendMessage(text("The ships's communication system crackles to life:", GRAY, ITALIC), null),
-                    SendMessage(text("This is your captain speaking, we're under attack by pirates"), null),
-                    SendMessage(text("We must abandon ship"), null),
+                    SendMessage(text("This is your captain speaking, we're under attack by pirates!"), null),
+                    SendMessage(text("They hit the main reactor! All passengers, abandon ship!"), null),
                     SendMessage(text("Proceed to the elevator down to the hangar bay!"), null),
                     SendMessage(Component.empty(), null),
                 ),
@@ -349,14 +353,32 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
         bootstrapPhase(
             phaseKey = RECEIVED_CHETHERITE,
             sequenceKey = SequenceKeys.TUTORIAL,
+            triggers = listOf(SequenceTrigger(
+				type = SequenceTriggerTypes.PLAYER_MOVEMENT,
+				settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(92, 355, -9, 94, 358, -9))),
+				triggerResult = SequenceTrigger.startPhase(ENTERED_ESCAPE_POD)
+			)),
+            effects = listOf(
+                RANDOM_EXPLOSION_SOUND,
+                NEXT_PHASE_SOUND,
+                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(93, 356, -16), 10L, EffectTiming.TICKED), 10),
+                SendMessage(Component.empty(), EffectTiming.START),
+                SendMessage(text("Chetherite is hyperdrive fuel, you'll need it to travel faster than light.", GRAY, ITALIC), EffectTiming.START),
+                SendMessage(text("Now quick! Make your way to the escape pod before the ship is completely lost!", GRAY, ITALIC), EffectTiming.START),
+                SendMessage(Component.empty(), EffectTiming.START),
+            )
+        )
+
+        bootstrapPhase(
+            phaseKey = ENTERED_ESCAPE_POD,
+            sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(/*TODO*/),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
                 NEXT_PHASE_SOUND,
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, EffectTiming.TICKED), 10),
-                SendMessage(Component.empty(), EffectTiming.START),
-                SendMessage(text("Chetherite is hyperdrive fuel, you'll need it to travel faster than light.", GRAY, ITALIC), EffectTiming.START),
-                SendMessage(Component.empty(), EffectTiming.START),
+				SequencePhaseEffect.RunCode({ player, _ ->
+					StarshipDealers.loadShip(player, NPCDealerShip(ConfigurationFiles.serverConfiguration().tutorialEscapePodShip))
+				}, EffectTiming.START),
             )
         )
     }
