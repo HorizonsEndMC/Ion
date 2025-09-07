@@ -220,6 +220,8 @@ import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.YELLOW_CONCRETE
 import org.bukkit.NamespacedKey
 import org.bukkit.enchantments.Enchantment
+import org.bukkit.event.EventHandler
+import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.inventory.BlastingRecipe
 import org.bukkit.inventory.FurnaceRecipe
 import org.bukkit.inventory.ItemStack
@@ -231,6 +233,8 @@ import org.bukkit.inventory.ShapelessRecipe
 
 @Suppress("unused") // Lots of helper functions which may not be used now but will be in the future
 object Crafting : IonServerComponent() {
+	val listOfCustomRecipes = mutableListOf<NamespacedKey>()
+
 	override fun onEnable() {
 		registerOreFurnaceRecipes()
 		registerTools()
@@ -833,6 +837,11 @@ object Crafting : IonServerComponent() {
 		registerSwordRecipes(ENERGY_SWORD_PINK, MaterialChoice(PINK_TULIP))
 	}
 
+	@EventHandler
+	fun onPlayerJoin(event: PlayerJoinEvent) {
+		event.player.discoverRecipes(listOfCustomRecipes)
+	}
+
 	private fun registerOreFurnaceRecipes() {
 		fun registerFurnaceRecipe(smelted: IonRegistryKey<CustomItem, out CustomItem>, result: IonRegistryKey<CustomItem, out CustomItem>) {
 			Bukkit.addRecipe(FurnaceRecipe(
@@ -905,6 +914,7 @@ object Crafting : IonServerComponent() {
 		recipe.shape(shape1, shape2, shape3)
 		for ((key, ingredient) in ingredients) recipe.setIngredient(key, ingredient)
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
 	private fun shapedItemStack(name: String, result: Material, shape1: String, shape2: String, shape3: String, vararg ingredients: Pair<Char, ItemStack>) {
@@ -912,6 +922,7 @@ object Crafting : IonServerComponent() {
 		recipe.shape(shape1, shape2, shape3)
 		for ((key, ingredient) in ingredients) recipe.setIngredient(key, ingredient)
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
 	private fun shapedCustomItem(name: String, result: Material, shape1: String, shape2: String, shape3: String, vararg ingredients: Pair<Char, IonRegistryKey<CustomItem, out CustomItem>>) {
@@ -919,36 +930,42 @@ object Crafting : IonServerComponent() {
 		recipe.shape(shape1, shape2, shape3)
 		for ((key, ingredient) in ingredients) recipe.setIngredient(key, ingredient)
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
 	private fun shaped(name: String, result: Material, execute: ShapedRecipe.() -> Unit) {
 		val recipe = ShapedRecipe(NamespacedKeys.key(name), ItemStack(result))
 		execute(recipe)
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
 	private fun shaped(name: String, result: ItemStack, execute: ShapedRecipe.() -> Unit) {
 		val recipe = ShapedRecipe(NamespacedKeys.key(name), result)
 		execute(recipe)
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
 	private fun shaped(name: String, result: IonRegistryKey<CustomItem, out CustomItem>, execute: ShapedRecipe.() -> Unit) {
 		val recipe = ShapedRecipe(NamespacedKeys.key(name), result.getValue().constructItemStack())
 		execute(recipe)
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
 	private fun shapeless(name: String, result: ItemStack, execute: ShapelessRecipe.() -> Unit) {
 		val recipe = ShapelessRecipe(NamespacedKeys.key(name), result)
 		execute(recipe)
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
 	private fun shapeless(name: String, result: IonRegistryKey<CustomItem, out CustomItem>, execute: ShapelessRecipe.() -> Unit) {
 		val recipe = ShapelessRecipe(NamespacedKeys.key(name), result.getValue().constructItemStack())
 		execute(recipe)
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
 	private fun shapeless(name: String, result: ItemStack, vararg ingredients: Material) {
@@ -957,6 +974,7 @@ object Crafting : IonServerComponent() {
 			recipe.addIngredient(MaterialChoice(ingreidient))
 		}
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
 	private fun shapeless(name: String, result: ItemStack, vararg ingredients: ItemStack) {
@@ -965,6 +983,7 @@ object Crafting : IonServerComponent() {
 			recipe.addIngredient(ingreidient)
 		}
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
 	private fun shapeless(name: String, result: ItemStack, vararg ingredients: IonRegistryKey<CustomItem, out CustomItem>) {
@@ -973,6 +992,7 @@ object Crafting : IonServerComponent() {
 			recipe.addIngredient(ingreidient.getValue().constructItemStack())
 		}
 		Bukkit.addRecipe(recipe)
+		listOfCustomRecipes.add(NamespacedKeys.key(name))
 	}
 
 	private fun ShapedRecipe.setIngredient(key: Char, customItem: IonRegistryKey<CustomItem, out CustomItem>) = setIngredient(key, customItem.getValue().constructItemStack())
