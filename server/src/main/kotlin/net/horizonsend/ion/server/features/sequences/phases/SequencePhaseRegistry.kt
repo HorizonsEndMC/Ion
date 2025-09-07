@@ -46,12 +46,15 @@ import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType
 import net.horizonsend.ion.server.features.sequences.trigger.UsedTractorBeamTrigger.TractorBeamTriggerSettings
 import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
 import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Sound
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.BoundingBox
 
 class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHASE) {
@@ -392,12 +395,19 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
         bootstrapPhase(
             phaseKey = ENTERED_ESCAPE_POD,
             sequenceKey = SequenceKeys.TUTORIAL,
-            triggers = listOf(/*TODO*/),
+            triggers = listOf(
+
+			),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
                 NEXT_PHASE_SOUND,
 				SequencePhaseEffect.RunCode({ player, _ ->
-					StarshipDealers.loadShip(player, NPCDealerShip(ConfigurationFiles.serverConfiguration().tutorialEscapePodShip))
+					Tasks.async {
+						StarshipDealers.loadDealerShipUnchecked(player, NPCDealerShip(ConfigurationFiles.serverConfiguration().tutorialEscapePodShip))
+					}
+				}, EffectTiming.START),
+				SequencePhaseEffect.RunCode({ player, _ ->
+					player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 1))
 				}, EffectTiming.START),
             )
         )
