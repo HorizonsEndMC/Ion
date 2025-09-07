@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.configuration
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import net.horizonsend.ion.common.utils.DBVec3i
 import net.horizonsend.ion.common.utils.NavigationObject
 import net.horizonsend.ion.server.configuration.util.Pos
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -43,7 +44,8 @@ data class ServerConfiguration(
 		shipClass = StarshipType.SHUTTLE.name,
 		lore = listOf(),
 		pilotOffset = Vec3i(0, 0, 6)
-	)
+	),
+	val tutorialOrigin: DBVec3i = Vec3i(93, 359, 82)
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
