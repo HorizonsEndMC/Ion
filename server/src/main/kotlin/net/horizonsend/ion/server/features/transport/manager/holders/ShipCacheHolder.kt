@@ -36,7 +36,7 @@ class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTran
 
 		transportManager.starship.iterateBlocks { x, y, z ->
 			IonChunk[transportManager.starship.world, x.shr(4), z.shr(4)]?.let {
-				cache.type.get(it).invalidate(x, y, z)
+				cache.type.get(it).invalidate(x, y, z, null)
 			}
 
 			val local = transportManager.getLocalCoordinate(Vec3i(x, y, z))
@@ -81,7 +81,7 @@ class ShipCacheHolder<T: TransportCache>(override val transportManager: ShipTran
 		Tasks.async {
 			cache.getRawCache().keys.forEach { key -> cache.getCached(key)?.onInvalidate() }
 			transportManager.starship.iterateBlocks { x, y, z ->
-				NewTransport.invalidateCache(getWorld(), x, y, z)
+				NewTransport.invalidateCache(getWorld(), x, y, z, null)
 			}
 		}
 	}
