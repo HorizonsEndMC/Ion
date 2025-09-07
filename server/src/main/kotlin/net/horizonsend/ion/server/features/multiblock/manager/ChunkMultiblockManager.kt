@@ -37,8 +37,8 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 
 	private var lastSaved = System.currentTimeMillis()
 
-	override fun getSignUnsavedTime(): Long {
-		return System.currentTimeMillis() - lastSaved
+	override fun getSignUnsavedTime(time: Long?): Long {
+		return (time ?: System.currentTimeMillis()) - lastSaved
 	}
 
 	override fun markSignSaved() {

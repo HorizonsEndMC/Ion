@@ -20,7 +20,11 @@ import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.*
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
@@ -52,7 +56,7 @@ class ShipMultiblockManager(val starship: Starship) : MultiblockManager(IonServe
 	}
 
 	override fun save() {}
-	override fun getSignUnsavedTime(): Long = 0
+	override fun getSignUnsavedTime(time: Long?): Long = 0
 	override fun markChanged() {}
 
 	override fun getNetwork(type: CacheType): TransportCache {

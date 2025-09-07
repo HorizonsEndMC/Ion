@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.control.input.AIInput
 import net.horizonsend.ion.server.features.starship.control.input.DirectControlInput
 import net.horizonsend.ion.server.features.starship.control.movement.AIControlUtils
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
+import net.horizonsend.ion.server.miscellaneous.utils.IntervalExecutor
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToPitchYaw
 import org.bukkit.util.Vector
@@ -29,13 +30,17 @@ class SteeringSolverModule(
 	val target: Supplier<AITarget?>,
 	val type: MovementType = MovementType.CRUISE
 ) : AIModule(controller) {
-
 	val ship: Starship get() = controller.starship
+
 	private var thrust = Vector()
 	private var throttle = 0.0
 	private var heading = Vector()
 
 	override fun tick() {
+		tickExecutor.invoke()
+	}
+
+	private val tickExecutor = IntervalExecutor(10) {
 		steeringModule.steer()
 
 		thrust = steeringModule.thrustOut
@@ -49,7 +54,7 @@ class SteeringSolverModule(
 			if (controller.starship.isDirectControlEnabled) controller.starship.setDirectControlEnabled(false)
 			StarshipCruising.stopCruising(controller, starship)
 			AIControlUtils.shiftFlyInDirection(controller, null)
-			return
+			return@IntervalExecutor
 		}
 
 		val targetVec = target.get()?.getLocation()?.toVector()

@@ -51,7 +51,7 @@ abstract class MultiblockManager(val log: Logger) {
 
 	abstract fun getNetwork(type: CacheType): TransportCache
 
-	abstract fun getSignUnsavedTime(): Long
+	abstract fun getSignUnsavedTime(time: Long? = null): Long
 
 	open fun markSignSaved() {}
 
