@@ -28,6 +28,7 @@ import org.bukkit.event.block.BlockPistonExtendEvent
 import org.bukkit.event.block.BlockPistonRetractEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import java.util.Timer
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -130,9 +131,9 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		transportManagers.remove(manager)
 	}
 
-	fun invalidateCache(world: World, x: Int, y: Int, z: Int) {
+	fun invalidateCache(world: World, x: Int, y: Int, z: Int, player: UUID?) {
 		val chunk = IonChunk.getFromWorldCoordinates(world, x, z) ?: return
-		chunk.transportNetwork.invalidateCache(x, y, z)
+		chunk.transportNetwork.invalidateCache(x, y, z, player)
 	}
 
 	private fun getExtractorManager(world: World, x: Int, z: Int): ExtractorManager? {
@@ -188,8 +189,8 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 		removeFilter(world, x, y, z)
 	}
 
-	fun handleBlockEvent(world: World, x: Int, y: Int, z: Int, previousData: BlockData, newData: BlockData) = Tasks.async {
-		invalidateCache(world, x, y, z)
+	fun handleBlockEvent(world: World, x: Int, y: Int, z: Int, previousData: BlockData, newData: BlockData, player: UUID?) = Tasks.async {
+		invalidateCache(world, x, y, z, player)
 
 		if (isExtractorData(previousData) && !isExtractorData(newData)) {
 			removeExtractor(world, x, y, z)
@@ -205,43 +206,43 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onPlayerBlockPlace(event: BlockPlaceEvent) {
 		val block = event.block
-		handleBlockEvent(block.world, block.x, block.y, block.z, event.blockReplacedState.blockData, block.blockData)
+		handleBlockEvent(block.world, block.x, block.y, block.z, event.blockReplacedState.blockData, block.blockData, event.player.uniqueId)
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onPlayerBlockBreak(event: BlockBreakEvent) {
 		val block = event.block
-		handleBlockEvent(block.world, block.x, block.y, block.z, block.blockData, Material.AIR.createBlockData())
+		handleBlockEvent(block.world, block.x, block.y, block.z, block.blockData, Material.AIR.createBlockData(), event.player.uniqueId)
 		ensureFilter(block.world, block.x, block.y, block.z)
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onShipBlockPlace(event: StarshipPlaceBlockEvent) {
 		val block = event.block
-		handleBlockEvent(block.world, block.x, block.y, block.z, Material.AIR.createBlockData(), block.blockData)
+		handleBlockEvent(block.world, block.x, block.y, block.z, Material.AIR.createBlockData(), block.blockData, null)
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onShipBlockBreak(event: StarshipBreakBlockEvent) {
 		val block = event.block
-		handleBlockEvent(block.world, block.x, block.y, block.z, event.block.blockData, Material.AIR.createBlockData())
+		handleBlockEvent(block.world, block.x, block.y, block.z, event.block.blockData, Material.AIR.createBlockData(), null)
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun handlePistonExtend(event: BlockPistonExtendEvent) {
 		Tasks.asyncDelay(3L) {
 			val piston = event.block
-			invalidateCache(piston.world, piston.x, piston.y, piston.z)
+			invalidateCache(piston.world, piston.x, piston.y, piston.z, null)
 
 			for (block in event.blocks) {
 				ensureExtractor(block.world, block.x, block.y, block.z)
 				ensureFilter(block.world, block.x, block.y, block.z)
-				invalidateCache(block.world, block.x, block.y, block.z)
+				invalidateCache(block.world, block.x, block.y, block.z, null)
 
 				val relative = block.getRelative(event.direction)
 				ensureExtractor(block.world, relative.x, relative.y, relative.z)
 				ensureFilter(block.world, block.x, block.y, block.z)
-				invalidateCache(block.world, relative.x, relative.y, relative.z)
+				invalidateCache(block.world, relative.x, relative.y, relative.z, null)
 			}
 		}
 	}
@@ -250,24 +251,24 @@ object NewTransport : IonServerComponent(runAfterTick = true /* Run after tick t
 	fun handlePistonRetract(event: BlockPistonRetractEvent) {
 		Tasks.asyncDelay(3L) {
 			val piston = event.block
-			invalidateCache(piston.world, piston.x, piston.y, piston.z)
+			invalidateCache(piston.world, piston.x, piston.y, piston.z, null)
 
 			for (block in event.blocks) {
 				ensureExtractor(block.world, block.x, block.y, block.z)
 				ensureFilter(block.world, block.x, block.y, block.z)
-				invalidateCache(block.world, block.x, block.y, block.z)
+				invalidateCache(block.world, block.x, block.y, block.z, null)
 
 				val relative = block.getRelative(event.direction)
 				ensureExtractor(block.world, relative.x, relative.y, relative.z)
 				ensureFilter(block.world, block.x, block.y, block.z)
-				invalidateCache(block.world, relative.x, relative.y, relative.z)
+				invalidateCache(block.world, relative.x, relative.y, relative.z, null)
 			}
 		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun handleWaterFlow(event: BlockFromToEvent) {
-		invalidateCache(event.block.world, event.block.x, event.block.y, event.block.z)
+		invalidateCache(event.block.world, event.block.x, event.block.y, event.block.z, null)
 	}
 
 	fun saveExtractors() {

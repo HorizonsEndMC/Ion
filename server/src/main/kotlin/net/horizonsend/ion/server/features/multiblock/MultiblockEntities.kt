@@ -11,7 +11,12 @@ import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.*
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -148,13 +153,15 @@ object MultiblockEntities : IonServerComponent() {
 	fun onTickEnd(event: ServerTickEndEvent) {
 		if (event.timeRemaining < msptBuffer) return
 
+		val time = System.currentTimeMillis()
+
 		MultiblockTicking.iterateManagers { manager ->
 			if (manager !is ChunkMultiblockManager) return@iterateManagers
-			if (manager.getSignUnsavedTime() < saveInterval) return@iterateManagers
+			if (manager.getSignUnsavedTime(time) < saveInterval) return@iterateManagers
 
 			for (keyEntity in manager.getAllMultiblockEntities()) {
 				if (event.timeRemaining < msptBuffer) {
-					break
+					return
 				}
 
 				keyEntity.value.saveToSign()

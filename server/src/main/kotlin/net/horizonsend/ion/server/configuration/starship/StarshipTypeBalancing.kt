@@ -530,6 +530,10 @@ data class StarshipSounds(
 	val explodeFar: SoundInfo? = null,
 	val startCruise: SoundInfo = SoundInfo("minecraft:block.note_block.chime", volume = 5f, pitch = 0.53f),
 	val stopCruise: SoundInfo = SoundInfo("minecraft:block.note_block.banjo", volume = 5f, pitch = 1.782f),
+	val jumpChargeNear: SoundInfo = SoundInfo("horizonsend:starship.jump.charge.near"),
+	val jumpChargeFar: SoundInfo = SoundInfo("horizonsend:starship.jump.charge.far"),
+	val jumpCompleteNear: SoundInfo = SoundInfo("horizonsend:starship.jump.complete.near"),
+	val jumpCompleteFar: SoundInfo = SoundInfo("horizonsend:starship.jump.complete.far"),
 ) {
 	@Serializable
 	data class SoundInfo(

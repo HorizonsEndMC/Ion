@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.World
 import org.bukkit.persistence.PersistentDataContainer
 import java.util.function.Consumer
+import java.util.UUID
 
 class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHolder<*>>() {
 	override val extractorManager: ChunkExtractorManager = ChunkExtractorManager(this)
@@ -65,12 +66,12 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHo
 		NewTransport.removeTransportManager(this)
 	}
 
-	fun invalidateCache(x: Int, y: Int, z: Int) {
-		invalidateCache(toBlockKey(x, y, z))
+	fun invalidateCache(x: Int, y: Int, z: Int, player: UUID?) {
+		invalidateCache(toBlockKey(x, y, z), player)
 	}
 
-	fun invalidateCache(key: BlockKey) {
-		cacheHolders.forEach { it.cache.invalidate(key) }
+	fun invalidateCache(key: BlockKey, player: UUID?) {
+		cacheHolders.forEach { it.cache.invalidate(key, player) }
 	}
 
 	fun invalidatePathing(x: Int, y: Int, z: Int) {

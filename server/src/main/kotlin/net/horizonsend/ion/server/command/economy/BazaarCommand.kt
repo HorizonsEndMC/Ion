@@ -251,10 +251,10 @@ object BazaarCommand : SLCommand() {
 
 		sender.sendMessage(builder.build())
 	}
-
+	
 	@Subcommand("export")
-	@Description("Export sell orders in CSV format (copies to clipboard)")
-	fun onExport(sender: Player) = asyncCommand(sender) {
+	@Description("Export your sell orders in CSV format (provides link)")
+	fun onExportPlayer(sender: Player) = asyncCommand(sender) {
 		// Prevent users from spamming API requests
 		val cooldownMillis = exportCooldown[sender.uniqueId] ?: 0
 		failIf(exportOnCooldown(sender)) {
@@ -262,40 +262,29 @@ object BazaarCommand : SLCommand() {
 					"(current time left: ${TIME_BETWEEN_EXPORTS_MIN - (Duration.ofMillis(System.currentTimeMillis() - cooldownMillis).toMinutes())})"
 		}
 
-
 		val items = BazaarItem.find(BazaarItem::seller eq sender.slPlayerId).toList()
 
-		if (items.isEmpty()) return@asyncCommand sender.userError("You do not have any items listed on the bazaar.")
+		if (items.isEmpty()) return@asyncCommand sender.userError("This city does not have any items listed on the bazaar.")
 
-		// Construct CSV string
-		val stringBuilder: StringBuilder = StringBuilder("Seller,Trade City,Item,Price,Stock,Balance").appendLine()
+		exportSellOrders(items, sender)
+	}
 
-		for (item in items) {
-			stringBuilder.appendLine(sender.name + ',' +
-					cityName(Regions[item.cityTerritory]) + ',' +
-					item.itemString + ',' +
-					item.price.roundToHundredth() + ',' +
-					item.stock + ',' +
-                    item.balance.roundToHundredth()
-			)
+	@Subcommand("export")
+	@Description("Export a city's sell orders in CSV format (provides link)")
+	@CommandCompletion("@bazaarCities")
+	fun onExportCity(sender: Player, city: TradeCityData) = asyncCommand(sender) {
+		// Prevent users from spamming API requests
+		val cooldownMillis = exportCooldown[sender.uniqueId] ?: 0
+		failIf(exportOnCooldown(sender)) {
+			"You must wait $TIME_BETWEEN_EXPORTS_MIN minutes before requesting another export " +
+					"(current time left: ${TIME_BETWEEN_EXPORTS_MIN - (Duration.ofMillis(System.currentTimeMillis() - cooldownMillis).toMinutes())})"
 		}
 
-		// Construct HTTP request
-		val httpClient = OkHttpClient()
-		val request = createPastebinHttpRequest(stringBuilder.toString(), sender.name + "_Bazaar_Export_" +
-				LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".csv")
-		httpClient.newCall(request).execute().use { response ->
-			if (!response.isSuccessful) {
-				sender.userError("Failed to export bazaar sell order data (${response.code}, ${response.body?.string()})")
-				return@asyncCommand
-			}
+		val items = BazaarItem.find(BazaarItem::cityTerritory eq city.territoryId).toList()
 
-			// Set new export cooldown
-			exportCooldown[sender.uniqueId] = System.currentTimeMillis()
-			sender.success("Exported bazaar sell order data as CSV (expires in 10 minutes): ")
-			val responseBody = response.body?.string() ?: "null"
-			sender.sendMessage(bracketed(formatLink(responseBody, responseBody)))
-		}
+		if (items.isEmpty()) return@asyncCommand sender.userError("This city does not have any items listed on the bazaar.")
+
+		exportSellOrders(items, sender)
 	}
 
 	@Suppress("Unused")
@@ -470,8 +459,8 @@ object BazaarCommand : SLCommand() {
 	}
 
 	@Subcommand("order export")
-	@Description("Export buy orders in CSV format (copies to clipboard)")
-	fun onOrderExport(sender: Player) = asyncCommand(sender) {
+	@Description("Export your buy orders in CSV format (provides link)")
+	fun onOrderExportPlayer(sender: Player) = asyncCommand(sender) {
 		// Prevent users from spamming API requests
 		val cooldownMillis = exportCooldown[sender.uniqueId] ?: 0
 		failIf(exportOnCooldown(sender)) {
@@ -481,31 +470,96 @@ object BazaarCommand : SLCommand() {
 
 		val items = BazaarOrder.find(BazaarOrder::player eq sender.slPlayerId).toList()
 
-		if (items.isEmpty()) return@asyncCommand sender.userError("You do not have any orders on the bazaar.")
+		if (items.isEmpty()) return@asyncCommand sender.userError("This city does not have any orders on the bazaar.")
+		exportBuyOrders(items, sender)
+	}
 
+	@Subcommand("order export")
+	@Description("Export a city's buy orders in CSV format (provides link)")
+	@CommandCompletion("@bazaarCities")
+	fun onOrderExportCity(sender: Player, city: TradeCityData) = asyncCommand(sender) {
+		// Prevent users from spamming API requests
+		val cooldownMillis = exportCooldown[sender.uniqueId] ?: 0
+		failIf(exportOnCooldown(sender)) {
+			"You must wait $TIME_BETWEEN_EXPORTS_MIN minutes before requesting another export " +
+					"(current time left: ${TIME_BETWEEN_EXPORTS_MIN - (Duration.ofMillis(System.currentTimeMillis() - cooldownMillis).toMinutes())})"
+		}
+
+		val items = BazaarOrder.find(BazaarOrder::cityTerritory eq city.territoryId).toList()
+
+		if (items.isEmpty()) return@asyncCommand sender.userError("This city does not have any orders on the bazaar.")
+		exportBuyOrders(items, sender)
+	}
+
+	private fun exportSellOrders(
+		items: List<BazaarItem>,
+		sender: Player
+	) {
 		// Construct CSV string
-		val stringBuilder: StringBuilder = StringBuilder("Buyer,Trade City,Item,Price,Balance,Requested Quantity,Fulfilled Quantity,Stock").appendLine()
+		val stringBuilder: StringBuilder = StringBuilder("Seller,Trade City,Item,Price,Stock,Balance").appendLine()
 
 		for (item in items) {
-			stringBuilder.appendLine(sender.name + ',' +
-					cityName(Regions[item.cityTerritory]) + ',' +
-					item.itemString + ',' +
-					item.pricePerItem.roundToHundredth() + ',' +
-					item.balance.roundToHundredth() + ',' +
-					item.requestedQuantity + ',' +
-					item.fulfilledQuantity + ',' +
-					item.stock
+			stringBuilder.appendLine(
+				sender.name + ',' +
+						cityName(Regions[item.cityTerritory]) + ',' +
+						item.itemString + ',' +
+						item.price.roundToHundredth() + ',' +
+						item.stock + ',' +
+						item.balance.roundToHundredth()
 			)
 		}
 
 		// Construct HTTP request
 		val httpClient = OkHttpClient()
-		val request = createPastebinHttpRequest(stringBuilder.toString(), sender.name + "_Bazaar_Order_Export_" +
-				LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".csv")
+		val request = createPastebinHttpRequest(
+			stringBuilder.toString(), sender.name + "_Bazaar_Export_" +
+					LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".csv"
+		)
 		httpClient.newCall(request).execute().use { response ->
 			if (!response.isSuccessful) {
 				sender.userError("Failed to export bazaar sell order data (${response.code}, ${response.body?.string()})")
-				return@asyncCommand
+				return
+			}
+
+			// Set new export cooldown
+			exportCooldown[sender.uniqueId] = System.currentTimeMillis()
+			sender.success("Exported bazaar sell order data as CSV (expires in 10 minutes): ")
+			val responseBody = response.body?.string() ?: "null"
+			sender.sendMessage(bracketed(formatLink(responseBody, responseBody)))
+		}
+	}
+	
+	private fun exportBuyOrders(
+		items: List<BazaarOrder>,
+		sender: Player
+	) {
+		// Construct CSV string
+		val stringBuilder: StringBuilder =
+			StringBuilder("Buyer,Trade City,Item,Price,Balance,Requested Quantity,Fulfilled Quantity,Stock").appendLine()
+
+		for (item in items) {
+			stringBuilder.appendLine(
+				sender.name + ',' +
+						cityName(Regions[item.cityTerritory]) + ',' +
+						item.itemString + ',' +
+						item.pricePerItem.roundToHundredth() + ',' +
+						item.balance.roundToHundredth() + ',' +
+						item.requestedQuantity + ',' +
+						item.fulfilledQuantity + ',' +
+						item.stock
+			)
+		}
+
+		// Construct HTTP request
+		val httpClient = OkHttpClient()
+		val request = createPastebinHttpRequest(
+			stringBuilder.toString(), sender.name + "_Bazaar_Order_Export_" +
+					LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm")) + ".csv"
+		)
+		httpClient.newCall(request).execute().use { response ->
+			if (!response.isSuccessful) {
+				sender.userError("Failed to export bazaar sell order data (${response.code}, ${response.body?.string()})")
+				return
 			}
 
 			// Set new export cooldown

@@ -52,7 +52,7 @@ fun ItemStack.getCustomName(): Component? = getData(DataComponentTypes.CUSTOM_NA
 @Deprecated("use components")
 fun ItemStack.setLoreAndGetString(lines: List<String>): ItemStack = apply { this.lore = lines }
 
-fun ItemStack.updateLore(lines: List<Component>): ItemStack = apply { this.lore(lines.map { it.itemLore }) }
+fun ItemStack.updateLore(lines: List<Component>): ItemStack = apply { this.lore(lines.take(256).map { it.itemLore }) }
 
 val ItemStack.displayNameComponent: Component get() =
 	if (hasData(DataComponentTypes.CUSTOM_NAME)) getData(DataComponentTypes.CUSTOM_NAME)!!.asComponent()

@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.DaylightDetector
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass
@@ -33,10 +34,10 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 
 	val powerCache = holder.transportManager.powerNodeManager.cache
 
-	override fun invalidate(key: BlockKey) {
+	override fun invalidate(key: BlockKey, player: UUID?) {
 		combinedSolarPanelPositions[key]?.removePosition(key)
 
-		super.invalidate(key)
+		super.invalidate(key, player)
 	}
 
 	sealed interface SolarPanelComponent: Node {
