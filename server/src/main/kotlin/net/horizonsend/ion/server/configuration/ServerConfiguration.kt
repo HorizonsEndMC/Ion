@@ -4,12 +4,14 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.common.utils.NavigationObject
 import net.horizonsend.ion.server.configuration.util.Pos
-import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
+import net.horizonsend.ion.server.features.starship.StarshipType
+import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip.SerializableDealerShipInformation
 import net.horizonsend.ion.server.features.world.WorldSettings
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Bukkit
+import org.bukkit.Material
 import java.time.DayOfWeek
 import kotlinx.serialization.SerialName
 
@@ -20,7 +22,7 @@ data class ServerConfiguration(
 	val particleColourChoosingMoneyRequirement: Double? = 5.0,
 	val beacons: List<HyperspaceBeacon> = listOf(),
 	val spaceGenConfig: Map<String, AsteroidConfig> = mapOf(),
-	val soldShips: List<NPCDealerShip.SerializableDealerShipInformation> = listOf(),
+	val soldShips: List<SerializableDealerShipInformation> = listOf(),
 	val dutyModeMonitorWebhook: String? = null,
 	val eventLoggerWebhook: String? = null,
 	val getPosMaxRange: Double = 600.0,
@@ -37,6 +39,17 @@ data class ServerConfiguration(
 
 	@SerialName("waypoint_receive_range")
 	val waypointReceiveRange: Double = 200.0,
+
+	val tutorialEscapePodShip: SerializableDealerShipInformation = SerializableDealerShipInformation(
+		price = 0.0,
+		schematicName = "TutorialEscapePod",
+		guiMaterial = Material.SPONGE,
+		displayName = "",
+		cooldown = 0L,
+		protectionCanBypass = true,
+		shipClass = StarshipType.SHUTTLE.name,
+		lore = listOf()
+	)
 ) {
 	/**
 	 * @param baseAsteroidDensity: Roughly a base level of the number of asteroids per chunk
