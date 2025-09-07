@@ -17,4 +17,5 @@ object SequencePhaseKeys : KeyRegistry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 	val BRANCH_MULTIBLOCKS = registerKey("BRANCH_MULTIBLOCKS")
 	val GET_CHETHERITE = registerKey("GET_CHETHERITE")
 	val RECEIVED_CHETHERITE = registerKey("RECEIVED_CHETHERITE")
+	val ENTERED_ESCAPE_POD = registerKey("ENTERED_ESCAPE_POD")
 }
