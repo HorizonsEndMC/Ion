@@ -6,12 +6,14 @@ import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.common.utils.DBVec3i
 import net.horizonsend.ion.common.utils.text.deserializeComponent
 import net.horizonsend.ion.common.utils.text.restrictedMiniMessageSerializer
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.miscellaneous.utils.actualType
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.readSchematic
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
@@ -24,7 +26,13 @@ import java.util.UUID
 
 class NPCDealerShip(
 	val serialized: SerializableDealerShipInformation,
-) : DealerShip(deserializeComponent(serialized.displayName, restrictedMiniMessageSerializer), serialized.price, serialized.protectionCanBypass, serialized.shipClass.actualType) {
+) : DealerShip(
+	deserializeComponent(serialized.displayName, restrictedMiniMessageSerializer),
+	serialized.price,
+	serialized.protectionCanBypass,
+	serialized.shipClass.actualType,
+	Vec3i(serialized.pilotOffset)
+) {
 	val cooldown: Duration = Duration.ofMillis(serialized.cooldown)
 
 	private val schematicFile = IonServer.dataFolder.resolve("sold_ships").resolve("${serialized.schematicName}.schem")
@@ -85,6 +93,7 @@ class NPCDealerShip(
 		val cooldown: Long,
 		val protectionCanBypass: Boolean,
 		val shipClass: StarshipTypeDB,
-		val lore: List<String>
+		val lore: List<String>,
+		val pilotOffset: DBVec3i = Vec3i(0, 0, 0)
 	)
 }
