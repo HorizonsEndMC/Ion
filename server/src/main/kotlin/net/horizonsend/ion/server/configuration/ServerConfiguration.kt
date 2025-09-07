@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip.SerializableDealerShipInformation
 import net.horizonsend.ion.server.features.world.WorldSettings
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.state.BlockState
 import org.bukkit.Bukkit
@@ -40,7 +41,8 @@ data class ServerConfiguration(
 		cooldown = 0L,
 		protectionCanBypass = true,
 		shipClass = StarshipType.SHUTTLE.name,
-		lore = listOf()
+		lore = listOf(),
+		pilotOffset = Vec3i(0, 0, 6)
 	)
 ) {
 	/**
