@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.Companion.ifPreviousPhase
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.GoToPreviousPhase
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendMessage
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_CARGO_CRATES
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_DYNMAP
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_LOOK_OUTSIDE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_MULTIBLOCKS
@@ -351,23 +352,42 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
         )
 
         bootstrapPhase(
-            phaseKey = RECEIVED_CHETHERITE,
-            sequenceKey = SequenceKeys.TUTORIAL,
-            triggers = listOf(SequenceTrigger(
-				type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-				settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(92, 355, -9, 94, 358, -9))),
-				triggerResult = SequenceTrigger.startPhase(ENTERED_ESCAPE_POD)
-			)),
-            effects = listOf(
-                RANDOM_EXPLOSION_SOUND,
-                NEXT_PHASE_SOUND,
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(93, 356, -16), 10L, EffectTiming.TICKED), 10),
-                SendMessage(Component.empty(), EffectTiming.START),
-                SendMessage(text("Chetherite is hyperdrive fuel, you'll need it to travel faster than light.", GRAY, ITALIC), EffectTiming.START),
-                SendMessage(text("Now quick! Make your way to the escape pod before the ship is completely lost!", GRAY, ITALIC), EffectTiming.START),
-                SendMessage(Component.empty(), EffectTiming.START),
-            )
-        )
+			RECEIVED_CHETHERITE, SequenceKeys.TUTORIAL, listOf(
+				SequenceTrigger(
+					type = SequenceTriggerTypes.PLAYER_MOVEMENT,
+					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(92, 355, -9, 94, 358, -9))),
+					triggerResult = SequenceTrigger.startPhase(ENTERED_ESCAPE_POD)
+				),
+				SequenceTrigger(
+					SequenceTriggerTypes.COMBINED_AND, CombinedAndTrigger.CombinedAndTriggerSettings(
+						// If looking out window
+						SequenceTrigger(
+							SequenceTriggerTypes.PLAYER_MOVEMENT,
+							MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(79, 352, -1, 81, 355, -1), distance = 5.0)),
+							triggerResult = SequenceTrigger.startPhase(BRANCH_CARGO_CRATES)
+						),
+						// Only trigger this branch if first time
+						SequenceTrigger(
+							SequenceTriggerTypes.DATA_PREDICATE, DataPredicate.DataPredicateSettings<Boolean>("seen_crates") { it != true },
+							triggerResult = SequenceTrigger.startPhase(BRANCH_CARGO_CRATES)
+						)
+					), triggerResult = SequenceTrigger.startPhase(BRANCH_CARGO_CRATES)
+				)
+			), listOf(
+				RANDOM_EXPLOSION_SOUND,
+				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(93, 356, -16), 10L, EffectTiming.TICKED), 10),
+
+				ifPreviousPhase(
+					GET_CHETHERITE,
+					EffectTiming.START,
+					NEXT_PHASE_SOUND,
+					SendMessage(Component.empty(), EffectTiming.START),
+					SendMessage(text("Chetherite is hyperdrive fuel, you'll need it to travel faster than light.", GRAY, ITALIC), EffectTiming.START),
+					SendMessage(text("Now quick! Make your way to the escape pod before the ship is completely lost!", GRAY, ITALIC), EffectTiming.START),
+					SendMessage(Component.empty(), EffectTiming.START),
+				)
+			)
+		)
 
         bootstrapPhase(
             phaseKey = ENTERED_ESCAPE_POD,
@@ -465,6 +485,23 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				GoToPreviousPhase(EffectTiming.START),
 
 				SequencePhaseEffect.SetSequenceData("seen_multiblocks", true, Boolean::class, EffectTiming.END),
+			)
+		)
+
+		bootstrapPhase(
+			phaseKey = BRANCH_CARGO_CRATES,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			triggers = listOf(),
+			effects = listOf(
+				RANDOM_EXPLOSION_SOUND,
+				NEXT_PHASE_SOUND,
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(text("These cargo crates won't be making it to their destination.", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
+
+				GoToPreviousPhase(EffectTiming.START),
+
+				SequencePhaseEffect.SetSequenceData("seen_crates", true, Boolean::class, EffectTiming.END),
 			)
 		)
     }
