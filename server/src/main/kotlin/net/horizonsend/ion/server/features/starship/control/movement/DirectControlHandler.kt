@@ -106,9 +106,9 @@ class DirectControlHandler(controller: Controller, override val input: DirectCon
 
 		val forwardZ = direction.modZ != 0
 		val strafeAxis = if (forwardZ) strafeVector.x else strafeVector.z
-		val strafe = (sign(strafeAxis).toInt() * abs(targetSpeed)).toInt()
+		val strafe = (sign(strafeAxis).toInt() * abs(targetSpeed)).roundToInt()
 		val ascensionAxis = if (forwardZ) strafeVector.z * -direction.modZ else strafeVector.x * -direction.modX
-		val ascension = (sign(ascensionAxis).toInt() * abs(targetSpeed)).toInt()
+		val ascension = (sign(ascensionAxis).toInt() * abs(targetSpeed)).roundToInt()
 		if (forwardZ) dx += strafe else dz += strafe
 		dy += ascension
 
