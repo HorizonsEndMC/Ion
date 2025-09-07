@@ -192,7 +192,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 
 				Tasks.async {
 					for (key in oldPositions.toModernBlockKey().union(LongOpenHashSet(newPositionArray.toModernBlockKey()))) {
-						NewTransport.invalidateCache(starship.world, getX(key), getY(key), getZ(key))
+						NewTransport.invalidateCache(starship.world, getX(key), getY(key), getZ(key), starship.playerPilot?.uniqueId)
 					}
 				}
 			}

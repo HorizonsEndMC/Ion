@@ -512,7 +512,6 @@ fun vectorToPitchYaw(vector: Vector, radians : Boolean= false): Pair<Float, Floa
 	val pitch: Float
 	val yaw: Float
 
-	val twoPi = 2 * Math.PI
 	val x = vector.x
 	val z = vector.z
 
@@ -532,6 +531,8 @@ fun vectorToPitchYaw(vector: Vector, radians : Boolean= false): Pair<Float, Floa
 	val xz = sqrt(x2 + z2)
 
 	val phi = atan(-vector.y / xz)
+
+	val twoPi = 2 * Math.PI
 
 	if (radians) {
 		yaw = theta.toFloat()

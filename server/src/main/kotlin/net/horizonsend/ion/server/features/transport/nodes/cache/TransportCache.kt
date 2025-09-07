@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.transport.nodes.util.CacheState
 import net.horizonsend.ion.server.features.transport.nodes.util.PathfindingNodeWrapper
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -29,7 +30,9 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.kyori.adventure.audience.Audience
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 import java.util.function.Supplier
 import kotlin.reflect.KClass
@@ -80,22 +83,32 @@ abstract class TransportCache(open val holder: CacheHolder<*>) {
 		}.get()
 	}
 
-	fun invalidate(x: Int, y: Int, z: Int) {
-		invalidate(toBlockKey(x, y, z))
+	fun invalidate(x: Int, y: Int, z: Int, player: UUID?) {
+		invalidate(toBlockKey(x, y, z), player)
 	}
 
 	abstract val extractorNodeClass: KClass<out Node>
 
-	open fun invalidate(key: BlockKey) {
+	val invalidationCooldown = PerPlayerCooldown(2, TimeUnit.SECONDS)
+
+	open fun invalidate(key: BlockKey, player: UUID?) {
 		val removed = (nodeCache.remove(key) as? CacheState.Present)?.node
 		removed?.onInvalidate()
 
-		if (removed == null) {
-			invalidateSurroundingPaths(key)
-			return
+		val pathInvalidation = pathInvalidation@{
+			if (removed == null) {
+				invalidateSurroundingPaths(key)
+				return@pathInvalidation
+			}
+
+			if (this is DestinationCacheHolder) destinationCache.invalidatePaths(key, removed)
 		}
 
-		if (this is DestinationCacheHolder) destinationCache.invalidatePaths(key, removed)
+		if (player != null) {
+			invalidationCooldown.tryExec(player, pathInvalidation)
+		} else {
+			pathInvalidation.invoke()
+		}
 	}
 
 	fun invalidateSurroundingPaths(key: BlockKey) {

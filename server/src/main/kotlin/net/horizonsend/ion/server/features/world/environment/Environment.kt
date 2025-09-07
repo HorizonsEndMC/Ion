@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.world.environment
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isInside
@@ -62,6 +63,9 @@ enum class Environment {
 	NO_GRAVITY {
 		override fun tickPlayer(player: Player) {
 			if (player.gameMode != GameMode.SURVIVAL || player.isDead || !player.hasGravity()) return
+
+			// do not update fly speed if the player is piloting and is in direct control
+			if (ActiveStarships.findByPilot(player)?.isDirectControlEnabled == true) return
 
 			if (isInside(player.eyeLocation, 1)) {
 				player.allowFlight = true

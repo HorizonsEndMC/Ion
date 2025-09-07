@@ -19,11 +19,8 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-class ShiftFlightHandler(controller: Controller,
-						 override val input: ShiftFlightInput
-) : MovementHandler(controller, "Shift Flight", input) {
+class ShiftFlightHandler(controller: Controller, override val input: ShiftFlightInput) : MovementHandler(controller, "Shift Flight", input) {
 	private var sneakMovements = 0
-
 
 	override fun onBlocked(reason: StarshipMovementException) {
 		sneakMovements = 0
@@ -46,8 +43,7 @@ class ShiftFlightHandler(controller: Controller,
 		val now = System.currentTimeMillis()
 		if (now - starship.lastManualMove < starship.manualMoveCooldownMillis) return
 
-
-		if (toggledSneak) {sneakMovements = 0}
+		if (toggledSneak) { sneakMovements = 0 }
 
 		starship.lastManualMove = now
 		sneakMovements++

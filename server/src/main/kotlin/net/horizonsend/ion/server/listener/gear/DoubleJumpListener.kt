@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.listener.gear
 
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -28,7 +29,11 @@ object DoubleJumpListener : SLEventListener() {
 
 	@EventHandler
 	fun onToggleFlight(event: PlayerToggleFlightEvent) {
+		// player is trying to stop flying
 		if (!event.isFlying) {
+			if (ActiveStarships.findByPilot(event.player)?.isDirectControlEnabled == true) {
+				event.isCancelled = true
+			}
 			return
 		}
 

@@ -17,7 +17,7 @@ class CollectionScrollButton<T : Any?>(
 	value: Supplier<Int>,
 	val nameFormatter: (T) -> Component,
 	valueConsumer: BiConsumer<Int, T>
-) : ValueScrollButton(providedItem, true, value, 1, entries.indices, { valueConsumer.accept(it, entries[it]) }) {
+) : ValueScrollButton(providedItem, true, value, 1, 0..entries.size, { valueConsumer.accept(it, entries[it]) }) {
 	override var currentLore: Supplier<List<Component>> =
 		Supplier { listOf(ofChildren(Component.text("Current value: "), nameFormatter.invoke(entries[value.get()]))) }
 
