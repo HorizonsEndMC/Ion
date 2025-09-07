@@ -122,7 +122,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         // If looking out window
                         SequenceTrigger(
                             SequenceTriggerTypes.PLAYER_MOVEMENT,
-                            MovementTriggerSettings(lookingAtBoundingBox(box = BoundingBox.of(Vec3i(-13, 358, -47).toVector(), Vec3i(48, 383, 75).toVector()), distance = 100.0)),
+                            MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(-13, 358, -47, 48, 383, 75), distance = 100.0)),
                             triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE)
                         ),
                         // Only trigger this branch if first time
@@ -145,7 +145,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     SendMessage(text("Proceed to the elevator down to the hangar bay!"), null),
                     SendMessage(Component.empty(), null),
                 ),
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(93, 359, 11), 10L, EffectTiming.TICKED), 10)
+                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(93.relativeX(), 359.relativeY(), 11.relativeZ()), 10L, EffectTiming.TICKED), 10)
             )
         )
 
@@ -205,7 +205,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     SendMessage(Component.empty(), null),
                 ),
 
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 359, 63), 10L, EffectTiming.TICKED), 10)
+                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97.relativeX(), 359.relativeY(), 63.relativeZ()), 10L, EffectTiming.TICKED), 10)
             )
         )
 
@@ -347,7 +347,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
                 NEXT_PHASE_SOUND,
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97, 352, 16), 10L, EffectTiming.TICKED), 10),
+                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97.relativeX(), 352.relativeY(), 16.relativeZ()), 10L, EffectTiming.TICKED), 10),
                 SendMessage(Component.empty(), EffectTiming.START),
                 SendMessage(text("Quick, you'll need to grab some fuel for the escape pod's emergancy hyperdrive. You can find some in that gargo container.", GRAY, ITALIC), EffectTiming.START),
                 SendMessage(Component.empty(), EffectTiming.START),
@@ -378,7 +378,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				)
 			), listOf(
 				RANDOM_EXPLOSION_SOUND,
-				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(93, 356, -16), 10L, EffectTiming.TICKED), 10),
+				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(93.relativeX(), 356.relativeY(), -16.relativeZ()), 10L, EffectTiming.TICKED), 10),
 
 				ifPreviousPhase(
 					GET_CHETHERITE,
@@ -399,7 +399,6 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
 			),
             effects = listOf(
-                RANDOM_EXPLOSION_SOUND,
                 NEXT_PHASE_SOUND,
 				SequencePhaseEffect.RunCode({ player, _ ->
 					Tasks.async {
@@ -456,7 +455,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     text("This is a starship computer. It is the primary point of interface for ships. They allow piloting, detection, and manage settings.", GRAY, ITALIC),
                     EffectTiming.START
                 ),
-                SequencePhaseEffect.HighlightBlock(Vec3i(93, 359, 82), 60L, EffectTiming.START),
+                SequencePhaseEffect.HighlightBlock(Vec3i(93.relativeX(), 359.relativeY(), 82.relativeZ()), 60L, EffectTiming.START),
                 SendMessage(Component.empty(), EffectTiming.START),
 
                 GoToPreviousPhase(EffectTiming.START),
@@ -517,13 +516,17 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
     }
 
 	private fun fullBoundingBox(x1: Int, y1: Int, z1: Int, x2: Int, y2: Int, z2: Int): BoundingBox {
-		val minX: Double = (minOf(x1, x2)).toDouble()
-		val minY: Double = (minOf(y1, y2)).toDouble()
-		val minZ: Double = (minOf(z1, z2)).toDouble()
-		val maxX: Double = (maxOf(x1, x2) + 1).toDouble()
-		val maxY: Double = (maxOf(y1, y2) + 1).toDouble()
-		val maxZ: Double = (maxOf(z1, z2) + 1).toDouble()
+		val minX: Double = (minOf(x1.relativeX(), x2.relativeX())).toDouble()
+		val minY: Double = (minOf(y1.relativeY(), y2.relativeY())).toDouble()
+		val minZ: Double = (minOf(z1.relativeZ(), z2.relativeZ())).toDouble()
+		val maxX: Double = (maxOf(x1.relativeX(), x2.relativeX()) + 1).toDouble()
+		val maxY: Double = (maxOf(y1.relativeY(), y2.relativeY()) + 1).toDouble()
+		val maxZ: Double = (maxOf(z1.relativeZ(), z2.relativeZ()) + 1).toDouble()
 
 		return BoundingBox(minX, minY, minZ, maxX, maxY, maxZ)
 	}
+
+	private fun Int.relativeX(): Int = (this - 93) + ConfigurationFiles.serverConfiguration().tutorialOrigin.x
+	private fun Int.relativeY(): Int = (this - 359) + ConfigurationFiles.serverConfiguration().tutorialOrigin.y
+	private fun Int.relativeZ(): Int = (this - 82) + ConfigurationFiles.serverConfiguration().tutorialOrigin.z
 }
