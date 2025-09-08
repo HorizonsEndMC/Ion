@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_
 import net.horizonsend.ion.server.features.client.display.modular.display.POWER_TEXT_LINE
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
-import net.horizonsend.ion.server.features.client.display.modular.display.gridenergy.GridEnergyConsumptionDisplay
+import net.horizonsend.ion.server.features.client.display.modular.display.gridenergy.GridEnergyDisplay
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.custom.settings.SettingsPageGui.Companion.createSettingsPage
 import net.horizonsend.ion.server.features.gui.custom.settings.button.ArbitraryButton
@@ -680,7 +680,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
                 )
             },
 			{
-                GridEnergyConsumptionDisplay(
+                GridEnergyDisplay(
                     handler = it,
 					multiblock = this,
                     offsetLeft = 0.0,

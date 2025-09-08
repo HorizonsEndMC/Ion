@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHan
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.getLinePos
-import net.horizonsend.ion.server.features.client.display.modular.display.gridenergy.GridEnergyConsumptionDisplay
+import net.horizonsend.ion.server.features.client.display.modular.display.gridenergy.GridEnergyDisplay
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -59,9 +59,13 @@ abstract class GridPowerGeneratorMultiblock : Multiblock(), EntityMultiblock<Gri
 
 		override val displayHandler: TextDisplayHandler= DisplayHandlers.newMultiblockSignOverlay(
 			this,
-			{ GridEnergyConsumptionDisplay(handler = it, multiblock = this, offsetLeft = 0.0, offsetUp = getLinePos(3), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
+			{ GridEnergyDisplay(handler = it, multiblock = this, offsetLeft = 0.0, offsetUp = getLinePos(3), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
 			{ StatusDisplayModule(it, statusManager) },
 		)
+
+		override fun getGridEnergyOutput(): Double {
+			return 10.0
+		}
 
 		override fun tickAsync() {
 			bootstrapGridEnergyNetwork()

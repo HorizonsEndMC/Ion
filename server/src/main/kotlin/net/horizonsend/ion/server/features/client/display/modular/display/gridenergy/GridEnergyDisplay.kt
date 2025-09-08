@@ -14,7 +14,7 @@ import org.bukkit.Bukkit.getPlayer
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
-class GridEnergyConsumptionDisplay(
+class GridEnergyDisplay(
     handler: TextDisplayHandler,
     val multiblock: GridEnergyMultiblock,
     offsetLeft: Double,
@@ -42,18 +42,21 @@ class GridEnergyConsumptionDisplay(
 		val format = DecimalFormat("##.##")
 		private const val BOLT_CHARACTER = '⚡'
 		private val BOLT_TEXT = text(BOLT_CHARACTER, NamedTextColor.YELLOW)
+		private val CONSUMPTION = text('-', NamedTextColor.RED)
+		private val PRODUCTION = text('+', NamedTextColor.GREEN)
 	}
 
 	private fun formatPower(): Component {
-		var amount = multiblock.getTotalGridEnergyConsumption()
+		var consumptionAmount = multiblock.getTotalGridEnergyConsumption()
+		val produced = multiblock.getGridEnergyOutput()
 
-		var unit = "W"
-
-		if (amount > 1000.0) {
-			amount /= 1000.0
-			unit = "kW"
+		if (consumptionAmount == 0.0 && produced == 0.0) {
+			return ofChildren(BOLT_TEXT, Component.space(), text(format.format(0.0), NamedTextColor.DARK_GRAY), text("W", NamedTextColor.WHITE))
 		}
 
+		if (consumptionAmount < produced) return formatOutput(produced)
+
+		var unit = "W"
 		var color: TextColor = NamedTextColor.GREEN
 		val availablePower = multiblock.getAvailablePowerPercentage()
 		if (availablePower < 1.0) color = NamedTextColor.RED
@@ -67,7 +70,20 @@ class GridEnergyConsumptionDisplay(
 			color = TextColor.color(r, g, b)
 		}
 
-		return ofChildren(BOLT_TEXT, Component.space(), text(format.format(amount), color), text(unit, NamedTextColor.WHITE))
+		return ofChildren(CONSUMPTION, BOLT_TEXT, Component.space(), text(format.format(consumptionAmount), color), text(unit, NamedTextColor.WHITE))
+	}
+
+	fun formatOutput(amount: Double): Component {
+		var amount = amount
+
+		var unit = "W"
+
+		if (amount > 1000.0) {
+			amount /= 1000.0
+			unit = "kW"
+		}
+
+		return ofChildren(PRODUCTION, BOLT_TEXT, Component.space(), text(format.format(amount), NamedTextColor.GREEN), text(unit, NamedTextColor.WHITE))
 	}
 
 	override fun buildText(): Component {
