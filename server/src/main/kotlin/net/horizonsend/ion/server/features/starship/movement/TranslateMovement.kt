@@ -29,7 +29,8 @@ class TranslateMovement(
 	val dx: Int,
 	val dy: Int,
 	val dz: Int,
-	override val newWorld: World? = null
+	override val newWorld: World? = null,
+	val source: MovementSource
 ) : StarshipMovement(starship) {
 	companion object {
 		fun loadChunksAndMove(
@@ -47,7 +48,7 @@ class TranslateMovement(
 			return CompletableFuture.allOf(*toLoad.toTypedArray())
 				.thenCompose {
 					Tasks.checkMainThread()
-					return@thenCompose starship.moveAsync(TranslateMovement(starship, dx, dy, dz, newWorld))
+					return@thenCompose starship.moveAsync(TranslateMovement(starship, dx, dy, dz, newWorld, source = type))
 				}
 				.thenCompose { original ->
 					if (original == true) when (type) {
