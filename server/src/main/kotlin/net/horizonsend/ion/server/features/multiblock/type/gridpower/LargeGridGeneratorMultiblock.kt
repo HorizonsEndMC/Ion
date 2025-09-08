@@ -4,11 +4,14 @@ import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.Material
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
 
 object LargeGridGeneratorMultiblock : GridPowerGeneratorMultiblock() {
+	override val linkageOffset: Vec3i = Vec3i(0, 2, 10)
+
 	override fun MultiblockShape.buildStructure() {
 		z(7) {
 			y(0) {

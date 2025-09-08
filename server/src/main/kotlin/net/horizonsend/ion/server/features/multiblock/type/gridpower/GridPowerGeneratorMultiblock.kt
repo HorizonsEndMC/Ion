@@ -13,6 +13,8 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultibl
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyPortMetaData
+import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.RotationConsumer
+import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.RotationProvider
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
@@ -21,12 +23,16 @@ import net.horizonsend.ion.server.features.multiblock.type.gridpower.GridPowerGe
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 
 abstract class GridPowerGeneratorMultiblock : Multiblock(), EntityMultiblock<GridPowerGeneratorMultiblockEntity> {
 	override val name: String = "generator"
+
+	abstract val linkageOffset: Vec3i
 
 	override val signText: Array<Component?> = createSignText(
 		Component.text("Grid Generator"),
@@ -47,7 +53,7 @@ abstract class GridPowerGeneratorMultiblock : Multiblock(), EntityMultiblock<Gri
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace
-	) : MultiblockEntity(manager, multiblock, world, x, y, z, structureDirection), DisplayMultiblockEntity, AsyncTickingMultiblockEntity, GridEnergyMultiblock, StatusMultiblockEntity {
+	) : MultiblockEntity(manager, multiblock, world, x, y, z, structureDirection), DisplayMultiblockEntity, AsyncTickingMultiblockEntity, GridEnergyMultiblock, StatusMultiblockEntity, RotationConsumer {
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(5)
 		override val gridEnergyManager: GridEnergyMultiblock.MultiblockGridEnergyManager = GridEnergyMultiblock.MultiblockGridEnergyManager(this)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
@@ -63,6 +69,10 @@ abstract class GridPowerGeneratorMultiblock : Multiblock(), EntityMultiblock<Gri
 			{ StatusDisplayModule(it, statusManager) },
 		)
 
+		val rotationLinkage = createLinkage(multiblock.linkageOffset.x, multiblock.linkageOffset.y, multiblock.linkageOffset.z, RelativeFace.FORWARD) {
+			it is RotationProvider
+		}
+
 		override fun getGridEnergyOutput(): Double {
 			return 10.0
 		}
@@ -70,7 +80,7 @@ abstract class GridPowerGeneratorMultiblock : Multiblock(), EntityMultiblock<Gri
 		override fun tickAsync() {
 			bootstrapGridEnergyNetwork()
 
-
+			println(rotationLinkage.get())
 		}
 	}
 }
