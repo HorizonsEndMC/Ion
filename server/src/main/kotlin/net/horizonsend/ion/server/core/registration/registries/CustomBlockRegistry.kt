@@ -303,6 +303,16 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 			),
 			CustomItemKeys.COPPER_COIL
 		))
+
+		register(CustomBlockKeys.ROTATION_SHAFT, CustomBlock(
+			key = CustomBlockKeys.ROTATION_SHAFT,
+			blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.DOWN, BlockFace.EAST, BlockFace.UP)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.ROTATION_SHAFT)
+			),
+			CustomItemKeys.ROTATION_SHAFT
+		))
 	}
 
 	override fun registerAdditional(key: IonRegistryKey<CustomBlock, *>, value: CustomBlock) {

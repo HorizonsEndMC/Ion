@@ -236,4 +236,5 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val GRID_ENERGY_PORT = registerTypedKey<CustomBlockItem>("GRID_ENERGY_PORT")
 
 	val COPPER_COIL = registerTypedKey<CustomBlockItem>("COPPER_COIL")
+	val ROTATION_SHAFT = registerTypedKey<CustomBlockItem>("ROTATION_SHAFT")
 }

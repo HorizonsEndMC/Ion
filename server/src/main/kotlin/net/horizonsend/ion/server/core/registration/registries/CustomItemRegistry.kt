@@ -322,6 +322,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 
 		register(CustomItemKeys.PROGRESS_HOLDER, ProgressHolder)
 		customBlockItem(CustomItemKeys.COPPER_COIL, "industry/copper_coil", Component.text("Copper Coil").itemName, CustomBlockKeys.COPPER_COIL)
+		customBlockItem(CustomItemKeys.ROTATION_SHAFT, "industry/rotation_shaft", Component.text("Rotation Shaft").itemName, CustomBlockKeys.ROTATION_SHAFT)
 	}
 
 	private fun registerShipCores() {
