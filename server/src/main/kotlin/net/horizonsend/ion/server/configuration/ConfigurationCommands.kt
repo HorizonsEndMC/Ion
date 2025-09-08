@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalan
 import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager.schematicCache
+import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.command.CommandSender
 import kotlin.reflect.KMutableProperty
@@ -193,5 +194,6 @@ object ConfigurationCommands : SLCommand() {
 
 	private fun reloadOthers() {
 		schematicCache.invalidateAll()
+		MultiblockRegistration.reloadMultiblocks()
 	}
 }

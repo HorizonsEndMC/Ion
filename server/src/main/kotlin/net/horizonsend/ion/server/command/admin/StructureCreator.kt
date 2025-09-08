@@ -109,7 +109,7 @@ object StructureCreator : SLCommand() {
 			CustomBlockKeys.NETHERITE_CASING -> ".netheriteCasing()"
 			CustomBlockKeys.FLUID_PORT -> ".fluidPort()"
 			CustomBlockKeys.GRID_ENERGY_PORT -> ".gridEnergyPort()"
-			else -> ".customBlock(CustomBlocksKeys.${registryKey.key}.getValue())"
+			else -> ".customBlock(CustomBlockKeys.${registryKey.key}.getValue())"
 		}
 
 		return when {

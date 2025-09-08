@@ -32,6 +32,9 @@ import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMu
 import net.horizonsend.ion.server.features.multiblock.type.fluid.PumpMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.BasicFluidStorageTankMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.LargeGridGeneratorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.MediumGridGeneratorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.SmallGridGeneratorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
@@ -186,6 +189,13 @@ object MultiblockRegistration : IonServerComponent() {
 	val byDetectionName : Multimap<String, Multiblock> = multimapOf()
 
 	override fun onEnable() {
+		reloadMultiblocks()
+	}
+
+	fun reloadMultiblocks() {
+		byDetectionName.clear()
+		multiblocks.clear()
+
 		initMultiblocks()
 		sortMultiblocks()
 
@@ -421,6 +431,9 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(BasicFluidStorageTankMultiblock)
 		registerMultiblock(PumpMultiblock)
 		registerMultiblock(CanisterUnloaderMultiblock)
+		registerMultiblock(SmallGridGeneratorMultiblock)
+		registerMultiblock(MediumGridGeneratorMultiblock)
+		registerMultiblock(LargeGridGeneratorMultiblock)
 	}
 
 	private fun sortMultiblocks() {
