@@ -500,7 +500,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 		bootstrapPhase(
 			phaseKey = BRANCH_CARGO_CRATES,
 			sequenceKey = SequenceKeys.TUTORIAL,
-			triggers = listOf(),
+			triggers = listOf(
+
+			),
 			effects = listOf(
 				RANDOM_EXPLOSION_SOUND,
 				NEXT_PHASE_SOUND,
