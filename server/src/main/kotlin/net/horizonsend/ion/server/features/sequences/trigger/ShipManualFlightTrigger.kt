@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.sequences.trigger
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.SequenceManager.getCurrentSequences
+import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.PlayerLocationPredicate
 import net.horizonsend.ion.server.features.sequences.trigger.ShipManualFlightTrigger.ShiftFlightTriggerSettings
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
@@ -18,10 +19,9 @@ object ShipManualFlightTrigger : SequenceTriggerType<ShiftFlightTriggerSettings>
 		}
 	}
 
-	class ShiftFlightTriggerSettings(
-	) : TriggerSettings() {
+	class ShiftFlightTriggerSettings(val predicates: List<PlayerLocationPredicate> = listOf<PlayerLocationPredicate>()) : TriggerSettings() {
 		override fun shouldProceed(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>, callingTrigger: SequenceTriggerType<*>): Boolean {
-			return callingTrigger == ShipManualFlightTrigger
+			return predicates.all { predicate -> predicate.check(player) }
 		}
 	}
 }

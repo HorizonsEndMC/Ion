@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.EN
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.EXIT_CRYOPOD_ROOM
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FIRE_OBSTACLE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GET_CHETHERITE
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.JUMP_TO_HYPERSPACE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.LOOK_AT_TRACTOR
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.RECEIVED_CHETHERITE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TUTORIAL_START
@@ -43,6 +44,7 @@ import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigg
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.lookingAtBoundingBox
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
+import net.horizonsend.ion.server.features.sequences.trigger.ShipManualFlightTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.UsedTractorBeamTrigger.TractorBeamTriggerSettings
 import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
 import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
@@ -396,7 +398,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             phaseKey = ENTERED_ESCAPE_POD,
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
-
+				SequenceTrigger(
+					SequenceTriggerTypes.STARSHIP_MANUAL_FLIGHT,
+					ShipManualFlightTrigger.ShiftFlightTriggerSettings(listOf(
+						inBoundingBox(fullBoundingBox(192, 239, -240, 11, 44, -377, Vec3i(93, 192, 82)))
+					)),
+					triggerResult = SequenceTrigger.startPhase(JUMP_TO_HYPERSPACE)
+				)
 			),
             effects = listOf(
                 NEXT_PHASE_SOUND,
@@ -410,6 +418,18 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				}, EffectTiming.START),
             )
         )
+
+		bootstrapPhase(
+			phaseKey = JUMP_TO_HYPERSPACE,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			triggers = listOf(
+				//TODO
+			),
+			effects = listOf(
+				NEXT_PHASE_SOUND,
+
+			)
+		)
     }
 
     private fun registerTutorialBranches() {
