@@ -18,7 +18,7 @@ object MediumGridGeneratorMultiblock : GridPowerGeneratorMultiblock() {
 			y(1) {
 				x(-2).steelBlock()
 				x(-1).steelBlock()
-				x(0).steelBlock()
+				x(0).customBlock(CustomBlockKeys.ROTATION_SHAFT.getValue())
 				x(1).steelBlock()
 				x(2).steelBlock()
 			}
@@ -146,7 +146,7 @@ object MediumGridGeneratorMultiblock : GridPowerGeneratorMultiblock() {
 			y(1) {
 				x(-2).steelBlock()
 				x(-1).steelBlock()
-				x(0).customBlock(CustomBlockKeys.ROTATION_SHAFT.getValue())
+				x(0).steelBlock()
 				x(1).steelBlock()
 				x(2).steelBlock()
 			}
