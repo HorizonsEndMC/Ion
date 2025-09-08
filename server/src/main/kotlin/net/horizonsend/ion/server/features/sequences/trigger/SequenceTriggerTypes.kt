@@ -10,6 +10,10 @@ object SequenceTriggerTypes {
 	val DATA_PREDICATE = register(DataPredicate)
 	val USE_TRACTOR_BEAM = register(UsedTractorBeamTrigger)
 	val CONTAINS_ITEM = register(ContainsItemTrigger)
+	val STARSHIP_CRUISE = register(StarshipCruiseTrigger)
+	val STARSHIP_MANUAL_FLIGHT = register(ShipManualFlightTrigger)
+	val STARSHIP_ROTATE = register(ShipRotateTrigger)
+	val STARSHIP_ENTER_HYPERSPACE = register(ShipEnterHyperspaceJumpTrigger)
 
 	fun <T : SequenceTriggerType<*>> register(type: T): T {
 		types.add(type)
