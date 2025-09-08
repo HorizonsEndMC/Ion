@@ -296,7 +296,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 
 		register(CustomBlockKeys.COPPER_COIL, CustomBlock(
 			key = CustomBlockKeys.COPPER_COIL,
-			blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.DOWN, BlockFace.WEST, BlockFace.NORTH)),
+			blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.DOWN, BlockFace.WEST, BlockFace.EAST, BlockFace.NORTH)),
 			drops = BlockLoot(
 				requiredTool = null,
 				drops = customItemDrop(CustomItemKeys.COPPER_COIL)
