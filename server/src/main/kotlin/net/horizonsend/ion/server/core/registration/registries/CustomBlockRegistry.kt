@@ -293,6 +293,16 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		), WrenchRemovable {
 			override fun decorateItem(itemStack: ItemStack, block: Block) {}
 		})
+
+		register(CustomBlockKeys.COPPER_COIL, CustomBlock(
+			key = CustomBlockKeys.COPPER_COIL,
+			blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.DOWN, BlockFace.WEST, BlockFace.NORTH)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.COPPER_COIL)
+			),
+			CustomItemKeys.COPPER_COIL
+		))
 	}
 
 	override fun registerAdditional(key: IonRegistryKey<CustomBlock, *>, value: CustomBlock) {

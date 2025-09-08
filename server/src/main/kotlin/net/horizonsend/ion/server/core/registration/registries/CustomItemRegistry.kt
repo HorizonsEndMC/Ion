@@ -321,6 +321,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		unStackable(key = CustomItemKeys.ACTIVATED_ARSENAL_MISSILE, model = "projectile/activated_arsenal_missile", displayName = Component.text("Activated Arsenal Missile", NamedTextColor.RED))
 
 		register(CustomItemKeys.PROGRESS_HOLDER, ProgressHolder)
+		customBlockItem(CustomItemKeys.COPPER_COIL, "industry/copper_coil", Component.text("Copper Coil").itemName, CustomBlockKeys.COPPER_COIL)
 	}
 
 	private fun registerShipCores() {
