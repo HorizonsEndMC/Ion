@@ -74,11 +74,18 @@ abstract class GridPowerGeneratorMultiblock : Multiblock(), EntityMultiblock<Gri
 		}
 
 		override fun getGridEnergyOutput(): Double {
-			return 10.0
+			val linkage = rotationLinkage.get() ?: return 0.0
+			return (linkage as RotationProvider).getRotationSpeed()
 		}
 
 		override fun tickAsync() {
 			bootstrapGridEnergyNetwork()
+
+			tickGeneration()
+		}
+
+		fun tickGeneration() {
+
 		}
 	}
 }

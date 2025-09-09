@@ -41,7 +41,7 @@ class ChemicalProcessorRecipe(
 			RequirementHolder.simpleConsumable(
 				{ it.fluidStore.getNamedStorage(fluidRequirementOne.storeName)?.getContents() ?: FluidStack.empty() },
 				fluidRequirementOne,
-				template(Component.text("Missing {0}", NamedTextColor.RED), fluidRequirementOne.type.getValue().displayName)
+				template(Component.text("Missing {0}", NamedTextColor.RED), fluidRequirementOne.asFluidStack().getDisplayName())
 			)
 		},
 
@@ -50,7 +50,7 @@ class ChemicalProcessorRecipe(
 			RequirementHolder.simpleConsumable(
 				{ it.fluidStore.getNamedStorage(fluidRequirementTwo.storeName)?.getContents() ?: FluidStack.empty() },
 				fluidRequirementTwo,
-				template(Component.text("Missing {0}", NamedTextColor.RED), fluidRequirementTwo.type.getValue().displayName)
+				template(Component.text("Missing {0}", NamedTextColor.RED), fluidRequirementTwo.asFluidStack().getDisplayName())
 			)
 		},
 

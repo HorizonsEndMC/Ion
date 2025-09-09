@@ -12,7 +12,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 object FluidUtils {
 	fun formatFluidInfo(fluidStack: FluidStack): Component {
 		val text = text()
-		text.append(fluidStack.type.getValue().displayName)
+		text.append(fluidStack.getDisplayName())
 		text.append(Component.space(), bracketed(ofChildren(text(format.format(fluidStack.amount), NamedTextColor.GRAY), text("L", NamedTextColor.GRAY))))
 
 		var lines = 0

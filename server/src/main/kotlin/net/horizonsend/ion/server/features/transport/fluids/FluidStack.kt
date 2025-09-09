@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
 import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -67,8 +68,12 @@ class FluidStack(
 		return getData(type) ?: throw NullPointerException()
 	}
 
-	fun <T : FluidProperty> hasData(type: FluidPropertyType<T>) : Boolean {
+	fun hasData(type: FluidPropertyType<*>) : Boolean {
 		return dataComponents.keys.contains(type)
+	}
+
+	fun hasData(type: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<*>>) : Boolean {
+		return dataComponents.keys.contains(type.getValue())
 	}
 
 	fun getDataMap() = dataComponents.toMap()
@@ -155,4 +160,6 @@ class FluidStack(
 	override fun toString(): String {
 		return "FluidStack{type=${type.key},amount=$amount,properties=[${dataComponents.entries.joinToString { (key, value) -> "(${key.key}:$value)" }}]}"
 	}
+
+	fun getDisplayName(): Component = type.getValue().getDisplayName(this)
 }

@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.fluids.types
 
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork.Companion.PIPE_INTERIOR_PADDING
@@ -20,7 +21,6 @@ import kotlin.random.Random
 
 object Water : FluidType(FluidTypeKeys.WATER) {
 	override val categories: Array<FluidCategory> = arrayOf()
-	override val displayName: Component = text("Water", BLUE)
 
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
 		val trailOptions = Trail(
@@ -49,5 +49,9 @@ object Water : FluidType(FluidTypeKeys.WATER) {
 		}
 
 		world.spawnParticle(Particle.FALLING_WATER, faceCenter, 1, 0.0, 0.0, 0.0)
+	}
+
+	override fun getDisplayName(stack: FluidStack): Component {
+		return text("Water", BLUE)
 	}
 }

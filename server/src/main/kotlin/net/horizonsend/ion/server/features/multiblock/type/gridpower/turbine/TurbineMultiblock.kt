@@ -88,5 +88,10 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 		fun tickSteam() {
 			if (steamInput.getContents().isEmpty()) return
 		}
+
+		override fun getRotationSpeed(): Double {
+			if (steamInput.getContents().isEmpty()) return 0.0
+			return 100.0
+		}
 	}
 }

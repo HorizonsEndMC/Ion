@@ -4,10 +4,12 @@ import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
 import net.horizonsend.ion.server.features.transport.fluids.types.Lava
+import net.horizonsend.ion.server.features.transport.fluids.types.Steam
 import net.horizonsend.ion.server.features.transport.fluids.types.Water
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
 import net.kyori.adventure.text.Component
@@ -23,7 +25,7 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 
 	override fun boostrap() {
 		register(FluidTypeKeys.EMPTY, object : FluidType(FluidTypeKeys.EMPTY) {
-			override val displayName: Component = text("Empty", WHITE)
+			override fun getDisplayName(stack: FluidStack): Component = text("Empty", WHITE)
 			override val categories: Array<FluidCategory> = arrayOf()
 
 			override fun displayInPipe(world: World, origin: Vector, destination: Vector) {}
@@ -41,5 +43,6 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 
 		register(FluidTypeKeys.WATER, Water)
 		register(FluidTypeKeys.LAVA, Lava)
+		register(FluidTypeKeys.STEAM, Steam)
 	}
 }

@@ -1,12 +1,11 @@
 package net.horizonsend.ion.server.features.transport.fluids.types
 
-import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
-import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
+import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid.Companion.windDirection
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork.Companion.PIPE_INTERIOR_PADDING
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -15,8 +14,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.GRAY
-import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
@@ -25,18 +22,10 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
-class GasFluid(
-	key: IonRegistryKey<FluidType, out FluidType>,
-	private val gasKey: IonRegistryKey<Gas, out Gas>,
-	val color: Color
-) : FluidType(key) {
-	override val categories: Array<FluidCategory> = arrayOf(FluidCategory.GAS)
+object Steam : FluidType(FluidTypeKeys.STEAM) {
+	override val categories: Array<FluidCategory> = arrayOf()
 
-	override fun getDisplayName(stack: FluidStack): Component {
-		return ofChildren(gas.displayName, text(" Gas", GRAY))
-	}
-
-	val gas get() = gasKey.getValue()
+	val color: Color = Color.WHITE
 
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
 		val trailOptions = Trail(
@@ -90,8 +79,12 @@ class GasFluid(
 //		}
 	}
 
-	companion object {
-		//TODO
-		val windDirection: Vector get() = Bukkit.getPlayer("GutinGongoozler")?.location?.direction ?: Vector.getRandom()
+	override fun getDisplayName(stack: FluidStack): Component {
+		if (stack.hasData(FluidPropertyTypeKeys.TEMPERATURE)) {
+			val boiling = stack.getData(FluidPropertyTypeKeys.TEMPERATURE.getValue())?.value?.let { it > 100.0 }
+			if (boiling == true) return text("Dry Steam")
+		}
+
+		return text("Wet Steam")
 	}
 }

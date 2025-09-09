@@ -11,7 +11,6 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
 abstract class FluidType(override val key: IonRegistryKey<FluidType, out FluidType>) : Keyed<FluidType> {
-	abstract val displayName: Component
 	abstract val categories: Array<FluidCategory>
 
 	/**
@@ -28,4 +27,6 @@ abstract class FluidType(override val key: IonRegistryKey<FluidType, out FluidTy
 	 * Called when this fluid leaks from a pipe. Should be used for anything that is not a visual effect, such as pollution.
 	 **/
 	open fun onLeak(world: World, location: Vec3i, amount: Double) {}
+	
+	abstract fun getDisplayName(stack: FluidStack): Component
 }

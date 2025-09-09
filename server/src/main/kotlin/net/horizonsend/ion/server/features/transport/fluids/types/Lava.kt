@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.fluids.types
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork.Companion.PIPE_INTERIOR_PADDING
@@ -21,7 +22,10 @@ import kotlin.random.Random
 
 object Lava : FluidType(FluidTypeKeys.LAVA) {
 	override val categories: Array<FluidCategory> = arrayOf()
-	override val displayName: Component = text("Lava", HE_LIGHT_ORANGE)
+
+	override fun getDisplayName(stack: FluidStack): Component {
+		return text("Lava", HE_LIGHT_ORANGE)
+	}
 
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
 		val colors = setOf(

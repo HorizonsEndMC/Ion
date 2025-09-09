@@ -606,12 +606,12 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 
 						listOfNotNull<String>(
 							key.key,
-							recipe.fluidRequirementOne?.type?.getValue()?.displayName?.plainText(),
-							recipe.fluidRequirementTwo?.type?.getValue()?.displayName?.plainText(),
+							recipe.fluidRequirementOne?.asFluidStack()?.getDisplayName()?.plainText(),
+							recipe.fluidRequirementTwo?.asFluidStack()?.getDisplayName()?.plainText(),
 							recipe.itemRequirement?.asItemStack()?.displayNameComponent?.plainText(),
-							recipe.fluidResultTwo?.stack?.type?.getValue()?.displayName?.plainText(),
-							recipe.fluidResultTwo?.stack?.type?.getValue()?.displayName?.plainText(),
-							recipe.fluidResultTwo?.stack?.type?.getValue()?.displayName?.plainText(),
+							recipe.fluidResultTwo?.stack?.getDisplayName()?.plainText(),
+							recipe.fluidResultTwo?.stack?.getDisplayName()?.plainText(),
+							recipe.fluidResultTwo?.stack?.getDisplayName()?.plainText(),
 							recipe.itemResult?.result?.asItem()?.displayNameComponent?.plainText(),
 						)
 					}

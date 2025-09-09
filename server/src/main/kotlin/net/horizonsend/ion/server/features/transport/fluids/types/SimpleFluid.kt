@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.transport.fluids.types
 
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork.Companion.PIPE_INTERIOR_PADDING
@@ -16,7 +17,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
-class SimpleFluid(key: IonRegistryKey<FluidType, out FluidType>, override val displayName: Component, override val categories: Array<FluidCategory>) : FluidType(key) {
+class SimpleFluid(key: IonRegistryKey<FluidType, out FluidType>, val displayName: Component, override val categories: Array<FluidCategory>) : FluidType(key) {
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
 		val trailOptions = Trail(
 			/* target = */ destination.toLocation(world),
@@ -25,6 +26,10 @@ class SimpleFluid(key: IonRegistryKey<FluidType, out FluidType>, override val di
 		)
 
 		world.spawnParticle(Particle.TRAIL, origin.toLocation(world), 1, 0.0, 0.0, 0.0, 0.0, trailOptions, false)
+	}
+
+	override fun getDisplayName(stack: FluidStack): Component {
+		return displayName
 	}
 
 	override fun playLeakEffects(world: World, leakingNode: FluidNode, leakingDirection: BlockFace) {
