@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPo
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
+import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.RotationConsumer
 import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.RotationProvider
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
@@ -23,6 +24,7 @@ import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -75,6 +77,8 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			val STEAM_OUTPUT = NamespacedKeys.key("steam_output")
 		}
 
+		val rotationLinkage = createLinkage(0, 0, 1, RelativeFace.FORWARD) { it is RotationConsumer }
+
 		override fun tickAsync() {
 			bootstrapFluidNetwork()
 
@@ -83,8 +87,6 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 
 		fun tickSteam() {
 			if (steamInput.getContents().isEmpty()) return
-
-			println(steamInput.getContents())
 		}
 	}
 }

@@ -8,6 +8,7 @@ object TemporaryTurbineMultiblock : TurbineMultiblock() {
 		z(1) {
 			y(0) {
 				x(3).fluidPort()
+				x(0).customBlock(CustomBlockKeys.ROTATION_SHAFT.getValue())
 				x(-3).fluidPort()
 			}
 		}
