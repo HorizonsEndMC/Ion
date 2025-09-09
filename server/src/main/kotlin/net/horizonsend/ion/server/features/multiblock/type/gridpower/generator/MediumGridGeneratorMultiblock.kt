@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.gridpower
+package net.horizonsend.ion.server.features.multiblock.type.gridpower.generator
 
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape

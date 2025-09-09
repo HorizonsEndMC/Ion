@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.multiblock.type.gridpower
+package net.horizonsend.ion.server.features.multiblock.type.gridpower.generator
 
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
@@ -19,7 +19,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTi
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedMultiblockEntityParent
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.gridpower.GridPowerGeneratorMultiblock.GridPowerGeneratorMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.generator.GridPowerGeneratorMultiblock.GridPowerGeneratorMultiblockEntity
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
@@ -79,8 +79,6 @@ abstract class GridPowerGeneratorMultiblock : Multiblock(), EntityMultiblock<Gri
 
 		override fun tickAsync() {
 			bootstrapGridEnergyNetwork()
-
-			println(rotationLinkage.get())
 		}
 	}
 }

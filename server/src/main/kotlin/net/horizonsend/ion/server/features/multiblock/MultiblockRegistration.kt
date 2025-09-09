@@ -32,9 +32,10 @@ import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMu
 import net.horizonsend.ion.server.features.multiblock.type.fluid.PumpMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.BasicFluidStorageTankMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.gridpower.LargeGridGeneratorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.gridpower.MediumGridGeneratorMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.gridpower.SmallGridGeneratorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.generator.LargeGridGeneratorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.generator.MediumGridGeneratorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.generator.SmallGridGeneratorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.turbine.TemporaryTurbineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
@@ -434,6 +435,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(SmallGridGeneratorMultiblock)
 		registerMultiblock(MediumGridGeneratorMultiblock)
 		registerMultiblock(LargeGridGeneratorMultiblock)
+		registerMultiblock(TemporaryTurbineMultiblock)
 	}
 
 	private fun sortMultiblocks() {
