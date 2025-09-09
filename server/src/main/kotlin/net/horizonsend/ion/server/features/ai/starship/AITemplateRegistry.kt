@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.ai.starship
 import net.horizonsend.ion.common.utils.text.colors.ABYSSAL_DESATURATED_RED
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_LIGHT_TEAL
+import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_MEDIUM_TEAL
+import net.horizonsend.ion.common.utils.text.colors.WATCHER_ACCENT
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.server.configuration.util.IntegerAmount
@@ -31,6 +33,7 @@ import net.horizonsend.ion.server.features.ai.spawning.spawner.mechanics.BagSpaw
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.PUMPKIN_GRENADE
 import net.horizonsend.ion.server.features.world.WorldSettings.DroppedItem
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
 import java.util.function.Supplier
 
@@ -1010,6 +1013,27 @@ object AITemplateRegistry {
 				)
 			)
 			.addAdditionalModule(
+				BehaviorConfiguration.AdvancedReinforcementInformation(
+					activationThreshold = 0.90,
+					delay = 150L,
+					broadcastMessage = null, // hidden extra backup for large fleets
+				) {
+					val locationSupplier = Supplier {it.getCenter().toLocation(it.starship.world)}
+					BagSpawner.asReinforcement(
+						formatLocationSupplier(locationSupplier, 200.0, 300.0),
+						BagSpawner.withFleetScaling(
+							StaticIntegerAmount(0),
+							locationSupplier,
+							shipWeight = 0.5,
+							threshold = 20),
+						text("Backup responding in {3} at {0}, {2}", PRIVATEER_MEDIUM_TEAL),
+						null,
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(200.0, 300.0, 0.0), 7),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE).withRandomRadialOffset(100.0, 200.0, 0.0), 10),
+						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(RESOLUTE).withRandomRadialOffset(50.0, 100.0, 0.0), 10),
+					)(it)
+				})
+			.addAdditionalModule(
 				BehaviorConfiguration.BasicReinforcementInformation(
 					activationThreshold = 0.75,
 					delay = 100L,
@@ -1029,8 +1053,8 @@ object AITemplateRegistry {
 						BagSpawner.withFleetScaling(
 							StaticIntegerAmount(0),
 							locationSupplier,
-							shipWeight = 0.5,
-							threshold = 25),
+							shipWeight = 0.75,
+							threshold = 20),
 						null,
 						null,
 						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(200.0, 300.0, 0.0), 7),
