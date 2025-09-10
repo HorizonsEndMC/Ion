@@ -128,7 +128,7 @@ open class EnmityModule(
 			if (!generalFilterResult && !friendlyFilterResult) continue
 			val dist = getOpponentDistance(tempTarget.target)!!
 			if (dist > Interdiction.starshipInterdictionRangeEquation(otherStarship)) continue
-			val weight = config.gravityWellAggro * if (generalFilterResult) 1.0 else 0.1
+			val weight = config.gravityWellAggro * if (generalFilterResult) 1.0 else 0.03
 
 			val index = enmityList.indexOf(tempTarget)
 			if (index != -1) {
