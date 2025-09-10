@@ -263,9 +263,8 @@ object AIDebugCommand : SLCommand() {
 		val ship = ActiveStarships.getByIdentifier(shipIdentifier) ?: fail { "$shipIdentifier is not a starship" }
 
 		sender.information(ship.controller.toString())
-
-		(ship.controller as? AIController)?.let { sender.userError(it.coreModules.entries.joinToString(separator = "\n") { mod ->
-			"[${mod.key}] = ${mod.value}" })
+		(ship.controller as? AIController)?.let { sender.userError(it.getAllModules().joinToString(separator = "\n") { mod ->
+			"[${mod::class}] = $mod" })
 		}
 	}
 

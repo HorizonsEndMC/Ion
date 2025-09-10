@@ -59,15 +59,18 @@ class EnmityMessageModule(
 
 	companion object {
 		val triggeredByFriendlyFire = { opponent: EnmityModule.AIOpponent, config: AIEmities.AIEmityConfiguration ->
-			opponent.damagerWeight > 0.1 && opponent.baseWeight == 0.0 && !opponent.aggroed
+			opponent.damagerWeight > 0.1
+				&& opponent.baseWeight <= opponent.damagerWeight && !opponent.aggroed
 		}
 
 		val escalatedFriendlyFire = { opponent: EnmityModule.AIOpponent, config: AIEmities.AIEmityConfiguration ->
-			opponent.damagerWeight > (config.initialAggroThreshold * 2) && opponent.baseWeight == 0.0 && !opponent.aggroed
+			opponent.damagerWeight > (config.initialAggroThreshold * 2)
+				&& opponent.baseWeight <= opponent.damagerWeight && !opponent.aggroed
 		}
 
 		val betrayalAggro = { opponent: EnmityModule.AIOpponent, config: AIEmities.AIEmityConfiguration ->
-			opponent.aggroed && opponent.baseWeight == 0.0
+			opponent.damagerWeight > (config.initialAggroThreshold * 2)
+				&& opponent.baseWeight < config.initialAggroThreshold
 		}
 	}
 }
