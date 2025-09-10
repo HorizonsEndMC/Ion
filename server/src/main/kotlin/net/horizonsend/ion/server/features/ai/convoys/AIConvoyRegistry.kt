@@ -363,7 +363,14 @@ object AIConvoyRegistry {
 		route: ConvoyRoute,
 		templateId: String
 	) {
-		controller.getCoreModuleByType<ReinforcementSpawnerModule>()?.controllerModifiers?.add { newController -> addCaravanModule(newController, route, templateId) }
+		//propagate to reinforcements as well
+		controller.getAllModules()
+			.filterIsInstance<ReinforcementSpawnerModule>()
+			.forEach { mod ->
+				mod.controllerModifiers.add { newController ->
+					addCaravanModule(newController, route, templateId)
+				}
+			}
 
 		controller.addUtilModule(
 			CaravanModule(
