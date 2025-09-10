@@ -50,6 +50,7 @@ import net.horizonsend.ion.server.features.ai.util.SpawnMessage
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.World
 import java.util.function.Supplier
 
@@ -364,14 +365,16 @@ object AIConvoyRegistry {
 		templateId: String
 	) {
 		//propagate to reinforcements as well
-		controller.getAllModules()
-			.filterIsInstance<ReinforcementSpawnerModule>()
-			.forEach { mod ->
-				mod.controllerModifiers.add { newController ->
-					addCaravanModule(newController, route, templateId)
+		//TODO: replace with a more robust fix.
+		Tasks.syncDelay(2L) {
+			controller.getAllModules()
+				.filterIsInstance<ReinforcementSpawnerModule>()
+				.forEach { mod ->
+					mod.controllerModifiers.add { newController ->
+						addCaravanModule(newController, route, templateId)
+					}
 				}
-			}
-
+		}
 		controller.addUtilModule(
 			CaravanModule(
 				controller,
