@@ -415,7 +415,6 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			iterations++
 
 			if (iterations > 20) {
-				println("BFS took too long!")
 				break
 			}
 

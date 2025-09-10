@@ -33,7 +33,7 @@ class MultiblockLinkageHolder(
 	fun deRegister() {
 		val manager = holder.manager
 
-		manager.getLinkageManager().deRegisterLinkage(location)
+		manager.getLinkageManager().removeLinkage(location, holder)
 	}
 
 	override fun get(): MultiblockEntity? {

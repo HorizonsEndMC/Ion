@@ -10,6 +10,9 @@ interface FluidProperty {
 
 	fun clone(): FluidProperty
 
+	/**
+	 * Stores pressure, in bars
+	 **/
 	data class Pressure(val value: Double) : FluidProperty {
 		init {
 		    check(value.isFinite()) { "Pressure must be finite!" }
@@ -19,7 +22,7 @@ interface FluidProperty {
 
 		companion object {
 			val PRESSURE = NamespacedKeys.key("pressure")
-			const val DEFAULT_PRESSURE = 0.0
+			const val DEFAULT_PRESSURE = 1.01325
 		}
 
 		override fun clone(): Pressure {
@@ -27,6 +30,9 @@ interface FluidProperty {
 		}
 	}
 
+	/**
+	 * Stores temperature, in Celsius
+	 **/
 	data class Temperature(val value: Double) : FluidProperty {
 		init {
 			check(value.isFinite()) { "Temperature must be finite!" }

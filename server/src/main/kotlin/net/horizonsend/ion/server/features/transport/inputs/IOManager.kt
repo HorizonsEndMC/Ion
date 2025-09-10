@@ -54,7 +54,7 @@ abstract class IOManager {
 		}
 
 		fun remove(location: BlockKey, holder: MultiblockEntity) {
-			when (val present: IOData<T>? = portLocations.get(location)) {
+			when (val present: IOData<T>? = portLocations[location]) {
 				is SingleMultiblockIO -> if (present.port.holder == holder) portLocations.remove(location)
 				is SharedMultiblockIO -> present.remove(holder)
 				null -> return

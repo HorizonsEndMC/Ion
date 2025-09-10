@@ -83,6 +83,11 @@ class GridEnergyDisplay(
 			unit = "kW"
 		}
 
+		if (amount > 1000.0) {
+			amount /= 1000.0
+			unit = "mW"
+		}
+
 		return ofChildren(PRODUCTION, BOLT_TEXT, Component.space(), text(format.format(amount), NamedTextColor.GREEN), text(unit, NamedTextColor.WHITE))
 	}
 

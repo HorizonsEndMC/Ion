@@ -206,6 +206,10 @@ object TransportDebugCommand : SLCommand() {
 		mergePoints.forEach {
 			sender.highlightBlock(toVec3i(it.key), 50L)
 		}
+
+		mergePoints.forEach { entry ->
+			sender.information("holder {0}", entry.value.getOwners())
+		}
 	}
 
 	@Subcommand("dump merges ship")

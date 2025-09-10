@@ -4,6 +4,9 @@ import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 
 object TemporaryTurbineMultiblock : TurbineMultiblock() {
+	override val inletCrossSectionArea: Double = 0.07
+	override val efficiency = 0.7
+
 	override fun MultiblockShape.buildStructure() {
 		z(1) {
 			y(0) {

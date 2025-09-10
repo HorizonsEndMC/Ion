@@ -5,7 +5,18 @@ import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProp
 import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 
 object FluidPropertyTypeKeys : KeyRegistry<FluidPropertyType<*>>(FLUID_PROPERTY_TYPE, FluidPropertyType::class) {
+	/**
+	 * Stores temperature, in Celsius
+	 **/
 	val TEMPERATURE = registerTypedKey<FluidPropertyType<FluidProperty.Temperature>>("TEMPERATURE")
+
+	/**
+	 * Stores pressure, in bars
+	 **/
 	val PRESSURE = registerTypedKey<FluidPropertyType<FluidProperty.Pressure>>("PRESSURE")
+
+	/**
+	 * Stores salinity, in percent
+	 **/
 	val SALINITY = registerTypedKey<FluidPropertyType<FluidProperty.Salinity>>("SALINITY")
 }

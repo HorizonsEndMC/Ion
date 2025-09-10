@@ -64,6 +64,10 @@ class FluidStack(
 		return dataComponents[type]?.let { type.castUnsafe(it) }
 	}
 
+	fun <T : FluidProperty> getDataOrDefault(type: FluidPropertyType<T>, location: Location?) : T {
+		return dataComponents[type]?.let { type.castUnsafe(it) } ?: type.getDefaultProperty(location)
+	}
+
 	fun <T : FluidProperty> getDataOrThrow(type: FluidPropertyType<T>) : T {
 		return getData(type) ?: throw NullPointerException()
 	}
