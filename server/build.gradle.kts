@@ -43,7 +43,7 @@ dependencies {
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
 	compileOnly("com.discordsrv:discordsrv:1.29.0")
 	compileOnly("net.luckperms:api:5.4")
-	compileOnly("xyz.xenondevs.invui:invui:1.43") // Downloaded via paper library manager for remapping
+	compileOnly("xyz.xenondevs.invui:invui:1.46") // Downloaded via paper library manager for remapping
 	compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
 
 	// Included Dependencies
@@ -52,7 +52,7 @@ dependencies {
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
 	implementation("com.github.stefvanschie.inventoryframework:IF:0.10.19")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
-	implementation("fr.skytasul:guardianbeam:2.4.0")
+	implementation("fr.skytasul:guardianbeam:2.4.4")
 	implementation("club.minnced:discord-webhooks:0.8.4")
 
 	val scoreboardLibraryVersion = "2.2.2"

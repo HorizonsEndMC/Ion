@@ -123,14 +123,18 @@ open class EnmityModule(
 		for (otherStarship in ActiveStarships.getInWorld(starship.world)) {
 			if (!otherStarship.isInterdicting) continue
 			val tempTarget = AIOpponent(StarshipTarget(otherStarship))
-			if (!enmityFilter(starship, tempTarget.target, targetMode)) continue
+			val generalFilterResult = enmityFilter(starship, tempTarget.target, targetMode)
+			val friendlyFilterResult = targetFilter(starship, tempTarget.target, targetMode)
+			if (!generalFilterResult && !friendlyFilterResult) continue
 			val dist = getOpponentDistance(tempTarget.target)!!
 			if (dist > Interdiction.starshipInterdictionRangeEquation(otherStarship)) continue
+			val weight = config.gravityWellAggro * if (generalFilterResult) 1.0 else 0.03
+
 			val index = enmityList.indexOf(tempTarget)
 			if (index != -1) {
-				enmityList[index].baseWeight += config.gravityWellAggro * 0.1 //kepping a well up will make ai pissed on you
+				enmityList[index].baseWeight += weight * 0.1 //kepping a well up will make ai pissed on you
 			} else {
-				tempTarget.baseWeight = config.gravityWellAggro
+				tempTarget.baseWeight = weight
 				enmityList.add(tempTarget)
 			}
 
@@ -184,15 +188,9 @@ open class EnmityModule(
 		val points = damagerEntry.value.points.get()
 		val tempTarget = damagerEntry.key.getAITarget()?.let { AIOpponent(it) } ?: return
 
-		//extra friendly fire check for AI ships
+		//extra faction check
 		if ((tempTarget.target as? StarshipTarget)?.ship?.controller is AIController) {
 			val targetController = (tempTarget.target as StarshipTarget).ship.controller as AIController
-
-			val fleetModule = controller.getUtilModule(AIFleetManageModule::class.java)
-			val fleet = fleetModule?.fleet
-
-			val targetFleet = targetController.getUtilModule(AIFleetManageModule::class.java)?.fleet
-			if (targetFleet != null && targetFleet == fleet) return
 			if (!evaluateFaction(controller, targetController)
 				&& !targetFilter(starship, tempTarget.target, targetMode)) return
 		} else {
@@ -204,9 +202,9 @@ open class EnmityModule(
 		if (index != -1) {
 			if (enmityList[index].damagePoints >= points) return
 			enmityList[index].damagePoints = points
-			debugAudience.debug("damagePoints : $points")
+			//debugAudience.debug("damagePoints : $points")
 			enmityList[index].damagerWeight += config.damagerAggroWeight //the highest damager will generate base emity
-			debugAudience.debug("damagerWeight : ${enmityList[index].damagerWeight}")
+			//debugAudience.debug("damagerWeight : ${enmityList[index].damagerWeight}")
 		} else {
 			tempTarget.damagerWeight = config.damagerAggroWeight
 			tempTarget.damagePoints = points
@@ -408,6 +406,13 @@ open class EnmityModule(
 				}
 
 				aiTarget is StarshipTarget && aiTarget.ship.controller is AIController -> {
+					//extra friendly fire check for AI ships
+					val targetController = (aiTarget.ship.controller as AIController)
+					val fleetModule = targetController.getUtilModule(AIFleetManageModule::class.java)
+					val fleet = fleetModule?.fleet
+
+					val targetFleet = targetController.getUtilModule(AIFleetManageModule::class.java)?.fleet
+					if (targetFleet != null && targetFleet == fleet) return false
 					return if (targetMode == AITarget.TargetMode.PLAYER_ONLY) {
 						false
 					} else {
