@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.celsiusToKelvin
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
+import net.horizonsend.ion.server.miscellaneous.utils.metersCubedToLiters
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.World
@@ -90,6 +91,8 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 		companion object {
 			val STEAM_INPUT = NamespacedKeys.key("steam_input")
 			val STEAM_OUTPUT = NamespacedKeys.key("steam_output")
+
+			private val USAGE_MULTIPLIER get() = 0.3
 		}
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
@@ -132,7 +135,7 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 
 			lastEnergy = work
 
-			val removedVolume = massFlow / getSteamDensity(steamStack)
+			val removedVolume = metersCubedToLiters(massFlow / getSteamDensity(steamStack)) * USAGE_MULTIPLIER
 
 			steamInput.removeAmount(removedVolume)
 			val new = steamStack.asAmount(removedVolume)
@@ -144,7 +147,6 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			val basePressure = FluidPropertyTypeKeys.PRESSURE.getValue().getDefaultProperty(location).value
 			val outletPressure = ((steamStack.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE.getValue(), location).value - basePressure) * multiblock.efficiency) + basePressure
 			new.setData(FluidPropertyTypeKeys.PRESSURE.getValue(), FluidProperty.Pressure(outletPressure))
-
 
 			steamOutput.getContents().combine(new, location)
 			setStatus(Component.text("Working", NamedTextColor.GREEN))
