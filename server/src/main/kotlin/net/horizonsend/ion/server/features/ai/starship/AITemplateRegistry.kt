@@ -1025,7 +1025,7 @@ object AITemplateRegistry {
 						BagSpawner.withFleetScaling(
 							StaticIntegerAmount(0),
 							locationSupplier,
-							shipWeight = 0.5,
+							shipWeight = 0.2,
 							threshold = 20),
 						text("Backup responding in {3} at {0}, {2}", PRIVATEER_MEDIUM_TEAL),
 						null,
@@ -1054,8 +1054,8 @@ object AITemplateRegistry {
 						BagSpawner.withFleetScaling(
 							StaticIntegerAmount(0),
 							locationSupplier,
-							shipWeight = 0.75,
-							threshold = 20),
+							shipWeight = 0.3,
+							threshold = 15),
 						null,
 						null,
 						asBagSpawned(SYSTEM_DEFENSE_FORCES.asSpawnedShip(BULWARK).withRandomRadialOffset(200.0, 300.0, 0.0), 7),
