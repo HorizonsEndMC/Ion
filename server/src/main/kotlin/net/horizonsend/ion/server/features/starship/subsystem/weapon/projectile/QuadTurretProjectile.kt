@@ -15,9 +15,9 @@ class QuadTurretProjectile(
 	name: Component,
 	loc: Location,
 	dir: Vector,
-	override val speed: Double,
 	override val color: Color,
-	shooter: Damager
+	shooter: Damager,
+	override val balancing: QuadTurretBalancing.QuadTurretProjectileBalancing
 ): LaserProjectile<QuadTurretBalancing.QuadTurretProjectileBalancing>(source, name, loc, dir, shooter, DamageType.GENERIC) {
 
 	override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
