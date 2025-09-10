@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import com.google.common.collect.Multimap
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
@@ -417,9 +418,12 @@ object MultiblockRegistration : IonServerComponent() {
 
 		registerMultiblock(AntiAirCannonBaseMultiblock)
 
-		registerMultiblock(ChemicalProcessorMultiblock)
+		if (ConfigurationFiles.featureFlags().graphTransfer) {
+			registerMultiblock(ChemicalProcessorMultiblock)
+			registerMultiblock(PumpMultiblock)
+		}
+
 		registerMultiblock(BasicFluidStorageTankMultiblock)
-		registerMultiblock(PumpMultiblock)
 		registerMultiblock(CanisterUnloaderMultiblock)
 	}
 
