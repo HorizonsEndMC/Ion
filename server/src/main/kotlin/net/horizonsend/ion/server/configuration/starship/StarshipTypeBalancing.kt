@@ -346,7 +346,7 @@ data class NewStarshipBalancing(
 			cruiseSpeedMultiplier = 0.88,
 			shieldPowerMultiplier = 1.60,
 			weaponOverrides = listOf(
-				QuadTurretBalancing(fireRestrictions = FireRestrictions(canFire = true)),
+				QuadTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 17500)),
 				TriTurretBalancing(
 					fireRestrictions = FireRestrictions(canFire = false),
 					boostChargeNanos = TimeUnit.SECONDS.toNanos(7),
