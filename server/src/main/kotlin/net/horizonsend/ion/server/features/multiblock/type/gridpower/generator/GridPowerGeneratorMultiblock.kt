@@ -85,8 +85,6 @@ abstract class GridPowerGeneratorMultiblock : Multiblock(), EntityMultiblock<Gri
 		}
 
 		fun tickGeneration() {
-			val linkage = rotationLinkage.get()
-			println(linkage)
 		}
 	}
 }

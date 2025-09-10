@@ -148,7 +148,6 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 
 			steamOutput.getContents().combine(new, location)
 			setStatus(Component.text("Working", NamedTextColor.GREEN))
-			println(this)
 		}
 
 		override fun getRotationSpeed(): Double {
