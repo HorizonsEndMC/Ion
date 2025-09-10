@@ -202,9 +202,9 @@ open class EnmityModule(
 		if (index != -1) {
 			if (enmityList[index].damagePoints >= points) return
 			enmityList[index].damagePoints = points
-			debugAudience.debug("damagePoints : $points")
+			//debugAudience.debug("damagePoints : $points")
 			enmityList[index].damagerWeight += config.damagerAggroWeight //the highest damager will generate base emity
-			debugAudience.debug("damagerWeight : ${enmityList[index].damagerWeight}")
+			//debugAudience.debug("damagerWeight : ${enmityList[index].damagerWeight}")
 		} else {
 			tempTarget.damagerWeight = config.damagerAggroWeight
 			tempTarget.damagePoints = points
