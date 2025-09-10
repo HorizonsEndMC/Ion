@@ -52,7 +52,7 @@ class PlayerDirectControlInput(override val controller: PlayerController
 		player.isFlying = true
 
 		val playerLoc = player.location
-		val newCenter = playerLoc.toBlockLocation().add(0.5, playerLoc.y.rem(1)+0.001, 0.5)
+		val newCenter = playerLoc.toBlockLocation().add(0.5, playerLoc.y.rem(1), 0.5)
 
 		starship.directControlCenter = newCenter
 		player.teleport(newCenter)

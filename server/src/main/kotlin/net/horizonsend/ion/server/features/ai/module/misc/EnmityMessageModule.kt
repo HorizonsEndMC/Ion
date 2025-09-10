@@ -69,7 +69,8 @@ class EnmityMessageModule(
 		}
 
 		val betrayalAggro = { opponent: EnmityModule.AIOpponent, config: AIEmities.AIEmityConfiguration ->
-			opponent.aggroed && opponent.baseWeight < config.initialAggroThreshold
+			opponent.damagerWeight > (config.initialAggroThreshold * 2)
+				&& opponent.baseWeight < config.initialAggroThreshold
 		}
 	}
 }
