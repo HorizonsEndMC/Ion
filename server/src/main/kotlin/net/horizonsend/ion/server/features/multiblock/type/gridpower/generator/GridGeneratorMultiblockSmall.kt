@@ -8,7 +8,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
 
-object SmallGridGeneratorMultiblock : GridPowerGeneratorMultiblock() {
+object GridGeneratorMultiblockSmall : GridPowerGeneratorMultiblock() {
 	override val linkageOffset: Vec3i = Vec3i(0, 0, 5)
 
 	override fun MultiblockShape.buildStructure() {

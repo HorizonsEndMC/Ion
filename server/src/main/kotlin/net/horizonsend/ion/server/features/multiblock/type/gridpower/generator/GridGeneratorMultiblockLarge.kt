@@ -9,7 +9,7 @@ import org.bukkit.Material
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
 
-object LargeGridGeneratorMultiblock : GridPowerGeneratorMultiblock() {
+object GridGeneratorMultiblockLarge : GridPowerGeneratorMultiblock() {
 	override val linkageOffset: Vec3i = Vec3i(0, 2, 10)
 
 	override fun MultiblockShape.buildStructure() {
