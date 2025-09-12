@@ -1,15 +1,33 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
+import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
+import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
+import net.horizonsend.ion.server.features.client.display.modular.display.getLinePos
+import net.horizonsend.ion.server.features.client.display.modular.display.gridenergy.GridEnergyDisplay
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock
+import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock.MultiblockGridEnergyManager
+import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyPortMetaData
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.ElectricBoilerMultiblock.ElectricBoilerEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
+import net.horizonsend.ion.server.features.transport.inputs.IOData
+import net.horizonsend.ion.server.features.transport.inputs.IOPort
+import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
 
-object ElectricBoilerMultiblock : BoilerMultiblock() {
+object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 	override val signText: Array<Component?> = createSignText(
 		Component.text("Electric Burner"),
 		null,
@@ -353,6 +371,44 @@ object ElectricBoilerMultiblock : BoilerMultiblock() {
 				x(1).aluminumBlock()
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
+		}
+	}
+
+	override fun createEntity(
+		manager: MultiblockManager,
+		data: PersistentMultiblockData,
+		world: World,
+		x: Int,
+		y: Int,
+		z: Int,
+		structureDirection: BlockFace
+	): ElectricBoilerEntity {
+		return ElectricBoilerEntity(manager, data, world, x, y, z, structureDirection)
+	}
+
+	class ElectricBoilerEntity(
+		manager: MultiblockManager,
+		data: PersistentMultiblockData,
+		world: World,
+		x: Int,
+		y: Int,
+		z: Int,
+		structureDirection: BlockFace
+	) : BoilerMultiblockEntity(manager, data, ElectricBoilerMultiblock, world, x, y, z, structureDirection), GridEnergyMultiblock {
+		override val gridEnergyManager: MultiblockGridEnergyManager = MultiblockGridEnergyManager(this)
+
+		override fun IOData.Builder.registerAdditionalIO(): IOData.Builder {
+			return addPort(IOType.GRID_ENERGY, 0, -1, 0) { IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>(this@ElectricBoilerEntity, GridEnergyPortMetaData(inputAllowed = false, outputAllowed = true)) }
+		}
+
+		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(this,
+			{ ComplexFluidDisplayModule(handler = it, container = fluidInput, title = text("Input"), offsetLeft = 3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.RIGHT) },
+			{ ComplexFluidDisplayModule(handler = it, container = fluidOutput, title = text("Output"), offsetLeft = -3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.LEFT) },
+			{ GridEnergyDisplay(handler = it, multiblock = this, offsetLeft = 0.0, offsetUp = getLinePos(4), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE, relativeFace = RelativeFace.FORWARD) },
+		)
+
+		override fun tickAsync() {
+			super<BoilerMultiblockEntity>.tickAsync()
 		}
 	}
 }

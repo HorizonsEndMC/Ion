@@ -1,14 +1,24 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
+import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.ItemCombustionBoilerMultiblock.ItemBoilerEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.Slab
 
-object ItemCombustionBoilerMultiblock : BoilerMultiblock() {
+object ItemCombustionBoilerMultiblock : BoilerMultiblock<ItemBoilerEntity>() {
 	override val signText: Array<Component?> = createSignText(
 		Component.text("Item Burner"),
 		null,
@@ -352,5 +362,35 @@ object ItemCombustionBoilerMultiblock : BoilerMultiblock() {
 				x(3).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 			}
 		}
+	}
+
+	override fun createEntity(
+		manager: MultiblockManager,
+		data: PersistentMultiblockData,
+		world: World,
+		x: Int,
+		y: Int,
+		z: Int,
+		structureDirection: BlockFace
+	): ItemBoilerEntity {
+		return ItemBoilerEntity(manager, data, world, x, y, z, structureDirection)
+	}
+
+	class ItemBoilerEntity(
+		manager: MultiblockManager,
+		data: PersistentMultiblockData,
+		world: World,
+		x: Int,
+		y: Int,
+		z: Int,
+		structureDirection: BlockFace
+	) : BoilerMultiblockEntity(manager, data, ItemCombustionBoilerMultiblock, world, x, y, z, structureDirection) {
+		// No additional IO
+		override fun IOData.Builder.registerAdditionalIO(): IOData.Builder = this
+
+		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(this,
+			{ ComplexFluidDisplayModule(handler = it, container = fluidInput, title = text("Input"), offsetLeft = 3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.RIGHT) },
+			{ ComplexFluidDisplayModule(handler = it, container = fluidOutput, title = text("Output"), offsetLeft = -3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.LEFT) },
+		)
 	}
 }

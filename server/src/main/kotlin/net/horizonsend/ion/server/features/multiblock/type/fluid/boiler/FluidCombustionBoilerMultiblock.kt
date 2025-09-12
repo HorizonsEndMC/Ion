@@ -1,16 +1,35 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
+import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
+import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
+import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
+import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SimpleFluidDisplayModule
+import net.horizonsend.ion.server.features.client.display.modular.display.getLinePos
+import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.FluidCombustionBoilerMultiblock.FluidBoilerEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
+import net.horizonsend.ion.server.features.transport.inputs.IOData
+import net.horizonsend.ion.server.features.transport.inputs.IOPort
+import net.horizonsend.ion.server.features.transport.inputs.IOType
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
+import org.bukkit.World
+import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
 
-object FluidCombustionBoilerMultiblock : BoilerMultiblock() {
+object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 	override val signText: Array<Component?> = createSignText(
 		Component.text("Fluid Burner"),
 		null,
@@ -364,6 +383,45 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock() {
 				x(1).anyTerracotta()
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
+		}
+	}
+
+	override fun createEntity(
+		manager: MultiblockManager,
+		data: PersistentMultiblockData,
+		world: World,
+		x: Int,
+		y: Int,
+		z: Int,
+		structureDirection: BlockFace
+	): FluidBoilerEntity {
+		return FluidBoilerEntity(manager, data, world, x, y, z, structureDirection)
+	}
+
+	class FluidBoilerEntity(
+		manager: MultiblockManager,
+		data: PersistentMultiblockData,
+		world: World,
+		x: Int,
+		y: Int,
+		z: Int,
+		structureDirection: BlockFace
+	) : BoilerMultiblockEntity(manager, data, FluidCombustionBoilerMultiblock, world, x, y, z, structureDirection) {
+		val fuelStorage = FluidStorageContainer(data, "fuel_storage", text("Fuel Storage"), NamespacedKeys.key("fuel_storage"), 100_000.0, FluidRestriction.Unlimited)
+
+		override fun IOData.Builder.registerAdditionalIO(): IOData.Builder {
+			// Fuel input
+			return addPort(IOType.FLUID, 0, -1, 0) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this@FluidBoilerEntity, FluidPortMetadata(connectedStore = fuelStorage, inputAllowed = true, outputAllowed = false)) }
+		}
+
+		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(this,
+			{ ComplexFluidDisplayModule(handler = it, container = fluidInput, title = text("Input"), offsetLeft = 3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.RIGHT) },
+			{ ComplexFluidDisplayModule(handler = it, container = fluidOutput, title = text("Output"), offsetLeft = -3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.LEFT) },
+			{ SimpleFluidDisplayModule(handler = it, storage = fuelStorage, offsetLeft = 0.0, offsetUp = getLinePos(2), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
+		)
+
+		override fun getStores(): List<FluidStorageContainer> {
+			return listOf(fluidInput, fluidOutput, fuelStorage)
 		}
 	}
 }
