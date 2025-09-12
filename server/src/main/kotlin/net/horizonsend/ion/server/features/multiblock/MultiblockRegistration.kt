@@ -31,6 +31,9 @@ import net.horizonsend.ion.server.features.multiblock.type.fluid.CanisterVentMul
 import net.horizonsend.ion.server.features.multiblock.type.fluid.ChemicalProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.PumpMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.ElectricBoilerMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.FluidCombustionBoilerMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.ItemCombustionBoilerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.BasicFluidStorageTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.gridpower.generator.LargeGridGeneratorMultiblock
@@ -429,17 +432,22 @@ object MultiblockRegistration : IonServerComponent() {
 
 		registerMultiblock(AntiAirCannonBaseMultiblock)
 
+		registerMultiblock(BasicFluidStorageTankMultiblock)
+		registerMultiblock(CanisterUnloaderMultiblock)
+
 		if (ConfigurationFiles.featureFlags().graphTransfer) {
 			registerMultiblock(ChemicalProcessorMultiblock)
 			registerMultiblock(PumpMultiblock)
-		}
 
-		registerMultiblock(BasicFluidStorageTankMultiblock)
-		registerMultiblock(CanisterUnloaderMultiblock)
-		registerMultiblock(SmallGridGeneratorMultiblock)
-		registerMultiblock(MediumGridGeneratorMultiblock)
-		registerMultiblock(LargeGridGeneratorMultiblock)
-		registerMultiblock(TemporaryTurbineMultiblock)
+			registerMultiblock(SmallGridGeneratorMultiblock)
+			registerMultiblock(MediumGridGeneratorMultiblock)
+			registerMultiblock(LargeGridGeneratorMultiblock)
+			registerMultiblock(TemporaryTurbineMultiblock)
+
+			registerMultiblock(ElectricBoilerMultiblock)
+			registerMultiblock(FluidCombustionBoilerMultiblock)
+			registerMultiblock(ItemCombustionBoilerMultiblock)
+		}
 	}
 
 	private fun sortMultiblocks() {
