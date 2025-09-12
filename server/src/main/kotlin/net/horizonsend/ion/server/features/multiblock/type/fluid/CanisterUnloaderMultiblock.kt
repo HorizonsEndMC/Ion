@@ -38,7 +38,6 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
@@ -72,12 +71,12 @@ object CanisterUnloaderMultiblock : Multiblock(), EntityMultiblock<CanisterUnloa
 		z(1) {
 			y(-1) {
 				x(-1).titaniumBlock()
-				x(0).type(Material.WAXED_COPPER_GRATE)
+				x(0).anyCopperGrate()
 				x(1).titaniumBlock()
 			}
 			y(0) {
 				x(-1).titaniumBlock()
-				x(0).type(Material.WAXED_COPPER_GRATE)
+				x(0).anyCopperGrate()
 				x(1).titaniumBlock()
 			}
 		}
