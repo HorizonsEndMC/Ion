@@ -12,6 +12,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.BLUE
 import org.bukkit.Axis
 import org.bukkit.Color
+import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
 import org.bukkit.World
@@ -53,5 +54,17 @@ object Water : FluidType(FluidTypeKeys.WATER) {
 
 	override fun getDisplayName(stack: FluidStack): Component {
 		return text("Water", BLUE)
+	}
+
+	override fun getIsobaricHeatCapacity(stack: FluidStack): Double {
+		return 4.181
+	}
+
+	override fun getMolarMass(stack: FluidStack): Double {
+		return 18.01528
+	}
+
+	override fun getDensity(stack: FluidStack, location: Location?): Double {
+		return 1.0
 	}
 }

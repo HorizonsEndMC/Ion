@@ -15,3 +15,19 @@ fun litersToMetersCubed(amountLiters: Double): Double {
 fun metersCubedToLiters(amountMetersCubed: Double): Double {
 	return amountMetersCubed * 1000.0
 }
+
+fun litersToCentimetersCubed(amountLiters: Double): Double {
+	return amountLiters * 1000.0
+}
+
+fun centimetersCubedToLiters(amountCentimetersCubed: Double): Double {
+	return amountCentimetersCubed / 1000.0
+}
+
+fun gramsToKilograms(amountGrams: Double): Double {
+	return amountGrams / 1000.0
+}
+
+fun kilogramsToGrams(amountKilorams: Double): Double {
+	return amountKilorams * 1000.0
+}

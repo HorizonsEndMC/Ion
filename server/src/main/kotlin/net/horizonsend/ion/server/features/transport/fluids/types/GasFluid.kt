@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
+import net.horizonsend.ion.server.features.transport.fluids.FluidUtils.getGasDensity
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork.Companion.PIPE_INTERIOR_PADDING
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
@@ -18,6 +19,7 @@ import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.Bukkit
 import org.bukkit.Color
+import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
 import org.bukkit.World
@@ -28,7 +30,9 @@ import kotlin.random.Random
 class GasFluid(
 	key: IonRegistryKey<FluidType, out FluidType>,
 	private val gasKey: IonRegistryKey<Gas, out Gas>,
-	val color: Color
+	val color: Color,
+	private val heatCapacity: Double,
+	private val molarMass: Double,
 ) : FluidType(key) {
 	override val categories: Array<FluidCategory> = arrayOf(FluidCategory.GAS)
 
@@ -93,5 +97,17 @@ class GasFluid(
 	companion object {
 		//TODO
 		val windDirection: Vector get() = Bukkit.getPlayer("GutinGongoozler")?.location?.direction ?: Vector.getRandom()
+	}
+
+	override fun getIsobaricHeatCapacity(stack: FluidStack): Double {
+		return heatCapacity * stack.amount
+	}
+
+	override fun getMolarMass(stack: FluidStack): Double {
+		return molarMass
+	}
+
+	override fun getDensity(stack: FluidStack, location: Location?): Double {
+		return getGasDensity(stack, location)
 	}
 }

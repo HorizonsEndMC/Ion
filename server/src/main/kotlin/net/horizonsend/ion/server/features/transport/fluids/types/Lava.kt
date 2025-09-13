@@ -13,6 +13,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Axis
 import org.bukkit.Color
+import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
 import org.bukkit.World
@@ -62,5 +63,17 @@ object Lava : FluidType(FluidTypeKeys.LAVA) {
 		}
 
 		world.spawnParticle(Particle.FALLING_LAVA, faceCenter, 1, 0.0, 0.0, 0.0)
+	}
+
+	override fun getIsobaricHeatCapacity(stack: FluidStack): Double {
+		return 0.84
+	}
+
+	override fun getMolarMass(stack: FluidStack): Double {
+		return 216.549
+	}
+
+	override fun getDensity(stack: FluidStack, location: Location?): Double {
+		return 2.9
 	}
 }

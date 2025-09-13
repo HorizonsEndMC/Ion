@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
+import net.horizonsend.ion.server.features.transport.fluids.FluidUtils
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid.Companion.windDirection
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork.Companion.PIPE_INTERIOR_PADDING
@@ -15,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Color
+import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
 import org.bukkit.World
@@ -86,5 +88,17 @@ object Steam : FluidType(FluidTypeKeys.STEAM) {
 		}
 
 		return text("Wet Steam")
+	}
+
+	override fun getIsobaricHeatCapacity(stack: FluidStack): Double {
+		return 2.030
+	}
+
+	override fun getDensity(stack: FluidStack, location: Location?): Double {
+		return FluidUtils.getGasDensity(stack, location)
+	}
+
+	override fun getMolarMass(stack: FluidStack): Double {
+		return 18.01528
 	}
 }

@@ -30,11 +30,11 @@ import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
-import net.horizonsend.ion.server.miscellaneous.utils.celsiusToKelvin
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.metersCubedToLiters
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
@@ -126,16 +126,16 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 				return
 			}
 
-			val massFlow = getMassFlowRate(steamStack) * delta
+			val massFlow = getMassFlowRate(steamStack, location) * delta
 
-			val specificEnthalpy = getSpecificEnthalpy(steamStack)
+			val specificEnthalpy = getSpecificEnthalpy(steamStack, location)
 			val workPerMassFlow = specificEnthalpy / (1 - multiblock.efficiency) * specificEnthalpy
 
 			val work = (workPerMassFlow * massFlow) / 60
 
 			lastEnergy = work
 
-			val removedVolume = metersCubedToLiters(massFlow / getSteamDensity(steamStack)) * USAGE_MULTIPLIER
+			val removedVolume = metersCubedToLiters(massFlow / steamStack.type.getValue().getDensity(steamStack, location)) * USAGE_MULTIPLIER
 
 			steamInput.removeAmount(removedVolume)
 			val new = steamStack.asAmount(removedVolume)
@@ -156,21 +156,6 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			return lastEnergy
 		}
 
-		/**
-		 * Returns density in kg / m^3
-		 **/
-		fun getSteamDensity(stack: FluidStack): Double {
-			val pressureBar = stack.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE.getValue(), location).value
-			val temperatureCelsius = stack.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE.getValue(), location).value
-
-			val gasConstant = 8.3144598 * 1000 // j / kmol - k
-			val molecularWeight = 18.01528 // kg / kmol
-			val pressurePascal = pressureBar * 100000
-			val density = (pressurePascal * molecularWeight) / (gasConstant * celsiusToKelvin(temperatureCelsius))
-
-			return density
-		}
-
 		fun getSaturationTemperature(stack: FluidStack): Double {
 			val pressure = stack.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE.getValue(), location)
 			return pressure.value.pow(0.25) * 100.0
@@ -189,18 +174,18 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 		/**
 		 * Returns the mass flow rate, in kilograms per second
 		 **/
-		fun getMassFlowRate(stack: FluidStack): Double {
-			val density = getSteamDensity(stack) // kg/m^3
+		fun getMassFlowRate(stack: FluidStack, location: Location?): Double {
+			val density = stack.type.getValue().getDensity(stack, location) // kg/m^3
 			val crossSectionArea = multiblock.inletCrossSectionArea // m^2
 			val velocity = 25.0 // m/s
 
 			return density * crossSectionArea * velocity
 		}
 
-		fun getSpecificEnthalpy(stack: FluidStack): Double {
+		fun getSpecificEnthalpy(stack: FluidStack, location: Location?): Double {
 			val pressure = stack.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE.getValue(), location).value
 
-			val specificVolume = 1.0 / getSteamDensity(stack)
+			val specificVolume = 1.0 / stack.type.getValue().getDensity(stack, location)
 			val steamHeatCapacity = 2000 // j / kg
 
 			return steamHeatCapacity + (pressure * (1.0 / specificVolume))

@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.kyori.adventure.text.Component
 import org.bukkit.Axis
 import org.bukkit.Color
+import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
 import org.bukkit.World
@@ -17,7 +18,14 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
-class SimpleFluid(key: IonRegistryKey<FluidType, out FluidType>, val displayName: Component, override val categories: Array<FluidCategory>) : FluidType(key) {
+class SimpleFluid(
+	key: IonRegistryKey<FluidType, out FluidType>,
+	val displayName: Component,
+	override val categories: Array<FluidCategory>,
+	private val heatCapacity: Double,
+	private val molarMass: Double,
+	private val density: Double
+) : FluidType(key) {
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
 		val trailOptions = Trail(
 			/* target = */ destination.toLocation(world),
@@ -49,5 +57,17 @@ class SimpleFluid(key: IonRegistryKey<FluidType, out FluidType>, val displayName
 		}
 
 		world.spawnParticle(Particle.FALLING_WATER, faceCenter, 1, 0.0, 0.0, 0.0)
+	}
+
+	override fun getIsobaricHeatCapacity(stack: FluidStack): Double {
+		return heatCapacity * stack.amount
+	}
+
+	override fun getMolarMass(stack: FluidStack): Double {
+		return molarMass
+	}
+
+	override fun getDensity(stack: FluidStack, location: Location?): Double {
+		return density
 	}
 }

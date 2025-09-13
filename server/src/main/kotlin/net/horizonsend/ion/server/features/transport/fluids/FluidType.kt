@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCate
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
+import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
@@ -27,6 +28,21 @@ abstract class FluidType(override val key: IonRegistryKey<FluidType, out FluidTy
 	 * Called when this fluid leaks from a pipe. Should be used for anything that is not a visual effect, such as pollution.
 	 **/
 	open fun onLeak(world: World, location: Vec3i, amount: Double) {}
-	
+
 	abstract fun getDisplayName(stack: FluidStack): Component
+
+	/**
+	 * Returns the heat capacity of this fluid, in joules per gram
+	 **/
+	abstract fun getIsobaricHeatCapacity(stack: FluidStack): Double
+
+	/**
+	 * Returns the density of this fluid, in grams per cubic centimeter
+	 **/
+	abstract fun getDensity(stack: FluidStack, location: Location?): Double
+
+	/**
+	 * Returns the molar mass of this fluid, in grams per mole
+	 **/
+	abstract fun getMolarMass(stack: FluidStack): Double
 }
