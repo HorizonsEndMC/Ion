@@ -49,7 +49,7 @@ object TemperatureProperty : FluidPropertyType<Temperature>() {
 	}
 
 	override fun formatValue(property: Temperature): Component {
-		return ofChildren(Component.text(property.value.roundToHundredth()), Component.space(), Component.text("C", HE_MEDIUM_GRAY))
+		return ofChildren(Component.text(property.value.roundToHundredth()), Component.space(), Component.text("°C", HE_MEDIUM_GRAY))
 	}
 
 	override fun getDisplayName(): Component {

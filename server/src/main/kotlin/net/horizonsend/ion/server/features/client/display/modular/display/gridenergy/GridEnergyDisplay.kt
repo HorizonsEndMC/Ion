@@ -39,7 +39,7 @@ class GridEnergyDisplay(
 	}
 
 	companion object {
-		val format = DecimalFormat("##.##")
+		val format = DecimalFormat("##.####")
 		private const val BOLT_CHARACTER = '⚡'
 		private val BOLT_TEXT = text(BOLT_CHARACTER, NamedTextColor.YELLOW)
 		private val CONSUMPTION = text('-', NamedTextColor.RED)
@@ -57,6 +57,17 @@ class GridEnergyDisplay(
 		if (consumptionAmount < produced) return formatOutput(produced)
 
 		var unit = "W"
+
+		if (consumptionAmount > 1000.0) {
+			consumptionAmount /= 1000.0
+			unit = "kW"
+		}
+
+		if (consumptionAmount > 1000.0) {
+			consumptionAmount /= 1000.0
+			unit = "mW"
+		}
+
 		var color: TextColor = NamedTextColor.GREEN
 		val availablePower = multiblock.getAvailablePowerPercentage()
 		if (availablePower < 1.0) color = NamedTextColor.RED

@@ -392,5 +392,17 @@ object ItemCombustionBoilerMultiblock : BoilerMultiblock<ItemBoilerEntity>() {
 			{ ComplexFluidDisplayModule(handler = it, container = fluidInput, title = text("Input"), offsetLeft = 3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.RIGHT) },
 			{ ComplexFluidDisplayModule(handler = it, container = fluidOutput, title = text("Output"), offsetLeft = -3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.LEFT) },
 		)
+
+		override fun getHeatProductionJoulesPerSecond(): Double {
+			return 10000.0
+		}
+
+		override fun postTick() {
+
+		}
+
+		override fun preTick() {
+
+		}
 	}
 }

@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
+import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.getLinePos
 import net.horizonsend.ion.server.features.client.display.modular.display.gridenergy.GridEnergyDisplay
@@ -26,6 +27,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
+import java.time.Duration
 
 object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 	override val signText: Array<Component?> = createSignText(
@@ -404,11 +406,27 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(this,
 			{ ComplexFluidDisplayModule(handler = it, container = fluidInput, title = text("Input"), offsetLeft = 3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.RIGHT) },
 			{ ComplexFluidDisplayModule(handler = it, container = fluidOutput, title = text("Output"), offsetLeft = -3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.LEFT) },
-			{ GridEnergyDisplay(handler = it, multiblock = this, offsetLeft = 0.0, offsetUp = getLinePos(4), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE, relativeFace = RelativeFace.FORWARD) },
+			{ GridEnergyDisplay(handler = it, multiblock = this, offsetLeft = 0.0, offsetUp = getLinePos(3), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE, relativeFace = RelativeFace.FORWARD) },
+			{ StatusDisplayModule(handler = it, statusSupplier = statusManager, offsetLeft = 0.0, offsetUp = getLinePos(4), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
 		)
 
 		override fun tickAsync() {
 			super<BoilerMultiblockEntity>.tickAsync()
 		}
+
+		override fun getHeatProductionJoulesPerSecond(): Double {
+			return POWER_DRAW_WATTS * 10
+		}
+
+		override fun postTick() {
+			if (isRunning) {
+				setActiveDuration(Duration.ofSeconds(2))
+				setActiveGridEnergyConsumption(POWER_DRAW_WATTS)
+			}
+		}
+
+		override fun getPassiveGridEnergyConsumption(): Double = 1.0
+
+		private val POWER_DRAW_WATTS get () = 50_000.0 // Watts
 	}
 }

@@ -423,5 +423,17 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 		override fun getStores(): List<FluidStorageContainer> {
 			return listOf(fluidInput, fluidOutput, fuelStorage)
 		}
+
+		override fun getHeatProductionJoulesPerSecond(): Double {
+			return 10000.0
+		}
+
+		override fun postTick() {
+
+		}
+
+		override fun preTick() {
+
+		}
 	}
 }
