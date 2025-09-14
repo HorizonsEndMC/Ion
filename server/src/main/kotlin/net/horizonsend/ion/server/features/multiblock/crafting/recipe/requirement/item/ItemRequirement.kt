@@ -23,7 +23,7 @@ fun interface ItemRequirement : RecipeRequirement<ItemStack?> {
 
 	class CustomItemRequirement(val customItem: IonRegistryKey<CustomItem, out CustomItem>) : ItemRequirement {
 		override fun matches(item: ItemStack?): Boolean {
-			return item?.customItem == customItem && item.amount >= 1
+			return item?.customItem?.key == customItem && item.amount >= 1
 		}
 
 		override fun asItemStack(): ItemStack = customItem.getValue().constructItemStack()
