@@ -47,7 +47,7 @@ abstract class FluidType(override val key: IonRegistryKey<FluidType, out FluidTy
 	/**
 	 * Returns the molar mass of this fluid, in grams per mole
 	 **/
-	abstract fun getMolarMass(stack: FluidStack): Double
+	abstract fun getMolarMass(): Double
 
 	/**
 	 * Returns result when a fluid stack of this type is heated

@@ -67,7 +67,7 @@ object Water : FluidType(FluidTypeKeys.WATER) {
 		return 4.181
 	}
 
-	override fun getMolarMass(stack: FluidStack): Double {
+	override fun getMolarMass(): Double {
 		return 18.01528
 	}
 
@@ -87,15 +87,28 @@ object Water : FluidType(FluidTypeKeys.WATER) {
 
 		val boilingTemperature = FluidProperty.Temperature(100.0)
 
-		if (resultContainer.getRemainingRoom() <= 0) {
-			return HeatingResult.Boiling(boilingTemperature, FluidStack.empty(), 0.0)
-		}
-
 		val deltaTemperature = boilingPoint - currentTemperature
 		val heatingJoules = getFluidWeight(stack, location) * getIsobaricHeatCapacity(stack) * deltaTemperature
 
 		val spareJoules = (appliedEnergyJoules - heatingJoules)
 		val boiledGrams = spareJoules / LATENT_HEAT_OF_VAPORIZATION
+
+		if (resultContainer.getRemainingRoom() <= 0) {
+			val newWeight = getFluidWeight(resultContainer.getContents(), location) + boiledGrams
+			val temperature = resultContainer.getContents().getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE.getValue(), location).value
+
+			val newPressure = FluidUtils.getFluidPressure(
+				resultContainer.getContents().type.getValue(),
+				newWeight,
+				temperature,
+				resultContainer,
+				location
+			)
+			println(newPressure)
+			resultContainer.getContents().setData(FluidPropertyTypeKeys.PRESSURE, FluidProperty.Pressure(newPressure))
+
+			return HeatingResult.Boiling(boilingTemperature, FluidStack.empty(), 0.0)
+		}
 
 		val tempSteamStack = FluidStack(FluidTypeKeys.STEAM, 1.0)
 		val steamDensity = FluidUtils.getGasDensity(tempSteamStack, location)

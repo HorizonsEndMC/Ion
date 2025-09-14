@@ -69,7 +69,7 @@ object Lava : FluidType(FluidTypeKeys.LAVA) {
 		return 0.84
 	}
 
-	override fun getMolarMass(stack: FluidStack): Double {
+	override fun getMolarMass(): Double {
 		return 216.549
 	}
 

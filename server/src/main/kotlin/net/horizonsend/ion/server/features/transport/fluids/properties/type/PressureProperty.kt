@@ -43,12 +43,12 @@ object PressureProperty : FluidPropertyType<Pressure>() {
 	}
 
 	override fun getDefaultProperty(location: Location?): Pressure {
-		//TODO
+		//TODO - per planet ambient pressure
 		return Pressure(DEFAULT_PRESSURE)
 	}
 
 	override fun formatValue(property: Pressure): Component {
-		return ofChildren(Component.text(property.value.roundToHundredth()), Component.space(), Component.text("mb", HE_MEDIUM_GRAY))
+		return ofChildren(Component.text(property.value.roundToHundredth()), Component.space(), Component.text("b", HE_MEDIUM_GRAY))
 	}
 
 	override fun getDisplayName(): Component {

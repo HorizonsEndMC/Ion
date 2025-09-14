@@ -98,7 +98,7 @@ object Steam : FluidType(FluidTypeKeys.STEAM) {
 		return FluidUtils.getGasDensity(stack, location)
 	}
 
-	override fun getMolarMass(stack: FluidStack): Double {
+	override fun getMolarMass(): Double {
 		return 18.01528
 	}
 }

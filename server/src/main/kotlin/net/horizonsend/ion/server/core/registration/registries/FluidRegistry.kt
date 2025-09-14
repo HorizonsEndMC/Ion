@@ -33,7 +33,7 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 			override fun playLeakEffects(world: World, leakingNode: FluidNode, leakingDirection: BlockFace) {}
 			override fun getIsobaricHeatCapacity(stack: FluidStack): Double = Double.MAX_VALUE
 			override fun getDensity(stack: FluidStack, location: Location?): Double = 0.0
-			override fun getMolarMass(stack: FluidStack): Double = 0.0
+			override fun getMolarMass(): Double = 0.0
 		})
 
 		register(FluidTypeKeys.HYDROGEN, GasFluid(FluidTypeKeys.HYDROGEN, AtmosphericGasKeys.HYDROGEN, Color.fromRGB(103, 145, 145), heatCapacity = 14.300, molarMass = 2.01568))

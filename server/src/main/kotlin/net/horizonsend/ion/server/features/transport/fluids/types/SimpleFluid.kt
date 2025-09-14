@@ -63,7 +63,7 @@ class SimpleFluid(
 		return heatCapacity * stack.amount
 	}
 
-	override fun getMolarMass(stack: FluidStack): Double {
+	override fun getMolarMass(): Double {
 		return molarMass
 	}
 

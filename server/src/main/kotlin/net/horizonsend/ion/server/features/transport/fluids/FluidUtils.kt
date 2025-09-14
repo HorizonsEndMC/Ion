@@ -6,9 +6,12 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.FluidDisplayModule.Companion.format
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Temperature
 import net.horizonsend.ion.server.miscellaneous.utils.celsiusToKelvin
 import net.horizonsend.ion.server.miscellaneous.utils.litersToCentimetersCubed
+import net.horizonsend.ion.server.miscellaneous.utils.litersToMetersCubed
+import net.horizonsend.ion.server.miscellaneous.utils.pascalsToBars
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -43,6 +46,16 @@ object FluidUtils {
 		return density * litersToCentimetersCubed(fluid.amount)
 	}
 
+	/** Returns the calculated pressure fluid stack, in bars */
+	fun getFluidPressure(fluidType: FluidType, fluidWeight: Double, fluidTemperatureCelsius: Double, container: FluidStorageContainer, location: Location?): Double {
+		val capacity = container.capacity
+		val weightGrams = fluidWeight
+		val moles =  weightGrams / fluidType.getMolarMass()
+
+		val pressure = (moles * GAS_CONSTANT * celsiusToKelvin(fluidTemperatureCelsius)) / litersToMetersCubed(capacity)
+		return pascalsToBars(pressure)
+	}
+
 	/**
 	 * Uses the ideal gas law to get the density of the gas, in grams / cm^3
 	 **/
@@ -52,7 +65,7 @@ object FluidUtils {
 		val temperatureCelsius = stack.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE.getValue(), location).value
 		val pressureBars = stack.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE.getValue(), location).value
 
-		val density = (type.getMolarMass(stack) * pressureBars) / (GAS_CONSTANT * celsiusToKelvin(temperatureCelsius))
+		val density = (type.getMolarMass() * pressureBars) / (GAS_CONSTANT * celsiusToKelvin(temperatureCelsius))
 
 		return density
 	}

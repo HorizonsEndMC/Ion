@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
@@ -42,7 +43,7 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
 		val fluidInput = FluidStorageContainer(data, "primaryin", text("Primary Input"), NamespacedKeys.key("primaryin"), 10_000.0, FluidRestriction.Unlimited)
-		val fluidOutput = FluidStorageContainer(data, "primaryout", text("Primary Output"), NamespacedKeys.key("primaryout"), 10_000.0, FluidRestriction.Unlimited)
+		val fluidOutput = FluidStorageContainer(data, "primaryout", text("Primary Output"), NamespacedKeys.key("primaryout"), 100.0, FluidRestriction.Unlimited)
 
 		override val ioData: IOData = IOData.builder(this)
 			.addPort(IOType.FLUID, -3, 0, 3) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = fluidInput, inputAllowed = true, outputAllowed = false)) }
@@ -91,19 +92,22 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 			)
 
 			input.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), heatingResult.newTemperature)
-			setStatus(FluidPropertyTypeKeys.TEMPERATURE.getValue().formatValue(heatingResult.newTemperature))
 
 			when (heatingResult) {
-				is FluidType.HeatingResult.TemperatureIncreaseInPlace -> {}
+				is FluidType.HeatingResult.TemperatureIncreaseInPlace -> {
+					setStatus(FluidPropertyTypeKeys.TEMPERATURE.getValue().formatValue(heatingResult.newTemperature))
+				}
 				is FluidType.HeatingResult.TemperatureIncreasePassthrough -> {
 					val clone = fluidInput.getContents().clone()
 					clone.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), heatingResult.newTemperature)
 					fluidInput.clear()
 					fluidOutput.addFluid(clone, location)
+					setStatus(FluidPropertyTypeKeys.TEMPERATURE.getValue().formatValue(heatingResult.newTemperature))
 				}
 				is FluidType.HeatingResult.Boiling -> {
-					fluidOutput.addFluid(heatingResult.newFluidStack, location)
+					if (heatingResult.newFluidStack.isNotEmpty()) fluidOutput.addFluid(heatingResult.newFluidStack, location)
 					fluidInput.removeAmount(heatingResult.inputRemovalAmount)
+					setStatus(ofChildren(text("Boiling "), FluidPropertyTypeKeys.TEMPERATURE.getValue().formatValue(heatingResult.newTemperature)))
 				}
 			}
 		}
