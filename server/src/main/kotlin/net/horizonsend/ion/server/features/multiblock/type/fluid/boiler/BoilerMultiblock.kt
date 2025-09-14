@@ -15,8 +15,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedM
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblock.BoilerMultiblockEntity
-import net.horizonsend.ion.server.features.transport.fluids.FluidUtils
-import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Temperature
+import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
@@ -64,33 +63,49 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 		override fun tickAsync() {
 			bootstrapFluidNetwork()
 
-			preTick()
+			if (!preTick()) return
 			heatFluid()
 			postTick()
 		}
 
-		open fun preTick() {}
+		open fun preTick(): Boolean = true
 
 		fun heatFluid() {
+			val deltaT = deltaTMS / 1000.0
+
 			val input = fluidInput.getContents()
 			if (input.isEmpty()) {
 				setRunning(false)
+				statusManager.setStatus(text("Idle"))
 				return
 			}
 
 			setRunning(true)
 
-			val currentHeat = input.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE.getValue(), location).value
+			val heatingResult = input.type.getValue().getHeatingResult(
+				stack = input,
+				resultContainer = fluidOutput,
+				appliedEnergyJoules = getHeatProductionJoulesPerSecond() * deltaT,
+				maximumTemperature = 500.0,
+				location = location
+			)
 
-			val heatOutput = getHeatProductionJoulesPerSecond()
-			val fluidWeightGrams = FluidUtils.getFluidWeight(input, location)
-			val specificHeat = input.type.getValue().getIsobaricHeatCapacity(input)
-			val kelvinHeat = heatOutput / (specificHeat * fluidWeightGrams)
+			input.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), heatingResult.newTemperature)
+			setStatus(FluidPropertyTypeKeys.TEMPERATURE.getValue().formatValue(heatingResult.newTemperature))
 
-			val newHeat = Temperature(currentHeat + kelvinHeat)
-			input.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), newHeat)
-
-			setStatus(FluidPropertyTypeKeys.TEMPERATURE.getValue().formatValue(newHeat))
+			when (heatingResult) {
+				is FluidType.HeatingResult.TemperatureIncreaseInPlace -> {}
+				is FluidType.HeatingResult.TemperatureIncreasePassthrough -> {
+					val clone = fluidInput.getContents().clone()
+					clone.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), heatingResult.newTemperature)
+					fluidInput.clear()
+					fluidOutput.addFluid(clone, location)
+				}
+				is FluidType.HeatingResult.Boiling -> {
+					fluidOutput.addFluid(heatingResult.newFluidStack, location)
+					fluidInput.removeAmount(heatingResult.inputRemovalAmount)
+				}
+			}
 		}
 
 		open fun postTick() {}

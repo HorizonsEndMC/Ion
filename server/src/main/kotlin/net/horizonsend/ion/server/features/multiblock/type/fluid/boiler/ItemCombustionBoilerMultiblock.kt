@@ -396,13 +396,5 @@ object ItemCombustionBoilerMultiblock : BoilerMultiblock<ItemBoilerEntity>() {
 		override fun getHeatProductionJoulesPerSecond(): Double {
 			return 10000.0
 		}
-
-		override fun postTick() {
-
-		}
-
-		override fun preTick() {
-
-		}
 	}
 }

@@ -31,7 +31,7 @@ import java.time.Duration
 
 object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 	override val signText: Array<Component?> = createSignText(
-		Component.text("Electric Burner"),
+		text("Electric Burner"),
 		null,
 		null,
 		null
@@ -412,21 +412,24 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 
 		override fun tickAsync() {
 			super<BoilerMultiblockEntity>.tickAsync()
+			bootstrapGridEnergyNetwork()
 		}
 
 		override fun getHeatProductionJoulesPerSecond(): Double {
-			return POWER_DRAW_WATTS * 10
+			return POWER_DRAW_WATTS
 		}
 
 		override fun postTick() {
 			if (isRunning) {
 				setActiveDuration(Duration.ofSeconds(2))
 				setActiveGridEnergyConsumption(POWER_DRAW_WATTS)
+			} else {
+				setActiveGridEnergyConsumption(0.0)
 			}
 		}
 
 		override fun getPassiveGridEnergyConsumption(): Double = 1.0
 
-		private val POWER_DRAW_WATTS get () = 50_000.0 // Watts
+		private val POWER_DRAW_WATTS get () = 500_000.0 // Watts
 	}
 }

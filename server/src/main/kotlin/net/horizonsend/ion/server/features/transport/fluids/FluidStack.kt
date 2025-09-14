@@ -52,12 +52,19 @@ class FluidStack(
 		return FluidStack(type, amount, Object2ObjectOpenHashMap(dataComponents))
 	}
 
-	fun <T : FluidProperty> setData(type: FluidPropertyType<T>, data: T) {
+	fun <T : FluidProperty> setData(type: FluidPropertyType<T>, data: T): FluidStack {
 		dataComponents[type] = data
+		return this
 	}
 
-	private fun setDataUnsafe(type: FluidPropertyType<*>, data: FluidProperty) {
+	fun <T : FluidProperty> setData(type: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<T>>, data: T): FluidStack {
+		dataComponents[type.getValue()] = data
+		return this
+	}
+
+	private fun setDataUnsafe(type: FluidPropertyType<*>, data: FluidProperty): FluidStack {
 		dataComponents[type] = data
+		return this
 	}
 
 	fun <T : FluidProperty> getData(type: FluidPropertyType<T>) : T? {
@@ -66,6 +73,10 @@ class FluidStack(
 
 	fun <T : FluidProperty> getDataOrDefault(type: FluidPropertyType<T>, location: Location?) : T {
 		return dataComponents[type]?.let { type.castUnsafe(it) } ?: type.getDefaultProperty(location)
+	}
+
+	fun <T : FluidProperty> getDataOrDefault(type: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<T>>, location: Location?) : T {
+		return dataComponents[type.getValue()]?.let { type.getValue().castUnsafe(it) } ?: type.getValue().getDefaultProperty(location)
 	}
 
 	fun <T : FluidProperty> getDataOrThrow(type: FluidPropertyType<T>) : T {

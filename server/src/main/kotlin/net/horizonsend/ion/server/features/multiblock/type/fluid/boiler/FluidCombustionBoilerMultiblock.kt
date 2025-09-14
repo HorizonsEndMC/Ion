@@ -431,9 +431,5 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 		override fun postTick() {
 
 		}
-
-		override fun preTick() {
-
-		}
 	}
 }

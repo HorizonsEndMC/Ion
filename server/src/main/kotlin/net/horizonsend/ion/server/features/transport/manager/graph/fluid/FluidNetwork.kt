@@ -219,13 +219,15 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		)
 
 		if (toRemove <= 0) return
+
+		if (!storageContents.isEmpty()) networkContents.type = storageContents.type
+
 		val notRemoved = storage.removeAmount(toRemove)
 
 		// Make a copy as the amount to be added, then combine with properties into the network
 		val combined = storageContents.asAmount(toRemove - notRemoved)
-		networkContents.combine(combined, Location(manager.transportManager.getWorld(), getX(location).toDouble(), getY(location).toDouble(), getZ(location).toDouble()))
-
-		if (!storageContents.isEmpty()) networkContents.type = storageContents.type
+		val combinationLocation = Location(manager.transportManager.getWorld(), getX(location).toDouble(), getY(location).toDouble(), getZ(location).toDouble())
+		networkContents.combine(combined, combinationLocation)
 	}
 
 	private fun addToMultiblocks(location: BlockKey, ioPort: IOPort.RegisteredMetaDataInput<FluidPortMetadata>, delta: Double) {

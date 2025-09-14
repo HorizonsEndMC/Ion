@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.FluidDisplayModule.Companion.format
+import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Temperature
 import net.horizonsend.ion.server.miscellaneous.utils.celsiusToKelvin
 import net.horizonsend.ion.server.miscellaneous.utils.litersToCentimetersCubed
 import net.kyori.adventure.text.Component
@@ -43,7 +44,7 @@ object FluidUtils {
 	}
 
 	/**
-	 * Uses the ideal gas law to get the density of the gas
+	 * Uses the ideal gas law to get the density of the gas, in grams / cm^3
 	 **/
 	fun getGasDensity(stack: FluidStack, location: Location?): Double {
 		val type = stack.type.getValue()
@@ -54,5 +55,15 @@ object FluidUtils {
 		val density = (type.getMolarMass(stack) * pressureBars) / (GAS_CONSTANT * celsiusToKelvin(temperatureCelsius))
 
 		return density
+	}
+
+	fun getNewTemperature(fluidStack: FluidStack, appliedHeatJoules: Double, maximumTemperature: Double, location: Location?): Temperature {
+		val currentHeat = fluidStack.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE.getValue(), location).value
+
+		val fluidWeightGrams = getFluidWeight(fluidStack, location)
+		val specificHeat = fluidStack.type.getValue().getIsobaricHeatCapacity(fluidStack)
+		val kelvinHeat = appliedHeatJoules / (specificHeat * fluidWeightGrams)
+
+		return Temperature(minOf(currentHeat + kelvinHeat, maximumTemperature))
 	}
 }
