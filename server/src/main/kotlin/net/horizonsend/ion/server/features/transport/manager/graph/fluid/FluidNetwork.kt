@@ -372,14 +372,14 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 				val container = input.metaData.connectedStore
 
 				// If the port can have input, has a fluid that can be combined with the network, and has room for more fluid, add to sinks.
-				input.metaData.inputAllowed && input.metaData.connectedStore.getContents().canCombine(networkContents) && container.getRemainingRoom() > 0.0
+				input.metaData.inputAllowed && (container.getContents().canCombine(networkContents) || container.getContents().isEmpty()) && container.getRemainingRoom() > 0.0
 			}) sinks.add(node)
 
 			if (manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input ->
 				val container = input.metaData.connectedStore
 
 				// If the port can output, has a fluid that can be combined, and is not empty, add to sources.
-				input.metaData.outputAllowed && container.getContents().canCombine(container.getContents()) && container.getContents().amount > 0.0
+				input.metaData.outputAllowed && (networkContents.canCombine(container.getContents()) || networkContents.isEmpty()) && container.getContents().amount > 0.0
 			}) sources.add(node)
 		}
 
