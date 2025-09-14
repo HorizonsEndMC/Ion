@@ -185,7 +185,7 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 						toPlayersInRadius(newLoc, /* visibility radius */ 500.0) { player ->
 							val useAlt = player.getSetting(PlayerSettings::useAlternateShieldHitParticle) ?: return@toPlayersInRadius
 
-							if (useAlt == false) {
+							if (useAlt != true) {
 								// Original behavior (large single flash)
 								player.spawnParticle(
 									Particle.FLASH,
