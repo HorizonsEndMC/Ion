@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
+import net.horizonsend.ion.server.features.transport.fluids.FluidType.HeatingResult.Companion.HEATING_RATE_MULTIPLIER
 import net.horizonsend.ion.server.features.transport.fluids.FluidUtils
 import net.horizonsend.ion.server.features.transport.fluids.FluidUtils.getFluidWeight
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
@@ -77,7 +78,7 @@ object Water : FluidType(FluidTypeKeys.WATER) {
 	override fun getHeatingResult(stack: FluidStack, resultContainer: FluidStorageContainer, appliedEnergyJoules: Double, maximumTemperature: Double, location: Location?): HeatingResult {
 		val currentTemperature = stack.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE, location).value
 
-		val newTemperature = FluidUtils.getNewTemperature(stack, appliedEnergyJoules, maximumTemperature, location)
+		val newTemperature = FluidUtils.getNewTemperature(stack, appliedEnergyJoules * HEATING_RATE_MULTIPLIER, maximumTemperature, location)
 		val boilingPoint = getBoilingPoint(stack, location)
 
 		if (newTemperature.value < boilingPoint) {

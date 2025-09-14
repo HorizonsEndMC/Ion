@@ -222,10 +222,12 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 		if (!storageContents.isEmpty()) networkContents.type = storageContents.type
 
-		val notRemoved = storage.removeAmount(toRemove)
-
 		// Make a copy as the amount to be added, then combine with properties into the network
-		val combined = storageContents.asAmount(toRemove - notRemoved)
+		val combined = storageContents.asAmount(toRemove)
+
+		val notRemoved = storage.removeAmount(toRemove)
+		combined.amount -= notRemoved
+
 		val combinationLocation = Location(manager.transportManager.getWorld(), getX(location).toDouble(), getY(location).toDouble(), getZ(location).toDouble())
 		networkContents.combine(combined, combinationLocation)
 	}
@@ -249,6 +251,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		val flowLimit = flowMap.getOrDefault(location, 0.0) * delta
 		val additionLimit = additionRate * delta
 		val toAdd = minOf(room, availableToMove, flowLimit, additionLimit)
+
+		if (toAdd <= 0) return
 
 		val toCombine = networkContents.asAmount(toAdd)
 		store.addFluid(toCombine, Location(manager.transportManager.getWorld(), getX(location).toDouble(), getY(location).toDouble(), getZ(location).toDouble()))

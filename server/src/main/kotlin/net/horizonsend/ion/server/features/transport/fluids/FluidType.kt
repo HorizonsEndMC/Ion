@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.fluids
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.Keyed
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
+import net.horizonsend.ion.server.features.transport.fluids.FluidType.HeatingResult.Companion.HEATING_RATE_MULTIPLIER
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
@@ -58,7 +59,7 @@ abstract class FluidType(override val key: IonRegistryKey<FluidType, out FluidTy
 	 * @param location: The location where this fluid is being heated, used to acertain default values
 	 **/
 	open fun getHeatingResult(stack: FluidStack, resultContainer: FluidStorageContainer, appliedEnergyJoules: Double, maximumTemperature: Double, location: Location?): HeatingResult {
-		val newTemperature = FluidUtils.getNewTemperature(stack, appliedEnergyJoules, maximumTemperature, location)
+		val newTemperature = FluidUtils.getNewTemperature(stack, appliedEnergyJoules * HEATING_RATE_MULTIPLIER, maximumTemperature, location)
 		return HeatingResult.TemperatureIncreasePassthrough(newTemperature)
 	}
 
@@ -71,5 +72,10 @@ abstract class FluidType(override val key: IonRegistryKey<FluidType, out FluidTy
 			val newFluidStack: FluidStack,
 			val inputRemovalAmount: Double
 		) : HeatingResult(newTemperature)
+
+		companion object {
+			/** A global multiplier for heating rates, since realistic numbers are annoyingly slow **/
+			const val HEATING_RATE_MULTIPLIER = 10.0
+		}
 	}
 }

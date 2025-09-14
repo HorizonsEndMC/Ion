@@ -87,7 +87,7 @@ object Steam : FluidType(FluidTypeKeys.STEAM) {
 			if (boiling == true) return text("Dry Steam")
 		}
 
-		return text("Wet Steam")
+		return text("Steam")
 	}
 
 	override fun getIsobaricHeatCapacity(stack: FluidStack): Double {
