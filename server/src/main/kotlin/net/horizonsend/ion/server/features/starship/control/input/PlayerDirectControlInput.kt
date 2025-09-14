@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.nations.utils.getPing
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
@@ -18,6 +19,7 @@ import net.minecraft.world.entity.Relative
 import org.bukkit.block.BlockFace
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerTeleportEvent
+import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.util.Vector
 import kotlin.math.ceil
 import kotlin.math.round
@@ -30,11 +32,16 @@ class PlayerDirectControlInput(override val controller: PlayerController
 		get() = player.inventory.heldItemSlot.toDouble()
 		set(value) {}
 	override var isBoosting : Boolean
-		get() = player.isSneaking
+		get() {
+			return if (player.getSetting(PlayerSettings::toggleDcBoost) == true) boostToggleOverride
+			else if (player.getSetting(PlayerSettings::reverseDcBoost) == false) player.isSneaking
+			else !player.isSneaking
+		}
 		set(value) {}
 
 	private var internalTick = 0
 	private var cachedState = DirectControlInput.DirectControlData(Vector(), 8.0, false)
+	private var boostToggleOverride = false
 
 	override fun create() {
 		val message = ofChildren(
@@ -47,9 +54,13 @@ class PlayerDirectControlInput(override val controller: PlayerController
 
 		controller.sendMessage(message)
 
-		player.walkSpeed = 0f
-		player.flySpeed = 0f
-		player.isFlying = true
+		if (player.getSetting(PlayerSettings::floatWhileDc) == true) {
+			player.walkSpeed = 0f
+			player.flySpeed = 0f
+			player.isFlying = true
+		} else {
+			player.walkSpeed = 0.009f
+		}
 
 		val playerLoc = player.location
 		val newCenter = playerLoc.toBlockLocation().add(0.5, playerLoc.y.rem(1), 0.5)
@@ -131,13 +142,21 @@ class PlayerDirectControlInput(override val controller: PlayerController
 		else (player.getSettingOrThrow(PlayerSettings::dcRefreshRate).toDouble())
 		val catchCooldown = (ceil(refreshRate / 50.0)).toInt().coerceAtLeast(2)
 
-		cachedState = DirectControlInput.DirectControlData(vector,selectedSpeed,isBoosting)
+		cachedState = DirectControlInput.DirectControlData(vector, selectedSpeed, isBoosting)
 
 		internalTick++
 		if (internalTick % catchCooldown != 0) return cachedState // reduce teleports to make it non hyper sensitive
 		internalTick = 0
 
-		player.isFlying = true
+		if (player.getSetting(PlayerSettings::floatWhileDc) == true) {
+			player.walkSpeed = 0f
+			player.flySpeed = 0f
+			player.isFlying = true
+		} else {
+			player.walkSpeed = 0.009f
+			player.flySpeed = 0.06f
+			player.isFlying = false
+		}
 
 		// If player moved, teleport them back to dc center
 		if (vector.x != 0.0 || vector.z != 0.0) {
@@ -164,5 +183,13 @@ class PlayerDirectControlInput(override val controller: PlayerController
 
 	override fun handleJump(event: PlayerJumpEvent) {
 		event.isCancelled = true
+	}
+
+	override fun handleSneak(event: PlayerToggleSneakEvent) {
+		if (!event.isSneaking) return
+
+		if (player.getSetting(PlayerSettings::toggleDcBoost) == true) {
+			boostToggleOverride = !boostToggleOverride
+		}
 	}
 }

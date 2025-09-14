@@ -52,5 +52,5 @@ open class HyperdriveSubsystem(starship: ActiveStarship, sign: Sign, multiblock:
 		hopper.inventory.addItem(CHETHERITE.getValue().constructItemStack().asQuantity(Hyperspace.HYPERMATTER_AMOUNT))
 	}
 
-	private fun isHypermatter(item: ItemStack) = item.customItem == CHETHERITE.getValue()
+	private fun isHypermatter(item: ItemStack) = item.customItem?.key == CHETHERITE
 }

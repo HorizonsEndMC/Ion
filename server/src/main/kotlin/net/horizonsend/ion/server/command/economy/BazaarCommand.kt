@@ -69,6 +69,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlin.math.ceil
+import kotlin.plus
 
 @CommandAlias("bazaar|ah|auctionhouse|shop|buy")
 object BazaarCommand : SLCommand() {
@@ -500,7 +501,7 @@ object BazaarCommand : SLCommand() {
 
 		for (item in items) {
 			stringBuilder.appendLine(
-				sender.name + ',' +
+				SLPlayer[item.seller]?.lastKnownName + ',' +
 						cityName(Regions[item.cityTerritory]) + ',' +
 						item.itemString + ',' +
 						item.price.roundToHundredth() + ',' +
@@ -539,7 +540,7 @@ object BazaarCommand : SLCommand() {
 
 		for (item in items) {
 			stringBuilder.appendLine(
-				sender.name + ',' +
+				SLPlayer[item.player]?.lastKnownName + ',' +
 						cityName(Regions[item.cityTerritory]) + ',' +
 						item.itemString + ',' +
 						item.pricePerItem.roundToHundredth() + ',' +

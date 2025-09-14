@@ -31,7 +31,10 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 		createSettingsPage(player, "Control Settings",
 			DBCachedBooleanToggle(text("DC Overrides Cruise"), "", GuiItem.GUNSHIP, false, PlayerSettings::useAlternateDCCruise),
 			DBCachedIntegerInput(-1,1_000_000, text("DC Refresh Rate"),
-				"\"How frequently DC responds to your movement and teleports you, a value of -1 means that refresh is entirely ping driven. High values means more forging feedback but less responsive", GuiItem.GUNSHIP, -1, PlayerSettings::dcRefreshRate)
+				"\"How frequently DC responds to your movement and teleports you, a value of -1 means that refresh is entirely ping driven. High values means more forging feedback but less responsive", GuiItem.GUNSHIP, -1, PlayerSettings::dcRefreshRate),
+			DBCachedBooleanToggle(text("Enable Floating While DC"), "Enabling this setting allows your character to float while in DC for a smoother experience.", GuiItem.LIST, true, PlayerSettings::floatWhileDc),
+			DBCachedBooleanToggle(text("Reverse DC Speed Boost Key"), "Enabled = DC speed is boosted by default; sneaking slows. Disabled = DC speed is slow by default; sneaking boosts.", GuiItem.LIST, false, PlayerSettings::reverseDcBoost),
+			DBCachedBooleanToggle(text("Toggle DC Speed Boost Key"), "Enabling this setting changes the DC boost key to a toggle.", GuiItem.LIST, false, PlayerSettings::toggleDcBoost),
 		),
 		createSettingsPage(player, "Sidebar Settings",
 			createSettingsPage(player, "Combat Timer Settings",

@@ -1,7 +1,9 @@
 package net.horizonsend.ion.server.features.world.environment
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -65,7 +67,7 @@ enum class Environment {
 			if (player.gameMode != GameMode.SURVIVAL || player.isDead || !player.hasGravity()) return
 
 			// do not update fly speed if the player is piloting and is in direct control
-			if (ActiveStarships.findByPilot(player)?.isDirectControlEnabled == true) return
+			if (ActiveStarships.findByPilot(player)?.isDirectControlEnabled == true && player.getSetting(PlayerSettings::floatWhileDc) == true) return
 
 			if (isInside(player.eyeLocation, 1)) {
 				player.allowFlight = true
