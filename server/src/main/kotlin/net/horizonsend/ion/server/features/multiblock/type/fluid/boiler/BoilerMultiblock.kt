@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.kyori.adventure.text.Component.text
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -63,6 +64,21 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 
 		override fun tickAsync() {
 			bootstrapFluidNetwork()
+
+			val outputContents = fluidOutput.getContents()
+			if (outputContents.isNotEmpty()) {
+				val pressure = outputContents.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE, location).value
+				if (pressure > 60.0) {
+					Tasks.sync {
+						val location = getBlockRelative(0, 5, 3).location.toCenterLocation()
+						world.createExplosion(location, 30.0f)
+					}
+					fluidOutput.clear()
+					fluidInput.clear()
+
+					return
+				}
+			}
 
 			if (!preTick()) return
 			heatFluid()
