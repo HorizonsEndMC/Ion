@@ -66,6 +66,15 @@ class FluidStorageContainer private constructor(
 	}
 
 	fun addFluid(stack: FluidStack, location: Location?): Double {
+		if (stack.isEmpty()) {
+			throw IllegalArgumentException("Cannot add empty fluid stack!")
+		}
+
+		if (getContents().isEmpty()) {
+			setContents(stack)
+			return 0.0
+		}
+
 		val newQuantity = minOf(getRemainingRoom(), stack.amount)
 		val toAdd = stack.asAmount(newQuantity)
 

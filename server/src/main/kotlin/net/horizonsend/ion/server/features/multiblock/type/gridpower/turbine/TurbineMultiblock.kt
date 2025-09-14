@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.gridpower.turbine.TurbineMultiblock.TurbineMultiblockEntity
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
+import net.horizonsend.ion.server.features.transport.fluids.FluidUtils
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
@@ -126,20 +127,33 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 				return
 			}
 
-			val massFlow = getMassFlowRate(steamStack, location) * delta
+			// The mass flow, in kilograms
+			val massFlow = minOf(FluidUtils.getFluidWeight(steamStack, location), getMassFlowRate(steamStack, location) * delta)
 
+			// The specific enthalpy, in joules per kilogram
 			val specificEnthalpy = getSpecificEnthalpy(steamStack, location)
+
+			// The amount of work that can be done is calculated by the difference in energy
+			// between the input and output. Here, the output energy efficiency is hardcoded,
+			// so the amount of work done is equal to specific enthalpy divded the remaining energy of
+			// the output
+			// Stored in
 			val workPerMassFlow = specificEnthalpy / (1 - multiblock.efficiency) * specificEnthalpy
 
+			// Simply multiply the work per mass flow by the mass flow
 			val work = (workPerMassFlow * massFlow) / 60
 
 			lastEnergy = work
 
-			val removedVolume = metersCubedToLiters(massFlow / steamStack.type.getValue().getDensity(steamStack, location)) * USAGE_MULTIPLIER
+			// Get the removed volume using the density of the steam and the mass flow rate
+			val removedVolume = minOf(steamStack.amount, metersCubedToLiters(massFlow / steamStack.type.getValue().getDensity(steamStack, location)) * USAGE_MULTIPLIER)
 
-			steamInput.removeAmount(removedVolume)
+			// Clone before removed
 			val new = steamStack.asAmount(removedVolume)
 
+			steamInput.removeAmount(removedVolume)
+
+			// Scale the properties down by the efficiency
 			val baseTemperature = FluidPropertyTypeKeys.TEMPERATURE.getValue().getDefaultProperty(location).value
 			val outletTemperature = ((steamStack.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE.getValue(), location).value - baseTemperature) * multiblock.efficiency) + baseTemperature
 			new.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), FluidProperty.Temperature(outletTemperature))
@@ -148,7 +162,7 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			val outletPressure = ((steamStack.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE.getValue(), location).value - basePressure) * multiblock.efficiency) + basePressure
 			new.setData(FluidPropertyTypeKeys.PRESSURE.getValue(), FluidProperty.Pressure(outletPressure))
 
-			steamOutput.getContents().combine(new, location)
+			steamOutput.addFluid(new, location)
 			setStatus(Component.text("Working", NamedTextColor.GREEN))
 		}
 
@@ -182,6 +196,9 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			return density * crossSectionArea * velocity
 		}
 
+		/**
+		 * Returns the specific enthalpy of the fluid stack, in joules per kilogram
+		 **/
 		fun getSpecificEnthalpy(stack: FluidStack, location: Location?): Double {
 			val pressure = stack.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE.getValue(), location).value
 
