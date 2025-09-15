@@ -1,14 +1,18 @@
 package net.horizonsend.ion.server.features.transport.manager.graph.fluid
 
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
+import net.horizonsend.ion.server.features.transport.nodes.GaugeNode.CommandBlockGaugeNode
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
@@ -16,6 +20,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.faces
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import org.bukkit.Axis
+import org.bukkit.World
 import org.bukkit.block.BlockFace
 
 abstract class FluidNode(location: BlockKey, type: TransportNodeType<*>, val volume: Double) : TransportNode(location, type) {
@@ -145,7 +150,17 @@ abstract class FluidNode(location: BlockKey, type: TransportNodeType<*>, val vol
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
 	}
 
-	class PressureGauge(location: BlockKey) : FluidNode(location, TransportNetworkNodeTypeKeys.PRESSURE_GAUGE.getValue(), 0.0) {
+	class PressureGauge(location: BlockKey) : FluidNode(location, TransportNetworkNodeTypeKeys.PRESSURE_GAUGE.getValue(), 0.0), CommandBlockGaugeNode {
+		override val customBlock: IonRegistryKey<CustomBlock, out CustomBlock> = CustomBlockKeys.PRESSURE_GAUGE
+
+		override fun getGlobalCoordinate(): Vec3i {
+			return getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))
+		}
+
+		override fun getWorld(): World {
+			return getNetwork().manager.transportManager.getWorld()
+		}
+
 		override val flowCapacity: Double get() {
 			return Double.MAX_VALUE
 		}

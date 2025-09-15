@@ -20,7 +20,6 @@ import net.horizonsend.ion.server.features.transport.manager.graph.NetworkManage
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidPort
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
-import net.horizonsend.ion.server.features.transport.util.getBlockEntity
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -30,7 +29,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.kyori.adventure.text.Component
-import net.minecraft.world.level.block.entity.CommandBlockEntity
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
@@ -203,19 +201,9 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 	private fun tickGauges() {
 		val pressure = networkContents.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE, (getGraphNodes().firstOrNull() ?: return).getCenter().toLocation(manager.transportManager.getWorld()))
-		val formatted = pressure.value.roundToInt().coerceIn(0, 15)
-		for (gauge in getGraphNodes().filterIsInstance<FluidNode.PressureGauge>()) {
-			//TODO convert to global loc
-			val entity = getBlockEntity(gauge.location, manager.transportManager.getWorld()) as? CommandBlockEntity ?: continue
-			val oldSuccessCount = entity.commandBlock.successCount
+		val formattedPressure = pressure.value.roundToInt().coerceIn(0, 15)
 
-			if (formatted != oldSuccessCount) {
-				entity.commandBlock.successCount = formatted
-				Tasks.sync {
-					entity.level?.updateNeighbourForOutputSignal(entity.blockPos, entity.blockState.block)
-				}
-			}
-		}
+		for (gauge in getGraphNodes().filterIsInstance<FluidNode.PressureGauge>()) gauge.setOutput(formattedPressure)
 	}
 
 	private fun depositToNetwork(location: BlockKey, port: IOPort.RegisteredMetaDataInput<FluidPortMetadata>, delta: Double) {
