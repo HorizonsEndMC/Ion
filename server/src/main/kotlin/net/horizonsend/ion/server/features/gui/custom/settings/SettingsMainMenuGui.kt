@@ -100,7 +100,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			DBCachedBooleanToggle(text("Enable Additional Sounds"), "", GuiItem.SOUND, true, PlayerSettings::enableAdditionalSounds),
 			DBCachedEnumCycle(CruiseIndicatorSounds::class.java, text("Cruise Indicator Sound"), "Click to Cycle", GuiItem.SOUND, 0, PlayerSettings::soundCruiseIndicator),
 			DBCachedBooleanToggle(text("Hitmarker On Hull"), "An indicator plays if you damage a starship's hull", GuiItem.SOUND, true, PlayerSettings::hitmarkerOnHull),
-			DBCachedBooleanToggle(text("Hitmarker On Shield"), "An indicator plays if you damage a starship's shields", GuiItem.SOUND, true, PlayerSettings::hitmarkerOnHull),
+			DBCachedBooleanToggle(text("Hitmarker On Shield"), "An indicator plays if you damage a starship's shields", GuiItem.SOUND, true, PlayerSettings::hitmarkerOnShield),
 			DBCachedEnumCycle(AudioRange::class.java, text("Nearby Weapon Sounds"), "Enables nearby weapon sounds", GuiItem.SOUND, 0, PlayerSettings::nearbyWeaponSounds),
 			DBCachedEnumCycle(AudioRange::class.java, text("Far Weapon Sounds"), "Enables far weapon sounds", GuiItem.SOUND, 0, PlayerSettings::farWeaponSounds),
 		),
