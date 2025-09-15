@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.roundToTenThousanth
+import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
@@ -19,6 +20,7 @@ import net.horizonsend.ion.server.features.transport.manager.graph.NetworkManage
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidPort
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
+import net.horizonsend.ion.server.features.transport.util.getBlockEntity
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -28,6 +30,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.kyori.adventure.text.Component
+import net.minecraft.world.level.block.entity.CommandBlockEntity
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
@@ -37,6 +40,7 @@ import java.util.UUID
 import kotlin.concurrent.withLock
 import kotlin.jvm.optionals.getOrDefault
 import kotlin.jvm.optionals.getOrNull
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 @Suppress("UnstableApiUsage")
@@ -120,6 +124,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			displayFluid(outputs)
 		}
 
+		tickGauges()
+
 		tickUnpairedPipes(delta)
 
 		tickMultiblockInputs(inputs, delta)
@@ -193,6 +199,16 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 	private fun tickMultiblockOutputs(outputs: Long2ObjectOpenHashMap<IOPort.RegisteredMetaDataInput<FluidPortMetadata>>, delta: Double) {
 		outputs.forEach { entry -> depositToNetwork(entry.key, entry.value, delta) }
+	}
+
+	private fun tickGauges() {
+		val pressure = networkContents.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE, (getGraphNodes().firstOrNull() ?: return).getCenter().toLocation(manager.transportManager.getWorld()))
+		val formatted = pressure.value.roundToInt().coerceIn(0, 15)
+		for (gauge in getGraphNodes().filterIsInstance<FluidNode.PressureGauge>()) {
+			//TODO convert to global loc
+			val entity = getBlockEntity(gauge.location, manager.transportManager.getWorld()) as? CommandBlockEntity ?: continue
+			entity.commandBlock.successCount = formatted
+		}
 	}
 
 	private fun depositToNetwork(location: BlockKey, port: IOPort.RegisteredMetaDataInput<FluidPortMetadata>, delta: Double) {

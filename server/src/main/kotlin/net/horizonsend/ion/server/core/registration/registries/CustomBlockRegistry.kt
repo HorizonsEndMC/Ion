@@ -20,6 +20,7 @@ import net.horizonsend.ion.server.features.custom.blocks.misc.OrientableCustomBl
 import net.horizonsend.ion.server.features.custom.blocks.misc.WrenchRemovable
 import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeBlock
 import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeJunctionBlock
+import net.horizonsend.ion.server.features.custom.blocks.pipe.PressureGaugeBlock
 import net.horizonsend.ion.server.features.custom.blocks.pipe.ReinforcedFluidPipeBlock
 import net.horizonsend.ion.server.features.custom.blocks.pipe.ReinforcedFluidPipeJunctionBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
@@ -281,6 +282,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 
 		register(CustomBlockKeys.REINFORCED_FLUID_PIPE, ReinforcedFluidPipeBlock)
 		register(CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION, ReinforcedFluidPipeJunctionBlock)
+		register(CustomBlockKeys.PRESSURE_GAUGE, PressureGaugeBlock)
 
 		register(CustomBlockKeys.GRID_ENERGY_PORT, object : CustomBlock(
 			key = CustomBlockKeys.GRID_ENERGY_PORT,

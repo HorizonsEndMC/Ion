@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.MultiblockWorkbench
 import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeBlock
 import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeJunctionBlock
+import net.horizonsend.ion.server.features.custom.blocks.pipe.PressureGaugeBlock
 import net.horizonsend.ion.server.features.custom.blocks.pipe.ReinforcedFluidPipeBlock
 import net.horizonsend.ion.server.features.custom.blocks.pipe.ReinforcedFluidPipeJunctionBlock
 
@@ -44,6 +45,7 @@ object CustomBlockKeys : KeyRegistry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS, Cu
 	val FLUID_PIPE_JUNCTION = registerTypedKey<FluidPipeJunctionBlock>("FLUID_PIPE_JUNCTION")
 	val REINFORCED_FLUID_PIPE = registerTypedKey<ReinforcedFluidPipeBlock>("REINFORCED_FLUID_PIPE")
 	val REINFORCED_FLUID_PIPE_JUNCTION = registerTypedKey<ReinforcedFluidPipeJunctionBlock>("REINFORCED_FLUID_PIPE_JUNCTION")
+	val PRESSURE_GAUGE = registerTypedKey<PressureGaugeBlock>("PRESSURE_GAUGE")
 
 	val COPPER_COIL = registerKey("COPPER_COIL")
 

@@ -144,4 +144,20 @@ abstract class FluidNode(location: BlockKey, type: TransportNodeType<*>, val vol
 
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
 	}
+
+	class PressureGauge(location: BlockKey) : FluidNode(location, TransportNetworkNodeTypeKeys.FLUID_VALVE.getValue(), 0.0) {
+		override val flowCapacity: Double get() {
+			return Double.MAX_VALUE
+		}
+
+		override fun isIntact(): Boolean? {
+			val world = getNetwork().manager.transportManager.getWorld()
+			val globalVec3i = getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))
+			val block = getBlockIfLoaded(world, globalVec3i.x, globalVec3i.y, globalVec3i.z) ?: return null
+
+			return block.blockData.customBlock?.key == CustomBlockKeys.PRESSURE_GAUGE
+		}
+
+		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
+	}
 }

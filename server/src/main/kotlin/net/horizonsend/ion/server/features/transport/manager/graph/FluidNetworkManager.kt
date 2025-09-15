@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.data.MultipleFacing
+import org.bukkit.block.data.type.CommandBlock
 import java.util.UUID
 
 class FluidNetworkManager(manager: TransportHolder) : NetworkManager<FluidNode, TransportNetwork<FluidNode>>(manager) {
@@ -45,6 +46,7 @@ class FluidNetworkManager(manager: TransportHolder) : NetworkManager<FluidNode, 
 			}
 			.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_PORT, Material.BROWN_MUSHROOM_BLOCK) { _, pos, holder -> FluidPort(pos) }
 			.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_VALVE, Material.BROWN_MUSHROOM_BLOCK) { _, pos, holder -> FluidValve(pos) }
+			.addDataHandler<CommandBlock>(CustomBlockKeys.PRESSURE_GAUGE, Material.COMMAND_BLOCK) { _, pos, holder -> FluidNode.PressureGauge(pos) }
 			.build()
 	}
 }
