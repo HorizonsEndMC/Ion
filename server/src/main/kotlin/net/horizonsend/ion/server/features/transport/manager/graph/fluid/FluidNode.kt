@@ -145,7 +145,7 @@ abstract class FluidNode(location: BlockKey, type: TransportNodeType<*>, val vol
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
 	}
 
-	class PressureGauge(location: BlockKey) : FluidNode(location, TransportNetworkNodeTypeKeys.FLUID_VALVE.getValue(), 0.0) {
+	class PressureGauge(location: BlockKey) : FluidNode(location, TransportNetworkNodeTypeKeys.PRESSURE_GAUGE.getValue(), 0.0) {
 		override val flowCapacity: Double get() {
 			return Double.MAX_VALUE
 		}
