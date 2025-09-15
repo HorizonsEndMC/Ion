@@ -347,7 +347,7 @@ class MiningLaserSubsystem(
 				item = item,
 				playerFilter = {
 					!it.isNPC &&
-					test <= it.getSetting(PlayerSettings::miningLaserEffectLevel)
+					test <= (it.getSetting(PlayerSettings::miningLaserEffectLevel) ?: return@ItemDisplayContainer false)
 				}
 			),
 			direction = beamOrigin.clone().subtract(origin).normalize().multiply(ANIMATION_SPEED).add(randomOffset),
