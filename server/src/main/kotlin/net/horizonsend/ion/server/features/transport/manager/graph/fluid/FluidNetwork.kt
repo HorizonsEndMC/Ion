@@ -207,7 +207,14 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		for (gauge in getGraphNodes().filterIsInstance<FluidNode.PressureGauge>()) {
 			//TODO convert to global loc
 			val entity = getBlockEntity(gauge.location, manager.transportManager.getWorld()) as? CommandBlockEntity ?: continue
-			entity.commandBlock.successCount = formatted
+			val oldSuccessCount = entity.commandBlock.successCount
+
+			if (formatted != oldSuccessCount) {
+				entity.commandBlock.successCount = formatted
+				Tasks.sync {
+					entity.level?.updateNeighbourForOutputSignal(entity.blockPos, entity.blockState.block)
+				}
+			}
 		}
 	}
 
