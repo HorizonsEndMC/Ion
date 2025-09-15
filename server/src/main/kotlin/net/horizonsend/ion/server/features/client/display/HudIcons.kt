@@ -91,7 +91,7 @@ object HudIcons : IonServerComponent() {
 
         /* Start with the Bukkit entity first as the NMS entity has private values that are easier to set by working off
          * the Bukkit wrapper first */
-        val entity = ClientDisplayEntityFactory.createItemDisplay(player)
+        val entity = ClientDisplayEntityFactory.createItemDisplay(player.world.minecraft)
         val entityRenderDistance = ClientDisplayEntities.getViewDistanceEdge(player)
         // do not render if the planet is closer than the entity render distance
         if (distance < entityRenderDistance * 2) return null
@@ -207,7 +207,7 @@ object HudIcons : IonServerComponent() {
         data: PlanetSelectorData
     ): net.minecraft.world.entity.Display.ItemDisplay {
 
-        val entity = ClientDisplayEntityFactory.createItemDisplay(player)
+        val entity = ClientDisplayEntityFactory.createItemDisplay(player.world.minecraft)
 
         entity.setItemStack(CustomItemKeys.PLANET_SELECTOR.getValue().constructItemStack())
         entity.billboard = Display.Billboard.FIXED
