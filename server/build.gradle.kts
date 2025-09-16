@@ -7,7 +7,7 @@ plugins {
 	kotlin("plugin.serialization")
 
 	id("com.github.johnrengelman.shadow")
-	id("io.papermc.paperweight.userdev") version "2.0.0-beta.14"
+	id("io.papermc.paperweight.userdev") version "2.0.0-beta.18"
 }
 
 repositories {
@@ -41,7 +41,7 @@ dependencies {
 	compileOnly("com.github.webbukkit.dynmap:spigot:3.1") { exclude("*") /* Old Version, takes forever to download */ }
 	compileOnly("net.citizensnpcs:citizens-main:2.0.37-SNAPSHOT") { exclude("*") }
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
-	compileOnly("com.discordsrv:discordsrv:1.29.0")
+	compileOnly("com.discordsrv:discordsrv:1.30.1")
 	compileOnly("net.luckperms:api:5.4")
 	compileOnly("xyz.xenondevs.invui:invui:1.46") // Downloaded via paper library manager for remapping
 	compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
@@ -50,7 +50,7 @@ dependencies {
 	implementation("com.manya:persistent-data-types:1.0.25")
 	implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
 	implementation("com.daveanthonythomas.moshipack:moshipack:1.0.1")
-	implementation("com.github.stefvanschie.inventoryframework:IF:0.10.19")
+	implementation("com.github.stefvanschie.inventoryframework:IF:0.11.3")
 	implementation("com.googlecode.cqengine:cqengine:3.6.0")
 	implementation("fr.skytasul:guardianbeam:2.4.4")
 	implementation("club.minnced:discord-webhooks:0.8.4")
@@ -66,8 +66,8 @@ dependencies {
 	implementation("org.apache.commons:commons-collections4:4.4")
 
 	implementation(platform("com.intellectualsites.bom:bom-newest:1.52"))
-	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.12.3")
-	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.12.3") { isTransitive = false }
+	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.13.2")
+	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit:2.13.2") { isTransitive = false }
 
 	compileOnly("dev.cubxity.plugins", "unifiedmetrics-api", "0.3.8")
 }

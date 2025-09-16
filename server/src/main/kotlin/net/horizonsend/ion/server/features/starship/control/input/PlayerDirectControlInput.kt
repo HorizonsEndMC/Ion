@@ -25,19 +25,16 @@ import kotlin.math.ceil
 import kotlin.math.round
 import kotlin.math.roundToInt
 
-class PlayerDirectControlInput(override val controller: PlayerController
-) : DirectControlInput, PlayerInput{
+class PlayerDirectControlInput(override val controller: PlayerController) : DirectControlInput, PlayerInput{
 	override val player get() = controller.player
-	override var selectedSpeed: Double
-		get() = player.inventory.heldItemSlot.toDouble()
-		set(value) {}
-	override var isBoosting : Boolean
+	override val selectedSpeed: Double get() = player.inventory.heldItemSlot.toDouble()
+
+	override val isBoosting : Boolean
 		get() {
 			return if (player.getSetting(PlayerSettings::toggleDcBoost) == true) boostToggleOverride
 			else if (player.getSetting(PlayerSettings::reverseDcBoost) == false) player.isSneaking
 			else !player.isSneaking
 		}
-		set(value) {}
 
 	private var internalTick = 0
 	private var cachedState = DirectControlInput.DirectControlData(Vector(), 8.0, false)
@@ -57,6 +54,7 @@ class PlayerDirectControlInput(override val controller: PlayerController
 		if (player.getSetting(PlayerSettings::floatWhileDc) == true) {
 			player.walkSpeed = 0f
 			player.flySpeed = 0f
+			player.allowFlight = true
 			player.isFlying = true
 		} else {
 			player.walkSpeed = 0.009f
@@ -75,6 +73,7 @@ class PlayerDirectControlInput(override val controller: PlayerController
 		player.walkSpeed = 0.2f // default
 		player.flySpeed = 0.06f
 		player.isFlying = false
+		player.allowFlight = false
 	}
 
 	override fun handlePlayerHoldItem(event: PlayerItemHeldEvent) {

@@ -174,7 +174,7 @@ data class NewStarshipBalancing(
 				),
 				HeavyTurretBalancing(
 					fireRestrictions = FireRestrictions(minBlockCount = 16500, maxBlockCount = 20000),
-					firePowerConsumption = 10000,
+					firePowerConsumption = 3333,
 					projectile = HeavyTurretBalancing.HeavyTurretProjectileBalancing(speed = 200.0)
 				)
 			),
