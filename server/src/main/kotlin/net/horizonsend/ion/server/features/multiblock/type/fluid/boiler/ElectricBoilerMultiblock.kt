@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
@@ -8,6 +9,8 @@ import net.horizonsend.ion.server.features.client.display.modular.display.fluid.
 import net.horizonsend.ion.server.features.client.display.modular.display.getLinePos
 import net.horizonsend.ion.server.features.client.display.modular.display.gridenergy.GridEnergyDisplay
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
+import net.horizonsend.ion.server.features.multiblock.entity.type.GaugedMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.GaugedMultiblockEntity.MultiblockGauges
 import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock.MultiblockGridEnergyManager
 import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyPortMetaData
@@ -159,13 +162,13 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 		}
 		z(3) {
 			y(-1) {
-				x(-3).type(Material.WAXED_COPPER_BLOCK)
+				x(-3).customBlock(CustomBlockKeys.PRESSURE_GAUGE.getValue())
 				x(-2).type(Material.MUD_BRICKS)
 				x(-1).type(Material.MUD_BRICKS)
 				x(0).type(Material.MUD_BRICKS)
 				x(1).type(Material.MUD_BRICKS)
 				x(2).type(Material.MUD_BRICKS)
-				x(3).type(Material.WAXED_COPPER_BLOCK)
+				x(3).customBlock(CustomBlockKeys.PRESSURE_GAUGE.getValue())
 			}
 			y(0) {
 				x(-3).fluidPort()
@@ -396,8 +399,12 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace
-	) : BoilerMultiblockEntity(manager, data, ElectricBoilerMultiblock, world, x, y, z, structureDirection), GridEnergyMultiblock {
+	) : BoilerMultiblockEntity(manager, data, ElectricBoilerMultiblock, world, x, y, z, structureDirection), GridEnergyMultiblock, GaugedMultiblockEntity {
 		override val gridEnergyManager: MultiblockGridEnergyManager = MultiblockGridEnergyManager(this)
+
+		override val gauges: MultiblockGauges = MultiblockGauges.builder(this)
+			.addGauge(3, -1, 3, GaugedMultiblockEntity.GaugeData.fluidPressureGauge(fluidOutput, this))
+			.build()
 
 		override fun IOData.Builder.registerAdditionalIO(): IOData.Builder {
 			return addPort(IOType.GRID_ENERGY, 0, -1, 0) { IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>(this@ElectricBoilerEntity, GridEnergyPortMetaData(inputAllowed = false, outputAllowed = true)) }
@@ -426,6 +433,11 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 			} else {
 				setActiveGridEnergyConsumption(0.0)
 			}
+		}
+
+		override fun preTick(): Boolean {
+			tickGauges()
+			return true
 		}
 
 		override fun getPassiveGridEnergyConsumption(): Double = 1.0

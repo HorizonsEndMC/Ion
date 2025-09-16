@@ -15,18 +15,13 @@ interface GaugeCustomBlock {
 	object CommandBlockGaugeCustomBlock : GaugeCustomBlock {
 		override fun setSignalOutput(value: Int, world: World, blockLocation: Vec3i): Boolean {
 			val entity = getBlockEntity(blockLocation, world) as? CommandBlockEntity ?: return false
-			val oldSuccessCount = entity.commandBlock.successCount
 
-			if (value != oldSuccessCount) {
+			Tasks.sync {
 				entity.commandBlock.successCount = value
-				Tasks.sync {
-					entity.level?.updateNeighbourForOutputSignal(entity.blockPos, entity.blockState.block)
-				}
-
-				return true
+				entity.level?.updateNeighbourForOutputSignal(entity.blockPos, entity.blockState.block)
 			}
 
-			return false
+			return true
 		}
 	}
 }
