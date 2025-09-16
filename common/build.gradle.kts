@@ -14,7 +14,7 @@ repositories {
 
 dependencies {
 	compileOnly("net.kyori:adventure-api:4.24.0")
-	compileOnly("net.kyori:adventure-text-logger-slf4j:4.21.0")
+	compileOnly("net.kyori:adventure-text-logger-slf4j:4.24.0")
 	compileOnly("net.kyori:adventure-text-minimessage:4.21.0")
 	compileOnly("net.kyori:adventure-text-serializer-plain:4.21.0")
 	compileOnly("net.kyori:adventure-text-serializer-gson:4.21.0")
