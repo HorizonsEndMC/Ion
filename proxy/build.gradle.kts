@@ -24,7 +24,7 @@ dependencies {
 	compileOnly("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
 	kapt("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
 
-	compileOnly("net.luckperms:api:5.4")
+	compileOnly("net.luckperms:api:5.5")
 
 	// Included Dependencies
 	implementation("co.aikar:acf-velocity:0.5.1-SNAPSHOT")
