@@ -21,7 +21,7 @@ dependencies {
 	compileOnly("net.kyori:adventure-text-serializer-legacy:4.21.0")
 
 	compileOnly("net.md-5:bungeecord-chat:1.20-R0.2")
-	compileOnly("net.luckperms:api:5.4")
+	compileOnly("net.luckperms:api:5.5")
 
 	compileOnly("com.gitlab.ruany:LiteBansAPI:0.6.1")
 
