@@ -69,7 +69,7 @@ class SettingsContainer<H : Any>(
 	}
 
 	companion object {
-		fun <T : MultiblockEntity> multiblockSettings(data: PersistentMultiblockData, vararg settingsProperties: SettingsProperty<T, Any, Any?>): SettingsContainer<T> {
+		fun <T : Any> multiblockSettings(data: PersistentMultiblockData, vararg settingsProperties: SettingsProperty<T, Any, Any?>): SettingsContainer<T> {
 			val container = SettingsContainer(changeCallback = {  }, *settingsProperties)
 			container.loadData(data.getAdditionalDataRaw())
 			return container
