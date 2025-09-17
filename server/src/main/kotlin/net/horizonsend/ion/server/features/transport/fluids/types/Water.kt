@@ -107,7 +107,10 @@ object Water : FluidType(FluidTypeKeys.WATER) {
 			println(newPressure)
 			resultContainer.getContents().setData(FluidPropertyTypeKeys.PRESSURE, FluidProperty.Pressure(newPressure))
 
-			return HeatingResult.Boiling(boilingTemperature, FluidStack.empty(), 0.0)
+			val waterVolume = centimetersCubedToLiters(boiledGrams / this.getDensity(stack, location))
+			val consumedWater = minOf(waterVolume, stack.amount)
+
+			return HeatingResult.Boiling(boilingTemperature, FluidStack.empty(), consumedWater)
 		}
 
 		val tempSteamStack = FluidStack(FluidTypeKeys.STEAM, 1.0)
