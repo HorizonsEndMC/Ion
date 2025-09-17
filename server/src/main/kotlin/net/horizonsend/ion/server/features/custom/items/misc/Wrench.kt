@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegist
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.rotateToFaceVector2d
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.client.display.HudIcons.FLUID_INFO_ID
 import net.horizonsend.ion.server.features.client.display.teleportDuration
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
@@ -128,6 +129,16 @@ object Wrench : CustomItem(
 
 		val network = player.world.ion.transportManager.fluidGraphManager.getByLocation(key) ?: return@async removeEntity(player)
 		network as FluidNetwork
+
+		if (player.isSneaking) {
+			for (node in network.getGraphNodes()) {
+				val flowText = ofChildren(text(network.getFlow(key).roundToHundredth()), text(" L/s", HE_MEDIUM_GRAY))
+
+				player.sendText(node.getCenter().toLocation(player.world).add(0.0, 0.75, 0.0), flowText, FLUID_TICK_INTERVAL.toLong() + 1L, backgroundColor = Color.fromARGB(255, 0, 0 ,0))
+			}
+
+			return@async removeEntity(player)
+		}
 
 		val fluid = network.networkContents
 
