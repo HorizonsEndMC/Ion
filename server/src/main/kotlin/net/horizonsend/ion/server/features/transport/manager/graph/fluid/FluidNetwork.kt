@@ -226,7 +226,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			removalRate * delta,
 			(getVolume() - networkContents.amount),
 			storage.getContents().amount,
-			flowMap.getOrDefault(location, 1.0) * delta // When no flow, still withdraw
+			flowMap.getOrDefault(location, 0.0) * delta // When no flow, still withdraw
 		)
 
 		if (toRemove <= 0) return
@@ -383,7 +383,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 				val container = input.metaData.connectedStore
 
 				// If the port can have input, has a fluid that can be combined with the network, and has room for more fluid, add to sinks.
-				input.metaData.inputAllowed && (container.getContents().canCombine(networkContents) || container.getContents().isEmpty()) && container.getRemainingRoom() > 0.0
+				input.metaData.inputAllowed && (container.getContents().canCombine(networkContents) || container.getContents().isEmpty() || networkContents.isEmpty()) && container.getRemainingRoom() > 0.0
 			}) sinks.add(node)
 
 			if (manager.transportManager.getInputProvider().getPorts(IOType.FLUID, node.location).any { input ->
