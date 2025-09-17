@@ -49,9 +49,9 @@ class PowerChainsaw(
 		if (event.player.gameMode != GameMode.SURVIVAL) return
 		val origin = event.clickedBlock ?: return
 
-		val mods = getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(itemStack)
+		val mods = getComponent(CustomComponentTypes.MOD_MANAGER).getMods(itemStack)
 
-		val maxDepth = if (mods.contains(ItemModKeys.EXTENDED_BAR)) initialBlocksBroken + 100 else initialBlocksBroken
+		val maxDepth = if (mods.contains(ItemModKeys.EXTENDED_BAR.getValue())) initialBlocksBroken + 100 else initialBlocksBroken
 
 		PowerChainsawMineTask(
 			player = player,
@@ -67,7 +67,7 @@ class PowerChainsaw(
 		private val player: Player,
 		private val chainsawItem: ItemStack,
 		private val chainsaw: PowerChainsaw,
-		private val mods: Array<IonRegistryKey<ItemModification, out ItemModification>>,
+		private val mods: Collection<ItemModification>,
 		private val origin: Block,
 		private val maxDepth: Int
 	) : BukkitRunnable() {
@@ -119,7 +119,7 @@ class PowerChainsaw(
 
 			var replacementType: Material? = null
 
-			if (mods.contains(ItemModKeys.AUTO_REPLANT) && (block.type.isWood || block.type.isLog)) {
+			if (mods.contains(ItemModKeys.AUTO_REPLANT.getValue()) && (block.type.isWood || block.type.isLog)) {
 				if (Crop.SWEET_BERRIES.canBePlanted(block)) {
 					replacementType = saplingTypes[block.type]
 				}
@@ -133,7 +133,7 @@ class PowerChainsaw(
 				powerManager.removePower(chainsawItem, chainsaw, (powerUse * usage.multiplier).roundToInt())
 			}
 
-			val collectorPresent = mods.contains(ItemModKeys.COLLECTOR)
+			val collectorPresent = mods.contains(ItemModKeys.COLLECTOR.getValue())
 
 			for ((dropLocation, items) in drops) {
 				val location = BlockPos.of(dropLocation).toLocation(origin.world).toCenterLocation()

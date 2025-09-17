@@ -54,7 +54,6 @@ abstract class HyperdriveMultiblock : Multiblock(), InteractableMultiblock, Disp
 
 	override fun onTransformSign(player: Player, sign: Sign) {
 		super.onTransformSign(player, sign)
-		sign.getSide(Side.FRONT).line(3, text("Select Destination", NamedTextColor.RED))
 		sign.update()
 	}
 

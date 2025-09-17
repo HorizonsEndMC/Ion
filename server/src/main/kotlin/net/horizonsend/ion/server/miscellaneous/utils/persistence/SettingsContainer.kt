@@ -13,10 +13,10 @@ import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty
 
 class SettingsContainer<H : Any>(
-	val changeCallback: Consumer<SettingsProperty<H, Any?>> = Consumer { },
-	private vararg val settingsProperties: SettingsProperty<H, Any?>,
+	val changeCallback: Consumer<SettingsProperty<H, Any, Any?>> = Consumer { },
+	private vararg val settingsProperties: SettingsProperty<H, Any, Any?>,
 ) {
-	private val propertyMap: Map<KMutableProperty1<*, *>, SettingsProperty<H, Any?>> = settingsProperties.associateBy { it.backing }
+	private val propertyMap: Map<KMutableProperty1<*, *>, SettingsProperty<H, Any, Any?>> = settingsProperties.associateBy { it.backing }
 
 	fun save(sourceContainer: PersistentDataContainer, context: PersistentDataAdapterContext) {
 		sourceContainer.set(SETTINGS_CONTAINER_KEY, TAG_CONTAINER, serialize(context))
@@ -58,18 +58,18 @@ class SettingsContainer<H : Any>(
 		return storedPropertyMap[property] as V
 	}
 
-	class SettingsProperty<H : Any, out T : Any?>(val backing: KMutableProperty1<H, out T?>, val serializer: PersistentDataType<*, @UnsafeVariance T>, val defaultValue: T?) {
+	class SettingsProperty<H : Any, out Z : Any, out T : Z?>(val backing: KMutableProperty1<H, out T>, val serializer: PersistentDataType<*, @UnsafeVariance Z>, val defaultValue: T) {
 		private fun getKey(property: KMutableProperty1<*, *>): NamespacedKey {
 			return NamespacedKeys.key(property.name)
 		}
 
 		val key by lazy { getKey(backing) }
 
-		fun getValue(container: SettingsContainer<H>): T? = container.getValue(backing)
+		fun getValue(container: SettingsContainer<H>): T = container.getValue(backing)
 	}
 
 	companion object {
-		fun <T : Any> multiblockSettings(data: PersistentMultiblockData, vararg settingsProperties: SettingsProperty<T, Any?>): SettingsContainer<T> {
+		fun <T : MultiblockEntity> multiblockSettings(data: PersistentMultiblockData, vararg settingsProperties: SettingsProperty<T, Any, Any?>): SettingsContainer<T> {
 			val container = SettingsContainer(changeCallback = {  }, *settingsProperties)
 			container.loadData(data.getAdditionalDataRaw())
 			return container
