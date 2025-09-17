@@ -63,7 +63,7 @@ dependencies {
 
     implementation("org.jgrapht:jgrapht-core:1.5.2")
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
-	implementation("org.apache.commons:commons-collections4:4.4")
+	implementation("org.apache.commons:commons-collections4:4.5.0")
 
 	implementation(platform("com.intellectualsites.bom:bom-newest:1.52"))
 	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.13.2")
