@@ -179,8 +179,7 @@ class SinkAnimation(
 	override fun run() {
 		iterations++
 
-		@Suppress("SYNTHETIC_PROPERTY_WITHOUT_JAVA_ORIGIN")
-		if (blockWrappers.isEmpty) {
+		if (blockWrappers.isEmpty()) {
 			cancel()
 			return
 		}

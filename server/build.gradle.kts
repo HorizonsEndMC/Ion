@@ -42,7 +42,7 @@ dependencies {
 	compileOnly("net.citizensnpcs:citizens-main:2.0.37-SNAPSHOT") { exclude("*") }
 	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
 	compileOnly("com.discordsrv:discordsrv:1.30.1")
-	compileOnly("net.luckperms:api:5.4")
+	compileOnly("net.luckperms:api:5.5")
 	compileOnly("xyz.xenondevs.invui:invui:1.46") // Downloaded via paper library manager for remapping
 	compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
 
@@ -55,7 +55,7 @@ dependencies {
 	implementation("fr.skytasul:guardianbeam:2.4.4")
 	implementation("club.minnced:discord-webhooks:0.8.4")
 
-	val scoreboardLibraryVersion = "2.2.2"
+	val scoreboardLibraryVersion = "2.4.1"
 	implementation("net.megavex:scoreboard-library-extra-kotlin:$scoreboardLibraryVersion")
 	implementation("net.megavex:scoreboard-library-api:$scoreboardLibraryVersion")
 	implementation("net.megavex:scoreboard-library-implementation:$scoreboardLibraryVersion")
@@ -63,7 +63,7 @@ dependencies {
 
     implementation("org.jgrapht:jgrapht-core:1.5.2")
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
-	implementation("org.apache.commons:commons-collections4:4.4")
+	implementation("org.apache.commons:commons-collections4:4.5.0")
 
 	implementation(platform("com.intellectualsites.bom:bom-newest:1.52"))
 	compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core:2.13.2")
