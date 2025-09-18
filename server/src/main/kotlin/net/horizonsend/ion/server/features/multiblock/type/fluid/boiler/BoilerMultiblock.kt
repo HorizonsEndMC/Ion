@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
+import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
@@ -16,7 +17,10 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedM
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblock.BoilerMultiblockEntity
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
+import net.horizonsend.ion.server.features.transport.fluids.FluidUtils
+import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
@@ -44,7 +48,7 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
 		val fluidInput = FluidStorageContainer(data, "primaryin", text("Primary Input"), NamespacedKeys.key("primaryin"), 10_000.0, FluidRestriction.Unlimited)
-		val fluidOutput = FluidStorageContainer(data, "primaryout", text("Primary Output"), NamespacedKeys.key("primaryout"), 100.0, FluidRestriction.Unlimited)
+		val fluidOutput = FluidStorageContainer(data, "primaryout", text("Primary Output"), NamespacedKeys.key("primaryout"), 100.0, FluidRestriction.Unlimited) { previousAmount: Double, stack: FluidStack -> recalculateSteamVolume(previousAmount, stack) }
 
 		override val ioData: IOData = IOData.builder(this)
 			.addPort(IOType.FLUID, -3, 0, 3) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = fluidInput, inputAllowed = true, outputAllowed = false)) }
@@ -148,6 +152,30 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 			if (!running) startedRunning = null
 			// Only set the start time if it hasn't been set
 			else if (startedRunning == null) startedRunning = System.currentTimeMillis()
+		}
+
+		private fun recalculateSteamVolume(previousAmount: Double, stack: FluidStack) {
+			if (stack.type != FluidTypeKeys.STEAM) return
+
+			// Only if decreasing
+			if (previousAmount <= stack.amount) return
+
+			val ambientPressure = FluidPropertyTypeKeys.PRESSURE.getValue().getDefaultProperty(location)
+
+			val newWeight = FluidUtils.getFluidWeight(stack, location)
+			val temperature = stack.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE.getValue(), location).value
+
+			val newPressure = maxOf(
+				FluidUtils.getFluidPressure(
+					FluidTypeKeys.STEAM.getValue(),
+					newWeight,
+					temperature,
+					fluidOutput
+				),
+				ambientPressure.value
+			)
+
+			fluidOutput.getContents().setData(FluidPropertyTypeKeys.PRESSURE, FluidProperty.Pressure(newPressure))
 		}
 	}
 }

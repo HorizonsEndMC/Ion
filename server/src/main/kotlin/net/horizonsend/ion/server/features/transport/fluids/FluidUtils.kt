@@ -47,7 +47,7 @@ object FluidUtils {
 	}
 
 	/** Returns the calculated pressure fluid stack, in bars */
-	fun getFluidPressure(fluidType: FluidType, fluidWeight: Double, fluidTemperatureCelsius: Double, container: FluidStorageContainer, location: Location?): Double {
+	fun getFluidPressure(fluidType: FluidType, fluidWeight: Double, fluidTemperatureCelsius: Double, container: FluidStorageContainer): Double {
 		val capacity = container.capacity
 		val weightGrams = fluidWeight
 		val moles =  weightGrams / fluidType.getMolarMass()

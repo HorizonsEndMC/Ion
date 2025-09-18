@@ -101,8 +101,7 @@ object Water : FluidType(FluidTypeKeys.WATER) {
 				resultContainer.getContents().type.getValue(),
 				newWeight,
 				temperature,
-				resultContainer,
-				location
+				resultContainer
 			)
 			println(newPressure)
 			resultContainer.getContents().setData(FluidPropertyTypeKeys.PRESSURE, FluidProperty.Pressure(newPressure))

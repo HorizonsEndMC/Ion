@@ -18,6 +18,7 @@ class FluidStorageContainer private constructor(
 	val namespacedKey: NamespacedKey,
 	val capacity: Double,
 	val restriction: FluidRestriction,
+	val changeCallback: (Double, FluidStack) -> Unit = { _, _ -> }
 ) {
 	private var contentsUnsafe = FluidStack.empty()
 		@Synchronized
@@ -32,7 +33,8 @@ class FluidStorageContainer private constructor(
 		namespacedKey: NamespacedKey,
 		capacity: Double,
 		restriction: FluidRestriction,
-	) : this(name, displayName, namespacedKey, capacity, restriction) {
+		changeCallback: (Double, FluidStack) -> Unit = { _, _ -> }
+	) : this(name, displayName, namespacedKey, capacity, restriction, changeCallback) {
 		load(data)
 	}
 
@@ -75,11 +77,13 @@ class FluidStorageContainer private constructor(
 			return 0.0
 		}
 
+		val previousAmount = contentsUnsafe.amount
+
 		val newQuantity = minOf(getRemainingRoom(), stack.amount)
 		val toAdd = stack.asAmount(newQuantity)
 
 		contentsUnsafe.combine(toAdd, location)
-
+		changeCallback.invoke(previousAmount, contentsUnsafe)
 		runUpdates()
 
 		return stack.amount - newQuantity
@@ -100,11 +104,13 @@ class FluidStorageContainer private constructor(
 
 	/** Returns amount not removed */
 	fun removeAmount(amount: Double): Double {
+		val previousAmount = contentsUnsafe.amount
 		val toRemove = minOf(amount, contentsUnsafe.amount)
 
 		val notRemoved = amount - toRemove
 
 		contentsUnsafe.amount -= toRemove
+		changeCallback.invoke(previousAmount, contentsUnsafe)
 		runUpdates()
 
 		return notRemoved
