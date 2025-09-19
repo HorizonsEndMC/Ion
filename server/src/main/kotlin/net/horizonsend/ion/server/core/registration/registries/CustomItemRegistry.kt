@@ -346,7 +346,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		customBlockItem(CustomItemKeys.FLUID_PIPE_JUNCTION, "pipe/fluid_pipe_junction", Component.text("Fluid Pipe Junction").itemName, CustomBlockKeys.FLUID_PIPE_JUNCTION)
 		customBlockItem(CustomItemKeys.REINFORCED_FLUID_PIPE, "pipe/reinforced_fluid_pipe", Component.text("Reinforced Fluid Pipe").itemName, CustomBlockKeys.REINFORCED_FLUID_PIPE)
 		customBlockItem(CustomItemKeys.REINFORCED_FLUID_PIPE_JUNCTION, "pipe/reinforced_fluid_pipe_junction", Component.text("Reinforced Fluid Pipe Junction").itemName, CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION)
-		customBlockItem(CustomItemKeys.TEMPERATURE_GAUGE, "pipe/TEMPERATURE_GAUGE", Component.text("Pressure Gauge").itemName, CustomBlockKeys.TEMPERATURE_GAUGE)
+		customBlockItem(CustomItemKeys.TEMPERATURE_GAUGE, "pipe/temperature_gauge", Component.text("Temperature Gauge").itemName, CustomBlockKeys.TEMPERATURE_GAUGE)
 	}
 
 	fun registerGridEnergyWires() {
