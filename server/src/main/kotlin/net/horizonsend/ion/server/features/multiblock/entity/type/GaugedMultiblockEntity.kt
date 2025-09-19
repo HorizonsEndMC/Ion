@@ -29,6 +29,7 @@ interface GaugedMultiblockEntity {
 		}
 
 		fun handleGauge(gauge: GaugeData, block: Block) {
+			gauge.claimOwnership.invoke(entity, block)
 			val signal = gauge.readValue.invoke()
 			gauge.applyValue.invoke(signal, block)
 		}
@@ -55,12 +56,13 @@ interface GaugedMultiblockEntity {
 		}
 	}
 
-	class GaugeData(val blockMatch: (Block) -> Boolean, val readValue: () -> Int, val applyValue: (Int, Block) -> Boolean) {
+	class GaugeData(val blockMatch: (Block) -> Boolean, val claimOwnership: (MultiblockEntity, Block) -> Unit, val readValue: () -> Int, val applyValue: (Int, Block) -> Boolean) {
 		companion object {
 			fun fluidPressureGauge(store: FluidStorageContainer, multiblock: MultiblockEntity) = GaugeData(
-				{ it.customBlock?.key == CustomBlockKeys.PRESSURE_GAUGE },
-				{ store.getContents().getDataOrDefault(FluidPropertyTypeKeys.PRESSURE, multiblock.location).value.roundToInt().coerceIn(0, 15) },
-				{ signal, block -> CustomBlockKeys.PRESSURE_GAUGE.getValue().setSignalOutput(signal, block.world, Vec3i(block.x, block.y, block.z)) }
+				blockMatch = { it.customBlock?.key == CustomBlockKeys.PRESSURE_GAUGE },
+				claimOwnership = { entity, block -> CustomBlockKeys.PRESSURE_GAUGE.getValue().setMultiblockOwner(entity.manager, Vec3i(block.x, block.y, block.z), entity) },
+				readValue = { store.getContents().getDataOrDefault(FluidPropertyTypeKeys.PRESSURE, multiblock.location).value.roundToInt().coerceIn(0, 15) },
+				applyValue = { signal, block -> CustomBlockKeys.PRESSURE_GAUGE.getValue().setSignalOutput(signal, block.world, Vec3i(block.x, block.y, block.z)) }
 			)
 		}
 	}

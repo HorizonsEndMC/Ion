@@ -63,6 +63,15 @@ class IonWorld private constructor(
 	}
 
 	/**
+	 * Gets the IonChunk at the specified coordinates if it is loaded
+	 **/
+	fun getChunkFromWorldcoordinates(x: Int, z: Int): IonChunk? {
+		val key = Chunk.getChunkKey(x.shr(4), z.shr(4))
+
+		return chunks[key]
+	}
+
+	/**
 	 * Gets the IonChunk at the specified key if it is loaded
 	 **/
 	fun getChunk(key: Long): IonChunk? {

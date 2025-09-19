@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.manager
 
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.manager.ChunkFilterCache
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
@@ -14,11 +15,12 @@ import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.World
 import org.bukkit.persistence.PersistentDataContainer
-import java.util.function.Consumer
 import java.util.UUID
+import java.util.function.Consumer
 
 class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHolder<*>>() {
 	override val extractorManager: ChunkExtractorManager = ChunkExtractorManager(this)
@@ -92,5 +94,9 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHo
 
 	override fun getGridEnergyGraphTransportManager(): GridEnergyGraphManager {
 		return getWorld().ion.transportManager.gridEnergyGraphManager
+	}
+
+	override fun getMultiblockmanager(globalVec3i: Vec3i): MultiblockManager? {
+		return chunk.multiblockManager
 	}
 }

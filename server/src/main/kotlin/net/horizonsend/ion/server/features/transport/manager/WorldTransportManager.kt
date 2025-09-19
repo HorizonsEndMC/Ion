@@ -1,11 +1,13 @@
 package net.horizonsend.ion.server.features.transport.manager
 
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.NewTransport.registerTransportManager
 import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.features.transport.manager.graph.FluidNetworkManager
 import net.horizonsend.ion.server.features.transport.manager.graph.GridEnergyGraphManager
 import net.horizonsend.ion.server.features.world.IonWorld
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.World
 import org.bukkit.persistence.PersistentDataContainer
 import java.util.function.Consumer
@@ -49,5 +51,9 @@ class WorldTransportManager(val world: IonWorld) : TransportHolder {
 
 	fun save() {
 		fluidGraphManager.save(world.world.persistentDataContainer.adapterContext)
+	}
+
+	override fun getMultiblockmanager(globalVec3i: Vec3i): MultiblockManager? {
+		return world.getChunkFromWorldcoordinates(globalVec3i.x, globalVec3i.z)?.multiblockManager
 	}
 }

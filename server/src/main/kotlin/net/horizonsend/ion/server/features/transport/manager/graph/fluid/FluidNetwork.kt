@@ -203,7 +203,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		val pressure = networkContents.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE, (getGraphNodes().firstOrNull() ?: return).getCenter().toLocation(manager.transportManager.getWorld()))
 		val formattedPressure = pressure.value.roundToInt().coerceIn(0, 15)
 
-		for (gauge in getGraphNodes().filterIsInstance<FluidNode.PressureGauge>()) gauge.setOutput(formattedPressure)
+		for (gauge in getGraphNodes().filterIsInstance<FluidNode.PressureGauge>()) gauge.setOutput(formattedPressure, manager.transportManager.getMultiblockmanager(gauge.getGlobalCoordinate()) ?: continue)
 	}
 
 	private fun depositToNetwork(location: BlockKey, port: IOPort.RegisteredMetaDataInput<FluidPortMetadata>, delta: Double) {
