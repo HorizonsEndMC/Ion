@@ -17,7 +17,7 @@ import org.bukkit.Color
 import org.bukkit.Location
 
 object SuperDenseSteam : GasFluid(
-	key = FluidTypeKeys.DENSE_STEAM,
+	key = FluidTypeKeys.SUPER_DENSE_STEAM,
 	color = Color.WHITE,
 	heatCapacity = 2.030,
 	molarMass = 18.01528,
@@ -26,12 +26,7 @@ object SuperDenseSteam : GasFluid(
 	override val categories: Array<FluidCategory> = arrayOf(FluidCategory.GAS, FluidCategory.STEAM)
 
 	override fun getDisplayName(stack: FluidStack): Component {
-		if (stack.hasData(FluidPropertyTypeKeys.TEMPERATURE)) {
-			val boiling = stack.getData(FluidPropertyTypeKeys.TEMPERATURE.getValue())?.value?.let { it > 100.0 }
-			if (boiling == true) return Component.text("Dry Steam")
-		}
-
-		return Component.text("Super Steam")
+		return Component.text("Super Dense Steam")
 	}
 
 	override fun getHeatingResult(stack: FluidStack, resultContainer: FluidStorageContainer, appliedEnergyJoules: Double, maximumTemperature: Double, location: Location?): HeatingResult {

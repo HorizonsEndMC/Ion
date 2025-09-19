@@ -26,11 +26,6 @@ object DenseSteam : GasFluid(
 	override val categories: Array<FluidCategory> = arrayOf(FluidCategory.GAS, FluidCategory.STEAM)
 
 	override fun getDisplayName(stack: FluidStack): Component {
-		if (stack.hasData(FluidPropertyTypeKeys.TEMPERATURE)) {
-			val boiling = stack.getData(FluidPropertyTypeKeys.TEMPERATURE.getValue())?.value?.let { it > 100.0 }
-			if (boiling == true) return Component.text("Dry Steam")
-		}
-
 		return Component.text("Dense Steam")
 	}
 

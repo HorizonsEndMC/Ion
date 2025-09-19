@@ -103,7 +103,7 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 				stack = input,
 				resultContainer = fluidOutput,
 				appliedEnergyJoules = getHeatProductionJoulesPerSecond() * deltaT,
-				maximumTemperature = 500.0,
+				maximumTemperature = 650.0,
 				location = location
 			)
 
