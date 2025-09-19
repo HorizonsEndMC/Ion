@@ -7,10 +7,12 @@ import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
-import net.horizonsend.ion.server.features.transport.fluids.types.DenseSteam
 import net.horizonsend.ion.server.features.transport.fluids.types.Lava
 import net.horizonsend.ion.server.features.transport.fluids.types.LegacyGasFluid
 import net.horizonsend.ion.server.features.transport.fluids.types.Water
+import net.horizonsend.ion.server.features.transport.fluids.types.steam.DenseSteam
+import net.horizonsend.ion.server.features.transport.fluids.types.steam.SuperDenseSteam
+import net.horizonsend.ion.server.features.transport.fluids.types.steam.UltraDenseSteam
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -47,6 +49,9 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 
 		register(FluidTypeKeys.WATER, Water)
 		register(FluidTypeKeys.LAVA, Lava)
+		
 		register(FluidTypeKeys.DENSE_STEAM, DenseSteam)
+		register(FluidTypeKeys.SUPER_DENSE_STEAM, SuperDenseSteam)
+		register(FluidTypeKeys.ULTRA_DENSE_STEAM, UltraDenseSteam)
 	}
 }
