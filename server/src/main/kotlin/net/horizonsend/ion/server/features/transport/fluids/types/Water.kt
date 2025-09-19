@@ -93,11 +93,9 @@ object Water : FluidType(FluidTypeKeys.WATER) {
 		val spareJoules = (appliedEnergyJoules - heatingJoules)
 		val boiledGrams = spareJoules / LATENT_HEAT_OF_VAPORIZATION
 
-		val tempSteamStack = FluidStack(FluidTypeKeys.DENSE_STEAM, 1.0)
-
 		val waterVolume = centimetersCubedToLiters(boiledGrams / this.getDensity(stack, location))
 
-		val steamVolume = waterVolume * 8
+		val steamVolume = waterVolume * EXPANSION_FACTOR
 
 		// Consume water equal to weight boiled
 		val consumed = minOf(waterVolume, stack.amount)
@@ -109,6 +107,7 @@ object Water : FluidType(FluidTypeKeys.WATER) {
 	}
 
 	private fun getBoilingPoint(stack: FluidStack, location: Location?): Double {
+		// TODO get planetary pressure, check indoors?
 //		val pressure = stack.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE.getValue(), location).value
 		return 100.0
 	}

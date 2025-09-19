@@ -1,10 +1,8 @@
 package net.horizonsend.ion.server.features.transport.fluids.types
 
-import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
-import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.FluidUtils.GAS_CONSTANT
@@ -16,9 +14,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.Component.text
-import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
@@ -29,21 +24,14 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
-class GasFluid(
+abstract class GasFluid(
 	key: IonRegistryKey<FluidType, out FluidType>,
-	private val gasKey: IonRegistryKey<Gas, out Gas>,
 	val color: Color,
 	private val heatCapacity: Double,
 	private val molarMass: Double,
 	private val pressureBars: Double = 1.0
 ) : FluidType(key) {
 	override val categories: Array<FluidCategory> = arrayOf(FluidCategory.GAS)
-
-	override fun getDisplayName(stack: FluidStack): Component {
-		return ofChildren(gas.displayName, text(" Gas", GRAY))
-	}
-
-	val gas get() = gasKey.getValue()
 
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
 		val trailOptions = Trail(

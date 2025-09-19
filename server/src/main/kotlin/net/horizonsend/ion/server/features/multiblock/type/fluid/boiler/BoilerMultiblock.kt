@@ -67,8 +67,8 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 
 			val outputContents = fluidOutput.getContents()
 			if (outputContents.isNotEmpty()) {
-				val pressure = outputContents.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE, location).value
-				if (pressure > 600.0 && fluidOutput.getRemainingRoom() <= 0) {
+				val temperature = outputContents.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE, location).value
+				if (temperature > 600.0 && fluidOutput.getRemainingRoom() <= 0) {
 					Tasks.sync {
 						val location = getBlockRelative(0, 5, 3).location.toCenterLocation()
 						world.createExplosion(location, 30.0f)

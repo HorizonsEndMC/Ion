@@ -6,12 +6,8 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.FluidDisplayModule.Companion.format
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Temperature
-import net.horizonsend.ion.server.miscellaneous.utils.celsiusToKelvin
 import net.horizonsend.ion.server.miscellaneous.utils.litersToCentimetersCubed
-import net.horizonsend.ion.server.miscellaneous.utils.litersToMetersCubed
-import net.horizonsend.ion.server.miscellaneous.utils.pascalsToBars
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -44,16 +40,6 @@ object FluidUtils {
 	fun getFluidWeight(fluid: FluidStack, location: Location?): Double {
 		val density = fluid.type.getValue().getDensity(fluid, location)
 		return density * litersToCentimetersCubed(fluid.amount)
-	}
-
-	/** Returns the calculated pressure fluid stack, in bars */
-	fun getFluidPressure(fluidType: FluidType, fluidWeight: Double, fluidTemperatureCelsius: Double, container: FluidStorageContainer): Double {
-		val capacity = container.capacity
-		val weightGrams = fluidWeight
-		val moles =  weightGrams / fluidType.getMolarMass()
-
-		val pressure = (moles * GAS_CONSTANT * celsiusToKelvin(fluidTemperatureCelsius)) / litersToMetersCubed(capacity)
-		return pascalsToBars(pressure)
 	}
 
 	fun getNewTemperature(fluidStack: FluidStack, appliedHeatJoules: Double, maximumTemperature: Double, location: Location?): Temperature {
