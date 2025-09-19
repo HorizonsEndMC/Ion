@@ -423,7 +423,7 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 		}
 
 		override fun getHeatProductionJoulesPerSecond(): Double {
-			return POWER_DRAW_WATTS
+			return POWER_DRAW_WATTS * 10
 		}
 
 		override fun postTick() {

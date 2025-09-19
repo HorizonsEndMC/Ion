@@ -40,7 +40,7 @@ class Steam(
 			return HeatingResult.TemperatureIncreaseInPlace(newTemperature)
 		}
 
-		val boilingTemperature = FluidProperty.Temperature(conversionTemperature)
+		val convertTemperature = FluidProperty.Temperature(conversionTemperature)
 
 		val deltaTemperature = conversionTemperature - currentTemperature
 		val heatingJoules = getFluidWeight(stack, location) * Water.getIsobaricHeatCapacity(stack) * deltaTemperature
@@ -48,13 +48,16 @@ class Steam(
 		val spareJoules = (appliedEnergyJoules - heatingJoules)
 		val convertedGrams = spareJoules / conversionCost
 
-		val convertedVolume = centimetersCubedToLiters(convertedGrams / this.getDensity(stack, location))
+		val stackDensity = getDensity(stack, location)
+
+		val convertedVolume = centimetersCubedToLiters(convertedGrams / stackDensity)
 
 		// Create a temp stack to get the density of the result
-		val tempStack = conversionResult.getValue().getDensity(FluidStack(conversionResult, 1.0), location)
+		val tempStack = FluidStack(conversionResult, 1.0).setData(FluidPropertyTypeKeys.TEMPERATURE, convertTemperature.clone())
+		val resultDensity = conversionResult.getValue().getDensity(tempStack, location)
 
 		// Get the shrinkage factor by multiplying by the fraction of the result density and current density, it will be below 1
-		val contractionFactor = tempStack / getDensity(stack, location)
+		val contractionFactor = stackDensity / resultDensity
 
 		val steamVolume = convertedVolume * contractionFactor
 
@@ -62,8 +65,8 @@ class Steam(
 		val consumed = minOf(convertedVolume, stack.amount)
 
 		val steamStack = FluidStack(conversionResult, steamVolume)
-			.setData(FluidPropertyTypeKeys.TEMPERATURE, boilingTemperature.clone())
+			.setData(FluidPropertyTypeKeys.TEMPERATURE, convertTemperature.clone())
 
-		return HeatingResult.Boiling(boilingTemperature, steamStack, consumed)
+		return HeatingResult.Boiling(convertTemperature, steamStack, consumed)
 	}
 }
