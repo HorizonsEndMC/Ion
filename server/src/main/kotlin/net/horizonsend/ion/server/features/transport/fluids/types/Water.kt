@@ -113,5 +113,5 @@ object Water : FluidType(FluidTypeKeys.WATER) {
 	}
 
 	private const val EXPANSION_FACTOR = 12.0
-	private val LATENT_HEAT_OF_VAPORIZATION get() = 2257 // j/g
+	private const val LATENT_HEAT_OF_VAPORIZATION = 2257.0 // j/g
 }
