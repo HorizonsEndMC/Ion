@@ -39,7 +39,6 @@ import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
-import kotlin.math.pow
 
 abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultiblockEntity> {
 	override val name: String = "turbine"
@@ -121,7 +120,7 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 				return
 			}
 
-			if (steamStack.type != FluidTypeKeys.STEAM) {
+			if (steamStack.type != FluidTypeKeys.DENSE_STEAM) {
 				lastEnergy = 0.0
 				setStatus(Component.text("Empty", NamedTextColor.RED))
 				return
@@ -131,7 +130,7 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			val massFlow = minOf(FluidUtils.getFluidWeight(steamStack, location), getMassFlowRate(steamStack, location) * delta)
 
 			// The specific enthalpy, in joules per kilogram
-			val specificEnthalpy = getSpecificEnthalpy(steamStack, location)
+			val specificEnthalpy = 1.0 // getSpecificEnthalpy(steamStack, location)
 
 			// The amount of work that can be done is calculated by the difference in energy
 			// between the input and output. Here, the output energy efficiency is hardcoded,
@@ -155,12 +154,8 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 
 			// Scale the properties down by the efficiency
 			val baseTemperature = FluidPropertyTypeKeys.TEMPERATURE.getValue().getDefaultProperty(location).value
-			val outletTemperature = ((steamStack.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE.getValue(), location).value - baseTemperature) * multiblock.efficiency) + baseTemperature
+			val outletTemperature = ((steamStack.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE.getValue(), location).value - baseTemperature) * multiblock.efficiency) + baseTemperature
 			new.setData(FluidPropertyTypeKeys.TEMPERATURE.getValue(), FluidProperty.Temperature(outletTemperature))
-
-			val basePressure = FluidPropertyTypeKeys.PRESSURE.getValue().getDefaultProperty(location).value
-			val outletPressure = ((steamStack.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE.getValue(), location).value - basePressure) * multiblock.efficiency) + basePressure
-			new.setData(FluidPropertyTypeKeys.PRESSURE.getValue(), FluidProperty.Pressure(outletPressure))
 
 			steamOutput.addFluid(new, location)
 			setStatus(Component.text("Working", NamedTextColor.GREEN))
@@ -168,21 +163,6 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 
 		override fun getRotationSpeed(): Double {
 			return lastEnergy
-		}
-
-		fun getSaturationTemperature(stack: FluidStack): Double {
-			val pressure = stack.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE.getValue(), location)
-			return pressure.value.pow(0.25) * 100.0
-		}
-
-		fun isSaturated(stack: FluidStack): Boolean {
-			val temperature = stack.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE.getValue(), location).value
-			return temperature >= getSaturationTemperature(stack)
-		}
-
-		fun getSuperheatDegrees(stack: FluidStack): Double {
-			val temperature = stack.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE.getValue(), location).value
-			return temperature - getSaturationTemperature(stack)
 		}
 
 		/**
@@ -194,18 +174,6 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			val velocity = 25.0 // m/s
 
 			return density * crossSectionArea * velocity
-		}
-
-		/**
-		 * Returns the specific enthalpy of the fluid stack, in joules per kilogram
-		 **/
-		fun getSpecificEnthalpy(stack: FluidStack, location: Location?): Double {
-			val pressure = stack.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE.getValue(), location).value
-
-			val specificVolume = 1.0 / stack.type.getValue().getDensity(stack, location)
-			val steamHeatCapacity = 2000 // j / kg
-
-			return steamHeatCapacity + (pressure * (1.0 / specificVolume))
 		}
 	}
 }

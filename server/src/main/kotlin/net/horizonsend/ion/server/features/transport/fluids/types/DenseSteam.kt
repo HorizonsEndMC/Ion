@@ -4,7 +4,6 @@ import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
-import net.horizonsend.ion.server.features.transport.fluids.FluidUtils
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid.Companion.windDirection
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork.Companion.PIPE_INTERIOR_PADDING
@@ -24,7 +23,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 import kotlin.random.Random
 
-object Steam : FluidType(FluidTypeKeys.STEAM) {
+object DenseSteam : FluidType(FluidTypeKeys.DENSE_STEAM) {
 	override val categories: Array<FluidCategory> = arrayOf()
 
 	val color: Color = Color.WHITE
@@ -95,7 +94,8 @@ object Steam : FluidType(FluidTypeKeys.STEAM) {
 	}
 
 	override fun getDensity(stack: FluidStack, location: Location?): Double {
-		return FluidUtils.getGasDensity(stack, location)
+		// https://www.spiraxsarco.com/resources-and-design-tools/steam-tables/superheated-steam-region?sc_lang=en-GB
+		return 1.13607
 	}
 
 	override fun getMolarMass(): Double {

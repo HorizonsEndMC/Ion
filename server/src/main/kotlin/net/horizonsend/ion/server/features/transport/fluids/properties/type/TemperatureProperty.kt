@@ -5,7 +5,6 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_M
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
-import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Pressure.Companion.DEFAULT_PRESSURE
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Temperature
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Temperature.Companion.DEFAULT_TEMPERATURE
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty.Temperature.Companion.TEMPERATURE
@@ -23,7 +22,7 @@ object TemperatureProperty : FluidPropertyType<Temperature>() {
 
 		val newVolume = currentAmount + otherAmount
 
-		if (newVolume <= 0.0) return Temperature(DEFAULT_TEMPERATURE)
+		if (newVolume <= 0.0) return getDefaultProperty(location)
 
 		val thisPortion = currentProperty.value * (currentAmount / newVolume)
 		val otherPortion = (other?.value ?: getDefaultProperty(location).value) * (otherAmount / newVolume)
@@ -45,7 +44,7 @@ object TemperatureProperty : FluidPropertyType<Temperature>() {
 
 	override fun getDefaultProperty(location: Location?): Temperature {
 		//TODO
-		return Temperature(DEFAULT_PRESSURE)
+		return Temperature(DEFAULT_TEMPERATURE)
 	}
 
 	override fun formatValue(property: Temperature): Component {

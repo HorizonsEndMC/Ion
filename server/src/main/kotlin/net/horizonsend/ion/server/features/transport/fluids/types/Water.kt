@@ -93,34 +93,16 @@ object Water : FluidType(FluidTypeKeys.WATER) {
 		val spareJoules = (appliedEnergyJoules - heatingJoules)
 		val boiledGrams = spareJoules / LATENT_HEAT_OF_VAPORIZATION
 
-		if (resultContainer.getRemainingRoom() <= 0) {
-			val newWeight = getFluidWeight(resultContainer.getContents(), location) + boiledGrams
-			val temperature = resultContainer.getContents().getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE.getValue(), location).value
+		val tempSteamStack = FluidStack(FluidTypeKeys.DENSE_STEAM, 1.0)
 
-			val newPressure = FluidUtils.getFluidPressure(
-				resultContainer.getContents().type.getValue(),
-				newWeight,
-				temperature,
-				resultContainer
-			)
-			println(newPressure)
-			resultContainer.getContents().setData(FluidPropertyTypeKeys.PRESSURE, FluidProperty.Pressure(newPressure))
+		val waterVolume = centimetersCubedToLiters(boiledGrams / this.getDensity(stack, location))
 
-			val waterVolume = centimetersCubedToLiters(boiledGrams / this.getDensity(stack, location))
-			val consumedWater = minOf(waterVolume, stack.amount)
-
-			return HeatingResult.Boiling(boilingTemperature, FluidStack.empty(), consumedWater)
-		}
-
-		val tempSteamStack = FluidStack(FluidTypeKeys.STEAM, 1.0)
-		val steamDensity = FluidUtils.getGasDensity(tempSteamStack, location)
-		val steamVolume = minOf(resultContainer.getRemainingRoom(), centimetersCubedToLiters(boiledGrams / steamDensity))
+		val steamVolume = waterVolume * 8
 
 		// Consume water equal to weight boiled
-		val waterVolume = centimetersCubedToLiters(boiledGrams / this.getDensity(stack, location))
 		val consumed = minOf(waterVolume, stack.amount)
 
-		val steamStack = FluidStack(FluidTypeKeys.STEAM, steamVolume)
+		val steamStack = FluidStack(FluidTypeKeys.DENSE_STEAM, steamVolume)
 			.setData(FluidPropertyTypeKeys.TEMPERATURE, boilingTemperature.clone())
 
 		return HeatingResult.Boiling(boilingTemperature, steamStack, consumed)

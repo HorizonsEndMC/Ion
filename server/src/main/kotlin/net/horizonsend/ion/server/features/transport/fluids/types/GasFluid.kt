@@ -2,14 +2,16 @@ package net.horizonsend.ion.server.features.transport.fluids.types
 
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
-import net.horizonsend.ion.server.features.transport.fluids.FluidUtils.getGasDensity
+import net.horizonsend.ion.server.features.transport.fluids.FluidUtils.GAS_CONSTANT
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork.Companion.PIPE_INTERIOR_PADDING
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
+import net.horizonsend.ion.server.miscellaneous.utils.celsiusToKelvin
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
@@ -33,6 +35,7 @@ class GasFluid(
 	val color: Color,
 	private val heatCapacity: Double,
 	private val molarMass: Double,
+	private val pressureBars: Double = 1.0
 ) : FluidType(key) {
 	override val categories: Array<FluidCategory> = arrayOf(FluidCategory.GAS)
 
@@ -108,6 +111,10 @@ class GasFluid(
 	}
 
 	override fun getDensity(stack: FluidStack, location: Location?): Double {
-		return getGasDensity(stack, location)
+		val temperatureCelsius = stack.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE.getValue(), location).value
+
+		val density = (getMolarMass() * pressureBars) / (GAS_CONSTANT * celsiusToKelvin(temperatureCelsius))
+
+		return density
 	}
 }

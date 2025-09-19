@@ -11,11 +11,6 @@ object FluidPropertyTypeKeys : KeyRegistry<FluidPropertyType<*>>(FLUID_PROPERTY_
 	val TEMPERATURE = registerTypedKey<FluidPropertyType<FluidProperty.Temperature>>("TEMPERATURE")
 
 	/**
-	 * Stores pressure, in bars
-	 **/
-	val PRESSURE = registerTypedKey<FluidPropertyType<FluidProperty.Pressure>>("PRESSURE")
-
-	/**
 	 * Stores salinity, in percent
 	 **/
 	val SALINITY = registerTypedKey<FluidPropertyType<FluidProperty.Salinity>>("SALINITY")

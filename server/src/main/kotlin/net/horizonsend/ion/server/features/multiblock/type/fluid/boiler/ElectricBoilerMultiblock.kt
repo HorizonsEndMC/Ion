@@ -162,13 +162,13 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 		}
 		z(3) {
 			y(-1) {
-				x(-3).customBlock(CustomBlockKeys.PRESSURE_GAUGE.getValue())
+				x(-3).customBlock(CustomBlockKeys.TEMPERATURE_GAUGE.getValue())
 				x(-2).type(Material.MUD_BRICKS)
 				x(-1).type(Material.MUD_BRICKS)
 				x(0).type(Material.MUD_BRICKS)
 				x(1).type(Material.MUD_BRICKS)
 				x(2).type(Material.MUD_BRICKS)
-				x(3).customBlock(CustomBlockKeys.PRESSURE_GAUGE.getValue())
+				x(3).customBlock(CustomBlockKeys.TEMPERATURE_GAUGE.getValue())
 			}
 			y(0) {
 				x(-3).fluidPort()
@@ -403,7 +403,7 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 		override val gridEnergyManager: MultiblockGridEnergyManager = MultiblockGridEnergyManager(this)
 
 		override val gauges: MultiblockGauges = MultiblockGauges.builder(this)
-			.addGauge(3, -1, 3, GaugedMultiblockEntity.GaugeData.fluidPressureGauge(fluidOutput, this))
+			.addGauge(3, -1, 3, GaugedMultiblockEntity.GaugeData.fluidTemperatureGauge(fluidOutput, this))
 			.build()
 
 		override fun IOData.Builder.registerAdditionalIO(): IOData.Builder {
@@ -442,6 +442,6 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 
 		override fun getPassiveGridEnergyConsumption(): Double = 1.0
 
-		private val POWER_DRAW_WATTS get () = 500_000.0 // Watts
+		private val POWER_DRAW_WATTS get() = 500_000.0 // Watts
 	}
 }

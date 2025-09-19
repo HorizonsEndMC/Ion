@@ -46,7 +46,7 @@ class FluidNetworkManager(manager: TransportHolder) : NetworkManager<FluidNode, 
 			}
 			.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_PORT, Material.BROWN_MUSHROOM_BLOCK) { _, pos, holder -> FluidPort(pos) }
 			.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_VALVE, Material.BROWN_MUSHROOM_BLOCK) { _, pos, holder -> FluidValve(pos) }
-			.addDataHandler<CommandBlock>(CustomBlockKeys.PRESSURE_GAUGE, Material.COMMAND_BLOCK) { _, pos, holder -> FluidNode.PressureGauge(pos) }
+			.addDataHandler<CommandBlock>(CustomBlockKeys.TEMPERATURE_GAUGE, Material.COMMAND_BLOCK) { _, pos, holder -> FluidNode.TemperatureGauge(pos) }
 			.build()
 	}
 }

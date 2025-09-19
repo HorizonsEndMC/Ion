@@ -12,16 +12,16 @@ import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTyp
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_VALVE
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.GRID_ENERGY_JUNCTION
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.GRID_ENERGY_PORT
-import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.PRESSURE_GAUGE
+import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.TEMPERATURE_GAUGE
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidPort
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidValve
-import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.PressureGauge
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.RegularJunctionPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.RegularLinearPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedJunctionPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedLinearPipe
+import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.TemperatureGauge
 import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyJunction
 import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyPort
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode.Companion.NODE_POSITION
@@ -60,13 +60,13 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return pdc
 			}
 		})
-		register(PRESSURE_GAUGE, object : TransportNodeType<PressureGauge>(PRESSURE_GAUGE) {
-			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): PressureGauge {
-				val node = PressureGauge(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
+		register(TEMPERATURE_GAUGE, object : TransportNodeType<TemperatureGauge>(TEMPERATURE_GAUGE) {
+			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): TemperatureGauge {
+				val node = TemperatureGauge(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
 				return node
 			}
 
-			override fun serializeData(complex: PressureGauge, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(complex: TemperatureGauge, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
 				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
 				return pdc

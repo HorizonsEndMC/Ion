@@ -56,20 +56,6 @@ object FluidUtils {
 		return pascalsToBars(pressure)
 	}
 
-	/**
-	 * Uses the ideal gas law to get the density of the gas, in grams / cm^3
-	 **/
-	fun getGasDensity(stack: FluidStack, location: Location?): Double {
-		val type = stack.type.getValue()
-
-		val temperatureCelsius = stack.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE.getValue(), location).value
-		val pressureBars = stack.getDataOrDefault(FluidPropertyTypeKeys.PRESSURE.getValue(), location).value
-
-		val density = (type.getMolarMass() * pressureBars) / (GAS_CONSTANT * celsiusToKelvin(temperatureCelsius))
-
-		return density
-	}
-
 	fun getNewTemperature(fluidStack: FluidStack, appliedHeatJoules: Double, maximumTemperature: Double, location: Location?): Temperature {
 		val currentHeat = fluidStack.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE.getValue(), location).value
 

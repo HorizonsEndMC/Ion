@@ -150,8 +150,8 @@ abstract class FluidNode(location: BlockKey, type: TransportNodeType<*>, val vol
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
 	}
 
-	class PressureGauge(location: BlockKey) : FluidNode(location, TransportNetworkNodeTypeKeys.PRESSURE_GAUGE.getValue(), 0.0), CommandBlockGaugeNode {
-		override val customBlock: IonRegistryKey<CustomBlock, out CustomBlock> = CustomBlockKeys.PRESSURE_GAUGE
+	class TemperatureGauge(location: BlockKey) : FluidNode(location, TransportNetworkNodeTypeKeys.TEMPERATURE_GAUGE.getValue(), 0.0), CommandBlockGaugeNode {
+		override val customBlock: IonRegistryKey<CustomBlock, out CustomBlock> = CustomBlockKeys.TEMPERATURE_GAUGE
 
 		override fun getGlobalCoordinate(): Vec3i {
 			return getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))
@@ -170,7 +170,7 @@ abstract class FluidNode(location: BlockKey, type: TransportNodeType<*>, val vol
 			val globalVec3i = getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))
 			val block = getBlockIfLoaded(world, globalVec3i.x, globalVec3i.y, globalVec3i.z) ?: return null
 
-			return block.blockData.customBlock?.key == CustomBlockKeys.PRESSURE_GAUGE
+			return block.blockData.customBlock?.key == CustomBlockKeys.TEMPERATURE_GAUGE
 		}
 
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES

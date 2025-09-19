@@ -11,8 +11,8 @@ import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.CommandBlock
 
-object PressureGaugeBlock : CustomBlock(
-	key = CustomBlockKeys.PRESSURE_GAUGE,
+object TemperatureGaugeBlock : CustomBlock(
+	key = CustomBlockKeys.TEMPERATURE_GAUGE,
 	blockData = Material.COMMAND_BLOCK.createBlockData { t ->
 		t as CommandBlock
 		t.facing = BlockFace.UP
@@ -20,7 +20,7 @@ object PressureGaugeBlock : CustomBlock(
 	},
 	drops = BlockLoot(
 		requiredTool = null,
-		drops = customItemDrop(CustomItemKeys.PRESSURE_GAUGE)
+		drops = customItemDrop(CustomItemKeys.TEMPERATURE_GAUGE)
 	),
-	customBlockItem = CustomItemKeys.PRESSURE_GAUGE
+	customBlockItem = CustomItemKeys.TEMPERATURE_GAUGE
 ), WrenchRemovable, GaugeCustomBlock by GaugeCustomBlock.CommandBlockGaugeCustomBlock
