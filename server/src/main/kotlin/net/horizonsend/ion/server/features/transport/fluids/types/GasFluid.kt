@@ -29,7 +29,7 @@ abstract class GasFluid(
 	val color: Color,
 	private val heatCapacity: Double,
 	private val molarMass: Double,
-	private val pressureBars: Double = 1.0
+	val pressureBars: Double = 1.0
 ) : FluidType(key) {
 	override val categories: Array<FluidCategory> = arrayOf(FluidCategory.GAS)
 

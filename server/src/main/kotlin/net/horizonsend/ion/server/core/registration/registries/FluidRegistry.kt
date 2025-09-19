@@ -55,6 +55,7 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 			heatCapacity = 2.030,
 			pressureBars = 5.0,
 			conversionResult = FluidTypeKeys.SUPER_DENSE_STEAM,
+			turbineResult = FluidTypeKeys.EMPTY, //TODO low-pressure
 			conversionCost = 2257.0 * 2,
 			conversionTemperature = 450.0
 		))
@@ -65,6 +66,7 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 			heatCapacity = 2.030,
 			pressureBars = 20.0,
 			conversionResult = FluidTypeKeys.ULTRA_DENSE_STEAM,
+			turbineResult = FluidTypeKeys.DENSE_STEAM,
 			conversionCost = 2257.0 * 4,
 			conversionTemperature = 600.0
 		))
@@ -76,6 +78,7 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 			pressureBars = 45.0,
 			// Does not convert
 			conversionResult = FluidTypeKeys.EMPTY,
+			turbineResult = FluidTypeKeys.SUPER_DENSE_STEAM,
 			conversionCost = Double.MAX_VALUE,
 			conversionTemperature = Double.MAX_VALUE
 		))

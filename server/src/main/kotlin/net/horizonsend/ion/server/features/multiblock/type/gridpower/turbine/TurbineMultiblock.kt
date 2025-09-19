@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.gridpower.turbine
 
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
-import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
@@ -26,7 +25,9 @@ import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.gridpower.turbine.TurbineMultiblock.TurbineMultiblockEntity
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidUtils
+import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
+import net.horizonsend.ion.server.features.transport.fluids.types.steam.Steam
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
@@ -70,8 +71,8 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(5)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
-		val steamInput = FluidStorageContainer(data, "steam_input", Component.text("Steam Input"), STEAM_INPUT, 1_000_000.0, FluidRestriction.FluidTypeWhitelist(setOf(FluidTypeKeys.WATER)))
-		val steamOutput = FluidStorageContainer(data, "steam_output", Component.text("Steam Output"), STEAM_OUTPUT, 1_000_000.0, FluidRestriction.FluidTypeWhitelist(setOf(FluidTypeKeys.WATER)))
+		val steamInput = FluidStorageContainer(data, "steam_input", Component.text("Steam Input"), STEAM_INPUT, 1_000_000.0, FluidRestriction.FluidCategoryWhitelist(setOf(FluidCategory.STEAM)))
+		val steamOutput = FluidStorageContainer(data, "steam_output", Component.text("Steam Output"), STEAM_OUTPUT, 1_000_000.0, FluidRestriction.Unlimited)
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
@@ -120,17 +121,20 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 				return
 			}
 
-			if (steamStack.type != FluidTypeKeys.DENSE_STEAM) {
+			// This shouldn't happen since its category restricted
+			if (!steamStack.type.getValue().categories.contains(FluidCategory.STEAM)) {
 				lastEnergy = 0.0
-				setStatus(Component.text("Empty", NamedTextColor.RED))
+				setStatus(Component.text("Invalid Input!", NamedTextColor.RED))
 				return
 			}
+
+			val type = steamStack.type.getValue() as Steam
 
 			// The mass flow, in kilograms
 			val massFlow = minOf(FluidUtils.getFluidWeight(steamStack, location), getMassFlowRate(steamStack, location) * delta)
 
 			// The specific enthalpy, in joules per kilogram
-			val specificEnthalpy = 1.0 // getSpecificEnthalpy(steamStack, location)
+			val specificEnthalpy = getSpecificEnthalpy(steamStack, type, location)
 
 			// The amount of work that can be done is calculated by the difference in energy
 			// between the input and output. Here, the output energy efficiency is hardcoded,
@@ -149,6 +153,7 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 
 			// Clone before removed
 			val new = steamStack.asAmount(removedVolume)
+			new.type = type.turbineResult
 
 			steamInput.removeAmount(removedVolume)
 
@@ -174,6 +179,17 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			val velocity = 25.0 // m/s
 
 			return density * crossSectionArea * velocity
+		}
+
+		/**
+		 * Returns the specific enthalpy of the fluid stack, in joules per kilogram
+		 **/
+		fun getSpecificEnthalpy(stack: FluidStack, type: Steam, location: Location?): Double {
+			val pressure = type.pressureBars
+			val specificVolume = 1.0 / stack.type.getValue().getDensity(stack, location)
+			val steamHeatCapacity = 2000 // j / kg
+
+			return steamHeatCapacity + (pressure * (1.0 / specificVolume))
 		}
 	}
 }
