@@ -10,9 +10,7 @@ import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCate
 import net.horizonsend.ion.server.features.transport.fluids.types.Lava
 import net.horizonsend.ion.server.features.transport.fluids.types.LegacyGasFluid
 import net.horizonsend.ion.server.features.transport.fluids.types.Water
-import net.horizonsend.ion.server.features.transport.fluids.types.steam.DenseSteam
-import net.horizonsend.ion.server.features.transport.fluids.types.steam.SuperDenseSteam
-import net.horizonsend.ion.server.features.transport.fluids.types.steam.UltraDenseSteam
+import net.horizonsend.ion.server.features.transport.fluids.types.steam.Steam
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -49,9 +47,37 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 
 		register(FluidTypeKeys.WATER, Water)
 		register(FluidTypeKeys.LAVA, Lava)
-		
-		register(FluidTypeKeys.DENSE_STEAM, DenseSteam)
-		register(FluidTypeKeys.SUPER_DENSE_STEAM, SuperDenseSteam)
-		register(FluidTypeKeys.ULTRA_DENSE_STEAM, UltraDenseSteam)
+
+		register(FluidTypeKeys.DENSE_STEAM, Steam(
+			key = FluidTypeKeys.DENSE_STEAM,
+			prefix = text("Dense"),
+			color = Color.WHITE,
+			heatCapacity = 2.030,
+			pressureBars = 5.0,
+			conversionResult = FluidTypeKeys.SUPER_DENSE_STEAM,
+			conversionCost = 2257.0 * 2,
+			conversionTemperature = 450.0
+		))
+		register(FluidTypeKeys.SUPER_DENSE_STEAM, Steam(
+			key = FluidTypeKeys.SUPER_DENSE_STEAM,
+			prefix = text("Super Dense"),
+			color = Color.WHITE,
+			heatCapacity = 2.030,
+			pressureBars = 20.0,
+			conversionResult = FluidTypeKeys.ULTRA_DENSE_STEAM,
+			conversionCost = 2257.0 * 4,
+			conversionTemperature = 600.0
+		))
+		register(FluidTypeKeys.ULTRA_DENSE_STEAM, Steam(
+			key = FluidTypeKeys.ULTRA_DENSE_STEAM,
+			prefix = text("Ultra Dense"),
+			color = Color.WHITE,
+			heatCapacity = 2.030,
+			pressureBars = 45.0,
+			// Does not convert
+			conversionResult = FluidTypeKeys.EMPTY,
+			conversionCost = Double.MAX_VALUE,
+			conversionTemperature = Double.MAX_VALUE
+		))
 	}
 }

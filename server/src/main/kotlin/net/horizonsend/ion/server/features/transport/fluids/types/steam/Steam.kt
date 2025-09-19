@@ -1,13 +1,14 @@
 package net.horizonsend.ion.server.features.transport.fluids.types.steam
 
+import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
-import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
+import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.FluidType.HeatingResult.Companion.HEATING_RATE_MULTIPLIER
 import net.horizonsend.ion.server.features.transport.fluids.FluidUtils
 import net.horizonsend.ion.server.features.transport.fluids.FluidUtils.getFluidWeight
-import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
 import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
 import net.horizonsend.ion.server.features.transport.fluids.types.Water
@@ -16,17 +17,18 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
 
-object DenseSteam : GasFluid(
-	key = FluidTypeKeys.DENSE_STEAM,
-	color = Color.WHITE,
-	heatCapacity = 2.030,
-	molarMass = 18.01528,
-	pressureBars = 5.0
-) {
-	override val categories: Array<FluidCategory> = arrayOf(FluidCategory.GAS, FluidCategory.STEAM)
-
+class Steam(
+	key: IonRegistryKey<FluidType, out FluidType>,
+	val prefix: Component,
+	color: Color,
+	heatCapacity: Double,
+	pressureBars: Double = 1.0,
+	val conversionResult: IonRegistryKey<FluidType, out FluidType>,
+	val conversionCost: Double,
+	val conversionTemperature: Double
+) : GasFluid(key, color, heatCapacity, 18.01528, pressureBars) {
 	override fun getDisplayName(stack: FluidStack): Component {
-		return Component.text("Dense Steam")
+		return ofChildren(prefix, Component.text(" Steam"))
 	}
 
 	override fun getHeatingResult(stack: FluidStack, resultContainer: FluidStorageContainer, appliedEnergyJoules: Double, maximumTemperature: Double, location: Location?): HeatingResult {
@@ -34,22 +36,23 @@ object DenseSteam : GasFluid(
 
 		val newTemperature = FluidUtils.getNewTemperature(stack, appliedEnergyJoules * HEATING_RATE_MULTIPLIER, maximumTemperature, location)
 
-		if (newTemperature.value < CONVERSION_POINT) {
+		if (newTemperature.value < conversionTemperature) {
 			return HeatingResult.TemperatureIncreaseInPlace(newTemperature)
 		}
 
-		val boilingTemperature = FluidProperty.Temperature(CONVERSION_POINT)
+		val boilingTemperature = FluidProperty.Temperature(conversionTemperature)
 
-		val deltaTemperature = CONVERSION_POINT - currentTemperature
+		val deltaTemperature = conversionTemperature - currentTemperature
 		val heatingJoules = getFluidWeight(stack, location) * Water.getIsobaricHeatCapacity(stack) * deltaTemperature
 
 		val spareJoules = (appliedEnergyJoules - heatingJoules)
-		val convertedGrams = spareJoules / CONVERSION_COST
+		val convertedGrams = spareJoules / conversionCost
 
 		val convertedVolume = centimetersCubedToLiters(convertedGrams / this.getDensity(stack, location))
 
 		// Create a temp stack to get the density of the result
-		val tempStack = FluidTypeKeys.SUPER_DENSE_STEAM.getValue().getDensity(FluidStack(FluidTypeKeys.SUPER_DENSE_STEAM, 1.0), location)
+		val tempStack = conversionResult.getValue().getDensity(FluidStack(conversionResult, 1.0), location)
+
 		// Get the shrinkage factor by multiplying by the fraction of the result density and current density, it will be below 1
 		val contractionFactor = tempStack / getDensity(stack, location)
 
@@ -58,12 +61,9 @@ object DenseSteam : GasFluid(
 		// Consume water equal to weight boiled
 		val consumed = minOf(convertedVolume, stack.amount)
 
-		val steamStack = FluidStack(FluidTypeKeys.SUPER_DENSE_STEAM, steamVolume)
+		val steamStack = FluidStack(conversionResult, steamVolume)
 			.setData(FluidPropertyTypeKeys.TEMPERATURE, boilingTemperature.clone())
 
 		return HeatingResult.Boiling(boilingTemperature, steamStack, consumed)
 	}
-
-	private const val CONVERSION_POINT = 450.0
-	private const val CONVERSION_COST = 2257.0 * 2
 }
