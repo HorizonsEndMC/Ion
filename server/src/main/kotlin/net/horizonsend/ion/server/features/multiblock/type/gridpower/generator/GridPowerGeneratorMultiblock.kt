@@ -75,7 +75,11 @@ abstract class GridPowerGeneratorMultiblock : Multiblock(), EntityMultiblock<Gri
 
 		override fun getGridEnergyOutput(): Double {
 			val linkage = rotationLinkage.get() ?: return 0.0
-			return (linkage as RotationProvider).getRotationSpeed()
+			return (linkage as RotationProvider).getRotationInertia()
+		}
+
+		override fun getSlowingJoules(): Double {
+			return getConnectedNetworks().sumOf { network -> network.lastConsumption }
 		}
 
 		override fun tickAsync() {

@@ -38,6 +38,8 @@ class GridEnergyNetwork(uuid: UUID, override val manager: NetworkManager<GridEne
 		reCalculatePower()
 	}
 
+	var lastConsumption = 0.0; private set
+
 	fun reCalculatePower(): Double {
 		val (inputs, outputs) = trackIO()
 
@@ -84,6 +86,8 @@ class GridEnergyNetwork(uuid: UUID, override val manager: NetworkManager<GridEne
 		}
 
 		val availablePercentage = availablePower / (consumed + bonusConsumption)
+
+		lastConsumption = consumed
 
 		if (!update) return availablePercentage
 

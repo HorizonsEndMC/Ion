@@ -35,3 +35,11 @@ fun kilogramsToGrams(amountKilorams: Double): Double {
 fun pascalsToBars(valuePascals: Double): Double {
 	return valuePascals / 1_000_000.0
 }
+
+fun rpmToHertz(valueRPM: Double): Double {
+	return valueRPM / 60.0
+}
+
+fun hertzToRPM(valueHertz: Double): Double {
+	return valueHertz * 60.0
+}

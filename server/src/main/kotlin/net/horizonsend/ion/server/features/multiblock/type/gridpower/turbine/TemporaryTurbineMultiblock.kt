@@ -5,7 +5,9 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 
 object TemporaryTurbineMultiblock : TurbineMultiblock() {
 	override val inletCrossSectionArea: Double = 0.07
-	override val efficiency = 0.7
+	override val efficiency get() = 0.75
+	override val rotorMomentOfInertia: Double get() = 1000.0
+	override val targetRPM: Double get() = 6000.0
 
 	override fun MultiblockShape.buildStructure() {
 		z(1) {
