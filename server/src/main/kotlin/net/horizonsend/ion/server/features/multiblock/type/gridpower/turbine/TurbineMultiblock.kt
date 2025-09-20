@@ -39,6 +39,7 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.getAngularVelocity
 import net.horizonsend.ion.server.miscellaneous.utils.getRotationalEnergy
+import net.horizonsend.ion.server.miscellaneous.utils.gramsToKilograms
 import net.horizonsend.ion.server.miscellaneous.utils.hertzToRPM
 import net.horizonsend.ion.server.miscellaneous.utils.metersCubedToLiters
 import net.horizonsend.ion.server.miscellaneous.utils.solveForAngularVelocity
@@ -157,6 +158,7 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 
 			val resistance = sqrt(rotationalEnergy)
 
+			println("Slowed by ${(slowingJoules + resistance)}, $rotationalEnergy total")
 			rotationalEnergy -= (slowingJoules + resistance)
 
 			if (rotationalEnergy <= 0) {
@@ -192,7 +194,8 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			val type = steamStack.type.getValue() as Steam
 
 			// The mass flow, in kilograms
-			val massFlow = minOf(FluidUtils.getFluidWeight(steamStack, location), getMassFlowRate(steamStack, location) * deltaSeconds)
+			val inputWeight = gramsToKilograms(FluidUtils.getFluidWeight(steamStack, location))
+			val massFlow = minOf(inputWeight, getMassFlowRate(steamStack, location) * deltaSeconds)
 
 			// The specific enthalpy, in joules per kilogram
 			val specificEnthalpy = type.turbineWorkPerKilogram
@@ -207,6 +210,7 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			// Simply multiply the work per mass flow by the mass flow
 			val work = workPerMassFlow * massFlow
 
+			println("Added $work")
 			var rotationalEnergy = getRotationalEnergy()
 			rotationalEnergy += work
 
@@ -221,7 +225,8 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			rpm = newRPM
 
 			// Get the removed volume using the density of the steam and the mass flow rate
-			val removedVolume = minOf(steamStack.amount, metersCubedToLiters(massFlow / steamStack.type.getValue().getDensity(steamStack, location)) * USAGE_MULTIPLIER)
+			val idealRemoved = metersCubedToLiters(massFlow / steamStack.type.getValue().getDensity(steamStack, location))
+			val removedVolume = minOf(steamStack.amount, idealRemoved * USAGE_MULTIPLIER)
 
 			// Clone before removed
 			val new = steamStack.asAmount(removedVolume)
