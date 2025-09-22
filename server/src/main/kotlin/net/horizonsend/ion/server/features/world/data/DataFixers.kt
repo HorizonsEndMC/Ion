@@ -53,7 +53,7 @@ object DataFixers: IonServerComponent() {
 			chunk.dataVersion = chunkDataFixer.dataVersion
 		}
 
-		SignFixerEntrance.iterateChunk(chunk)
+//		SignFixerEntrance.iterateChunk(chunk)
 	}
 
 	fun handleSignLoad(sign: Sign) {
