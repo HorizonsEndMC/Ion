@@ -111,7 +111,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			DBCachedBooleanToggle(text("Remove User Prefixes"), "Removes prefixes, like Helper and Mod, from non-global chats", GuiItem.LIST, false, PlayerSettings::hideUserPrefixes),
 			DBCachedBooleanToggle(text("Remove Global Prefixes"), "Removes prefixes, like Helper and Mod, from global chats", GuiItem.LIST, false, PlayerSettings::hideGlobalPrefixes),
 			DBCachedBooleanToggle(text("Show /itemsearch Items"), "", GuiItem.COMPASS_NEEDLE, true, PlayerSettings::showItemSearchItem),
-			PermissionBooleanToggle(sitStateNode, text("Hitmarker On Hull"), "", GuiItem.BOOKMARK, true)
+			PermissionBooleanToggle(sitStateNode, text("Toggle Sitting"), "", GuiItem.BOOKMARK, true)
 		)
     ).onEach { subMenu -> subMenu.setParent(this@SettingsMainMenuGui)  }
 
