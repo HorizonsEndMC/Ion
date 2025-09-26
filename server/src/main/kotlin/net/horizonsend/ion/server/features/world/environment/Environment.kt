@@ -1,16 +1,10 @@
 package net.horizonsend.ion.server.features.world.environment
 
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
-import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
-import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
-import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isInside
 import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.GameMode
-import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.entity.FallingBlock
 import org.bukkit.entity.Player
@@ -18,49 +12,8 @@ import org.bukkit.event.entity.EntityChangeBlockEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.ItemSpawnEvent
 import org.bukkit.event.player.PlayerMoveEvent
-import java.util.concurrent.TimeUnit
 
 enum class Environment {
-	VACUUM {
-		private fun checkSuffocation(player: Player) {
-			if (isWearingSpaceSuit(player)) return
-
-			if (isInside(player.eyeLocation, 1)) return
-
-			if (checkPressureField(player)) return
-
-			player.damage(0.5)
-		}
-
-		private val pressureFieldPowerCooldown = PerPlayerCooldown(1, TimeUnit.SECONDS)
-
-		private fun checkPressureField(player: Player): Boolean {
-			val helmet = player.inventory.helmet ?: return false
-			val customItem = helmet.customItem ?: return false
-
-			if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) return false
-			val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(helmet)
-			if (!mods.contains(ItemModKeys.PRESSURE_FIELD)) return false
-
-			val powerUsage = 10
-
-			val power = customItem.getComponent(CustomComponentTypes.POWER_STORAGE)
-			if (power.getPower(helmet) < powerUsage) return false
-
-			pressureFieldPowerCooldown.tryExec(player) {
-				power.removePower(helmet, customItem, powerUsage)
-			}
-
-			return true
-		}
-
-		override fun tickPlayer(player: Player) {
-			if (player.gameMode != GameMode.SURVIVAL || player.isDead) return
-
-			checkSuffocation(player)
-		}
-	},
-
 	NO_GRAVITY {
 		override fun tickPlayer(player: Player) {
 			if (player.gameMode != GameMode.SURVIVAL || player.isDead || !player.hasGravity()) return
@@ -135,15 +88,4 @@ enum class Environment {
 	open fun setup() {}
 
 	protected fun World.hasEnvironment(): Boolean = false // this.ion.environments.contains(this@Environment)
-
-	companion object {
-		fun isWearingSpaceSuit(player: Player): Boolean {
-			val inventory = player.inventory
-
-			return inventory.helmet?.type == Material.CHAINMAIL_HELMET &&
-				inventory.chestplate?.type == Material.CHAINMAIL_CHESTPLATE &&
-				inventory.leggings?.type == Material.CHAINMAIL_LEGGINGS &&
-				inventory.boots?.type == Material.CHAINMAIL_BOOTS
-		}
-	}
 }
