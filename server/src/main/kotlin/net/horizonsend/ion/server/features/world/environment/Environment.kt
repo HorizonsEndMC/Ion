@@ -6,7 +6,6 @@ import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistr
 import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
-import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isInside
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -135,7 +134,7 @@ enum class Environment {
 	open fun tickPlayer(player: Player) {}
 	open fun setup() {}
 
-	protected fun World.hasEnvironment(): Boolean = this.ion.environments.contains(this@Environment)
+	protected fun World.hasEnvironment(): Boolean = false // this.ion.environments.contains(this@Environment)
 
 	companion object {
 		fun isWearingSpaceSuit(player: Player): Boolean {

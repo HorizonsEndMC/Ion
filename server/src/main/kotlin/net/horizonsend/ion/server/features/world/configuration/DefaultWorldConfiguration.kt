@@ -10,6 +10,8 @@ import net.horizonsend.ion.server.features.gas.collection.HeightRamp
 import net.horizonsend.ion.server.features.gas.collection.StaticBase
 import net.horizonsend.ion.server.features.gas.type.WorldGasConfiguration
 import net.horizonsend.ion.server.features.world.WorldSettings
+import net.horizonsend.ion.server.features.world.environment.configuration.GravityModuleConfiguration
+import net.horizonsend.ion.server.features.world.environment.configuration.WorldEnvironmentConfiguration
 import org.bukkit.entity.EntityType
 
 @Suppress("UNUSED")
@@ -86,19 +88,25 @@ object DefaultWorldConfiguration {
 		)
 	))))
 
-	val CHANDRA = register("Chandra", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
-		CollectedGas(AtmosphericGasKeys.HYDROGEN, ChildWeight(
-			parent = HeightRamp(
-				parent = StaticBase(amount = StaticIntegerAmount(85)),
-				minHeight = StaticIntegerAmount(100),
-				maxHeight = StaticIntegerAmount(384),
-				minWeight = StaticDoubleAmount(0.0),
-				maxWeight = StaticDoubleAmount(1.0)
+	val CHANDRA = register("Chandra", WorldSettings(
+		gasConfiguration = WorldGasConfiguration(gasses = listOf(
+			CollectedGas(AtmosphericGasKeys.HYDROGEN, ChildWeight(
+				parent = HeightRamp(
+					parent = StaticBase(amount = StaticIntegerAmount(85)),
+					minHeight = StaticIntegerAmount(100),
+					maxHeight = StaticIntegerAmount(384),
+					minWeight = StaticDoubleAmount(0.0),
+					maxWeight = StaticDoubleAmount(1.0)
+				),
+				weight = StaticDoubleAmount(0.9)
+        	)
 			),
-			weight = StaticDoubleAmount(0.9)
-        )
-		),
-	))))
+		)),
+		environments = WorldEnvironmentConfiguration(
+			atmosphericPressure = 0.0,
+			moduleConfiguration = listOf(GravityModuleConfiguration(0.01))
+		)
+	))
 
 	val ILIUS = register("Ilius", WorldSettings(gasConfiguration = WorldGasConfiguration(gasses = listOf(
 		CollectedGas(AtmosphericGasKeys.NITROGEN,
