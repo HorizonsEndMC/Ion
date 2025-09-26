@@ -18,7 +18,7 @@ object FluidTypeKeys : KeyRegistry<FluidType>(RegistryKeys.FLUID_TYPE, FluidType
 	val WATER = registerKey("WATER")
 	val LAVA = registerKey("LAVA")
 
-//	val LOW_PRESSURE_STEAM = registerKey("STEAM")
+	val LOW_PRESSURE_STEAM = registerKey("LOW_PRESSURE_STEAM")
 	val DENSE_STEAM = registerKey("DENSE_STEAM")
 	val SUPER_DENSE_STEAM = registerKey("SUPER_DENSE_STEAM")
 	val ULTRA_DENSE_STEAM = registerKey("ULTRA_DENSE_STEAM")

@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.fluids.types.Lava
 import net.horizonsend.ion.server.features.transport.fluids.types.LegacyGasFluid
+import net.horizonsend.ion.server.features.transport.fluids.types.SimpleFluid
 import net.horizonsend.ion.server.features.transport.fluids.types.Water
 import net.horizonsend.ion.server.features.transport.fluids.types.steam.Steam
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
@@ -48,6 +49,14 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 		register(FluidTypeKeys.WATER, Water)
 		register(FluidTypeKeys.LAVA, Lava)
 
+		register(FluidTypeKeys.LOW_PRESSURE_STEAM, SimpleFluid(
+			FluidTypeKeys.LOW_PRESSURE_STEAM,
+			text("Low Pressure Steam"),
+			categories = arrayOf(FluidCategory.GAS),
+			heatCapacity = 2.0,
+			molarMass = 18.01528,
+			density = 0.479,
+		))
 		register(FluidTypeKeys.DENSE_STEAM, Steam(
 			key = FluidTypeKeys.DENSE_STEAM,
 			prefix = text("Dense"),
@@ -56,7 +65,7 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 			pressureBars = 5.0,
 			conversionResult = FluidTypeKeys.SUPER_DENSE_STEAM,
 			turbineWorkPerKilogram = 2675.8,
-			turbineResult = FluidTypeKeys.EMPTY, //TODO low-pressure
+			turbineResult = FluidTypeKeys.LOW_PRESSURE_STEAM,
 			conversionCost = 2257.0 * 2,
 			conversionTemperature = 450.0
 		))
