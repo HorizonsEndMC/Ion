@@ -4,6 +4,7 @@ import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.server.command.SLCommand
@@ -14,6 +15,7 @@ import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager.schematicCache
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
+import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.command.CommandSender
 import kotlin.reflect.KMutableProperty
@@ -182,10 +184,16 @@ object ConfigurationCommands : SLCommand() {
 	@Subcommand("config reload")
 	fun onConfigReload(sender: CommandSender) {
 		Tasks.async {
-			kotlin.runCatching { ConfigurationFiles.reload() }.onFailure { sender.sendMessage(formatException(it)) }
+			kotlin.runCatching {
+				ConfigurationFiles.reload()
+				for (world in IonWorld.all()) {
+					sender.information("Reloading ${world.world.key.asString()} configuration.")
+					world.reloadConfiguration()
+				}
+			}.onFailure { sender.sendMessage(formatException(it)) }
 
 			Tasks.sync {
-				reloadOthers()
+				kotlin.runCatching { reloadOthers() }.onFailure { sender.sendMessage(formatException(it)) }
 
 				sender.success("Reloaded configs.")
 			}

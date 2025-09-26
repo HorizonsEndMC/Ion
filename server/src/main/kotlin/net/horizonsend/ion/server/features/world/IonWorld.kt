@@ -117,8 +117,10 @@ class IonWorld private constructor(
 	 * @see Environment
 	 * @see WorldSettings
 	 **/
-	val configuration: WorldSettings by lazy {
-		Configuration.loadOrDefault(WORLD_CONFIGURATION_DIRECTORY, "${world.name}.json", DefaultWorldConfiguration[world.name])
+	var configuration: WorldSettings = Configuration.loadOrDefault(WORLD_CONFIGURATION_DIRECTORY, "${world.name}.json", DefaultWorldConfiguration[world.name]); private set
+
+	fun reloadConfiguration() {
+		configuration = Configuration.loadOrDefault(WORLD_CONFIGURATION_DIRECTORY, "${world.name}.json", DefaultWorldConfiguration[world.name])
 	}
 
 	/** Write the configuration to the disk */
