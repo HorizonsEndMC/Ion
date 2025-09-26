@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.core.registration.registries
 
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
@@ -15,6 +16,7 @@ import net.horizonsend.ion.server.features.transport.fluids.types.steam.Steam
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
 import org.bukkit.Color
 import org.bukkit.Location
@@ -59,7 +61,7 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 		))
 		register(FluidTypeKeys.DENSE_STEAM, Steam(
 			key = FluidTypeKeys.DENSE_STEAM,
-			prefix = text("Dense"),
+			prefix = text("Dense", HE_LIGHT_BLUE),
 			color = Color.WHITE,
 			heatCapacity = 2.030,
 			pressureBars = 5.0,
@@ -93,6 +95,15 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 			turbineWorkPerKilogram = 3670.9,
 			conversionCost = Double.MAX_VALUE,
 			conversionTemperature = Double.MAX_VALUE
+		))
+
+		register(FluidTypeKeys.CRUDE_OIL, SimpleFluid(
+			FluidTypeKeys.CRUDE_OIL,
+			text("Crude Oil", NamedTextColor.BLACK),
+			categories = arrayOf(FluidCategory.GAS),
+			heatCapacity = 2.0,
+			molarMass = 18.01528,
+			density = 0.479,
 		))
 	}
 }
