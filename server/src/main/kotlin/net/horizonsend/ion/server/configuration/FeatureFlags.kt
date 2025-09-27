@@ -13,4 +13,5 @@ data class FeatureFlags(
 	val customTurrets: Boolean = false,
 	val miningLaserAnimation: Boolean = false,
 	val graphTransfer: Boolean = false,
+	val explorationSpawns: Boolean = true,
 )

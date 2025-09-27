@@ -8,8 +8,7 @@ import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.MultiblockRecipe
-import net.horizonsend.ion.server.features.space.signatures.Signature
-import net.horizonsend.ion.server.features.space.signatures.SignatureSpawner
+import net.horizonsend.ion.server.features.space.signatures.SignatureType
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
@@ -25,8 +24,7 @@ object RegistryKeys {
 	val MULTIBLOCK_RECIPE = registryId<MultiblockRecipe<*>>("MULTIBLOCK_RECIPE")
 	val TRANSPORT_NETWORK_NODE_TYPE = registryId<TransportNodeType<*>>("TRANSPORT_NETWORK_NODE_TYPE")
 	val FLUID_PROPERTY_TYPE = registryId<FluidPropertyType<*>>("FLUID_PROPERTY_TYPE")
-	val SIGNATURE_SPAWNER = registryId<SignatureSpawner>("SIGNATURE_SPAWNERS")
-	val SIGNATURES = registryId<Signature>("SIGNATURES")
+	val SIGNATURE_TYPE = registryId<SignatureType>("SIGNATURES")
 
 	fun <T: Any> registryId(key: String): RegistryId<T> {
 		val id = RegistryId<T>(key)
