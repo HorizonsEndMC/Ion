@@ -12,8 +12,7 @@ import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.core.registration.registries.TransportNetworkNodeTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.WeatherTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.WrappedListenerRegistry
-import net.horizonsend.ion.server.core.registration.registries.SignatureRegistry
-import net.horizonsend.ion.server.core.registration.registries.SignatureSpawnerRegistry
+import net.horizonsend.ion.server.core.registration.registries.SignatureTypeRegistry
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
 
 object IonRegistries : IonComponent() {
@@ -38,8 +37,7 @@ object IonRegistries : IonComponent() {
 	val FLUID_PROPERTY_TYPE = register(FluidPropertyTypeRegistry())
 	val WRAPPED_LISTENER_TYPE = register(WrappedListenerRegistry())
 	val WEATHER_TYPE = register(WeatherTypeRegistry())
-	val SIGNATURE_SPAWNERS = register(SignatureSpawnerRegistry())
-	val SIGNATURES = register(SignatureRegistry())
+	val SIGNATURE_TYPE = register(SignatureTypeRegistry())
 
 	private fun <T : Registry<*>> register(registry: T): T {
 		byId[registry.id] = registry
