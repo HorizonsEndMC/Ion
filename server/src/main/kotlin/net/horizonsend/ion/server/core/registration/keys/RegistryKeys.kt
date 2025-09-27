@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.space.signatures.Signature
 import net.horizonsend.ion.server.features.space.signatures.SignatureSpawner
 import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
+import net.horizonsend.ion.server.features.space.signatures.SignatureType
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
@@ -33,8 +34,7 @@ object RegistryKeys {
 	val FLUID_PROPERTY_TYPE = registryId<FluidPropertyType<*>>("FLUID_PROPERTY_TYPE")
 	val WRAPPED_LISTENER_TYPE = registryId<WrappedListenerType<*>>("WRAPPED_LISTENER_TYPE")
 	val WEATHER_TYPE = registryId<WeatherType>("WEATHER_TYPE")
-	val SIGNATURE_SPAWNER = registryId<SignatureSpawner>("SIGNATURE_SPAWNERS")
-	val SIGNATURES = registryId<Signature>("SIGNATURES")
+	val SIGNATURE_TYPE = registryId<SignatureType>("SIGNATURES")
 
 	fun <T: Any> registryId(key: String): RegistryId<T> {
 		val id = RegistryId<T>(key)

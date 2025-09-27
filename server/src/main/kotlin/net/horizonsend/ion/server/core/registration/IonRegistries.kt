@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.core.registration.registries.SignatureRegistry
 import net.horizonsend.ion.server.core.registration.registries.SignatureSpawnerRegistry
 import net.horizonsend.ion.server.core.registration.registries.WeatherTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.WrappedListenerRegistry
+import net.horizonsend.ion.server.core.registration.registries.SignatureTypeRegistry
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
 import net.horizonsend.ion.server.features.sequences.SequenceRegistry
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseRegistry
@@ -50,8 +51,7 @@ object IonRegistries : IonComponent() {
 
 	val SEQUENCE_PHASE = register(SequencePhaseRegistry())
 	val SEQUENCE = register(SequenceRegistry())
-	val SIGNATURE_SPAWNERS = register(SignatureSpawnerRegistry())
-	val SIGNATURES = register(SignatureRegistry())
+	val SIGNATURE_TYPE = register(SignatureTypeRegistry())
 
 	private fun <T : Registry<*>> register(registry: T): T {
 		byId[registry.id] = registry
