@@ -16,6 +16,9 @@ import net.horizonsend.ion.server.core.registration.registries.WeatherTypeRegist
 import net.horizonsend.ion.server.core.registration.registries.WorldGenerationFeatureRegistry
 import net.horizonsend.ion.server.core.registration.registries.WrappedListenerRegistry
 import net.horizonsend.ion.server.core.registration.registries.WreckStructureRegistry
+import net.horizonsend.ion.server.core.registration.registries.SignatureRegistry
+import net.horizonsend.ion.server.core.registration.registries.SignatureSpawnerRegistry
+import net.horizonsend.ion.server.core.registration.registries.SignatureTypeRegistry
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
 import net.horizonsend.ion.server.features.sequences.SequenceRegistry
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseRegistry
@@ -53,8 +56,7 @@ object IonRegistries : IonComponent() {
 	val WRECK_STRUCTURES = register(WreckStructureRegistry())
 	val STARSHIP_STATUS_EFFECT = register(StarshipStatusEffectTypeRegistry())
 	val FRONTIER_NATION_BUFF_TYPE = register(FrontierNationBuffTypeRegistry())
-    val SIGNATURE_SPAWNERS = register(SignatureSpawnerRegistry())
-    val SIGNATURES = register(SignatureRegistry())
+    val SIGNATURE_TYPE = register(SignatureTypeRegistry())
 
 	val SEQUENCE_PHASE = register(SequencePhaseRegistry())
 	val SEQUENCE = register(SequenceRegistry())

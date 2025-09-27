@@ -80,6 +80,8 @@ import net.horizonsend.ion.server.command.qol.SearchCommand
 import net.horizonsend.ion.server.command.qol.SetFluidCommand
 import net.horizonsend.ion.server.command.qol.SetPowerCommand
 import net.horizonsend.ion.server.command.space.PlanetCommand
+import net.horizonsend.ion.server.command.space.SignatureCommand
+import net.horizonsend.ion.server.command.space.SpaceGenCommand
 import net.horizonsend.ion.server.command.space.StarCommand
 import net.horizonsend.ion.server.command.starship.BlueprintCommand
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
@@ -214,5 +216,7 @@ val commands: List<SLCommand> = listOf(
 	EnableOrbitBreakingCommand,
 	SetFluidCommand,
 	EnableStationBreakingCommand,
-	SequenceAdminCommand
+	SequenceAdminCommand,
+	SetFluidCommand,
+	SignatureCommand
 )

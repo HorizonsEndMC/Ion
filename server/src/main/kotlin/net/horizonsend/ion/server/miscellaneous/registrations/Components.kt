@@ -72,6 +72,7 @@ import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.space.Orbits
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.space.SpaceMap
+import net.horizonsend.ion.server.features.space.signatures.SignatureManager
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Hangars
 import net.horizonsend.ion.server.features.starship.Interdiction
@@ -248,4 +249,5 @@ val components: List<IonComponent> = listOf(
     SequenceManager,
 	Environments,
 	Power,
+	SignatureManager,
 )

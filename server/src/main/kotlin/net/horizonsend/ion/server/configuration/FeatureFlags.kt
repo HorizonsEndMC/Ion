@@ -17,4 +17,5 @@ data class FeatureFlags(
 	val tractorBeams: Boolean = false,
 	val boardingRamps: Boolean = false,
 	val loadSpawnerData: Boolean = true,
+    val explorationSpawns: Boolean = true,
 )

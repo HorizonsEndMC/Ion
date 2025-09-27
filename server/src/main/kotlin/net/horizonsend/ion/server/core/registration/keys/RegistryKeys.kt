@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.nations.FrontierNationBuffType
 import net.horizonsend.ion.server.features.starship.status_effects.StarshipStatusEffectType
 import net.horizonsend.ion.server.features.space.signatures.Signature
 import net.horizonsend.ion.server.features.space.signatures.SignatureSpawner
+import net.horizonsend.ion.server.features.space.signatures.SignatureType
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
@@ -41,8 +42,7 @@ object RegistryKeys {
 	val WRECK_STRUCTURE = registryId<WreckStructure>("WRECK_STRUCTURE")
 	val STARSHIP_STATUS_EFFECT_PROPERTY_TYPE = registryId<StarshipStatusEffectType>("STARSHIP_STATUS_EFFECT_PROPERTY_TYPE")
 	val FRONTIER_NATION_BUFF_TYPE = registryId<FrontierNationBuffType>("FRONTIER_NATION_BUFF_TYPE")
-    val SIGNATURE_SPAWNER = registryId<SignatureSpawner>("SIGNATURE_SPAWNERS")
-    val SIGNATURES = registryId<Signature>("SIGNATURES")
+    val SIGNATURE_TYPE = registryId<SignatureType>("SIGNATURES")
 
 	fun <T: Any> registryId(key: String): RegistryId<T> {
 		val id = RegistryId<T>(key)
