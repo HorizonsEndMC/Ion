@@ -24,10 +24,10 @@ class GravityModule(manager: WorldEnvironmentManager, val strength: Double) : En
 	}
 
 	override fun removeEffects(player: Player) {
-		setGravity(player, DEFAULT_VALUE)
+		setGravity(player, DEFAULT_GRAVITY)
 	}
 
 	companion object {
-		private const val DEFAULT_VALUE = 0.08
+		const val DEFAULT_GRAVITY = 0.08
 	}
 }
