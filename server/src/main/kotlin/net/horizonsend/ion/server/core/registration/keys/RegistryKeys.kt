@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.crafting.recipe.Multiblock
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
+import net.horizonsend.ion.server.features.world.environment.listener.WrappedListenerType
 
 object RegistryKeys {
 	private val keys = mutableMapOf<String, RegistryId<*>>()
@@ -23,6 +24,7 @@ object RegistryKeys {
 	val MULTIBLOCK_RECIPE = registryId<MultiblockRecipe<*>>("MULTIBLOCK_RECIPE")
 	val TRANSPORT_NETWORK_NODE_TYPE = registryId<TransportNodeType<*>>("TRANSPORT_NETWORK_NODE_TYPE")
 	val FLUID_PROPERTY_TYPE = registryId<FluidPropertyType<*>>("FLUID_PROPERTY_TYPE")
+	val WRAPPED_LISTENER_TYPE = registryId<WrappedListenerType<*>>("WRAPPED_LISTENER_TYPE")
 
 	fun <T: Any> registryId(key: String): RegistryId<T> {
 		val id = RegistryId<T>(key)

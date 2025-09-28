@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.core.registration.registries.FluidTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.ItemModRegistry
 import net.horizonsend.ion.server.core.registration.registries.Registry
 import net.horizonsend.ion.server.core.registration.registries.TransportNetworkNodeTypeRegistry
+import net.horizonsend.ion.server.core.registration.registries.WrappedListenerRegistry
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
 
 object IonRegistries : IonComponent() {
@@ -32,6 +33,7 @@ object IonRegistries : IonComponent() {
 	val MULTIBLOCK_RECIPE = register(MultiblockRecipeRegistry())
 	val TRANSPORT_NETWORK_NODE_TYPE = register(TransportNetworkNodeTypeRegistry())
 	val FLUID_PROPERTY_TYPE = register(FluidPropertyTypeRegistry())
+	val WRAPPED_LISTENER_TYPE = register(WrappedListenerRegistry())
 
 	private fun <T : Registry<*>> register(registry: T): T {
 		byId[registry.id] = registry

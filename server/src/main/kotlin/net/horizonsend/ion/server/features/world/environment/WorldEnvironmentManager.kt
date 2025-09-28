@@ -15,7 +15,12 @@ class WorldEnvironmentManager(val world: IonWorld) {
 
 	fun reloadConfiguration() {
 		configuration = world.configuration.environments
+		// Deregister all listeners and such in case the module configuration changes
+		modules.forEach(EnvironmentModule::onUnload)
+
 		modules = configuration.moduleConfiguration.mapTo(ObjectOpenHashSet()) { it.buildModule(this) }
+		// Reregister all listeners and stuff
+		modules.forEach(EnvironmentModule::handleLoad)
 	}
 
 	fun tickSync() {
