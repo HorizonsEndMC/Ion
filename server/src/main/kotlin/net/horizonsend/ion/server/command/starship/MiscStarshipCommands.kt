@@ -229,8 +229,8 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@CommandAlias("jump")
-	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks")
-	@Description("Jump to a set of coordinates, a hyperspace beacon, or a planet")
+	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks|@nationMembers")
+	@Description("Jump to a set of coordinates, a hyperspace beacon, a planet, or a member of your nation")
 	fun onJump(sender: Player, destination: String, @Optional hyperdriveTier: Int?) {
 		val separated = destination.split(",")
 		if (separated.size == 2 && separated.all { runCatching { it.toInt() }.isSuccess }) {
@@ -282,7 +282,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				it.y,
 				it.z
 			)
-		}
+		} ?: Bukkit.getPlayer(destination)?.location?.let { Pos(it.world.name, it.x.toInt(), it.y.toInt(), it.z.toInt()) }
 
 		if (destinationPos == null) {
 			sender.userError("Unknown destination $destination.")
