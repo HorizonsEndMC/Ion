@@ -4,6 +4,7 @@ import fr.skytasul.guardianbeam.Laser.CrystalLaser
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.alertSubtitle
+import net.horizonsend.ion.common.extensions.hint
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
@@ -15,6 +16,7 @@ import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayCon
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblock
+import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -27,6 +29,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsys
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
@@ -44,6 +47,9 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import org.bukkit.util.Vector
+import java.util.UUID
+import java.util.concurrent.TimeUnit
+import kotlin.math.pow
 import kotlin.math.roundToLong
 import kotlin.random.Random
 
@@ -203,6 +209,19 @@ class MiningLaserSubsystem(
 		// Set the targeted block to the nearest hit block (if not null)
 		raytrace?.hitPosition?.let { targetedBlock = it }
 
+		val playerShooter = controller.starship.playerPilot
+		if (playerShooter != null && !spaceStationBreakEnable.contains(playerShooter.uniqueId) &&
+			SpaceStationCache.all()
+				.filter { station -> station.world == entity.world.name }
+				.any { station -> (targetedBlock.x - station.x).pow(2) + (targetedBlock.z - station.z).pow(2) < station.radius.toDouble().pow(2)
+				}) {
+			spaceStationBreakWarning.tryExec(playerShooter) {
+				playerShooter.hint("Did you want to break blocks within a space station? Click to enable")
+				playerShooter.sendRichMessage("<green><italic><hover:show_text:'<gray>/stationbreak'><gray>[<green><click:run_command:/stationbreak>Enable</click><gray>]")
+			}
+			return setFiring(false)
+		}
+
 		// Create a laser to visualize the beam with a life of 5 ticks
 		val laserEnd = targetedBlock.toLocation(starship.world)
 
@@ -324,6 +343,9 @@ class MiningLaserSubsystem(
 		private const val ANIMATION_COUNT = 3
 		private const val RANDOM_VELOCITY = 1.0
 		private const val BEAM_CORRECTION_FACTOR = 0.125
+
+		val spaceStationBreakEnable = mutableSetOf<UUID>()
+		val spaceStationBreakWarning = PerPlayerCooldown(10, TimeUnit.SECONDS)
 	}
 
 	inner class BrokenBlockAnimation(
