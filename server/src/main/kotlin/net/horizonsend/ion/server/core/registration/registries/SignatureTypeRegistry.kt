@@ -15,6 +15,7 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
             key = SignatureTypeKeys.COMET_SMALL,
             displayName = Component.text("Small Comet"),
             detectionRange = 5000,
+            interactRange = 200,
             maximumPerServer = 5,
             minSpawnTimeMinutes = Duration.ofMinutes(15L),
             maxSpawnTimeMinutes = Duration.ofMinutes(30L)
@@ -24,6 +25,7 @@ class SignatureTypeRegistry : Registry<SignatureType>(RegistryKeys.SIGNATURE_TYP
             key = SignatureTypeKeys.COMET_MEDIUM,
             displayName = Component.text("Medium Comet"),
             detectionRange = 3000,
+            interactRange = 200,
             maximumPerServer = 3,
             minSpawnTimeMinutes = Duration.ofMinutes(20L),
             maxSpawnTimeMinutes = Duration.ofMinutes(60L)

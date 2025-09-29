@@ -10,13 +10,14 @@ open class SignatureType(
     override val key: IonRegistryKey<SignatureType, out SignatureType>,
     val displayName: Component,
     val detectionRange: Int,
+    val interactRange: Int,
     val maximumPerServer: Int,
     val minSpawnTimeMinutes: Duration,
     val maxSpawnTimeMinutes: Duration,
 ) : Keyed<SignatureType> {
     var nextSpawnTimeMillis: Long = 0L
 
-    fun readyToSpawn(): Boolean {
+    fun isReadyToSpawn(): Boolean {
         if (System.currentTimeMillis() > nextSpawnTimeMillis) {
             calculateNewSpawnTime()
             return true
