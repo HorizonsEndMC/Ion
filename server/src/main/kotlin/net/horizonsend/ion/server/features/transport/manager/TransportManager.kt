@@ -43,7 +43,7 @@ abstract class TransportManager<T: CacheHolder<*>> : TransportHolder {
 
 		for ((index, extractor) in extractors.withIndex()) {
 			if (!extractorManager.verifyExtractor(getWorld(), extractor.pos)) {
-				invalid.add(extractor.pos)
+//				invalid.add(extractor.pos)
 				continue
 			}
 
@@ -56,7 +56,7 @@ abstract class TransportManager<T: CacheHolder<*>> : TransportHolder {
 
 		solarPanelManager.cache.tickSolarPanels()
 
-		invalid.forEach(extractorManager::removeExtractor)
+//		invalid.forEach(extractorManager::removeExtractor)
 	}
 
 	override fun tickGraphs() {}

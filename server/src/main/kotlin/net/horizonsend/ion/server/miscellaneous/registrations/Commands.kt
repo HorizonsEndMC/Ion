@@ -66,6 +66,7 @@ import net.horizonsend.ion.server.command.qol.CheckProtectionCommand
 import net.horizonsend.ion.server.command.qol.ContainerCommand
 import net.horizonsend.ion.server.command.qol.DisplayShieldsCommand
 import net.horizonsend.ion.server.command.qol.EnableOrbitBreakingCommand
+import net.horizonsend.ion.server.command.qol.EnableStationBreakingCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.command.qol.PersonalTransporterCommand
 import net.horizonsend.ion.server.command.qol.SearchCommand
@@ -200,5 +201,6 @@ val commands: List<SLCommand> = listOf(
 	ChatCommand,
 	IonNPCCommand,
 	EnableOrbitBreakingCommand,
-	SetFluidCommand
+	SetFluidCommand,
+	EnableStationBreakingCommand
 )
