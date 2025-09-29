@@ -1,9 +1,12 @@
 package net.horizonsend.ion.server.features.world.configuration
 
+import net.horizonsend.ion.server.configuration.util.DurationConfig
+import net.horizonsend.ion.server.configuration.util.DurationRange
 import net.horizonsend.ion.server.configuration.util.StaticDoubleAmount
 import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
 import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
 import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
+import net.horizonsend.ion.server.core.registration.keys.WeatherTypeKeys
 import net.horizonsend.ion.server.features.gas.collection.ChildWeight
 import net.horizonsend.ion.server.features.gas.collection.CollectedGas
 import net.horizonsend.ion.server.features.gas.collection.HeightRamp
@@ -16,7 +19,10 @@ import net.horizonsend.ion.server.features.world.environment.configuration.NoGra
 import net.horizonsend.ion.server.features.world.environment.configuration.VacuumEnvironmentConfiguration
 import net.horizonsend.ion.server.features.world.environment.configuration.WorldEnvironmentConfiguration
 import net.horizonsend.ion.server.features.world.environment.modules.GravityModule.Companion.DEFAULT_GRAVITY
+import net.horizonsend.ion.server.features.world.environment.weather.configuration.WeatherTypeConfiguration
+import net.horizonsend.ion.server.features.world.environment.weather.configuration.WorldWeatherConfiguration
 import org.bukkit.entity.EntityType
+import java.util.concurrent.TimeUnit
 
 @Suppress("UNUSED")
 object DefaultWorldConfiguration {
@@ -127,6 +133,12 @@ object DefaultWorldConfiguration {
 				moduleConfiguration = listOf(
 					GravityModuleConfiguration(0.03),
 					VacuumEnvironmentConfiguration
+				),
+				weatherConfiguration = WorldWeatherConfiguration(
+					weatherSeparation = DurationRange(DurationConfig(TimeUnit.SECONDS, 15), DurationConfig(TimeUnit.SECONDS, 60)),
+					weatherTypes = listOf(
+						WeatherTypeConfiguration(WeatherTypeKeys.BLIZZARD, duration = DurationRange(DurationConfig(TimeUnit.SECONDS, 15), DurationConfig(TimeUnit.SECONDS, 60)))
+					)
 				)
 			),
 			flags = mutableSetOf(
