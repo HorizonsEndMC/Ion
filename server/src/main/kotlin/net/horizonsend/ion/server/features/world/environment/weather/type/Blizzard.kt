@@ -41,8 +41,10 @@ object Blizzard : WeatherType(WeatherTypeKeys.BLIZZARD) {
 			if (isInside(player.location, 1)) continue
 			player.spawnParticle(Particle.SNOWFLAKE, player.location.x, player.location.y, player.location.z, 50, 1.5, 1.5, 1.5, 0.5)
 
+			player.freezeTicks = minOf(player.freezeTicks + 3, 200)
+
 			if (soundInterval == 1) {
-				player.playSound(Sound.sound().type(Registry.SOUNDS.getKeyOrThrow(ITEM_ELYTRA_FLYING).key()).pitch(1f).source(Sound.Source.WEATHER).build(), player)
+				player.playSound(SOUND, player)
 			}
 		}
 	}
@@ -56,7 +58,7 @@ object Blizzard : WeatherType(WeatherTypeKeys.BLIZZARD) {
 		}
 	}
 
-	private val SOUND = Sound.sound().type(Registry.SOUNDS.getKeyOrThrow(ITEM_ELYTRA_FLYING).key()).pitch(0.03f).source(Sound.Source.WEATHER).build()
+	private val SOUND = Sound.sound().type(Registry.SOUNDS.getKeyOrThrow(ITEM_ELYTRA_FLYING).key()).pitch(1f).source(Sound.Source.WEATHER).build()
 
 	override fun getWindSpeedMultiplier(): Double = 3.0
 	override fun getWindChangeMultiplier(): Double = 50.0
