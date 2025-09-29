@@ -9,8 +9,8 @@ import org.bukkit.event.player.PlayerChangedWorldEvent
 
 object Environments : IonServerComponent() {
 	override fun onEnable() {
-		Tasks.syncRepeat(10, 10, ::tickSyncEnironments)
-		Tasks.asyncRepeat(10, 10, ::tickAsyncEnironments)
+		Tasks.syncRepeat(1, 1, ::tickSyncEnironments)
+		Tasks.asyncRepeat(1, 1, ::tickAsyncEnironments)
 	}
 
 	private fun tickSyncEnironments() {

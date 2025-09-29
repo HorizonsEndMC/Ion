@@ -1,11 +1,20 @@
 package net.horizonsend.ion.server.features.world.environment
 
 import net.horizonsend.ion.common.utils.miscellaneous.d
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.ItemModKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
+import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
+import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemStack
+import java.util.concurrent.TimeUnit
 
 fun isWearingSpaceSuit(player: Player): Boolean {
 	val inventory = player.inventory
@@ -108,3 +117,50 @@ fun isInside(location: Location, extraChecks: Int): Boolean {
 
 	return true
 }
+
+val pressureFieldPowerCooldown = PerPlayerCooldown(1, TimeUnit.SECONDS)
+val environmentModuleCooldown = PerPlayerCooldown(1, TimeUnit.SECONDS)
+
+/**
+ * Returns the item stack of power armor in the provided slot if it contains the specified mod
+ **/
+private fun Player.getModdedPowerArmorItem(mod: IonRegistryKey<ItemModification, out ItemModification>, slot: EquipmentSlot): ItemStack? {
+	val item = equipment.getItem(slot)
+	if (item.isEmpty) return null
+
+	val customItem = item.customItem ?: return null
+
+	if (!customItem.hasComponent(CustomComponentTypes.MOD_MANAGER)) return null
+	val mods = customItem.getComponent(CustomComponentTypes.MOD_MANAGER).getModKeys(item)
+	if (!mods.contains(mod)) return null
+
+	return item
+}
+
+/**
+ * Consumes the provided power
+ *
+ * Returns whether the power could be consumed
+ **/
+private fun Player.consumeModPower(mod: IonRegistryKey<ItemModification, out ItemModification>, slot: EquipmentSlot, powerUsage: Int, cooldown: PerPlayerCooldown): Boolean {
+	val item = getModdedPowerArmorItem(mod, slot) ?: return false
+	val customItem = item.customItem ?: return false
+
+	val power = customItem.getComponent(CustomComponentTypes.POWER_STORAGE)
+	if (power.getPower(item) < powerUsage) return false
+
+	cooldown.tryExec(this) {
+		power.removePower(item, customItem, powerUsage)
+	}
+
+	return true
+}
+
+fun tickPressureFieldModule(player: Player, powerUsage: Int): Boolean {
+	return player.consumeModPower(ItemModKeys.PRESSURE_FIELD, EquipmentSlot.HEAD, powerUsage, pressureFieldPowerCooldown)
+}
+
+fun tickEnvironmentModule(player: Player, powerUsage: Int): Boolean {
+	return player.consumeModPower(ItemModKeys.ENVIRONMENT, EquipmentSlot.HEAD, powerUsage, pressureFieldPowerCooldown)
+}
+

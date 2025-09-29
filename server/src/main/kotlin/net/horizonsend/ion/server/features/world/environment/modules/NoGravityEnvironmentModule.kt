@@ -12,7 +12,12 @@ import org.bukkit.entity.FallingBlock
 import org.bukkit.entity.Player
 
 class NoGravityEnvironmentModule(manager: WorldEnvironmentManager, val ignoreIndoors: Boolean) : EnvironmentModule(manager) {
+	var interval = 0
+
 	override fun tickSync() {
+		interval++
+		if (interval % 10 != 0) return
+
 		for (player in world.players) {
 			if (player.gameMode != GameMode.SURVIVAL || player.isDead || !player.hasGravity()) return
 

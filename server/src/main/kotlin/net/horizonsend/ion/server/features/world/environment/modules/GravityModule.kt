@@ -5,7 +5,12 @@ import org.bukkit.attribute.Attribute
 import org.bukkit.entity.Player
 
 class GravityModule(manager: WorldEnvironmentManager, val strength: Double) : EnvironmentModule(manager) {
+	var interval = 0
+
 	override fun tickSync() {
+		interval++
+		if (interval % 20 != 0) return
+
 		for (player in world.players) {
 			setGravity(player, strength)
 		}

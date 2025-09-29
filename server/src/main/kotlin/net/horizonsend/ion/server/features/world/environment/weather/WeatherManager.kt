@@ -92,7 +92,7 @@ class WeatherManager(val environmentManager: WorldEnvironmentManager) {
 
 	fun getWeatherState() = currentWeatherState
 
-	val backgroundWindNoise get() = PerlinOctaveGenerator(environmentManager.world.world, 3)
+	val backgroundWindNoise = PerlinOctaveGenerator(environmentManager.world.world, 3)
 
 	fun getWindVector(world: World, x: Double, y: Double, z: Double): Vector {
 		val gameTime = world.gameTime.toDouble()

@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.features.world.WorldSettings
 import net.horizonsend.ion.server.features.world.environment.configuration.GravityModuleConfiguration
 import net.horizonsend.ion.server.features.world.environment.configuration.NoGravityModuleConfiguration
+import net.horizonsend.ion.server.features.world.environment.configuration.UltracoldEnvironmentModuleConfiguration
 import net.horizonsend.ion.server.features.world.environment.configuration.VacuumEnvironmentConfiguration
 import net.horizonsend.ion.server.features.world.environment.configuration.WorldEnvironmentConfiguration
 import net.horizonsend.ion.server.features.world.environment.modules.GravityModule.Companion.DEFAULT_GRAVITY
@@ -132,7 +133,8 @@ object DefaultWorldConfiguration {
 				atmosphericPressure = 0.0,
 				moduleConfiguration = listOf(
 					GravityModuleConfiguration(0.03),
-					VacuumEnvironmentConfiguration
+					VacuumEnvironmentConfiguration,
+					UltracoldEnvironmentModuleConfiguration
 				),
 				weatherConfiguration = WorldWeatherConfiguration(
 					weatherSeparation = DurationRange(DurationConfig(TimeUnit.SECONDS, 15), DurationConfig(TimeUnit.SECONDS, 60)),
