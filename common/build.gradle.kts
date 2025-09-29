@@ -20,7 +20,7 @@ dependencies {
 	compileOnly("net.kyori:adventure-text-serializer-gson:4.24.0")
 	compileOnly("net.kyori:adventure-text-serializer-legacy:4.24.0")
 
-	compileOnly("net.md-5:bungeecord-chat:1.21-R0.3")
+	compileOnly("net.md-5:bungeecord-chat:1.21-R0.4")
 	compileOnly("net.luckperms:api:5.5")
 
 	compileOnly("com.gitlab.ruany:LiteBansAPI:0.6.1")
@@ -35,7 +35,7 @@ dependencies {
 	api("org.litote.kmongo:kmongo:5.5.1")
 	api("com.fasterxml.jackson.core:jackson-databind:2.20.0")
 
-	api("redis.clients:jedis:5.2.0")
+	api("redis.clients:jedis:6.2.0")
 }
 
 kotlin.jvmToolchain(21)
