@@ -13,4 +13,7 @@ abstract class WeatherType(override val key: IonRegistryKey<WeatherType, out Wea
 	open fun onEnd(worldWeatherManager: WeatherManager) {}
 
 	abstract fun getDuration(worldWeatherManager: WeatherManager): Duration
+
+	abstract fun getWindSpeedMultiplier(): Double
+	abstract fun getWindChangeMultiplier(): Double
 }

@@ -4,6 +4,9 @@ import net.horizonsend.ion.common.utils.miscellaneous.getDurationBreakdownString
 import net.horizonsend.ion.server.features.world.environment.WorldEnvironmentManager
 import net.horizonsend.ion.server.features.world.environment.weather.configuration.WeatherTypeConfiguration
 import net.horizonsend.ion.server.features.world.environment.weather.type.WeatherType
+import org.bukkit.World
+import org.bukkit.util.Vector
+import org.bukkit.util.noise.PerlinOctaveGenerator
 import java.time.Duration
 import java.time.Instant
 
@@ -88,4 +91,21 @@ class WeatherManager(val environmentManager: WorldEnvironmentManager) {
 	}
 
 	fun getWeatherState() = currentWeatherState
+
+	val backgroundWindNoise get() = PerlinOctaveGenerator(environmentManager.world.world, 3)
+
+	fun getWindVector(world: World, x: Double, y: Double, z: Double): Vector {
+		val gameTime = world.gameTime.toDouble()
+
+		val weatherState = getWeatherState()
+
+		val windScale = 0.005 * if (weatherState is Active) weatherState.weatherType.getWindChangeMultiplier() else 1.0
+		val windSpeed = 2.0 * if (weatherState is Active) weatherState.weatherType.getWindSpeedMultiplier() else 1.0
+
+		val xDir = backgroundWindNoise.noise(x, gameTime, windScale, windSpeed)
+		val yDir = backgroundWindNoise.noise(y, gameTime, windScale, windSpeed)
+		val zDir = backgroundWindNoise.noise(z, gameTime, windScale, windSpeed)
+
+		return Vector(xDir, yDir, zDir)
+	}
 }

@@ -57,4 +57,7 @@ object Blizzard : WeatherType(WeatherTypeKeys.BLIZZARD) {
 	}
 
 	private val SOUND = Sound.sound().type(Registry.SOUNDS.getKeyOrThrow(ITEM_ELYTRA_FLYING).key()).pitch(0.03f).source(Sound.Source.WEATHER).build()
+
+	override fun getWindSpeedMultiplier(): Double = 3.0
+	override fun getWindChangeMultiplier(): Double = 50.0
 }

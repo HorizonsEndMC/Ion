@@ -9,6 +9,7 @@ import net.horizonsend.ion.server.features.transport.fluids.FluidUtils.GAS_CONST
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork.Companion.PIPE_INTERIOR_PADDING
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.celsiusToKelvin
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -56,7 +57,7 @@ abstract class GasFluid(
 
 		val start = smokeLocation.clone().add(offset)
 
-		val destination = start.clone().add(offset).add(leakingDirection.direction.multiply(5)).add(windDirection.multiply(2))
+		val destination = start.clone().add(offset).add(leakingDirection.direction.multiply(5)).add(world.ion.enviornmentManager.weatherManager.getWindVector(world, smokeLocation.x, smokeLocation.y, smokeLocation.z))
 
 		val trial = Trail(
 			/* target = */ destination,
