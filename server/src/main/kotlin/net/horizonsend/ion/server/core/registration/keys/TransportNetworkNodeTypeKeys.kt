@@ -8,6 +8,9 @@ import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNo
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.RegularLinearPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedJunctionPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedLinearPipe
+import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.TemperatureGauge
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyJunction
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyPort
 
 object TransportNetworkNodeTypeKeys : KeyRegistry<TransportNodeType<*>>(TRANSPORT_NETWORK_NODE_TYPE, TransportNodeType::class) {
 	val FLUID_JUNCTION_REGULAR = registerTypedKey<TransportNodeType<RegularJunctionPipe>>("FLUID_JUNCTION_REGULAR")
@@ -16,4 +19,8 @@ object TransportNetworkNodeTypeKeys : KeyRegistry<TransportNodeType<*>>(TRANSPOR
 	val FLUID_LINEAR_REINFORCED = registerTypedKey<TransportNodeType<ReinforcedLinearPipe>>("FLUID_LINEAR_REINFORCED")
 	val FLUID_PORT = registerTypedKey<TransportNodeType<FluidPort>>("FLUID_PORT")
 	val FLUID_VALVE = registerTypedKey<TransportNodeType<FluidValve>>("FLUID_VALVE")
+	val TEMPERATURE_GAUGE = registerTypedKey<TransportNodeType<TemperatureGauge>>("TEMPERATURE_GAUGE")
+
+	val GRID_ENERGY_PORT = registerTypedKey<TransportNodeType<GridEnergyPort>>("GRID_ENERGY_PORT")
+	val GRID_ENERGY_JUNCTION = registerTypedKey<TransportNodeType<GridEnergyJunction>>("GRID_ENERGY_JUNCTION")
 }

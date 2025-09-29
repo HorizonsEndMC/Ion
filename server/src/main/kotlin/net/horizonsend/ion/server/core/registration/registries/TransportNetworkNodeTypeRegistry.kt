@@ -10,6 +10,9 @@ import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTyp
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_LINEAR_REINFORCED
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_PORT
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_VALVE
+import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.GRID_ENERGY_JUNCTION
+import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.GRID_ENERGY_PORT
+import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.TEMPERATURE_GAUGE
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidPort
@@ -18,6 +21,9 @@ import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNo
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.RegularLinearPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedJunctionPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedLinearPipe
+import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.TemperatureGauge
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyJunction
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyPort
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode.Companion.NODE_POSITION
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CONTENTS
@@ -49,6 +55,18 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 			}
 
 			override fun serializeData(complex: FluidValve, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+				val pdc = adapterContext.newPersistentDataContainer()
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
+				return pdc
+			}
+		})
+		register(TEMPERATURE_GAUGE, object : TransportNodeType<TemperatureGauge>(TEMPERATURE_GAUGE) {
+			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): TemperatureGauge {
+				val node = TemperatureGauge(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
+				return node
+			}
+
+			override fun serializeData(complex: TemperatureGauge, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
 				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
 				return pdc
@@ -109,6 +127,30 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
 				pdc.set(CONTENTS, FluidStack, complex.contents)
 				pdc.set(NamespacedKeys.AXIS, axisType, complex.axis)
+				return pdc
+			}
+		})
+		register(GRID_ENERGY_PORT, object : TransportNodeType<GridEnergyPort>(GRID_ENERGY_PORT) {
+			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): GridEnergyPort {
+				val node = GridEnergyPort(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
+				return node
+			}
+
+			override fun serializeData(complex: GridEnergyPort, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+				val pdc = adapterContext.newPersistentDataContainer()
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
+				return pdc
+			}
+		})
+		register(GRID_ENERGY_JUNCTION, object : TransportNodeType<GridEnergyJunction>(GRID_ENERGY_JUNCTION) {
+			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): GridEnergyJunction {
+				val node = GridEnergyJunction(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
+				return node
+			}
+
+			override fun serializeData(complex: GridEnergyJunction, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+				val pdc = adapterContext.newPersistentDataContainer()
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
 				return pdc
 			}
 		})

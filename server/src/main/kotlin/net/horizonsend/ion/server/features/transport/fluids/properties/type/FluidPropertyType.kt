@@ -58,5 +58,5 @@ abstract class FluidPropertyType<T : FluidProperty> {
 
 	abstract fun formatValue(property: T): Component
 
-	protected abstract fun getDefaultProperty(location: Location?): T
+	abstract fun getDefaultProperty(location: Location?): T
 }

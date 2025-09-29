@@ -56,6 +56,7 @@ object HudIcons : IonServerComponent() {
     private const val STATION_PREFIX = "hud-station-"
     private const val SIEGE_STATION_PREFIX = "hud-siege-station-"
     private const val BOOKMARK_PREFIX = "hud-bookmark-"
+    const val FLUID_INFO_ID = "hud-fluid-info"
 
     // These vars are for saving the info of the closest
     private val lowestAngleMap = mutableMapOf<UUID, Float>()

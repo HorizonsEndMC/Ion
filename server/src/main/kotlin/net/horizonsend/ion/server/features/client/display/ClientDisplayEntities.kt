@@ -427,6 +427,44 @@ object ClientDisplayEntities : IonServerComponent() {
         OFF
     }
 
+	fun createTextEntity(
+		location: Location,
+		text: Component,
+		durationTicks: Long,
+		scale: Float = 1.0f,
+		backgroundColor: Color = Color.fromARGB(0x00000000),
+		defaultBackground: Boolean = false,
+		seeThrough: Boolean = false,
+		highlight: Boolean = false
+	): TextDisplay {
+		val entity = CraftTextDisplay(IonServer.server as CraftServer, TextDisplay(EntityType.TEXT_DISPLAY, location.world.minecraft))
+
+		entity.text(text)
+		entity.billboard = Display.Billboard.CENTER
+		entity.viewRange = 5.0f
+		//entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
+		entity.brightness = Display.Brightness(15, 15)
+		entity.teleportDuration = 0
+
+		if (!defaultBackground) {
+			entity.backgroundColor = backgroundColor
+		} else entity.isDefaultBackground = true
+
+		entity.isGlowing = highlight
+		entity.isSeeThrough = seeThrough
+
+		// apply transformation
+		entity.transformation = Transformation(
+			Vector3f(),
+			rotateToFaceVector2d(Vector3f()),
+			Vector3f(scale),
+			Quaternionf()
+		)
+
+		// position needs to be assigned immediately or else the entity gets culled as it's not in a loaded chunk
+		return entity.getNMSData(location.x, location.y, location.z)
+	}
+
 	fun Audience.sendText(
 		location: Location,
 		text: Component,

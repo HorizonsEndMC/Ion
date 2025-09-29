@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
 import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
@@ -40,6 +41,7 @@ class FluidStack(
 		set
 
 	fun isEmpty(): Boolean = type == FluidTypeKeys.EMPTY || amount <= 0
+	fun isNotEmpty(): Boolean = type != FluidTypeKeys.EMPTY && amount > 0
 
 	/**
 	 * Returns a copy of this fluid stack with the amount specified
@@ -50,24 +52,43 @@ class FluidStack(
 		return FluidStack(type, amount, Object2ObjectOpenHashMap(dataComponents))
 	}
 
-	fun <T : FluidProperty> setData(type: FluidPropertyType<T>, data: T) {
+	fun <T : FluidProperty> setData(type: FluidPropertyType<T>, data: T): FluidStack {
 		dataComponents[type] = data
+		return this
 	}
 
-	private fun setDataUnsafe(type: FluidPropertyType<*>, data: FluidProperty) {
+	fun <T : FluidProperty> setData(type: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<T>>, data: T): FluidStack {
+		dataComponents[type.getValue()] = data
+		return this
+	}
+
+	private fun setDataUnsafe(type: FluidPropertyType<*>, data: FluidProperty): FluidStack {
 		dataComponents[type] = data
+		return this
 	}
 
 	fun <T : FluidProperty> getData(type: FluidPropertyType<T>) : T? {
 		return dataComponents[type]?.let { type.castUnsafe(it) }
 	}
 
+	fun <T : FluidProperty> getDataOrDefault(type: FluidPropertyType<T>, location: Location?) : T {
+		return dataComponents[type]?.let { type.castUnsafe(it) } ?: type.getDefaultProperty(location)
+	}
+
+	fun <T : FluidProperty> getDataOrDefault(type: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<T>>, location: Location?) : T {
+		return dataComponents[type.getValue()]?.let { type.getValue().castUnsafe(it) } ?: type.getValue().getDefaultProperty(location)
+	}
+
 	fun <T : FluidProperty> getDataOrThrow(type: FluidPropertyType<T>) : T {
 		return getData(type) ?: throw NullPointerException()
 	}
 
-	fun <T : FluidProperty> hasData(type: FluidPropertyType<T>) : Boolean {
+	fun hasData(type: FluidPropertyType<*>) : Boolean {
 		return dataComponents.keys.contains(type)
+	}
+
+	fun hasData(type: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<*>>) : Boolean {
+		return dataComponents.keys.contains(type.getValue())
 	}
 
 	fun getDataMap() = dataComponents.toMap()
@@ -154,4 +175,6 @@ class FluidStack(
 	override fun toString(): String {
 		return "FluidStack{type=${type.key},amount=$amount,properties=[${dataComponents.entries.joinToString { (key, value) -> "(${key.key}:$value)" }}]}"
 	}
+
+	fun getDisplayName(): Component = type.getValue().getDisplayName(this)
 }

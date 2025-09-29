@@ -14,10 +14,10 @@ import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.configuration.DefaultWorldConfiguration
 import net.horizonsend.ion.server.features.world.data.DataFixers
 import net.horizonsend.ion.server.features.world.environment.Environment
+import net.horizonsend.ion.server.features.world.environment.WorldEnvironmentManager
 import net.horizonsend.ion.server.features.world.environment.mobs.CustomMobSpawner
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.DATA_VERSION
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.FORBIDDEN_BLOCKS
-import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.mainThreadCheck
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
@@ -58,6 +58,15 @@ class IonWorld private constructor(
 	 **/
 	fun getChunk(x: Int, z: Int): IonChunk? {
 		val key = Chunk.getChunkKey(x, z)
+
+		return chunks[key]
+	}
+
+	/**
+	 * Gets the IonChunk at the specified coordinates if it is loaded
+	 **/
+	fun getChunkFromWorldcoordinates(x: Int, z: Int): IonChunk? {
+		val key = Chunk.getChunkKey(x.shr(4), z.shr(4))
 
 		return chunks[key]
 	}
@@ -108,8 +117,11 @@ class IonWorld private constructor(
 	 * @see Environment
 	 * @see WorldSettings
 	 **/
-	val configuration: WorldSettings by lazy {
-		Configuration.loadOrDefault(WORLD_CONFIGURATION_DIRECTORY, "${world.name}.json", DefaultWorldConfiguration[world.name])
+	var configuration: WorldSettings = Configuration.loadOrDefault(WORLD_CONFIGURATION_DIRECTORY, "${world.name}.json", DefaultWorldConfiguration[world.name]); private set
+
+	fun reloadConfiguration() {
+		configuration = Configuration.loadOrDefault(WORLD_CONFIGURATION_DIRECTORY, "${world.name}.json", DefaultWorldConfiguration[world.name])
+		enviornmentManager.reloadConfiguration()
 	}
 
 	/** Write the configuration to the disk */
@@ -120,6 +132,8 @@ class IonWorld private constructor(
 
 	/** Get all environments applied to this world */
 	val environments get() = configuration.environments
+
+	val enviornmentManager = WorldEnvironmentManager(this)
 
 	/** Get all players on the inner world */
 	val players: List<Player> get() = world.players
@@ -152,9 +166,6 @@ class IonWorld private constructor(
 			ionWorlds[world] = ionWorld
 
 			DataFixers.handleWorldInit(ionWorld)
-
-			ionWorld.configuration.environments.forEach { it.setup() }
-			Tasks.syncRepeat(10, 10, ionWorld::tickEnvironments)
 		}.onFailure {
 			log.error("There was an error loading an Ion World [${world.key}]. The server will now shut down to prevent undefined behavior.")
 			it.printStackTrace()
@@ -236,13 +247,7 @@ class IonWorld private constructor(
 		/** Gets the world's Ion counterpart */
 		val World.ion: IonWorld get() = get(this)
 		fun World.hasFlag(flag: WorldFlag): Boolean = ion.hasFlag(flag)
-		fun World.environments(): Set<Environment> = ion.environments
-	}
-
-	private fun tickEnvironments() {
-		for (environment in environments) {
-			players.forEach(environment::tickPlayer)
-		}
+//		fun World.environments(): Set<Environment> = ion.environments
 	}
 
 	private fun loadForbiddenBlocks(): LongOpenHashSet {

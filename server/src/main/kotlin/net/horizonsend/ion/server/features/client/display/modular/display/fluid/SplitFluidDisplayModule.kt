@@ -17,6 +17,6 @@ class SplitFluidDisplayModule(
 	relativeFace: RelativeFace = RelativeFace.FORWARD
 ) : FluidDisplayModule(handler, storage, offsetLeft, offsetUp, offsetBack, scale, relativeFace) {
 	override fun buildText(): Component {
-		return ofChildren(container.getContents().type.getValue().displayName, newline(), formatFluid())
+		return ofChildren(container.getContents().getDisplayName(), newline(), formatFluid())
 	}
 }

@@ -32,8 +32,15 @@ import net.horizonsend.ion.server.features.multiblock.type.fluid.CanisterVentMul
 import net.horizonsend.ion.server.features.multiblock.type.fluid.ChemicalProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.PumpMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.ElectricBoilerMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.FluidCombustionBoilerMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.ItemCombustionBoilerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.BasicFluidStorageTankMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.generator.GridGeneratorMultiblockLarge
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.generator.GridGeneratorMultiblockMedium
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.generator.GridGeneratorMultiblockSmall
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.turbine.TemporaryTurbineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
@@ -188,6 +195,13 @@ object MultiblockRegistration : IonServerComponent() {
 	val byDetectionName : Multimap<String, Multiblock> = multimapOf()
 
 	override fun onEnable() {
+		reloadMultiblocks()
+	}
+
+	fun reloadMultiblocks() {
+		byDetectionName.clear()
+		multiblocks.clear()
+
 		initMultiblocks()
 		sortMultiblocks()
 
@@ -420,13 +434,22 @@ object MultiblockRegistration : IonServerComponent() {
 
 		registerMultiblock(AntiAirCannonBaseMultiblock)
 
+		registerMultiblock(BasicFluidStorageTankMultiblock)
+		registerMultiblock(CanisterUnloaderMultiblock)
+
 		if (ConfigurationFiles.featureFlags().graphTransfer) {
 			registerMultiblock(ChemicalProcessorMultiblock)
 			registerMultiblock(PumpMultiblock)
-		}
 
-		registerMultiblock(BasicFluidStorageTankMultiblock)
-		registerMultiblock(CanisterUnloaderMultiblock)
+			registerMultiblock(GridGeneratorMultiblockSmall)
+			registerMultiblock(GridGeneratorMultiblockMedium)
+			registerMultiblock(GridGeneratorMultiblockLarge)
+			registerMultiblock(TemporaryTurbineMultiblock)
+
+			registerMultiblock(ElectricBoilerMultiblock)
+			registerMultiblock(FluidCombustionBoilerMultiblock)
+			registerMultiblock(ItemCombustionBoilerMultiblock)
+		}
 	}
 
 	private fun sortMultiblocks() {

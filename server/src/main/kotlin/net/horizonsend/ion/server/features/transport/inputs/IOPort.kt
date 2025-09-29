@@ -7,7 +7,7 @@ interface IOPort {
 
 	class Simple(override val holder: MultiblockEntity) : IOPort
 
-	class RegisteredMetaDataInput<T: InputMetaData>(override val holder: MultiblockEntity, val metaData: T) : IOPort {}
+	class RegisteredMetaDataInput<T: InputMetaData>(override val holder: MultiblockEntity, val metaData: T) : IOPort
 
 	interface InputMetaData
 }
