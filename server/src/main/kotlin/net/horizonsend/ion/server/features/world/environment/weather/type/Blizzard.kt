@@ -64,7 +64,7 @@ object Blizzard : WeatherType(WeatherTypeKeys.BLIZZARD) {
 		val windDirection = worldWeatherManager.getWindVector(player.world, eyeLocation.x, eyeLocation.y, eyeLocation.z)
 		val radius = 2.5
 
-		val vector = windDirection.clone().normalize().multiply(radius * 0.75)
+		val vector = windDirection.clone().normalize().multiply(radius * 0.75).multiply(-1)
 		val forwardCenter = eyeLocation.clone().add(vector.clone().multiply(Random.nextDouble(0.25, 2.25)))
 		val rearCenter = eyeLocation.clone().subtract(vector.clone())
 		val orthogonal = windDirection.clone().normalize().getCrossProduct(BlockFace.UP.direction).multiply(radius * 0.5)
