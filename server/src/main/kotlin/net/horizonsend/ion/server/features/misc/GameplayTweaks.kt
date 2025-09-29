@@ -105,7 +105,7 @@ object GameplayTweaks : IonServerComponent() {
 		setBlastResistance(Material.DISPENSER, 6.0f)
 		setBlastResistance(Material.IRON_TRAPDOOR, 6.0f)
 		setBlastResistance(Material.VAULT, 6.0f)
-		STAINED_GLASS_TYPES.forEach { setBlastResistance(it, 5.0f) }
+		STAINED_GLASS_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		setBlastResistance(Material.END_STONE, 5.0f)
 		setBlastResistance(Material.END_PORTAL_FRAME, 5.0f)
 		setBlastResistance(Material.END_STONE_BRICKS, 6.0f)
@@ -117,7 +117,7 @@ object GameplayTweaks : IonServerComponent() {
 		TERRACOTTA_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		SLAB_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		STAIR_TYPES.forEach { setBlastResistance(it, 6.0f) }
-		STAINED_GLASS_PANE_TYPES.forEach { setBlastResistance(it, 5.0f) }
+		STAINED_GLASS_PANE_TYPES.forEach { setBlastResistance(it, 6.0f) }
 		TRAPDOOR_TYPES.forEach { setBlastResistance(it, 6.0f)}
 		WALL_TYPES.forEach { setBlastResistance(it, 6.0f)}
 		ANVIL_TYPES.forEach { setBlastResistance(it, 6.0f)}
