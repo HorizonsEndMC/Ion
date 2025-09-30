@@ -265,6 +265,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			return
 		}
 
+		val otherPlayer = Bukkit.getPlayer(destination)
 		val destinationPos = Space.getPlanet(destination)?.let {
 			Pos(
 				it.spaceWorldName,
@@ -282,7 +283,9 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				it.y,
 				it.z
 			)
-		} ?: Bukkit.getPlayer(destination)?.location?.let { Pos(it.world.name, it.x.toInt(), it.y.toInt(), it.z.toInt()) }
+		} ?: if (otherPlayer != null && PlayerCache[otherPlayer].nationOid == PlayerCache[sender].nationOid) {
+			otherPlayer.location.let { Pos(it.world.name, it.x.toInt(), it.y.toInt(), it.z.toInt()) }
+		} else null
 
 		if (destinationPos == null) {
 			sender.userError("Unknown destination $destination.")

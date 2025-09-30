@@ -11,6 +11,7 @@ import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.waypoint.WaypointVertex
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -49,7 +50,7 @@ object WaypointCommand : SLCommand() {
         val vertex = WaypointManager.getVertex(playerGraph, option)
         val otherPlayer = Bukkit.getPlayer(option)
         // If another player (in the same nation) is found, just create a static temp waypoint to them
-        if (otherPlayer != null) {
+        if (otherPlayer != null && PlayerCache[otherPlayer].nationOid == PlayerCache[sender].nationOid) {
             onSetWaypoint(sender, otherPlayer.location.world.name, otherPlayer.location.x.toInt().toString(), otherPlayer.location.z.toInt().toString())
             return
         }
