@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.features.sidebar.tasks.StarshipsSidebar
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
+import net.horizonsend.ion.server.features.starship.control.input.DirectControlInput
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.kyori.adventure.text.Component.space
 import net.kyori.adventure.text.Component.text
@@ -20,6 +21,7 @@ class StarshipsSidebarComponent2(starship: ActiveControlledStarship, player: Pla
     private val pmThruster = starship.reactor.powerDistributor.thrusterPortion
     private val acceleration = starship.cruiseData.getRealAccel(pmThruster).roundToHundredth()
     private val isDirectControlEnabled = starship.isDirectControlEnabled
+    private val isDirectControlBoosted = (starship.controller.movementHandler.input as? DirectControlInput)?.isBoosting ?: false
     private val isCruising = StarshipCruising.isCruisingAndAccelerating(starship)
     private val isStopped = starship.cruiseData.velocity.lengthSquared() == 0.0
     private val isBlocked = starship.lastBlockedTime > (System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(StarshipCruising.SECONDS_PER_CRUISE.toLong()))
@@ -36,7 +38,7 @@ class StarshipsSidebarComponent2(starship: ActiveControlledStarship, player: Pla
 
             // Speed
             text("SPD: ", WHITE),
-            StarshipsSidebar.speedComponent(isDirectControlEnabled, isCruising, isStopped, isBlocked),
+            StarshipsSidebar.speedComponent(isDirectControlEnabled, isDirectControlBoosted, isCruising, isStopped, isBlocked),
             space(),
             StarshipsSidebar.maxSpeedComponent(currentVelocity, maxVelocity, acceleration)
         )
