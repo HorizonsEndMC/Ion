@@ -13,6 +13,9 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
+import net.horizonsend.ion.server.features.world.environment.listener.WrappedListenerType
+import net.horizonsend.ion.server.features.world.environment.weather.type.WeatherType
+import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
 
 object RegistryKeys {
 	private val keys = mutableMapOf<String, RegistryId<*>>()
@@ -27,6 +30,9 @@ object RegistryKeys {
 	val FLUID_PROPERTY_TYPE = registryId<FluidPropertyType<*>>("FLUID_PROPERTY_TYPE")
 	val SEQUENCE_PHASE = registryId<SequencePhase>("SEQUENCE_PHASE")
 	val SEQUENCE = registryId<Sequence>("SEQUENCE")
+	val WRAPPED_LISTENER_TYPE = registryId<WrappedListenerType<*>>("WRAPPED_LISTENER_TYPE")
+	val WEATHER_TYPE = registryId<WeatherType>("WEATHER_TYPE")
+	val WORLD_GENERATION_FEATURE = registryId<GeneratedFeature<*>>("WORLD_GENERATION_FEATURE")
 
 	fun <T: Any> registryId(key: String): RegistryId<T> {
 		val id = RegistryId<T>(key)
