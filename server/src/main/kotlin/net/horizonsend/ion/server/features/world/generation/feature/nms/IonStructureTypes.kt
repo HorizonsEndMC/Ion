@@ -4,8 +4,8 @@ import com.mojang.serialization.Codec
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.horizonsend.ion.server.core.IonServerComponent
-import net.horizonsend.ion.server.features.world.generation.feature.FeatureRegistry
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
+import net.horizonsend.ion.server.features.world.generation.feature.WorldGenerationFeatureRegistry
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.core.BlockPos
@@ -78,7 +78,7 @@ object IonStructureTypes : IonServerComponent() {
 	private fun registerStructures() {
 		unfreezeRegistry(MinecraftServer.getServer().registryAccess().lookupOrThrow(Registries.STRUCTURE))
 
-		log.info("Registering ${FeatureRegistry.features.size} features into the structure registry")
+		log.info("Registering ${WorldGenerationFeatureRegistry.features.size} features into the structure registry")
 
 		unregisteredIntrusiveHoldersField.isAccessible = true
 
@@ -87,7 +87,7 @@ object IonStructureTypes : IonServerComponent() {
 
 		unregisteredIntrusiveHoldersField.set(structureRegistry, IdentityHashMap<Structure, Holder.Reference<Structure>>())
 
-		for ((key, feature) in FeatureRegistry.features) try {
+		for ((key, feature) in WorldGenerationFeatureRegistry.features) try {
 			val resourceKey = feature.resourceKey
 
 			val biomes = holderLookup.lookupOrThrow(Registries.BIOME).getOrThrow(BiomeTags.IS_END)
@@ -184,7 +184,7 @@ object IonStructureTypes : IonServerComponent() {
 				instance.group(
 					settingsCodec(instance),
 					Codec.string(0, 100).fieldOf("ion_feature").forGetter { structure -> structure.feature.key.toString() }
-				).apply(instance) { settings, ionFeatureKey -> IonStructure(settings, FeatureRegistry[NamespacedKey.fromString(ionFeatureKey)!!]) }
+				).apply(instance) { settings, ionFeatureKey -> IonStructure(settings, WorldGenerationFeatureRegistry[NamespacedKey.fromString(ionFeatureKey)!!]) }
 			}
 		}
 	}
@@ -203,7 +203,7 @@ object IonStructureTypes : IonServerComponent() {
 
 		companion object Type : StructureTemplateType {
 			override fun load(context: StructureTemplateManager, tag: CompoundTag): StructurePiece {
-				val feature = FeatureRegistry[NamespacedKey.fromString(tag.getString("feature"))!!]
+				val feature = WorldGenerationFeatureRegistry[NamespacedKey.fromString(tag.getString("feature"))!!]
 
 				return PieceDataStorage(
 					Vec3i(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")),
