@@ -28,7 +28,7 @@ abstract class GeneratedFeature<T: FeatureMetaData>(override val key: IonRegistr
 	abstract val metaFactory: FeatureMetadataFactory<T>
 	abstract suspend fun generateSection(generator: IonWorldGenerator<*>, chunkPos: ChunkPos, start: FeatureStart, metaData: T, sectionY: Int, sectionMin: Int, sectionMax: Int): CompletedSection
 
-	val resourceKey = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(key.ionNapespacedKey.namespace, key.key))
+	val resourceKey = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(key.ionNapespacedKey.namespace, key.ionNapespacedKey.key))
 	lateinit var ionStructure: Reference<Structure> // by lazy { MinecraftServer.getServer().registryAccess().lookupOrThrow(Registries.STRUCTURE).getValueOrThrow(resourceKey) as IonStructureTypes.IonStructure }
 
 	@Suppress("UNCHECKED_CAST")
