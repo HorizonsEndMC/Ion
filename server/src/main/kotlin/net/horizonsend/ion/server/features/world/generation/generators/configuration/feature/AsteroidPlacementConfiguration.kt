@@ -1,11 +1,11 @@
-package net.horizonsend.ion.server.features.world.generation.generators.configuration
+package net.horizonsend.ion.server.features.world.generation.generators.configuration.feature
 
 import com.github.auburn.FastNoiseLite
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.world.generation.feature.FeatureRegistry
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
+import net.horizonsend.ion.server.features.world.generation.feature.WorldGenerationFeatureRegistry
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.MaterialConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.EvaluationConfiguration
@@ -45,7 +45,7 @@ data class AsteroidPlacementConfiguration(
 ) : FeaturePlacementConfiguration<ConfigurableAsteroidMeta> {
 	override val placementPriority: Int = 0
 
-	override fun getFeature(): GeneratedFeature<ConfigurableAsteroidMeta> = FeatureRegistry.ASTEROID
+	override fun getFeature(): GeneratedFeature<ConfigurableAsteroidMeta> = WorldGenerationFeatureRegistry.ASTEROID
 
 	override fun generatePlacements(world: World, chunk: ChunkPos, random: Random): List<Pair<Vec3i, ConfigurableAsteroidMeta>> {
 		val stdev = density * 4.0

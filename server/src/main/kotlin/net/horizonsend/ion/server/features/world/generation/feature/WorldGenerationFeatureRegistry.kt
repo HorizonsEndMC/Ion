@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.world.generation.feature
 
 import org.bukkit.NamespacedKey
 
-object FeatureRegistry {
+object WorldGenerationFeatureRegistry {
 	val features = mutableMapOf<NamespacedKey, GeneratedFeature<*>>()
 
 	val ASTEROID = register(ConfigurableAsteroidFeature)

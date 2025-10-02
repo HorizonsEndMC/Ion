@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.Feature
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetadataFactory
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
-import net.horizonsend.ion.server.features.world.generation.generators.configuration.FeaturePlacementConfiguration
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.feature.FeaturePlacementConfiguration
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.core.Holder.Reference
 import net.minecraft.core.registries.Registries

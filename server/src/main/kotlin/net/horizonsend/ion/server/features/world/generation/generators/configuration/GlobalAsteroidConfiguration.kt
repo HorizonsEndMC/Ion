@@ -21,7 +21,7 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroi
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.StaticConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.SubtractConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.SumConfiguration
-import net.horizonsend.ion.server.features.world.generation.generators.configuration.AsteroidPlacementConfiguration.AsteroidBuilder
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.feature.AsteroidPlacementConfiguration.AsteroidBuilder
 import org.bukkit.Material
 
 @Serializable
