@@ -191,7 +191,7 @@ object NMSStructureIntegration : IonServerComponent() {
 			tag.putInt("x", pos.x)
 			tag.putInt("y", pos.y)
 			tag.putInt("z", pos.z)
-			tag.putString("feature", feature.key.toString())
+			tag.putString("feature", feature.key.ionNapespacedKey.asString())
 
 			tag.put("meta_data", feature.metaFactory.castAndSave(metaData))
 		}

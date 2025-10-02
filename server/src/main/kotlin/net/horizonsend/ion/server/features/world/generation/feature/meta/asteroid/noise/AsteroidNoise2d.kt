@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.world.generation.feature.meta.astero
 
 import com.github.auburn.FastNoiseLite
 import com.github.auburn.FastNoiseLite.Vector3
-import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.util.Vector
 import kotlin.random.Random
@@ -11,7 +10,7 @@ class AsteroidNoise2d(
 	private val xScale: Double = 1.0,
 	private val yScale: Double = 1.0,
 	private val zScale: Double = 1.0,
-	val meta: ConfigurableAsteroidMeta,
+	val asteroidSize: Double,
 	private val noise: FastNoiseLite,
 	private val domainWarp: AsteroidNoise3d.DomainWarp,
 	val amplitude: Double,
@@ -27,7 +26,7 @@ class AsteroidNoise2d(
 	}
 
 	override fun getValue(x: Double, y: Double, z: Double, origin: Vec3i): Double {
-		val diff = Vector((x * xScale) - origin.x, (y * yScale) - origin.y, (z * zScale) - origin.z).normalize().multiply(meta.size)
+		val diff = Vector((x * xScale) - origin.x, (y * yScale) - origin.y, (z * zScale) - origin.z).normalize().multiply(asteroidSize)
 
 		val vector = Vector3(
 			diff.x.toFloat() + origin.x,
