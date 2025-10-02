@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.world.generation.generators.configuration.feature
 
 import kotlinx.serialization.Serializable
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
@@ -15,7 +16,7 @@ sealed interface FeaturePlacementConfiguration<T: FeatureMetaData> {
 
 	fun generatePlacements(world: World, chunk: ChunkPos, random: Random): List<Pair<Vec3i, T>>
 
-	fun getFeature(): GeneratedFeature<T>
+	fun getFeatureKey(): IonRegistryKey<GeneratedFeature<*>, GeneratedFeature<T>>
 
-	fun buildStartsData(world: World, chunkPos: ChunkPos, random: Random): List<FeatureStart> = getFeature().buildStartsData(world, chunkPos, random, this)
+	fun buildStartsData(world: World, chunkPos: ChunkPos, random: Random): List<FeatureStart> = getFeatureKey().getValue().buildStartsData(world, chunkPos, random, this)
 }

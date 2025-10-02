@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.world.generation.feature.start
 
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
-import net.horizonsend.ion.server.features.world.generation.feature.nms.IonStructureTypes
+import net.horizonsend.ion.server.features.world.generation.feature.nms.NMSStructureIntegration
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.levelgen.structure.StructureStart
@@ -20,13 +20,13 @@ data class FeatureStart(
 			feature.ionStructure.value(),
 			ChunkPos(x.shr(4), z.shr(4)),
 			0,
-			PiecesContainer(listOf(IonStructureTypes.PieceDataStorage(Vec3i(x, y, z), feature, metaData)))
+			PiecesContainer(listOf(NMSStructureIntegration.PieceDataStorage(Vec3i(x, y, z), feature, metaData)))
 		)
 	}
 
 	companion object {
 		fun fromNMS(start: StructureStart): FeatureStart {
-			val piece = start.pieces.first() as IonStructureTypes.PieceDataStorage
+			val piece = start.pieces.first() as NMSStructureIntegration.PieceDataStorage
 			return FeatureStart(
 				piece.feature,
 				piece.pos.x,
