@@ -122,6 +122,7 @@ class IonWorld private constructor(
 
 	fun reloadConfiguration() {
 		configuration = loadConfiguration()
+		terrainGenerator = configuration.terrainGenerationSettings?.buildGenerator(this)
 		enviornmentManager.reloadConfiguration()
 	}
 
@@ -142,8 +143,8 @@ class IonWorld private constructor(
 	/** Contains custom mob spawning behavior */
 	val customMonSpawner = CustomMobSpawner(this, configuration.customMobSpawns)
 
-	/** Custom terrain generation handling, including space or nebulas */
-	val terrainGenerator: IonWorldGenerator<*>? = configuration.terrainGenerationSettings?.buildGenerator(this)
+	/** Custom terrain generation handling, including asteroids, wrecks, or nebulas */
+	var terrainGenerator: IonWorldGenerator<*>? = configuration.terrainGenerationSettings?.buildGenerator(this); private set
 
 	companion object : IonServerComponent() {
 		private val WORLD_CONFIGURATION_DIRECTORY = ConfigurationFiles.configurationFolder.resolve("worlds").apply { mkdirs() }
@@ -261,7 +262,7 @@ class IonWorld private constructor(
 		return runCatching {
 			Configuration.loadOrDefault(WORLD_CONFIGURATION_DIRECTORY, "${world.name}.json", DefaultWorldConfiguration[world.name])
 		}.onFailure { exception ->
-			IonServer.slF4JLogger.error("There was an error loading the world configuration for $this. To prevent undefiend behavior the server will now shut down.")
+			IonServer.slF4JLogger.error("There was an error loading the world configuration for ${world.key.asString()}. To prevent undefiend behavior the server will now shut down.")
 			exception.printStackTrace()
 			Bukkit.shutdown()
 		}.getOrThrow()

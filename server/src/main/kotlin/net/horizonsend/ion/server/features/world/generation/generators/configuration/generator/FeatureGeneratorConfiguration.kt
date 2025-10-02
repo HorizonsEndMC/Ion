@@ -1,9 +1,10 @@
-package net.horizonsend.ion.server.features.world.generation.generators.configuration
+package net.horizonsend.ion.server.features.world.generation.generators.configuration.generator
 
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.generators.FeatureGenerator
 import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.FeaturePlacementConfiguration
 
 @Serializable
 data class FeatureGeneratorConfiguration(

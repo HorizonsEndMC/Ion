@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.world.generation.generators.configuration
+package net.horizonsend.ion.server.features.world.generation.generators.configuration.generator
 
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.features.world.IonWorld
