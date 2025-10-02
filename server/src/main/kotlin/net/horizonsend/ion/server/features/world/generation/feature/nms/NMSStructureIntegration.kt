@@ -4,8 +4,9 @@ import com.mojang.serialization.Codec
 import com.mojang.serialization.MapCodec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.WorldGenerationFeatureKeys
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
-import net.horizonsend.ion.server.features.world.generation.feature.WorldGenerationFeatureRegistry
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.core.BlockPos
@@ -36,7 +37,7 @@ import org.bukkit.NamespacedKey
 import java.util.IdentityHashMap
 import java.util.Optional
 
-object IonStructureTypes : IonServerComponent() {
+object NMSStructureIntegration : IonServerComponent() {
 	private lateinit var structureType: StructureType<IonStructure>
 
 	override fun onEnable() {
@@ -60,13 +61,6 @@ object IonStructureTypes : IonServerComponent() {
 			log.warn("Could not register structure type! Feature generation will not function.")
 			e.printStackTrace()
 
-//			var cause: Throwable? = e
-//
-//			while (cause != null) {
-//				cause.printStackTrace()
-//				cause = cause.cause
-//			}
-
 			throw e
 		}
 
@@ -78,7 +72,9 @@ object IonStructureTypes : IonServerComponent() {
 	private fun registerStructures() {
 		unfreezeRegistry(MinecraftServer.getServer().registryAccess().lookupOrThrow(Registries.STRUCTURE))
 
-		log.info("Registering ${WorldGenerationFeatureRegistry.features.size} features into the structure registry")
+		val featureKeys = WorldGenerationFeatureKeys.allkeys()
+
+		log.info("Registering ${featureKeys.size} features into the structure registry")
 
 		unregisteredIntrusiveHoldersField.isAccessible = true
 
@@ -87,11 +83,12 @@ object IonStructureTypes : IonServerComponent() {
 
 		unregisteredIntrusiveHoldersField.set(structureRegistry, IdentityHashMap<Structure, Holder.Reference<Structure>>())
 
-		for ((key, feature) in WorldGenerationFeatureRegistry.features) try {
+		for (key in featureKeys) try {
+			val feature = key.getValue()
 			val resourceKey = feature.resourceKey
 
 			val biomes = holderLookup.lookupOrThrow(Registries.BIOME).getOrThrow(BiomeTags.IS_END)
-			val structure = IonStructure(StructureSettings(biomes), feature)
+			val structure = IonStructure(StructureSettings(biomes), feature.key)
 
 			structureRegistry.createIntrusiveHolder(structure)
 			feature.ionStructure = structureRegistry.register(resourceKey, structure, RegistrationInfo.BUILT_IN)
@@ -168,7 +165,7 @@ object IonStructureTypes : IonServerComponent() {
 
 	class IonStructure(
 		settings: StructureSettings,
-		val feature: GeneratedFeature<*>,
+		val feature: IonRegistryKey<GeneratedFeature<*>, out GeneratedFeature<*>>,
 	) : Structure(settings) {
 		override fun findGenerationPoint(context: GenerationContext): Optional<GenerationStub> {
 			return Optional.empty()
@@ -184,7 +181,7 @@ object IonStructureTypes : IonServerComponent() {
 				instance.group(
 					settingsCodec(instance),
 					Codec.string(0, 100).fieldOf("ion_feature").forGetter { structure -> structure.feature.key.toString() }
-				).apply(instance) { settings, ionFeatureKey -> IonStructure(settings, WorldGenerationFeatureRegistry[NamespacedKey.fromString(ionFeatureKey)!!]) }
+				).apply(instance) { settings, ionFeatureKey -> IonStructure(settings, WorldGenerationFeatureKeys[NamespacedKey.fromString(ionFeatureKey)!!]!!) }
 			}
 		}
 	}
@@ -203,7 +200,8 @@ object IonStructureTypes : IonServerComponent() {
 
 		companion object Type : StructureTemplateType {
 			override fun load(context: StructureTemplateManager, tag: CompoundTag): StructurePiece {
-				val feature = WorldGenerationFeatureRegistry[NamespacedKey.fromString(tag.getString("feature"))!!]
+				val namespacedKey = NamespacedKey.fromString(tag.getString("feature")) ?: throw IllegalArgumentException("Invalid namespaced key ${tag.getString("feature")}!")
+				val feature = WorldGenerationFeatureKeys[namespacedKey]?.getValue() ?: throw NullPointerException("World generation feature ${namespacedKey.asString()} not found!")
 
 				return PieceDataStorage(
 					Vec3i(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")),

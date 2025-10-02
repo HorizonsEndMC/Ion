@@ -6,7 +6,7 @@ import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.features.space.data.CompletedSection
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
-import net.horizonsend.ion.server.features.world.generation.feature.nms.IonStructureTypes
+import net.horizonsend.ion.server.features.world.generation.feature.nms.NMSStructureIntegration
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.feature.AsteroidPlacementConfiguration
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.generator.FeatureGeneratorConfiguration
@@ -34,13 +34,13 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 
 		val starts = nmsChunk.allStarts
 		for ((structure, nmsStart) in starts) {
-			if (structure !is IonStructureTypes.IonStructure) continue
+			if (structure !is NMSStructureIntegration.IonStructure) continue
 			referencedStarts.add(FeatureStart.fromNMS(nmsStart))
 		}
 
 		val references = nmsChunk.allReferences
 		for ((structure, chunkReferences) in references) {
-			if (structure !is IonStructureTypes.IonStructure) continue
+			if (structure !is NMSStructureIntegration.IonStructure) continue
 
 			for (key in chunkReferences.iterator()) {
 				val referencePos = ChunkPos(key)
@@ -90,7 +90,7 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 		val starts = mutableListOf<FeatureStart>()
 		val chunkRandom = Random(chunk.longKey)
 
-		for (feature in features.filter { feature -> feature.getFeature().canPlace() }) {
+		for (feature in features.filter { feature -> feature.getFeatureKey().getValue().canPlace() }) {
 			val featureStarts = feature.buildStartsData(world.world, chunk, chunkRandom)
 
 			starts.addAll(featureStarts)
