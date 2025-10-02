@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.world.generation.feature.meta.astero
 import com.github.auburn.FastNoiseLite
 import kotlinx.serialization.Serializable
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
+import kotlin.random.Random
 
 @Serializable
 sealed interface NoiseConfiguration : EvaluationConfiguration {
@@ -49,15 +50,26 @@ data class NoiseConfiguration2d(
 	override val xScale: Double = 1.0,
 	override val yScale: Double = 1.0,
 	override val zScale: Double = 1.0,
-) : NoiseConfiguration {
+) : NoiseConfiguration, GlobalEvaluationConfiguration {
 	override fun build(meta: ConfigurableAsteroidMeta): AsteroidNoise2d {
 		val instance = FastNoiseLite()
 		noiseTypeConfiguration.apply(instance)
 		fractalSettings.apply(instance)
 		domainWarpConfiguration.apply(instance)
 
-		val wrapper = AsteroidNoise2d(xScale, yScale, zScale, meta, instance, domainWarpConfiguration.build(), amplitude, normalizedPositive)
+		val wrapper = AsteroidNoise2d(xScale, yScale, zScale, meta.size, instance, domainWarpConfiguration.build(), amplitude, normalizedPositive)
 		wrapper.setSeed(meta.random)
+		return wrapper
+	}
+
+	override fun build(seed: Long): IterativeValueProvider {
+		val instance = FastNoiseLite()
+		noiseTypeConfiguration.apply(instance)
+		fractalSettings.apply(instance)
+		domainWarpConfiguration.apply(instance)
+
+		val wrapper = AsteroidNoise2d(xScale, yScale, zScale, 1.0, instance, domainWarpConfiguration.build(), amplitude, normalizedPositive)
+		wrapper.setSeed(Random(seed))
 		return wrapper
 	}
 }
