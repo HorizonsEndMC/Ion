@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.configuration.util.StaticIntegerAmount
 import net.horizonsend.ion.server.configuration.util.WeightedIntegerAmount
 import net.horizonsend.ion.server.features.gas.type.WorldGasConfiguration
 import net.horizonsend.ion.server.features.world.environment.configuration.WorldEnvironmentConfiguration
-import net.horizonsend.ion.server.features.world.generation.generators.configuration.GenerationConfiguration
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.generator.GenerationConfiguration
 import org.bukkit.entity.EntityType
 import java.util.function.Supplier
 

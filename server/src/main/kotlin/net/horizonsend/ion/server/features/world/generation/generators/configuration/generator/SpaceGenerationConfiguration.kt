@@ -1,11 +1,10 @@
-package net.horizonsend.ion.server.features.world.generation.generators.configuration
+package net.horizonsend.ion.server.features.world.generation.generators.configuration.generator
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import net.horizonsend.ion.server.configuration.util.Pos
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.generators.IonWorldGenerator
-import net.horizonsend.ion.server.features.world.generation.generators.configuration.SpaceGenerationConfiguration.Palette
 import net.horizonsend.ion.server.features.world.generation.generators.space.SpaceGenerator
 import net.horizonsend.ion.server.miscellaneous.utils.WeightedRandomList
 import net.horizonsend.ion.server.miscellaneous.utils.nms
