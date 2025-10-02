@@ -9,7 +9,7 @@ import net.horizonsend.ion.server.features.world.generation.WorldGenerationManag
 import net.horizonsend.ion.server.features.world.generation.feature.nms.IonStructureTypes
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.AsteroidPlacementConfiguration
-import net.horizonsend.ion.server.features.world.generation.generators.configuration.FeatureGeneratorConfiguration
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.generator.FeatureGeneratorConfiguration
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.chunk.status.ChunkStatus
