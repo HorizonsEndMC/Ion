@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.world.generation.generators
 
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
-import net.horizonsend.ion.server.features.world.generation.generators.configuration.GenerationConfiguration
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.generator.GenerationConfiguration
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.world.level.ChunkPos

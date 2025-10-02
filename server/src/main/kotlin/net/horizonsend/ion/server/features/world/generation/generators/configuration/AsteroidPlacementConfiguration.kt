@@ -24,7 +24,7 @@ data class AsteroidPlacementConfiguration(
 	val density: Double = 0.0612,
 
 	val selector: AsteroidSelectorCondition = AsteroidSelectorCondition.IfBiome(
-		biomeKeys = listOf("minecraft:small_end_islandsddd"),
+		biomeKeys = listOf("minecraft:small_end_islands"),
 		ifTrue = AsteroidSelectorCondition.BuilderReference("TEST"),
 		ifFalse = AsteroidSelectorCondition.WeightedNoise(
 			noiseTypeConfiguration = NoiseTypeConfiguration.OpenSimplex2(featureSize = 2500f),
