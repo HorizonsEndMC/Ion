@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.world.generation.feature
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.Keyed
 import net.horizonsend.ion.server.features.space.data.CompletedSection
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
@@ -17,17 +19,16 @@ import net.minecraft.resources.ResourceKey
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.levelgen.structure.Structure
-import org.bukkit.NamespacedKey
 import org.bukkit.World
 import kotlin.random.Random
 
-abstract class GeneratedFeature<T: FeatureMetaData>(val key: NamespacedKey) {
+abstract class GeneratedFeature<T: FeatureMetaData>(override val key: IonRegistryKey<GeneratedFeature<*>, out GeneratedFeature<T>>): Keyed<GeneratedFeature<*>> {
 	abstract val placementPriority: Int
 
 	abstract val metaFactory: FeatureMetadataFactory<T>
 	abstract suspend fun generateSection(generator: IonWorldGenerator<*>, chunkPos: ChunkPos, start: FeatureStart, metaData: T, sectionY: Int, sectionMin: Int, sectionMax: Int): CompletedSection
 
-	val resourceKey = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(key.namespace, key.key))
+	val resourceKey = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(key.ionNapespacedKey.namespace, key.key))
 	lateinit var ionStructure: Reference<Structure> // by lazy { MinecraftServer.getServer().registryAccess().lookupOrThrow(Registries.STRUCTURE).getValueOrThrow(resourceKey) as IonStructureTypes.IonStructure }
 
 	@Suppress("UNCHECKED_CAST")
