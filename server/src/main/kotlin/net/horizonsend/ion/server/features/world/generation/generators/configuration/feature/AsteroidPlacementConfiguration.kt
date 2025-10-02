@@ -9,9 +9,16 @@ import net.horizonsend.ion.server.core.registration.keys.WorldGenerationFeatureK
 import net.horizonsend.ion.server.features.world.generation.feature.GeneratedFeature
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.material.MaterialConfiguration
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.DomainWarpConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.EvaluationConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.FractalSettings
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.GlobalEvaluationConfiguration
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.IterativeValueProvider
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.MinConfigurationGlobal
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.NoiseConfiguration2d
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.NoiseTypeConfiguration
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.StaticConfigurationGlobal
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.SumConfigurationGlobal
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.weightedEntry
 import net.horizonsend.ion.server.miscellaneous.utils.weightedRandom
@@ -22,7 +29,21 @@ import kotlin.random.asJavaRandom
 
 @Serializable
 data class AsteroidPlacementConfiguration(
-	val density: Double = 0.0612,
+	val densityProvider: GlobalEvaluationConfiguration = MinConfigurationGlobal(
+		a = StaticConfigurationGlobal(0.075),
+		b = SumConfigurationGlobal(listOf(
+			StaticConfigurationGlobal(0.0612),
+
+			// Backgrond noise
+			NoiseConfiguration2d(
+				noiseTypeConfiguration = NoiseTypeConfiguration.Perlin(featureSize = 150f),
+				fractalSettings = FractalSettings.None,
+				domainWarpConfiguration = DomainWarpConfiguration.None,
+				amplitude = 11111.612,
+				normalizedPositive = false
+			)
+		))
+	),
 
 	val selector: AsteroidSelectorCondition = AsteroidSelectorCondition.IfBiome(
 		biomeKeys = listOf("minecraft:small_end_islands"),
@@ -44,15 +65,32 @@ data class AsteroidPlacementConfiguration(
 		),
 	)
 ) : FeaturePlacementConfiguration<ConfigurableAsteroidMeta> {
+	@Transient
+	private var builtDensityProvider: IterativeValueProvider? = null
+
 	override val placementPriority: Int = 0
 
 	override fun getFeatureKey(): IonRegistryKey<GeneratedFeature<*>, GeneratedFeature<ConfigurableAsteroidMeta>> = WorldGenerationFeatureKeys.CONFIGURABLE_ASTEROID
 
+	private fun getDensityProvider(world: World): IterativeValueProvider {
+		builtDensityProvider?.let { return it }
+
+		val built = densityProvider.build(world.seed)
+		builtDensityProvider = built
+		return built
+	}
+
 	override fun generatePlacements(world: World, chunk: ChunkPos, random: Random): List<Pair<Vec3i, ConfigurableAsteroidMeta>> {
-		val stdev = density * 4.0
+		val samplePointX = chunk.x.shl(4).toDouble()
+		val samplePointZ = chunk.z.shl(4).toDouble()
+
+		val chunkDensity = getDensityProvider(world).getValue(samplePointX, 1.0, samplePointZ, Vec3i(0, 0, 0))
+		println("density for $chunk: $chunkDensity")
+
+		val stdev = chunkDensity * 4.0
 
 		val count = random.asJavaRandom()
-			.nextGaussian(density, stdev)
+			.nextGaussian(chunkDensity, stdev)
 			.plus(stdev)
 			.coerceAtLeast(0.0)
 			.toInt()
