@@ -31,13 +31,13 @@ object StarshipWeaponry : IonServerComponent() {
 	val rightClickTimes = mutableMapOf<Damager, Long>()
 
 	fun manualFire(
-        shooter: Damager,
-        starship: ActiveStarship,
-        leftClick: Boolean,
-        facing: BlockFace,
-        dir: Vector,
-        target: Vector,
-        weaponSet: String?,
+		shooter: Damager,
+		starship: ActiveStarship,
+		lightWeapons: Boolean,
+		facing: BlockFace,
+		dir: Vector,
+		target: Vector,
+		weaponSet: String?,
 		manual: Boolean = true
 	) {
 		starship.debug("Common manual firing")
@@ -56,12 +56,12 @@ object StarshipWeaponry : IonServerComponent() {
 		starship.debug("Weapons: ${weapons.joinToString { it.javaClass.simpleName }}")
 
 		val fireTask = {
-			val queuedShots = queueShots(shooter, weapons, leftClick, facing, dir, target, manual)
+			val queuedShots = queueShots(shooter, weapons, lightWeapons, facing, dir, target, manual)
 			starship.debug("Queued shots: ${queuedShots.joinToString { it.weapon.javaClass.simpleName }}")
 			fireQueuedShots(queuedShots, starship)
 		}
 
-		if (!leftClick) {
+		if (!lightWeapons) {
 			if (weapons.all { it !is HeavyWeaponSubsystem }) return //prevent light weapons from messing up the cooldown
 			cooldown.tryExec(shooter, fireTask)
 		} else fireTask()
@@ -121,7 +121,7 @@ object StarshipWeaponry : IonServerComponent() {
 	private fun queueShots(
 		shooter: Damager,
 		weapons: List<FiredSubsystem>,
-		leftClick: Boolean,
+		lightWeapons: Boolean,
 		facing: BlockFace,
 		dir: Vector,
 		target: Vector,
@@ -154,7 +154,7 @@ object StarshipWeaponry : IonServerComponent() {
 				continue
 			}
 
-			if (weapon is HeavyWeaponSubsystem != !leftClick) {
+			if (weapon is HeavyWeaponSubsystem != !lightWeapons) {
 				shooter.starship?.debug("Continue, not correct click")
 				continue
 			}

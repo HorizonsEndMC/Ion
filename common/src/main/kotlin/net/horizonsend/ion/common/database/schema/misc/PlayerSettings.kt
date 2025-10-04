@@ -90,6 +90,7 @@ data class PlayerSettings(
 	var floatWhileDc: Boolean = true,
 	var reverseDcBoost: Boolean = false,
 	var toggleDcBoost: Boolean = false,
+	var alternateFireButtons: Boolean = false,
 ) : DbObject {
 	companion object : DbObjectCompanion<PlayerSettings, StringId<PlayerSettings>>(PlayerSettings::class, setup = {}) {
 		fun create(id: StringId<PlayerSettings>): InsertOneResult = trx { session ->
