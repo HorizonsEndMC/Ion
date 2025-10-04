@@ -154,6 +154,7 @@ class IonWorld private constructor(
 		fun all() = ionWorlds.values
 
 		operator fun get(world: World): IonWorld = ionWorlds[world] ?: throw IllegalStateException("Unregistered Ion World: $world!")
+		fun getIfLoaded(world: World): IonWorld? = ionWorlds[world]
 
 		fun register(world: World) = kotlin.runCatching {
 			mainThreadCheck()

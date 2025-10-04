@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.world.generation.generators
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.horizonsend.ion.server.features.space.data.CompletedSection
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
@@ -13,7 +14,9 @@ import net.horizonsend.ion.server.features.world.generation.generators.configura
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.chunk.status.ChunkStatus
+import org.bukkit.Bukkit
 import org.bukkit.Chunk
+import org.bukkit.generator.WorldInfo
 import kotlin.random.Random
 
 class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfiguration) : IonWorldGenerator<FeatureGeneratorConfiguration>(world, configuration) {
@@ -112,5 +115,58 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 
 			return chunks
 		}
+	}
+
+	override fun generateNoise(worldInfo: WorldInfo, random: java.util.Random, chunkX: Int, chunkZ: Int, chunkData: ChunkData) {
+		val level = Bukkit.getWorld(worldInfo.uid)!!.minecraft
+		val nmsChunk = level.getChunk(chunkX, chunkZ, ChunkStatus.STRUCTURE_STARTS)
+
+		val pos = ChunkPos(chunkX, chunkZ)
+
+		// Search #FEATURE_START_SEARCH_RANGE chunks ahead for structure starts
+		getStartSearchChunks(pos).forEach(::buildStructureData)
+
+		// Get data for this chunk
+
+		val referencedStarts = mutableListOf<FeatureStart>()
+
+		val starts = nmsChunk.allStarts
+		for ((structure, nmsStart) in starts) {
+			if (structure !is NMSStructureIntegration.IonStructure) continue
+			referencedStarts.add(FeatureStart.fromNMS(nmsStart))
+		}
+
+		val references = nmsChunk.allReferences
+		for ((structure, chunkReferences) in references) {
+			if (structure !is NMSStructureIntegration.IonStructure) continue
+
+			for (key in chunkReferences.iterator()) {
+				val referencePos = ChunkPos(key)
+				val referencedChunk = level.getChunk(referencePos.x, referencePos.z, ChunkStatus.STRUCTURE_STARTS)
+				val nmsStart = referencedChunk.getStartForStructure(structure) ?: continue
+				referencedStarts.add(FeatureStart.fromNMS(nmsStart))
+			}
+		}
+
+		if (referencedStarts.isEmpty()) return
+
+		val sectionsB = referencedStarts
+			.associateWith { featureStart: FeatureStart ->
+				val deferred = CompletableDeferred<List<CompletedSection>>()
+				runBlocking {
+					deferred.complete(featureStart.feature.castAndGenerateChunk(this@FeatureGenerator, pos, featureStart))
+				}
+
+				deferred
+			}
+
+		runBlocking { sectionsB.values.awaitAll() }
+		val sections = sectionsB.entries.sortedBy { it.key.feature.placementPriority }
+
+		sections.forEach { t -> t.value.getCompleted().forEach { section -> section.place(chunkData, nmsChunk, chunkX, chunkZ) } }
+	}
+
+	override fun shouldGenerateNoise(): Boolean {
+		return false
 	}
 }

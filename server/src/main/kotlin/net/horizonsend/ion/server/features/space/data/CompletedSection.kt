@@ -6,7 +6,9 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.chunk.ChunkAccess
 import net.minecraft.world.level.chunk.LevelChunk
+import org.bukkit.generator.ChunkGenerator
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
@@ -86,6 +88,49 @@ data class CompletedSection(val y: Int, val palette: MutableList<BlockData>, val
 						) ?: return@let
 
 						levelChunk.addAndRegisterBlockEntity(blockEntity)
+					}
+				}
+			}
+		}
+	}
+
+	fun place(chunkData: ChunkGenerator.ChunkData, nms: ChunkAccess, x: Int, z: Int) {
+		val worldMin = chunkData.minHeight.shr(4)
+
+		val chunkAbsoluteX = x.shl(4)
+		val chunkAbsoluteZ = z.shl(4)
+		val sectionAbsoluteY = (y - worldMin).shl(4)
+
+		for (x in 0..15) {
+			val absoluteX = x + chunkAbsoluteX
+
+			for (y in 0..15) {
+				val absoluteY = sectionAbsoluteY + y
+
+				for (z in 0..15) {
+					val absoluteZ = z + chunkAbsoluteZ
+
+					val index = posToIndex(x, y ,z)
+					val paletteIndex = blocks[index]
+					val blockData = palette[paletteIndex]
+
+					if (blockData.blockState.isAir) continue
+
+					val blockPos = BlockPos(absoluteX, absoluteY, absoluteZ)
+
+					chunkData.setBlock(x, absoluteY, z, blockData.blockState.createCraftBlockData())
+
+					if (nms !is LevelChunk) continue
+
+					blockData.blockEntityTag?.let {
+						val blockEntity = BlockEntity.loadStatic(
+							blockPos,
+							blockData.blockState,
+							it,
+							nms.level.registryAccess()
+						) ?: return@let
+
+						nms.addAndRegisterBlockEntity(blockEntity)
 					}
 				}
 			}
