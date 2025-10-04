@@ -83,6 +83,12 @@ object SettingsCommand : SLCommand() {
         handleBooleanToggleSetting(sender, PlayerSettings::toggleDcBoost, enabled)
     }
 
+    @CommandAlias("control altlightheavyweaponkeys")
+    @CommandCompletion("true|false")
+    fun onSettingsControlAltLightHeavyWeaponKeys(sender: Player, @Optional enabled: Boolean?) = asyncCommand(sender) {
+        handleBooleanToggleSetting(sender, PlayerSettings::alternateFireButtons, enabled)
+    }
+
     @CommandAlias("sidebar combattimer enablecombattimerinfo")
     @CommandCompletion("true|false")
     fun onSettingsSidebarCombatTimerEnableCombatTimerInfo(sender: Player, @Optional enabled: Boolean?) = asyncCommand(sender) {
