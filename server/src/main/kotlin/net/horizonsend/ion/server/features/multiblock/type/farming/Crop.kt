@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.type.farming
 
-import net.horizonsend.ion.server.features.multiblock.type.farming.Crop.values
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -13,7 +12,9 @@ enum class Crop(val material: Material, val seed: Material) {
 	POTATOES(Material.POTATOES, Material.POTATO),
 	BEETROOTS(Material.BEETROOTS, Material.BEETROOT_SEEDS),
 	NETHER_WART(Material.NETHER_WART, Material.NETHER_WART),
-	SWEET_BERRIES(Material.SWEET_BERRY_BUSH, Material.SWEET_BERRIES) {
+	SWEET_BERRIES(Material.SWEET_BERRY_BUSH, Material.SWEET_BERRIES),
+	PUMPKINS(Material.PUMPKIN_STEM, Material.PUMPKIN_SEEDS),
+	MELONS(Material.MELON_STEM, Material.MELON_SEEDS) {
 		private val harvestedBush = Material.SWEET_BERRY_BUSH.createBlockData {
 			it as Ageable
 
