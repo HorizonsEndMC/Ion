@@ -85,7 +85,6 @@ data class AsteroidPlacementConfiguration(
 		val samplePointZ = chunk.z.shl(4).toDouble()
 
 		val chunkDensity = getDensityProvider(world).getValue(samplePointX, 1.0, samplePointZ, Vec3i(0, 0, 0))
-		println("density for $chunk: $chunkDensity")
 
 		val stdev = chunkDensity * 4.0
 

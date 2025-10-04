@@ -17,7 +17,7 @@ import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.client.networking.packets.ShipData
 import net.horizonsend.ion.server.features.misc.WorldReset
 import net.horizonsend.ion.server.features.world.IonWorld
-import net.horizonsend.ion.server.features.world.generation.generators.bukkit.EmptyChunkGenerator
+import net.horizonsend.ion.server.features.world.generation.generators.DelegatedChunkGenerator
 import net.horizonsend.ion.server.features.world.generation.generators.bukkit.SpaceBiomeProvider
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.registrations.commands
@@ -143,8 +143,8 @@ object IonServer : JavaPlugin() {
 		return SpaceBiomeProvider()
 	}
 
-	override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator {
-		return EmptyChunkGenerator
+	override fun getDefaultWorldGenerator(worldName: String, id: String?): ChunkGenerator? {
+		return DelegatedChunkGenerator(worldName)
 	}
 }
 
