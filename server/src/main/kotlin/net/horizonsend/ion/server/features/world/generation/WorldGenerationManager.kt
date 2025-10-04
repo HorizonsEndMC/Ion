@@ -24,6 +24,7 @@ object WorldGenerationManager : IonServerComponent() {
 	@EventHandler
 	fun onChunkLoadEvent(event: ChunkLoadEvent) {
 		val generator = event.chunk.world.ion.terrainGenerator ?: return
+		return
 		coroutineScope.launch {
 			generator.generateChunk(event.chunk)
 		}
