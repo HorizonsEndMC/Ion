@@ -1,12 +1,7 @@
 package net.horizonsend.ion.server.features.world.generation.feature
 
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.launch
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.Keyed
-import net.horizonsend.ion.server.features.space.data.CompletedSection
-import net.horizonsend.ion.server.features.world.generation.WorldGenerationManager
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetaData
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetadataFactory
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
@@ -20,45 +15,28 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.levelgen.structure.Structure
 import org.bukkit.World
+import org.bukkit.generator.ChunkGenerator
 import kotlin.random.Random
 
 abstract class GeneratedFeature<T: FeatureMetaData>(override val key: IonRegistryKey<GeneratedFeature<*>, out GeneratedFeature<T>>): Keyed<GeneratedFeature<*>> {
 	abstract val placementPriority: Int
 
 	abstract val metaFactory: FeatureMetadataFactory<T>
-	abstract suspend fun generateSection(generator: IonWorldGenerator<*>, chunkPos: ChunkPos, start: FeatureStart, metaData: T, sectionY: Int, sectionMin: Int, sectionMax: Int): CompletedSection
 
-	val resourceKey = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(key.ionNapespacedKey.namespace, key.ionNapespacedKey.key))
+	abstract fun generateChunk(generator: IonWorldGenerator<*>, chunkPos: ChunkPos, chunkData: ChunkGenerator.ChunkData, start: FeatureStart, metaData: T, minY: Int, maxY: Int)
+
+	val resourceKey: ResourceKey<Structure> = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(key.ionNapespacedKey.namespace, key.ionNapespacedKey.key))
 	lateinit var ionStructure: Reference<Structure> // by lazy { MinecraftServer.getServer().registryAccess().lookupOrThrow(Registries.STRUCTURE).getValueOrThrow(resourceKey) as IonStructureTypes.IonStructure }
 
 	@Suppress("UNCHECKED_CAST")
-	suspend fun castAndGenerateChunk(generator: IonWorldGenerator<*>, chunkPos: ChunkPos, start: FeatureStart): List<CompletedSection> = generateChunk(generator, chunkPos, start, start.metaData as T)
+	fun castAndGenerateChunk(generator: IonWorldGenerator<*>, chunkPos: ChunkPos, chunkData: ChunkGenerator.ChunkData, start: FeatureStart) = generateChunk(generator, chunkPos, chunkData, start, start.metaData as T)
 
-	suspend fun generateChunk(generator: IonWorldGenerator<*>, chunkPos: ChunkPos, start: FeatureStart, metaData: T): List<CompletedSection> {
+	fun generateChunk(generator: IonWorldGenerator<*>, chunkPos: ChunkPos, data: ChunkGenerator.ChunkData, start: FeatureStart, metaData: T) {
 		val (minPoint, maxPoint) = getExtents(metaData)
-		val minY = minPoint.y + start.y
-		val maxY = maxPoint.y + start.y
+		val minY = maxOf(minPoint.y + start.y, generator.heightAccessor.minY)
+		val maxY = minOf(maxPoint.y + start.y, generator.heightAccessor.maxY)
 
-		val sections = IntRange(
-			maxOf(generator.heightAccessor.getSectionIndex(minY), generator.heightAccessor.minSectionY),
-			minOf(generator.heightAccessor.getSectionIndex(maxY), generator.heightAccessor.maxSectionY),
-		)
-
-		val deferredSections = mutableListOf<CompletableDeferred<CompletedSection>>()
-
-		for (section: Int in sections) {
-			val deferred = CompletableDeferred<CompletedSection>()
-			deferredSections.add(deferred)
-
-			val sectionMin = (section.shl(4) + generator.heightAccessor.minY)
-			val sectionMax = (section.shl(4) + generator.heightAccessor.minY) + 15
-
-			WorldGenerationManager.coroutineScope.launch {
-				deferred.complete(generateSection(generator, chunkPos, start, metaData, section, sectionMin, sectionMax))
-			}
-		}
-
-		return deferredSections.awaitAll()
+		generateChunk(generator, chunkPos, data , start, metaData, minY, maxY)
 	}
 
 	/**

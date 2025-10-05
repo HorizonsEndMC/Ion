@@ -179,7 +179,7 @@ class SpaceGenerator(world: IonWorld, configuration: SpaceGenerationConfiguratio
 		return foundFeatures
 	}
 
-	override suspend fun generateChunk(chunk: Chunk) {
+	fun generateChunk(chunk: Chunk) {
 		if (chunk.persistentDataContainer.has(NamespacedKeys.SPACE_GEN_VERSION)) return
 
 		chunk.persistentDataContainer.set(NamespacedKeys.SPACE_GEN_VERSION, PersistentDataType.BYTE, spaceGenerationVersion)
@@ -222,7 +222,7 @@ class SpaceGenerator(world: IonWorld, configuration: SpaceGenerationConfiguratio
 			}
 		} else listOf()
 
-		if (acquiredAsteroids.isEmpty() && acquiredWrecks.isEmpty()) return //@runBlocking
+		if (acquiredAsteroids.isEmpty() && acquiredWrecks.isEmpty()) return
 
 		WorldGenerationManager.handleGeneration(
 			GenerateChunk(this, chunk.minecraft, acquiredWrecks, acquiredAsteroids),
