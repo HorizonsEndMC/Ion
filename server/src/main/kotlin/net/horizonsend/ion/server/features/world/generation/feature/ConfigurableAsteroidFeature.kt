@@ -2,8 +2,6 @@ package net.horizonsend.ion.server.features.world.generation.feature
 
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.core.registration.keys.WorldGenerationFeatureKeys
-import net.horizonsend.ion.server.features.space.data.BlockData
-import net.horizonsend.ion.server.features.space.data.CompletedSection
 import net.horizonsend.ion.server.features.world.generation.feature.meta.FeatureMetadataFactory
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.ConfigurableAsteroidMeta
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
@@ -11,30 +9,29 @@ import net.horizonsend.ion.server.features.world.generation.generators.IonWorldG
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.world.level.ChunkPos
 import net.minecraft.world.level.block.state.BlockState
+import org.bukkit.generator.ChunkGenerator
 import kotlin.math.abs
 
 object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(WorldGenerationFeatureKeys.CONFIGURABLE_ASTEROID) {
 	override val placementPriority: Int = 0
 	override val metaFactory: FeatureMetadataFactory<ConfigurableAsteroidMeta> = ConfigurableAsteroidMeta.Factory
 
-	override suspend fun generateSection(
+	override fun generateChunk(
 		generator: IonWorldGenerator<*>,
 		chunkPos: ChunkPos,
+		chunkData: ChunkGenerator.ChunkData,
 		start: FeatureStart,
 		metaData: ConfigurableAsteroidMeta,
-		sectionY: Int,
-		sectionMin: Int,
-		sectionMax: Int,
-	): CompletedSection {
-		val section = CompletedSection.empty(sectionY)
+		minY: Int,
+		maxY: Int
+	) {
 		val center = Vec3i(start.x, start.y, start.z).toCenterVector()
 
 		for (x in 0..15) {
 			val realX = (chunkPos.x.shl(4) + x).toDouble()
 			val xOffset = center.x - realX
 
-			for (y in 0..15) {
-				val realY = (sectionMin + y).toDouble()
+			for (realY in minY..maxY) {
 				val yOffset = center.y - realY
 
 				for (z in 0..15) {
@@ -43,14 +40,12 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 
 					val centerDistanceSquared = xOffset.squared() + yOffset.squared() + zOffset.squared()
 
-					val blockState = checkBlockPlacement(metaData, start, realX, realY, realZ, centerDistanceSquared) ?: continue
+					val blockState = checkBlockPlacement(metaData, start, realX, realY.toDouble(), realZ, centerDistanceSquared) ?: continue
 
-					section.setBlock(x, y, z, BlockData(blockState, null))
+					chunkData.setBlock(x, realY, z, blockState.createCraftBlockData())
 				}
 			}
 		}
-
-		return section
 	}
 
 	/**
