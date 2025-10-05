@@ -24,7 +24,7 @@ class GenerateChunk(
 
 	val returnData = CompletableDeferred<StoredChunkBlocks>()
 
-	suspend fun generateChunk(scope: CoroutineScope) {
+	fun generateChunk(scope: CoroutineScope) {
 		val asteroidSectionsMapped = asteroids.associateWith {
 			it.getCoveredSections(generator.world.world.minHeight, generator.world.world.maxHeight)
 		}
@@ -56,7 +56,7 @@ class GenerateChunk(
 		)
 
 		val completedSections : List<CompletedSection> = completableSectionMap.mapNotNull { (_, section) ->
-			section.await()
+			section.getCompleted()
 		}
 
 		returnData.complete(StoredChunkBlocks(completedSections))
