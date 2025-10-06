@@ -14,6 +14,7 @@ import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroi
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.FractalSettings
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.GlobalEvaluationConfiguration
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.IterativeValueProvider
+import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.MaxConfigurationGlobal
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.MinConfigurationGlobal
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.NoiseConfiguration2d
 import net.horizonsend.ion.server.features.world.generation.feature.meta.asteroid.noise.NoiseTypeConfiguration
@@ -30,20 +31,23 @@ import kotlin.random.asJavaRandom
 
 @Serializable
 data class AsteroidPlacementConfiguration(
-	val densityProvider: GlobalEvaluationConfiguration = MinConfigurationGlobal(
-		a = StaticConfigurationGlobal(0.075),
-		b = SumConfigurationGlobal(listOf(
-			StaticConfigurationGlobal(0.0812),
+	val densityProvider: GlobalEvaluationConfiguration = MaxConfigurationGlobal(
+		a = StaticConfigurationGlobal(0.045),
+		b = MinConfigurationGlobal(
+			a = StaticConfigurationGlobal(0.0912),
+			b = SumConfigurationGlobal(listOf(
+				StaticConfigurationGlobal(0.0612),
 
-			// Backgrond noise
-			NoiseConfiguration2d(
-				noiseTypeConfiguration = NoiseTypeConfiguration.Perlin(featureSize = 150f),
-				fractalSettings = FractalSettings.None,
-				domainWarpConfiguration = DomainWarpConfiguration.None,
-				amplitude = 11111.612,
-				normalizedPositive = false
-			)
-		))
+				// Backgrond noise
+				NoiseConfiguration2d(
+					noiseTypeConfiguration = NoiseTypeConfiguration.Perlin(featureSize = 150f),
+					fractalSettings = FractalSettings.None,
+					domainWarpConfiguration = DomainWarpConfiguration.None,
+					amplitude = 111.612,
+					normalizedPositive = false
+				)
+			))
+		)
 	),
 
 	val selector: AsteroidSelectorCondition = AsteroidSelectorCondition.IfBiome(
@@ -73,7 +77,7 @@ data class AsteroidPlacementConfiguration(
 
 	override fun getFeatureKey(): IonRegistryKey<GeneratedFeature<*>, GeneratedFeature<ConfigurableAsteroidMeta>> = WorldGenerationFeatureKeys.CONFIGURABLE_ASTEROID
 
-	private fun getDensityProvider(world: World): IterativeValueProvider {
+	fun getDensityProvider(world: World): IterativeValueProvider {
 		builtDensityProvider?.let { return it }
 
 		val built = densityProvider.build(world.seed)
@@ -87,7 +91,7 @@ data class AsteroidPlacementConfiguration(
 
 		val chunkDensity = getDensityProvider(world).getValue(samplePointX, 1.0, samplePointZ, Vec3i(0, 0, 0))
 
-		val stdev = chunkDensity * 4.0
+		val stdev = maxOf(0.0, chunkDensity * 4.0)
 
 		val count = random.asJavaRandom()
 			.nextGaussian(chunkDensity, stdev)

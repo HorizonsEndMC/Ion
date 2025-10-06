@@ -34,6 +34,7 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.feature.AsteroidPlacementConfiguration
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
@@ -438,6 +439,15 @@ object TransportDebugCommand : SLCommand() {
 				val ionStart = FeatureStart.fromNMS(start)
 				"${WorldGenerationFeatureKeys.CONFIGURABLE_ASTEROID.key}: ${ionStart.metaData} @ $chunkPos"
 			}.joinToString(separator = "\n")
+		}")
+
+		val config = AsteroidPlacementConfiguration()
+
+		val samplePointX = chunk.locX.shl(4).toDouble()
+		val samplePointZ = chunk.locZ.shl(4).toDouble()
+
+		sender.information("Chunk density: ${
+			config.getDensityProvider(sender.world).getValue(samplePointX, 1.0, samplePointZ, Vec3i(0, 0, 0))
 		}")
 
 		val transportManager = sender.world.ion.transportManager
