@@ -12,6 +12,7 @@ import net.horizonsend.ion.common.utils.text.formatPaginatedMenu
 import net.horizonsend.ion.common.utils.text.join
 import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.SLCommand
+import net.horizonsend.ion.server.core.registration.keys.WorldGenerationFeatureKeys
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkage
@@ -32,14 +33,17 @@ import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.features.world.chunk.IonChunk.Companion.ion
+import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent.callback
+import net.minecraft.world.level.ChunkPos
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -426,6 +430,16 @@ object TransportDebugCommand : SLCommand() {
 
 	@Subcommand("network reset fluid")
 	fun networkReset(sender: Player) {
+		val chunk = sender.chunk.minecraft
+		sender.information("Chunk references: ${
+			chunk.getReferencesForStructure(WorldGenerationFeatureKeys.CONFIGURABLE_ASTEROID.getValue().ionStructure.value()).mapNotNull { lng ->
+				val chunkPos = ChunkPos(lng)
+				val start = chunk.level.getChunk(chunkPos.x, chunkPos.z).getStartForStructure(WorldGenerationFeatureKeys.CONFIGURABLE_ASTEROID.getValue().ionStructure.value()) ?: return@mapNotNull null
+				val ionStart = FeatureStart.fromNMS(start)
+				"${WorldGenerationFeatureKeys.CONFIGURABLE_ASTEROID.key}: ${ionStart.metaData} @ $chunkPos"
+			}.joinToString(separator = "\n")
+		}")
+
 		val transportManager = sender.world.ion.transportManager
 		val fluidManager = transportManager.fluidGraphManager
 		fluidManager.clear()
