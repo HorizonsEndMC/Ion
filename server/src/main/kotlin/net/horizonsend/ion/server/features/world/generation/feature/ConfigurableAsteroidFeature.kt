@@ -60,8 +60,6 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 		distanceSquared: Double
 	): BlockState? {
 		if (distanceSquared > metaData.sizeSquared) return null
-		// Calculate a noise pattern with a minimum at zero, and a max peak of the size of the materials list.
-		val paletteSample = (metaData.materialNoise.noise(worldX, worldY, worldZ, 0.0, 0.0, true) + 1) / 2
 
 		val fullNoise = metaData.getNoise(worldX, worldY, worldZ, start)
 
