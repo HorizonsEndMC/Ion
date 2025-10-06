@@ -11,7 +11,6 @@ import net.horizonsend.ion.server.features.world.generation.feature.start.Featur
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.minecraft.nbt.CompoundTag
 import org.bukkit.util.noise.PerlinOctaveGenerator
-import org.bukkit.util.noise.SimplexOctaveGenerator
 import kotlin.math.sqrt
 import kotlin.random.Random
 
@@ -33,10 +32,6 @@ data class ConfigurableAsteroidMeta(
 
 	val cave1 = PerlinOctaveGenerator(random.nextLong(), 3).apply { this.setScale(sqrt(0.05 * (1 / size))) }
 	val cave2 = PerlinOctaveGenerator(random.nextLong(), 3).apply { this.setScale(sqrt(0.05 * (1 / size))) }
-
-	val materialNoise = SimplexOctaveGenerator(seed, 1).apply {
-		this.setScale(0.15 / sqrt(size / 15))
-	}
 
 	val totalDisplacement = getMaxDisplacement()
 	private val normalizingFactor = size / totalDisplacement
