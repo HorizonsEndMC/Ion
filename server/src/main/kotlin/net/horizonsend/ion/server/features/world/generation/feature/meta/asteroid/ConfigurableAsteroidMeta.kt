@@ -15,7 +15,7 @@ import org.bukkit.util.noise.SimplexOctaveGenerator
 import kotlin.math.sqrt
 import kotlin.random.Random
 
-class ConfigurableAsteroidMeta(
+data class ConfigurableAsteroidMeta(
 	override val seed: Long,
 	val size: Double,
 	val oreBlobs: MutableList<OreBlob> = mutableListOf(),
