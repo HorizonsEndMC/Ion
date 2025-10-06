@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.weightedEntry
 import net.horizonsend.ion.server.miscellaneous.utils.weightedRandom
 import net.minecraft.world.level.ChunkPos
 import org.bukkit.World
+import kotlin.math.roundToInt
 import kotlin.random.Random
 import kotlin.random.asJavaRandom
 
@@ -32,7 +33,7 @@ data class AsteroidPlacementConfiguration(
 	val densityProvider: GlobalEvaluationConfiguration = MinConfigurationGlobal(
 		a = StaticConfigurationGlobal(0.075),
 		b = SumConfigurationGlobal(listOf(
-			StaticConfigurationGlobal(0.0612),
+			StaticConfigurationGlobal(0.0812),
 
 			// Backgrond noise
 			NoiseConfiguration2d(
@@ -105,7 +106,7 @@ data class AsteroidPlacementConfiguration(
 
 			val meta = generateMetaData(random, world, x, z) ?: return@repeat
 
-			val y = random.nextInt(world.minHeight + meta.totalDisplacement.toInt(), world.maxHeight - meta.totalDisplacement.toInt())
+			val y = random.nextInt(world.minHeight + (meta.totalDisplacement.toInt() * 0.7).roundToInt(), world.maxHeight - (meta.totalDisplacement.toInt() * 0.7).roundToInt())
 
 			list.add(Vec3i(x, y, z) to meta)
 		}
