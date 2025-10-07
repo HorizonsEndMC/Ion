@@ -50,12 +50,13 @@ object FleetCommand : SLCommand() {
         val fleet = getFleet(sender) ?: return
 
         if (isFleetLeader(sender) ?: return) {
-            sender.userError("Transfer command of your fleet before leaving")
+            sender.userError("Transfer command of your fleet before leaving.")
             return
         }
 
         fleet.remove(sender.toFleetMember())
-        fleet.information("${sender.name} has left your fleet")
+        fleet.information("${sender.name} has left your fleet.")
+		sender.information("You have left the fleet.")
     }
 
     @Subcommand("kick")

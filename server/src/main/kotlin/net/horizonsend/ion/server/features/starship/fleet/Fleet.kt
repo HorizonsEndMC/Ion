@@ -77,13 +77,15 @@ class Fleet(var leader: FleetMember?, var initalized : Boolean = true) : Forward
 	}
 
     fun switchLeader(player: Player): Boolean {
-		val result = switchLeader(player.toFleetMember())
-		if (!result) return false
+		val newLeader = player.toFleetMember()
+		if (!isMember(newLeader)) return false
 
-		for (memberId in members) {
-			val member = (memberId as? FleetMember.PlayerMember)?.let { Bukkit.getPlayer(it.uuid) } ?: continue
+		leader = newLeader
+
+		for (member in members) {
 			member.information("${player.name} is now the new Fleet Commander of your fleet")
 		}
+
 		return true
 	}
 
