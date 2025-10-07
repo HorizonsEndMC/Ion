@@ -76,7 +76,7 @@ object ConfigurableAsteroidFeature : GeneratedFeature<ConfigurableAsteroidMeta>(
 
 		if (isCave) return null
 
-		return metaData.blockPlacer.getValue(worldX, worldY, worldZ, distanceSquared, fullNoise, metaData, start)
+		return metaData.paletteBlockPlacer.getValue(worldX, worldY, worldZ, distanceSquared, fullNoise, metaData, start)
 	}
 
 	override fun getExtents(metaData: ConfigurableAsteroidMeta): Pair<Vec3i, Vec3i> {
