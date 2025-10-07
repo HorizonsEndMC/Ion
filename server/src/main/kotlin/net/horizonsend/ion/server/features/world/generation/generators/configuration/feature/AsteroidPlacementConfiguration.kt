@@ -66,9 +66,12 @@ data class AsteroidPlacementConfiguration(
 				AsteroidSelectorCondition.BuilderReference("TEST5") to 1.0,
 				AsteroidSelectorCondition.BuilderReference("TEST6") to 1.0,
 				AsteroidSelectorCondition.BuilderReference("TEST8") to 1.0,
-			),
-		),
-	)
+			)
+		)
+	),
+
+	val minSize: Double = 75.0,
+	val maxSize: Double = 150.0
 ) : FeaturePlacementConfiguration<ConfigurableAsteroidMeta> {
 	@Transient
 	private var builtDensityProvider: IterativeValueProvider? = null
@@ -122,10 +125,10 @@ data class AsteroidPlacementConfiguration(
 		val builder = ConfigurationFiles.globalAsteroidConfiguration().builders[selector.getBuilder(chunkRandom, world, x, z)]
 
 		return builder?.build(
-			ConfigurationFiles.globalAsteroidConfiguration().structureTemplates,
-			ConfigurationFiles.globalAsteroidConfiguration().paletteTemplates,
-			chunkRandom.nextLong(),
-			chunkRandom.nextDouble(75.0, 150.0),
+			structureMap = ConfigurationFiles.globalAsteroidConfiguration().structureTemplates,
+			paletteMap = ConfigurationFiles.globalAsteroidConfiguration().paletteTemplates,
+			seed = chunkRandom.nextLong(),
+			size = chunkRandom.nextDouble(minSize, maxSize),
 		)
 	}
 
