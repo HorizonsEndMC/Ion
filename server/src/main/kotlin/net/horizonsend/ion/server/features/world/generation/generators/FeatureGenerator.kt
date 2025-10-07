@@ -62,21 +62,6 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 		}
 	}
 
-	companion object {
-		// NMS starts throwing warnings if it goes beyond 8
-		const val FEATURE_START_SEARCH_RANGE = 8
-
-		fun getStartSearchChunks(chunkPos: ChunkPos): List<ChunkPos> {
-			val chunks = mutableListOf<ChunkPos>()
-
-			for (x in -FEATURE_START_SEARCH_RANGE..FEATURE_START_SEARCH_RANGE) for (z in -FEATURE_START_SEARCH_RANGE..FEATURE_START_SEARCH_RANGE) {
-				chunks.add(ChunkPos(chunkPos.x + x, chunkPos.z + z))
-			}
-
-			return chunks
-		}
-	}
-
 	/**
 	 * Generates the structures that have their origin in this chunk
 	 **/
