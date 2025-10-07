@@ -34,6 +34,7 @@ import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component.text
 import org.apache.commons.lang3.time.TimeZones.GMT_ID
 import org.bukkit.Bukkit
+import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.entity.PlayerDeathEvent
@@ -90,8 +91,7 @@ object SolarSieges : IonServerComponent(true) {
 	 * Returns whether this siege zone is being prepared for a siege, or actively under siege
 	 **/
 	private fun isUnderSiege(stationId: Oid<SolarSiegeZone>): Boolean {
-		return activeSieges.any { it.value.region.id == stationId } ||
-			   preparationSieges.any { it.value.region.id == stationId }
+		return activeSieges.any { it.value.region.id == stationId } || preparationSieges.any { it.value.region.id == stationId }
 	}
 
 	/**
@@ -129,7 +129,7 @@ object SolarSieges : IonServerComponent(true) {
 			return@asyncLocked player.userError("Your nation already owns this station.")
 		}
 
-		if (!isSiegeDeclarationPeriod() && false) {
+		if (!isSiegeDeclarationPeriod() || config.ignoreSiegeWindow) {
 			player.userError("It is not the siege declaration period!")
 			player.information("Solar Sieges can only be declared on Saturday or Sunday between 14:00 and 17:00 UTC")
 			return@asyncLocked
@@ -249,7 +249,7 @@ object SolarSieges : IonServerComponent(true) {
 
 		if (siege.isDefender(player.slPlayerId) && siege.isAttacker(killer.slPlayerId)) {
 			siege.attackerPoints += points
-			log.info("Awarded attacker $points points")
+			log.info("Awarded attacker $points points for killing ${player.name}")
 
 			IonServer.server.sendMessage(template(
 				text("{0} accrued {1} points for killing {2}."),
@@ -261,7 +261,7 @@ object SolarSieges : IonServerComponent(true) {
 
 		if (siege.isDefender(killer.slPlayerId) && siege.isAttacker(player.slPlayerId)) {
 			siege.defenderPoints += points
-			log.info("Awarded defender $points points")
+			log.info("Awarded defender $points points for killing ${player.name}")
 
 			IonServer.server.sendMessage(template(
 				text("{0} accrued {1} points for killing {2}."),
@@ -291,7 +291,7 @@ object SolarSieges : IonServerComponent(true) {
 
 		if (defenderNew > 0) {
 			siege.defenderPoints += defenderNew
-			log.info("Awarded defender $defenderNew points")
+			log.info("Awarded defender $defenderNew passive points")
 
 			siegeAudience.sendMessage(template(
 				text("{0} accrued {1} passive points for being inside the siege region."),
@@ -385,5 +385,21 @@ object SolarSieges : IonServerComponent(true) {
 	private fun handleNationDisband(id: Oid<Nation>) {
 		getAllSieges().filter { it.defender == id }.forEach { it.fail(); it.removeActive() }
 		getAllSieges().filter { it.attacker == id }.forEach { it.succeed(); it.removeActive() }
+	}
+
+	/**
+	 * Returns if player's nation owns a solar siege zone
+	 **/
+	fun checkZoneBenefits(player: Player): Boolean {
+		val nation = PlayerCache[player].nationOid ?: return false
+		return Regions.getAllOf<RegionSolarSiegeZone>().any { zone -> zone.nation == nation }
+	}
+
+	/**
+	 * Returns if player's nation owns a solar siege zone in the specified world
+	 **/
+	fun checkZoneBenefits(player: Player, world: World): Boolean {
+		val nation = PlayerCache[player].nationOid ?: return false
+		return Regions.getAllOfInWorld<RegionSolarSiegeZone>(world).any { zone -> zone.nation == nation }
 	}
 }

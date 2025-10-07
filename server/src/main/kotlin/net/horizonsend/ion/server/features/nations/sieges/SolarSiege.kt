@@ -117,6 +117,8 @@ class SolarSiege(
 	fun succeed() {
 		SolarSiegeZone.setNation(region.id, attacker)
 
+		disperseRewards()
+
 		val attackerName = NationCache[attacker].name
 		val defenderName = NationCache[defender].name
 
@@ -214,4 +216,8 @@ class SolarSiege(
 
 	val defenderNameFormatted = formatNationName(defender)
 	val attackerNameFormatted = formatNationName(attacker)
+
+	fun disperseRewards() {
+
+	}
 }

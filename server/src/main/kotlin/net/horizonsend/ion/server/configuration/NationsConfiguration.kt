@@ -18,5 +18,6 @@ data class NationsConfiguration(
 		val playerKillPoints: Int = 1000,
 		val shipCostMultiplier: Double = 1.0,
 		val referenceDestroyerPrice: Int = 10_000,
+		val ignoreSiegeWindow: Boolean = false
 	)
 }
