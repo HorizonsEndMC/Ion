@@ -145,8 +145,8 @@ data class AsteroidPlacementConfiguration(
 					seed,
 					size,
 					oreBlobs = mutableListOf(),
-					aliasedNoiseLayers = aliasedNoiseLayersKey to aliasedNoiseLayers,
-					aliasedBlockPlacerConfiguration = aliasedBlockPlacerConfigurationKey to aliasedBlockPlacerConfiguration
+					aliasedStructureNoiseLayers = aliasedNoiseLayersKey to aliasedNoiseLayers,
+					aliasedPaletteConfiguration = aliasedBlockPlacerConfigurationKey to aliasedBlockPlacerConfiguration
 				)
 			}
 		}
@@ -158,8 +158,8 @@ data class AsteroidPlacementConfiguration(
 					seed,
 					size,
 					oreBlobs = mutableListOf(),
-					aliasedNoiseLayers = structure to structureMap[structure]!!,
-					aliasedBlockPlacerConfiguration = palette to paletteMap[palette]!!
+					aliasedStructureNoiseLayers = structure to structureMap[structure]!!,
+					aliasedPaletteConfiguration = palette to paletteMap[palette]!!
 				)
 			}
 		}

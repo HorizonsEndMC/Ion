@@ -19,12 +19,12 @@ data class ConfigurableAsteroidMeta(
 	val size: Double,
 	val oreBlobs: MutableList<OreBlob> = mutableListOf(),
 
-	private val aliasedNoiseLayers: Pair<String, EvaluationConfiguration>,
-	private val aliasedBlockPlacerConfiguration: Pair<String, MaterialConfiguration>
+	private val aliasedStructureNoiseLayers: Pair<String, EvaluationConfiguration>,
+	private val aliasedPaletteConfiguration: Pair<String, MaterialConfiguration>
 ) : FeatureMetaData {
 	val random = Random(seed)
-	val blockPlacer = aliasedBlockPlacerConfiguration.second.build(this)
-	private val noiseLayers = aliasedNoiseLayers.second.build(this)
+	val paletteBlockPlacer = aliasedPaletteConfiguration.second.build(this)
+	private val structureNoiseLayers = aliasedStructureNoiseLayers.second.build(this)
 
 	override val factory: FeatureMetadataFactory<ConfigurableAsteroidMeta> = Factory
 
@@ -37,11 +37,11 @@ data class ConfigurableAsteroidMeta(
 	private val normalizingFactor = size / totalDisplacement
 
 	fun getNoise(x: Double, y: Double, z: Double, start: FeatureStart): Double {
-		return noiseLayers.getValue(x, y, z, Vec3i(start.x, start.y, start.z)) * normalizingFactor
+		return structureNoiseLayers.getValue(x, y, z, Vec3i(start.x, start.y, start.z)) * normalizingFactor
 	}
 
 	private fun getMaxDisplacement(): Double {
-		return noiseLayers.getFallbackValue()
+		return structureNoiseLayers.getFallbackValue()
 	}
 
 	object Factory : FeatureMetadataFactory<ConfigurableAsteroidMeta>() {
@@ -64,8 +64,8 @@ data class ConfigurableAsteroidMeta(
 			val tag = CompoundTag()
 			tag.putLong("seed", featureData.seed)
 			tag.putDouble("size", featureData.size)
-			tag.putString("structureAlias", featureData.aliasedNoiseLayers.first)
-			tag.putString("paletteAlias", featureData.aliasedBlockPlacerConfiguration.first)
+			tag.putString("structureAlias", featureData.aliasedStructureNoiseLayers.first)
+			tag.putString("paletteAlias", featureData.aliasedPaletteConfiguration.first)
 			return tag
 		}
 	}
