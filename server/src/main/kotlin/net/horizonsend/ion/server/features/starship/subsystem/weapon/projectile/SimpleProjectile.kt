@@ -176,7 +176,7 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 			AreaShields.withExplosionPowerOverride(fraction * explosionPower * areaShieldDamageMultiplier) {
 				if (!hasHit) {
 					// shields/area shields cancel explosion damage
-					explosionOccurred = world.createExplosion(newLoc, explosionPower)
+					explosionOccurred = if (explosionPower > 0.0) world.createExplosion(newLoc, explosionPower) else false
 
 					if (explosionPower > 0) {
 						val base = explosionPower.coerceAtLeast(1f)
