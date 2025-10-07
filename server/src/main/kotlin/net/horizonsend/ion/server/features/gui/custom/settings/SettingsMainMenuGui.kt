@@ -35,6 +35,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 			DBCachedBooleanToggle(text("Enable Floating While DC"), "Enabling this setting allows your character to float while in DC for a smoother experience.", GuiItem.LIST, true, PlayerSettings::floatWhileDc),
 			DBCachedBooleanToggle(text("Reverse DC Speed Boost Key"), "Enabled = DC speed is boosted by default; sneaking slows. Disabled = DC speed is slow by default; sneaking boosts.", GuiItem.LIST, false, PlayerSettings::reverseDcBoost),
 			DBCachedBooleanToggle(text("Toggle DC Speed Boost Key"), "Enabling this setting changes the DC boost key to a toggle.", GuiItem.LIST, false, PlayerSettings::toggleDcBoost),
+			DBCachedBooleanToggle(text("Switch Light/Heavy Weapon Keys"), "Switches the firing controls for light and heavy weapons.", GuiItem.LIST, false, PlayerSettings::alternateFireButtons),
 		),
 		createSettingsPage(player, "Sidebar Settings",
 			createSettingsPage(player, "Combat Timer Settings",

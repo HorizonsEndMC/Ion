@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.custom.items.component.Listener.Compa
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModification
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.drops.DropSource
+import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.BlockListModifier
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.hoe.FertilizerDispenser.fertilizeCrop
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.multiblock.type.farming.Crop
@@ -233,10 +234,10 @@ class PowerHoe(key: IonRegistryKey<CustomItem, out CustomItem>, displayName: Com
 		val blockList = mutableListOf(origin)
 		val modManager = getComponent(CustomComponentTypes.MOD_MANAGER)
 
-		val mods = modManager.getModKeys(itemStack)
+		val mods = modManager.getMods(itemStack)
 
-		mods.filterNot { it.getValue().crouchingDisables && player.isSneaking }
-			.filterIsInstance<net.horizonsend.ion.server.features.custom.items.type.tool.mods.tool.BlockListModifier>()
+		mods.filterNot { it.crouchingDisables && player.isSneaking }
+			.filterIsInstance<BlockListModifier>()
 			.sortedBy { it.priority }
 			.forEach {
 				it.modifyBlockList(BlockFace.DOWN, origin, blockList)
