@@ -284,6 +284,9 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
 			shieldPowerMultiplier = 1.0,
+			weaponOverrides = listOf(
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 420),
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
@@ -297,6 +300,9 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.9,
 			shieldPowerMultiplier = 1.0,
+			weaponOverrides = listOf(
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 360),
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
