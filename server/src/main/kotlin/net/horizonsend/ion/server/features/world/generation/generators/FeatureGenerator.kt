@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.world.generation.generators
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.generation.feature.nms.NMSStructureIntegration
 import net.horizonsend.ion.server.features.world.generation.feature.start.FeatureStart
-import net.horizonsend.ion.server.features.world.generation.generators.configuration.feature.AsteroidPlacementConfiguration
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.generator.FeatureGeneratorConfiguration
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.server.level.GenerationChunkHolder
@@ -18,8 +17,6 @@ import org.bukkit.generator.WorldInfo
 import kotlin.random.Random
 
 class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfiguration) : IonWorldGenerator<FeatureGeneratorConfiguration>(world, configuration) {
-	val features = configuration.features.plus(AsteroidPlacementConfiguration())
-
 	override fun generateStructureStarts(context: WorldGenContext, step: ChunkStep, neighborCache: StaticCache2D<GenerationChunkHolder>, chunk: ChunkAccess) {
 		val toGenerate = generateStructureStarts(chunk.pos)
 
@@ -69,7 +66,7 @@ class FeatureGenerator(world: IonWorld, configuration: FeatureGeneratorConfigura
 		val starts = mutableListOf<FeatureStart>()
 		val chunkRandom = Random(chunk.longKey)
 
-		for (feature in features.filter { feature -> feature.getFeatureKey().getValue().canPlace() }) {
+		for (feature in configuration.features.filter { feature -> feature.getFeatureKey().getValue().canPlace() }) {
 			val featureStarts = feature.buildStartsData(world.world, chunk, chunkRandom)
 
 			starts.addAll(featureStarts)
