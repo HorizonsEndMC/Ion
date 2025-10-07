@@ -648,6 +648,15 @@ sealed interface StarshipWaveProjectileBalancing : StarshipParticleProjectileBal
 }
 
 @Serializable
+sealed interface StarshipBoidProjectileBalancing : StarshipProjectileBalancing {
+	val separationDistance: Double
+	val separationFactor: Double
+	val visibleDistance: Double
+	val alignFactor: Double
+	val centerFactor: Double
+}
+
+@Serializable
 sealed interface StarshipWeaponBalancing<T : StarshipProjectileBalancing> {
 	val clazz: KClass<out BalancedWeaponSubsystem<*>>
 	val projectile: T
