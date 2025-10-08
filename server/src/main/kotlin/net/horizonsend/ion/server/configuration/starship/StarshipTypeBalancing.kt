@@ -64,6 +64,7 @@ data class NewStarshipBalancing(
 			MiniPhaserBalancing(),
 			CthulhuBeamBalancing(),
 			CapitalCannonBalancing(),
+			TestBoidCannonBalancing(),
 		)
 	)
 

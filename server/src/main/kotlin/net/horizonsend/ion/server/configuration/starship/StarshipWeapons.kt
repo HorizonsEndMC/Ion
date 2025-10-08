@@ -1100,8 +1100,8 @@ data class TestBoidCannonBalancing(
 
 	@Serializable
 	data class TestBoidCannonProjectileBalancing(
-		override val range: Double = 200.0,
-		override val speed: Double = 10.0,
+		override val range: Double = 500.0,
+		override val speed: Double = 5.0,
 		override val explosionPower: Float = 1.0f,
 		override val starshipShieldDamageMultiplier: Double = 1.0,
 		override val areaShieldDamageMultiplier: Double = 1.0,
@@ -1109,10 +1109,10 @@ data class TestBoidCannonBalancing(
 		override val fireSoundFar: SoundInfo = SoundInfo(key = "entity.zombie_villager.converted"),
 		override val entityDamage: EntityDamage = RegularDamage(20.0),
 		override val separationDistance: Double = 8.0,
-		override val separationFactor: Double = 0.05,
+		override val separationFactor: Double = 10.0,
 		override val visibleDistance: Double = 40.0,
-		override val alignFactor: Double = 0.05,
-		override val centerFactor: Double = 0.0005
+		override val alignFactor: Double = 0.0,
+		override val centerFactor: Double = 0.0
 	) : StarshipBoidProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = TestBoidProjectile::class

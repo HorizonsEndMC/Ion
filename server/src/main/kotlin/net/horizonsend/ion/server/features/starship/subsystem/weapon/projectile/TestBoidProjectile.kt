@@ -21,7 +21,7 @@ class TestBoidProjectile(
 ) : BoidParticleProjectile<TestBoidCannonBalancing.TestBoidCannonProjectileBalancing>(source, name, loc, dir, shooter, otherBoids, damageType) {
     override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
         val particle = Particle.DUST
-        val dustOptions = Particle.DustOptions(Color.AQUA, 1f)
+        val dustOptions = Particle.DustOptions(Color.AQUA, 5f)
 
         location.world.spawnParticle(particle, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
     }

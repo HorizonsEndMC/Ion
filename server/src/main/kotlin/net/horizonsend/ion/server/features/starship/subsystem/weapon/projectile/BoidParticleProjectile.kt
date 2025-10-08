@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 import net.horizonsend.ion.server.configuration.starship.StarshipBoidProjectileBalancing
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.damage.DamageType
@@ -18,12 +19,8 @@ abstract class BoidParticleProjectile<T: StarshipBoidProjectileBalancing>(
     damageType: DamageType
 ) : BoidProjectile<T>(source, name, loc, dir, shooter, otherBoids, damageType) {
     override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
-        for (i in 0 until travel.toInt()) {
-            val x = location.x + direction.x * i
-            val y = location.y + direction.y * i
-            val z = location.z + direction.z * i
-            val force = i % 3 == 0
-            spawnParticle(x, y, z, force)
+        for (lineLoc in oldLocation.alongVector(newLocation.toVector().subtract(oldLocation.toVector()), 10)) {
+            spawnParticle(lineLoc.x, lineLoc.y, lineLoc.z, true)
         }
     }
 

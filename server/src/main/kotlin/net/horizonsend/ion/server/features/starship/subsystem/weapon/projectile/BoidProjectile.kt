@@ -27,7 +27,9 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
         otherBoids.add(this)
     }
 
+    var age = 0
     override fun tick() {
+        age++
         var neighboringBoids = 0
         val separationVector = Vector(0.0, 0.0, 0.0)
         val alignVector = Vector(0.0, 0.0, 0.0)
@@ -37,14 +39,14 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
             // Ensure that this boid does not try to modify itself
             if (boid === this) continue
 
-            if (location.distanceSquared(boid.location) < separationDistance) {
+            if (location.distanceSquared(boid.location) < separationDistance * separationDistance) {
                 // Steer away from other boids
-                separationVector.x = boid.location.x - location.x
-                separationVector.y = boid.location.y - location.y
-                separationVector.z = boid.location.z - location.z
+                separationVector.x += boid.location.x - location.x
+                separationVector.y += boid.location.y - location.y
+                separationVector.z += boid.location.z - location.z
             }
 
-            if (location.distanceSquared(boid.location) < visibleDistance) {
+            if (location.distanceSquared(boid.location) < visibleDistance * visibleDistance) {
                 // Align with nearby boids
                 neighboringBoids++
                 alignVector.x += boid.direction.x
@@ -62,10 +64,20 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
         }
 
         val oldDirection = direction.clone()
-        direction.add(separationVector.multiply(separationFactor))
-        direction.add(alignVector.clone().subtract(oldDirection).multiply(alignFactor))
-        direction.add(averagePosition.clone().subtract(location.toVector()).multiply(centerFactor))
-        direction.normalize().multiply(speed)
+        val newDirection = direction.clone()
+            .add(separationVector.clone().multiply(separationFactor))
+            .add(alignVector.clone().subtract(oldDirection).multiply(alignFactor))
+            .add(averagePosition.clone().subtract(location.toVector()).multiply(centerFactor))
+            .normalize().multiply(speed)
+        //if (direction.lengthSquared() > 30.0) direction.normalize().multiply(30.0)
+        println("TICK ${age}")
+        println("separationVector: ${separationVector.clone().multiply(separationFactor)}")
+        println("alignVector: ${alignVector.clone().subtract(oldDirection).multiply(alignFactor)}")
+        println("averagePositionBefore: ${averagePosition.clone()}")
+        println("averagePosition: ${averagePosition.clone().subtract(location.toVector()).multiply(centerFactor)}")
+        println("oldDirection: $oldDirection")
+        println("new direction: $newDirection")
+        direction = newDirection
 
         super.tick()
     }
