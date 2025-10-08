@@ -44,9 +44,7 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
                 separationVector.x += boid.location.x - location.x
                 separationVector.y += boid.location.y - location.y
                 separationVector.z += boid.location.z - location.z
-            }
-
-            if (location.distanceSquared(boid.location) < visibleDistance * visibleDistance) {
+            } else if (location.distanceSquared(boid.location) < visibleDistance * visibleDistance) {
                 // Align with nearby boids
                 neighboringBoids++
                 alignVector.x += boid.direction.x
@@ -59,8 +57,9 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
         }
 
         if (neighboringBoids > 0) {
-            alignVector.multiply(1 / neighboringBoids)
-            averagePosition.multiply(1 / neighboringBoids)
+            // Average alignment vector and center vector
+            alignVector.multiply(1 / neighboringBoids.toDouble())
+            averagePosition.multiply(1 / neighboringBoids.toDouble())
         }
 
         val oldDirection = direction.clone()
