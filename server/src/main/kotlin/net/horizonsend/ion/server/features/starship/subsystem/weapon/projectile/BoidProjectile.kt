@@ -14,8 +14,8 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
     loc: Location,
     dir: Vector,
     shooter: Damager,
-    damageType: DamageType,
-    val otherBoids: MutableList<SimpleProjectile<B>>
+    val otherBoids: MutableList<BoidProjectile<*>>,
+    damageType: DamageType
 ) : SimpleProjectile<B>(source, name, loc, dir, shooter, damageType) {
     val separationDistance: Double get() = balancing.separationDistance
     val separationFactor: Double get() = balancing.separationFactor
