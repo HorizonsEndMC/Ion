@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
+import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.starship.TestBoidCannonBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.TestBoidCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -23,7 +24,22 @@ class TestBoidWeaponSubsystem(
 
     override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
         val projectileList = mutableListOf<BoidProjectile<*>>()
-        TestBoidProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter, projectileList, TestBoidCannonStarshipWeaponMultiblock.damageType).fire()
+        for (newBoid in 0 until 9) {
+            val randomDir = dir.clone()
+                .rotateAroundX(randomDouble(-0.05, 0.05))
+                .rotateAroundY(randomDouble(-0.05, 0.05))
+                .rotateAroundZ(randomDouble(-0.05, 0.05))
+
+            TestBoidProjectile(
+                StarshipProjectileSource(starship),
+                getName(),
+                loc,
+                randomDir,
+                shooter,
+                projectileList,
+                TestBoidCannonStarshipWeaponMultiblock.damageType
+            ).fire()
+        }
     }
 
     override fun getName(): Component {
