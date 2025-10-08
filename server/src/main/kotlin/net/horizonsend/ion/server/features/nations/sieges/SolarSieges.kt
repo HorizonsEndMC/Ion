@@ -129,7 +129,7 @@ object SolarSieges : IonServerComponent(true) {
 			return@asyncLocked player.userError("Your nation already owns this station.")
 		}
 
-		if (!isSiegeDeclarationPeriod() || config.ignoreSiegeWindow) {
+		if (!isSiegeDeclarationPeriod() && !config.ignoreSiegeWindow) {
 			player.userError("It is not the siege declaration period!")
 			player.information("Solar Sieges can only be declared on Saturday or Sunday between 14:00 and 17:00 UTC")
 			return@asyncLocked

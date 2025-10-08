@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Bukkit
+import org.litote.kmongo.setValue
 import java.time.Duration
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -36,6 +37,7 @@ class SolarSiege(
 	val defender: Oid<Nation>,
 	defenderPoints: Int = 0,
 	val declaredTime: Long,
+	val availableRewards: MutableMap<String, Int> = mutableMapOf()
 ) {
 	val taskIds = mutableSetOf<Int>()
 
@@ -117,7 +119,7 @@ class SolarSiege(
 	fun succeed() {
 		SolarSiegeZone.setNation(region.id, attacker)
 
-		disperseRewards()
+		disperseMaterialRewards()
 
 		val attackerName = NationCache[attacker].name
 		val defenderName = NationCache[defender].name
@@ -217,7 +219,15 @@ class SolarSiege(
 	val defenderNameFormatted = formatNationName(defender)
 	val attackerNameFormatted = formatNationName(attacker)
 
-	fun disperseRewards() {
+	fun disperseMaterialRewards() {
+		val rewards = SolarSiegeRewards.generateRewards(attackerPoints)
+		availableRewards.putAll(rewards)
+		SolarSiegeData.updateById(databaseId, setValue(SolarSiegeData::availableRewards, availableRewards))
+	}
 
+	fun setRewardAmount(itemString: String, amount: Int) {
+		availableRewards[itemString] = amount
+		// Push the new rewards map to the db
+		SolarSiegeData.updateById(databaseId, setValue(SolarSiegeData::availableRewards, availableRewards))
 	}
 }

@@ -35,6 +35,10 @@ object GlobalCompletions {
 		return item.customItem?.getBazaarString(item) ?: item.type.toString()
 	}
 
+	fun toItemString(material: Material): String {
+		return material.toString()
+	}
+
 	val stringItemCache: LoadingCache<String, Optional<ItemStack>> = CacheBuilder.newBuilder().build(
 		CacheLoader.from { string -> Optional.ofNullable(stringToItem(string)) }
 	)
