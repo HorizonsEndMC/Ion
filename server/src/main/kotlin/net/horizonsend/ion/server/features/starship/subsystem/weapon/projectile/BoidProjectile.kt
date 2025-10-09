@@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
+import kotlin.math.pow
 
 abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
     source: ProjectileSource,
@@ -22,14 +23,26 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
     val visibleDistance: Double get() = balancing.visibleDistance
     val alignFactor: Double get() = balancing.alignFactor
     val centerFactor: Double get() = balancing.centerFactor
+    val minSpeedFactor: Double get() = balancing.minSpeedFactor
+    val maxSpeedFactor: Double get() = balancing.maxSpeedFactor
+    val originalDirectionFactor: Double get() = balancing.originalDirectionFactor
+
+    var age = 0
+    val originalDir: Vector
 
     init {
         otherBoids.add(this)
+        originalDir = dir.clone()
     }
 
-    var age = 0
     override fun tick() {
         age++
+
+        if (age < 5) {
+            super.tick()
+            return
+        }
+
         var neighboringBoids = 0
         val separationVector = Vector(0.0, 0.0, 0.0)
         val alignVector = Vector(0.0, 0.0, 0.0)
@@ -41,9 +54,10 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
 
             if (location.distanceSquared(boid.location) < separationDistance * separationDistance) {
                 // Steer away from other boids
-                separationVector.x += boid.location.x - location.x
-                separationVector.y += boid.location.y - location.y
-                separationVector.z += boid.location.z - location.z
+                //println("STEERING AWAY")
+                separationVector.x += location.x - boid.location.x
+                separationVector.y += location.y - boid.location.y
+                separationVector.z += location.z - boid.location.z
             } else if (location.distanceSquared(boid.location) < visibleDistance * visibleDistance) {
                 // Align with nearby boids
                 neighboringBoids++
@@ -67,15 +81,12 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
             .add(separationVector.clone().multiply(separationFactor))
             .add(alignVector.clone().subtract(oldDirection).multiply(alignFactor))
             .add(averagePosition.clone().subtract(location.toVector()).multiply(centerFactor))
-            .normalize().multiply(speed)
-        //if (direction.lengthSquared() > 30.0) direction.normalize().multiply(30.0)
-        println("TICK ${age}")
-        println("separationVector: ${separationVector.clone().multiply(separationFactor)}")
-        println("alignVector: ${alignVector.clone().subtract(oldDirection).multiply(alignFactor)}")
-        println("averagePositionBefore: ${averagePosition.clone()}")
-        println("averagePosition: ${averagePosition.clone().subtract(location.toVector()).multiply(centerFactor)}")
-        println("oldDirection: $oldDirection")
-        println("new direction: $newDirection")
+            .add(originalDir.clone().multiply(originalDirectionFactor))
+        if (newDirection.lengthSquared() > maxSpeedFactor.pow(2)) {
+            newDirection.normalize().multiply(maxSpeedFactor)
+        } else if (newDirection.lengthSquared() < (minSpeedFactor).pow(2)) {
+            newDirection.normalize().multiply(minSpeedFactor)
+        }
         direction = newDirection
 
         super.tick()

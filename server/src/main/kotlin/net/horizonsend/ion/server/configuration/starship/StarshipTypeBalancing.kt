@@ -655,6 +655,9 @@ sealed interface StarshipBoidProjectileBalancing : StarshipProjectileBalancing {
 	val visibleDistance: Double
 	val alignFactor: Double
 	val centerFactor: Double
+	val minSpeedFactor: Double
+	val maxSpeedFactor: Double
+	val originalDirectionFactor: Double
 }
 
 @Serializable

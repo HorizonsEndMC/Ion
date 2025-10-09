@@ -26,14 +26,16 @@ class TestBoidWeaponSubsystem(
         val projectileList = mutableListOf<BoidProjectile<*>>()
         for (newBoid in 0 until 9) {
             val randomDir = dir.clone()
-                .rotateAroundX(randomDouble(-0.05, 0.05))
-                .rotateAroundY(randomDouble(-0.05, 0.05))
-                .rotateAroundZ(randomDouble(-0.05, 0.05))
+                .rotateAroundX(randomDouble(-0.15, 0.15))
+                .rotateAroundY(randomDouble(-0.15, 0.15))
+                .rotateAroundZ(randomDouble(-0.15, 0.15))
+            val randomLoc = loc.clone()
+                .add(randomDir.clone().normalize().multiply(0.1))
 
             TestBoidProjectile(
                 StarshipProjectileSource(starship),
                 getName(),
-                loc,
+                randomLoc,
                 randomDir,
                 shooter,
                 projectileList,
