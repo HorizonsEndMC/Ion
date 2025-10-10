@@ -324,7 +324,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			}
 
 		failIf(!hyperdrive.hasFuel()) {
-			"Insufficient chetherite, need ${Hyperspace.HYPERMATTER_AMOUNT} in each hopper"
+			"Insufficient chetherite, need ${Hyperspace.getHyperMatterAmount(starship)} in each hopper"
 		}
 
 		val currentWorld = starship.world
