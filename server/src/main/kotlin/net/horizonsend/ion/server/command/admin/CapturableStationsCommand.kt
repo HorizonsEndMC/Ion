@@ -45,7 +45,7 @@ object CapturableStationsCommand : SLCommand() {
 			z
 		)
 
-		sender.success("Successfully created Solar Siege Zone ($stationName), At {$x}, {$z}")
+		sender.success("Successfully created Solar Siege Zone ({0}), At {1}, {2}", stationName, x, z)
 	}
 }
 
