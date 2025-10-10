@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
@@ -308,7 +309,7 @@ object NationsMap : IonServerComponent(true) {
 	fun addSolarSiege(station: RegionSolarSiegeZone): Unit = syncOnly {
 		removeSolarSiege(station)
 
-		val name = station.name
+		val name = "${station.name} Solar Siege Zone"
 		val world = station.world
 		val x = station.x.toDouble()
 		val y = 128.0
@@ -341,6 +342,9 @@ object NationsMap : IonServerComponent(true) {
 		marker.setFillStyle(0.4, rgb)
 		marker.setLineStyle(5, 0.8, rgb)
 
+		val siegeDeclareStartHour = ConfigurationFiles.nationConfiguration().solarSiegeConfiguration.declareWindowStart
+		val siegeDeclareEndHour = siegeDeclareStartHour + ConfigurationFiles.nationConfiguration().solarSiegeConfiguration.declareWindowDuration.toDuration().toHours()
+
 		marker.description = """
 		<p><h2>${station.name}</h2></p><p>
 		${if (nation == null) {
@@ -350,6 +354,8 @@ object NationsMap : IonServerComponent(true) {
 			<h3>Owned by ${nation.name}</h3>
 			""".trimIndent()
 		}}
+			<h3>Siege Window</h3>
+			<p>Can be sieged between $siegeDeclareStartHour:00 and $siegeDeclareEndHour:00 (UTC) on Saturdays and Sundays</p>
 		</p>
 		""".trimIndent()
 	}
