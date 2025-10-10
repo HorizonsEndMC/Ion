@@ -10,11 +10,12 @@ import net.horizonsend.ion.server.command.nations.SiegeCommand
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
+import net.horizonsend.ion.server.features.gui.GuiText
 import net.horizonsend.ion.server.features.nations.sieges.SiegeRewardsGui.SiegeRewardData
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
+import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponentUncolored
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
@@ -28,7 +29,13 @@ class SiegeRewardsGui(viewer: Player, val rewardSiegeIDs: List<Oid<SolarSiegeDat
 	override val listingsPerPage: Int = 7
 
 	override fun buildTitle(): Component {
-		return Component.text("Rewads")
+		return GuiText("Siege Rewards")
+			.setSlotOverlay(
+				"# # # # # # # # #",
+				"# . . . . . . . #",
+				"# # # # # # # # #",
+			)
+			.build()
 	}
 
 	override fun buildWindow(): Window? {
@@ -51,19 +58,21 @@ class SiegeRewardsGui(viewer: Player, val rewardSiegeIDs: List<Oid<SolarSiegeDat
 		return GuiItem.STAR
 			.makeItem(Component.text(entry.name))
 			.updateLore(entry.rewards.entries.map { (reward, amount) ->
-				val rewardName = fromItemString(reward).displayNameComponent
-
-				ofChildren(rewardName, Component.text(": ", HEColorScheme.HE_DARK_GRAY), Component.text(amount, HEColorScheme.HE_LIGHT_GRAY))
+				val rewardName = fromItemString(reward).displayNameComponentUncolored
+				val name = Component.text().color(HEColorScheme.HE_MEDIUM_GRAY).append(rewardName).build()
+				ofChildren(name, Component.text(": ", HEColorScheme.HE_DARK_GRAY), Component.text(amount, HEColorScheme.HE_LIGHT_GRAY))
 			})
 			.makeGuiButton { type, player -> openIndividualSiegeRewards(entry) }
 	}
 
 	override fun generateEntries(): List<SiegeRewardData> {
-		return rewardSiegeIDs.map { entry ->
+		return rewardSiegeIDs.mapNotNull { entry ->
 			val siegerName = runCatching { NationCache[SolarSiegeData.findOnePropById(entry, SolarSiegeData::attacker)!!].name }.getOrNull()
 			val name = "${siegerName}'s siege of ${SiegeCommand.getSiegeRegionName(entry)}"
 
 			val rewards = SolarSiegeData.findOnePropById(entry, SolarSiegeData::availableRewards) ?: mutableMapOf()
+
+			if (rewards.isEmpty()) return@mapNotNull null
 
 			SiegeRewardData(entry, name, rewards)
 		}
@@ -79,17 +88,24 @@ class SiegeRewardsGui(viewer: Player, val rewardSiegeIDs: List<Oid<SolarSiegeDat
 		IndividualSiegeGui(viewer, data).openGui(this)
 	}
 
-	class IndividualSiegeGui(viewer: Player, val data: SiegeRewardData) : ListInvUIWindow<Map.Entry<String, Int>>(viewer) {
+	inner class IndividualSiegeGui(viewer: Player, val data: SiegeRewardData) : ListInvUIWindow<Map.Entry<String, Int>>(viewer) {
 		override val listingsPerPage: Int = 18
 
 		override fun buildTitle(): Component {
-			return Component.text("${data.name} Rewards")
+			return GuiText("${data.name} Rewards")
+				.setSlotOverlay(
+					"# # # # # # # # #",
+					". . . . . . . . .",
+					". . . . . . . . .",
+					"# # # # # # # # #",
+				)
+				.build()
 		}
 
 		override fun buildWindow(): Window? {
 			val gui = PagedGui.items()
 				.setStructure(
-					". . . . . . . . .",
+					"b . . . . . . . .",
 					"# # # # # # # # #",
 					"# # # # # # # # #",
 					". l . . . . . r ."
@@ -97,6 +113,7 @@ class SiegeRewardsGui(viewer: Player, val rewardSiegeIDs: List<Oid<SolarSiegeDat
 				.addIngredient('#', Markers.CONTENT_LIST_SLOT_HORIZONTAL)
 				.addIngredient('r', GuiItems.PageRightItem())
 				.addIngredient('l', GuiItems.PageLeftItem())
+				.addIngredient('b', GuiItem.CANCEL.makeItem(Component.text("Go Back")).makeGuiButton { type, player -> SiegeRewardsGui(viewer, rewardSiegeIDs).openGui() })
 				.setContent(items)
 				.build()
 
@@ -104,24 +121,43 @@ class SiegeRewardsGui(viewer: Player, val rewardSiegeIDs: List<Oid<SolarSiegeDat
 		}
 
 		override fun createItem(entry: Map.Entry<String, Int>): Item {
-			return fromItemString(entry.key).makeGuiButton { type, player ->
-				withdrawAndReOpen(entry.key, entry.value)
-			}
+			return fromItemString(entry.key)
+				.updateLore(listOf(
+					ofChildren(Component.text("Quanity", HEColorScheme.HE_MEDIUM_GRAY), Component.text(": ", HEColorScheme.HE_DARK_GRAY), Component.text(entry.value, HEColorScheme.HE_LIGHT_GRAY)),
+					Component.text("Hold Shift to Withdraw All", HEColorScheme.HE_MEDIUM_GRAY)
+				))
+				.makeGuiButton { type, player ->
+					withdrawAndReOpen(entry.key, entry.value, if (type.isShiftClick) entry.value else 64)
+				}
 		}
 
 		override fun generateEntries(): List<Map.Entry<String, Int>> {
 			return data.rewards.entries.toList()
 		}
 
-		fun withdrawAndReOpen(item: String, amount: Int) {
+		fun withdrawAndReOpen(item: String, amount: Int, limit: Int) {
 			val itemStack = fromItemString(item)
 
 			Tasks.async {
-				val amount = data.rewards.remove(item) ?: amount
+				val amount = data.rewards[item] ?: amount
+
+				val withdrawAmount = minOf(amount, limit)
+
+				val newAmount = amount - withdrawAmount
+
+				data.rewards[item] = newAmount
+				if (newAmount <= 0) data.rewards.remove(item)
+
 				SolarSiegeData.updateById(data.id, setValue(SolarSiegeData::availableRewards, data.rewards))
 
 				Tasks.sync {
-					Bazaars.giveOrDropItems(itemStack, amount, viewer)
+					Bazaars.giveOrDropItems(itemStack, withdrawAmount, viewer)
+
+					if (data.rewards.isEmpty()) {
+						parentWindow?.openGui()
+						return@sync
+					}
+
 					openGui()
 				}
 			}

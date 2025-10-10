@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.nations.sieges
 
 import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges.config
 import org.bukkit.Material
@@ -11,7 +12,15 @@ import kotlin.math.roundToInt
 
 object SolarSiegeRewards {
 	private val SOLAR_SIEGE_REWARDS_BAG: RewardsBag = RewardsBag.builder()
-		.addReward(Material.CYAN_TERRACOTTA, 1, 1)
+		.addReward(Material.REDSTONE_BLOCK, 64, 12_500)
+		.addReward(Material.IRON_BLOCK, 64, 12_500)
+		.addReward(Material.DIAMOND_BLOCK, 64, 12_500)
+		.addReward(Material.GOLD_BLOCK, 64, 12_500)
+		.addReward(Material.EMERALD_BLOCK, 64, 12_500)
+		.addReward(Material.COPPER_BLOCK, 64, 12_500)
+		.addReward(CustomItemKeys.TITANIUM_BLOCK, 64, 12_500)
+		.addReward(CustomItemKeys.ALUMINUM_BLOCK, 64, 12_500)
+		.addReward(CustomItemKeys.CHETHERITE_BLOCK, 64, 12_500)
 		.build()
 
 	fun generateRewards(attackerPoints: Int): Map<String, Int> {
