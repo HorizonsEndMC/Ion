@@ -15,10 +15,10 @@ data class NationsConfiguration(
 		val preparationWindowDuration: DurationConfig = DurationConfig(TimeUnit.HOURS, 3),
 		val activeWindowDuration: DurationConfig = DurationConfig(TimeUnit.MINUTES, 90),
 		val participationLength: DurationConfig = DurationConfig(TimeUnit.MINUTES, 15),
-		val playerKillPoints: Int = 1000,
+		val playerKillPoints: Int = 5_000,
 		val shipCostMultiplier: Double = 1.0,
-		val referenceDestroyerPrice: Int = 10_000,
+		val referenceDestroyerPrice: Int = 19_765,
 		val ignoreSiegeWindow: Boolean = false,
-		val rewardPointCap: Int = 10_000
+		val rewardPointCap: Int = 100_000
 	)
 }
