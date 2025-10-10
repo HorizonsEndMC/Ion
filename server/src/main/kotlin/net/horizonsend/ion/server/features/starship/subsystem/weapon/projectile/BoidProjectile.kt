@@ -27,7 +27,6 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
     val maxSpeedFactor: Double get() = balancing.maxSpeedFactor
     val originalDirectionFactor: Double get() = balancing.originalDirectionFactor
 
-    var age = 0
     val originalDir: Vector
 
     init {
@@ -35,14 +34,7 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
         originalDir = dir.clone()
     }
 
-    override fun tick() {
-        age++
-
-        if (age < 5) {
-            super.tick()
-            return
-        }
-
+    fun calculateBoidDirection(oldDirection: Vector): Vector {
         var neighboringBoids = 0
         val separationVector = Vector(0.0, 0.0, 0.0)
         val alignVector = Vector(0.0, 0.0, 0.0)
@@ -76,8 +68,7 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
             averagePosition.multiply(1 / neighboringBoids.toDouble())
         }
 
-        val oldDirection = direction.clone()
-        val newDirection = direction.clone()
+        val newDirection = oldDirection.clone()
             .add(separationVector.clone().multiply(separationFactor))
             .add(alignVector.clone().subtract(oldDirection).multiply(alignFactor))
             .add(averagePosition.clone().subtract(location.toVector()).multiply(centerFactor))
@@ -87,8 +78,7 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
         } else if (newDirection.lengthSquared() < (minSpeedFactor).pow(2)) {
             newDirection.normalize().multiply(minSpeedFactor)
         }
-        direction = newDirection
 
-        super.tick()
+        return newDirection
     }
 }

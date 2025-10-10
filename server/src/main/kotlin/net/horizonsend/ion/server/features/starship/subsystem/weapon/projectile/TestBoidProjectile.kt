@@ -19,10 +19,25 @@ class TestBoidProjectile(
     otherBoids: MutableList<BoidProjectile<*>>,
     damageType: DamageType
 ) : BoidParticleProjectile<TestBoidCannonBalancing.TestBoidCannonProjectileBalancing>(source, name, loc, dir, shooter, otherBoids, damageType) {
+    var age = 0
+
     override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
         val particle = Particle.DUST
         val dustOptions = Particle.DustOptions(Color.AQUA, 5f)
 
         location.world.spawnParticle(particle, x, y, z, 1, 0.0, 0.0, 0.0, 0.0, dustOptions, force)
+    }
+
+    override fun tick() {
+        age++
+
+        if (age < 5) {
+            super.tick()
+            return
+        }
+
+        direction = calculateBoidDirection(direction)
+
+        super.tick()
     }
 }
