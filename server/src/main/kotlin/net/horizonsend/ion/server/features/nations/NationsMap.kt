@@ -334,7 +334,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		val marker: CircleMarker = markerSet.findCircleMarker(station.name) ?: return@syncOnly addSolarSiege(station)
+		val marker: CircleMarker = markerSet.findCircleMarker("${station.name} Solar Siege Zone") ?: return@syncOnly addSolarSiege(station)
 
 		val nation = station.nation?.let(NationCache::get)
 
