@@ -104,7 +104,7 @@ object SolarSieges : IonServerComponent(true) {
 		val calendar = Calendar.getInstance(getTimeZone(GMT_ID))
 		calendar.time = Date()
 		val hour = calendar.get(Calendar.HOUR_OF_DAY)
-		return hour in 14..16
+		return hour in config.declareWindowStart..config.declareWindowStart + config.declareWindowDuration.toDuration().toHours()
 	}
 
 	// Initiation, Ending
