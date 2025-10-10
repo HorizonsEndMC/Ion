@@ -169,7 +169,6 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				TriTurretBalancing(
 					fireRestrictions = FireRestrictions(minBlockCount = 3400),
-					boostChargeNanos = TimeUnit.SECONDS.toNanos(7),
 					projectile = TriTurretProjectileBalancing(speed = 110.0)
 				),
 				HeavyTurretBalancing(
@@ -268,8 +267,11 @@ data class NewStarshipBalancing(
 			shieldPowerMultiplier = 1.0,
 			weaponOverrides = listOf(
 				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, maxBlockCount = 12000)),
-				TriTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 3400)),
-				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 1000, maxBlockCount = 4000)),
+				TriTurretBalancing(
+					fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 3400),
+					boostChargeNanos = TimeUnit.SECONDS.toNanos(7)
+				),
+				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 1000, maxBlockCount = 4000))
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
@@ -355,7 +357,6 @@ data class NewStarshipBalancing(
 				QuadTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 17500)),
 				TriTurretBalancing(
 					fireRestrictions = FireRestrictions(canFire = true),
-					boostChargeNanos = TimeUnit.SECONDS.toNanos(7),
 					projectile = TriTurretProjectileBalancing(speed = 110.0)
 				),
 				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true)),
