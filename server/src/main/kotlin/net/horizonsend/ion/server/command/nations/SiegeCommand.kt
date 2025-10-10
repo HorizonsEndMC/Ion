@@ -35,9 +35,13 @@ import kotlin.time.Duration.Companion.seconds
 object SiegeCommand : SLCommand() {
 	@Default
 	fun execute(sender: Player) {
-		tellPlayerCurrentlySiegableStations(sender)
 		ensurePilotingStarship(sender)
 		beginSiege(sender)
+	}
+
+	@Subcommand("current")
+	fun onGetCurrentSiegableStations(sender: Player) {
+		tellPlayerCurrentlySiegableStations(sender)
 	}
 
 	private fun tellPlayerCurrentlySiegableStations(sender: Player) {
