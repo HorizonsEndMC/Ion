@@ -155,11 +155,14 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AIHeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AIPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.BottomArsenalStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.BottomSwarmMissileStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.DownwardRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HorizontalRocketStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HorizontalSwarmMissileStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.PhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopArsenalStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopSwarmMissileStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TorpedoStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.UpwardRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockBottom
@@ -345,6 +348,9 @@ object MultiblockRegistration : IonServerComponent() {
 
 		registerMultiblock(TopArsenalStarshipWeaponMultiblock)
 		registerMultiblock(BottomArsenalStarshipWeaponMultiblock)
+		registerMultiblock(HorizontalSwarmMissileStarshipWeaponMultiblock)
+		registerMultiblock(TopSwarmMissileStarshipWeaponMultiblock)
+		registerMultiblock(BottomSwarmMissileStarshipWeaponMultiblock)
 
 		// Starship event weapons
 		registerMultiblock(SonicMissileWeaponMultiblock)
@@ -356,6 +362,8 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(CapitalBeamStarshipWeaponMultiblock)
 		registerMultiblock(GazeStarshipWeaponMultiblock)
 		registerMultiblock(SkullThrowerStarshipWeaponMultiblock)
+
+		// Starship test weapons
 		registerMultiblock(TestBoidCannonStarshipWeaponMultiblock)
 
 		// Starship utilities
