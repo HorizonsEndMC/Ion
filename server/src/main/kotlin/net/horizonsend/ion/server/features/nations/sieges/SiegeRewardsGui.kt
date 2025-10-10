@@ -5,6 +5,7 @@ import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.command.nations.SiegeCommand
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
@@ -15,7 +16,7 @@ import net.horizonsend.ion.server.features.nations.sieges.SiegeRewardsGui.SiegeR
 import net.horizonsend.ion.server.gui.invui.ListInvUIWindow
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponentUncolored
+import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
 import net.kyori.adventure.text.Component
 import org.bukkit.entity.Player
@@ -58,9 +59,8 @@ class SiegeRewardsGui(viewer: Player, val rewardSiegeIDs: List<Oid<SolarSiegeDat
 		return GuiItem.STAR
 			.makeItem(Component.text(entry.name))
 			.updateLore(entry.rewards.entries.map { (reward, amount) ->
-				val rewardName = fromItemString(reward).displayNameComponentUncolored
-				val name = Component.text().color(HEColorScheme.HE_MEDIUM_GRAY).append(rewardName).build()
-				ofChildren(name, Component.text(": ", HEColorScheme.HE_DARK_GRAY), Component.text(amount, HEColorScheme.HE_LIGHT_GRAY))
+				val rewardName = fromItemString(reward).displayNameComponent
+				ofChildren(rewardName, Component.text(": ", HEColorScheme.HE_DARK_GRAY), Component.text(amount, HEColorScheme.HE_LIGHT_GRAY))
 			})
 			.makeGuiButton { type, player -> openIndividualSiegeRewards(entry) }
 	}
@@ -152,6 +152,7 @@ class SiegeRewardsGui(viewer: Player, val rewardSiegeIDs: List<Oid<SolarSiegeDat
 
 				Tasks.sync {
 					Bazaars.giveOrDropItems(itemStack, withdrawAmount, viewer)
+					IonServer.slF4JLogger.info("${viewer.name} withdrew $withdrawAmount $item from siege rewards.")
 
 					if (data.rewards.isEmpty()) {
 						parentWindow?.openGui()

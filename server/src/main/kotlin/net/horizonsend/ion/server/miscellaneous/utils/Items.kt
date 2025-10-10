@@ -58,8 +58,4 @@ val ItemStack.displayNameComponent: Component get() =
 	if (hasData(DataComponentTypes.CUSTOM_NAME)) getData(DataComponentTypes.CUSTOM_NAME)!!.asComponent()
 	else PaperAdventure.asAdventure(CraftItemStack.asNMSCopy(this).itemName).itemName
 
-val ItemStack.displayNameComponentUncolored: Component get() =
-	if (hasData(DataComponentTypes.CUSTOM_NAME)) getData(DataComponentTypes.CUSTOM_NAME)!!.asComponent()
-	else PaperAdventure.asAdventure(CraftItemStack.asNMSCopy(this).itemName)
-
 val ItemStack.displayNameString get() = displayNameComponent.plainText()

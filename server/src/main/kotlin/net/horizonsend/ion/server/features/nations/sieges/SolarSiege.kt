@@ -9,6 +9,7 @@ import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.utils.discord.Embed
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.formatNationName
 import net.horizonsend.ion.common.utils.text.lineBreak
@@ -17,6 +18,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.command.nations.SiegeCommand.SIEGE_INFO_WIDTH
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.cache.PlayerCache
@@ -26,6 +28,7 @@ import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiege
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges.config
 import net.horizonsend.ion.server.miscellaneous.utils.Notify
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.runnable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.newline
@@ -119,7 +122,6 @@ class SolarSiege(
 	fun endSiege(disableEarlyCheck: Boolean = false) {
 		removeActive()
 		if (isSuccess()) succeed() else fail(disableEarlyCheck)
-
 	}
 
 	private fun isSuccess(): Boolean {
@@ -297,11 +299,17 @@ class SolarSiege(
 		val rewards = SolarSiegeRewards.generateRewards(attackerPoints)
 		availableRewards.putAll(rewards)
 		SolarSiegeData.updateById(databaseId, setValue(SolarSiegeData::availableRewards, availableRewards))
-	}
 
-	fun setRewardAmount(itemString: String, amount: Int) {
-		availableRewards[itemString] = amount
-		// Push the new rewards map to the db
-		SolarSiegeData.updateById(databaseId, setValue(SolarSiegeData::availableRewards, availableRewards))
+		Tasks.async {
+			val message = text()
+				.append(template(text("For winning your siege of {0} against {1}, your nation has won:", HE_MEDIUM_GRAY), region.name, defenderNameFormatted))
+
+			for ((material, amount) in availableRewards) {
+				val rewardName = fromItemString(material).displayNameComponent
+				message.append(newline(), ofChildren(rewardName, Component.text(": ", HEColorScheme.HE_DARK_GRAY), Component.text(amount, HEColorScheme.HE_LIGHT_GRAY)))
+			}
+
+			Notify.nationCrossServer(attacker, message.build())
+		}
 	}
 }
