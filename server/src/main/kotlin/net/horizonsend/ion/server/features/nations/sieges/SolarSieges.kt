@@ -195,7 +195,7 @@ object SolarSieges : IonServerComponent(true) {
 
 		val nationName = NationCache[playerNation].name
 		Notify.chatAndEvents(template(
-			text("{0} of {1} has abandoned {2}"),
+			text("{0} of {1} has abandoned {2}", HE_MEDIUM_GRAY),
 			useQuotesAroundObjects = false,
 			player.name,
 			nationName,
@@ -213,7 +213,7 @@ object SolarSieges : IonServerComponent(true) {
 
 		val nationName = NationCache[playerNation].name
 		Notify.chatAndEvents(template(
-			text("{0} of {1} has abandoned {2}"),
+			text("{0} of {1} has abandoned {2}", HE_MEDIUM_GRAY),
 			useQuotesAroundObjects = false,
 			player.name,
 			nationName,
@@ -306,7 +306,7 @@ object SolarSieges : IonServerComponent(true) {
 
 		if (attackerNew > 0) {
 			siege.attackerPoints += attackerNew
-			log.info("Awarded attacker $attackerNew points")
+			log.info("Awarded attacker $attackerNew passive points")
 
 			siegeAudience.sendMessage(template(
 				text("{0} accrued {1} passive points for being inside the siege region."),
@@ -342,7 +342,9 @@ object SolarSieges : IonServerComponent(true) {
 		if (participationData != null) {
 			val now = System.currentTimeMillis()
 			val participationLength = config.participationLength.toDuration()
-			if (participationData.tagTime - now <= participationLength.toMillis()) return participationData.siege.let(activeSieges::get)
+			if (participationData.tagTime - now <= participationLength.toMillis()) {
+				if (activeSieges.containsKey(participationData.siege)) return participationData.siege.let(activeSieges::get)
+			}
 		}
 
 		val contained = getAllActiveSieges().firstOrNull { it.region.contains(player.location) && it.isActivePeriod() } ?: return null

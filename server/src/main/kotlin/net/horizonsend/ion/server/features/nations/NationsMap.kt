@@ -340,6 +340,18 @@ object NationsMap : IonServerComponent(true) {
 		val rgb = nation?.color ?: Color.WHITE.asRGB()
 		marker.setFillStyle(0.4, rgb)
 		marker.setLineStyle(5, 0.8, rgb)
+
+		marker.description = """
+		<p><h2>${station.name}</h2></p><p>
+		${if (nation == null) {
+			""
+		} else {
+			"""
+			<h3>Owned by ${nation.name}</h3>
+			""".trimIndent()
+		}}
+		</p>
+		""".trimIndent()
 	}
 
 	fun addSpaceStation(station: RegionSpaceStation<*, *>): Unit = syncOnly {

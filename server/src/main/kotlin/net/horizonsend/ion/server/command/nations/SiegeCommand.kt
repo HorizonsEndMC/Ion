@@ -104,7 +104,7 @@ object SiegeCommand : SLCommand() {
 		fail { "You aren't a participant of this siege!" }
 	}
 
-	private const val WIDTH = 48
+	val SIEGE_INFO_WIDTH get() = 48
 
 	@Subcommand("status")
 	@CommandCompletion("@solarSieges")
@@ -120,8 +120,8 @@ object SiegeCommand : SLCommand() {
 		val totalWidth = lineBreak.minecraftLength + 8
 
 		val totalPoints = (siege.defenderPoints + siege.attackerPoints).toDouble()
-		val attackerWidth = ((siege.attackerPoints.toDouble() / max(totalPoints, 1.0)) * WIDTH).roundToInt()
-		val defenderWidth = ((siege.defenderPoints.toDouble() / max(totalPoints, 1.0)) * WIDTH).roundToInt()
+		val attackerWidth = ((siege.attackerPoints.toDouble() / max(totalPoints, 1.0)) * SIEGE_INFO_WIDTH).roundToInt()
+		val defenderWidth = ((siege.defenderPoints.toDouble() / max(totalPoints, 1.0)) * SIEGE_INFO_WIDTH).roundToInt()
 
 		val attackerColor = NationCache[siege.attacker].textColor
 		val defenderColor = NationCache[siege.defender].textColor
