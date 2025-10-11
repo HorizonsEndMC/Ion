@@ -280,7 +280,7 @@ object SolarSieges : IonServerComponent(true) {
 		val world = siege.region.bukkitWorld ?: return
 		val starships = ActiveStarships.getInWorld(world)
 		val contained = starships
-			.filter { siege.region.contains(it.centerOfMass.x, it.centerOfMass.y, it.centerOfMass.z) }
+			.filter { siege.region.contains(it.centerOfMass.x, it.centerOfMass.y, it.centerOfMass.z) && it.initialBlockCount >= config.minimumPassivePointsShipSize }
 			.mapNotNull { it.controller as? PlayerController }
 
 		val siegeAudience = ForwardingAudience { Bukkit.getOnlinePlayers().filter { getParticipating(it) == siege } }
