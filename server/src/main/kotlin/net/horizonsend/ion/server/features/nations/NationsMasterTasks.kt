@@ -11,11 +11,10 @@ import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
 import net.horizonsend.ion.common.database.schema.nations.SettlementRole
+import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
 import net.horizonsend.ion.common.database.uuid
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
-import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
@@ -136,6 +135,17 @@ object NationsMasterTasks : IonServerComponent() {
 						"<gold>Your nation received <yellow>${stationIncome.toCreditsString()}<gold> credits " +
 							"from captured space station hourly income with <dark_aqua>$stationCount<gold> stations"
 					)
+				)
+			}
+
+			val solarSiegeCount = SolarSiegeZone.count(SolarSiegeZone::nation eq nationId).toInt()
+			val solarSiegeIncome = solarSiegeCount * 100
+
+			if (solarSiegeIncome > 0) {
+				Nation.deposit(nationId, solarSiegeIncome)
+				Notify.nationCrossServer(
+					nationId,
+					template(Component.text("Your nation received {0} credits of hourly income for owning {0} solar siege zones."), stationIncome.toCreditComponent(), stationCount)
 				)
 			}
 
