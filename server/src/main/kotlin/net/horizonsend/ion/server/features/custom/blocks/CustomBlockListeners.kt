@@ -54,11 +54,8 @@ object CustomBlockListeners : SLEventListener() {
 			}
 
 			event.block.location.block.setBlockData(data, true)
-		} else {
-			event.block.location.block.setBlockData(block.blockData, true)
 		}
-
-		if (block is OrientableCustomBlock) {
+		else if (block is OrientableCustomBlock) {
 			val placedAgainst = BlockFace.entries.first {
 				it.modX == (event.blockAgainst.x - event.blockPlaced.x) &&
 				it.modY == (event.blockAgainst.y - event.blockPlaced.y) &&
@@ -71,7 +68,8 @@ object CustomBlockListeners : SLEventListener() {
 			}
 
 			event.block.location.block.setBlockData(data, true)
-		} else {
+		}
+		else {
 			event.block.location.block.setBlockData(block.blockData, true)
 		}
 
