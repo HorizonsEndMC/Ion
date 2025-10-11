@@ -280,7 +280,7 @@ object SolarSieges : IonServerComponent(true) {
 		val world = siege.region.bukkitWorld ?: return
 		val starships = ActiveStarships.getInWorld(world)
 		val contained = starships
-			.filter { siege.region.contains(it.centerOfMass.x, it.centerOfMass.y, it.centerOfMass.z) }
+			.filter { siege.region.contains(it.centerOfMass.x, it.centerOfMass.y, it.centerOfMass.z) && it.initialBlockCount >= config.minimumPassivePointsShipSize }
 			.mapNotNull { it.controller as? PlayerController }
 
 		val siegeAudience = ForwardingAudience { Bukkit.getOnlinePlayers().filter { getParticipating(it) == siege } }
@@ -403,5 +403,22 @@ object SolarSieges : IonServerComponent(true) {
 	fun checkZoneBenefits(player: Player, world: World): Boolean {
 		val nation = PlayerCache[player].nationOid ?: return false
 		return Regions.getAllOfInWorld<RegionSolarSiegeZone>(world).any { zone -> zone.nation == nation }
+	}
+
+	fun isWinner(siege: Oid<SolarSiegeData>, nation: Oid<Nation>): Boolean {
+		val completed = SolarSiegeData.findOnePropById(siege, SolarSiegeData::complete)
+		if (completed != true) return false
+
+		val props = SolarSiegeData.findPropsById(siege, SolarSiegeData::attacker, SolarSiegeData::defender, SolarSiegeData::attackerPoints, SolarSiegeData::defenderPoints) ?: return false
+		val attacker = props[SolarSiegeData::attacker]
+		val attackerPoints = props[SolarSiegeData::attackerPoints]
+		val defender = props[SolarSiegeData::defender]
+		val defenderPoints = props[SolarSiegeData::defenderPoints]
+
+		val success = attackerPoints > defenderPoints
+		if (nation == attacker && success) return true
+		if (nation == defender && !success) return true
+
+		return false
 	}
 }

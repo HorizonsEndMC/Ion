@@ -19,6 +19,7 @@ data class NationsConfiguration(
 		val shipCostMultiplier: Double = 1.0,
 		val referenceDestroyerPrice: Int = 19_765,
 		val ignoreSiegeWindow: Boolean = false,
-		val rewardPointCap: Int = 100_000
+		val rewardPointCap: Int = 100_000,
+		val minimumPassivePointsShipSize: Int = 350
 	)
 }

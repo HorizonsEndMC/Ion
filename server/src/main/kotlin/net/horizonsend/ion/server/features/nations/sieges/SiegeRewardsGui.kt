@@ -8,6 +8,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.command.nations.SiegeCommand
+import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiItems
@@ -66,16 +67,20 @@ class SiegeRewardsGui(viewer: Player, val rewardSiegeIDs: List<Oid<SolarSiegeDat
 	}
 
 	override fun generateEntries(): List<SiegeRewardData> {
-		return rewardSiegeIDs.mapNotNull { entry ->
-			val siegerName = runCatching { NationCache[SolarSiegeData.findOnePropById(entry, SolarSiegeData::attacker)!!].name }.getOrNull()
-			val name = "${siegerName}'s siege of ${SiegeCommand.getSiegeRegionName(entry)}"
+		val viewerNation = PlayerCache[viewer].nationOid ?: return listOf()
 
-			val rewards = SolarSiegeData.findOnePropById(entry, SolarSiegeData::availableRewards) ?: mutableMapOf()
+		return rewardSiegeIDs
+			.filter { SolarSieges.isWinner(it, viewerNation) }
+			.mapNotNull { entry ->
+				val siegerName = runCatching { NationCache[SolarSiegeData.findOnePropById(entry, SolarSiegeData::attacker)!!].name }.getOrNull()
+				val name = "${siegerName}'s siege of ${SiegeCommand.getSiegeRegionName(entry)}"
 
-			if (rewards.isEmpty()) return@mapNotNull null
+				val rewards = SolarSiegeData.findOnePropById(entry, SolarSiegeData::availableRewards) ?: mutableMapOf()
 
-			SiegeRewardData(entry, name, rewards)
-		}
+				if (rewards.isEmpty()) return@mapNotNull null
+
+				SiegeRewardData(entry, name, rewards)
+			}
 	}
 
 	data class SiegeRewardData(

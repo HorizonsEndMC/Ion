@@ -354,8 +354,7 @@ object NationsMap : IonServerComponent(true) {
 			<h3>Owned by ${nation.name}</h3>
 			""".trimIndent()
 		}}
-			<h3>Siege Window</h3>
-			<p>Can be sieged between $siegeDeclareStartHour:00 and $siegeDeclareEndHour:00 (UTC) on Saturdays and Sundays</p>
+			<p>This zone be sieged between $siegeDeclareStartHour:00 and $siegeDeclareEndHour:00 (UTC) on Saturdays and Sundays</p>
 		</p>
 		""".trimIndent()
 	}
