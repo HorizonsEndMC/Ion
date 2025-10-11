@@ -266,7 +266,7 @@ data class SwarmMissileBalancing(
 	override val maxPerShot: Int? = 2,
 	override val applyCooldownToAll: Boolean = false,
 
-	override val projectile: SwarmMissileProjectileBalancing,
+	override val projectile: SwarmMissileProjectileBalancing = SwarmMissileProjectileBalancing(),
 ) : StarshipHeavyWeaponBalancing<SwarmMissileBalancing.SwarmMissileProjectileBalancing> {
 	@Transient
 	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = SwarmMissileStarshipWeaponSubsystem::class

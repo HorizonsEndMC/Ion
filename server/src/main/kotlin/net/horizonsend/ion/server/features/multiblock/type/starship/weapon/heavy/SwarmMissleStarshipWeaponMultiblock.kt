@@ -71,17 +71,17 @@ object HorizontalSwarmMissileStarshipWeaponMultiblock : SwarmMissleStarshipWeapo
         z(3) {
             y(-1) {
                 x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-                x(0).titaniumBlock()
+                x(0).aluminumBlock()
                 x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
             }
             y(0) {
-                x(1).anyGlass()
+                x(1).titaniumBlock()
                 x(0).type(Material.COAL_BLOCK)
-                x(-1).anyGlass()
+                x(-1).titaniumBlock()
             }
             y(1) {
                 x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-                x(0).titaniumBlock()
+                x(0).anyGlass()
                 x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
             }
         }
@@ -162,7 +162,7 @@ object TopSwarmMissileStarshipWeaponMultiblock : SwarmMissleStarshipWeaponMultib
                 x(-1).sponge()
             }
             y(3) {
-                x(1).anyGlass()
+                x(1).aluminumBlock()
                 x(0).type(Material.COAL_BLOCK)
                 x(-1).anyGlass()
             }
@@ -241,7 +241,7 @@ object BottomSwarmMissileStarshipWeaponMultiblock : SwarmMissleStarshipWeaponMul
                 x(1).anyGlass()
             }
             y(-3) {
-                x(-1).anyGlass()
+                x(-1).aluminumBlock()
                 x(0).type(Material.COAL_BLOCK)
                 x(1).anyGlass()
             }

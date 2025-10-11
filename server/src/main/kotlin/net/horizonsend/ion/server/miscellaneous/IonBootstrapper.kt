@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HorizontalRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.PhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopArsenalStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopSwarmMissileStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TorpedoStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockTop
 import net.minecraft.core.cauldron.CauldronInteraction
@@ -63,6 +64,7 @@ class IonBootstrapper : PluginBootstrap {
 			TorpedoStarshipWeaponMultiblock,
 			PointDefenseStarshipWeaponMultiblockTop,
 			TestBoidCannonStarshipWeaponMultiblock,
+			TopSwarmMissileStarshipWeaponMultiblock,
 		)
 
 
