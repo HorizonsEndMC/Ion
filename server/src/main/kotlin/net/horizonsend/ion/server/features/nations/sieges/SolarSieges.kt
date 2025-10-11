@@ -404,4 +404,21 @@ object SolarSieges : IonServerComponent(true) {
 		val nation = PlayerCache[player].nationOid ?: return false
 		return Regions.getAllOfInWorld<RegionSolarSiegeZone>(world).any { zone -> zone.nation == nation }
 	}
+
+	fun isWinner(siege: Oid<SolarSiegeData>, nation: Oid<Nation>): Boolean {
+		val completed = SolarSiegeData.findOnePropById(siege, SolarSiegeData::complete)
+		if (completed != true) return false
+
+		val props = SolarSiegeData.findPropsById(siege, SolarSiegeData::attacker, SolarSiegeData::defender, SolarSiegeData::attackerPoints, SolarSiegeData::defenderPoints) ?: return false
+		val attacker = props[SolarSiegeData::attacker]
+		val attackerPoints = props[SolarSiegeData::attackerPoints]
+		val defender = props[SolarSiegeData::defender]
+		val defenderPoints = props[SolarSiegeData::defenderPoints]
+
+		val success = attackerPoints > defenderPoints
+		if (nation == attacker && success) return true
+		if (nation == defender && !success) return true
+
+		return false
+	}
 }

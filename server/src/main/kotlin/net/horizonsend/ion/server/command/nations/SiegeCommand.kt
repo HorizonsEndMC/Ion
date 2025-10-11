@@ -165,7 +165,7 @@ object SiegeCommand : SLCommand() {
 		val nationId = requireNationIn(sender)
 		requireNationPermission(sender, nationId, NationRole.Permission.MONEY_WITHDRAW)
 
-		val sieges = SolarSiegeData.findProp(and(or(not(SolarSiegeData::availableRewards size(0)), SolarSiegeData::availableRewards eq null), SolarSiegeData::attacker eq nationId), SolarSiegeData::_id)
+		val sieges = SolarSiegeData.findProp(and(or(not(SolarSiegeData::availableRewards size(0)), SolarSiegeData::availableRewards eq null), or(SolarSiegeData::attacker eq nationId, SolarSiegeData::defender eq nationId)), SolarSiegeData::_id)
 		failIf(!sieges.any()) { "You don't have any rewards to collect!" }
 
 		SiegeRewardsGui(sender, sieges.toList()).openGui()

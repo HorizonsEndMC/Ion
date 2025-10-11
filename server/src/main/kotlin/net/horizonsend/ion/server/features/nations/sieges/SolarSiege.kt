@@ -131,7 +131,7 @@ class SolarSiege(
 	fun succeed() {
 		SolarSiegeZone.setNation(region.id, attacker)
 
-		disperseMaterialRewards()
+		disperseMaterialRewards(true)
 
 		val attackerName = NationCache[attacker].name
 		val defenderName = NationCache[defender].name
@@ -193,7 +193,7 @@ class SolarSiege(
 			return
 		}
 
-//		Notify.chatAndGlobal()
+		disperseMaterialRewards(false)
 
 		val attackerName = NationCache[attacker].name
 		val defenderName = NationCache[defender].name
@@ -295,21 +295,21 @@ class SolarSiege(
 	val defenderNameFormatted get() = formatNationName(defender)
 	val attackerNameFormatted get() = formatNationName(attacker)
 
-	fun disperseMaterialRewards() {
+	fun disperseMaterialRewards(success: Boolean) {
 		val rewards = SolarSiegeRewards.generateRewards(attackerPoints)
 		availableRewards.putAll(rewards)
 		SolarSiegeData.updateById(databaseId, setValue(SolarSiegeData::availableRewards, availableRewards))
 
 		Tasks.async {
 			val message = text()
-				.append(template(text("For winning your siege of {0} against {1}, your nation has won:", HE_MEDIUM_GRAY), region.name, defenderNameFormatted))
+				.append(template(text("For winning your siege of {0} against {1}, your nation has won:", HE_MEDIUM_GRAY), region.name, if (success) defenderNameFormatted else attackerNameFormatted))
 
 			for ((material, amount) in availableRewards) {
 				val rewardName = fromItemString(material).displayNameComponent
 				message.append(newline(), ofChildren(rewardName, Component.text(": ", HEColorScheme.HE_DARK_GRAY), Component.text(amount, HEColorScheme.HE_LIGHT_GRAY)))
 			}
 
-			Notify.nationCrossServer(attacker, message.build())
+			Notify.nationCrossServer(if (success) attacker else defender, message.build())
 		}
 	}
 }
