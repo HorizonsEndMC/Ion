@@ -536,6 +536,15 @@ fun Vector.orthogonalThird(other: Vector): Vector {
 	return Vector(+((y * oz) + (z * oy)), -((x * oz) - (z * ox)), +((x * oy) - (y * ox)))
 }
 
+/**
+ * Linearly interpolates [this] vector with the [other] vector based on a [percentage], where 0.0 is this vector and
+ * 1.0 is the [other] vector
+ */
+fun Vector.lerp(other: Vector, percentage: Double): Vector {
+	val coercedPercentage = percentage.coerceIn(0.0, 1.0)
+	return this.multiply(1 - coercedPercentage).add(other.clone().multiply(coercedPercentage))
+}
+
 fun helixAroundVector(
 	origin: Location,
 	direction: Vector,

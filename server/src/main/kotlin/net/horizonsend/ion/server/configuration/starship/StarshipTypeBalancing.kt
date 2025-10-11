@@ -65,6 +65,7 @@ data class NewStarshipBalancing(
 			CthulhuBeamBalancing(),
 			CapitalCannonBalancing(),
 			TestBoidCannonBalancing(),
+			SwarmMissileBalancing(),
 		)
 	)
 
