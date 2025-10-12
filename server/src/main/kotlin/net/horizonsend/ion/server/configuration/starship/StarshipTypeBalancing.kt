@@ -639,6 +639,11 @@ sealed interface StarshipTrackingProjectileBalancing : StarshipParticleProjectil
 }
 
 @Serializable
+sealed interface StarshipProximityProjectileBalancing : StarshipProjectileBalancing {
+	val proximityRange: Double
+}
+
+@Serializable
 sealed interface StarshipArcedProjectileBalancing : StarshipParticleProjectileBalancing {
 	val gravityMultiplier: Double
 	val decelerationAmount: Double
