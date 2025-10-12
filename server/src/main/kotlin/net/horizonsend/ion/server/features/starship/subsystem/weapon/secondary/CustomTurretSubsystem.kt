@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.CustomTurretBaseMultiblock
@@ -11,6 +12,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.TranslationAccessor
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.ProceduralSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -39,7 +41,7 @@ import java.util.LinkedList
 class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace, val multiblock: CustomTurretBaseMultiblock) : FiredSubsystem(
 	starship,
 	pos,
-), DirectionalSubsystem {
+), DirectionalSubsystem, ProceduralSubsystem {
 	init {
 		val furnacePos = pos.plus(multiblock.furnaceOffset)
 	    val furnaceBlock = starship.world.getBlockAtKey(furnacePos.toBlockKey()).blockData as? Directional
@@ -70,10 +72,12 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		return rotate(newFace)
 	}
 
-	fun detectTurret() {
+	override fun detectStructure() {
+		if (!ConfigurationFiles.featureFlags().customTurrets) return
+
 		val starshipBlocks = starship.blocks
 		val subsystemsByPos = starship.subsystems.associateByTo(Long2ObjectOpenHashMap()) { toBlockKey(it.pos) }
-		if (!starship.contains(pos.x, pos.y + 1, pos.z)) return // Turret base is empty
+		if (!starship.contains(pos.plus(multiblock.detectionOrigin))) return // Turret base is empty
 
 		// Add the center of the turret base, it rotates with the turret to control direction.
 		val foundBlocks = LongOpenHashSet.of(pos.plus(multiblock.furnaceOffset).toBlockKey())
@@ -87,6 +91,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 
 		// Jump to start with the origin
 		visitQueue.add(Vec3i(pos.x, pos.y, pos.z).plus(multiblock.detectionOrigin))
+		debugAudience.highlightBlock(Vec3i(pos.x, pos.y, pos.z).plus(multiblock.detectionOrigin), 300L)
 
 		var iterations = 0L
 
@@ -142,7 +147,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 
 	private fun canDetect(block: Block): Boolean {
 		// Detect all blocks above the turret base
-		return block.y > multiblock.detectionOrigin.y + pos.y
+		return multiblock.canDetect(pos, Vec3i(block.x, block.y, block.z))
 	}
 
 	override fun onMovement(movement: TranslationAccessor, success: Boolean) {
