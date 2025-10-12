@@ -5,9 +5,11 @@ import net.horizonsend.ion.common.extensions.serverError
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
 import net.horizonsend.ion.server.features.space.Space
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -44,7 +46,13 @@ object Hyperspace : IonServerComponent() {
 		return movementTasks[starship]?.dest
 	}
 
-	const val HYPERMATTER_AMOUNT = 2
+	fun getHyperMatterAmount(starship: Starship): Int {
+		val playerPilot = starship.playerPilot ?: return DEFAULT_HYPERMATTER_AMOUNT
+
+		return if (SolarSieges.checkZoneBenefits(playerPilot)) 1 else DEFAULT_HYPERMATTER_AMOUNT
+	}
+
+	private const val DEFAULT_HYPERMATTER_AMOUNT = 2
 	const val INTER_SYSTEM_DISTANCE = 60000
 
 	override fun onDisable() {
