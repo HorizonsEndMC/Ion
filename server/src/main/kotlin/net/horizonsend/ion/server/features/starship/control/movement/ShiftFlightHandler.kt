@@ -43,8 +43,7 @@ class ShiftFlightHandler(controller: Controller, override val input: ShiftFlight
 		val now = System.currentTimeMillis()
 		if (now - starship.lastManualMove < starship.manualMoveCooldownMillis) return
 
-
-		if (toggledSneak) {sneakMovements = 0}
+		if (toggledSneak) { sneakMovements = 0 }
 
 		starship.lastManualMove = now
 		sneakMovements++

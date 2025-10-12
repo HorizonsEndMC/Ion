@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import com.google.common.collect.Multimap
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.type.ammo.AmmoLoaderMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.ammo.MissileLoaderMultiblock
@@ -10,6 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areas
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield20
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield30
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield5
+import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield70
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.ConnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.dockingtube.DisconnectedDockingTubeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblockTier1
@@ -30,8 +32,15 @@ import net.horizonsend.ion.server.features.multiblock.type.fluid.CanisterVentMul
 import net.horizonsend.ion.server.features.multiblock.type.fluid.ChemicalProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.PumpMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.ElectricBoilerMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.FluidCombustionBoilerMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.ItemCombustionBoilerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.BasicFluidStorageTankMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.generator.GridGeneratorMultiblockLarge
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.generator.GridGeneratorMultiblockMedium
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.generator.GridGeneratorMultiblockSmall
+import net.horizonsend.ion.server.features.multiblock.type.gridpower.turbine.TemporaryTurbineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
@@ -187,6 +196,13 @@ object MultiblockRegistration : IonServerComponent() {
 	val byDetectionName : Multimap<String, Multiblock> = multimapOf()
 
 	override fun onEnable() {
+		reloadMultiblocks()
+	}
+
+	fun reloadMultiblocks() {
+		byDetectionName.clear()
+		multiblocks.clear()
+
 		initMultiblocks()
 		sortMultiblocks()
 
@@ -309,6 +325,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(AreaShield10)
 		registerMultiblock(AreaShield20)
 		registerMultiblock(AreaShield30)
+		registerMultiblock(AreaShield70)
 
 		registerMultiblock(MobDefender)
 
@@ -420,10 +437,22 @@ object MultiblockRegistration : IonServerComponent() {
 
 		registerMultiblock(AntiAirCannonBaseMultiblock)
 
-		registerMultiblock(ChemicalProcessorMultiblock)
 		registerMultiblock(BasicFluidStorageTankMultiblock)
-		registerMultiblock(PumpMultiblock)
 		registerMultiblock(CanisterUnloaderMultiblock)
+
+		if (ConfigurationFiles.featureFlags().graphTransfer) {
+			registerMultiblock(ChemicalProcessorMultiblock)
+			registerMultiblock(PumpMultiblock)
+
+			registerMultiblock(GridGeneratorMultiblockSmall)
+			registerMultiblock(GridGeneratorMultiblockMedium)
+			registerMultiblock(GridGeneratorMultiblockLarge)
+			registerMultiblock(TemporaryTurbineMultiblock)
+
+			registerMultiblock(ElectricBoilerMultiblock)
+			registerMultiblock(FluidCombustionBoilerMultiblock)
+			registerMultiblock(ItemCombustionBoilerMultiblock)
+		}
 	}
 
 	private fun sortMultiblocks() {

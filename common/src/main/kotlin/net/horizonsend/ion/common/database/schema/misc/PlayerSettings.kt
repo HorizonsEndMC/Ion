@@ -87,6 +87,12 @@ data class PlayerSettings(
 	var displayEntityVisibility: Int = 0,
 	var nearbyWeaponSounds: Int = 0,
 	var farWeaponSounds: Int = 0,
+	var floatWhileDc: Boolean = true,
+	var reverseDcBoost: Boolean = false,
+	var toggleDcBoost: Boolean = false,
+	var alternateFireButtons: Boolean = false,
+	var chestShopDisplays: Boolean = true,
+	var miningLaserEffectLevel: Int = 3,
 ) : DbObject {
 	companion object : DbObjectCompanion<PlayerSettings, StringId<PlayerSettings>>(PlayerSettings::class, setup = {}) {
 		fun create(id: StringId<PlayerSettings>): InsertOneResult = trx { session ->

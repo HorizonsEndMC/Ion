@@ -1,11 +1,13 @@
 package net.horizonsend.ion.server.features.transport.manager
 
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.manager.ChunkFilterCache
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
 import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ChunkExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.graph.FluidNetworkManager
+import net.horizonsend.ion.server.features.transport.manager.graph.GridEnergyGraphManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ChunkCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
@@ -13,9 +15,11 @@ import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import org.bukkit.World
 import org.bukkit.persistence.PersistentDataContainer
+import java.util.UUID
 import java.util.function.Consumer
 
 class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHolder<*>>() {
@@ -64,12 +68,12 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHo
 		NewTransport.removeTransportManager(this)
 	}
 
-	fun invalidateCache(x: Int, y: Int, z: Int) {
-		invalidateCache(toBlockKey(x, y, z))
+	fun invalidateCache(x: Int, y: Int, z: Int, player: UUID?) {
+		invalidateCache(toBlockKey(x, y, z), player)
 	}
 
-	fun invalidateCache(key: BlockKey) {
-		cacheHolders.forEach { it.cache.invalidate(key) }
+	fun invalidateCache(key: BlockKey, player: UUID?) {
+		cacheHolders.forEach { it.cache.invalidate(key, player) }
 	}
 
 	fun invalidatePathing(x: Int, y: Int, z: Int) {
@@ -84,7 +88,15 @@ class ChunkTransportManager(val chunk: IonChunk) : TransportManager<ChunkCacheHo
 		storeConsumer.accept(chunk.inner.persistentDataContainer)
 	}
 
-	override fun getGraphTransportManager(): FluidNetworkManager {
+	override fun getFluidGraphTransportManager(): FluidNetworkManager {
 		return getWorld().ion.transportManager.fluidGraphManager
+	}
+
+	override fun getGridEnergyGraphTransportManager(): GridEnergyGraphManager {
+		return getWorld().ion.transportManager.gridEnergyGraphManager
+	}
+
+	override fun getMultiblockmanager(globalVec3i: Vec3i): MultiblockManager? {
+		return chunk.multiblockManager
 	}
 }

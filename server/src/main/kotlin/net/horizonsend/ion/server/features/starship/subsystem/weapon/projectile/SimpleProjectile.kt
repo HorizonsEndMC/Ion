@@ -176,7 +176,7 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 			AreaShields.withExplosionPowerOverride(fraction * explosionPower * areaShieldDamageMultiplier) {
 				if (!hasHit) {
 					// shields/area shields cancel explosion damage
-					explosionOccurred = world.createExplosion(newLoc, explosionPower)
+					explosionOccurred = if (explosionPower > 0.0) world.createExplosion(newLoc, explosionPower) else false
 
 					if (explosionPower > 0) {
 						val base = explosionPower.coerceAtLeast(1f)
@@ -185,7 +185,7 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 						toPlayersInRadius(newLoc, /* visibility radius */ 500.0) { player ->
 							val useAlt = player.getSetting(PlayerSettings::useAlternateShieldHitParticle) ?: return@toPlayersInRadius
 
-							if (useAlt == true) {
+							if (useAlt != true) {
 								// Original behavior (large single flash)
 								player.spawnParticle(
 									Particle.FLASH,

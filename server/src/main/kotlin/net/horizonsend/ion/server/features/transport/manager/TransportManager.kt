@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
 import net.horizonsend.ion.server.features.transport.manager.graph.FluidNetworkManager
+import net.horizonsend.ion.server.features.transport.manager.graph.GridEnergyGraphManager
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
@@ -21,7 +22,8 @@ abstract class TransportManager<T: CacheHolder<*>> : TransportHolder {
 	abstract val cacheHolders: Array<T>
 	abstract val tickedHolders: Array<T>
 
-	abstract fun getGraphTransportManager(): FluidNetworkManager
+	abstract fun getFluidGraphTransportManager(): FluidNetworkManager
+	abstract fun getGridEnergyGraphTransportManager(): GridEnergyGraphManager
 
 	fun markReady() {
 		for (cacheHolder in cacheHolders) {
@@ -41,7 +43,7 @@ abstract class TransportManager<T: CacheHolder<*>> : TransportHolder {
 
 		for ((index, extractor) in extractors.withIndex()) {
 			if (!extractorManager.verifyExtractor(getWorld(), extractor.pos)) {
-				invalid.add(extractor.pos)
+//				invalid.add(extractor.pos)
 				continue
 			}
 
@@ -54,7 +56,7 @@ abstract class TransportManager<T: CacheHolder<*>> : TransportHolder {
 
 		solarPanelManager.cache.tickSolarPanels()
 
-		invalid.forEach(extractorManager::removeExtractor)
+//		invalid.forEach(extractorManager::removeExtractor)
 	}
 
 	override fun tickGraphs() {}

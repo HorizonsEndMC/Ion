@@ -20,7 +20,6 @@ import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.misc.ReinforcementSpawnerModule
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager
 import net.horizonsend.ion.server.features.ai.spawning.createAIShipFromTemplate
-import net.horizonsend.ion.server.features.ai.spawning.spawner.AISpawners
 import net.horizonsend.ion.server.features.ai.starship.AITemplateRegistry
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.starship.Starship
@@ -40,7 +39,7 @@ import java.util.UUID
 object AIOpponentCommand : SLCommand() {
 	override fun onEnable(manager: PaperCommandManager) {
 		manager.commandCompletions.registerAsyncCompletion("allTemplates") {
-			AISpawners.getAllSpawners().flatMap { it.getAvailableShips() }.map { it.template.identifier }.distinct()
+			AITemplateRegistry.all().mapTo(mutableSetOf()) { it.key }
 		}
 
 		manager.commandContexts.registerContext(AITemplate::class.java) { context ->

@@ -5,7 +5,9 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.manager.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 
@@ -47,6 +49,13 @@ object MultiblockTicking : IonServerComponent() {
 		if (!IonServer.isEnabled) return
 
 		iterateManagers { manager: MultiblockManager? ->
+			if (manager is ChunkMultiblockManager) {
+				if (IonChunk[manager.world, manager.chunk.x, manager.chunk.z]?.multiblockManager !== manager) {
+					removeMultiblockManager(manager)
+					return@iterateManagers
+				}
+			}
+
 			if (manager == null) return@iterateManagers
 
 			var multiblock: AsyncTickingMultiblockEntity? = null

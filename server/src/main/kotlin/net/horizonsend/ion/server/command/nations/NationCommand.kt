@@ -476,7 +476,7 @@ internal object NationCommand : SLCommand() {
 	}
 
 	@Subcommand("top|list")
-	@Description("View the top nations on Star Legacy")
+	@Description("View the top nations on Horizon's End")
 	fun onTop(sender: CommandSender, @Optional page: Int?): Unit = asyncCommand(sender) {
 		val nations = Nation.allIds()
 

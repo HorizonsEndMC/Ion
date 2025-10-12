@@ -19,7 +19,7 @@ class EnumScrollButton<T : Enum<T>>(
 	val nameFormatter: (T) -> Component,
 	private val subEntry: Array<T> = enum.enumConstants,
 	valueConsumer: Consumer<T>
-) : ValueScrollButton(providedItem, true, value.map { it.ordinal }, increment, 0..subEntry.lastIndex, { valueConsumer.accept(subEntry[it]) }) {
+) : ValueScrollButton(providedItem, true, value.map { it.ordinal }, increment, 0..subEntry.lastIndex + 1, { valueConsumer.accept(subEntry[it]) }) {
 	override var currentLore: Supplier<List<Component>> = Supplier { listOf(ofChildren(Component.text("Current value: "), nameFormatter.invoke(value.get()))) }
 
 	override fun getResult(event: InventoryClickEvent, player: Player): InputResult {

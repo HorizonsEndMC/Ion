@@ -125,7 +125,7 @@ data class TorpedoBalancing(
 
 	@Serializable
 	data class TorpedoProjectileBalancing(
-        override val range: Double = 135.0,
+        override val range: Double = 300.0,
         override val speed: Double = 70.0,
         override val explosionPower: Float = 7.0f,
         override val starshipShieldDamageMultiplier: Double = 2.0,
@@ -546,7 +546,7 @@ data class LaserCannonBalancing(
         override val range: Double = 200.0,
         override val speed: Double = 250.0,
         override val explosionPower: Float = 2f,
-        override val starshipShieldDamageMultiplier: Double = 0.3,
+        override val starshipShieldDamageMultiplier: Double = 0.2,
         override val areaShieldDamageMultiplier: Double = 1.0,
         override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.laser_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),

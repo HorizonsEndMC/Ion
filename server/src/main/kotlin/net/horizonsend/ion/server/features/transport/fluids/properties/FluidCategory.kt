@@ -5,7 +5,8 @@ import com.manya.pdc.base.EnumDataType
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 
 enum class FluidCategory {
-	GAS;
+	GAS,
+	STEAM;
 
 	private val members = mutableListOf<FluidType>()
 

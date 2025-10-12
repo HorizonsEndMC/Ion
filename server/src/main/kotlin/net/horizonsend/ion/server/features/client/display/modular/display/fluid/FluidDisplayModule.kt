@@ -32,7 +32,7 @@ abstract class FluidDisplayModule(
 	}
 
 	override fun deRegister() {
-		container.registerUpdateListener(updateHandler)
+		container.deregisterUpdateListener(updateHandler)
 	}
 
 	companion object {

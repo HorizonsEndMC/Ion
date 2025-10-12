@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.fluids.types
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork.Companion.PIPE_INTERIOR_PADDING
@@ -12,6 +13,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Axis
 import org.bukkit.Color
+import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
 import org.bukkit.World
@@ -21,7 +23,10 @@ import kotlin.random.Random
 
 object Lava : FluidType(FluidTypeKeys.LAVA) {
 	override val categories: Array<FluidCategory> = arrayOf()
-	override val displayName: Component = text("Lava", HE_LIGHT_ORANGE)
+
+	override fun getDisplayName(stack: FluidStack): Component {
+		return text("Lava", HE_LIGHT_ORANGE)
+	}
 
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
 		val colors = setOf(
@@ -58,5 +63,17 @@ object Lava : FluidType(FluidTypeKeys.LAVA) {
 		}
 
 		world.spawnParticle(Particle.FALLING_LAVA, faceCenter, 1, 0.0, 0.0, 0.0)
+	}
+
+	override fun getIsobaricHeatCapacity(stack: FluidStack): Double {
+		return 0.84
+	}
+
+	override fun getMolarMass(): Double {
+		return 216.549
+	}
+
+	override fun getDensity(stack: FluidStack, location: Location?): Double {
+		return 2.9
 	}
 }

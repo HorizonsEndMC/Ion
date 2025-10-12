@@ -362,13 +362,23 @@ abstract class MultiblockEntity(
 		offsetForward: Int,
 		linkageDirection: RelativeFace,
 		vararg allowedEntities: KClass<out MultiblockEntity>
+	): MultiblockLinkageHolder = createLinkage(offsetRight, offsetUp, offsetForward, linkageDirection) { to ->
+		allowedEntities.any { it.isInstance(to) }
+	}
+
+	fun createLinkage(
+		offsetRight: Int,
+		offsetUp: Int,
+		offsetForward: Int,
+		linkageDirection: RelativeFace,
+		multiblockFilter: (MultiblockEntity) -> Boolean,
 	): MultiblockLinkageHolder {
 		val holder = MultiblockLinkageHolder(
 			this,
 			offsetRight,
 			offsetUp,
 			offsetForward,
-			allowedEntities,
+			multiblockFilter,
 			linkageDirection
 		)
 

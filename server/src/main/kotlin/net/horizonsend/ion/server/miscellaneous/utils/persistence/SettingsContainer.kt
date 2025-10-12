@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.miscellaneous.utils.persistence
 
-import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import org.bukkit.NamespacedKey
@@ -14,10 +13,10 @@ import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty
 
 class SettingsContainer<H : Any>(
-	val changeCallback: Consumer<SettingsProperty<H, Any?>> = Consumer { },
-	private vararg val settingsProperties: SettingsProperty<H, Any?>,
+	val changeCallback: Consumer<SettingsProperty<H, Any, Any?>> = Consumer { },
+	private vararg val settingsProperties: SettingsProperty<H, Any, Any?>,
 ) {
-	private val propertyMap: Map<KMutableProperty1<*, *>, SettingsProperty<H, Any?>> = settingsProperties.associateBy { it.backing }
+	private val propertyMap: Map<KMutableProperty1<*, *>, SettingsProperty<H, Any, Any?>> = settingsProperties.associateBy { it.backing }
 
 	fun save(sourceContainer: PersistentDataContainer, context: PersistentDataAdapterContext) {
 		sourceContainer.set(SETTINGS_CONTAINER_KEY, TAG_CONTAINER, serialize(context))
@@ -59,7 +58,7 @@ class SettingsContainer<H : Any>(
 		return storedPropertyMap[property] as V
 	}
 
-	class SettingsProperty<H : Any, out T : Any?>(val backing: KMutableProperty1<H, out T>, val serializer: PersistentDataType<*, @UnsafeVariance T>, val defaultValue: T) {
+	class SettingsProperty<H : Any, out Z : Any, out T : Z?>(val backing: KMutableProperty1<H, out T>, val serializer: PersistentDataType<*, @UnsafeVariance Z>, val defaultValue: T) {
 		private fun getKey(property: KMutableProperty1<*, *>): NamespacedKey {
 			return NamespacedKeys.key(property.name)
 		}
@@ -70,7 +69,7 @@ class SettingsContainer<H : Any>(
 	}
 
 	companion object {
-		fun <T : MultiblockEntity> multiblockSettings(data: PersistentMultiblockData, vararg settingsProperties: SettingsProperty<T, Any?>): SettingsContainer<T> {
+		fun <T : Any> multiblockSettings(data: PersistentMultiblockData, vararg settingsProperties: SettingsProperty<T, Any, Any?>): SettingsContainer<T> {
 			val container = SettingsContainer(changeCallback = {  }, *settingsProperties)
 			container.loadData(data.getAdditionalDataRaw())
 			return container
@@ -79,15 +78,17 @@ class SettingsContainer<H : Any>(
 		val SETTINGS_CONTAINER_KEY = NamespacedKeys.key("settings_container")
 	}
 
-	fun <V : Any?> getDelegate() = SettingsDelegate<V, H>(this)
+	fun <V : Any?> getDelegate(setterCallback: (value: V) -> Unit = { _ -> }) = SettingsDelegate<V, H>(this, setterCallback)
 
-	class SettingsDelegate<T : Any?, O : Any>(val container: SettingsContainer<O>) : ReadWriteProperty<O, T> {
+	class SettingsDelegate<T : Any?, O : Any>(val container: SettingsContainer<O>, val setterCallback: (value: T) -> Unit = { _ -> }) : ReadWriteProperty<O, T> {
 		override fun getValue(thisRef: O, property: KProperty<*>): T {
 			@Suppress("UNCHECKED_CAST")
 			return container.getValue(property as KMutableProperty1<O, T>)
 		}
 
 		override fun setValue(thisRef: O, property: KProperty<*>, value: T) {
+			setterCallback.invoke(value)
+
 			@Suppress("UNCHECKED_CAST")
 			return container.setValue(property as KMutableProperty1<O, T>, value)
 		}

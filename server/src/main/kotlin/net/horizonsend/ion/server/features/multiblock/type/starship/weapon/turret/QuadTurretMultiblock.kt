@@ -203,8 +203,6 @@ sealed class QuadTurretMultiblock : TurretMultiblock<QuadTurretProjectileBalanci
 		subSystem: TurretWeaponSubsystem<out StarshipTurretWeaponBalancing<QuadTurretProjectileBalancing>, QuadTurretProjectileBalancing>,
 		isAuto: Boolean
 	) {
-		val speed = getProjectileSpeed(starship)
-
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
 			if (starship.isInternallyObstructed(point, dir)) continue
 
@@ -215,9 +213,9 @@ sealed class QuadTurretMultiblock : TurretMultiblock<QuadTurretProjectileBalanci
 				subSystem.getName(),
 				loc,
 				dir,
-				speed,
 				shooter.color,
-				shooter
+				shooter,
+				subSystem.balancing.projectile
 			).fire()
 		}
 	}

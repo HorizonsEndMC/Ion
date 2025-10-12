@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.FLEET_COMMANDER_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.FLEET_ICON
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component.space
@@ -76,13 +77,15 @@ class Fleet(var leader: FleetMember?, var initalized : Boolean = true) : Forward
 	}
 
     fun switchLeader(player: Player): Boolean {
-		val result = switchLeader(player.toFleetMember())
-		if (!result) return false
+		val newLeader = player.toFleetMember()
+		if (!isMember(newLeader)) return false
 
-		for (memberId in members) {
-			val member = (memberId as? FleetMember.PlayerMember)?.let { Bukkit.getPlayer(it.uuid) } ?: continue
+		leader = newLeader
+
+		for (member in members) {
 			member.information("${player.name} is now the new Fleet Commander of your fleet")
 		}
+
 		return true
 	}
 
@@ -114,6 +117,7 @@ class Fleet(var leader: FleetMember?, var initalized : Boolean = true) : Forward
     fun jumpFleet(destination: String) {
         for (memberId in members) {
             val player = (memberId as? FleetMember.PlayerMember)?.let { Bukkit.getPlayer(it.uuid) } ?: continue
+			if (ActiveStarships.findByPilot(player) == null) continue
 
             MiscStarshipCommands.onJump(player, destination, null)
         }

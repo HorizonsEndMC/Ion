@@ -51,7 +51,7 @@ abstract class MultiblockManager(val log: Logger) {
 
 	abstract fun getNetwork(type: CacheType): TransportCache
 
-	abstract fun getSignUnsavedTime(): Long
+	abstract fun getSignUnsavedTime(time: Long? = null): Long
 
 	open fun markSignSaved() {}
 
@@ -69,6 +69,9 @@ abstract class MultiblockManager(val log: Logger) {
 		}
 
 		multiblockEntities.remove(entity.localBlockKey)?.processRemoval()
+		syncTickingMultiblockEntities.remove(entity.localBlockKey)
+		asyncTickingMultiblockEntities.remove(entity.localBlockKey)
+
 		multiblockEntities[entity.localBlockKey] = entity
 
 		entity.processLoad()

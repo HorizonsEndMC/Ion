@@ -23,11 +23,11 @@ abstract class MultiblockRecipe<E: RecipeEnviornment>(
 		.filter { it.dataTypeClass == ItemStack::class.java }
 		.filterIsInstance<RequirementHolder<E, ItemStack?, *>>()
 
-	fun verifyAllRequirements(enviornment: E): Boolean = getAllRequirements().all { holder ->
-		holder.checkRequirement(enviornment)
+	fun verifyAllRequirements(enviornment: E, displayStatuses: Boolean): Boolean = getAllRequirements().all { holder ->
+		holder.checkRequirement(enviornment, displayStatuses)
 	}
 
 	fun getAllRequirements(): Collection<RequirementHolder<E, *, *>> = requirements
 
-	abstract fun assemble(enviornment: E)
+	abstract fun assemble(enviornment: E): Boolean
 }

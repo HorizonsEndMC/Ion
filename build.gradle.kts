@@ -1,65 +1,81 @@
-import org.jetbrains.kotlin.js.parser.sourcemaps.JsonArray
-import org.jetbrains.kotlin.js.parser.sourcemaps.JsonObject
-import org.jetbrains.kotlin.js.parser.sourcemaps.JsonString
-import org.jetbrains.kotlin.js.parser.sourcemaps.parseJson
+import groovy.json.JsonSlurper
+import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
 import java.net.URI
 
 plugins {
 	id("com.github.johnrengelman.shadow") version "8.1.1" apply false
 
-	kotlin("plugin.serialization") version "2.0.20" apply false
-	kotlin("jvm") version "2.0.21" apply false
+	kotlin("plugin.serialization") version "2.2.20" apply false
+	kotlin("jvm") version "2.2.20" apply false
 }
 
 // TODO: Use Json
-// TODO: Don't redownload every time
 fun downloadJenkinsArtifact(domain: String, project: String, filter: String, location: String) {
 	val jarName = URI("https://$domain/job/$project/lastSuccessfulBuild/api/xml?xpath=/freeStyleBuild/artifact/relativePath${if (filter.isNotEmpty()) "[$filter]" else ""}").toURL()
-			.readText()
-			.substringAfter("<relativePath>$location/")
-			.substringBefore("</relativePath>")
+		.readText()
+		.substringAfter("<relativePath>$location/")
+		.substringBefore("</relativePath>")
 
-	print("Downloading $jarName... ")
+	logger.log(LogLevel.QUIET, "Downloading $jarName... ")
 
-	File("./run/paper/plugins/$jarName")
-		.writeBytes(
-			URI("https://$domain/job/$project/lastSuccessfulBuild/artifact/$location/$jarName").toURL()
-				.readBytes()
-		)
+	val projectDir = layout.buildDirectory.get().asFile.parentFile.absolutePath
 
-	println("Done!")
-}
+	val file = File("$projectDir/run/paper/plugins/$jarName")
 
-fun downloadModrinthArtifact(project: String, targetVersion: String = "1.21.4") {
-	val targetLoader = "paper"
-
-	print("Downloading $project... ")
-
-	val versions : JsonArray = parseJson(URI("https://api.modrinth.com/v2/project/$project/version").toURL().readText()) as JsonArray
-
-	val version = versions.elements.firstOrNull check@{ version ->
-		version as JsonObject
-
-		val gameVersions = version.properties["game_versions"] as JsonArray
-		val gameLoaders = version.properties["loaders"] as JsonArray
-
-		if (gameVersions.elements.none { it as JsonString; it.value == targetVersion }) return@check false
-		if (gameLoaders.elements.none { it as JsonString; it.value == targetLoader }) return@check false
-
-		true
-	} as JsonObject?
-
-	if (version == null) {
-		println("\nCould not find suitable version for $project!")
+	if (!file.exists()) {
+		file.ensureParentDirsCreated()
+		file.createNewFile()
+	} else {
+		logger.log(LogLevel.QUIET, "Plugin already present, skipping.")
 		return
 	}
 
-	val file = ((version.properties["files"] as JsonArray).elements[0] as JsonObject).properties["url"] as JsonString
-	val fileName = file.value.substringAfterLast("/")
+	file.writeBytes(URI("https://$domain/job/$project/lastSuccessfulBuild/artifact/$location/$jarName").toURL().readBytes())
 
-	File("./run/paper/plugins/$fileName").writeBytes(URI(file.value).toURL().readBytes())
+	logger.log(LogLevel.QUIET, "Done!")
+}
 
-	println("Done!")
+@Suppress("UNCHECKED_CAST")
+fun downloadModrinthArtifact(project: String, targetVersion: String = "1.21.4") {
+	val targetLoader = "paper"
+
+	logger.log(LogLevel.QUIET, "Downloading $project... ")
+
+	val versions = JsonSlurper().parseText(URI("https://api.modrinth.com/v2/project/$project/version").toURL().readText()) as ArrayList<Map<String, Any>>
+
+	val version = versions.firstOrNull check@{ version ->
+		val gameVersions = version["game_versions"] as ArrayList<String>
+		val gameLoaders = version["loaders"] as ArrayList<String>
+
+		if (gameVersions.none { it == targetVersion }) return@check false
+		if (gameLoaders.none { it == targetLoader }) return@check false
+
+		true
+	}
+
+	if (version == null) {
+		logger.log(LogLevel.ERROR, "\nCould not find suitable version for $project!")
+		return
+	}
+
+	val file = (version["files"] as ArrayList<Map<String, Any>>).first()["url"] as String
+	val fileName = file.substringAfterLast("/")
+
+	val projectDir = layout.buildDirectory.get().asFile.parentFile.absolutePath
+
+	val pluginDestinationFile = File("$projectDir/run/paper/plugins/$fileName")
+
+	if (!pluginDestinationFile.exists()) {
+		pluginDestinationFile.ensureParentDirsCreated()
+		pluginDestinationFile.createNewFile()
+	} else {
+		logger.log(LogLevel.QUIET, "Plugin already present, skipping.")
+		return
+	}
+
+	pluginDestinationFile.writeBytes(URI(file).toURL().readBytes())
+
+	logger.log(LogLevel.QUIET, "Done!")
 }
 
 tasks.register("downloadTestServerDependencies") {

@@ -7,7 +7,6 @@ import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkageManager
-import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
@@ -38,8 +37,8 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 
 	private var lastSaved = System.currentTimeMillis()
 
-	override fun getSignUnsavedTime(): Long {
-		return System.currentTimeMillis() - lastSaved
+	override fun getSignUnsavedTime(time: Long?): Long {
+		return (time ?: System.currentTimeMillis()) - lastSaved
 	}
 
 	override fun markSignSaved() {
@@ -122,10 +121,8 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 
 	fun onUnload() {
 		multiblockEntities.values.forEach {
-			it.releaseInputs()
+			it.processRemoval()
 			it.onUnload()
-
-			if (it is DisplayMultiblockEntity) it.displayHandler.remove()
 		}
 
 		MultiblockTicking.removeMultiblockManager(this)

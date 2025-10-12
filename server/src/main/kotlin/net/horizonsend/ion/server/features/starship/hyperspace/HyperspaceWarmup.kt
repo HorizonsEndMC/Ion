@@ -8,11 +8,13 @@ import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Vibration
@@ -47,6 +49,8 @@ class HyperspaceWarmup(
 	private var seconds = 0
 
 	override fun run() {
+		// Goofy aah solution to make this play once at the start (because this doesn't work in the init block)
+		if (seconds == 0) playChargeSound()
 		seconds++
 
 		if(Hyperspace.isMoving(ship)) {
@@ -93,6 +97,11 @@ class HyperspaceWarmup(
 
 		displayParticles()
 
+		// play the complete warmup sound 2 seconds before actually jumping
+		if (seconds == warmup - 2) {
+			playCompleteWarmupSound()
+		}
+
 		if (seconds < warmup) {
 			return
 		}
@@ -107,6 +116,12 @@ class HyperspaceWarmup(
 			}
 
 			drive.useFuel()
+		}
+
+		// cancel the jump warmup sound
+		toPlayersInRadius(startLocation, 500.0 * 20.0) { player ->
+			player.stopSound(ship.balancing.shipSounds.jumpChargeNear.sound)
+			player.stopSound(ship.balancing.shipSounds.jumpChargeFar.sound)
 		}
 
 		ship.informationAction("Jumping")
@@ -132,6 +147,30 @@ class HyperspaceWarmup(
 				100
 			)
 		)
+	}
+
+	private fun playChargeSound() {
+		toPlayersInRadius(startLocation, 500.0 * 20.0) { player ->
+			playDirectionalStarshipSound(
+				startLocation,
+				player,
+				ship.balancing.shipSounds.jumpChargeNear,
+				ship.balancing.shipSounds.jumpChargeFar,
+				500.0
+			)
+		}
+	}
+
+	private fun playCompleteWarmupSound() {
+		toPlayersInRadius(startLocation, 500.0 * 20.0) { player ->
+			playDirectionalStarshipSound(
+				startLocation,
+				player,
+				ship.balancing.shipSounds.jumpCompleteNear,
+				ship.balancing.shipSounds.jumpCompleteFar,
+				500.0
+			)
+		}
 	}
 
 	override fun cancel() {

@@ -158,7 +158,7 @@ object ActiveStarshipFactory {
 				continue
 			}
 
-			if (weapon is BalancedWeaponSubsystem<*> && !weapon.isForwardOnly()) {
+			if (weapon !is BalancedWeaponSubsystem<*> || !weapon.isForwardOnly()) {
 				continue
 			}
 

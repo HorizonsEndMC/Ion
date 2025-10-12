@@ -22,17 +22,17 @@ interface InputHandler {
 }
 
 interface ShiftFlightInput : InputHandler {
-	var pitch: Float
-	var yaw: Float
-	var isSneakFlying: Boolean
-	var toggledSneak: Boolean
+	val pitch: Float
+	val yaw: Float
+	val isSneakFlying: Boolean
+	val toggledSneak: Boolean
 	data class ShiftFlightData(val pitch: Float, val yaw: Float, val isSneakFlying: Boolean, val toggledSneak: Boolean)
 	override fun getData() : ShiftFlightData
 }
 
 interface DirectControlInput : InputHandler {
-	var isBoosting: Boolean
-	var selectedSpeed : Double
+	val isBoosting: Boolean
+	val selectedSpeed : Double
 
 	data class DirectControlData(val strafeVector: Vector, val selectedSpeed : Double, val isBoosting: Boolean)
 	override fun getData(): DirectControlData

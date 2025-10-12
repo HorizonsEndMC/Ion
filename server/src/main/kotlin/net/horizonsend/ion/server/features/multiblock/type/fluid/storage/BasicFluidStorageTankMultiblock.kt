@@ -13,7 +13,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.BasicFluidStorageTankMultiblock.FluidTankMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
+import net.horizonsend.ion.server.features.transport.fluids.FluidUtils
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
@@ -102,9 +103,9 @@ object BasicFluidStorageTankMultiblock : Multiblock(), EntityMultiblock<FluidTan
 		z(0) {
 			y(-1) {
 				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-				x(-1).fluidInput()
+				x(-1).fluidPort()
 				x(0).anyCopperGrate()
-				x(1).fluidInput()
+				x(1).fluidPort()
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
@@ -129,7 +130,10 @@ object BasicFluidStorageTankMultiblock : Multiblock(), EntityMultiblock<FluidTan
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		getMultiblockEntity(sign, false)?.getStores()?.first()?.let { container -> player.information(container.getContents().toString()) }
+		getMultiblockEntity(sign, false)?.getStores()?.first()?.let { container ->
+			player.information(container.getContents().toString())
+			player.information(FluidUtils.getFluidWeight(container.getContents(), sign.location).toString())
+		}
 	}
 
 	class FluidTankMultiblockEntity(
@@ -145,9 +149,9 @@ object BasicFluidStorageTankMultiblock : Multiblock(), EntityMultiblock<FluidTan
 
 		override val ioData: IOData = IOData.Companion.builder(this)
 			// Input
-			.addPort(IOType.FLUID, -1, -1, 0) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = mainStorage, inputAllowed = true, outputAllowed = false)) }
+			.addPort(IOType.FLUID, -1, -1, 0) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = mainStorage, inputAllowed = true, outputAllowed = false)) }
 			// Output
-			.addPort(IOType.FLUID, 1, -1, 0) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 1, -1, 0) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
 			.build()
 
 		val mainStorage = FluidStorageContainer(data, "main_storage", Component.text("Main Storage"), NamespacedKeys.MAIN_STORAGE, 100_000.0, FluidRestriction.Unlimited)
@@ -168,7 +172,7 @@ object BasicFluidStorageTankMultiblock : Multiblock(), EntityMultiblock<FluidTan
 		}
 
 		override fun tickAsync() {
-			bootstrapNetwork()
+			bootstrapFluidNetwork()
 		}
 	}
 }

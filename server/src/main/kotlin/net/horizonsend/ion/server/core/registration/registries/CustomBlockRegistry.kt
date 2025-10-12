@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeBlock
 import net.horizonsend.ion.server.features.custom.blocks.pipe.FluidPipeJunctionBlock
 import net.horizonsend.ion.server.features.custom.blocks.pipe.ReinforcedFluidPipeBlock
 import net.horizonsend.ion.server.features.custom.blocks.pipe.ReinforcedFluidPipeJunctionBlock
+import net.horizonsend.ion.server.features.custom.blocks.pipe.TemperatureGaugeBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.space.encounters.SecondaryChest.Companion.random
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateBlockFace
@@ -252,14 +253,14 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		register(CustomBlockKeys.ADVANCED_ITEM_EXTRACTOR, AdvancedItemExtractorBlock)
 		register(CustomBlockKeys.ITEM_FILTER, ItemFilterBlock)
 
-		register(CustomBlockKeys.FLUID_INPUT, object : CustomBlock(
-			key = CustomBlockKeys.FLUID_INPUT,
+		register(CustomBlockKeys.FLUID_PORT, object : CustomBlock(
+			key = CustomBlockKeys.FLUID_PORT,
 			blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.DOWN, BlockFace.WEST, BlockFace.EAST)),
 			drops = BlockLoot(
 				requiredTool = null,
-				drops = customItemDrop(CustomItemKeys.FLUID_INPUT)
+				drops = customItemDrop(CustomItemKeys.FLUID_PORT)
 			),
-			CustomItemKeys.FLUID_INPUT
+			CustomItemKeys.FLUID_PORT
 		), WrenchRemovable {
 			override fun decorateItem(itemStack: ItemStack, block: Block) {}
 		})
@@ -281,6 +282,39 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 
 		register(CustomBlockKeys.REINFORCED_FLUID_PIPE, ReinforcedFluidPipeBlock)
 		register(CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION, ReinforcedFluidPipeJunctionBlock)
+		register(CustomBlockKeys.TEMPERATURE_GAUGE, TemperatureGaugeBlock)
+
+		register(CustomBlockKeys.GRID_ENERGY_PORT, object : CustomBlock(
+			key = CustomBlockKeys.GRID_ENERGY_PORT,
+			blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.DOWN, BlockFace.WEST, BlockFace.NORTH)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.GRID_ENERGY_PORT)
+			),
+			CustomItemKeys.GRID_ENERGY_PORT
+		), WrenchRemovable {
+			override fun decorateItem(itemStack: ItemStack, block: Block) {}
+		})
+
+		register(CustomBlockKeys.COPPER_COIL, CustomBlock(
+			key = CustomBlockKeys.COPPER_COIL,
+			blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.DOWN, BlockFace.WEST, BlockFace.EAST, BlockFace.NORTH)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.COPPER_COIL)
+			),
+			CustomItemKeys.COPPER_COIL
+		))
+
+		register(CustomBlockKeys.ROTATION_SHAFT, CustomBlock(
+			key = CustomBlockKeys.ROTATION_SHAFT,
+			blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.DOWN, BlockFace.EAST, BlockFace.UP)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.ROTATION_SHAFT)
+			),
+			CustomItemKeys.ROTATION_SHAFT
+		))
 	}
 
 	override fun registerAdditional(key: IonRegistryKey<CustomBlock, *>, value: CustomBlock) {

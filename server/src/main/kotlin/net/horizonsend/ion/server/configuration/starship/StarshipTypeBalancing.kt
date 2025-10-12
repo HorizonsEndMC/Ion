@@ -169,12 +169,11 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				TriTurretBalancing(
 					fireRestrictions = FireRestrictions(minBlockCount = 3400),
-					boostChargeNanos = TimeUnit.SECONDS.toNanos(7),
 					projectile = TriTurretProjectileBalancing(speed = 110.0)
 				),
 				HeavyTurretBalancing(
 					fireRestrictions = FireRestrictions(minBlockCount = 16500, maxBlockCount = 20000),
-					firePowerConsumption = 10000,
+					firePowerConsumption = 3333,
 					projectile = HeavyTurretBalancing.HeavyTurretProjectileBalancing(speed = 200.0)
 				)
 			),
@@ -268,8 +267,11 @@ data class NewStarshipBalancing(
 			shieldPowerMultiplier = 1.0,
 			weaponOverrides = listOf(
 				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, maxBlockCount = 12000)),
-				TriTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 3400)),
-				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 1000, maxBlockCount = 4000)),
+				TriTurretBalancing(
+					fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 3400),
+					boostChargeNanos = TimeUnit.SECONDS.toNanos(7)
+				),
+				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 1000, maxBlockCount = 4000))
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
@@ -284,6 +286,9 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
 			shieldPowerMultiplier = 1.0,
+			weaponOverrides = listOf(
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 420),
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
@@ -297,6 +302,9 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.9,
 			shieldPowerMultiplier = 1.0,
+			weaponOverrides = listOf(
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 360),
+			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
@@ -346,10 +354,9 @@ data class NewStarshipBalancing(
 			cruiseSpeedMultiplier = 0.88,
 			shieldPowerMultiplier = 1.60,
 			weaponOverrides = listOf(
-				QuadTurretBalancing(fireRestrictions = FireRestrictions(canFire = true)),
+				QuadTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 17500)),
 				TriTurretBalancing(
-					fireRestrictions = FireRestrictions(canFire = false),
-					boostChargeNanos = TimeUnit.SECONDS.toNanos(7),
+					fireRestrictions = FireRestrictions(canFire = true),
 					projectile = TriTurretProjectileBalancing(speed = 110.0)
 				),
 				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true)),
@@ -530,6 +537,10 @@ data class StarshipSounds(
 	val explodeFar: SoundInfo? = null,
 	val startCruise: SoundInfo = SoundInfo("minecraft:block.note_block.chime", volume = 5f, pitch = 0.53f),
 	val stopCruise: SoundInfo = SoundInfo("minecraft:block.note_block.banjo", volume = 5f, pitch = 1.782f),
+	val jumpChargeNear: SoundInfo = SoundInfo("horizonsend:starship.jump.charge.near"),
+	val jumpChargeFar: SoundInfo = SoundInfo("horizonsend:starship.jump.charge.far"),
+	val jumpCompleteNear: SoundInfo = SoundInfo("horizonsend:starship.jump.complete.near"),
+	val jumpCompleteFar: SoundInfo = SoundInfo("horizonsend:starship.jump.complete.far"),
 ) {
 	@Serializable
 	data class SoundInfo(
