@@ -256,6 +256,10 @@ class Starship(
 		return isInBounds(x, y, z) && blocks.contains(blockKey(x, y, z))
 	}
 
+	fun contains(pos: Vec3i): Boolean {
+		return isInBounds(pos.x, pos.y, pos.z) && blocks.contains(pos.toBlockKey())
+	}
+
 	fun isInternallyObstructed(origin: Vec3i, dir: Vector, maxDistance: Int? = null): Boolean {
 		var x = origin.x.toDouble() + 0.5
 		var y = origin.y.toDouble() + 0.5
