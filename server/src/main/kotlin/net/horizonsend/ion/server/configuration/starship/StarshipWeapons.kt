@@ -288,8 +288,9 @@ data class SwarmMissileBalancing(
 		override val centerFactor: Double = 0.10,
 		override val minSpeedFactor: Double = 0.2,
 		override val maxSpeedFactor: Double = 1.0,
-		override val originalDirectionFactor: Double = 2.0
-	) : StarshipBoidProjectileBalancing {
+		override val originalDirectionFactor: Double = 2.0,
+		override val proximityRange: Double = 50.0,
+	) : StarshipBoidProjectileBalancing, StarshipProximityProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = SwarmMissileProjectile::class
 	}
