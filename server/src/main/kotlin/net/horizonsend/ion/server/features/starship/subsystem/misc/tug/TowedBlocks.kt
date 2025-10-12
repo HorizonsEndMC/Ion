@@ -4,14 +4,22 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
-import net.horizonsend.ion.server.features.starship.subsystem.misc.tug.TugSubsystem.Companion.MAX_ASTEROID_SIZE
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.*
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKeyZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getX
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -19,7 +27,7 @@ import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 
-class TowedBlocks private constructor (
+class TowedBlocks private constructor(
 	val subsystem: TugSubsystem,
 	val multiblockEntities: ObjectOpenHashSet<MultiblockEntity>,
 	blocks: LongArray,
@@ -28,12 +36,21 @@ class TowedBlocks private constructor (
 	val weight: Double
 ) {
 	var blocks: LongArray = blocks; private set
+	var blockSet = LongOpenHashSet(blocks); private set
 	var minPoint: Vec3i = minPoint; private set
 	var maxPoint: Vec3i = maxPoint; private set
 
 	var movementFuture: Future<Boolean>? = null
 
 	val centerPoint: Vec3i? get() = Vec3i((minPoint.x + maxPoint.x) / 2, (minPoint.y + maxPoint.y) / 2, (minPoint.z + maxPoint.z) / 2)
+
+	fun contains(position: Vec3i): Boolean {
+		return blockSet.contains(position.toBlockKey())
+	}
+
+	fun contains(x: Int, y: Int, z: Int): Boolean {
+		return blockSet.contains(blockKey(x, y, z))
+	}
 
 	fun move(transformationAccessor: TransformationAccessor) {
 		var lastTicked = System.currentTimeMillis()
@@ -55,6 +72,7 @@ class TowedBlocks private constructor (
 					executionCheck = { true }
 				) { newBlocks ->
 					blocks = newBlocks
+					blockSet = LongOpenHashSet(newBlocks)
 
 					recalculateMinMax()
 				}
@@ -138,6 +156,8 @@ class TowedBlocks private constructor (
 			var maxY: Int = Int.MIN_VALUE
 			var maxZ: Int = Int.MIN_VALUE
 
+			val towLimit = subsystem.getTowLimit()
+
 			while (visitQueue.isNotEmpty()) {
 				val current = visitQueue.removeFirst()
 				val x = getX(current)
@@ -159,8 +179,10 @@ class TowedBlocks private constructor (
 					foundMultiblockEntities.add(multiblockEntity)
 				}
 
-				if (foundBlocks.size > MAX_ASTEROID_SIZE) {
-					return ValidatorResult.FailureResult(listOf(Component.text("That structure is too large to move!")))
+				if (foundBlocks.size > towLimit) {
+					val message = template(Component.text("That structure is too large to move! You may only tow {0} blocks!", NamedTextColor.RED), towLimit)
+
+					return ValidatorResult.FailureResult(listOf(message))
 				}
 
 				if (minX > x) minX = x

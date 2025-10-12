@@ -3,7 +3,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.misc.tug
 import io.papermc.paper.raytracing.RayTraceTarget
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
-import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TugMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TugBaseMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.ProceduralSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -22,6 +23,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -32,28 +34,16 @@ import org.bukkit.util.Vector
 import java.util.concurrent.CompletableFuture
 import kotlin.math.roundToInt
 
-class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace, val multiblock: TugMultiblock) : FiredSubsystem(starship, pos), DirectionalSubsystem, ManualWeaponSubsystem {
-
+class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace, val multiblock: TugBaseMultiblock) : FiredSubsystem(starship, pos), DirectionalSubsystem, ManualWeaponSubsystem, ProceduralSubsystem {
 	private var controlMode: TugControlMode = TugControlMode.FOLLOW
 	var towState: TowState = TowState.Empty; private set
 
 	override fun canFire(dir: Vector, target: Vector): Boolean {
-		return towState.canStartDiscovery()
+		return towState.canStartDiscovery() && intact
 	}
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
 		return target.clone().subtract(getFirePosition().toVector()).normalize()
-	}
-
-	private fun getFirePosition(): Location {
-		val firePos = getRelative(pos.getRelative(face.oppositeFace), face.oppositeFace, multiblock.firePosOffset.x, multiblock.firePosOffset.y, multiblock.firePosOffset.z)
-		return firePos.toCenterVector().toLocation(starship.world)
-	}
-
-	override fun isIntact(): Boolean {
-		val origin = pos.getRelative(face.oppositeFace)
-		starship.highlightBlock(origin, 10L)
-		return multiblock.blockMatchesStructure(starship.world.getBlockAt(origin.x, origin.y, origin.z), face.oppositeFace)
 	}
 
 	fun setControlMode(new: TugControlMode) {
@@ -66,7 +56,8 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 		if (shooter !is PlayerDamager) return
 		val player = shooter.player
 
-		if (towState is TowState.Discovering) return
+		val existingState = towState
+		if (existingState is TowState.Discovering) return
 
 		val originLoc = getFirePosition()
 
@@ -88,6 +79,16 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 			it.targets(RayTraceTarget.BLOCK)
 		}?.hitBlock ?: return
 
+		if (existingState is TowState.Full) {
+			if (existingState.blocks.contains(hitBlock.x, hitBlock.y, hitBlock.z)) {
+				towState = TowState.Empty
+
+				starship.information("Released {0} blocks", existingState.blocks.blocks.size)
+
+				return
+			}
+		}
+
 		val future = CompletableFuture<TowedBlocks?>()
 
 		future.whenComplete { blocks: TowedBlocks?, exception: Throwable? ->
@@ -102,6 +103,8 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 				(towState as? TowState.Discovering)?.let { discovering -> towState = discovering.previous }
 				return@whenComplete
 			}
+
+			starship.information("Acquired {0} blocks", blocks.blocks.size)
 
 			towState = TowState.Full(blocks)
 		}
@@ -151,12 +154,78 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 	}
 
 	companion object {
-		const val MAX_ASTEROID_SIZE = 1_000_000
+		const val MAX_LENGTH = 150
 	}
 
 	fun getTowed(): TowedBlocks? = (towState as? TowState.Full)?.blocks
 
+	fun getTowLimit() = if (intact) length * 5000 else 0
+
 	override fun getMaxPerShot(): Int? {
-		return 1
+		return null
+	}
+
+	var length = 0
+	var intact: Boolean = false
+
+	override fun detectStructure() {
+		val structureDirection = face.oppositeFace
+		val detectionOrigin = multiblock.getTileOrigin(pos, structureDirection)
+
+		var length = 0
+		var failure = false
+
+		while (length < MAX_LENGTH) {
+			val position = multiblock.getOriginRelativePosition(detectionOrigin, structureDirection, length + 1)
+			val block = starship.world.getBlockAt(position.x, position.y, position.z)
+
+			if (multiblock.originMatchesTiledStructure(origin = block, direction = structureDirection, loadChunks = false)) {
+				length++
+				continue
+			}
+
+			if (multiblock.originMatchesCapStructure(origin = block, direction = structureDirection, loadChunks = false)) {
+				break
+			}
+
+			failure = true
+			break
+		}
+
+		intact = !failure
+		this.length = length
+	}
+
+	override fun isIntact(): Boolean {
+		if (!intact) return false
+
+		val structureDirection = face.oppositeFace
+		if (!multiblock.blockMatchesStructure(starship.world.getBlockAt(pos.x, pos.y, pos.z).getRelative(structureDirection), structureDirection)) return false
+
+		val tileOrigin = multiblock.getTileOrigin(pos, structureDirection)
+
+		for (prog in 1..length) {
+			val progPosition = multiblock.getOriginRelativePosition(tileOrigin, structureDirection, prog)
+			val block = starship.world.getBlockAt(progPosition.x, progPosition.y, progPosition.z)
+
+			if (!multiblock.originMatchesTiledStructure(origin = block, direction = structureDirection, loadChunks = false)) return false
+		}
+
+		val endOrigin = multiblock.getOriginRelativePosition(tileOrigin, structureDirection, length + 1)
+		val endBlock = starship.world.getBlockAt(endOrigin.x, endOrigin.y, endOrigin.z)
+
+		debugAudience.highlightBlock(endOrigin, 30L)
+
+		return multiblock.originMatchesCapStructure(origin = endBlock, direction = structureDirection, loadChunks = false)
+	}
+
+	private fun getFirePosition(): Location {
+		val structureDirection = face.oppositeFace
+
+		val tileOrigin = multiblock.getTileOrigin(pos, structureDirection)
+		val tileEnd = multiblock.getOriginRelativePosition(tileOrigin, structureDirection, length)
+		val capEnd = getRelative(tileEnd, structureDirection, right = multiblock.firePosOffset.x, up = multiblock.firePosOffset.y, forward = multiblock.firePosOffset.z)
+
+		return capEnd.toCenterVector().toLocation(starship.world)
 	}
 }
