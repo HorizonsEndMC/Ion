@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.subsystem.misc.tug
+package net.horizonsend.ion.server.features.starship.subsystem.misc.tractor
 
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.input.InputHandler
@@ -15,14 +15,14 @@ import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.util.Vector
 import kotlin.math.roundToInt
 
-class TugWASDHandler(controller: PlayerController) : MovementHandler(controller, "Tug Direct") {
-	override val input: TugWASDInput = TugWASDInput(controller)
+class TractorWASDHandler(controller: PlayerController) : MovementHandler(controller, "Tractor Direct") {
+	override val input: TractorWASDInput = TractorWASDInput(controller)
 
-	val tug = controller.starship.tugs.firstOrNull()
+	val tractor = controller.starship.tractors.firstOrNull()
 
 	override fun tick() {
-		if (tug == null) return
-		val state = tug.getTowed() ?: return
+		if (tractor == null) return
+		val state = tractor.getTowed() ?: return
 
 		popTranslations(state)
 		popRotations(state)
@@ -60,7 +60,7 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 		state.move(TransformationAccessor.RotationTransformation(null, fullRotation) { middle })
 	}
 
-	inner class TugWASDInput(override val controller: PlayerController) : InputHandler, PlayerInput {
+	inner class TractorWASDInput(override val controller: PlayerController) : InputHandler, PlayerInput {
 		override fun getData(): Any = Any()
 		override val player: Player = controller.player
 
@@ -68,14 +68,14 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 		val queuedRotations = ArrayDeque<Double>()
 
 		override fun handleMove(event: PlayerMoveEvent) {
-			if (tug == null) return
+			if (tractor == null) return
 
 			if (!event.hasChangedPosition()) return
 
 			if (player.isSneaking) return
 
 			event.isCancelled = true
-			if (!tug.towState.canStartDiscovery()) return
+			if (!tractor.towState.canStartDiscovery()) return
 
 			val difference = event.to.clone().subtract(event.from).toVector().normalize()
 
@@ -83,10 +83,10 @@ class TugWASDHandler(controller: PlayerController) : MovementHandler(controller,
 		}
 
 		override fun handleSneak(event: PlayerToggleSneakEvent) {
-			if (tug == null) return
+			if (tractor == null) return
 
 			event.isCancelled = true
-			if (!tug.towState.canStartDiscovery()) return
+			if (!tractor.towState.canStartDiscovery()) return
 
 			moveVectorDeque.addLast(Vector(0.0, -1.0, 0.0))
 		}

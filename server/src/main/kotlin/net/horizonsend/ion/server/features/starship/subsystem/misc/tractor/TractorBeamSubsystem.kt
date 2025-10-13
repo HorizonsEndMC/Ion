@@ -1,9 +1,9 @@
-package net.horizonsend.ion.server.features.starship.subsystem.misc.tug
+package net.horizonsend.ion.server.features.starship.subsystem.misc.tractor
 
 import io.papermc.paper.raytracing.RayTraceTarget
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing
-import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TugBaseMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TractorBeamBaseMultiblock
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -37,13 +37,13 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Supplier
 import kotlin.math.roundToInt
 
-class TugSubsystem(
+class TractorBeamSubsystem(
 	starship: Starship,
 	pos: Vec3i,
 	override var face: BlockFace,
-	val multiblock: TugBaseMultiblock
+	val multiblock: TractorBeamBaseMultiblock
 ) : FiredSubsystem(starship, pos), DirectionalSubsystem, ManualWeaponSubsystem, ProceduralSubsystem, BalancedSubsystem<NewStarshipBalancing.TractorBalancing> {
-	override val balancingSupplier: Supplier<NewStarshipBalancing.TractorBalancing> = starship.balancingManager.getSubsystemSupplier(TugSubsystem::class)
+	override val balancingSupplier: Supplier<NewStarshipBalancing.TractorBalancing> = starship.balancingManager.getSubsystemSupplier(TractorBeamSubsystem::class)
 
 	/**
 	 * Store of the length of the tiled section of the procedural multiblock structure
@@ -55,7 +55,7 @@ class TugSubsystem(
 	 **/
 	private var structureIntact: Boolean = false
 
-	private var controlMode: TugControlMode = TugControlMode.FOLLOW
+	private var controlMode: TractorControlMode = TractorControlMode.FOLLOW
 	var towState: TowState = TowState.Empty
 		private set(value) {
 			field = value
@@ -71,7 +71,7 @@ class TugSubsystem(
 		return target.clone().subtract(getFirePosition().toVector()).normalize()
 	}
 
-	fun setControlMode(new: TugControlMode) {
+	fun setControlMode(new: TractorControlMode) {
 		controlMode.onStop(starship)
 		controlMode = new
 		new.onSetup(starship)
@@ -159,7 +159,7 @@ class TugSubsystem(
 	}
 
 	override fun onMovement(movement: TransformationAccessor, success: Boolean) {
-		if (movement !is TranslateMovement || !success || controlMode != TugControlMode.FOLLOW) return
+		if (movement !is TranslateMovement || !success || controlMode != TractorControlMode.FOLLOW) return
 		towState.handleMovement(movement)
 	}
 

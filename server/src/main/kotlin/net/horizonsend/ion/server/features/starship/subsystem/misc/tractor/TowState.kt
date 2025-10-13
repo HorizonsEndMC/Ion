@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.subsystem.misc.tug
+package net.horizonsend.ion.server.features.starship.subsystem.misc.tractor
 
 import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import java.util.concurrent.Future

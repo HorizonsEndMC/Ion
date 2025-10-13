@@ -58,7 +58,7 @@ import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconM
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.misc.tug.TugControlMode
+import net.horizonsend.ion.server.features.starship.subsystem.misc.tractor.TractorControlMode
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ArsenalRocketStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
@@ -784,12 +784,17 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@Suppress("unused")
-	@CommandAlias("towmode|tug towmode")
-	fun onSetTowMode(sender: Player, mode: TugControlMode) {
+	@CommandAlias("towmode|tractor towmode")
+	fun onSetTowMode(sender: Player, mode: TractorControlMode) {
 		val starship = getStarshipPiloting(sender)
-		val tug = starship.tugs.firstOrNull() ?: fail { "Your starship is not equipped with a tug!" }
+		val tractor = starship.tractors.firstOrNull() ?: fail { "Your starship is not equipped with a tractor beam!" }
 
-		sender.information("Updated starship tow mode to $mode")
-		tug.setControlMode(mode)
+		val tractors = starship.tractors
+		failIf(tractors.isEmpty()) { "Your starship is not equipped with a tractor beam!" }
+
+		tractors.forEach { t ->
+			sender.information("Updated starship tow mode to $mode")
+			tractor.setControlMode(mode)
+		}
 	}
 }

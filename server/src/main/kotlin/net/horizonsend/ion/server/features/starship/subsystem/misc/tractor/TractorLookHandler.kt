@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.subsystem.misc.tug
+package net.horizonsend.ion.server.features.starship.subsystem.misc.tractor
 
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.input.InputHandler
@@ -15,21 +15,21 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.util.Vector
 import kotlin.math.roundToInt
 
-class TugLookHandler(controller: PlayerController) : MovementHandler(controller, "Tug Look") {
-	override val input: TugLookInput = TugLookInput(controller)
+class TractorLookHandler(controller: PlayerController) : MovementHandler(controller, "Tractor Look") {
+	override val input: TractorLookInput = TractorLookInput(controller)
 
-	val tug = controller.starship.tugs.firstOrNull()
+	val tractor = controller.starship.tractors.firstOrNull()
 
 	override fun tick() {
-		if (tug == null) return
-		val state = tug.getTowed() ?: return
+		if (tractor == null) return
+		val state = tractor.getTowed() ?: return
 
-		popDistanceChanges(tug, state)
-		popRotations(tug, state)
-		trackView(tug, state)
+		popDistanceChanges(tractor, state)
+		popRotations(tractor, state)
+		trackView(tractor, state)
 	}
 
-	fun popDistanceChanges(tug: TugSubsystem, state: TowedBlocks) {
+	fun popDistanceChanges(tug: TractorBeamSubsystem, state: TowedBlocks) {
 		val center = state.centerPoint ?: return
 		var direction: RelativeFace? = null
 
@@ -53,7 +53,7 @@ class TugLookHandler(controller: PlayerController) : MovementHandler(controller,
 		state.move(TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
 	}
 
-	fun popRotations(tug: TugSubsystem, state: TowedBlocks) {
+	fun popRotations(tug: TractorBeamSubsystem, state: TowedBlocks) {
 		val middle = state.centerPoint ?: return
 
 		var fullRotation = 0.0
@@ -70,7 +70,7 @@ class TugLookHandler(controller: PlayerController) : MovementHandler(controller,
 
 	var lastDirection: Vector? = starship.playerPilot?.location?.direction
 
-	fun trackView(tug: TugSubsystem, state: TowedBlocks) {
+	fun trackView(tug: TractorBeamSubsystem, state: TowedBlocks) {
 		val center = state.centerPoint ?: return
 		val playerPilot = starship.playerPilot?: return
 		val viewDirection = playerPilot.location.direction
@@ -92,7 +92,7 @@ class TugLookHandler(controller: PlayerController) : MovementHandler(controller,
 		state.move(TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
 	}
 
-	inner class TugLookInput(override val controller: PlayerController) : InputHandler, PlayerInput {
+	inner class TractorLookInput(override val controller: PlayerController) : InputHandler, PlayerInput {
 		override fun getData(): Any = Any()
 		override val player: Player = controller.player
 
@@ -100,7 +100,7 @@ class TugLookHandler(controller: PlayerController) : MovementHandler(controller,
 		val queuedRotations = ArrayDeque<Double>()
 
 		override fun handlePlayerHoldItem(event: PlayerItemHeldEvent) {
-			if (tug == null) return
+			if (tractor == null) return
 			event.isCancelled = true
 
 			if (event.player.inventory.getItem(event.previousSlot)?.type != StarshipControl.CONTROLLER_TYPE) return
@@ -145,9 +145,5 @@ class TugLookHandler(controller: PlayerController) : MovementHandler(controller,
 
 			queuedRotations.add(270.0)
 		}
-	}
-
-	companion object {
-		private const val MAX_DISTANCE = 5
 	}
 }

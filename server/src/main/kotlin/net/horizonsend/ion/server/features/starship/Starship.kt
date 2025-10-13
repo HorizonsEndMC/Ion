@@ -67,7 +67,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSub
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.PlanetDrillSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.misc.tug.TugSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.tractor.TractorBeamSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustData
@@ -345,7 +345,7 @@ class Starship(
 	var lastBlockedTime: Long = 0
 
 	// To fix initialization order issue
-	val tugs = LinkedList<TugSubsystem>()
+	val tractors = LinkedList<TractorBeamSubsystem>()
 
 	var manualMoveCooldownMillis: Long = calculateManualMoveCooldown()
 
@@ -357,7 +357,7 @@ class Starship(
 	private fun calculateManualMoveCooldown(): Long {
 		val baseMass = (cbrt(initialBlockCount.toDouble()) * 40).toLong()
 
-		val towed = tugs.mapNotNull { subsystem -> subsystem.getTowed() }
+		val towed = tractors.mapNotNull { subsystem -> subsystem.getTowed() }
 
 		if (towed.isEmpty()) return baseMass
 
@@ -778,6 +778,6 @@ class Starship(
 	}
 
 	fun getTotalMass(): Double {
-		return mass + tugs.sumOf { it.getTowed()?.mass ?: 0.0 }
+		return mass + tractors.sumOf { it.getTowed()?.mass ?: 0.0 }
 	}
 }

@@ -141,7 +141,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier4SideMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier4Top
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier4TopMirrored
-import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TugBaseMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TractorBeamBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.HorizontalNavigationComputerMultiblockAdvanced
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.VerticalNavigationComputerMultiblockAdvanced
@@ -393,8 +393,8 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(HyperdriveMultiblockClass3)
 		registerMultiblock(HyperdriveMultiblockClass4)
 
-		registerMultiblock(TugBaseMultiblock.HorizontalTugBaseMultiblock)
-		registerMultiblock(TugBaseMultiblock.VerticalTugBaseMultiblock)
+		registerMultiblock(TractorBeamBaseMultiblock.HorizontalTractorBeamBaseMultiblock)
+		registerMultiblock(TractorBeamBaseMultiblock.VerticalTractorBeamBaseMultiblock)
 
 		// Starship shields
 		registerMultiblock(ShieldMultiblockClass08Right)

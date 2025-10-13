@@ -7,7 +7,7 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.starship.SubsystemMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.subsystem.misc.tug.TugSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.tractor.TractorBeamSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
@@ -19,8 +19,8 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
 
-sealed class TugBaseMultiblock : Multiblock(), SubsystemMultiblock<TugSubsystem> {
-	override val name: String = "tug"
+sealed class TractorBeamBaseMultiblock : Multiblock(), SubsystemMultiblock<TractorBeamSubsystem> {
+	override val name: String = "tractorbeam"
 
 	override val signText: Array<Component?> = createSignText(
 		bracketed(Component.text("Tractor Beam", NamedTextColor.AQUA)),
@@ -49,11 +49,11 @@ sealed class TugBaseMultiblock : Multiblock(), SubsystemMultiblock<TugSubsystem>
 		return tiledStructure.checkRequirementsSpecific(origin = origin, face = direction, loadChunks = loadChunks, particles = false)
 	}
 
-	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TugSubsystem {
-		return TugSubsystem(starship, pos, face, this)
+	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TractorBeamSubsystem {
+		return TractorBeamSubsystem(starship, pos, face, this)
 	}
 
-	object HorizontalTugBaseMultiblock : TugBaseMultiblock() {
+	object HorizontalTractorBeamBaseMultiblock : TractorBeamBaseMultiblock() {
 		override val firePosOffset: Vec3i = Vec3i(0, 0, 5)
 
 		override fun getTileOrigin(subsytemPos: Vec3i, subsystemDirection: BlockFace): Vec3i {
@@ -170,7 +170,7 @@ sealed class TugBaseMultiblock : Multiblock(), SubsystemMultiblock<TugSubsystem>
 		}
 	}
 
-	object VerticalTugBaseMultiblock : TugBaseMultiblock() {
+	object VerticalTractorBeamBaseMultiblock : TractorBeamBaseMultiblock() {
 		override val firePosOffset: Vec3i = Vec3i(0, 5, 0)
 
 		override fun getTileOrigin(subsytemPos: Vec3i, subsystemDirection: BlockFace): Vec3i {

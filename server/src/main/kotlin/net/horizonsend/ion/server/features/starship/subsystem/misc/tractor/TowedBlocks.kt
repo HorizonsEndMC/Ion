@@ -1,4 +1,4 @@
-package net.horizonsend.ion.server.features.starship.subsystem.misc.tug
+package net.horizonsend.ion.server.features.starship.subsystem.misc.tractor
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
@@ -29,12 +29,12 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 
 class TowedBlocks private constructor(
-	val subsystem: TugSubsystem,
-	val multiblockEntities: ObjectOpenHashSet<MultiblockEntity>,
-	blocks: LongArray,
-	minPoint: Vec3i,
-	maxPoint: Vec3i,
-	val mass: Double
+    val subsystem: TractorBeamSubsystem,
+    val multiblockEntities: ObjectOpenHashSet<MultiblockEntity>,
+    blocks: LongArray,
+    minPoint: Vec3i,
+    maxPoint: Vec3i,
+    val mass: Double
 ) {
 	var blocks: LongArray = blocks; private set
 	var blockSet = LongOpenHashSet(blocks); private set
@@ -138,7 +138,7 @@ class TowedBlocks private constructor(
 	}
 
 	companion object {
-		fun build(user: Player, origin: Vec3i, subsystem: TugSubsystem): ValidatorResult<TowedBlocks> {
+		fun build(user: Player, origin: Vec3i, subsystem: TractorBeamSubsystem): ValidatorResult<TowedBlocks> {
 			val originKey = toBlockKey(origin)
 			val world = subsystem.starship.world
 

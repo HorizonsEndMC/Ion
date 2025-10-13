@@ -16,7 +16,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeRea
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.misc.tug.TugSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.tractor.TractorBeamSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.Projectile
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
@@ -74,7 +74,7 @@ data class NewStarshipBalancing(
 		val range: Double = 100.0
 	) : SubsystemBalancing {
 		@Transient
-		override val clazz: KClass<out BalancedSubsystem<*>> = TugSubsystem::class
+		override val clazz: KClass<out BalancedSubsystem<*>> = TractorBeamSubsystem::class
 	}
 
 	@Serializable
