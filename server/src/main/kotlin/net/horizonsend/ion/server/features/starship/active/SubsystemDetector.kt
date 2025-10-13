@@ -174,6 +174,8 @@ object SubsystemDetector {
 
 		if (multiblock == null) return
 
+		if (!multiblock.signMatchesStructure(sign)) return
+
 		when (multiblock) {
 			is SphereShieldMultiblock -> {
 				starship.subsystems += SphereShieldSubsystem(starship, sign, multiblock)
