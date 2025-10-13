@@ -17,7 +17,7 @@ class FlamethrowerWeaponSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	face: BlockFace,
-) : CannonWeaponSubsystem<FlamethrowerCannonBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(FlamethrowerWeaponSubsystem::class)), PermissionWeaponSubsystem {
+) : CannonWeaponSubsystem<FlamethrowerCannonBalancing>(starship, pos, face, starship.balancingManager.getSubsystemSupplier(FlamethrowerWeaponSubsystem::class)), PermissionWeaponSubsystem {
 	override val permission: String = "ioncore.eventweapon"
 	override val length: Int = 8
 

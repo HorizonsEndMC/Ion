@@ -22,7 +22,7 @@ class AIPhaserWeaponSystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	face: BlockFace
-) : CannonWeaponSubsystem<PhaserBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(PhaserWeaponSubsystem::class)),
+) : CannonWeaponSubsystem<PhaserBalancing>(starship, pos, face, starship.balancingManager.getSubsystemSupplier(PhaserWeaponSubsystem::class)),
 	HeavyWeaponSubsystem,
 	PermissionWeaponSubsystem {
 	override val permission: String = "ion.weapon.ai"

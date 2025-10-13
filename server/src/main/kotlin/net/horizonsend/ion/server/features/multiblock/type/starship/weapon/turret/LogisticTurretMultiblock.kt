@@ -30,7 +30,7 @@ sealed class LogisticTurretMultiblock : TurretMultiblock<LogisticsTurretProjecti
 
     protected abstract fun getSign(): Int
 
-    override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<LogisticsTurretProjectileBalancing> = starship.balancingManager.getWeapon(LogisticTurretWeaponSubsystem::class)
+    override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<LogisticsTurretProjectileBalancing> = starship.balancingManager.getSubsystem(LogisticTurretWeaponSubsystem::class)
 
     override fun buildFirePointOffsets(): List<Vec3i> = listOf(Vec3i(0, +4 * getSign(), +2))
 

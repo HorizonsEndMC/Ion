@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.starship.subsystem.misc.tug
 
 import io.papermc.paper.raytracing.RayTraceTarget
 import net.horizonsend.ion.common.extensions.information
+import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TugBaseMultiblock
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Starship
@@ -10,6 +11,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
+import net.horizonsend.ion.server.features.starship.subsystem.BalancedSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.ProceduralSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
@@ -31,9 +33,17 @@ import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 import java.util.concurrent.CompletableFuture
+import java.util.function.Supplier
 import kotlin.math.roundToInt
 
-class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace, val multiblock: TugBaseMultiblock) : FiredSubsystem(starship, pos), DirectionalSubsystem, ManualWeaponSubsystem, ProceduralSubsystem {
+class TugSubsystem(
+	starship: Starship,
+	pos: Vec3i,
+	override var face: BlockFace,
+	val multiblock: TugBaseMultiblock
+) : FiredSubsystem(starship, pos), DirectionalSubsystem, ManualWeaponSubsystem, ProceduralSubsystem, BalancedSubsystem<NewStarshipBalancing.TractorBalancing> {
+	override val balancingSupplier: Supplier<NewStarshipBalancing.TractorBalancing> = starship.balancingManager.getSubsystemSupplier(TugSubsystem::class)
+
 	private var controlMode: TugControlMode = TugControlMode.FOLLOW
 	var towState: TowState = TowState.Empty; private set
 
@@ -64,12 +74,12 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 			it.direction(dir)
 			it.start(originLoc)
 			it.blockFilter { verifyBlock(shooter.player, it) }
-			it.maxDistance(100.0)
+			it.maxDistance(balancing.range)
 			it.targets(RayTraceTarget.BLOCK)
 		}?.hitBlock
 
 		val distance = distance(target, originLoc.toVector())
-		var beamDistance = minOf(100, distance.roundToInt())
+		var beamDistance = minOf(balancing.range.roundToInt(), distance.roundToInt())
 
 		if (hitBlock != null) beamDistance = minOf(beamDistance, getFirePosition().distance(hitBlock.location).roundToInt())
 

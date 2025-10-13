@@ -22,7 +22,7 @@ sealed class TriTurretMultiblock : TurretMultiblock<TriTurretProjectileBalancing
 	override val displayName: Component get() = text("Tri Turret (${if (getYFactor() == 1) "Top" else "Bottom"})")
 	override val description: Component get() = text("Rotating weapon system effective against large targets. Can be auto-targeting.")
 
-	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<TriTurretProjectileBalancing> = starship.balancingManager.getWeapon(TriTurretWeaponSubsystem::class)
+	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<TriTurretProjectileBalancing> = starship.balancingManager.getSubsystem(TriTurretWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> = listOf(
 		Vec3i(-2, getYFactor() * 4, +3),

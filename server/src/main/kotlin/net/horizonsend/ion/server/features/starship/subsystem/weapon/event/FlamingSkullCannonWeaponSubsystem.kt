@@ -18,7 +18,7 @@ class FlamingSkullCannonWeaponSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	face: BlockFace
-) : CannonWeaponSubsystem<FlamingSkullCannonBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(FlamingSkullCannonWeaponSubsystem::class)), HeavyWeaponSubsystem, PermissionWeaponSubsystem {
+) : CannonWeaponSubsystem<FlamingSkullCannonBalancing>(starship, pos, face, starship.balancingManager.getSubsystemSupplier(FlamingSkullCannonWeaponSubsystem::class)), HeavyWeaponSubsystem, PermissionWeaponSubsystem {
 	override val permission: String = "ioncore.eventweapon"
 	override val boostChargeNanos: Long = balancing.boostChargeNanos
 	override val length: Int = 4

@@ -18,7 +18,7 @@ class LightTurretWeaponSubsystem(
 	pos: Vec3i,
 	face: BlockFace,
 	override val multiblock: LightTurretMultiblock
-) : TurretWeaponSubsystem<LightTurretBalancing, LightTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(LightTurretWeaponSubsystem::class)), AutoWeaponSubsystem {
+) : TurretWeaponSubsystem<LightTurretBalancing, LightTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getSubsystemSupplier(LightTurretWeaponSubsystem::class)), AutoWeaponSubsystem {
 	override val range: Double get() = balancing.range
 
 	override fun autoFire(target: AutoTurretTarget<*>, dir: Vector) {

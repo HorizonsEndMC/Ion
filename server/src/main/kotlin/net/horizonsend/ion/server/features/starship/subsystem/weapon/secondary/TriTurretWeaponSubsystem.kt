@@ -17,7 +17,7 @@ class TriTurretWeaponSubsystem(
 	pos: Vec3i,
 	face: BlockFace,
 	override val multiblock: TriTurretMultiblock
-) : TurretWeaponSubsystem<TriTurretBalancing, TriTurretBalancing.TriTurretProjectileBalancing>(ship, pos, face, ship.balancingManager.getWeaponSupplier(TriTurretWeaponSubsystem::class)), HeavyWeaponSubsystem, AutoWeaponSubsystem {
+) : TurretWeaponSubsystem<TriTurretBalancing, TriTurretBalancing.TriTurretProjectileBalancing>(ship, pos, face, ship.balancingManager.getSubsystemSupplier(TriTurretWeaponSubsystem::class)), HeavyWeaponSubsystem, AutoWeaponSubsystem {
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 
 	override val range: Double get() = multiblock.getRange(starship)

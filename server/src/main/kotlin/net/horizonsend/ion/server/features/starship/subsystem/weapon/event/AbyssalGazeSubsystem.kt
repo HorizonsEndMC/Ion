@@ -17,7 +17,7 @@ class AbyssalGazeSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	face: BlockFace
-) : CannonWeaponSubsystem<AbyssalGazeBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(AbyssalGazeSubsystem::class)), PermissionWeaponSubsystem {
+) : CannonWeaponSubsystem<AbyssalGazeBalancing>(starship, pos, face, starship.balancingManager.getSubsystemSupplier(AbyssalGazeSubsystem::class)), PermissionWeaponSubsystem {
 	override val permission: String = "ioncore.eventweapon"
 	override val length: Int = 4
 

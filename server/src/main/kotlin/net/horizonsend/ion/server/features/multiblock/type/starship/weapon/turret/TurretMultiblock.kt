@@ -256,7 +256,7 @@ abstract class TurretMultiblock<T : StarshipParticleProjectileBalancing> : Multi
 				dir,
 				shooter,
 				shooter.color,
-				subSystem.starship.balancingManager.getWeapon(subSystem::class).projectile
+				subSystem.starship.balancingManager.getSubsystem(subSystem::class).projectile
 			).fire()
 		}
 	}

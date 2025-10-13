@@ -27,7 +27,7 @@ class ArsenalRocketStarshipWeaponSubsystem(
     override var face: BlockFace,
     private val multiblock: ArsenalRocketStarshipWeaponMultiblock,
     private val upOrDown: BlockFace
-) : BalancedWeaponSubsystem<ArsenalRocketBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(ArsenalRocketStarshipWeaponSubsystem::class)), HeavyWeaponSubsystem, ManualWeaponSubsystem, DirectionalSubsystem, AmmoConsumingWeaponSubsystem {
+) : BalancedWeaponSubsystem<ArsenalRocketBalancing>(starship, pos, starship.balancingManager.getSubsystemSupplier(ArsenalRocketStarshipWeaponSubsystem::class)), HeavyWeaponSubsystem, ManualWeaponSubsystem, DirectionalSubsystem, AmmoConsumingWeaponSubsystem {
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
