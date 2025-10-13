@@ -43,7 +43,13 @@ class TractorLookHandler(controller: PlayerController) : MovementHandler(control
 
 		val eyeLocation = starship.playerPilot?.eyeLocation ?: return
 
-		val vector = center.toCenterVector().clone().subtract(eyeLocation.toVector()).normalize()
+		val now = System.currentTimeMillis()
+		if (now - lastMovementTimeMillis < state.manualMoveCooldown) {
+			return
+		}
+		lastMovementTimeMillis = now
+
+		val vector = center.toCenterVector().clone().subtract(eyeLocation.toVector()).normalize() //TODO acceleration
 		if (direction == RelativeFace.BACKWARD) vector.multiply(-1)
 
 		val dx = vector.x.roundToInt()
@@ -69,14 +75,21 @@ class TractorLookHandler(controller: PlayerController) : MovementHandler(control
 	}
 
 	var lastDirection: Vector? = starship.playerPilot?.location?.direction
+	private var lastMovementTimeMillis = System.currentTimeMillis()
 
 	fun trackView(tug: TractorBeamSubsystem, state: TowedBlocks) {
 		val center = state.centerPoint ?: return
 		val playerPilot = starship.playerPilot?: return
 		val viewDirection = playerPilot.location.direction
 
+		val now = System.currentTimeMillis()
+		if (now - lastMovementTimeMillis < state.manualMoveCooldown) {
+			return
+		}
+
 		if (viewDirection == lastDirection) return
 		lastDirection = viewDirection
+		lastMovementTimeMillis = now
 
 		val vector = center.toCenterVector().clone().subtract(playerPilot.eyeLocation.toVector())
 		val distance = vector.length()
@@ -85,9 +98,9 @@ class TractorLookHandler(controller: PlayerController) : MovementHandler(control
 
 		val difference = newLocation.clone().subtract(center.toCenterVector())
 
-		val dx = difference.x.roundToInt()
-		val dy = difference.y.roundToInt()
-		val dz = difference.z.roundToInt()
+		val dx = difference.x.roundToInt().coerceIn(-5, 5)
+		val dy = difference.y.roundToInt().coerceIn(-5, 5)
+		val dz = difference.z.roundToInt().coerceIn(-5, 5)
 
 		state.move(tug.starship.world, TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
 	}
