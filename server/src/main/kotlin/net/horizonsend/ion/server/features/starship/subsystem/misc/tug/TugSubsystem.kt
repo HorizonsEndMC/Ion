@@ -45,6 +45,16 @@ class TugSubsystem(
 ) : FiredSubsystem(starship, pos), DirectionalSubsystem, ManualWeaponSubsystem, ProceduralSubsystem, BalancedSubsystem<NewStarshipBalancing.TractorBalancing> {
 	override val balancingSupplier: Supplier<NewStarshipBalancing.TractorBalancing> = starship.balancingManager.getSubsystemSupplier(TugSubsystem::class)
 
+	/**
+	 * Store of the length of the tiled section of the procedural multiblock structure
+	 **/
+	private var structureLength = 0
+
+	/**
+	 * Stores whether the detection of the procedural structure was successful
+	 **/
+	private var structureIntact: Boolean = false
+
 	private var controlMode: TugControlMode = TugControlMode.FOLLOW
 	var towState: TowState = TowState.Empty
 		private set(value) {
@@ -54,7 +64,7 @@ class TugSubsystem(
 		}
 
 	override fun canFire(dir: Vector, target: Vector): Boolean {
-		return towState.canStartDiscovery() && intact
+		return towState.canStartDiscovery() && structureIntact
 	}
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
@@ -131,8 +141,7 @@ class TugSubsystem(
 				amount /= 1000.0
 			}
 
-			val massFormat = DecimalFormat("##.## $unit")
-			val massFormatted = massFormat.format(amount)
+			val massFormatted = "${massFormat.format(amount)} $unit"
 
 			starship.information("Acquired {0} blocks, weighing {1}.", blocks.blocks.size, massFormatted)
 
@@ -190,19 +199,17 @@ class TugSubsystem(
 	}
 
 	companion object {
-		const val MAX_LENGTH = 150
+		const val MAX_STRUCTURE_LENGTH = 150
+		val massFormat = DecimalFormat("##.##")
 	}
 
 	fun getTowed(): TowedBlocks? = (towState as? TowState.Full)?.blocks
 
-	fun getTowLimit() = if (intact) length * 10000 else 0
+	fun getTowLimit() = if (structureIntact) structureLength * 10000 else 0
 
 	override fun getMaxPerShot(): Int? {
 		return null
 	}
-
-	var length = 0
-	var intact: Boolean = false
 
 	override fun detectStructure() {
 		val structureDirection = face.oppositeFace
@@ -211,7 +218,7 @@ class TugSubsystem(
 		var length = 0
 		var failure = false
 
-		while (length < MAX_LENGTH) {
+		while (length < MAX_STRUCTURE_LENGTH) {
 			val position = multiblock.getOriginRelativePosition(detectionOrigin, structureDirection, length + 1)
 			val block = starship.world.getBlockAt(position.x, position.y, position.z)
 
@@ -228,26 +235,26 @@ class TugSubsystem(
 			break
 		}
 
-		intact = !failure
-		this.length = length
+		structureIntact = !failure
+		this.structureLength = length
 	}
 
 	override fun isIntact(): Boolean {
-		if (!intact) return false
+		if (!structureIntact) return false
 
 		val structureDirection = face.oppositeFace
 		if (!multiblock.blockMatchesStructure(starship.world.getBlockAt(pos.x, pos.y, pos.z).getRelative(structureDirection), structureDirection)) return false
 
 		val tileOrigin = multiblock.getTileOrigin(pos, structureDirection)
 
-		for (prog in 1..length) {
+		for (prog in 1..structureLength) {
 			val progPosition = multiblock.getOriginRelativePosition(tileOrigin, structureDirection, prog)
 			val block = starship.world.getBlockAt(progPosition.x, progPosition.y, progPosition.z)
 
 			if (!multiblock.originMatchesTiledStructure(origin = block, direction = structureDirection, loadChunks = false)) return false
 		}
 
-		val endOrigin = multiblock.getOriginRelativePosition(tileOrigin, structureDirection, length + 1)
+		val endOrigin = multiblock.getOriginRelativePosition(tileOrigin, structureDirection, structureLength + 1)
 		val endBlock = starship.world.getBlockAt(endOrigin.x, endOrigin.y, endOrigin.z)
 
 		return multiblock.originMatchesCapStructure(origin = endBlock, direction = structureDirection, loadChunks = false)
@@ -257,7 +264,7 @@ class TugSubsystem(
 		val structureDirection = face.oppositeFace
 
 		val tileOrigin = multiblock.getTileOrigin(pos, structureDirection)
-		val tileEnd = multiblock.getOriginRelativePosition(tileOrigin, structureDirection, length)
+		val tileEnd = multiblock.getOriginRelativePosition(tileOrigin, structureDirection, structureLength)
 		val capEnd = getRelative(tileEnd, structureDirection, right = multiblock.firePosOffset.x, up = multiblock.firePosOffset.y, forward = multiblock.firePosOffset.z)
 
 		return capEnd.toCenterVector().toLocation(starship.world)
