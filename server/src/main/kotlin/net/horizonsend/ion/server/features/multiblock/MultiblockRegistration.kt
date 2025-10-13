@@ -52,15 +52,15 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultibloc
 import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.DisposalMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.DisposalMultiblockMirrored
+import net.horizonsend.ion.server.features.multiblock.type.misc.ElevatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ExpandableAirlock
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ItemSplitterMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.misc.LargeTractorBeamMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.LargeElevatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MagazineMultiblockMirrored
-import net.horizonsend.ion.server.features.multiblock.type.misc.MediumTractorBeamMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.MediumElevatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.MobDefender
-import net.horizonsend.ion.server.features.multiblock.type.misc.TractorBeamMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BoxShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.BubbleShieldMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.particleshield.EventShieldMultiblock
@@ -428,9 +428,9 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(CryoPodMultiblock)
 		registerMultiblock(AirlockMultiblock)
 		registerMultiblock(ExpandableAirlock)
-		registerMultiblock(TractorBeamMultiblock)
-		registerMultiblock(MediumTractorBeamMultiblock)
-		registerMultiblock(LargeTractorBeamMultiblock)
+		registerMultiblock(ElevatorMultiblock, "TractorBeamMultiblock")
+		registerMultiblock(MediumElevatorMultiblock, "MediumTractorBeamMultiblock")
+		registerMultiblock(LargeElevatorMultiblock, "LargeTractorBeamMultiblock")
 
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockStandard)
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableRight)
