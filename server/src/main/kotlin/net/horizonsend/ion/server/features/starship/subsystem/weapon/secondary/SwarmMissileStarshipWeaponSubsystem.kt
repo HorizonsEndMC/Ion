@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
@@ -98,10 +99,20 @@ class SwarmMissileStarshipWeaponSubsystem(
                     randomLoc.toLocation(starship.world),
                     dir,
                     randomInitialDir,
+                    shooter.color,
                     shooter,
                     otherMissiles,
                     TopSwarmMissileStarshipWeaponMultiblock.damageType
                 ).fire()
+
+                (0 until 5).forEach { _ ->
+                    val angle = Math.PI / 12
+                    val opposite = randomInitialDir.clone()
+                        .rotateAroundX(randomDouble(-angle, angle))
+                        .rotateAroundY(randomDouble(-angle, angle))
+                        .rotateAroundZ(randomDouble(-angle, angle))
+                    starship.world.spawnParticle(Particle.CLOUD, randomLoc.toLocation(starship.world), 0, opposite.x, opposite.y, opposite.z, 5.0, null, true)
+                }
             }
         }
     }
