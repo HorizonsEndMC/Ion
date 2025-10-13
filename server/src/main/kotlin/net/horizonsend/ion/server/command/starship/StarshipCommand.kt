@@ -42,7 +42,7 @@ object StarshipCommand : net.horizonsend.ion.server.command.SLCommand() {
 		sender.sendRichMessage(
 			"<aqua>${ship.getDisplayNameMiniMessage()} <white>(${
 				ship.data.starshipType.actualType.displayName}) ($size blocks)\n" +
-				"   <gray>Mass:<white> ${"%.2f".format(ship.mass)}\n" +
+				"   <gray>Mass:<white> ${"%.2f".format(ship.getTotalMass())}\n" +
 				"   <gray>World:<white> ${ship.world.name}\n" +
 				"   <gray>Pilot:<white> ${ship.controller.name}"
 		)

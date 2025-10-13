@@ -46,7 +46,12 @@ class TugSubsystem(
 	override val balancingSupplier: Supplier<NewStarshipBalancing.TractorBalancing> = starship.balancingManager.getSubsystemSupplier(TugSubsystem::class)
 
 	private var controlMode: TugControlMode = TugControlMode.FOLLOW
-	var towState: TowState = TowState.Empty; private set
+	var towState: TowState = TowState.Empty
+		private set(value) {
+			field = value
+			starship.recalculateManualMoveCooldown()
+			starship.generateThrusterMap()
+		}
 
 	override fun canFire(dir: Vector, target: Vector): Boolean {
 		return towState.canStartDiscovery() && intact

@@ -341,9 +341,32 @@ class Starship(
 
 	//region Movement
 	var cruiseData = StarshipCruising.CruiseData(this)
+
 	var lastBlockedTime: Long = 0
-	val manualMoveCooldownMillis: Long = (cbrt(initialBlockCount.toDouble()) * 40).toLong()
+
+	// To fix initialization order issue
+	val tugs = LinkedList<TugSubsystem>()
+
+	var manualMoveCooldownMillis: Long = calculateManualMoveCooldown()
+
+	fun recalculateManualMoveCooldown() {
+		if (!ActiveStarships.isActive(this)) return
+		manualMoveCooldownMillis = calculateManualMoveCooldown()
+	}
+
+	private fun calculateManualMoveCooldown(): Long {
+		val baseMass = (cbrt(initialBlockCount.toDouble()) * 40).toLong()
+
+		val towed = tugs.mapNotNull { subsystem -> subsystem.getTowed() }
+
+		if (towed.isEmpty()) return baseMass
+
+		val towedBlocks = towed.sumOf { it.blocks.size }
+		return baseMass + (cbrt(towedBlocks.toDouble()) * 40L).toLong()
+	}
+
 	var speedLimit = -1
+
 	// manual move is sneak/direct control
 	var lastManualMove = System.nanoTime() / 1_000_000
 
@@ -478,7 +501,6 @@ class Starship(
 	val drills = LinkedList<PlanetDrillSubsystem>()
 	val fuelTanks = LinkedList<FuelTankSubsystem>()
 	val customTurrets = LinkedList<CustomTurretSubsystem>()
-	val tugs = LinkedList<TugSubsystem>()
 
 	val shieldBars = mutableMapOf<String, BossBar>()
 
@@ -555,7 +577,7 @@ class Starship(
 		val reductionBase = 0.85
 		val finalSpeedFactor = 1.0
 
-		val mass = this.mass
+		val mass = this.getTotalMass()
 		val totalAccel = 1.0 + faceThrusters.sumOf { it.type.accel }
 		val totalWeight = faceThrusters.sumOf { it.type.weight }.toDouble()
 		val reduction = reductionBase.pow(sqrt(totalWeight))
@@ -753,5 +775,9 @@ class Starship(
 			vec3i.y,
 			(vec3i.x.toDouble() * sinTheta + vec3i.z.toDouble() * cosTheta).roundToInt()
 		)
+	}
+
+	fun getTotalMass(): Double {
+		return mass + tugs.sumOf { it.getTowed()?.mass ?: 0.0 }
 	}
 }
