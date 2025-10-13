@@ -50,7 +50,7 @@ class TractorLookHandler(controller: PlayerController) : MovementHandler(control
 		val dy = vector.y.roundToInt()
 		val dz = vector.z.roundToInt()
 
-		state.move(TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
+		state.move(tug.starship.world, TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
 	}
 
 	fun popRotations(tug: TractorBeamSubsystem, state: TowedBlocks) {
@@ -65,7 +65,7 @@ class TractorLookHandler(controller: PlayerController) : MovementHandler(control
 
 		if ((fullRotation % 360.0) == 0.0) return
 
-		state.move(TransformationAccessor.RotationTransformation(null, fullRotation) { middle })
+		state.move(tug.starship.world, TransformationAccessor.RotationTransformation(null, fullRotation) { middle })
 	}
 
 	var lastDirection: Vector? = starship.playerPilot?.location?.direction
@@ -89,7 +89,7 @@ class TractorLookHandler(controller: PlayerController) : MovementHandler(control
 		val dy = difference.y.roundToInt()
 		val dz = difference.z.roundToInt()
 
-		state.move(TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
+		state.move(tug.starship.world, TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
 	}
 
 	inner class TractorLookInput(override val controller: PlayerController) : InputHandler, PlayerInput {

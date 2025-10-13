@@ -28,6 +28,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import org.bukkit.Location
 import org.bukkit.Particle
+import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
@@ -158,8 +159,9 @@ class TractorBeamSubsystem(
 		}
 	}
 
-	override fun onMovement(movement: TransformationAccessor, success: Boolean) {
+	override fun onMovement(oldWorld: World, movement: TransformationAccessor, success: Boolean) {
 		if (movement !is TranslateMovement || !success || controlMode != TractorControlMode.FOLLOW) return
+
 		towState.handleMovement(movement)
 	}
 

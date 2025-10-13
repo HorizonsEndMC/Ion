@@ -406,10 +406,12 @@ class Starship(
 
 		val future = CompletableFuture<Boolean>()
 		Tasks.async {
+			val oldWorld = world
+
 			val result = executeMovement(movement, pilot)
 			future.complete(result)
 			controller.onMove(movement)
-			subsystems.forEach { runCatching { it.onMovement(movement, result) } }
+			subsystems.forEach { runCatching { it.onMovement(oldWorld, movement, result) } }
 		}
 
 		return future

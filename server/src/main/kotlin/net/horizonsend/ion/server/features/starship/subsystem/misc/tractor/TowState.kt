@@ -13,7 +13,7 @@ sealed interface TowState {
 		override fun canStartDiscovery(): Boolean = true
 
 		override fun handleMovement(transformationAccessor: TransformationAccessor) {
-			blocks.move(transformationAccessor)
+			blocks.move(blocks.world, transformationAccessor)
 		}
 	}
 

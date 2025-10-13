@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceMovement
 import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import org.bukkit.World
 
 abstract class StarshipSubsystem(open val starship: ActiveStarship, var pos: Vec3i) {
 	/**
@@ -24,7 +25,7 @@ abstract class StarshipSubsystem(open val starship: ActiveStarship, var pos: Vec
 
 	open fun handleRelease() {}
 
-	open fun onMovement(movement: TransformationAccessor, success: Boolean) {}
+	open fun onMovement(oldWorld: World, movement: TransformationAccessor, success: Boolean) {}
 
 	/**
 	 * Executed AFTER jump is completed

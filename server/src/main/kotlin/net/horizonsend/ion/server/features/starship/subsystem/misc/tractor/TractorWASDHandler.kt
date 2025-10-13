@@ -42,7 +42,7 @@ class TractorWASDHandler(controller: PlayerController) : MovementHandler(control
 		val dy = delta.y.roundToInt()
 		val dz = delta.z.roundToInt()
 
-		state.move(TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
+		state.move(state.subsystem.starship.world, TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
 	}
 
 	fun popRotations(state: TowedBlocks) {
@@ -57,7 +57,7 @@ class TractorWASDHandler(controller: PlayerController) : MovementHandler(control
 
 		if ((fullRotation % 360.0) == 0.0) return
 
-		state.move(TransformationAccessor.RotationTransformation(null, fullRotation) { middle })
+		state.move(state.subsystem.starship.world, TransformationAccessor.RotationTransformation(null, fullRotation) { middle })
 	}
 
 	inner class TractorWASDInput(override val controller: PlayerController) : InputHandler, PlayerInput {

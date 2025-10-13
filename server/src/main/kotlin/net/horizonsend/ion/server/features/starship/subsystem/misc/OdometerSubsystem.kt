@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.kyori.adventure.text.Component.text
+import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.sign.Side
@@ -34,7 +35,7 @@ class OdometerSubsystem(
 
 	private fun getSign() = getBlockIfLoaded(starship.world, pos.x, pos.y, pos.z)?.state as? Sign
 
-	override fun onMovement(movement: TransformationAccessor, success: Boolean) = Tasks.sync {
+	override fun onMovement(oldWorld: World, movement: TransformationAccessor, success: Boolean) = Tasks.sync {
 		if (!success) return@sync
 		if (movement.newWorld != null) return@sync
 		if (movement is RotationMovement) return@sync

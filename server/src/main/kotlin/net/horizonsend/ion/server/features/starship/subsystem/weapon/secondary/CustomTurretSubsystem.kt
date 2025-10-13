@@ -31,11 +31,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Directional
 import org.bukkit.util.Vector
-import java.util.*
+import java.util.ArrayDeque
+import java.util.LinkedList
 
 class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace, val multiblock: CustomTurretBaseMultiblock) : FiredSubsystem(
 	starship,
@@ -149,7 +151,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		return multiblock.canDetect(pos, Vec3i(block.x, block.y, block.z))
 	}
 
-	override fun onMovement(movement: TransformationAccessor, success: Boolean) {
+	override fun onMovement(oldWorld: World, movement: TransformationAccessor, success: Boolean) {
 		if (!success) return
 		// Offset the blocks when the ship moves
 		blocks = LongArray(blocks.size) { movement.displaceLegacyKey(blocks[it]) }
@@ -218,7 +220,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 				translation.displaceZ(oldZ, oldX)
 			)
 
-			subsystem.onMovement(translation, true)
+			subsystem.onMovement(starship.world, translation, true)
 
 			if (subsystem is DirectionalSubsystem) {
 				subsystem.face = rotateBlockFace(subsystem.face, translation.nmsRotation)

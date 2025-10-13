@@ -2,9 +2,9 @@ package net.horizonsend.ion.server.features.starship.subsystem.misc.tractor
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.starship.Mass
@@ -24,11 +24,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.World
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
 
 class TowedBlocks private constructor(
+	world: World,
     val subsystem: TractorBeamSubsystem,
     val multiblockEntities: ObjectOpenHashSet<MultiblockEntity>,
     blocks: LongArray,
@@ -36,6 +38,7 @@ class TowedBlocks private constructor(
     maxPoint: Vec3i,
     val mass: Double
 ) {
+	var world: World = world; private set
 	var blocks: LongArray = blocks; private set
 	var blockSet = LongOpenHashSet(blocks); private set
 	var minPoint: Vec3i = minPoint; private set
@@ -53,7 +56,7 @@ class TowedBlocks private constructor(
 		return blockSet.contains(blockKey(x, y, z))
 	}
 
-	fun move(transformationAccessor: TransformationAccessor) {
+	fun move(oldWorld: World, transformationAccessor: TransformationAccessor) {
 		var lastTicked = System.currentTimeMillis()
 
 		if (movementFuture?.isDone == false) {
@@ -65,11 +68,11 @@ class TowedBlocks private constructor(
 
 		Tasks.async {
 			try {
-				subsystem.starship.information("Moving ${blocks.size} blocks")
+				subsystem.starship.debug("Moving ${blocks.size} blocks")
 
 				transformationAccessor.execute(
 					positions = blocks,
-					world1 = subsystem.starship.world,
+					world1 = oldWorld,
 					executionCheck = { true }
 				) { newBlocks ->
 					blocks = newBlocks
@@ -83,8 +86,9 @@ class TowedBlocks private constructor(
 				}
 
 				val now = System.currentTimeMillis()
-				subsystem.starship.information("Movement took ${(now - lastTicked) / 1000.0}s")
+				subsystem.starship.debug("Movement took ${(now - lastTicked) / 1000.0}s")
 				lastTicked = now
+				transformationAccessor.newWorld?.let { world = it }
 
 				future.complete(true)
 			} catch (e: StarshipMovementException) {
@@ -221,6 +225,7 @@ class TowedBlocks private constructor(
 			if (foundBlocks.isEmpty()) return ValidatorResult.FailureResult(listOf(Component.text("No blocks found.")))
 
 			return ValidatorResult.ValidatorSuccessSingleEntry(TowedBlocks(
+				world = subsystem.starship.world,
                 subsystem = subsystem,
                 multiblockEntities = foundMultiblockEntities,
                 blocks = foundBlocks.toLongArray(),
