@@ -7,6 +7,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.starship.Mass
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
 import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
@@ -33,7 +34,7 @@ class TowedBlocks private constructor(
 	blocks: LongArray,
 	minPoint: Vec3i,
 	maxPoint: Vec3i,
-	val weight: Double
+	val mass: Double
 ) {
 	var blocks: LongArray = blocks; private set
 	var blockSet = LongOpenHashSet(blocks); private set
@@ -158,21 +159,28 @@ class TowedBlocks private constructor(
 
 			val towLimit = subsystem.getTowLimit()
 
+			var totalMass = 0.0
+
 			while (visitQueue.isNotEmpty()) {
 				val current = visitQueue.removeFirst()
 				val x = getX(current)
 				val y = getY(current)
 				val z = getZ(current)
 
+				if (y !in world.minHeight..<world.maxHeight) continue
+
 				val block = getBlockIfLoaded(world, x, y, z)
 
 				if (block == null) {
-					return ValidatorResult.FailureResult(listOf(Component.text("That structure goes beyond loaded chunks!")))
+					return ValidatorResult.FailureResult(listOf(Component.text("That structure goes beyond loaded chunks!", NamedTextColor.RED)))
 				}
 
 				if (!subsystem.verifyBlock(user, block)) continue
 
 				foundBlocks.add(blockKey(x, y, z))
+
+				val mass = Mass[block.type]
+				totalMass += mass
 
 				val multiblockEntity = MultiblockEntities.getMultiblockEntity(block)
 				if (multiblockEntity != null) {
@@ -213,12 +221,12 @@ class TowedBlocks private constructor(
 			if (foundBlocks.isEmpty()) return ValidatorResult.FailureResult(listOf(Component.text("No blocks found.")))
 
 			return ValidatorResult.ValidatorSuccessSingleEntry(TowedBlocks(
-				subsystem,
-				foundMultiblockEntities,
-				foundBlocks.toLongArray(),
-				Vec3i(minX, minY, minZ),
-				Vec3i(maxX, maxY, maxZ),
-				0.0
+                subsystem = subsystem,
+                multiblockEntities = foundMultiblockEntities,
+                blocks = foundBlocks.toLongArray(),
+                minPoint = Vec3i(minX, minY, minZ),
+                maxPoint = Vec3i(maxX, maxY, maxZ),
+                mass = totalMass
 			))
 		}
 	}

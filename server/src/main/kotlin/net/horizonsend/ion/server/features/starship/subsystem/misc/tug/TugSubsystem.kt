@@ -32,6 +32,7 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import java.text.DecimalFormat
 import java.util.concurrent.CompletableFuture
 import java.util.function.Supplier
 import kotlin.math.roundToInt
@@ -96,7 +97,7 @@ class TugSubsystem(
 			if (existingState.blocks.contains(hitBlock.x, hitBlock.y, hitBlock.z)) {
 				towState = TowState.Empty
 
-				starship.information("Released {0} blocks", existingState.blocks.blocks.size)
+				starship.information("Released {0} blocks.", existingState.blocks.blocks.size)
 
 				return
 			}
@@ -117,7 +118,18 @@ class TugSubsystem(
 				return@whenComplete
 			}
 
-			starship.information("Acquired {0} blocks", blocks.blocks.size)
+			var amount = blocks.mass
+			var unit = "kg"
+
+			if (amount > 1000.0) {
+				unit = "tons"
+				amount /= 1000.0
+			}
+
+			val massFormat = DecimalFormat("##.## $unit")
+			val massFormatted = massFormat.format(amount)
+
+			starship.information("Acquired {0} blocks, weighing {1}.", blocks.blocks.size, massFormatted)
 
 			towState = TowState.Full(blocks)
 		}
@@ -178,7 +190,7 @@ class TugSubsystem(
 
 	fun getTowed(): TowedBlocks? = (towState as? TowState.Full)?.blocks
 
-	fun getTowLimit() = if (intact) length * 5000 else 0
+	fun getTowLimit() = if (intact) length * 10000 else 0
 
 	override fun getMaxPerShot(): Int? {
 		return null

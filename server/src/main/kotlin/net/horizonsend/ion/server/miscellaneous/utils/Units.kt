@@ -32,6 +32,10 @@ fun kilogramsToGrams(amountKilorams: Double): Double {
 	return amountKilorams * 1000.0
 }
 
+fun kilogramsToTons(amountKilograms: Double): Double {
+	return amountKilograms / 1000.0
+}
+
 fun pascalsToBars(valuePascals: Double): Double {
 	return valuePascals / 1_000_000.0
 }
