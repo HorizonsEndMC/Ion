@@ -268,6 +268,24 @@ fun Location.spherePoints(radius: Double, points: Int): List<Location> {
 	return coordinates
 }
 
+fun Location.circlePoints(radius: Double, points: Int, axis: Vector): List<Location> {
+	// Get an orthogonal vector to axis
+	val radiusVector = axis.getCrossProduct(Vector(0, 1, 0)).normalize().multiply(radius)
+	val angle = 2 * Math.PI / points
+	val coordinates = mutableListOf<Location>()
+
+	for (count in 0..points) {
+		val x = radiusVector.x
+		val y = radiusVector.y
+		val z = radiusVector.z
+
+		coordinates.add(Location(this.world, x, y, z).add(this))
+		radiusVector.rotateAroundAxis(axis, angle)
+	}
+
+	return coordinates
+}
+
 fun rotateBlockFace(blockFace: BlockFace, rotiation: Rotation): BlockFace {
 	return when (rotiation) {
 		Rotation.NONE -> blockFace
