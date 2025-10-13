@@ -328,12 +328,14 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			"Insufficient chetherite, need ${Hyperspace.getHyperMatterAmount(starship)} in each hopper"
 		}
 
+		failIf(Hyperspace.isWarmingUp(starship)) { "You're already jumping to hyperspace!" }
+
 		val currentWorld = starship.world
 		failIf(!sender.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			"Not a space world!"
 		}
 
-		failIf(!sender.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
+		failIf(!destinationWorld.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			"Not a space world!"
 		}
 
