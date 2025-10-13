@@ -19,7 +19,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.
 import net.horizonsend.ion.server.miscellaneous.utils.PerDamagerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.isLava
 import net.horizonsend.ion.server.miscellaneous.utils.isWater
-import org.bukkit.FluidCollisionMode
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
@@ -69,8 +68,6 @@ object StarshipWeaponry : IonServerComponent() {
 	}
 
 	fun getTarget(loc: Location, dir: Vector, starship: ActiveStarship, defaultDistance: Int = 500): Vector {
-		starship.world.rayTraceBlocks(loc, dir.clone().normalize(), defaultDistance.toDouble(), FluidCollisionMode.NEVER, true) { !starship.contains(it.x, it.y, it.z) }?.hitPosition?.let { vector -> return vector }
-
 		val world = loc.world
 		var target: Vector = loc.toVector()
 		val x = loc.blockX

@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.starship.subsystem.misc.tug
 
 import io.papermc.paper.raytracing.RayTraceTarget
 import net.horizonsend.ion.common.extensions.information
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TugBaseMultiblock
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Starship
@@ -24,7 +23,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -44,7 +42,6 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 	}
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
-		starship.highlightBlock(Vec3i(target), 10L)
 		return target.clone().subtract(getFirePosition().toVector()).normalize()
 	}
 
@@ -63,8 +60,18 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 
 		val originLoc = getFirePosition()
 
+		val hitBlock = starship.world.rayTrace {
+			it.direction(dir)
+			it.start(originLoc)
+			it.blockFilter { verifyBlock(shooter.player, it) }
+			it.maxDistance(100.0)
+			it.targets(RayTraceTarget.BLOCK)
+		}?.hitBlock
+
 		val distance = distance(target, originLoc.toVector())
-		val beamDistance = minOf(100, distance.roundToInt())
+		var beamDistance = minOf(100, distance.roundToInt())
+
+		if (hitBlock != null) beamDistance = minOf(beamDistance, getFirePosition().distance(hitBlock.location).roundToInt())
 
 		// Draw beam
 		originLoc
@@ -73,13 +80,7 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 				starship.world.spawnParticle(Particle.SOUL_FIRE_FLAME, intermediate.x, intermediate.y, intermediate.z, 0, 0.0, 0.0, 0.0, 0.0, null, true)
 			}
 
-		val hitBlock = starship.world.rayTrace {
-			it.direction(dir)
-			it.start(originLoc)
-			it.blockFilter { verifyBlock(shooter.player, it) }
-			it.maxDistance(100.0)
-			it.targets(RayTraceTarget.BLOCK)
-		}?.hitBlock ?: return
+		if (hitBlock == null) return
 
 		if (existingState is TowState.Full) {
 			if (existingState.blocks.contains(hitBlock.x, hitBlock.y, hitBlock.z)) {
@@ -221,8 +222,6 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 
 		val endOrigin = multiblock.getOriginRelativePosition(tileOrigin, structureDirection, length + 1)
 		val endBlock = starship.world.getBlockAt(endOrigin.x, endOrigin.y, endOrigin.z)
-
-		debugAudience.highlightBlock(endOrigin, 30L)
 
 		return multiblock.originMatchesCapStructure(origin = endBlock, direction = structureDirection, loadChunks = false)
 	}
