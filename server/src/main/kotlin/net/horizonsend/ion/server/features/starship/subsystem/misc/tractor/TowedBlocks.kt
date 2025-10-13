@@ -28,6 +28,7 @@ import org.bukkit.World
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Future
+import java.util.concurrent.TimeUnit
 
 class TowedBlocks private constructor(
 	world: World,
@@ -47,6 +48,8 @@ class TowedBlocks private constructor(
 	var movementFuture: Future<Boolean>? = null
 
 	val centerPoint: Vec3i? get() = Vec3i((minPoint.x + maxPoint.x) / 2, (minPoint.y + maxPoint.y) / 2, (minPoint.z + maxPoint.z) / 2)
+
+	val rotationTime get() = TimeUnit.MILLISECONDS.toNanos(50L + blocks.size / 30L)
 
 	fun contains(position: Vec3i): Boolean {
 		return blockSet.contains(position.toBlockKey())

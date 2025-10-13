@@ -124,10 +124,17 @@ class TractorLookHandler(controller: PlayerController) : MovementHandler(control
 			else distanceQueue.addLast(RelativeFace.FORWARD)
 		}
 
+		private var lastRotation = System.nanoTime()
+
 		override fun handleSwapHands(event: PlayerSwapHandItemsEvent) {
 			if (event.offHandItem.type != StarshipControl.CONTROLLER_TYPE) return
 
 			event.isCancelled = true
+
+			val towedRotationTime = tractor?.getTowed()?.rotationTime ?: return
+			val now = System.nanoTime()
+			if (now - lastRotation < towedRotationTime) return
+			lastRotation = now
 
 			if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
 
@@ -138,6 +145,11 @@ class TractorLookHandler(controller: PlayerController) : MovementHandler(control
 			if (event.itemDrop.itemStack.type != StarshipControl.CONTROLLER_TYPE) return
 
 			event.isCancelled = true
+
+			val towedRotationTime = tractor?.getTowed()?.rotationTime ?: return
+			val now = System.nanoTime()
+			if (now - lastRotation < towedRotationTime) return
+			lastRotation = now
 
 			if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
 
