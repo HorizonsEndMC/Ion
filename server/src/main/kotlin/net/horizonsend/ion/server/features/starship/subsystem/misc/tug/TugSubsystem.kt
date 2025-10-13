@@ -4,6 +4,7 @@ import io.papermc.paper.raytracing.RayTraceTarget
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TugBaseMultiblock
+import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -43,6 +44,7 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 	}
 
 	override fun getAdjustedDir(dir: Vector, target: Vector): Vector {
+		starship.highlightBlock(Vec3i(target), 10L)
 		return target.clone().subtract(getFirePosition().toVector()).normalize()
 	}
 
@@ -142,11 +144,17 @@ class TugSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace,
 		val type = block.getTypeSafe() ?: return false
 		if (type.isAir) return false
 
-		if (starship.contains(block.x, block.y, block.z)) return false
+		if (starship.contains(block.x, block.y, block.z)) {
+			return false
+		}
 
 		if (block.world.ion.detectionForbiddenBlocks.contains(toBlockKey(block.x, block.y, block.z))) return false
 
 		if (ActiveStarships.findByBlock(block) != null) {
+			return false
+		}
+
+		if (DeactivatedPlayerStarships.getContaining(block.world, block.x, block.y, block.z) != null) {
 			return false
 		}
 
