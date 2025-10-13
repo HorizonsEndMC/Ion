@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.misc.tractor
 
 import io.papermc.paper.raytracing.RayTraceTarget
+import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TractorBeamBaseMultiblock
@@ -168,6 +169,14 @@ class TractorBeamSubsystem(
 	override fun tick() {
 		val state = towState as? TowState.Full ?: return
 
+		if (checkStateDistance(state)) {
+			starship.alert("The towed load has gone out of range and been lost!")
+
+			towState = TowState.Empty
+
+			return
+		}
+
 		val minVec = state.blocks.minPoint
 		val maxVec = state.blocks.maxPoint.plus(Vec3i(1, 1, 1))
 
@@ -177,6 +186,30 @@ class TractorBeamSubsystem(
         ).forEach { t ->
 			starship.playerPilot?.spawnParticle(Particle.ELECTRIC_SPARK, t.x, t.y, t.z, 1, 0.0, 0.0, 0.0, 0.0, null, true)
 		}
+	}
+
+	/**
+	 * Returns true if the towed load becomes out of range
+	 **/
+	fun checkStateDistance(state: TowState.Full): Boolean {
+		val range = balancing.range
+		val firePos = Vec3i(getFirePosition())
+
+		val minPoint = state.blocks.minPoint
+		val maxPoint = state.blocks.maxPoint
+
+		val distances: Set<Double> = setOf(
+			Vec3i(minPoint.x, minPoint.y, minPoint.z).distance(firePos),
+			Vec3i(minPoint.x, minPoint.y, maxPoint.z).distance(firePos),
+			Vec3i(maxPoint.x, minPoint.y, minPoint.z).distance(firePos),
+			Vec3i(maxPoint.x, minPoint.y, maxPoint.z).distance(firePos),
+			Vec3i(minPoint.x, maxPoint.y, minPoint.z).distance(firePos),
+			Vec3i(minPoint.x, maxPoint.y, maxPoint.z).distance(firePos),
+			Vec3i(maxPoint.x, maxPoint.y, minPoint.z).distance(firePos),
+			Vec3i(maxPoint.x, maxPoint.y, maxPoint.z).distance(firePos)
+		)
+
+		return !distances.any { it <= range }
 	}
 
 	fun verifyBlock(player: Player, block: Block): Boolean {
