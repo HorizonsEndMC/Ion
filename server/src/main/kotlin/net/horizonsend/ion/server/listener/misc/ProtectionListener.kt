@@ -160,7 +160,7 @@ object ProtectionListener : SLEventListener() {
 		if (shipContaining?.isPilot(player) == true && event !is BlockPlaceEvent) denied = false
 
 		val (x1, y1, z1) = Vec3i(location)
-		if (ActiveStarships.findByPilot(player)?.contains(x1, y1, z1) == true) denied = false
+		if ((ActiveStarships.findByBlock(location.world, x1, y1, z1)?.data as? PlayerStarshipData)?.isPilot(player) == true) denied = false
 
 		if (isLockedShipDenied(player, location)) return true
 
