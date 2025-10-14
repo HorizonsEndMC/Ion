@@ -4,6 +4,7 @@ import io.papermc.paper.raytracing.RayTraceTarget
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TractorBeamBaseMultiblock
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Starship
@@ -27,6 +28,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.cube
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distance
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -261,6 +263,8 @@ class TractorBeamSubsystem(
 		while (length < MAX_STRUCTURE_LENGTH) {
 			val position = multiblock.getOriginRelativePosition(detectionOrigin, structureDirection, length + 1)
 			val block = starship.world.getBlockAt(position.x, position.y, position.z)
+
+			debugAudience.highlightBlock(Vec3i(position.x, position.y, position.z), 20L)
 
 			if (multiblock.originMatchesTiledStructure(origin = block, direction = structureDirection, loadChunks = false)) {
 				length++

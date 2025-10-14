@@ -286,7 +286,7 @@ sealed class TractorBeamBaseMultiblock : ProceduralMultiblock(), SubsystemMultib
 		override val firePosOffset: Vec3i = Vec3i(0, 5, 0)
 
 		override fun getTileOrigin(subsytemPos: Vec3i, subsystemDirection: BlockFace): Vec3i {
-			return subsytemPos.getRelative(subsystemDirection).getRelative(BlockFace.UP, 3)
+			return subsytemPos.getRelative(subsystemDirection, 2).getRelative(BlockFace.UP, 3)
 		}
 
 		override fun getOriginRelativePosition(origin: Vec3i, subsystemDirection: BlockFace, length: Int): Vec3i {
@@ -505,7 +505,7 @@ sealed class TractorBeamBaseMultiblock : ProceduralMultiblock(), SubsystemMultib
 		override val firePosOffset: Vec3i = Vec3i(0, -5, 0)
 
 		override fun getTileOrigin(subsytemPos: Vec3i, subsystemDirection: BlockFace): Vec3i {
-			return subsytemPos.getRelative(subsystemDirection).getRelative(BlockFace.DOWN, 3)
+			return subsytemPos.getRelative(subsystemDirection, 2).getRelative(BlockFace.DOWN, 3)
 		}
 
 		override fun getOriginRelativePosition(origin: Vec3i, subsystemDirection: BlockFace, length: Int): Vec3i {
