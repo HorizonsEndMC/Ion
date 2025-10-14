@@ -394,7 +394,8 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(HyperdriveMultiblockClass4)
 
 		registerMultiblock(TractorBeamBaseMultiblock.HorizontalTractorBeamBaseMultiblock)
-		registerMultiblock(TractorBeamBaseMultiblock.VerticalTractorBeamBaseMultiblock)
+		registerMultiblock(TractorBeamBaseMultiblock.UpTractorBeamBaseMultiblock)
+		registerMultiblock(TractorBeamBaseMultiblock.DownTractorBeamBaseMultiblock)
 
 		// Starship shields
 		registerMultiblock(ShieldMultiblockClass08Right)

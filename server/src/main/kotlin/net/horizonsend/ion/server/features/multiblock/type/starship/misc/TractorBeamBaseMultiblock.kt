@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.type.starship.misc
 
 import net.horizonsend.ion.common.utils.text.bracketed
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
-import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.ProceduralMultiblock
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.starship.SubsystemMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
@@ -19,7 +19,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
 
-sealed class TractorBeamBaseMultiblock : Multiblock(), SubsystemMultiblock<TractorBeamSubsystem> {
+sealed class TractorBeamBaseMultiblock : ProceduralMultiblock(), SubsystemMultiblock<TractorBeamSubsystem> {
 	override val name: String = "tractorbeam"
 
 	override val signText: Array<Component?> = createSignText(
@@ -62,6 +62,118 @@ sealed class TractorBeamBaseMultiblock : Multiblock(), SubsystemMultiblock<Tract
 
 		override fun getOriginRelativePosition(origin: Vec3i, subsystemDirection: BlockFace, length: Int): Vec3i {
 			return origin.getRelative(subsystemDirection, length)
+		}
+
+		override fun MultiblockShape.buildExampleShape() {
+			z(0) {
+				y(-1) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(0) {
+					x(-1).aluminumBlock()
+					x(0).sponge()
+					x(1).aluminumBlock()
+				}
+				y(1) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				}
+			}
+			z(1) {
+				y(-1) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(0) {
+					x(-1).aluminumBlock()
+					x(0).sponge()
+					x(1).aluminumBlock()
+				}
+				y(1) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				}
+			}
+			z(2) {
+				y(-1) {
+					x(0).anyWall()
+				}
+				y(0) {
+					x(-1).anyWall()
+					x(0).sponge()
+					x(1).anyWall()
+				}
+				y(1) {
+					x(0).anyWall()
+				}
+			}
+			z(3) {
+				y(-1) {
+					x(0).anyGlass()
+				}
+				y(0) {
+					x(-1).anyGlass()
+					x(0).customBlock(CustomBlockKeys.SUPERCONDUCTOR_BLOCK.getValue())
+					x(1).anyGlass()
+				}
+				y(1) {
+					x(0).anyGlass()
+				}
+			}
+			z(4) {
+				y(-1) {
+					x(0).anyGlass()
+				}
+				y(0) {
+					x(-1).anyGlass()
+					x(0).customBlock(CustomBlockKeys.SUPERCONDUCTOR_BLOCK.getValue())
+					x(1).anyGlass()
+				}
+				y(1) {
+					x(0).anyGlass()
+				}
+			}
+			z(5) {
+				y(-1) {
+					x(0).anyWall()
+				}
+				y(0) {
+					x(-1).anyWall()
+					x(0).sponge()
+					x(1).anyWall()
+				}
+				y(1) {
+					x(0).anyWall()
+				}
+			}
+			z(6) {
+				y(-1) {
+					x(0).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD))
+				}
+				y(0) {
+					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.BACKWARD))
+					x(0).thrusterBlock()
+					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT, RelativeFace.BACKWARD))
+				}
+				y(1) {
+					x(0).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD))
+				}
+			}
+			z(7) {
+				y(0) {
+					x(0).customBlock(CustomBlockKeys.REINFORCED_FLUID_PIPE.getValue())
+				}
+			}
+			z(8) {
+				y(0) {
+					x(0).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.END_ROD.createBlockData()))
+				}
+			}
 		}
 
 		override fun MultiblockShape.buildStructure() {
@@ -170,7 +282,7 @@ sealed class TractorBeamBaseMultiblock : Multiblock(), SubsystemMultiblock<Tract
 		}
 	}
 
-	object VerticalTractorBeamBaseMultiblock : TractorBeamBaseMultiblock() {
+	object UpTractorBeamBaseMultiblock : TractorBeamBaseMultiblock() {
 		override val firePosOffset: Vec3i = Vec3i(0, 5, 0)
 
 		override fun getTileOrigin(subsytemPos: Vec3i, subsystemDirection: BlockFace): Vec3i {
@@ -179,6 +291,106 @@ sealed class TractorBeamBaseMultiblock : Multiblock(), SubsystemMultiblock<Tract
 
 		override fun getOriginRelativePosition(origin: Vec3i, subsystemDirection: BlockFace, length: Int): Vec3i {
 			return origin.getRelative(BlockFace.UP, length)
+		}
+
+		override fun MultiblockShape.buildExampleShape()  {
+			z(2) {
+				y(0) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(1) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(2) {
+					x(0).anyWall()
+				}
+				y(3) {
+					x(0).anyGlass()
+				}
+				y(4) {
+					x(0).anyGlass()
+				}
+				y(5) {
+					x(0).anyWall()
+				}
+				y(6) {
+					x(0).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD))
+				}
+			}
+			z(1) {
+				y(0) {
+					x(-1).aluminumBlock()
+					x(0).sponge()
+					x(1).aluminumBlock()
+				}
+				y(1) {
+					x(-1).aluminumBlock()
+					x(0).sponge()
+					x(1).aluminumBlock()
+				}
+				y(2) {
+					x(-1).anyWall()
+					x(0).sponge()
+					x(1).anyWall()
+				}
+				y(3) {
+					x(-1).anyGlass()
+					x(0).customBlock(CustomBlockKeys.SUPERCONDUCTOR_BLOCK.getValue())
+					x(1).anyGlass()
+				}
+				y(4) {
+					x(-1).anyGlass()
+					x(0).customBlock(CustomBlockKeys.SUPERCONDUCTOR_BLOCK.getValue())
+					x(1).anyGlass()
+				}
+				y(5) {
+					x(-1).anyWall()
+					x(0).sponge()
+					x(1).anyWall()
+				}
+				y(6) {
+					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT))
+					x(0).thrusterBlock()
+					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT))
+				}
+				y(7) {
+					x(0).customBlock(CustomBlockKeys.REINFORCED_FLUID_PIPE.getValue())
+				}
+				y(8) {
+					x(0).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.UP, example = Material.END_ROD.createBlockData()))
+				}
+			}
+			z(0) {
+				y(0) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(1) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(2) {
+					x(0).anyWall()
+				}
+				y(3) {
+					x(0).anyGlass()
+				}
+				y(4) {
+					x(0).anyGlass()
+				}
+				y(5) {
+					x(0).anyWall()
+				}
+				y(6) {
+					x(0).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD))
+				}
+			}
 		}
 
 		override fun MultiblockShape.buildStructure() {
@@ -284,6 +496,225 @@ sealed class TractorBeamBaseMultiblock : Multiblock(), SubsystemMultiblock<Tract
 				}
 				y(1) {
 					x(0).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD))
+				}
+			}
+		}
+	}
+
+	object DownTractorBeamBaseMultiblock : TractorBeamBaseMultiblock() {
+		override val firePosOffset: Vec3i = Vec3i(0, -5, 0)
+
+		override fun getTileOrigin(subsytemPos: Vec3i, subsystemDirection: BlockFace): Vec3i {
+			return subsytemPos.getRelative(subsystemDirection).getRelative(BlockFace.DOWN, 3)
+		}
+
+		override fun getOriginRelativePosition(origin: Vec3i, subsystemDirection: BlockFace, length: Int): Vec3i {
+			return origin.getRelative(BlockFace.DOWN, length)
+		}
+
+		override fun MultiblockShape.buildExampleShape() {
+			z(1) {
+				y(-6) {
+					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT))
+					x(0).thrusterBlock()
+					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT))
+				}
+				y(-5) {
+					x(-1).anyWall()
+					x(0).sponge()
+					x(1).anyWall()
+				}
+				y(-4) {
+					x(-1).anyGlass()
+					x(0).customBlock(CustomBlockKeys.SUPERCONDUCTOR_BLOCK.getValue())
+					x(1).anyGlass()
+				}
+				y(-3) {
+					x(-1).anyGlass()
+					x(0).customBlock(CustomBlockKeys.SUPERCONDUCTOR_BLOCK.getValue())
+					x(1).anyGlass()
+				}
+				y(-2) {
+					x(-1).anyWall()
+					x(0).sponge()
+					x(1).anyWall()
+				}
+				y(-1) {
+					x(-1).aluminumBlock()
+					x(0).sponge()
+					x(1).aluminumBlock()
+				}
+				y(0) {
+					x(-1).aluminumBlock()
+					x(0).sponge()
+					x(1).aluminumBlock()
+				}
+				y(-8) {
+					x(0).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
+				}
+				y(-7) {
+					x(0).customBlock(CustomBlockKeys.REINFORCED_FLUID_PIPE.getValue())
+				}
+			}
+			z(2) {
+				y(-1) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(0) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(-6) {
+					x(0).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD))
+				}
+				y(-5) {
+					x(0).anyWall()
+				}
+				y(-4) {
+					x(0).anyGlass()
+				}
+				y(-3) {
+					x(0).anyGlass()
+				}
+				y(-2) {
+					x(0).anyWall()
+				}
+			}
+			z(0) {
+				y(-1) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(0) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(-6) {
+					x(0).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD))
+				}
+				y(-5) {
+					x(0).anyWall()
+				}
+				y(-4) {
+					x(0).anyGlass()
+				}
+				y(-3) {
+					x(0).anyGlass()
+				}
+				y(-2) {
+					x(0).anyWall()
+				}
+			}
+		}
+
+		override fun MultiblockShape.buildStructure() {
+			z(1) {
+				y(-2) {
+					x(-1).anyWall()
+					x(0).sponge()
+					x(1).anyWall()
+				}
+				y(-1) {
+					x(-1).aluminumBlock()
+					x(0).sponge()
+					x(1).aluminumBlock()
+				}
+				y(0) {
+					x(-1).aluminumBlock()
+					x(0).sponge()
+					x(1).aluminumBlock()
+				}
+			}
+			z(2) {
+				y(-1) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(0) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(-2) {
+					x(0).anyWall()
+				}
+			}
+			z(0) {
+				y(-1) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(0) {
+					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+					x(0).aluminumBlock()
+					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				}
+				y(-2) {
+					x(0).anyWall()
+				}
+			}
+		}
+
+		override fun MultiblockShape.buildTiledStructure() {
+			z(0) {
+				y(0) {
+					x(-1).anyGlass()
+					x(0).customBlock(CustomBlockKeys.SUPERCONDUCTOR_BLOCK.getValue())
+					x(1).anyGlass()
+				}
+			}
+			z(1) {
+				y(0) {
+					x(0).anyGlass()
+				}
+			}
+			z(-1) {
+				y(0) {
+					x(0).anyGlass()
+				}
+			}
+		}
+
+		override fun MultiblockShape.buildTugEndStructure() {
+			z(0) {
+				y(-1) {
+					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT))
+					x(0).thrusterBlock()
+					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT))
+				}
+				y(0) {
+					x(-1).anyWall()
+					x(0).sponge()
+					x(1).anyWall()
+				}
+				y(-3) {
+					x(0).endRod(PrepackagedPreset.simpleDirectional(RelativeFace.DOWN, example = Material.END_ROD.createBlockData()))
+				}
+				y(-2) {
+					x(0).customBlock(CustomBlockKeys.REINFORCED_FLUID_PIPE.getValue())
+				}
+			}
+			z(1) {
+				y(-1) {
+					x(0).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD))
+				}
+				y(0) {
+					x(0).anyWall()
+				}
+			}
+			z(-1) {
+				y(-1) {
+					x(0).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD))
+				}
+				y(0) {
+					x(0).anyWall()
 				}
 			}
 		}
