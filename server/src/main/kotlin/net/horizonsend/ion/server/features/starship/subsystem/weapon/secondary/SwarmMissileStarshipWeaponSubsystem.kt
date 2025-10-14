@@ -117,9 +117,16 @@ class SwarmMissileStarshipWeaponSubsystem(
         }
     }
 
-    override fun isRequiredAmmo(item: ItemStack): Boolean = requireMaterial(item, Material.COAL_BLOCK, 2)
+    override fun isRequiredAmmo(item: ItemStack): Boolean = requireMaterial(item, Material.COAL_BLOCK, 2) ||
+            requireMaterial(item, Material.COAL, 18) ||
+            requireMaterial(item, Material.CHARCOAL, 36)
 
     override fun consumeAmmo(itemStack: ItemStack) {
-        consumeItem(itemStack, 2)
+        when (itemStack.type) {
+            Material.COAL_BLOCK -> consumeItem(itemStack, 2)
+            Material.COAL -> consumeItem(itemStack, 18)
+            Material.CHARCOAL -> consumeItem(itemStack, 36)
+            else -> throw IllegalArgumentException("Unsupported material type")
+        }
     }
 }
