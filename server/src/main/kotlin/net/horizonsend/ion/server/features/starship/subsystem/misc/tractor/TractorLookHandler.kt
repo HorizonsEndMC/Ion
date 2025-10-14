@@ -34,15 +34,17 @@ class TractorLookHandler(controller: PlayerController) : MovementHandler(control
 		trackView(tractor, state)
 	}
 
+	var lastDistanceChangeMillis = System.currentTimeMillis()
+
 	fun popDistanceChanges(tug: TractorBeamSubsystem, state: TowedBlocks) {
 		val center = state.centerPoint ?: return
 		var direction: RelativeFace? = null
 
 		val now = System.currentTimeMillis()
-		if (now - lastMovementTimeMillis < state.manualMoveCooldown) {
+		if (now - lastDistanceChangeMillis < state.manualMoveCooldown) {
 			return
 		}
-		lastMovementTimeMillis = now
+		lastDistanceChangeMillis = now
 
 		if (input.distanceQueue.isEmpty()) {
 			sneakMovements = 0
@@ -92,7 +94,9 @@ class TractorLookHandler(controller: PlayerController) : MovementHandler(control
 	}
 
 	var lastDirection: Vector? = starship.playerPilot?.location?.direction
-	private var lastMovementTimeMillis = System.currentTimeMillis()
+	private var lastTrackMovementTimeMillis = System.currentTimeMillis()
+
+	private var trackMovements = 0
 
 	fun trackView(tug: TractorBeamSubsystem, state: TowedBlocks) {
 		val center = state.centerPoint ?: return
@@ -100,24 +104,42 @@ class TractorLookHandler(controller: PlayerController) : MovementHandler(control
 		val viewDirection = playerPilot.location.direction
 
 		val now = System.currentTimeMillis()
-		if (now - lastMovementTimeMillis < state.manualMoveCooldown) {
+		if (now - lastTrackMovementTimeMillis < state.manualMoveCooldown) {
 			return
 		}
 
-		if (viewDirection == lastDirection) return
-		lastDirection = viewDirection
-		lastMovementTimeMillis = now
+		if (viewDirection == lastDirection) {
+			trackMovements = 0
+		}
 
-		val vector = center.toCenterVector().clone().subtract(playerPilot.eyeLocation.toVector())
-		val distance = vector.length()
+		lastTrackMovementTimeMillis = now
 
-		val newLocation = viewDirection.clone().normalize().multiply(distance).add(playerPilot.eyeLocation.toVector())
+		val vectorToTowCenter = center.toCenterVector().clone().subtract(playerPilot.eyeLocation.toVector())
+		val distanceToTowCenter = vectorToTowCenter.length()
 
+		if (vectorToTowCenter.angle(viewDirection) < Math.toRadians(5.0)) return
+
+		trackMovements++
+
+		val trackMovements = trackMovements
+
+		val accelDistance = (6.0 - min(state.blocks.size.toDouble(), 1_000_000.0).pow(1.0 / 8.0)).roundToInt()
+		val travelDistance = Math.toRadians(max(min(5, trackMovements / min(1, accelDistance)), 1).toDouble())
+
+		// Get the orthogal angle to use as an axis to rotate the vector to the tow center to get an intermediate vector with a limited travel angle
+		val orthogonal = vectorToTowCenter.clone().crossProduct(viewDirection).normalize()
+
+		val newDirection = vectorToTowCenter.clone().rotateAroundAxis(orthogonal, travelDistance)
+
+		// Project the new direction at the same distance from the player's eyes
+		val newLocation = newDirection.clone().normalize().multiply(distanceToTowCenter).add(playerPilot.eyeLocation.toVector())
+
+		// get the delta coordinates to move the towed structure
 		val difference = newLocation.clone().subtract(center.toCenterVector())
 
-		val dx = difference.x.roundToInt().coerceIn(-5, 5)
-		val dy = difference.y.roundToInt().coerceIn(-5, 5)
-		val dz = difference.z.roundToInt().coerceIn(-5, 5)
+		val dx = difference.x.roundToInt()
+		val dy = difference.y.roundToInt()
+		val dz = difference.z.roundToInt()
 
 		state.move(tug.starship.world, TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
 	}
