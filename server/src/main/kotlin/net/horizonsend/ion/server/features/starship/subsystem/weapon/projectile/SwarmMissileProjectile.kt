@@ -99,7 +99,7 @@ class SwarmMissileProjectile(
             lineLoc.world.spawnParticle(Particle.DUST, lineLoc.x, lineLoc.y, lineLoc.z, 1, 0.0, 0.0, 0.0, 0.0, Particle.DustOptions(color, 2f), true)
         }*/
 
-        (0 until 5).forEach { _ ->
+        (0 until 2).forEach { _ ->
             val angle = Math.PI / 24
             val opposite = direction.clone().multiply(-1)
                 .rotateAroundX(randomDouble(-angle, angle))
@@ -124,9 +124,27 @@ class SwarmMissileProjectile(
     }
 
     override fun onImpact() {
-        val randomVector = Vector(randomDouble(-1.0, 1.0), randomDouble(-1.0, 1.0), randomDouble(-1.0, 1.0)).normalize()
-        for (loc in location.circlePoints(2.0, 10, randomVector)) {
-            loc.world.spawnParticle(Particle.CLOUD, loc, 1, 0.0, 0.0, 0.0, 0.0, null, true)
+        for (loc in location.circlePoints(2.0, 30, direction)) {
+            val radialVector = loc.toVector().subtract(location.toVector()).normalize()
+            loc.world.spawnParticle(Particle.CLOUD, location, 0, radialVector.x, radialVector.y, radialVector.z, 1.0, null, true)
+        }
+
+        (0 until 20).forEach { _ ->
+            val angle = Math.PI / 12
+            val opposite = direction.clone().multiply(-1)
+                .rotateAroundX(randomDouble(-angle, angle))
+                .rotateAroundY(randomDouble(-angle, angle))
+                .rotateAroundZ(randomDouble(-angle, angle))
+            location.world.spawnParticle(Particle.FLAME, location, 0, opposite.x, opposite.y, opposite.z, 1.0, null, true)
+        }
+
+        (0 until 40).forEach { _ ->
+            val angle = Math.PI / 6
+            val opposite = direction.clone().multiply(-1)
+                .rotateAroundX(randomDouble(-angle, angle))
+                .rotateAroundY(randomDouble(-angle, angle))
+                .rotateAroundZ(randomDouble(-angle, angle))
+            location.world.spawnParticle(Particle.LARGE_SMOKE, location, 0, opposite.x, opposite.y, opposite.z, 2.0, null, true)
         }
     }
 }

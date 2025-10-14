@@ -105,7 +105,7 @@ class SwarmMissileStarshipWeaponSubsystem(
                     TopSwarmMissileStarshipWeaponMultiblock.damageType
                 ).fire()
 
-                (0 until 5).forEach { _ ->
+                (0 until 10).forEach { _ ->
                     val angle = Math.PI / 12
                     val opposite = randomInitialDir.clone()
                         .rotateAroundX(randomDouble(-angle, angle))
