@@ -141,7 +141,6 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.canno
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.LaserCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.PulseCannonStarshipWeaponMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.TestBoidCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CapitalBeamStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CthulhuBeamStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CthulhuBeamStarshipWeaponMultiblockSide
@@ -364,7 +363,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(SkullThrowerStarshipWeaponMultiblock)
 
 		// Starship test weapons
-		registerMultiblock(TestBoidCannonStarshipWeaponMultiblock)
+		//registerMultiblock(TestBoidCannonStarshipWeaponMultiblock)
 
 		// Starship utilities
 		registerMultiblock(FauxReactorMultiblock)
