@@ -290,6 +290,7 @@ data class NewStarshipBalancing(
 			shieldPowerMultiplier = 1.0,
 			weaponOverrides = listOf(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 420),
+				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 4500, maxBlockCount = 8000), maxPerShot = 1, boostChargeNanos = TimeUnit.SECONDS.toNanos(6))
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
@@ -306,6 +307,7 @@ data class NewStarshipBalancing(
 			shieldPowerMultiplier = 1.0,
 			weaponOverrides = listOf(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 360),
+				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 8000, maxBlockCount = 12000), maxPerShot = 2, boostChargeNanos = TimeUnit.SECONDS.toNanos(8))
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
