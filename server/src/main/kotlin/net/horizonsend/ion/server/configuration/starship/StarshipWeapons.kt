@@ -276,7 +276,7 @@ data class SwarmMissileBalancing(
 		override val range: Double = 170.0,
 		override val speed: Double = 100.0,
 		override val explosionPower: Float = 1.0f,
-		override val starshipShieldDamageMultiplier: Double = 2.0,
+		override val starshipShieldDamageMultiplier: Double = 3.0,
 		override val areaShieldDamageMultiplier: Double = 1.25,
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.swarm_missile.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.swarm_missile.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
