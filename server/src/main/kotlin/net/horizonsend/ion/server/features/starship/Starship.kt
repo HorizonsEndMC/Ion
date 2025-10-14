@@ -782,4 +782,11 @@ class Starship(
 	fun getTotalMass(): Double {
 		return mass + tractors.sumOf { it.getTowed()?.mass ?: 0.0 }
 	}
+
+	/**
+	 * Returns the starship block count + the towed block count
+	 **/
+	fun getTotalBlockCount(): Int {
+		return initialBlockCount + tractors.sumOf { it.getTowed()?.blocks?.size ?: 0 }
+	}
 }
