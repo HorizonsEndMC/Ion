@@ -259,11 +259,11 @@ data class ArsenalRocketBalancing(
 @Serializable
 data class SwarmMissileBalancing(
 	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(6),
-	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = true, minBlockCount = 4500, maxBlockCount = 12000),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
-	override val firePowerConsumption: Int = 8000,
+	override val firePowerConsumption: Int = 32846,
 	override val isForwardOnly: Boolean = false,
-	override val maxPerShot: Int? = 2,
+	override val maxPerShot: Int? = 1,
 	override val applyCooldownToAll: Boolean = false,
 
 	override val projectile: SwarmMissileProjectileBalancing = SwarmMissileProjectileBalancing(),
