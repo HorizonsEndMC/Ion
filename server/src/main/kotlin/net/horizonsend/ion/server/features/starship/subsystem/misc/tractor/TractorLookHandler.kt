@@ -13,12 +13,17 @@ import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.util.Vector
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class TractorLookHandler(controller: PlayerController) : MovementHandler(controller, "Tractor Look") {
 	override val input: TractorLookInput = TractorLookInput(controller)
 
 	val tractor = controller.starship.tractors.firstOrNull()
+
+	private var sneakMovements = 0
 
 	override fun tick() {
 		if (tractor == null) return
@@ -33,6 +38,17 @@ class TractorLookHandler(controller: PlayerController) : MovementHandler(control
 		val center = state.centerPoint ?: return
 		var direction: RelativeFace? = null
 
+		val now = System.currentTimeMillis()
+		if (now - lastMovementTimeMillis < state.manualMoveCooldown) {
+			return
+		}
+		lastMovementTimeMillis = now
+
+		if (input.distanceQueue.isEmpty()) {
+			sneakMovements = 0
+		}
+
+		// Only check after cooldown
 		while (input.distanceQueue.isNotEmpty()) {
 			val vector = input.distanceQueue.removeFirst()
 			direction = vector
@@ -43,18 +59,19 @@ class TractorLookHandler(controller: PlayerController) : MovementHandler(control
 
 		val eyeLocation = starship.playerPilot?.eyeLocation ?: return
 
-		val now = System.currentTimeMillis()
-		if (now - lastMovementTimeMillis < state.manualMoveCooldown) {
-			return
-		}
-		lastMovementTimeMillis = now
+		sneakMovements++
 
-		val vector = center.toCenterVector().clone().subtract(eyeLocation.toVector()).normalize() //TODO acceleration
+		val sneakMovements = sneakMovements
+
+		val accelDistance = (6.0 - min(state.blocks.size.toDouble(), 1_000_000.0).pow(1.0 / 8.0)).roundToInt()
+		val distance = max(min(4, sneakMovements / min(1, accelDistance)), 1)
+
+		val vector = center.toCenterVector().clone().subtract(eyeLocation.toVector()).normalize()
 		if (direction == RelativeFace.BACKWARD) vector.multiply(-1)
 
-		val dx = vector.x.roundToInt()
-		val dy = vector.y.roundToInt()
-		val dz = vector.z.roundToInt()
+		val dx = vector.x.roundToInt() * distance
+		val dy = vector.y.roundToInt() * distance
+		val dz = vector.z.roundToInt() * distance
 
 		state.move(tug.starship.world, TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
 	}

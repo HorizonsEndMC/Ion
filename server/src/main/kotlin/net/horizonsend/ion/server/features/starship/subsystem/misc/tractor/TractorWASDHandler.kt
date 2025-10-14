@@ -13,12 +13,19 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.util.Vector
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.pow
 import kotlin.math.roundToInt
 
 class TractorWASDHandler(controller: PlayerController) : MovementHandler(controller, "Tractor Direct") {
 	override val input: TractorWASDInput = TractorWASDInput(controller)
 
 	val tractor = controller.starship.tractors.firstOrNull()
+
+	private var sneakMovements = 0
+
+	private var lastMovementTimeMillis = System.currentTimeMillis()
 
 	override fun tick() {
 		if (tractor == null) return
@@ -31,16 +38,36 @@ class TractorWASDHandler(controller: PlayerController) : MovementHandler(control
 	fun popTranslations(state: TowedBlocks) {
 		val delta = Vector()
 
+		val now = System.currentTimeMillis()
+		if (now - lastMovementTimeMillis < state.manualMoveCooldown) {
+			return
+		}
+		lastMovementTimeMillis = now
+
+		if (input.moveVectorDeque.isEmpty()) {
+			sneakMovements = 0
+		}
+
 		while (input.moveVectorDeque.isNotEmpty()) {
 			val vector = input.moveVectorDeque.removeFirst()
 			delta.add(vector)
 		}
 
+		sneakMovements++
+
+		val sneakMovements = sneakMovements
+
+		val accelDistance = (6.0 - min(state.blocks.size.toDouble(), 1_000_000.0).pow(1.0 / 8.0)).roundToInt()
+
+		val distance = max(min(4, sneakMovements / min(1, accelDistance)), 1)
+
 		if (delta.isZero) return
 
-		val dx = delta.x.roundToInt()
-		val dy = delta.y.roundToInt()
-		val dz = delta.z.roundToInt()
+		delta.normalize()
+
+		val dx = delta.x.roundToInt() * distance
+		val dy = delta.y.roundToInt() * distance
+		val dz = delta.z.roundToInt() * distance
 
 		state.move(state.subsystem.starship.world, TransformationAccessor.TranslationTransformation(null, dx, dy, dz))
 	}
