@@ -71,7 +71,10 @@ data class NewStarshipBalancing(
 
 	@Serializable
 	data class TractorBalancing(
-		val range: Double = 100.0
+		val range: Double = 100.0,
+		val shootSound: SoundInfo = SoundInfo("horizonsend:starship.weapon.plasma_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		val acquireSound: SoundInfo = SoundInfo("minecraft:block.beacon.activate", volume = 1f, source = Sound.Source.PLAYER),
+		val releaseSound: SoundInfo = SoundInfo("minecraft:block.beacon.deactivate", volume = 1f, source = Sound.Source.PLAYER),
 	) : SubsystemBalancing {
 		@Transient
 		override val clazz: KClass<out BalancedSubsystem<*>> = TractorBeamSubsystem::class

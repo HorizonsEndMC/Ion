@@ -19,6 +19,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsys
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.ManualWeaponSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
+import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.alongVector
@@ -96,6 +97,8 @@ class TractorBeamSubsystem(
 			it.targets(RayTraceTarget.BLOCK)
 		}?.hitBlock
 
+		playSoundInRadius(originLoc, balancing.range * 20.0, balancing.shootSound.sound)
+
 		val distance = distance(target, originLoc.toVector())
 		var beamDistance = minOf(balancing.range.roundToInt(), distance.roundToInt())
 
@@ -115,6 +118,7 @@ class TractorBeamSubsystem(
 				towState = TowState.Empty
 
 				starship.information("Released {0} blocks.", existingState.blocks.blocks.size)
+				starship.playSound(balancing.releaseSound.sound)
 
 				return
 			}
@@ -146,6 +150,7 @@ class TractorBeamSubsystem(
 			val massFormatted = "${massFormat.format(amount)} $unit"
 
 			starship.information("Acquired {0} blocks, weighing {1}.", blocks.blocks.size, massFormatted)
+			starship.playSound(balancing.acquireSound.sound)
 
 			towState = TowState.Full(blocks)
 		}
