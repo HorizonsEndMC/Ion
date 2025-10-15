@@ -15,7 +15,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
@@ -38,7 +38,6 @@ import net.horizonsend.ion.server.miscellaneous.registrations.persistence.Namesp
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
@@ -60,7 +59,7 @@ object CanisterUnloaderMultiblock : Multiblock(), EntityMultiblock<CanisterUnloa
 		z(2) {
 			y(-1) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-				x(0).fluidInput()
+				x(0).fluidPort()
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
@@ -72,12 +71,12 @@ object CanisterUnloaderMultiblock : Multiblock(), EntityMultiblock<CanisterUnloa
 		z(1) {
 			y(-1) {
 				x(-1).titaniumBlock()
-				x(0).type(Material.WAXED_COPPER_GRATE)
+				x(0).anyCopperGrate()
 				x(1).titaniumBlock()
 			}
 			y(0) {
 				x(-1).titaniumBlock()
-				x(0).type(Material.WAXED_COPPER_GRATE)
+				x(0).anyCopperGrate()
 				x(1).titaniumBlock()
 			}
 		}
@@ -123,7 +122,7 @@ object CanisterUnloaderMultiblock : Multiblock(), EntityMultiblock<CanisterUnloa
 			// Input
 			.addPowerInput(0, -1, 0)
 			// Output
-			.addPort(IOType.FLUID, 0, -1, 2) { IOPort.RegisteredMetaDataInput<FluidInputMetadata>(this, FluidInputMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 0, -1, 2) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = mainStorage, inputAllowed = false, outputAllowed = true)) }
 			.build()
 
 		val mainStorage = FluidStorageContainer(data, "main_storage", Component.text("Main Storage"), NamespacedKeys.MAIN_STORAGE, 1000.0, FluidRestriction.Unlimited)
@@ -199,7 +198,7 @@ object CanisterUnloaderMultiblock : Multiblock(), EntityMultiblock<CanisterUnloa
 		}
 
 		override fun tickAsync() {
-			bootstrapNetwork()
+			bootstrapFluidNetwork()
 		}
 	}
 }

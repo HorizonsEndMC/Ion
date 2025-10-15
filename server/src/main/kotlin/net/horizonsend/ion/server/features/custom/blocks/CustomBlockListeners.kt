@@ -21,6 +21,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockFromToEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import java.util.concurrent.ConcurrentHashMap
@@ -54,11 +55,8 @@ object CustomBlockListeners : SLEventListener() {
 			}
 
 			event.block.location.block.setBlockData(data, true)
-		} else {
-			event.block.location.block.setBlockData(block.blockData, true)
 		}
-
-		if (block is OrientableCustomBlock) {
+		else if (block is OrientableCustomBlock) {
 			val placedAgainst = BlockFace.entries.first {
 				it.modX == (event.blockAgainst.x - event.blockPlaced.x) &&
 				it.modY == (event.blockAgainst.y - event.blockPlaced.y) &&
@@ -71,7 +69,8 @@ object CustomBlockListeners : SLEventListener() {
 			}
 
 			event.block.location.block.setBlockData(data, true)
-		} else {
+		}
+		else {
 			event.block.location.block.setBlockData(block.blockData, true)
 		}
 
@@ -173,5 +172,10 @@ object CustomBlockListeners : SLEventListener() {
 				}
 			}
 		}
+	}
+
+	@EventHandler
+	fun onWaterBreakPipe(event: BlockFromToEvent) {
+		if (event.toBlock.customBlock != null) event.isCancelled = true
 	}
 }

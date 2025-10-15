@@ -49,5 +49,10 @@ class SharedMultiblockLinkage : LinkageHolder {
 			entities.forEach(new::add)
 			return new
 		}
+		fun of(entities: Collection<MultiblockLinkage>): SharedMultiblockLinkage {
+			val new = SharedMultiblockLinkage()
+			entities.forEach(new::add)
+			return new
+		}
 	}
 }

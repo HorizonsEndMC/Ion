@@ -4,15 +4,18 @@ import co.aikar.commands.PaperCommandManager
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing
-import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing.WeaponDefaults
+import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing.SubsystemDefaults
 import net.horizonsend.ion.server.configuration.starship.StarshipProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipTypeBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.ai.spawning.AISpawningManager.schematicCache
+import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
+import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import org.bukkit.command.CommandSender
 import kotlin.reflect.KMutableProperty
@@ -23,7 +26,7 @@ import kotlin.reflect.full.memberProperties
 object ConfigurationCommands : SLCommand() {
 	private val starshipTypes = NewStarshipBalancing.ShipClasses::class.memberProperties
 	private val starshipBalancingOptions = StarshipTypeBalancing::class.memberProperties
-	private val weaponDefaults = WeaponDefaults::class.memberProperties
+	private val subsystemDefaults = SubsystemDefaults::class.memberProperties
 	private val weaponFields = StarshipWeaponBalancing::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
 	private val projectileFields = StarshipProjectileBalancing::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
 	private val starshipFields = StarshipTypeBalancing::class.memberProperties.filterIsInstance<KMutableProperty<*>>()
@@ -38,7 +41,7 @@ object ConfigurationCommands : SLCommand() {
 		}
 
 		manager.commandCompletions.registerCompletion("weaponDefaults") {
-			weaponDefaults.map { it.name }
+			subsystemDefaults.map { it.name }
 		}
 
 		manager.commandCompletions.registerCompletion("balancingValues") {
@@ -181,10 +184,16 @@ object ConfigurationCommands : SLCommand() {
 	@Subcommand("config reload")
 	fun onConfigReload(sender: CommandSender) {
 		Tasks.async {
-			kotlin.runCatching { ConfigurationFiles.reload() }.onFailure { sender.sendMessage(formatException(it)) }
+			kotlin.runCatching {
+				ConfigurationFiles.reload()
+				for (world in IonWorld.all()) {
+					sender.information("Reloading ${world.world.key.asString()} configuration.")
+					world.reloadConfiguration()
+				}
+			}.onFailure { sender.sendMessage(formatException(it)) }
 
 			Tasks.sync {
-				reloadOthers()
+				kotlin.runCatching { reloadOthers() }.onFailure { sender.sendMessage(formatException(it)) }
 
 				sender.success("Reloaded configs.")
 			}
@@ -193,5 +202,6 @@ object ConfigurationCommands : SLCommand() {
 
 	private fun reloadOthers() {
 		schematicCache.invalidateAll()
+		MultiblockRegistration.reloadMultiblocks()
 	}
 }

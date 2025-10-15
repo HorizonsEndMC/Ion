@@ -226,10 +226,16 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val DEBUG_LINE_BLUE = registerKey("DEBUG_LINE_BLUE")
 	val DEBUG_LINE = registerKey("DEBUG_LINE")
 
-	val FLUID_INPUT = registerTypedKey<CustomBlockItem>("FLUID_INPUT")
+	val FLUID_PORT = registerTypedKey<CustomBlockItem>("FLUID_PORT")
 	val FLUID_VALVE = registerTypedKey<CustomBlockItem>("FLUID_VALVE")
 	val FLUID_PIPE = registerTypedKey<CustomBlockItem>("FLUID_PIPE")
 	val FLUID_PIPE_JUNCTION = registerTypedKey<CustomBlockItem>("FLUID_PIPE_JUNCTION")
 	val REINFORCED_FLUID_PIPE = registerTypedKey<CustomBlockItem>("REINFORCED_FLUID_PIPE")
 	val REINFORCED_FLUID_PIPE_JUNCTION = registerTypedKey<CustomBlockItem>("REINFORCED_FLUID_PIPE_JUNCTION")
+	val TEMPERATURE_GAUGE = registerTypedKey<CustomBlockItem>("TEMPERATURE_GAUGE")
+
+	val GRID_ENERGY_PORT = registerTypedKey<CustomBlockItem>("GRID_ENERGY_PORT")
+
+	val COPPER_COIL = registerTypedKey<CustomBlockItem>("COPPER_COIL")
+	val ROTATION_SHAFT = registerTypedKey<CustomBlockItem>("ROTATION_SHAFT")
 }

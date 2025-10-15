@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.features.economy.cargotrade.CrateRestrictions
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentBalancing
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentGenerator
 import net.horizonsend.ion.server.features.economy.cargotrade.ShipmentManager
+import net.horizonsend.ion.server.features.economy.chestshops.ChestShops
 import net.horizonsend.ion.server.features.economy.city.CityNPCs
 import net.horizonsend.ion.server.features.economy.city.TradeCities
 import net.horizonsend.ion.server.features.economy.collectors.CollectionMissions
@@ -94,6 +95,7 @@ import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.data.DataFixers
+import net.horizonsend.ion.server.features.world.environment.Environments
 import net.horizonsend.ion.server.listener.misc.WorldEditListener
 import net.horizonsend.ion.server.listener.packets.PacketListeners
 import net.horizonsend.ion.server.miscellaneous.registrations.legacy.CustomRecipes
@@ -226,4 +228,6 @@ val components: List<IonComponent> = listOf(
 	ServerInboxes,
 	SequenceManager,
 	ServerMutesHook,
+	ChestShops,
+	Environments,
 )

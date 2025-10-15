@@ -14,8 +14,10 @@ import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 
 class ActivePlayerController(player: Player, starship: ActiveStarship) : PlayerController(player, starship, "Player") {
@@ -60,6 +62,16 @@ class ActivePlayerController(player: Player, starship: ActiveStarship) : PlayerC
 		@EventHandler
 		fun onPlayerHoldItem(event: PlayerItemHeldEvent) {
 			(getMovementHandler(event.player)?.input as? PlayerInput)?.handlePlayerHoldItem(event)
+		}
+
+		@EventHandler
+		fun onPlayerDropItem(event: PlayerDropItemEvent) {
+			(getMovementHandler(event.player)?.input as? PlayerInput)?.handleDropItem(event)
+		}
+
+		@EventHandler
+		fun onPlayerSwapItem(event: PlayerSwapHandItemsEvent) {
+			(getMovementHandler(event.player)?.input as? PlayerInput)?.handleSwapHands(event)
 		}
 	}
 }

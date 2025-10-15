@@ -4,7 +4,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.economy.chestshops.ChestShops
 import net.horizonsend.ion.server.features.multiblock.MultiblockAccess
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield
@@ -28,6 +28,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.ProceduralSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
@@ -134,18 +135,20 @@ object SubsystemDetector {
 		filterSubsystems(starship)
 
 		// Do this after all subsystems are detected so that they can be captured
-		if (ConfigurationFiles.featureFlags().customTurrets) {
-			starship.customTurrets.forEach { it.detectTurret() }
+		starship.subsystems.filterIsInstance<ProceduralSubsystem>().forEach(ProceduralSubsystem::detectStructure)
 
-			// Detect if any turrets share blocks
-			if (starship.customTurrets.any { turret1 -> starship.customTurrets.minus(turret1).any { turret2 -> turret1.blocks.intersect(LongOpenHashSet(turret2.blocks)).isNotEmpty() } }) {
-				throw ActiveStarshipFactory.StarshipActivationException("Custom turrets share blocks!")
-			}
+		// Detect if any turrets share blocks
+		if (starship.customTurrets.any { turret1 -> starship.customTurrets.minus(turret1).any { turret2 -> turret1.blocks.intersect(LongOpenHashSet(turret2.blocks)).isNotEmpty() } }) {
+			throw ActiveStarshipFactory.StarshipActivationException("Custom turrets share blocks!")
 		}
 	}
 
 	private fun detectSign(starship: ActiveControlledStarship, block: Block) {
 		val sign = block.state as Sign
+
+		if (ChestShops.getShop(sign) != null) {
+			throw ActiveStarshipFactory.StarshipActivationException("Starships cannot fly with chest shops!")
+		}
 
 		val multiblock = MultiblockAccess.getFast(sign)
 		if (multiblock is AreaShield) {
@@ -353,6 +356,7 @@ object SubsystemDetector {
 		starship.subsystems.filterIsInstanceTo(starship.gravityWells)
 		starship.subsystems.filterIsInstanceTo(starship.drills)
 		starship.subsystems.filterIsInstanceTo(starship.fuelTanks)
+		starship.subsystems.filterIsInstanceTo(starship.tractors)
 		starship.subsystems.filterIsInstanceTo(starship.customTurrets)
 	}
 }

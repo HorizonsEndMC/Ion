@@ -21,7 +21,7 @@ class SonicMissileWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace
-) : CannonWeaponSubsystem<SonicMissileBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(SonicMissileWeaponSubsystem::class)),
+) : CannonWeaponSubsystem<SonicMissileBalancing>(starship, pos, face, starship.balancingManager.getSubsystemSupplier(SonicMissileWeaponSubsystem::class)),
 	HeavyWeaponSubsystem,
 	AmmoConsumingWeaponSubsystem,
 	PermissionWeaponSubsystem {

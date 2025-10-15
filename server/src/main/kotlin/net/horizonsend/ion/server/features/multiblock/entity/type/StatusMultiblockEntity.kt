@@ -10,6 +10,10 @@ interface StatusMultiblockEntity {
 		statusManager.setStatus(status)
 	}
 
+	fun clearStatus() {
+		statusManager.setStatus(empty())
+	}
+
 	class StatusManager {
 		val updateManager = mutableSetOf<Runnable>()
 

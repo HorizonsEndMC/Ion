@@ -73,7 +73,7 @@ class AutoMasonIntegration(
 				continue
 			}
 
-			val recipe = recipesForMaterial.firstOrNull { it.verifyAllRequirements(recipeEnviornment) }
+			val recipe = recipesForMaterial.firstOrNull { it.verifyAllRequirements(recipeEnviornment, false) }
 			if (recipe == null) {
 				fails.addAll(positions.keys)
 				continue
@@ -97,7 +97,7 @@ class AutoMasonIntegration(
 		val itemStack = kotlin.runCatching { fromItemString(printItem.itemString) }.getOrNull() ?: return false
 		val recipes = recipes[itemStack.type]
 
-		val recipe = recipes.firstOrNull { it.verifyAllRequirements(enviornment) }
+		val recipe = recipes.firstOrNull { it.verifyAllRequirements(enviornment, false) }
 		if (recipe == null) return false
 
 		val ingredientMatches = recipe.getItemRequirements().mapNotNull { (it.requirement as ItemRequirement).asItemStack() }

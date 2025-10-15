@@ -35,7 +35,6 @@ import net.minecraft.core.Direction
 import net.minecraft.world.phys.shapes.VoxelShape
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.Sound as SoundType
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
 import org.bukkit.entity.Player
@@ -47,13 +46,16 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import java.util.concurrent.TimeUnit
+import org.bukkit.Sound as SoundType
 
-abstract class AbstractTractorBeam : Multiblock(), InteractableMultiblock, DisplayNameMultilblock {
-	override val name = "tractorbeam"
+abstract class AbstractElevatorBeam : Multiblock(), InteractableMultiblock, DisplayNameMultilblock {
+	override val name = "elevator"
+
+	override val alternativeDetectionNames: Array<String> = arrayOf("tractorbeam")
 
 	override val signText = createSignText(
-		line1 = "&7Tractor",
-		line2 = "&7Beam",
+		line1 = "&7Elevator",
+		line2 = null,
 		line3 = "[-?::]",
 		line4 = "[:->:]"
 	)
@@ -180,13 +182,13 @@ abstract class AbstractTractorBeam : Multiblock(), InteractableMultiblock, Displ
 		private fun checkMultiblock(block: Block): Boolean {
 			if (!block.type.isGlass) return false
 
-			return TractorBeamMultiblock.isInteriorBlock(block) || MediumTractorBeamMultiblock.isInteriorBlock(block) || LargeTractorBeamMultiblock.isInteriorBlock(block)
+			return ElevatorMultiblock.isInteriorBlock(block) || MediumElevatorMultiblock.isInteriorBlock(block) || LargeElevatorMultiblock.isInteriorBlock(block)
 		}
 	}
 }
 
-object TractorBeamMultiblock : AbstractTractorBeam() {
-	override val displayName: Component get() = text("Tractor Beam")
+object ElevatorMultiblock : AbstractElevatorBeam() {
+	override val displayName: Component get() = text("Elevator")
 	override val description: Component get() = text("Allows players to ascend or descend between floors, or between a starship and planet surface. 1x1 area.")
 
 	override fun MultiblockShape.buildStructure() {
@@ -212,8 +214,8 @@ object TractorBeamMultiblock : AbstractTractorBeam() {
 	}
 }
 
-object MediumTractorBeamMultiblock : AbstractTractorBeam() {
-	override val displayName: Component get() = text("Medium Tractor Beam")
+object MediumElevatorMultiblock : AbstractElevatorBeam() {
+	override val displayName: Component get() = text("Medium Elevator")
 	override val description: Component get() = text("Allows players to ascend or descend between floors, or between a starship and planet surface. 2x2 area.")
 
 	override fun MultiblockShape.buildStructure() {
@@ -263,8 +265,8 @@ object MediumTractorBeamMultiblock : AbstractTractorBeam() {
 	}
 }
 
-object LargeTractorBeamMultiblock : AbstractTractorBeam() {
-	override val displayName: Component get() = text("Large Tractor Beam")
+object LargeElevatorMultiblock : AbstractElevatorBeam() {
+	override val displayName: Component get() = text("Large Elevator")
 	override val description: Component get() = text("Allows players to ascend or descend between floors, or between a starship and planet surface. 3x3 area.")
 
 	override fun MultiblockShape.buildStructure() {

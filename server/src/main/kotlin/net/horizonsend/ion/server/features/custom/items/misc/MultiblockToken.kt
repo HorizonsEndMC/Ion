@@ -62,10 +62,10 @@ object MultiblockToken : CustomItem(
 		val origin = PrePackaged.getOriginFromPlacement(
 			event.clickedBlock ?: return,
 			livingEntity.facing,
-			packagedData.shape
+			packagedData.getExampleShape()
 		)
 
-		val obstructions = PrePackaged.checkObstructions(origin, livingEntity.facing, packagedData.shape, livingEntity.isSneaking)
+		val obstructions = PrePackaged.checkObstructions(origin, livingEntity.facing, packagedData.getExampleShape(), livingEntity.isSneaking)
 
 		if (obstructions.isNotEmpty()) {
 			livingEntity.userError("Placement is obstructed! Crouch to enable block sharing.")

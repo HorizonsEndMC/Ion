@@ -104,7 +104,7 @@ object ItemFilterBlock : DirectionalCustomBlock(
 
 	override fun onRightClick(event: PlayerInteractEvent, block: Block) {
 		val clickedItem = event.item
-		if (event.player.isSneaking && clickedItem == null) return
+		if (event.player.isSneaking) return
 
 		event.isCancelled = true
 		event.player.closeInventory()

@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.control.controllers
 
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.control.input.InputHandler
 import net.horizonsend.ion.server.features.starship.control.input.NoInput
 import net.horizonsend.ion.server.features.starship.control.movement.MovementHandler
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -13,8 +14,9 @@ import org.bukkit.block.BlockState
 
 open class NoOpController(starship: ActiveStarship, previousDamager: Damager?) : Controller(previousDamager ?: noOpDamager, starship, "Idle") {
 	// Can't move
-	override var movementHandler: MovementHandler =
-		object : MovementHandler(this,"Idle", NoInput(this)) {}
+	override var movementHandler: MovementHandler = object : MovementHandler(this, "Idle") {
+		override val input: InputHandler = NoInput(this@NoOpController)
+	}
 
 	// Shouldn't be treated like they're still piloting it
 	override fun audience(): Audience = Audience.empty()

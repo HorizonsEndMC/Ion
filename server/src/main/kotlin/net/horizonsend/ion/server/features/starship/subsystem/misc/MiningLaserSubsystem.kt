@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.misc
 
 import fr.skytasul.guardianbeam.Laser.CrystalLaser
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.alertSubtitle
 import net.horizonsend.ion.common.extensions.hint
@@ -10,12 +11,14 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorSubtitle
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.multiblock.type.drills.DrillMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblock
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
+import net.horizonsend.ion.server.features.nations.utils.isNPC
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -363,6 +366,8 @@ class MiningLaserSubsystem(
 	) : BukkitRunnable() {
 		val randomOffset = Vector(Random.nextDouble(-RANDOM_VELOCITY, RANDOM_VELOCITY), Random.nextDouble(-RANDOM_VELOCITY, RANDOM_VELOCITY), Random.nextDouble(-RANDOM_VELOCITY, RANDOM_VELOCITY))
 
+		val test = Random.nextInt(1, 3)
+
 		val block = object : SinkAnimationBlock(
 			duration = length / ANIMATION_SPEED,
 			wrapper = ItemDisplayContainer(
@@ -370,7 +375,11 @@ class MiningLaserSubsystem(
 				initPosition = origin,
 				initHeading = BlockFace.NORTH.direction,
 				initScale = 1.0f,
-				item = item
+				item = item,
+				playerFilter = {
+					!it.isNPC &&
+					test <= (it.getSetting(PlayerSettings::miningLaserEffectLevel) ?: return@ItemDisplayContainer false)
+				}
 			),
 			direction = beamOrigin.clone().subtract(origin).normalize().multiply(ANIMATION_SPEED).add(randomOffset),
 			initialScale = 1.0,

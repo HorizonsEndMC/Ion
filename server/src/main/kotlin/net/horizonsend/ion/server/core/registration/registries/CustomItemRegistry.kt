@@ -66,6 +66,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerIndustry()
 		registerShipCores()
 		registerPipes()
+		registerGridEnergyWires()
 		registerGasCanisters()
 		registerTools()
 		registerModificationItems()
@@ -320,6 +321,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		unStackable(key = CustomItemKeys.ACTIVATED_ARSENAL_MISSILE, model = "projectile/activated_arsenal_missile", displayName = Component.text("Activated Arsenal Missile", NamedTextColor.RED))
 
 		register(CustomItemKeys.PROGRESS_HOLDER, ProgressHolder)
+		customBlockItem(CustomItemKeys.COPPER_COIL, "industry/copper_coil", Component.text("Copper Coil").itemName, CustomBlockKeys.COPPER_COIL)
+		customBlockItem(CustomItemKeys.ROTATION_SHAFT, "industry/rotation_shaft", Component.text("Rotation Shaft").itemName, CustomBlockKeys.ROTATION_SHAFT)
 	}
 
 	private fun registerShipCores() {
@@ -337,12 +340,17 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 	}
 
 	fun registerPipes() {
-		customBlockItem(CustomItemKeys.FLUID_INPUT, "pipe/fluid_input", Component.text("Fluid Port").itemName, CustomBlockKeys.FLUID_INPUT)
+		customBlockItem(CustomItemKeys.FLUID_PORT, "pipe/fluid_port", Component.text("Fluid Port").itemName, CustomBlockKeys.FLUID_PORT)
 		customBlockItem(CustomItemKeys.FLUID_VALVE, "pipe/fluid_valve", Component.text("Fluid Valve").itemName, CustomBlockKeys.FLUID_VALVE)
 		customBlockItem(CustomItemKeys.FLUID_PIPE, "pipe/fluid_pipe", Component.text("Fluid Pipe").itemName, CustomBlockKeys.FLUID_PIPE)
 		customBlockItem(CustomItemKeys.FLUID_PIPE_JUNCTION, "pipe/fluid_pipe_junction", Component.text("Fluid Pipe Junction").itemName, CustomBlockKeys.FLUID_PIPE_JUNCTION)
 		customBlockItem(CustomItemKeys.REINFORCED_FLUID_PIPE, "pipe/reinforced_fluid_pipe", Component.text("Reinforced Fluid Pipe").itemName, CustomBlockKeys.REINFORCED_FLUID_PIPE)
 		customBlockItem(CustomItemKeys.REINFORCED_FLUID_PIPE_JUNCTION, "pipe/reinforced_fluid_pipe_junction", Component.text("Reinforced Fluid Pipe Junction").itemName, CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION)
+		customBlockItem(CustomItemKeys.TEMPERATURE_GAUGE, "pipe/temperature_gauge", Component.text("Temperature Gauge").itemName, CustomBlockKeys.TEMPERATURE_GAUGE)
+	}
+
+	fun registerGridEnergyWires() {
+		customBlockItem(CustomItemKeys.GRID_ENERGY_PORT, "pipe/grid_energy_port", Component.text("Grid Energy Port").itemName, CustomBlockKeys.GRID_ENERGY_PORT)
 	}
 
 	private fun registerGasCanisters() {

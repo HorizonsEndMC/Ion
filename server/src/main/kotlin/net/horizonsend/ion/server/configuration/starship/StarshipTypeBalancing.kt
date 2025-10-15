@@ -10,12 +10,13 @@ import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriT
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.EntityDamager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
+import net.horizonsend.ion.server.features.starship.subsystem.BalancedSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.tractor.TractorBeamSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.Projectile
 import net.kyori.adventure.key.Key
 import net.kyori.adventure.sound.Sound
@@ -30,12 +31,12 @@ import kotlin.reflect.KClass
 
 @Serializable
 data class NewStarshipBalancing(
-	val weaponDefaults: WeaponDefaults = WeaponDefaults(),
+	val subsystemDefaults: SubsystemDefaults = SubsystemDefaults(),
 	val shipClasses: ShipClasses = ShipClasses()
 ) {
 	@Serializable
-	data class WeaponDefaults(
-		val weapons: List<StarshipWeaponBalancing<*>> = listOf(
+	data class SubsystemDefaults(
+		val weapons: List<SubsystemBalancing> = listOf(
 			TorpedoBalancing(),
 			HeavyLaserBalancing(),
 			PhaserBalancing(),
@@ -66,8 +67,20 @@ data class NewStarshipBalancing(
 			CapitalCannonBalancing(),
 			TestBoidCannonBalancing(),
 			SwarmMissileBalancing(),
+			TractorBalancing()
 		)
 	)
+
+	@Serializable
+	data class TractorBalancing(
+		val range: Double = 100.0,
+		val shootSound: SoundInfo = SoundInfo("horizonsend:starship.weapon.plasma_cannon.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		val acquireSound: SoundInfo = SoundInfo("minecraft:block.beacon.activate", volume = 1f, source = Sound.Source.PLAYER),
+		val releaseSound: SoundInfo = SoundInfo("minecraft:block.beacon.deactivate", volume = 1f, source = Sound.Source.PLAYER),
+	) : SubsystemBalancing {
+		@Transient
+		override val clazz: KClass<out BalancedSubsystem<*>> = TractorBeamSubsystem::class
+	}
 
 	@Serializable
 	data class ShipClasses(
@@ -669,8 +682,7 @@ sealed interface StarshipBoidProjectileBalancing : StarshipProjectileBalancing {
 }
 
 @Serializable
-sealed interface StarshipWeaponBalancing<T : StarshipProjectileBalancing> {
-	val clazz: KClass<out BalancedWeaponSubsystem<*>>
+sealed interface StarshipWeaponBalancing<T : StarshipProjectileBalancing> : SubsystemBalancing {
 	val projectile: T
 
 	/** Controls for which ships can fire this weapon **/
@@ -697,6 +709,11 @@ sealed interface StarshipWeaponBalancing<T : StarshipProjectileBalancing> {
 		val minBlockCount: Int = 0,
 		val maxBlockCount: Int = Int.MAX_VALUE
 	)
+}
+
+@Serializable
+sealed interface SubsystemBalancing {
+	val clazz: KClass<out BalancedSubsystem<*>>
 }
 
 @Serializable

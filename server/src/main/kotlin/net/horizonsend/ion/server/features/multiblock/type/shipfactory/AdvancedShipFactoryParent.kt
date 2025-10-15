@@ -342,7 +342,7 @@ sealed class AdvancedShipFactoryParent : AbstractShipFactoryMultiblock<AdvancedS
 		override fun startTask(blueprint: Blueprint, gui: ShipFactoryGui?, user: Player) {
 			val integrations = getMergedWith().mapNotNull(::getMergeIntegration)
 
-			startTask(ShipFactoryPrintTask(blueprint, settings,this, integrations, gui, getInventories(), user))
+			startTask(ShipFactoryPrintTask(blueprint, settings, this, integrations, gui, getInventories(), user))
 		}
 
 		fun getMergeIntegration(multiblockEntity: MultiblockEntity): ShipFactoryIntegration<*>? = when (multiblockEntity) {

@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.transport.manager
 
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.NewTransport
@@ -9,6 +10,7 @@ import net.horizonsend.ion.server.features.transport.inputs.ShipIOManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ShipExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
 import net.horizonsend.ion.server.features.transport.manager.graph.FluidNetworkManager
+import net.horizonsend.ion.server.features.transport.manager.graph.GridEnergyGraphManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ShipCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
@@ -99,8 +101,17 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 
 	override fun tickGraphs() {}
 
-	override fun getGraphTransportManager(): FluidNetworkManager {
+	override fun getFluidGraphTransportManager(): FluidNetworkManager {
 		TODO()
 //		return getWorld().ion.transportManager.fluidGraphManager
+	}
+
+	override fun getGridEnergyGraphTransportManager(): GridEnergyGraphManager {
+		TODO()
+//		return getWorld().ion.transportManager.fluidGraphManager
+	}
+
+	override fun getMultiblockmanager(globalVec3i: Vec3i): MultiblockManager? {
+		return starship.multiblockManager
 	}
 }

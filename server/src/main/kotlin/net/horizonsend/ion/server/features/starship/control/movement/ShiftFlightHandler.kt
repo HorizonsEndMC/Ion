@@ -19,7 +19,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-class ShiftFlightHandler(controller: Controller, override val input: ShiftFlightInput) : MovementHandler(controller, "Shift Flight", input) {
+class ShiftFlightHandler(controller: Controller, override val input: ShiftFlightInput) : MovementHandler(controller, "Shift Flight") {
 	private var sneakMovements = 0
 
 	override fun onBlocked(reason: StarshipMovementException) {

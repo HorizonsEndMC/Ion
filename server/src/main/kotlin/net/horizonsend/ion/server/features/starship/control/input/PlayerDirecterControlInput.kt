@@ -2,9 +2,13 @@ package net.horizonsend.ion.server.features.starship.control.input
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
+import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.lastRotationAttempt
+import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
+import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerMoveEvent
+import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import kotlin.math.roundToInt
 
@@ -41,5 +45,26 @@ class PlayerDirecterControlInput(override val controller: PlayerController) : Di
 		val temp = lastDelta
 		lastDelta = Vec3i(0,0,0)
 		return temp
+	}
+
+	override fun handleDropItem(event: PlayerDropItemEvent) {
+		if (event.itemDrop.itemStack.type != StarshipControl.CONTROLLER_TYPE) return
+
+		event.isCancelled = true
+
+		if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
+
+		lastRotationAttempt[event.player.uniqueId] = System.currentTimeMillis()
+		starship.tryRotate(false)
+	}
+
+	override fun handleSwapHands(event: PlayerSwapHandItemsEvent) {
+		if (event.offHandItem.type != StarshipControl.CONTROLLER_TYPE) return
+
+		event.isCancelled = true
+
+		if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
+
+		starship.tryRotate(true)
 	}
 }

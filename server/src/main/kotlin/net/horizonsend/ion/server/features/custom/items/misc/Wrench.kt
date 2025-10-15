@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.misc
 
+import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
@@ -9,7 +10,12 @@ import net.horizonsend.ion.server.command.misc.MultiblockCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.rotateToFaceVector2d
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
+import net.horizonsend.ion.server.features.client.display.HudIcons.FLUID_INFO_ID
+import net.horizonsend.ion.server.features.client.display.teleportDuration
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlockListeners
 import net.horizonsend.ion.server.features.custom.blocks.misc.WrenchRemovable
@@ -28,10 +34,13 @@ import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.isWallSign
+import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.minecraft.world.entity.Display
 import org.bukkit.Color
 import org.bukkit.FluidCollisionMode
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.Sign
@@ -39,6 +48,8 @@ import org.bukkit.entity.Player
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.util.RayTraceResult
+import org.joml.Quaternionf
+import org.joml.Vector3f
 import kotlin.math.roundToInt
 
 object Wrench : CustomItem(
@@ -109,15 +120,25 @@ object Wrench : CustomItem(
 		)
 	}
 
-	private fun giveFluidTips(player: Player)= Tasks.async {
+	private fun giveFluidTips(player: Player) = Tasks.async {
 		val hitResult: RayTraceResult? = player.rayTraceBlocks(7.0, FluidCollisionMode.NEVER)
-		val targeted = hitResult?.hitBlock ?: return@async
+		val targeted = hitResult?.hitBlock ?: return@async removeEntity(player)
 		val targetedLocation = hitResult.hitPosition
 
 		val key = toBlockKey(targeted.x, targeted.y, targeted.z)
 
-		val network = player.world.ion.transportManager.fluidGraphManager.getByLocation(key) ?: return@async
+		val network = player.world.ion.transportManager.fluidGraphManager.getByLocation(key) ?: return@async removeEntity(player)
 		network as FluidNetwork
+
+		if (player.isSneaking) {
+			for (node in network.getGraphNodes()) {
+				val flowText = ofChildren(text(network.getFlow(key).roundToHundredth()), text(" L/s", HE_MEDIUM_GRAY))
+
+				player.sendText(node.getCenter().toLocation(player.world).add(0.0, 0.75, 0.0), flowText, FLUID_TICK_INTERVAL.toLong() + 1L, backgroundColor = Color.fromARGB(255, 0, 0 ,0))
+			}
+
+			return@async removeEntity(player)
+		}
 
 		val fluid = network.networkContents
 
@@ -133,13 +154,56 @@ object Wrench : CustomItem(
 		val projectedLocation = targetedLocation.add(player.location.direction.clone().multiply(-1)).toLocation(player.world).add(0.0, 0.3, 0.0)
 		val scale = maxOf(player.eyeLocation.distance(projectedLocation).roundToInt() * 0.2f, 0.5f)
 
-		player.sendText(
-			projectedLocation,
-			text,
+		if (ClientDisplayEntities[player.uniqueId]?.get(FLUID_INFO_ID) == null)
+			createHudEntity(player, projectedLocation, text, scale)
+		else updateHudEntity(player, projectedLocation, text, scale)
+
+		Tasks.asyncDelay(FLUID_TICK_INTERVAL.toLong()) async2@{
+			if (player.inventory.itemInMainHand.customItem?.key != CustomItemKeys.WRENCH) return@async2 removeEntity(player)
+
+			val hitResult: RayTraceResult? = player.rayTraceBlocks(7.0, FluidCollisionMode.NEVER)
+			val targeted = hitResult?.hitBlock ?: return@async2 removeEntity(player)
+			val key = toBlockKey(targeted.x, targeted.y, targeted.z)
+
+			if (player.world.ion.transportManager.fluidGraphManager.getByLocation(key) == null) return@async2 removeEntity(player)
+		}
+	}
+
+	fun removeEntity(player: Player) {
+		val entity = ClientDisplayEntities[player.uniqueId]?.remove(FLUID_INFO_ID) ?: return
+		ClientDisplayEntities.deleteDisplayEntityPacket(player.minecraft, entity)
+	}
+
+	fun createHudEntity(player: Player, location: Location, info: Component, scale: Float) {
+		val entity = ClientDisplayEntities.createTextEntity(
+			location,
+			info,
 			FLUID_TICK_INTERVAL.toLong() + 1,
 			scale = scale,
 			backgroundColor = Color.fromARGB(255, 0, 0, 0),
 			seeThrough = true,
 		)
+
+		ClientDisplayEntities[player.uniqueId]?.set(FLUID_INFO_ID, entity)
+		ClientDisplayEntities.sendEntityPacket(player, entity)
+	}
+
+	fun updateHudEntity(player: Player, location: Location, info: Component, scale: Float) {
+		val nmsEntity = ClientDisplayEntities[player.uniqueId]?.get(FLUID_INFO_ID) as? Display.TextDisplay ?: return
+
+		nmsEntity.text = PaperAdventure.asVanilla(info)
+
+		val transformation = com.mojang.math.Transformation(
+			Vector3f(),
+			rotateToFaceVector2d(Vector3f()),
+			Vector3f(scale),
+			Quaternionf()
+		)
+
+		nmsEntity.transformationInterpolationDuration = FLUID_TICK_INTERVAL
+		nmsEntity.teleportDuration = FLUID_TICK_INTERVAL
+
+		ClientDisplayEntities.moveDisplayEntityPacket(player.minecraft, nmsEntity, location.x, location.y, location.z)
+		ClientDisplayEntities.transformDisplayEntityPacket(player, nmsEntity, transformation)
 	}
 }

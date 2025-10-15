@@ -43,6 +43,7 @@ import org.bukkit.Material.CAULDRON
 import org.bukkit.Material.CHAIN
 import org.bukkit.Material.CHEST
 import org.bukkit.Material.CHIPPED_ANVIL
+import org.bukkit.Material.CHORUS_PLANT
 import org.bukkit.Material.COAL_BLOCK
 import org.bukkit.Material.COMPARATOR
 import org.bukkit.Material.COMPOSTER
@@ -378,6 +379,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 	POTATOES,
 	BEETROOTS,
 	HAY_BLOCK,
+	CHORUS_PLANT,
 
 ).also {
 	it.addAll(CONCRETE_TYPES)

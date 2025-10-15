@@ -4,9 +4,7 @@ import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
-import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerMoveEvent
-import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import java.util.UUID
 
 object PlayerStarshipControl : IonServerComponent() {
@@ -16,31 +14,6 @@ object PlayerStarshipControl : IonServerComponent() {
 	}
 
 	val lastRotationAttempt = mutableMapOf<UUID, Long>()
-
-	@EventHandler
-	fun onPlayerDropItem(event: PlayerDropItemEvent) {
-		val starship = PilotedStarships[event.player] ?: return
-		if (event.itemDrop.itemStack.type != StarshipControl.CONTROLLER_TYPE) return
-
-		event.isCancelled = true
-
-		if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
-
-		lastRotationAttempt[event.player.uniqueId] = System.currentTimeMillis()
-		starship.tryRotate(false)
-	}
-
-	@EventHandler
-	fun onPlayerSwapItem(event: PlayerSwapHandItemsEvent) {
-		val starship = PilotedStarships[event.player] ?: return
-		if (event.offHandItem.type != StarshipControl.CONTROLLER_TYPE) return
-
-		event.isCancelled = true
-
-		if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
-
-		starship.tryRotate(true)
-	}
 
 	@EventHandler
 	fun onPlayerMove(event: PlayerMoveEvent) {

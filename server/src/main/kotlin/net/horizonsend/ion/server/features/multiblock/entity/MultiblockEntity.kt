@@ -5,7 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkageHolder
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
-import net.horizonsend.ion.server.features.starship.movement.TranslationAccessor
+import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
@@ -117,7 +117,7 @@ abstract class MultiblockEntity(
 	/** Logic to be run upon the loading of the chunk holding this entity, or its creation */
 	protected open fun onLoad() {}
 
-	open fun displaceAdditional(movement: TranslationAccessor) {}
+	open fun displaceAdditional(movement: TransformationAccessor) {}
 
 	/**
 	 * Stores any additional data for this multiblock (e.g. power, owner, etc)
@@ -188,7 +188,7 @@ abstract class MultiblockEntity(
 		)
 	}
 
-	fun displace(movement: TranslationAccessor) {
+	fun displace(movement: TransformationAccessor) {
 		val newWorld = movement.newWorld
 		if (newWorld != null) {
 			this.world = newWorld
@@ -362,13 +362,23 @@ abstract class MultiblockEntity(
 		offsetForward: Int,
 		linkageDirection: RelativeFace,
 		vararg allowedEntities: KClass<out MultiblockEntity>
+	): MultiblockLinkageHolder = createLinkage(offsetRight, offsetUp, offsetForward, linkageDirection) { to ->
+		allowedEntities.any { it.isInstance(to) }
+	}
+
+	fun createLinkage(
+		offsetRight: Int,
+		offsetUp: Int,
+		offsetForward: Int,
+		linkageDirection: RelativeFace,
+		multiblockFilter: (MultiblockEntity) -> Boolean,
 	): MultiblockLinkageHolder {
 		val holder = MultiblockLinkageHolder(
 			this,
 			offsetRight,
 			offsetUp,
 			offsetForward,
-			allowedEntities,
+			multiblockFilter,
 			linkageDirection
 		)
 

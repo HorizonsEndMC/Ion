@@ -2,7 +2,7 @@ package net.horizonsend.ion.server.features.starship.movement
 
 import io.papermc.paper.entity.TeleportFlag
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.movement.TranslationAccessor.RotationTranslation
+import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor.RotationTransformation
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustData
 import org.bukkit.block.BlockFace
@@ -13,7 +13,7 @@ import org.bukkit.util.Vector
 import kotlin.math.cos
 import kotlin.math.sin
 
-class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : StarshipMovement(starship), TranslationAccessor by RotationTranslation(null, if (clockwise) 90.0 else 270.0, starship::centerOfMass) {
+class RotationMovement(starship: ActiveStarship, val clockwise: Boolean) : StarshipMovement(starship), TransformationAccessor by RotationTransformation(null, if (clockwise) 90.0 else 270.0, starship::centerOfMass) {
 	private val theta: Double = if (clockwise) 90.0 else -90.0
 	private val cosTheta: Double = cos(Math.toRadians(theta))
 	private val sinTheta: Double = sin(Math.toRadians(theta))

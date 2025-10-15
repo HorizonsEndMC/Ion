@@ -3,14 +3,16 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.CustomTurretBaseMultiblock
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarshipFactory
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
-import net.horizonsend.ion.server.features.starship.movement.TranslationAccessor
+import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import net.horizonsend.ion.server.features.starship.subsystem.DirectionalSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.ProceduralSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -29,6 +31,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.horizonsend.ion.server.miscellaneous.utils.leftFace
 import net.horizonsend.ion.server.miscellaneous.utils.rightFace
+import org.bukkit.World
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Directional
@@ -39,7 +42,7 @@ import java.util.LinkedList
 class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: BlockFace, val multiblock: CustomTurretBaseMultiblock) : FiredSubsystem(
 	starship,
 	pos,
-), DirectionalSubsystem {
+), DirectionalSubsystem, ProceduralSubsystem {
 	init {
 		val furnacePos = pos.plus(multiblock.furnaceOffset)
 	    val furnaceBlock = starship.world.getBlockAtKey(furnacePos.toBlockKey()).blockData as? Directional
@@ -70,10 +73,12 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		return rotate(newFace)
 	}
 
-	fun detectTurret() {
+	override fun detectStructure() {
+		if (!ConfigurationFiles.featureFlags().customTurrets) return
+
 		val starshipBlocks = starship.blocks
 		val subsystemsByPos = starship.subsystems.associateByTo(Long2ObjectOpenHashMap()) { toBlockKey(it.pos) }
-		if (!starship.contains(pos.x, pos.y + 1, pos.z)) return // Turret base is empty
+		if (!starship.contains(pos.plus(multiblock.detectionOrigin))) return // Turret base is empty
 
 		// Add the center of the turret base, it rotates with the turret to control direction.
 		val foundBlocks = LongOpenHashSet.of(pos.plus(multiblock.furnaceOffset).toBlockKey())
@@ -87,6 +92,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 
 		// Jump to start with the origin
 		visitQueue.add(Vec3i(pos.x, pos.y, pos.z).plus(multiblock.detectionOrigin))
+		debugAudience.highlightBlock(Vec3i(pos.x, pos.y, pos.z).plus(multiblock.detectionOrigin), 300L)
 
 		var iterations = 0L
 
@@ -142,10 +148,10 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 
 	private fun canDetect(block: Block): Boolean {
 		// Detect all blocks above the turret base
-		return block.y > multiblock.detectionOrigin.y + pos.y
+		return multiblock.canDetect(pos, Vec3i(block.x, block.y, block.z))
 	}
 
-	override fun onMovement(movement: TranslationAccessor, success: Boolean) {
+	override fun onMovement(oldWorld: World, movement: TransformationAccessor, success: Boolean) {
 		if (!success) return
 		// Offset the blocks when the ship moves
 		blocks = LongArray(blocks.size) { movement.displaceLegacyKey(blocks[it]) }
@@ -178,8 +184,8 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		try {
 			val oldPositions = blocks
 
-			val translationAccessor = TranslationAccessor.RotationTranslation(null, thetaDegrees, this::pos)
-			translationAccessor.execute(blocks, starship.world, { !starship.isMoving }) { newPositionArray ->
+			val transformationAccessor = TransformationAccessor.RotationTransformation(null, thetaDegrees, this::pos)
+			transformationAccessor.execute(blocks, starship.world, { !starship.isMoving }) { newPositionArray ->
 				blocks = newPositionArray
 
 				starship.blocks.removeAll(LongOpenHashSet(blocks))
@@ -188,7 +194,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 				starship.calculateHitbox()
 
 				totalRotation += thetaDegrees
-				rotateCapturedSubsystems(translationAccessor)
+				rotateCapturedSubsystems(transformationAccessor)
 
 				Tasks.async {
 					for (key in oldPositions.toModernBlockKey().union(LongOpenHashSet(newPositionArray.toModernBlockKey()))) {
@@ -203,7 +209,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 		return true
 	}
 
-	private fun rotateCapturedSubsystems(translation: TranslationAccessor.RotationTranslation) {
+	private fun rotateCapturedSubsystems(translation: TransformationAccessor.RotationTransformation) {
 		for (subsystem in captiveSubsystems) {
 			val oldX = subsystem.pos.x
 			val oldZ = subsystem.pos.z
@@ -214,7 +220,7 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 				translation.displaceZ(oldZ, oldX)
 			)
 
-			subsystem.onMovement(translation, true)
+			subsystem.onMovement(starship.world, translation, true)
 
 			if (subsystem is DirectionalSubsystem) {
 				subsystem.face = rotateBlockFace(subsystem.face, translation.nmsRotation)
@@ -227,8 +233,6 @@ class CustomTurretSubsystem(starship: Starship, pos: Vec3i, override var face: B
 			entity.localOffsetX = localVec3i.x
 			entity.localOffsetY = localVec3i.y
 			entity.localOffsetZ = localVec3i.z
-
-			entity.manager
 
 			entity.displace(translation)
 		}

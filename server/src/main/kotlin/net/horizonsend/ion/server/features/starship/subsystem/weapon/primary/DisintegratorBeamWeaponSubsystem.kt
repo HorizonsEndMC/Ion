@@ -21,7 +21,7 @@ class DisintegratorBeamWeaponSubsystem(
     pos: Vec3i,
     override var face: BlockFace,
     val multiblock: DisintegratorBeamWeaponMultiblock
-) : BalancedWeaponSubsystem<DisintegratorBeamBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(DisintegratorBeamWeaponSubsystem::class)), DirectionalSubsystem, ManualWeaponSubsystem {
+) : BalancedWeaponSubsystem<DisintegratorBeamBalancing>(starship, pos, starship.balancingManager.getSubsystemSupplier(DisintegratorBeamWeaponSubsystem::class)), DirectionalSubsystem, ManualWeaponSubsystem {
 
     companion object {
         private const val MIN_STACKS = 1

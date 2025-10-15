@@ -9,6 +9,8 @@ import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingO
 import net.horizonsend.ion.server.features.nations.utils.getPing
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
+import net.horizonsend.ion.server.features.starship.control.movement.PlayerStarshipControl.lastRotationAttempt
+import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component.keybind
 import net.kyori.adventure.text.Component.text
@@ -17,7 +19,9 @@ import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.YELLOW
 import net.minecraft.world.entity.Relative
 import org.bukkit.block.BlockFace
+import org.bukkit.event.player.PlayerDropItemEvent
 import org.bukkit.event.player.PlayerItemHeldEvent
+import org.bukkit.event.player.PlayerSwapHandItemsEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.event.player.PlayerToggleSneakEvent
 import org.bukkit.util.Vector
@@ -190,5 +194,26 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 		if (player.getSetting(PlayerSettings::toggleDcBoost) == true) {
 			boostToggleOverride = !boostToggleOverride
 		}
+	}
+
+	override fun handleDropItem(event: PlayerDropItemEvent) {
+		if (event.itemDrop.itemStack.type != StarshipControl.CONTROLLER_TYPE) return
+
+		event.isCancelled = true
+
+		if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
+
+		lastRotationAttempt[event.player.uniqueId] = System.currentTimeMillis()
+		starship.tryRotate(false)
+	}
+
+	override fun handleSwapHands(event: PlayerSwapHandItemsEvent) {
+		if (event.offHandItem.type != StarshipControl.CONTROLLER_TYPE) return
+
+		event.isCancelled = true
+
+		if (event.player.hasCooldown(StarshipControl.CONTROLLER_TYPE)) return
+
+		starship.tryRotate(true)
 	}
 }

@@ -17,7 +17,7 @@ class TorpedoWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace,
-) : TargetTrackingCannonWeaponSubsystem<TorpedoBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(TorpedoWeaponSubsystem::class)), HeavyWeaponSubsystem {
+) : TargetTrackingCannonWeaponSubsystem<TorpedoBalancing>(starship, pos, face, starship.balancingManager.getSubsystemSupplier(TorpedoWeaponSubsystem::class)), HeavyWeaponSubsystem {
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 	override val length = 3
 

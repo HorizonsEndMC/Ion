@@ -18,7 +18,7 @@ class IonTurretWeaponSubsystem(
 	pos: Vec3i,
 	face: BlockFace,
 	override val multiblock: IonTurretMultiblock
-) : TurretWeaponSubsystem<IonTurretBalancing, IonTurretBalancing.IonTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(IonTurretWeaponSubsystem::class)), AmmoConsumingWeaponSubsystem {
+) : TurretWeaponSubsystem<IonTurretBalancing, IonTurretBalancing.IonTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getSubsystemSupplier(IonTurretWeaponSubsystem::class)), AmmoConsumingWeaponSubsystem {
 
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		multiblock.shoot(starship.world, pos, face, dir, starship, shooter, this, false)
