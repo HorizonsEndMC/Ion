@@ -22,7 +22,7 @@ class PairType<A : Any, B : Any>(
 	}
 
 	override fun fromPrimitive(primitive: PersistentDataContainer, context: PersistentDataAdapterContext): Pair<A, B> {
-		return Pair(primitive.get(FIRST, firstSerializer), primitive.get(SECOND, secondSerializer))
+		return Pair(primitive.get(FIRST, firstSerializer)!!, primitive.get(SECOND, secondSerializer)!!)
 	}
 
 	companion object {
