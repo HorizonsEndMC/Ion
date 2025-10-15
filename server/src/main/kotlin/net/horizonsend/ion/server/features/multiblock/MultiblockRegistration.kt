@@ -445,7 +445,7 @@ object MultiblockRegistration : IonServerComponent() {
 
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockStandard)
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableRight)
-		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableLeft
+		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableLeft)
 
 		registerMultiblock(ExpandableBoardingRampMultiblock)
 

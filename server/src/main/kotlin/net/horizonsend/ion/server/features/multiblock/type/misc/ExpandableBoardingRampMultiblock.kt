@@ -11,7 +11,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.ShipMultiblockMana
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.BOARDING_RAMP_STATE
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -85,7 +85,7 @@ object ExpandableBoardingRampMultiblock : Multiblock(), InteractableMultiblock, 
 		z: Int,
 		structureDirection: BlockFace
 	) : MultiblockEntity(manager, ExpandableBoardingRampMultiblock, world, x, y, z, structureDirection) {
-		override val inputsData: InputsData = none()
+		override val ioData: IOData = none()
 		private var extended: Boolean = data.getAdditionalDataOrDefault(BOARDING_RAMP_STATE, PersistentDataType.BOOLEAN, false)
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
