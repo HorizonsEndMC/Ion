@@ -327,6 +327,7 @@ data class NewStarshipBalancing(
 				IonTurretBalancing(fireRestrictions = FireRestrictions(canFire = true)),
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true)),
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 			),
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -364,6 +365,7 @@ data class NewStarshipBalancing(
 					projectile = TriTurretProjectileBalancing(speed = 110.0)
 				),
 				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = true)),
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 			),
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
