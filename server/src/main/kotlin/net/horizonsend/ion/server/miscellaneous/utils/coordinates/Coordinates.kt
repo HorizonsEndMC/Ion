@@ -266,6 +266,24 @@ fun Location.spherePoints(radius: Double, points: Int): List<Location> {
 	return coordinates
 }
 
+fun Location.circlePoints(radius: Double, points: Int, axis: Vector): List<Location> {
+	// Get an orthogonal vector to axis
+	val radiusVector = axis.getCrossProduct(Vector(0, 1, 0)).normalize().multiply(radius)
+	val angle = 2 * Math.PI / points
+	val coordinates = mutableListOf<Location>()
+
+	for (count in 0..points) {
+		val x = radiusVector.x
+		val y = radiusVector.y
+		val z = radiusVector.z
+
+		coordinates.add(Location(this.world, x, y, z).add(this))
+		radiusVector.rotateAroundAxis(axis, angle)
+	}
+
+	return coordinates
+}
+
 fun rotateBlockFace(blockFace: BlockFace, rotiation: Rotation): BlockFace {
 	return when (rotiation) {
 		Rotation.NONE -> blockFace
@@ -439,6 +457,15 @@ fun Vector.orthogonalThird(other: Vector): Vector {
 	val ox = other.x; val oy = other.y; val oz = other.z
 
 	return Vector(+((y * oz) + (z * oy)), -((x * oz) - (z * ox)), +((x * oy) - (y * ox)))
+}
+
+/**
+ * Linearly interpolates [this] vector with the [other] vector based on a [percentage], where 0.0 is this vector and
+ * 1.0 is the [other] vector
+ */
+fun Vector.lerp(other: Vector, percentage: Double): Vector {
+	val coercedPercentage = percentage.coerceIn(0.0, 1.0)
+	return this.multiply(1 - coercedPercentage).add(other.clone().multiply(coercedPercentage))
 }
 
 fun helixAroundVector(

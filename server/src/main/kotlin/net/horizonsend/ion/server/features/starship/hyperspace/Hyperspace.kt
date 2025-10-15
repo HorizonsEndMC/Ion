@@ -117,7 +117,7 @@ object Hyperspace : IonServerComponent() {
 		useFuel: Boolean
 	) {
 		val dest = Location(destinationWorld, x.toDouble(), 192.0, z.toDouble())
-		val mass = starship.mass
+		val mass = starship.getTotalMass()
 		val speed = if (hyperdrive != null) {calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)}
 			else calculateSpeed(3, mass)
 		val warmup = (5.0 + log10(mass) * 2.0 + sqrt(speed.toDouble()) / 10.0).toInt()
@@ -166,7 +166,7 @@ object Hyperspace : IonServerComponent() {
 				return@thenAccept
 			}
 
-			val mass = starship.mass
+			val mass = starship.getTotalMass()
 			val speed = (if (warmup.drive != null) calculateSpeed(warmup.drive.multiblock.hyperdriveClass, mass)
 				 else calculateSpeed(3, mass)) / 10
 			movementTasks[starship] = HyperspaceMovement(starship, speed, originWorld, warmup.dest)

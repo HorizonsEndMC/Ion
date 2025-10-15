@@ -12,7 +12,7 @@ import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI
 import net.horizonsend.ion.server.features.machine.CryoPods
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.PrePackaged
-import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractTractorBeam
+import net.horizonsend.ion.server.features.multiblock.type.misc.AbstractElevatorBeam
 import net.horizonsend.ion.server.features.progression.achievements.AchievementListeners
 import net.horizonsend.ion.server.features.space.encounters.EncounterManager
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
@@ -73,7 +73,7 @@ val listeners: List<Listener> = listOf(
 	VoidNetwork(),
 	CryoPods,
 	BiomeFixer9001(),
-	AbstractTractorBeam.Companion,
+	AbstractElevatorBeam.Companion,
 	PlayerDeathListener,
 	ToolModMenu,
 	InteractableGUI.Companion,

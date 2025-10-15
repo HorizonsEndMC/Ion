@@ -70,7 +70,7 @@ object ModelCreator : SLCommand() {
 		val modelPath = itemModelPath.resolve(parent).apply { mkdirs() }.resolve("${name}.json")
 
 		val modelWriter = BufferedWriter(FileWriter(modelPath))
-		val model = createModel(multiblock.shape)
+		val model = createModel(multiblock.getExampleShape())
 		modelWriter.write(model)
 		modelWriter.close()
 

@@ -85,8 +85,16 @@ object Bounties : IonServerComponent() {
 		val sum = damagers.values.sum().toDouble()
 		val totalMoney = event.starship.initialBlockCount.toDouble() * blockCountMultipler
 
+		val victimNation = PlayerCache[victim].nationOid
+
 		for ((damager : PlayerDamager, points) in damagers) {
 			val killer = damager.player
+
+			val damagerNation = PlayerCache[killer].nationOid
+			if (damagerNation != null && victimNation != null) {
+				if (RelationCache[victimNation, damagerNation] >= NationRelation.Level.ALLY) continue
+			}
+
 			val percent = points / sum
 			val money = totalMoney * percent
 

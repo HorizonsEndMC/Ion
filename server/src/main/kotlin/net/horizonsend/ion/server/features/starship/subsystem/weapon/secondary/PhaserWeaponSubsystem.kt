@@ -27,7 +27,7 @@ class PhaserWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace
-) : CannonWeaponSubsystem<PhaserBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(PhaserWeaponSubsystem::class)), HeavyWeaponSubsystem, AmmoConsumingWeaponSubsystem {
+) : CannonWeaponSubsystem<PhaserBalancing>(starship, pos, face, starship.balancingManager.getSubsystemSupplier(PhaserWeaponSubsystem::class)), HeavyWeaponSubsystem, AmmoConsumingWeaponSubsystem {
 	override val length: Int = 8
 
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos

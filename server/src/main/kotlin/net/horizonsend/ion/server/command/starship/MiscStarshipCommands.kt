@@ -58,6 +58,7 @@ import net.horizonsend.ion.server.features.starship.hyperspace.HyperspaceBeaconM
 import net.horizonsend.ion.server.features.starship.hyperspace.MassShadows
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.tractor.TractorControlMode
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.ArsenalRocketStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
@@ -327,12 +328,14 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			"Insufficient chetherite, need ${Hyperspace.getHyperMatterAmount(starship)} in each hopper"
 		}
 
+		failIf(Hyperspace.isWarmingUp(starship)) { "You're already jumping to hyperspace!" }
+
 		val currentWorld = starship.world
 		failIf(!sender.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			"Not a space world!"
 		}
 
-		failIf(!sender.world.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
+		failIf(!destinationWorld.ion.hasFlag(WorldFlag.SPACE_WORLD)) {
 			"Not a space world!"
 		}
 
@@ -542,7 +545,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 		failIf(!starship.isDirectControlEnabled && !isHoldingController(sender)) {
 			"You need to hold a starship controller to enable direct control"
 		}
-		if (starship.initialBlockCount > StarshipType.DESTROYER.maxSize) {
+		if (starship.getTotalBlockCount() > StarshipType.DESTROYER.maxSize) {
 			sender.serverError(
 				"Only ships of size ${StarshipType.DESTROYER.maxSize} or less can use direct control, " +
 					"this is mostly a performance thing, and will probably change in the future."
@@ -673,7 +676,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 	@CommandAlias("usebeacon")
 	fun onUseBeacon(sender: Player) {
-		val ship = getStarshipRiding(sender) as? ActiveControlledStarship ?: return
+		val ship = getStarshipRiding(sender)
 		HyperspaceBeaconManager.detectNearbyBeacons(ship, 0, 0)
 		val beacon = ship.beacon
 
@@ -771,12 +774,27 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 
 	@Suppress("unused")
 	@CommandAlias("targetposition")
-	@Description("Targets a currentPosition")
+	@Description("Targets a position")
 	fun onTargetPosition(sender: Player, x: Double, y: Double, z: Double) {
 		val starship = getStarshipPiloting(sender)
 		if (!starship.weapons.any {it is ArsenalRocketStarshipWeaponSubsystem}) sender.userError("Error: No Arsenal Missiles found, position not targeted")
 
 		starship.targetedPosition = Location(starship.world, x, y, z)
 		sender.information("Targeted: $x, $y, $z with the ships Arsenal Missiles")
+	}
+
+	@Suppress("unused")
+	@CommandAlias("towmode|tractor towmode")
+	fun onSetTowMode(sender: Player, mode: TractorControlMode) {
+		val starship = getStarshipPiloting(sender)
+		val tractor = starship.tractors.firstOrNull() ?: fail { "Your starship is not equipped with a tractor beam!" }
+
+		val tractors = starship.tractors
+		failIf(tractors.isEmpty()) { "Your starship is not equipped with a tractor beam!" }
+
+		tractors.forEach { t ->
+			sender.information("Updated starship tow mode to $mode")
+			tractor.setControlMode(mode)
+		}
 	}
 }

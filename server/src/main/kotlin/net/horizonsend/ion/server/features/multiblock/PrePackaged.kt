@@ -109,7 +109,7 @@ object PrePackaged : SLEventListener() {
 	val cooldown = PerPlayerCooldown(100L)
 
 	fun place(player: Player, origin: Block, direction: BlockFace, multiblock: Multiblock, itemSource: List<ItemStack>?, entityData: PersistentMultiblockData?) {
-		val requirements = multiblock.shape.getRequirementMap(direction)
+		val requirements = multiblock.getExampleShape().getRequirementMap(direction)
 		val placements = mutableMapOf<Block, BlockData>()
 
 		for ((offset, requirement) in requirements) {
@@ -174,7 +174,7 @@ object PrePackaged : SLEventListener() {
 		val signType = signItem?.type?.let { getWallSignType(it) } ?: Material.OAK_WALL_SIGN
 
 		// Add sign
-		val signPosition = origin.getRelative(direction.oppositeFace, if (multiblock.shape.signCentered) 0 else 1)
+		val signPosition = origin.getRelative(direction.oppositeFace, if (multiblock.getExampleShape().signCentered) 0 else 1)
 		val signData = signType.createBlockData { signData ->
 			signData as Directional
 			signData.facing = direction.oppositeFace
@@ -313,12 +313,12 @@ object PrePackaged : SLEventListener() {
 		}
 
 		// Structure already checked to get the face if turret
-		if (multiblockType !is TurretMultiblock<*> && !multiblockType.shape.checkRequirements(structureOrigin, structureDirection, false)) {
+		if (multiblockType !is TurretMultiblock<*> && !multiblockType.getExampleShape().checkRequirements(structureOrigin, structureDirection, false)) {
 			player.userError("Structure not intact!")
 			return
 		}
 
-		val requirements = multiblockType.shape.getRequirementMap(structureDirection)
+		val requirements = multiblockType.getExampleShape().getRequirementMap(structureDirection)
 
 		val toBreak = mutableListOf<Block>()
 		val items = mutableListOf<ItemStack>()
@@ -362,7 +362,7 @@ object PrePackaged : SLEventListener() {
 		sign.world.dropItem(sign.location.toCenterLocation(), item)
 	}
 
-	private fun getRequirements(multiblock: Multiblock): List<BlockRequirement> = multiblock.shape.getRequirementMap(BlockFace.NORTH).values.plus(signRequirement)
+	private fun getRequirements(multiblock: Multiblock): List<BlockRequirement> = multiblock.getExampleShape().getRequirementMap(BlockFace.NORTH).values.plus(signRequirement)
 
 	private val signRequirement = BlockRequirement(
 		"any sign",
@@ -423,15 +423,15 @@ object PrePackaged : SLEventListener() {
 		val origin = getOriginFromPlacement(
 			event.clickedBlock ?: return,
 			face,
-			packagedData.shape
+			packagedData.getExampleShape()
 		)
 
-		packagedData.shape.getRequirementMap(face).forEach { (coords, requirement) ->
+		packagedData.getExampleShape().getRequirementMap(face).forEach { (coords, requirement) ->
 			val requirementX = coords.x
 			val requirementY = coords.y
 			val requirementZ = coords.z
 
-			val relative: Block = (if (!packagedData.shape.signCentered) origin else origin.getRelative(face.oppositeFace)).getRelative(requirementX, requirementY, requirementZ)
+			val relative: Block = (if (!packagedData.getExampleShape().signCentered) origin else origin.getRelative(face.oppositeFace)).getRelative(requirementX, requirementY, requirementZ)
 
 			val requirementMet = requirement(relative, face, false)
 

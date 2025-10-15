@@ -67,6 +67,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSub
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.PlanetDrillSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.tractor.TractorBeamSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustData
@@ -255,6 +256,10 @@ class Starship(
 		return isInBounds(x, y, z) && blocks.contains(blockKey(x, y, z))
 	}
 
+	fun contains(pos: Vec3i): Boolean {
+		return isInBounds(pos.x, pos.y, pos.z) && blocks.contains(pos.toBlockKey())
+	}
+
 	fun isInternallyObstructed(origin: Vec3i, dir: Vector, maxDistance: Int? = null): Boolean {
 		var x = origin.x.toDouble() + 0.5
 		var y = origin.y.toDouble() + 0.5
@@ -336,9 +341,32 @@ class Starship(
 
 	//region Movement
 	var cruiseData = StarshipCruising.CruiseData(this)
+
 	var lastBlockedTime: Long = 0
-	val manualMoveCooldownMillis: Long = (cbrt(initialBlockCount.toDouble()) * 40).toLong()
+
+	// To fix initialization order issue
+	val tractors = LinkedList<TractorBeamSubsystem>()
+
+	var manualMoveCooldownMillis: Long = calculateManualMoveCooldown()
+
+	fun recalculateManualMoveCooldown() {
+		if (!ActiveStarships.isActive(this)) return
+		manualMoveCooldownMillis = calculateManualMoveCooldown()
+	}
+
+	private fun calculateManualMoveCooldown(): Long {
+		val baseMass = (cbrt(initialBlockCount.toDouble()) * 40).toLong()
+
+		val towed = tractors.mapNotNull { subsystem -> subsystem.getTowed() }
+
+		if (towed.isEmpty()) return baseMass
+
+		val towedBlocks = towed.sumOf { it.blocks.size }
+		return baseMass + (cbrt(towedBlocks.toDouble()) * 40L).toLong()
+	}
+
 	var speedLimit = -1
+
 	// manual move is sneak/direct control
 	var lastManualMove = System.nanoTime() / 1_000_000
 
@@ -378,10 +406,12 @@ class Starship(
 
 		val future = CompletableFuture<Boolean>()
 		Tasks.async {
+			val oldWorld = world
+
 			val result = executeMovement(movement, pilot)
 			future.complete(result)
 			controller.onMove(movement)
-			subsystems.forEach { runCatching { it.onMovement(movement, result) } }
+			subsystems.forEach { runCatching { it.onMovement(oldWorld, movement, result) } }
 		}
 
 		return future
@@ -549,7 +579,7 @@ class Starship(
 		val reductionBase = 0.85
 		val finalSpeedFactor = 1.0
 
-		val mass = this.mass
+		val mass = this.getTotalMass()
 		val totalAccel = 1.0 + faceThrusters.sumOf { it.type.accel }
 		val totalWeight = faceThrusters.sumOf { it.type.weight }.toDouble()
 		val reduction = reductionBase.pow(sqrt(totalWeight))
@@ -747,5 +777,16 @@ class Starship(
 			vec3i.y,
 			(vec3i.x.toDouble() * sinTheta + vec3i.z.toDouble() * cosTheta).roundToInt()
 		)
+	}
+
+	fun getTotalMass(): Double {
+		return mass + tractors.sumOf { it.getTowed()?.mass ?: 0.0 }
+	}
+
+	/**
+	 * Returns the starship block count + the towed block count
+	 **/
+	fun getTotalBlockCount(): Int {
+		return initialBlockCount + tractors.sumOf { it.getTowed()?.blocks?.size ?: 0 }
 	}
 }

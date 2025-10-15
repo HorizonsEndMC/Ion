@@ -40,7 +40,7 @@ import org.bukkit.util.Vector
 import org.litote.kmongo.setValue
 import kotlin.math.sqrt
 
-abstract class StarshipMovement(val starship: ActiveStarship) : TranslationAccessor {
+abstract class StarshipMovement(val starship: ActiveStarship) : TransformationAccessor {
 	// null if the ship is not a player ship
 	private val playerShip: Starship = starship
 

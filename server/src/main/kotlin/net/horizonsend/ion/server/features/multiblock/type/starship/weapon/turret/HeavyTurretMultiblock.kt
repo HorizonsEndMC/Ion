@@ -22,7 +22,7 @@ sealed class HeavyTurretMultiblock : TurretMultiblock<HeavyTurretProjectileBalan
 
 	protected abstract fun getSign(): Int
 
-	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<HeavyTurretProjectileBalancing> = starship.balancingManager.getWeapon(HeavyTurretWeaponSubsystem::class)
+	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<HeavyTurretProjectileBalancing> = starship.balancingManager.getSubsystem(HeavyTurretWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
 		listOf(Vec3i(-1, getSign() * 4, +2), Vec3i(1, getSign() * 4, +2))

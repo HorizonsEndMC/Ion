@@ -20,7 +20,7 @@ class PointDefenseSubsystem(
 	starship: ActiveStarship,
 	pos: Vec3i,
 	override var face: BlockFace,
-) : BalancedWeaponSubsystem<PointDefenseBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(PointDefenseSubsystem::class)), DirectionalSubsystem, AutoWeaponSubsystem {
+) : BalancedWeaponSubsystem<PointDefenseBalancing>(starship, pos, starship.balancingManager.getSubsystemSupplier(PointDefenseSubsystem::class)), DirectionalSubsystem, AutoWeaponSubsystem {
 	override val range: Double get() = balancing.range
 
 	override fun getMaxPerShot(): Int {

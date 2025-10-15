@@ -463,6 +463,7 @@ fun bootstrapCustomTranslations() {
 	store.register("death.attack.oriomium_rocket", Locale.US, MessageFormat("{0} was killed by oriomium rocket", Locale.US))
 	store.register("death.attack.torpedo", Locale.US, MessageFormat("{0} was killed by torpedo", Locale.US))
 	store.register("death.attack.point_defense", Locale.US, MessageFormat("{0} was killed by point defense", Locale.US))
+	store.register("death.attack.swarm_missile", Locale.US, MessageFormat("{0} was killed by swarm missile", Locale.US))
 
 	GlobalTranslator.translator().addSource(store)
 }

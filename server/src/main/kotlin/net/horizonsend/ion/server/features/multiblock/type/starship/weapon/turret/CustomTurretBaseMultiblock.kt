@@ -22,13 +22,15 @@ sealed class CustomTurretBaseMultiblock : Multiblock(), SubsystemMultiblock<Cust
 		shape.ignoreDirection()
 	}
 
+	abstract fun canDetect(subsystemPos: Vec3i, detectionPos: Vec3i): Boolean
+
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): CustomTurretSubsystem {
 		return CustomTurretSubsystem(starship, pos, face, this)
 	}
 
 	object CustomTurretBaseMultiblockTop : CustomTurretBaseMultiblock() {
-		override val detectionOrigin: Vec3i = Vec3i(0, 2, 0)
-		override val furnaceOffset: Vec3i = Vec3i(0, 1, 0)
+		override val detectionOrigin: Vec3i = Vec3i(0, 3, 0)
+		override val furnaceOffset: Vec3i = Vec3i(0, 2, 0)
 
 		override fun MultiblockShape.buildStructure() {
 			z(1) {
@@ -53,11 +55,15 @@ sealed class CustomTurretBaseMultiblock : Multiblock(), SubsystemMultiblock<Cust
 				}
 			}
 		}
+
+		override fun canDetect(subsystemPos: Vec3i, detectionPos: Vec3i): Boolean {
+			return detectionPos.y >= subsystemPos.y + detectionOrigin.y
+		}
 	}
 
 	object CustomTurretBaseMultiblockBottom : CustomTurretBaseMultiblock() {
-		override val detectionOrigin: Vec3i = Vec3i(0, -2, 0)
-		override val furnaceOffset: Vec3i = Vec3i(0, -1, 0)
+		override val detectionOrigin: Vec3i = Vec3i(0, -3, 0)
+		override val furnaceOffset: Vec3i = Vec3i(0, -2, 0)
 
 		override fun MultiblockShape.buildStructure() {
 			z(1) {
@@ -81,6 +87,10 @@ sealed class CustomTurretBaseMultiblock : Multiblock(), SubsystemMultiblock<Cust
 					x(1).titaniumBlock()
 				}
 			}
+		}
+
+		override fun canDetect(subsystemPos: Vec3i, detectionPos: Vec3i): Boolean {
+			return detectionPos.y <= subsystemPos.y + detectionOrigin.y
 		}
 	}
 }

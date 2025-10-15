@@ -18,7 +18,7 @@ class AIHeavyLaserWeaponSubsystem(
 	starship: Starship,
 	pos: Vec3i,
 	face: BlockFace
-) : TargetTrackingCannonWeaponSubsystem<HeavyLaserBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(HeavyLaserWeaponSubsystem::class)), HeavyWeaponSubsystem, PermissionWeaponSubsystem {
+) : TargetTrackingCannonWeaponSubsystem<HeavyLaserBalancing>(starship, pos, face, starship.balancingManager.getSubsystemSupplier(HeavyLaserWeaponSubsystem::class)), HeavyWeaponSubsystem, PermissionWeaponSubsystem {
 	override val permission: String = "ion.weapon.ai"
 	override val length: Int = 8
 
