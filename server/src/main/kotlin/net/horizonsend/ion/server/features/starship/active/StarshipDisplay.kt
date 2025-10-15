@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.cache.nations.NationCache
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -26,8 +26,8 @@ import org.dynmap.markers.MarkerIcon
 import org.dynmap.markers.MarkerSet
 
 object StarshipDisplay : IonServerComponent(true) {
-	private lateinit var starshipMarkers: MarkerSet
 	private lateinit var walk: MarkerIcon
+	private lateinit var starshipMarkers: MarkerSet
 	private val markerAPI: MarkerAPI get() = DynmapPlugin.plugin.markerAPI
 	private val starshipsIcons: MutableMap<String, StarshipIcon> = mutableMapOf()
 
@@ -80,7 +80,6 @@ object StarshipDisplay : IonServerComponent(true) {
 		}
 
 		val starshipIcon = if (isInHyperspace) {
-			if (starship !is ActiveControlledStarship) return
 			val movement = Hyperspace.getHyperspaceMovement(starship)!!
 
 			if (movement.originWorld != movement.dest.world) {
@@ -103,7 +102,7 @@ object StarshipDisplay : IonServerComponent(true) {
 	private fun createDynmapPopupHTML(starship: ActiveStarship, hyperspace: Boolean): String {
 		val starshipDisplayName = starship.getDisplayNamePlain()
 
-		val pilotNamePlain = starship.controller.getPilotName().plainText()
+		val pilotNamePlain = starship.controller.pilotName.plainText()
 
 		val type = starship.type.displayNameComponent.plainText()
 		val blockCount = starship.initialBlockCount
@@ -173,7 +172,7 @@ object StarshipDisplay : IonServerComponent(true) {
 		while (iterator.hasNext()) {
 			val (identifier, icon) = iterator.next()
 
-			if (ActiveStarships[identifier] != null) continue
+			if (ActiveStarships.getByCharIdentifier(identifier) != null) continue
 
 			val gravityWellCircleMarker: CircleMarker? = markerSet.findCircleMarker("${identifier}_gravity_well")
 			gravityWellCircleMarker?.deleteMarker()

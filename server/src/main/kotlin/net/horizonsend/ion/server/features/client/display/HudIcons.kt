@@ -2,12 +2,13 @@ package net.horizonsend.ion.server.features.client.display
 
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.database.cache.BookmarkCache
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntityFactory.getNMSData
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.space.Space
@@ -37,7 +38,7 @@ import kotlin.math.min
 
 object HudIcons : IonServerComponent() {
     // How often the planet display entities should update in ticks
-    private const val UPDATE_RATE = 10L
+    private const val UPDATE_RATE = 2L
 
     // The threshold for "hovering" over a planet, in radians
     private const val SELECTOR_ANGLE_THRESHOLD = 5.0 / 180.0 * PI
@@ -55,6 +56,7 @@ object HudIcons : IonServerComponent() {
     private const val STATION_PREFIX = "hud-station-"
     private const val SIEGE_STATION_PREFIX = "hud-siege-station-"
     private const val BOOKMARK_PREFIX = "hud-bookmark-"
+    const val FLUID_INFO_ID = "hud-fluid-info"
 
     // These vars are for saving the info of the closest
     private val lowestAngleMap = mutableMapOf<UUID, Float>()
@@ -89,7 +91,7 @@ object HudIcons : IonServerComponent() {
 
         /* Start with the Bukkit entity first as the NMS entity has private values that are easier to set by working off
          * the Bukkit wrapper first */
-        val entity = ClientDisplayEntityFactory.createItemDisplay(player)
+        val entity = ClientDisplayEntityFactory.createItemDisplay(player.world.minecraft)
         val entityRenderDistance = ClientDisplayEntities.getViewDistanceEdge(player)
         // do not render if the planet is closer than the entity render distance
         if (distance < entityRenderDistance * 2) return null
@@ -97,7 +99,7 @@ object HudIcons : IonServerComponent() {
         entity.setItemStack(getItemStack(identifier))
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
-        //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
+        //entity.interpolationDuration = UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
         entity.teleportDuration = 0
 
@@ -205,12 +207,12 @@ object HudIcons : IonServerComponent() {
         data: PlanetSelectorData
     ): net.minecraft.world.entity.Display.ItemDisplay {
 
-        val entity = ClientDisplayEntityFactory.createItemDisplay(player)
+        val entity = ClientDisplayEntityFactory.createItemDisplay(player.world.minecraft)
 
-        entity.setItemStack(CustomItemRegistry.PLANET_SELECTOR.constructItemStack())
+        entity.setItemStack(CustomItemKeys.PLANET_SELECTOR.getValue().constructItemStack())
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
-        //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
+        //entity.interpolationDuration = UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
         entity.teleportDuration = 0
 
@@ -308,7 +310,7 @@ object HudIcons : IonServerComponent() {
         )
         entity.billboard = Display.Billboard.FIXED
         entity.viewRange = 5.0f
-        //entity.interpolationDuration = PLANET_UPDATE_RATE.toInt()
+        //entity.interpolationDuration = UPDATE_RATE.toInt()
         entity.brightness = Display.Brightness(15, 15)
         entity.teleportDuration = 0
         entity.backgroundColor = Color.fromARGB(0x00000000)
@@ -427,46 +429,46 @@ object HudIcons : IonServerComponent() {
     private fun getItemStack(name: String): ItemStack {
         if (name.contains(PLANET_PREFIX)) {
             return when (name) {
-                PLANET_PREFIX + "Aerach" -> CustomItemRegistry.AERACH
-                PLANET_PREFIX + "Aret" -> CustomItemRegistry.ARET
-                PLANET_PREFIX + "Chandra" -> CustomItemRegistry.CHANDRA
-                PLANET_PREFIX + "Chimgara" -> CustomItemRegistry.CHIMGARA
-                PLANET_PREFIX + "Damkoth" -> CustomItemRegistry.DAMKOTH
-                PLANET_PREFIX + "Disterra" -> CustomItemRegistry.DISTERRA
-                PLANET_PREFIX + "Eden" -> CustomItemRegistry.EDEN
-                PLANET_PREFIX + "Gahara" -> CustomItemRegistry.GAHARA
-                PLANET_PREFIX + "Herdoli" -> CustomItemRegistry.HERDOLI
-                PLANET_PREFIX + "Ilius" -> CustomItemRegistry.ILIUS
-                PLANET_PREFIX + "Isik" -> CustomItemRegistry.ISIK
-                PLANET_PREFIX + "Kovfefe" -> CustomItemRegistry.KOVFEFE
-                PLANET_PREFIX + "Krio" -> CustomItemRegistry.KRIO
-                PLANET_PREFIX + "Lioda" -> CustomItemRegistry.LIODA
-                PLANET_PREFIX + "Luxiterna" -> CustomItemRegistry.LUXITERNA
-                PLANET_PREFIX + "Qatra" -> CustomItemRegistry.QATRA
-                PLANET_PREFIX + "Rubaciea" -> CustomItemRegistry.RUBACIEA
-                PLANET_PREFIX + "Turms" -> CustomItemRegistry.TURMS
-                PLANET_PREFIX + "Vask" -> CustomItemRegistry.VASK
+                PLANET_PREFIX + "Aerach" -> CustomItemKeys.AERACH
+                PLANET_PREFIX + "Aret" -> CustomItemKeys.ARET
+                PLANET_PREFIX + "Chandra" -> CustomItemKeys.CHANDRA
+                PLANET_PREFIX + "Chimgara" -> CustomItemKeys.CHIMGARA
+                PLANET_PREFIX + "Damkoth" -> CustomItemKeys.DAMKOTH
+                PLANET_PREFIX + "Disterra" -> CustomItemKeys.DISTERRA
+                PLANET_PREFIX + "Eden" -> CustomItemKeys.EDEN
+                PLANET_PREFIX + "Gahara" -> CustomItemKeys.GAHARA
+                PLANET_PREFIX + "Herdoli" -> CustomItemKeys.HERDOLI
+                PLANET_PREFIX + "Ilius" -> CustomItemKeys.ILIUS
+                PLANET_PREFIX + "Isik" -> CustomItemKeys.ISIK
+                PLANET_PREFIX + "Kovfefe" -> CustomItemKeys.KOVFEFE
+                PLANET_PREFIX + "Krio" -> CustomItemKeys.KRIO
+                PLANET_PREFIX + "Lioda" -> CustomItemKeys.LIODA
+                PLANET_PREFIX + "Luxiterna" -> CustomItemKeys.LUXITERNA
+                PLANET_PREFIX + "Qatra" -> CustomItemKeys.QATRA
+                PLANET_PREFIX + "Rubaciea" -> CustomItemKeys.RUBACIEA
+                PLANET_PREFIX + "Turms" -> CustomItemKeys.TURMS
+                PLANET_PREFIX + "Vask" -> CustomItemKeys.VASK
 
-                PLANET_PREFIX + "Asteri" -> CustomItemRegistry.ASTERI
-                PLANET_PREFIX + "EdenHack" -> CustomItemRegistry.HORIZON
-                PLANET_PREFIX + "Ilios" -> CustomItemRegistry.ILIOS
-                PLANET_PREFIX + "Regulus" -> CustomItemRegistry.REGULUS
-                PLANET_PREFIX + "Sirius" -> CustomItemRegistry.SIRIUS
+                PLANET_PREFIX + "Asteri" -> CustomItemKeys.ASTERI
+                PLANET_PREFIX + "EdenHack" -> CustomItemKeys.HORIZON
+                PLANET_PREFIX + "Ilios" -> CustomItemKeys.ILIOS
+                PLANET_PREFIX + "Regulus" -> CustomItemKeys.REGULUS
+                PLANET_PREFIX + "Sirius" -> CustomItemKeys.SIRIUS
 
-                else -> CustomItemRegistry.AERACH
-            }.constructItemStack()
+                else -> CustomItemKeys.AERACH
+            }.getValue().constructItemStack()
         }
 
         else if (name.contains(STAR_PREFIX)) {
             return when (name) {
-                STAR_PREFIX + "Asteri" -> CustomItemRegistry.ASTERI
-                STAR_PREFIX + "Horizon" -> CustomItemRegistry.HORIZON
-                STAR_PREFIX + "Ilios" -> CustomItemRegistry.ILIOS
-                STAR_PREFIX + "Regulus" -> CustomItemRegistry.REGULUS
-                STAR_PREFIX + "Sirius" -> CustomItemRegistry.SIRIUS
+                STAR_PREFIX + "Asteri" -> CustomItemKeys.ASTERI
+                STAR_PREFIX + "Horizon" -> CustomItemKeys.HORIZON
+                STAR_PREFIX + "Ilios" -> CustomItemKeys.ILIOS
+                STAR_PREFIX + "Regulus" -> CustomItemKeys.REGULUS
+                STAR_PREFIX + "Sirius" -> CustomItemKeys.SIRIUS
 
-                else -> CustomItemRegistry.ASTERI
-            }.constructItemStack()
+                else -> CustomItemKeys.ASTERI
+            }.getValue().constructItemStack()
         }
 
         else if (name.contains(BEACON_PREFIX)) {
@@ -516,12 +518,12 @@ object HudIcons : IonServerComponent() {
         // Reset planet selector information
         lowestAngleMap[player.uniqueId] = Float.MAX_VALUE
 
-        val hudSelectorEnabled = PlayerCache[player].hudPlanetsSelector
-        val hudPlanetsEnabled = PlayerCache[player].hudPlanetsImage
-        val hudStarsEnabled = PlayerCache[player].hudIconStars
-        val hudBeaconsEnabled = PlayerCache[player].hudIconBeacons
-        val hudStationsEnabled = PlayerCache[player].hudIconStations
-        val hudBookmarksEnabled = PlayerCache[player].hudIconBookmarks
+        val hudSelectorEnabled = player.getSettingOrThrow(PlayerSettings::hudPlanetsSelector)
+        val hudPlanetsEnabled = player.getSettingOrThrow(PlayerSettings::hudPlanetsImage)
+        val hudStarsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconStars)
+        val hudBeaconsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconBeacons)
+        val hudStationsEnabled = player.getSettingOrThrow(PlayerSettings::hudIconStations)
+        val hudBookmarksEnabled = player.getSettingOrThrow(PlayerSettings::hudIconBookmarks)
 
         // Rendering planets
         for (planet in planetList) {

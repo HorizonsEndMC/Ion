@@ -1,11 +1,13 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.manager.ChunkMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
+import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 
@@ -24,7 +26,9 @@ object MultiblockTicking : IonServerComponent() {
 	private fun tickSyncMultiblocks() {
 		if (!IonServer.isEnabled) return
 
-		iterateManagers { manager ->
+		iterateManagers { manager: MultiblockManager? ->
+			if (manager == null) return@iterateManagers
+
 			var multiblock: SyncTickingMultiblockEntity? = null
 
 			for (key in manager.syncTickingMultiblockEntities.keys) runCatching {
@@ -44,7 +48,16 @@ object MultiblockTicking : IonServerComponent() {
 	private fun tickAsyncMultiblocks() {
 		if (!IonServer.isEnabled) return
 
-		iterateManagers { manager ->
+		iterateManagers { manager: MultiblockManager? ->
+			if (manager is ChunkMultiblockManager) {
+				if (IonChunk[manager.world, manager.chunk.x, manager.chunk.z]?.multiblockManager !== manager) {
+					removeMultiblockManager(manager)
+					return@iterateManagers
+				}
+			}
+
+			if (manager == null) return@iterateManagers
+
 			var multiblock: AsyncTickingMultiblockEntity? = null
 
 			for (key in manager.asyncTickingMultiblockEntities.keys) runCatching {

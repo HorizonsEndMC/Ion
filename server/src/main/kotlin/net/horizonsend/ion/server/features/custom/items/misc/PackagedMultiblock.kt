@@ -4,6 +4,7 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
@@ -28,7 +29,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 
 object PackagedMultiblock : CustomItem(
-	"PACKAGED_MULTIBLOCK",
+	CustomItemKeys.PACKAGED_MULTIBLOCK,
 	ofChildren(text("Packaged Null")),
 	ItemFactory.unStackableCustomItem
 ) {
@@ -65,10 +66,10 @@ object PackagedMultiblock : CustomItem(
 		val origin = PrePackaged.getOriginFromPlacement(
 			event.clickedBlock ?: return,
 			direction,
-			packagedData.shape
+			packagedData.getExampleShape()
 		)
 
-		val obstructions = PrePackaged.checkObstructions(origin, livingEntity.facing, packagedData.shape, livingEntity.isSneaking)
+		val obstructions = PrePackaged.checkObstructions(origin, livingEntity.facing, packagedData.getExampleShape(), livingEntity.isSneaking)
 
 		if (obstructions.isNotEmpty()) {
 			livingEntity.userError("Placement is obstructed!  Crouch to enable block sharing.")
@@ -96,10 +97,10 @@ object PackagedMultiblock : CustomItem(
 	}
 
 	override fun getBazaarString(itemStack: ItemStack): String {
-		throw NotImplementedError("Packaged multiblocks may not be listed on bazaar")
+		return MultiblockToken.getBazaarString(itemStack)
 	}
 
 	override fun fromBazaarString(string: String): ItemStack {
-		throw NotImplementedError("Packaged multiblocks may not be listed on bazaar")
+		return MultiblockToken.deserialize(string)
 	}
 }

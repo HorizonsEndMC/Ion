@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.transport.util
 
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.ITEM_FILTER
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
@@ -10,10 +10,12 @@ import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode
 import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.SolidGlassNode
+import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerFlowMeter
 import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.PowerInputNode
-import net.horizonsend.ion.server.features.transport.nodes.util.NodeCacheFactory
+import net.horizonsend.ion.server.features.transport.nodes.util.BlockBasedCacheFactory
+import net.horizonsend.ion.server.features.transport.util.CacheType.entries
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_PANE_TYPES
@@ -21,6 +23,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.STAINED_GLASS_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import org.bukkit.Material
 import org.bukkit.Material.BARREL
 import org.bukkit.Material.BLAST_FURNACE
 import org.bukkit.Material.CHEST
@@ -56,7 +59,7 @@ import org.bukkit.craftbukkit.block.impl.CraftGrindstone
 
 enum class CacheType(val namespacedKey: NamespacedKey) {
 	POWER(NamespacedKeys.POWER_TRANSPORT) {
-		override val nodeCacheFactory: NodeCacheFactory = NodeCacheFactory.builder()
+		override val nodeCacheFactory: BlockBasedCacheFactory<Node, CacheHolder<*>> = BlockBasedCacheFactory.builder<Node, CacheHolder<*>>()
 			.addSimpleNode(CRAFTING_TABLE, PowerNode.PowerExtractorNode)
 			.addSimpleNode(SPONGE, PowerNode.SpongeNode)
 			.addDataHandler<CraftEndRod>(END_ROD) { data, _, _ -> PowerNode.EndRodNode(data.facing.axis) }
@@ -76,7 +79,7 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 		}
 	},
 	SOLAR_PANELS(NamespacedKeys.POWER_TRANSPORT) {
-		override val nodeCacheFactory: NodeCacheFactory = NodeCacheFactory.builder()
+		override val nodeCacheFactory: BlockBasedCacheFactory<Node, CacheHolder<*>> = BlockBasedCacheFactory.builder<Node, CacheHolder<*>>()
 			.addSimpleNode(CRAFTING_TABLE, SolarPanelComponent.CraftingTable)
 			.addSimpleNode(DIAMOND_BLOCK, SolarPanelComponent.DiamondBlock)
 			.addSimpleNode(DAYLIGHT_DETECTOR, SolarPanelComponent.DaylightDetector)
@@ -90,35 +93,10 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 			return ship.transportManager.solarPanelManager.cache
 		}
 	},
-//	FLUID(NamespacedKeys.FLUID_TRANSPORT, FluidNode.FluidInputNode::class) {
-//		override val nodeCacheFactory: NodeCacheFactory = NodeCacheFactory.builder()
-//			.addDataHandler<CraftLightningRod>(Material.LIGHTNING_ROD) { data, _, _ -> FluidNode.LightningRodNode(data.facing.axis) }
-//			.addSimpleNode(WAXED_CHISELED_COPPER) { _, _ -> FluidNode.FluidJunctionNode(WAXED_CHISELED_COPPER) }
-//			.addSimpleNode(WAXED_EXPOSED_CHISELED_COPPER) { _, _ -> FluidNode.FluidJunctionNode(WAXED_EXPOSED_CHISELED_COPPER) }
-//			.addSimpleNode(WAXED_WEATHERED_CHISELED_COPPER) { _, _ -> FluidNode.FluidJunctionNode(WAXED_WEATHERED_CHISELED_COPPER) }
-//			.addSimpleNode(WAXED_OXIDIZED_COPPER) { _, _ -> FluidNode.FluidJunctionNode(WAXED_OXIDIZED_COPPER) }
-//			.addSimpleNode(UNWAXED_CHISELED_COPPER_TYPES) { _, _, _ -> FluidNode.FluidJunctionNode(CRAFTING_TABLE) } // All unwaxed chiseled are a single channel
-//			.addSimpleNode(CRAFTING_TABLE, FluidNode.FluidExtractorNode)
-//			.addSimpleNode(FLETCHING_TABLE, FluidNode.FluidInputNode)
-//			.addSimpleNode(REDSTONE_BLOCK, FluidNode.FluidMergeNode)
-//			.addSimpleNode(IRON_BLOCK, FluidNode.FluidMergeNode)
-//			.addSimpleNode(LAPIS_BLOCK, FluidNode.FluidInvertedMergeNode)
-//			.build()
-//
-//		override fun get(chunk: IonChunk): FluidTransportCache {
-//			TODO("Fluid is disabled")
-////			return chunk.transportNetwork.fluidNodeManager.cache
-//		}
-//
-//		override fun get(ship: ActiveStarship): FluidTransportCache {
-//			TODO("Fluid is disabled")
-////			return ship.transportManager.fluidNodeManager.cache
-//		}
-//	},
 	ITEMS(NamespacedKeys.ITEM_TRANSPORT) {
-		override val nodeCacheFactory: NodeCacheFactory = NodeCacheFactory.builder()
+		override val nodeCacheFactory: BlockBasedCacheFactory<Node, CacheHolder<*>> = BlockBasedCacheFactory.builder<Node, CacheHolder<*>>()
 			.addSimpleNode(CRAFTING_TABLE, ItemNode.ItemExtractorNode)
-			.addDataHandler<Vault>(CustomBlocks.ADVANCED_ITEM_EXTRACTOR) { _, _, _ -> ItemNode.ItemExtractorNode }
+			.addDataHandler<Vault>(CustomBlockKeys.ADVANCED_ITEM_EXTRACTOR, Material.VAULT) { _, _, _ -> ItemNode.ItemExtractorNode }
 			.addSimpleNode(STAINED_GLASS_TYPES) { _, material, _ -> SolidGlassNode(ItemNode.PipeChannel[material]!!) }
 			.addSimpleNode(STAINED_GLASS_PANE_TYPES) { _, material, _ -> ItemNode.PaneGlassNode(ItemNode.PipeChannel[material]!!) }
 			.addSimpleNode(GLASS, SolidGlassNode(ItemNode.PipeChannel.CLEAR))
@@ -133,10 +111,10 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 
 				ItemNode.ItemMergeNode(outFace)
 			}
-			.addDataHandler<Vault>(ITEM_FILTER) { data, key, holder -> ItemNode.AdvancedFilterNode(
+			.addDataHandler<Vault>(CustomBlockKeys.ITEM_FILTER, Material.VAULT) { data, key, holder -> ItemNode.AdvancedFilterNode(
 				toBlockKey(holder.transportManager.getLocalCoordinate(toVec3i(key))),
 				holder.cache as ItemTransportCache,
-				ITEM_FILTER.getFace(data)
+				CustomBlockKeys.ITEM_FILTER.getValue().getFace(data)
 			) }
 			.addDataHandler<Hopper>(HOPPER) { data, key, holder -> ItemNode.HopperFilterNode(
 				toBlockKey(holder.transportManager.getLocalCoordinate(toVec3i(key))),
@@ -165,7 +143,7 @@ enum class CacheType(val namespacedKey: NamespacedKey) {
 		}
 	};
 
-	abstract val nodeCacheFactory: NodeCacheFactory
+	abstract val nodeCacheFactory: BlockBasedCacheFactory<Node, CacheHolder<*>>
 
 	abstract fun get(chunk: IonChunk): TransportCache
 	abstract fun get(ship: ActiveStarship): TransportCache

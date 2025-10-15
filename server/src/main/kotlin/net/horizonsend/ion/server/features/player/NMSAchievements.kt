@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.player
 
 import io.papermc.paper.adventure.PaperAdventure
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.kyori.adventure.text.Component
 import net.minecraft.advancements.Advancement
 import net.minecraft.advancements.AdvancementHolder

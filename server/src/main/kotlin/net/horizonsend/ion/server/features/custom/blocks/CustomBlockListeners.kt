@@ -1,13 +1,15 @@
 package net.horizonsend.ion.server.features.custom.blocks
 
 import io.papermc.paper.event.player.PlayerPickItemEvent
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.InteractableCustomBlock
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.features.custom.blocks.misc.OrientableCustomBlock
 import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.listener.SLEventListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.vectorToBlockFace
 import net.minecraft.server.network.ServerGamePacketListenerImpl
 import org.bukkit.GameMode
@@ -19,6 +21,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.block.BlockFromToEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import java.util.concurrent.ConcurrentHashMap
@@ -52,7 +55,22 @@ object CustomBlockListeners : SLEventListener() {
 			}
 
 			event.block.location.block.setBlockData(data, true)
-		} else {
+		}
+		else if (block is OrientableCustomBlock) {
+			val placedAgainst = BlockFace.entries.first {
+				it.modX == (event.blockAgainst.x - event.blockPlaced.x) &&
+				it.modY == (event.blockAgainst.y - event.blockPlaced.y) &&
+				it.modZ == (event.blockAgainst.z - event.blockPlaced.z)
+			}.axis
+
+			val data = when {
+				block.axisData.containsKey(placedAgainst) -> block.axisData[placedAgainst]!!
+				else -> block.blockData
+			}
+
+			event.block.location.block.setBlockData(data, true)
+		}
+		else {
 			event.block.location.block.setBlockData(block.blockData, true)
 		}
 
@@ -117,7 +135,7 @@ object CustomBlockListeners : SLEventListener() {
 		val player = event.player
 
 		val targetedBlock = player.getTargetBlockExact(player.getAttribute(Attribute.BLOCK_INTERACTION_RANGE)?.value?.roundToInt() ?: 5) ?: return
-		val customBlock = CustomBlocks.getByBlockData(targetedBlock.blockData) ?: return
+		val customBlock = targetedBlock.blockData.customBlock ?: return
 		val customBlockItem = customBlock.customItem.constructItemStack()
 
 		// Source slot is for survival, when taking the item from the slot in the inventory, -1 if it is not present, e.g. creative mode
@@ -137,6 +155,7 @@ object CustomBlockListeners : SLEventListener() {
 			} else {
 				event.isCancelled = true
 				event.player.inventory.setItem(event.targetSlot, customBlockItem)
+				event.player.inventory.heldItemSlot = event.targetSlot
 			}
 		}
 
@@ -153,5 +172,10 @@ object CustomBlockListeners : SLEventListener() {
 				}
 			}
 		}
+	}
+
+	@EventHandler
+	fun onWaterBreakPipe(event: BlockFromToEvent) {
+		if (event.toBlock.customBlock != null) event.isCancelled = true
 	}
 }

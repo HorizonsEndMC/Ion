@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock
 
 import com.destroystokyo.paper.event.server.ServerTickEndEvent
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.LegacyMultiblockEntity
@@ -20,10 +20,10 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
 import org.bukkit.World
 import org.bukkit.block.Block
-import org.bukkit.block.Sign as SignState
-import org.bukkit.block.data.type.WallSign as WallSignData
 import org.bukkit.event.EventHandler
 import java.util.concurrent.TimeUnit
+import org.bukkit.block.Sign as SignState
+import org.bukkit.block.data.type.WallSign as WallSignData
 
 /**
  * Provides utility functions for multiblock entities, and handles sign backups
@@ -110,9 +110,9 @@ object MultiblockEntities : IonServerComponent() {
 		return multiblock.createEntity(manager, stored, manager.world, stored.x, stored.y, stored.z, stored.signOffset)
 	}
 
-	fun loadFromSign(sign: SignState, save: Boolean = true) {
+	fun loadFromSign(sign: SignState, save: Boolean = true): MultiblockEntity? {
 		val multiblockType = MultiblockAccess.getFast(sign)
-		if (multiblockType !is EntityMultiblock<*>) return
+		if (multiblockType !is EntityMultiblock<*>) return null
 
 		val data = sign.persistentDataContainer.get(MULTIBLOCK_ENTITY_DATA, PersistentMultiblockData) ?: return migrateFromSign(sign, multiblockType)
 
@@ -124,7 +124,7 @@ object MultiblockEntities : IonServerComponent() {
 		data.z = origin.z
 		data.signOffset = sign.getFacing().oppositeFace
 
-		setMultiblockEntity(sign.world, origin.x, origin.y, origin.z, save = save) { manager ->
+		return setMultiblockEntity(sign.world, origin.x, origin.y, origin.z, save = save) { manager ->
 			val new = loadFromData(multiblockType, manager, data)
 			if (new is LegacyMultiblockEntity) {
 				new.loadFromSign(sign)
@@ -134,14 +134,16 @@ object MultiblockEntities : IonServerComponent() {
 		}
 	}
 
-	fun migrateFromSign(sign: SignState, type: EntityMultiblock<*>) {
+	fun migrateFromSign(sign: SignState, type: EntityMultiblock<*>): MultiblockEntity? {
 		val origin = MultiblockEntity.getOriginFromSign(sign)
 
-		val ionChunk = IonChunk.getFromWorldCoordinates(sign.world, origin.x, origin.z) ?: return
+		val ionChunk = IonChunk.getFromWorldCoordinates(sign.world, origin.x, origin.z) ?: return null
 		val new = ionChunk.multiblockManager.handleNewMultiblockEntity(type, origin.x, origin.y, origin.z, sign.getFacing().oppositeFace)
 
 		if (new is LegacyMultiblockEntity) new.loadFromSign(sign)
 		new?.saveToSign()
+
+		return new
 	}
 
 	private val msptBuffer = TimeUnit.MILLISECONDS.toNanos(5)
@@ -151,13 +153,15 @@ object MultiblockEntities : IonServerComponent() {
 	fun onTickEnd(event: ServerTickEndEvent) {
 		if (event.timeRemaining < msptBuffer) return
 
+		val time = System.currentTimeMillis()
+
 		MultiblockTicking.iterateManagers { manager ->
 			if (manager !is ChunkMultiblockManager) return@iterateManagers
-			if (manager.getSignUnsavedTime() < saveInterval) return@iterateManagers
+			if (manager.getSignUnsavedTime(time) < saveInterval) return@iterateManagers
 
 			for (keyEntity in manager.getAllMultiblockEntities()) {
 				if (event.timeRemaining < msptBuffer) {
-					break
+					return
 				}
 
 				keyEntity.value.saveToSign()

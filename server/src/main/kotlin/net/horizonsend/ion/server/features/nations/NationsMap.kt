@@ -6,9 +6,11 @@ import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
 import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.Settlement
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionNPCSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.nations.region.types.RegionSpaceStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionTerritory
@@ -78,6 +80,7 @@ object NationsMap : IonServerComponent(true) {
 			Regions.getAllOf<RegionCapturableStation>().forEach(::addCapturableStation)
 			Regions.getAllOf<RegionSolarSiegeZone>().forEach(::addSolarSiege)
 			Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(::addSpaceStation)
+			Regions.getAllOf<RegionNPCSpaceStation>().forEach(::addNpcSpaceStation)
 		}
 	}
 
@@ -190,6 +193,12 @@ object NationsMap : IonServerComponent(true) {
 		}
 
 		if (nation != null) {
+			val alias = territory.alias
+			var name = territory.name
+			if (alias != null) {
+				name = alias + " (${territory.name})"
+			}
+
 			val rgb = nation.color
 			fillOpacity = 0.2
 			fillRGB = rgb
@@ -198,7 +207,7 @@ object NationsMap : IonServerComponent(true) {
 
 			// for nation outposts only
 			if (settlement == null) marker.setLabel(
-				"<h3 style=\"text-align: center;\">${territory.name}</h3>" +
+				"<h3 style=\"text-align: center;\">${name}</h3>" +
 				"\n<h3 style=\"text-align: center;\">Owner: ${nation.name}</h3>" +
 				"\n<p style=\"padding-top: 0;\">${territory.name} is an outpost of the nation ${nation.name}</p>",
 				true
@@ -300,7 +309,7 @@ object NationsMap : IonServerComponent(true) {
 	fun addSolarSiege(station: RegionSolarSiegeZone): Unit = syncOnly {
 		removeSolarSiege(station)
 
-		val name = station.name
+		val name = "${station.name} Solar Siege Zone"
 		val world = station.world
 		val x = station.x.toDouble()
 		val y = 128.0
@@ -325,13 +334,29 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		val marker: CircleMarker = markerSet.findCircleMarker(station.name) ?: return@syncOnly addSolarSiege(station)
+		val marker: CircleMarker = markerSet.findCircleMarker("${station.name} Solar Siege Zone") ?: return@syncOnly addSolarSiege(station)
 
 		val nation = station.nation?.let(NationCache::get)
 
 		val rgb = nation?.color ?: Color.WHITE.asRGB()
 		marker.setFillStyle(0.4, rgb)
 		marker.setLineStyle(5, 0.8, rgb)
+
+		val siegeDeclareStartHour = ConfigurationFiles.nationConfiguration().solarSiegeConfiguration.declareWindowStart
+		val siegeDeclareEndHour = siegeDeclareStartHour + ConfigurationFiles.nationConfiguration().solarSiegeConfiguration.declareWindowDuration.toDuration().toHours()
+
+		marker.description = """
+		<p><h2>${station.name}</h2></p><p>
+		${if (nation == null) {
+			""
+		} else {
+			"""
+			<h3>Owned by ${nation.name}</h3>
+			""".trimIndent()
+		}}
+			<p>This zone be sieged between $siegeDeclareStartHour:00 and $siegeDeclareEndHour:00 (UTC) on Saturdays and Sundays</p>
+		</p>
+		""".trimIndent()
 	}
 
 	fun addSpaceStation(station: RegionSpaceStation<*, *>): Unit = syncOnly {
@@ -382,6 +407,56 @@ object NationsMap : IonServerComponent(true) {
 
 		removeSpaceStation(station)
 		addSpaceStation(station)
+	}
+
+	fun addNpcSpaceStation(station: RegionNPCSpaceStation): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		val id = "npc-station-${station.id}"
+		val label = station.name
+		val markup = true // whether to use HTML for label
+		val world = station.world
+		val x = station.x.toDouble()
+		val y = 128.0
+		val z = station.z.toDouble()
+		val xRadius = station.radius.toDouble()
+		val zRadius = station.radius.toDouble()
+		val persistent = false
+
+		markerSet.findCircleMarker(id)?.deleteMarker()
+		markerSet.createCircleMarker(id, label, markup, world, x, y, z, xRadius, zRadius, persistent)
+		val marker: CircleMarker = markerSet.findCircleMarker(id)
+
+		val rgb = station.color
+
+		marker.setFillStyle(0.2, rgb)
+		marker.setLineStyle(5, 0.4, rgb)
+
+		marker.description = """
+		<p><h2>NPC Outpost ${station.name}</h2></p>
+ 		<p><h3>Protected: ${station.isProtected}</h3></p>
+		<p><i>${station.radius} block radius</i></p>
+		""".trimIndent()
+	}
+
+	fun removeNpcSpaceStation(station: RegionNPCSpaceStation) = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		val id = "npc-station-${station.id}"
+		markerSet.findCircleMarker(id)?.deleteMarker()
+	}
+
+	fun updateNpcSpaceStation(station: RegionNPCSpaceStation): Unit = syncOnly {
+		if (!dynmapLoaded) {
+			return@syncOnly
+		}
+
+		removeNpcSpaceStation(station)
+		addNpcSpaceStation(station)
 	}
 
 	private fun getMarkerID(station: RegionSpaceStation<*, *>) =

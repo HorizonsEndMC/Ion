@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.machine
 
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
+import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.isInRange
 import org.bukkit.Color
 import org.bukkit.Location
@@ -60,6 +61,7 @@ object AreaShields : IonServerComponent() {
 
 	private fun handleExplosion(location: Location, blockList: MutableList<Block>, yield: Float, event: Cancellable) {
 		if (yield == 0.123f) return
+		if (location.world.ion.hasFlag(WorldFlag.AREA_SHIELDS_DISABLED)) return
 
 		val power = explosionPowerOverride ?: yield
 

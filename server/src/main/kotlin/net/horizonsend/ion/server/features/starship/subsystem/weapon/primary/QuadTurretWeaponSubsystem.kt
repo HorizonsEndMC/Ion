@@ -1,7 +1,7 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.primary
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
+import net.horizonsend.ion.server.configuration.starship.QuadTurretBalancing
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.QuadTurretMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
@@ -11,20 +11,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.block.BlockFace
 import org.bukkit.inventory.ItemStack
-import java.util.concurrent.TimeUnit
 
 class QuadTurretWeaponSubsystem(
-    ship: ActiveStarship,
-    pos: Vec3i,
-    face: BlockFace,
-    override val multiblock: QuadTurretMultiblock
-) : TurretWeaponSubsystem(ship, pos, face), PermissionWeaponSubsystem, AmmoConsumingWeaponSubsystem {
-	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.quadTurret
-	override val inaccuracyRadians: Double get() = Math.toRadians(balancing.inaccuracyRadians)
-	override val powerUsage: Int get() = balancing.powerUsage
-	override var fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(balancing.fireCooldownMillis)
-	override fun getMaxPerShot(): Int = balancing.maxPerShot
-
+	starship: ActiveStarship,
+	pos: Vec3i,
+	face: BlockFace,
+	override val multiblock: QuadTurretMultiblock
+) : TurretWeaponSubsystem<QuadTurretBalancing, QuadTurretBalancing.QuadTurretProjectileBalancing>(starship, pos, face, starship.balancingManager.getSubsystemSupplier(QuadTurretWeaponSubsystem::class)), PermissionWeaponSubsystem, AmmoConsumingWeaponSubsystem {
 	override val permission: String = "ion.multiblock.quadturret"
 
 	override fun getName(): Component {
@@ -32,7 +25,7 @@ class QuadTurretWeaponSubsystem(
 	}
 
 	override fun isRequiredAmmo(item: ItemStack): Boolean {
-		return requireCustomItem(item, CustomItemRegistry.LOADED_SHELL, 1)
+		return requireCustomItem(item, CustomItemKeys.LOADED_SHELL.getValue(), 1)
 	}
 
 	override fun consumeAmmo(itemStack: ItemStack) {

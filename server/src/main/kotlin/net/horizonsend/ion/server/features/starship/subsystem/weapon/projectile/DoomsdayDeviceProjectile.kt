@@ -1,12 +1,11 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.DoomsdayDeviceBalancing
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.DoomsdayDeviceWeaponMultiblock
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.EntityDamager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.iterateVector
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.spherePoints
@@ -23,22 +22,12 @@ import org.bukkit.util.RayTraceResult
 import org.bukkit.util.Vector
 
 class DoomsdayDeviceProjectile(
-	starship: ActiveStarship?,
+	source: ProjectileSource,
 	name: Component,
 	loc: Location,
 	dir: Vector,
 	shooter: Damager
-) : ParticleProjectile(starship, name, loc, dir, shooter, DoomsdayDeviceWeaponMultiblock.damageType) {
-    override val balancing: StarshipWeapons.ProjectileBalancing = starship?.balancing?.weapons?.doomsdayDevice ?: ConfigurationFiles.starshipBalancing().nonStarshipFired.doomsdayDevice
-    override val range: Double = balancing.range
-    override var speed: Double = balancing.speed
-    override val starshipShieldDamageMultiplier = balancing.starshipShieldDamageMultiplier
-    override val areaShieldDamageMultiplier: Double = balancing.areaShieldDamageMultiplier
-    override val explosionPower: Float = balancing.explosionPower
-    override val volume: Int = balancing.volume
-    override val pitch: Float = balancing.pitch
-    override val soundName: String = balancing.soundName
-
+) : ParticleProjectile<DoomsdayDeviceBalancing.DoomsdayDeviceProjectileBalancing>(source, name, loc, dir, shooter, DoomsdayDeviceWeaponMultiblock.damageType) {
     private val greenParticleData = Particle.DustTransition(
         Color.fromARGB(255, 182, 255, 0),
         Color.BLACK,
@@ -54,7 +43,7 @@ class DoomsdayDeviceProjectile(
     override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {
 
 
-        Location(loc.world, x, y, z).spherePoints(3.0, 20).forEach {
+        Location(location.world, x, y, z).spherePoints(3.0, 20).forEach {
             it.world.spawnParticle(
                 Particle.DUST_COLOR_TRANSITION,
                 it.x,
@@ -71,7 +60,7 @@ class DoomsdayDeviceProjectile(
         }
 
         Tasks.syncDelay(5) {
-            Location(loc.world, x, y, z).spherePoints(1.5, 5).forEach {
+            Location(location.world, x, y, z).spherePoints(1.5, 5).forEach {
                 it.world.spawnParticle(
                     Particle.DUST_COLOR_TRANSITION,
                     it.x,
@@ -93,15 +82,15 @@ class DoomsdayDeviceProjectile(
     override fun tick() {
         delta = (System.nanoTime() - lastTick) / 1_000_000_000.0 // Convert to seconds
 
-        val predictedNewLoc = loc.clone().add(dir.clone().multiply(delta * speed))
+        val predictedNewLoc = location.clone().add(direction.clone().multiply(delta * speed))
         if (!predictedNewLoc.isChunkLoaded) {
             return
         }
-        val result: RayTraceResult? = loc.world.rayTrace(loc, dir, delta * speed, FluidCollisionMode.NEVER, true, 0.5) { it.type != EntityType.ITEM_DISPLAY }
-        val newLoc = result?.hitPosition?.toLocation(loc.world) ?: predictedNewLoc
-        val travel = loc.distance(newLoc)
+        val result: RayTraceResult? = location.world.rayTrace(location, direction, delta * speed, FluidCollisionMode.NEVER, true, 0.5) { it.type != EntityType.ITEM_DISPLAY }
+        val newLoc = result?.hitPosition?.toLocation(location.world) ?: predictedNewLoc
+        val travel = location.distance(newLoc)
 
-        moveVisually(loc, newLoc, travel)
+        moveVisually(location, newLoc, travel)
 
         var impacted = false
 
@@ -109,7 +98,7 @@ class DoomsdayDeviceProjectile(
             impacted = tryImpact(result, newLoc)
         }
 
-        loc = newLoc
+        location = newLoc
 
         distance += travel
 

@@ -5,7 +5,7 @@ import net.horizonsend.ion.common.utils.text.CHETHERITE_CHARACTER
 import net.horizonsend.ion.common.utils.text.SPECIAL_FONT_KEY
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.CHETHERITE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE
 import net.horizonsend.ion.server.features.gui.AbstractBackgroundPagedGui
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
@@ -36,18 +36,17 @@ import xyz.xenondevs.invui.gui.structure.Markers
 import xyz.xenondevs.invui.item.Item
 import xyz.xenondevs.invui.item.builder.ItemBuilder
 import xyz.xenondevs.invui.item.impl.SimpleItem
-import xyz.xenondevs.invui.window.Window
 import kotlin.math.ceil
 import kotlin.math.min
 
-class Achievements(val player: Player) : AbstractBackgroundPagedGui {
+class Achievements(viewer: Player) : AbstractBackgroundPagedGui(viewer) {
 
 	companion object {
 		private const val ACHIEVEMENTS_PER_PAGE = 5
 		private const val PAGE_NUMBER_VERTICAL_SHIFT = 4
 	}
 
-	override var currentWindow: Window? = null
+	private var currentPage: Int = 0
 
 	override fun createGui(): PagedGui<Item> {
 		val gui = PagedGui.items()
@@ -74,22 +73,27 @@ class Achievements(val player: Player) : AbstractBackgroundPagedGui {
 			"x . . . . . . . .",
 			"x . . . . . . . .",
 			"x . . . . . . . .",
-			"< . . . . . . . >")
+			"< . . . . . . . >"
+		)
 
-		gui.addIngredient('x', Markers.CONTENT_LIST_SLOT_VERTICAL)
+		gui
+			.addIngredient('x', Markers.CONTENT_LIST_SLOT_VERTICAL)
 			.addIngredient('<', GuiItems.PageLeftItem())
 			.addIngredient('>', GuiItems.PageRightItem())
 			.setContent(achievementIcons)
+			.addPageChangeHandler { _, new ->
+				currentPage = new
+				refreshTitle()
+			}
 
 		return gui.build()
 	}
 
-	override fun createText(player: Player, currentPage: Int): Component {
-
-		val obtainedAchievements = SLPlayer[player].achievements.map { Achievement.valueOf(it) }.toList()
+	override fun buildTitle(): Component {
+		val obtainedAchievements = SLPlayer[viewer].achievements.map { Achievement.valueOf(it) }.toList()
 
 		// create a new GuiText builder
-		val header = "${player.name}'s Achievements"
+		val header = "${viewer.name}'s Achievements"
 		val guiText = GuiText(header)
 		guiText.addBackground()
 
@@ -140,10 +144,6 @@ class Achievements(val player: Player) : AbstractBackgroundPagedGui {
 
 		return guiText.build()
 	}
-
-	fun openMainWindow() {
-		currentWindow = buildWindow(player).apply { open() }
-	}
 }
 
 fun Player.rewardAchievement(achievement: Achievement, callback: () -> Unit = {}) = Tasks.async {
@@ -159,7 +159,7 @@ fun Player.rewardAchievement(achievement: Achievement, callback: () -> Unit = {}
 	SLXP.addAsync(this@rewardAchievement, achievement.experienceReward, false)
 
 	if (achievement.chetheriteReward > 0) {
-		inventory.addItem(CHETHERITE.constructItemStack().asQuantity(achievement.chetheriteReward))
+		inventory.addItem(CHETHERITE.getValue().constructItemStack().asQuantity(achievement.chetheriteReward))
 	}
 
 	showTitle(

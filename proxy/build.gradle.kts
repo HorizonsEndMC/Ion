@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
 	id("com.github.johnrengelman.shadow")
 
@@ -19,20 +21,26 @@ dependencies {
 	implementation(project(":common"))
 
 	// Platform
-	compileOnly("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
-	kapt("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
+	compileOnly("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
+	kapt("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
 
-	compileOnly("net.luckperms:api:5.4")
+	compileOnly("net.luckperms:api:5.5")
 
 	// Included Dependencies
 	implementation("co.aikar:acf-velocity:0.5.1-SNAPSHOT")
-	implementation("net.dv8tion:JDA:5.2.2")
-	implementation("net.kyori:adventure-text-logger-slf4j:4.18.0")
+	implementation("net.dv8tion:JDA:5.6.1")
+	implementation("net.kyori:adventure-text-logger-slf4j:4.24.0")
 	implementation("dev.vankka:mcdiscordreserializer:4.3.0")
 }
 
 tasks.build { dependsOn("shadowJar") }
 tasks.shadowJar { archiveFileName.set("../../../build/IonProxy.jar") }
+
+tasks.named<KotlinJvmCompile>("compileKotlin") {
+	compilerOptions {
+		javaParameters = true
+	}
+}
 
 kotlin.jvmToolchain(21)
 

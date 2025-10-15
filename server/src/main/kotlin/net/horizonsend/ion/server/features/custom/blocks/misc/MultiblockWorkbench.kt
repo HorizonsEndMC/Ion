@@ -7,14 +7,14 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.wrap
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customItemDrop
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.custom.misc.anvilinput.TextInputMenu.Companion.searchEntires
 import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockRegistration
@@ -24,6 +24,7 @@ import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilbloc
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDescription
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getDisplayName
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock.Companion.getIcon
+import net.horizonsend.ion.server.gui.invui.misc.util.input.TextInputMenu.Companion.openSearchMenu
 import net.horizonsend.ion.server.miscellaneous.utils.PerPlayerCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemLore
@@ -51,13 +52,13 @@ import org.bukkit.inventory.ItemStack
 import java.util.concurrent.TimeUnit
 
 object MultiblockWorkbench : CustomBlock(
-	identifier = "MULTIBLOCK_WORKBENCH",
-	blockData = CustomBlocks.mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.DOWN, BlockFace.EAST)),
+	key = CustomBlockKeys.MULTIBLOCK_WORKBENCH,
+	blockData = CustomBlockRegistry.mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.DOWN, BlockFace.EAST)),
 	drops = BlockLoot(
 		requiredTool = null,
-		drops = customItemDrop(CustomItemRegistry::MULTIBLOCK_WORKBENCH, 1)
+		drops = customItemDrop(CustomItemKeys.MULTIBLOCK_WORKBENCH, 1)
 	),
-	customBlockItem = { CustomItemRegistry.MULTIBLOCK_WORKBENCH }
+	customBlockItem = CustomItemKeys.MULTIBLOCK_WORKBENCH
 ), InteractableCustomBlock {
 	private val cooldown = PerPlayerCooldown(5L, TimeUnit.MILLISECONDS)
 
@@ -77,7 +78,7 @@ object MultiblockWorkbench : CustomBlock(
 	private fun openMenu(player: Player, location: Location) {
 		val inv = MultiblockWorkbenchMenu(player, location)
 		InteractableGUI.setInventory(player.uniqueId, inv)
-		inv.open()
+		inv.openGui()
 	}
 
 	class MultiblockWorkbenchMenu(viewer: Player, val location: Location): InteractableGUI(viewer) {
@@ -238,13 +239,13 @@ object MultiblockWorkbench : CustomBlock(
 		private fun openSearchMenu() {
 			isSearching = true
 
-			viewer.searchEntires(
+			viewer.openSearchMenu(
 				entries = MultiblockRegistration.getAllMultiblocks(),
 				searchTermProvider = { getSearchTerms(it) },
 				prompt = text("Search by Multiblock Name"),
 				description = text("Top result is selected"),
 				backButtonHandler = {
-					this.open()
+					this.openGui()
 					isSearching = false
 				},
 				itemTransformer = { it.getIcon() },
@@ -257,7 +258,7 @@ object MultiblockWorkbench : CustomBlock(
 			runCatching {
 				multiblockIndex = multiblocks.indexOf(multiblock)
 				viewer.closeInventory()
-				open()
+				openGui()
 				refreshButtons()
 
 				isSearching = false

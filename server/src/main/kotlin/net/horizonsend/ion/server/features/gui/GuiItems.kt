@@ -153,6 +153,18 @@ object GuiItems {
 		override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
 			clickHandler.invoke(clickType, player, event)
 		}
+
+		override fun equals(other: Any?): Boolean {
+			return other === this
+		}
+	}
+
+	fun createButton(provider: ItemProvider, clickHandler: (ClickType, Player, InventoryClickEvent) -> Unit) = object : AbstractItem() {
+		override fun getItemProvider(): ItemProvider = provider
+
+		override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
+			clickHandler.invoke(clickType, player, event)
+		}
 	}
 
     open class PlayerHeadItem(val uuid: UUID, val name: String, val callback: () -> Unit = {}) : ControlItem<Gui>() {
@@ -163,7 +175,7 @@ object GuiItems {
         override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) { callback() }
     }
 
-    fun closeMenuItem(player: Player) = CustomControlItem(text("Close Menu").decoration(TextDecoration.ITALIC, false), GuiItem.CANCEL) {
+    fun closeMenuItem(player: Player, icon: GuiItem = GuiItem.CANCEL) = CustomControlItem(text("Close Menu").decoration(TextDecoration.ITALIC, false), icon) {
             _: ClickType, _: Player, _: InventoryClickEvent -> player.closeInventory()
     }
 
@@ -260,6 +272,17 @@ enum class GuiItem(val modelKey: Key) : ItemProvider {
     THREE_QUARTER(NamespacedKeys.packKey("ui/three_quarter")),
     GEAR(NamespacedKeys.packKey("ui/gear")),
 	SHIP_FACTORY_RUNNING(NamespacedKeys.packKey("ui/ship_factory_running")),
+	CITY(NamespacedKeys.packKey("ui/city")),
+	WORLD(NamespacedKeys.packKey("ui/world")),
+	CITY_GRAY(NamespacedKeys.packKey("ui/city_gray")),
+	WORLD_GRAY(NamespacedKeys.packKey("ui/world_gray")),
+	INFO(NamespacedKeys.packKey("ui/info")),
+	FILTER(NamespacedKeys.packKey("ui/filter")),
+    SORT(NamespacedKeys.packKey("ui/sort")),
+    LIST_VIEW(NamespacedKeys.packKey("ui/list_view")),
+    GRID_VIEW(NamespacedKeys.packKey("ui/grid_view")),
+    PLUS(NamespacedKeys.packKey("ui/plus")),
+    COLLECT_CREDITS(NamespacedKeys.packKey("ui/collect_credits")),
 
 	;
 

@@ -2,7 +2,9 @@ package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turr
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.StarshipParticleProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTurretWeaponBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.SubsystemMultiblock
@@ -11,6 +13,7 @@ import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.TurretLaserProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
@@ -25,11 +28,12 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.Sign
 import org.bukkit.block.data.BlockData
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeaponSubsystem>, DisplayNameMultilblock {
+abstract class TurretMultiblock<T : StarshipParticleProjectileBalancing> : Multiblock(), SubsystemMultiblock<TurretWeaponSubsystem<*, T>>, DisplayNameMultilblock {
 	init {
 		shape.signCentered()
 		shape.ignoreDirection()
@@ -38,16 +42,16 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 	override val name: String = "turret"
 	override val signText = createSignText("&8Turret", null, null, null)
 
-	abstract fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon
+	abstract fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<T>
 
-	fun getCooldownMillis(starship: ActiveStarship) = getBalancing(starship).fireCooldownMillis
-	fun getRange(starship: ActiveStarship) = getBalancing(starship).range
-	fun getSound(starship: ActiveStarship) = getBalancing(starship).soundName
-	fun getProjectileSpeed(starship: ActiveStarship) = getBalancing(starship).speed
-	fun getParticleThickness(starship: ActiveStarship) = getBalancing(starship).particleThickness
-	fun getExplosionPower(starship: ActiveStarship) = getBalancing(starship).explosionPower
-	fun getStarshipShieldDamageMultiplier(starship: ActiveStarship) = getBalancing(starship).starshipShieldDamageMultiplier
-	fun getAreaShieldDamageMultiplier(starship: ActiveStarship) = getBalancing(starship).areaShieldDamageMultiplier
+	fun getCooldownMillis(starship: ActiveStarship) = TimeUnit.NANOSECONDS.toMillis(getBalancing(starship).fireCooldownNanos)
+	fun getRange(starship: ActiveStarship) = getBalancing(starship).projectile.range
+	fun getSound(starship: ActiveStarship) = getBalancing(starship).projectile.fireSoundNear
+	fun getProjectileSpeed(starship: ActiveStarship) = getBalancing(starship).projectile.speed
+	fun getParticleThickness(starship: ActiveStarship) = getBalancing(starship).projectile.particleThickness
+	fun getExplosionPower(starship: ActiveStarship) = getBalancing(starship).projectile.explosionPower
+	fun getStarshipShieldDamageMultiplier(starship: ActiveStarship) = getBalancing(starship).projectile.starshipShieldDamageMultiplier
+	fun getAreaShieldDamageMultiplier(starship: ActiveStarship) = getBalancing(starship).projectile.areaShieldDamageMultiplier
 
 	protected abstract fun buildFirePointOffsets(): List<Vec3i>
 	protected abstract fun getPilotOffset(): Vec3i
@@ -230,29 +234,29 @@ abstract class TurretMultiblock : Multiblock(), SubsystemMultiblock<TurretWeapon
 	protected fun getAdjustedFirePoints(pos: Vec3i, face: BlockFace) = getFirePoints(face)
 		.map { Vec3i(it.x + pos.x, it.y + pos.y, it.z + pos.z) }
 
-	open fun shoot(world: World, pos: Vec3i, face: BlockFace, dir: Vector, starship: ActiveStarship, shooter: Damager, subSystem: TurretWeaponSubsystem, isAuto: Boolean = true) {
-		val speed = getProjectileSpeed(starship)
-
+	open fun shoot(
+		world: World,
+		pos: Vec3i,
+		face: BlockFace,
+		dir: Vector,
+		starship: ActiveStarship,
+		shooter: Damager,
+		subSystem: TurretWeaponSubsystem<out StarshipTurretWeaponBalancing<T>, T>,
+		isAuto: Boolean = true,
+	) {
 		for (point: Vec3i in getAdjustedFirePoints(pos, face)) {
 			if (starship.isInternallyObstructed(point, dir)) continue
 
 			val loc = point.toLocation(world).toCenterLocation()
 
-			TurretLaserProjectile(
-				starship,
+			TurretLaserProjectile<T>(
+				StarshipProjectileSource(starship),
 				subSystem.getName(),
 				loc,
 				dir,
-				speed,
+				shooter,
 				shooter.color,
-				getRange(starship),
-				getParticleThickness(starship),
-				getExplosionPower(starship),
-				getStarshipShieldDamageMultiplier(starship),
-				getAreaShieldDamageMultiplier(starship),
-				getSound(starship),
-				starship.balancing.weapons.heavyTurret, // Not used by anything
-				shooter
+				subSystem.starship.balancingManager.getSubsystem(subSystem::class).projectile
 			).fire()
 		}
 	}

@@ -5,12 +5,15 @@ import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.command.GlobalCompletions
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.priceMult
+import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
+import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.LegacyItemUtils
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.horizonsend.ion.server.miscellaneous.utils.updateDisplayName
 import net.horizonsend.ion.server.miscellaneous.utils.updateLore
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
@@ -19,7 +22,6 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.inventory.ItemStack
-import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.ItemProvider
 import xyz.xenondevs.invui.item.builder.ItemBuilder
@@ -29,15 +31,13 @@ import xyz.xenondevs.invui.window.AnvilWindow
 import xyz.xenondevs.invui.window.Window
 
 class BazaarPurchaseMenuGui(
-    val player: Player,
-    private val bazaarItem: BazaarItem,
-    private val sellerName: String,
-    val remote: Boolean,
-    val returnCallback: () -> Unit = {},
-    val confirmCallback: (Player, BazaarItem, Int, Boolean) -> Unit
-) {
-
-    private var currentWindow: Window? = null
+	viewer: Player,
+	private val bazaarItem: BazaarItem,
+	private val sellerName: String,
+	val remote: Boolean,
+	val returnCallback: () -> Unit = {},
+	val confirmCallback: (Player, BazaarItem, Int, Boolean) -> Unit
+) : InvUIWindowWrapper(viewer) {
     private var currentAmount = 0
 
     private val returnToItemMenuItem = ReturnToItemMenuButton()
@@ -55,26 +55,26 @@ class BazaarPurchaseMenuGui(
         return gui.build()
     }
 
-    fun open(player: Player): Window {
-        val gui = createGui()
+	override fun buildWindow(): Window {
+		val gui = createGui()
 
-        val window = AnvilWindow.single()
-            .setViewer(player)
-            .setTitle(AdventureComponentWrapper(text("Buying $sellerName's ${GlobalCompletions.fromItemString(bazaarItem.itemString).displayNameString}")))
-            .setGui(gui)
-            .addRenameHandler { string ->
-                currentAmount = string?.toIntOrNull() ?: 0
-                returnToItemMenuItem.notifyWindows()
-                confirmPurchaseItem.notifyWindows()
-            }
-            .build()
+		val window = AnvilWindow.single()
+			.setViewer(viewer)
+			.setTitle(buildTitle())
+			.setGui(gui)
+			.addRenameHandler { string ->
+				currentAmount = string?.toIntOrNull() ?: 0
+				returnToItemMenuItem.notifyWindows()
+				confirmPurchaseItem.notifyWindows()
+			}
+			.build()
 
-        return window
-    }
+		return window
+	}
 
-    fun openMainWindow() {
-        currentWindow = open(player).apply { open() }
-    }
+	override fun buildTitle(): Component {
+		return text("Buying $sellerName's ${GlobalCompletions.fromItemString(bazaarItem.itemString).displayNameString}")
+	}
 
     // Item being purchased
     private inner class BazaarGuiItem(val itemStack: ItemStack) : AbstractItem() {
@@ -116,7 +116,7 @@ class BazaarPurchaseMenuGui(
 						text("Buy $currentAmount of $name for ${(bazaarItem.price * currentAmount * priceMult).roundToHundredth()}"),
 
 						// Inventory warning
-						if (!LegacyItemUtils.canFit(player.inventory, GlobalCompletions.fromItemString(bazaarItem.itemString), currentAmount)) {
+						if (!LegacyItemUtils.canFit(viewer.inventory, GlobalCompletions.fromItemString(bazaarItem.itemString), currentAmount)) {
 							ofChildren(
 								text("WARNING: Amount is larger than may fit in your inventory.", NamedTextColor.RED),
 								text("Adding additional items may result in their stacks getting deleted.", NamedTextColor.RED)

@@ -2,14 +2,15 @@ package net.horizonsend.ion.server.features.multiblock.entity
 
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlerHolder
 import net.horizonsend.ion.server.features.multiblock.Multiblock
+import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkageHolder
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.linkage.MultiblockLinkageHolder
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
+import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.MULTIBLOCK_ENTITY_DATA
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.PDCSerializable
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
@@ -26,6 +27,7 @@ import org.bukkit.block.data.type.WallSign
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.InventoryHolder
 import org.bukkit.persistence.PersistentDataAdapterContext
+import kotlin.reflect.KClass
 
 /**
  * @param manager The multiblock manager that this is registered to
@@ -71,13 +73,17 @@ abstract class MultiblockEntity(
 	val localBlockKey: BlockKey get() = toBlockKey(localOffsetX, localOffsetY, localOffsetZ)
 	val globalBlockKey: BlockKey get() = toBlockKey(globalVec3i)
 
-	private var lastRetrieved = System.currentTimeMillis()
+	private var lastDeltaRetrieved = System.currentTimeMillis()
+
+	fun resetDelta() {
+		lastDeltaRetrieved = System.currentTimeMillis()
+	}
 
 	/** Gets the time since this value was last retrieved */
 	protected val deltaTMS: Long get() {
 		val time = System.currentTimeMillis()
-		val delta = time - lastRetrieved
-		lastRetrieved = time
+		val delta = time - lastDeltaRetrieved
+		lastDeltaRetrieved = time
 
 		return delta
 	}
@@ -111,7 +117,7 @@ abstract class MultiblockEntity(
 	/** Logic to be run upon the loading of the chunk holding this entity, or its creation */
 	protected open fun onLoad() {}
 
-	open fun displaceAdditional(movement: StarshipMovement) {}
+	open fun displaceAdditional(movement: TransformationAccessor) {}
 
 	/**
 	 * Stores any additional data for this multiblock (e.g. power, owner, etc)
@@ -151,8 +157,8 @@ abstract class MultiblockEntity(
 	/**
 	 * Gets the sign of this multiblock
 	 **/
-	fun getSign(): Sign? {
-		return getSignFromOrigin(world, globalVec3i, structureDirection).state as? Sign
+	fun getSign(useSnapshot: Boolean = true): Sign? {
+		return getSignFromOrigin(world, globalVec3i, structureDirection).getState(useSnapshot) as? Sign
 	}
 
 	fun getSignLocation() = getSignFromOrigin(world, globalVec3i, structureDirection).location
@@ -182,7 +188,7 @@ abstract class MultiblockEntity(
 		)
 	}
 
-	fun displace(movement: StarshipMovement) {
+	fun displace(movement: TransformationAccessor) {
 		val newWorld = movement.newWorld
 		if (newWorld != null) {
 			this.world = newWorld
@@ -206,6 +212,7 @@ abstract class MultiblockEntity(
 		return world.getBlockAt(x, y, z)
 	}
 
+	/** Returns a global coordinate offset from the origin with the provided transform */
 	fun getPosRelative(right: Int, up: Int, forward: Int): Vec3i {
 		return getRelative(globalVec3i, structureDirection, right = right, up = up, forward = forward)
 	}
@@ -325,18 +332,18 @@ abstract class MultiblockEntity(
 	}
 
 	// Section inputs
-	abstract val inputsData: InputsData
+	abstract val ioData: IOData
 
 	fun registerInputs() {
-		inputsData.registerInputs()
+		ioData.registerInputs()
 	}
 
 	fun releaseInputs() {
-		inputsData.releaseInputs()
+		ioData.releaseInputs()
 	}
 
 	// Util
-	protected fun none(): InputsData = InputsData.builder(this).build()
+	protected fun none(): IOData = IOData.builder(this).build()
 
 	val linkages = mutableListOf<MultiblockLinkageHolder>()
 
@@ -347,6 +354,51 @@ abstract class MultiblockEntity(
 
 	fun removeLinkages() {
 		linkages.forEach { linkage -> linkage.deRegister() }
+	}
+
+	fun createLinkage(
+		offsetRight: Int,
+		offsetUp: Int,
+		offsetForward: Int,
+		linkageDirection: RelativeFace,
+		vararg allowedEntities: KClass<out MultiblockEntity>
+	): MultiblockLinkageHolder = createLinkage(offsetRight, offsetUp, offsetForward, linkageDirection) { to ->
+		allowedEntities.any { it.isInstance(to) }
+	}
+
+	fun createLinkage(
+		offsetRight: Int,
+		offsetUp: Int,
+		offsetForward: Int,
+		linkageDirection: RelativeFace,
+		multiblockFilter: (MultiblockEntity) -> Boolean,
+	): MultiblockLinkageHolder {
+		val holder = MultiblockLinkageHolder(
+			this,
+			offsetRight,
+			offsetUp,
+			offsetForward,
+			multiblockFilter,
+			linkageDirection
+		)
+
+		linkages.add(holder)
+
+		holder.register()
+		return holder
+	}
+
+	fun createLinkage(
+		offsetRight: Int,
+		offsetUp: Int,
+		offsetForward: Int,
+		linkageDirection: RelativeFace,
+		predicate: () -> Boolean = { true },
+		vararg allowedEntities: KClass<out MultiblockEntity>
+	): MultiblockLinkageHolder? {
+		if (!predicate.invoke()) return null
+
+		return createLinkage(offsetRight, offsetUp, offsetForward, linkageDirection, *allowedEntities)
 	}
 
 	override fun handlerGetWorld(): World {

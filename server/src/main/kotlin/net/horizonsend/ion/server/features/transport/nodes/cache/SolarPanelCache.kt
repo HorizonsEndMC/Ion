@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSettings
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.transport.TransportTask
@@ -21,6 +20,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.DaylightDetector
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass
@@ -34,10 +34,10 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 
 	val powerCache = holder.transportManager.powerNodeManager.cache
 
-	override fun invalidate(key: BlockKey) {
+	override fun invalidate(key: BlockKey, player: UUID?) {
 		combinedSolarPanelPositions[key]?.removePosition(key)
 
-		super.invalidate(key)
+		super.invalidate(key, player)
 	}
 
 	sealed interface SolarPanelComponent: Node {
@@ -66,7 +66,7 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 		val data = getBlockDataSafe(holder.getWorld(), detectorPosition.x, detectorPosition.y, detectorPosition.z) as? DaylightDetector ?: return 0
 		val powerRatio = data.power.toDouble() / data.maximumPower.toDouble()
 
-		val powerConfig = ConfigurationFiles.transportSettings().powerConfiguration
+		val powerConfig = transportSettings().powerConfiguration
 		val base = powerConfig.solarPanelTickPower * delta
 		return (base * powerRatio * powerMultiplier).roundToInt()
 	}
@@ -104,11 +104,11 @@ class SolarPanelCache(holder: CacheHolder<SolarPanelCache>) : TransportCache(hol
 
 	private fun getSolarPanelExtractors(origin: BlockKey): Array<PathfindResult> {
 		return powerCache.getNetworkDestinations(
-			TransportTask(origin, holder.getWorld(), {}, 1000, IonServer.slF4JLogger),
-			PowerNode.PowerExtractorNode::class,
-			origin,
-			PowerNode.PowerExtractorNode,
-			false,
+			task = TransportTask(origin, holder.getWorld(), {}, 1000, IonServer.slF4JLogger),
+			destinationTypeClass = PowerNode.PowerExtractorNode::class,
+			originPos = origin,
+			originNode = PowerNode.PowerExtractorNode,
+			retainFullPath = false,
 			destinationCheck = { !combinedSolarPanelPositions.containsKey(it.position) && isSolarPanel(it.position) },
 			nextNodeProvider = { combinedSolarPanelProvider(this) }
 		)

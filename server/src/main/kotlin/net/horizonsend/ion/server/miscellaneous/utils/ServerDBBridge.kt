@@ -1,12 +1,14 @@
 package net.horizonsend.ion.server.miscellaneous.utils
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard
+import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.SLTextStyleDB
 import net.horizonsend.ion.common.database.StarshipTypeDB
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.SLPlayerId
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.database.schema.starships.BlueprintLike
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.database.schema.starships.StarshipData
 import net.horizonsend.ion.common.database.slPlayerId
@@ -21,11 +23,9 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
-import java.util.Base64
-import java.util.UUID
+import java.util.*
 
 val SLTextStyleDB.actualStyle get() = SLTextStyle.valueOf(this)
-
 val StarshipTypeDB.actualType get() = StarshipType.valueOf(this)
 
 val Player.slPlayerId: SLPlayerId get() = uniqueId.slPlayerId
@@ -52,13 +52,29 @@ fun Blueprint.Companion.parseData(data: String): Clipboard {
 	return StarshipSchematic.deserializeSchematic(Base64.getDecoder().decode(data))
 }
 
-fun Blueprint.loadClipboard(): Clipboard {
+fun BlueprintLike.loadClipboard(): Clipboard {
 	return Blueprint.parseData(blockData)
 }
 
 fun Blueprint.canAccess(player: Player): Boolean {
 	val slPlayerId = player.slPlayerId
 	return slPlayerId == owner || trustedPlayers.contains(slPlayerId) || trustedNations.contains(PlayerCache[player].nationOid)
+}
+
+fun Blueprint.Companion.canAccess(player: Player, id: Oid<Blueprint>): Boolean {
+	val slPlayerId = player.slPlayerId
+
+	val props = findPropsById(id, Blueprint::owner, Blueprint::trustedPlayers, Blueprint::trustedNations) ?: return false
+	val owner = props[Blueprint::owner]
+	val trustedPlayers = props[Blueprint::trustedPlayers]
+	val trustedNations = props[Blueprint::trustedNations]
+
+	if (slPlayerId == owner) return true
+	if (trustedPlayers.contains(slPlayerId)) return true
+
+	if (trustedNations.contains(PlayerCache[player].nationOid)) return true
+
+	return false
 }
 
 class CommonPlayerWrapper(private val inner: Player) : CommonPlayer {

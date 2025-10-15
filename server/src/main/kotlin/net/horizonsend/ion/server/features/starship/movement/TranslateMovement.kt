@@ -24,26 +24,41 @@ import java.util.concurrent.CompletableFuture
 import kotlin.math.max
 import kotlin.math.min
 
-class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val dz: Int, newWorld: World? = null) :
-	StarshipMovement(starship, newWorld) {
+class TranslateMovement(
+	starship: ActiveStarship,
+	val dx: Int,
+	val dy: Int,
+	val dz: Int,
+	override val newWorld: World? = null
+) : StarshipMovement(starship) {
 	companion object {
 		fun loadChunksAndMove(
 			starship: ActiveStarship,
 			dx: Int,
 			dy: Int,
 			dz: Int,
-			newWorld: World? = null
+			newWorld: World? = null,
+			type: MovementSource = MovementSource.OTHER
 		): CompletableFuture<Boolean> {
-			starship.velocity = Vector(dx.toDouble(), dy.toDouble(), dz.toDouble())
-
 			val world = newWorld ?: starship.world
 
 			val toLoad = this.getChunkLoadTasks(starship, world, dx, dz)
 
-			return CompletableFuture.allOf(*toLoad.toTypedArray()).thenCompose {
-				Tasks.checkMainThread()
-				return@thenCompose starship.moveAsync(TranslateMovement(starship, dx, dy, dz, newWorld))
-			}
+			return CompletableFuture.allOf(*toLoad.toTypedArray())
+				.thenCompose {
+					Tasks.checkMainThread()
+					return@thenCompose starship.moveAsync(TranslateMovement(starship, dx, dy, dz, newWorld))
+				}
+				.thenCompose { original ->
+					if (original == true) when (type) {
+						MovementSource.MANUAL -> starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
+						MovementSource.DC -> starship.shiftKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
+						MovementSource.CRUISE -> starship.cruiseKinematicEstimator.addData(starship.centerOfMass.toVector(), dx, dy, dz)
+						else -> {}
+					}
+
+					CompletableFuture.completedFuture(original)
+				}
 		}
 
 		private fun getChunkLoadTasks(
@@ -73,7 +88,9 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 		}
 	}
 
-	override fun blockDataTransform(blockData: BlockState): BlockState = blockData
+
+
+	override fun blockStateTransform(blockData: BlockState): BlockState = blockData
 
 	override fun displaceX(oldX: Int, oldZ: Int): Int = oldX + dx
 
@@ -89,7 +106,7 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 		.clone()
 		.add(Vector(dx.toDouble(), dy.toDouble(), dz.toDouble()))
 
-	override fun displaceKey(key: BlockKey): BlockKey {
+	override fun displaceModernKey(key: BlockKey): BlockKey {
 		return toBlockKey(
 			getX(key) + dx,
 			getY(key) + dy,
@@ -155,4 +172,6 @@ class TranslateMovement(starship: ActiveStarship, val dx: Int, val dy: Int, val 
 	}
 
 	override fun onComplete() {}
+
+	enum class MovementSource {MANUAL, DC, CRUISE,OTHER}
 }

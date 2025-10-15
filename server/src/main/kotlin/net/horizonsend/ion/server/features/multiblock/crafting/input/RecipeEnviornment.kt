@@ -7,10 +7,10 @@ import org.bukkit.inventory.ItemStack
 interface RecipeEnviornment {
 	val multiblock: MultiblockEntity
 
-	fun getItemSize(): Int
-	fun getItem(index: Int): ItemStack?
+	fun getInputItems(): List<ItemStack?>
 
-	fun isEmpty(): Boolean
+	fun getInputItemSize(): Int
+	fun getInputItem(index: Int): ItemStack?
 
 	fun playSound(sound: Sound)
 }

@@ -1,16 +1,16 @@
 package net.horizonsend.ion.server.features.multiblock.manager
 
 import kotlinx.serialization.SerializationException
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.MultiblockTicking
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.linkages.MultiblockLinkageManager
-import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.chunk.IonChunk
@@ -24,7 +24,7 @@ import org.slf4j.Logger
 
 class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManager(log) {
 	override val world: World = chunk.world
-	override fun getInputManager(): InputManager = chunk.world.ion.inputManager
+	override fun getInputManager(): IOManager = chunk.world.ion.inputManager
 	override fun getLinkageManager(): MultiblockLinkageManager = chunk.world.ion.multiblockManager.linkageManager
 	override fun getTransportManager(): TransportManager<*> = chunk.transportNetwork
 
@@ -37,8 +37,8 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 
 	private var lastSaved = System.currentTimeMillis()
 
-	override fun getSignUnsavedTime(): Long {
-		return System.currentTimeMillis() - lastSaved
+	override fun getSignUnsavedTime(time: Long?): Long {
+		return (time ?: System.currentTimeMillis()) - lastSaved
 	}
 
 	override fun markSignSaved() {
@@ -104,7 +104,15 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 
 			val multiblock = stored.type as EntityMultiblock<*>
 
-			val entity = MultiblockEntities.loadFromData(multiblock, this, stored)
+			val entity = try {
+				MultiblockEntities.loadFromData(multiblock, this, stored)
+			}
+			catch (e: Throwable) {
+				if (ConfigurationFiles.serverConfiguration().deleteInvalidMultiblockData) {
+					log.warn("Removed invalid multiblock entity!", e)
+					continue
+				} else throw e
+			}
 
 			// No need to save a load
 			addMultiblockEntity(entity, save = false, ensureSign = true)
@@ -113,10 +121,8 @@ class ChunkMultiblockManager(val chunk: IonChunk, log: Logger) : MultiblockManag
 
 	fun onUnload() {
 		multiblockEntities.values.forEach {
-			it.releaseInputs()
+			it.processRemoval()
 			it.onUnload()
-
-			if (it is DisplayMultiblockEntity) it.displayHandler.remove()
 		}
 
 		MultiblockTicking.removeMultiblockManager(this)

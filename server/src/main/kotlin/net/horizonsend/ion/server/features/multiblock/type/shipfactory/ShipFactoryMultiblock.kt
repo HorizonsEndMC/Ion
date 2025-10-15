@@ -6,7 +6,8 @@ import net.horizonsend.ion.server.features.client.display.modular.display.Status
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
+import net.horizonsend.ion.server.features.multiblock.type.economy.RemotePipeMultiblock.InventoryReference
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getFacing
@@ -72,7 +73,7 @@ object ShipFactoryMultiblock : AbstractShipFactoryMultiblock<ShipFactoryMultiblo
 		world: World,
 		structureDirection: BlockFace
 	) : ShipFactoryEntity(data, ShipFactoryMultiblock, manager, world, x, y, z, structureDirection) {
-		override val inputsData: InputsData = none()
+		override val ioData: IOData = none()
 		override val guiTitle: String = "Ship Factory"
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(

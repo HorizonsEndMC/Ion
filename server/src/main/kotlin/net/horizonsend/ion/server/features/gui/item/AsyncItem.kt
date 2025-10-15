@@ -20,12 +20,18 @@ class AsyncItem(
 	val handleClick: (InventoryClickEvent) -> Unit
 ) : AbstractItem() {
 	private var provider = loadingItem
+	private var loaded: Boolean = false
 
 	override fun getItemProvider(viewer: Player): ItemProvider {
 		return provider
 	}
 
+	override fun getItemProvider(): ItemProvider {
+		return provider
+	}
+
 	override fun handleClick(p0: ClickType, p1: Player, event: InventoryClickEvent) {
+		if (!loaded) return
 		handleClick.invoke(event)
 	}
 
@@ -35,12 +41,14 @@ class AsyncItem(
 
 	fun update() {
 		provider = loadingItem
+		loaded = false
 		notifyWindows()
 
 		Tasks.async {
 			val item = buildResultItem()
 			provider = ItemProvider { item }
 
+			loaded = true
 			Tasks.sync { notifyWindows() }
 		}
 	}
@@ -64,6 +72,7 @@ class AsyncItem(
 			.updateDisplayName(Component.text("ERROR", NamedTextColor.RED))
 			.updateLore(listOf(
 				Component.text("Sorry, there was an error getting the result, please forward this to staff.", NamedTextColor.RED),
+				Component.text(exception.toString(), NamedTextColor.RED),
 				Component.text("Message: ${exception.message ?: "NULL"}", NamedTextColor.RED),
 				*exception.stackTrace.map { element -> Component.text(element.toString(), NamedTextColor.RED) }.toTypedArray()
 			))

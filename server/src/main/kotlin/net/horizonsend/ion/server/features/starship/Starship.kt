@@ -16,11 +16,12 @@ import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_L
 import net.horizonsend.ion.common.utils.text.formatException
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.common.utils.text.randomString
+import net.horizonsend.ion.common.utils.text.restrictedMiniMessageSerializer
+import net.horizonsend.ion.common.utils.text.serialize
 import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.configuration.ServerConfiguration
-import net.horizonsend.ion.server.features.gui.custom.starship.RenameButton.Companion.starshipNameSerializer
 import net.horizonsend.ion.server.features.multiblock.manager.ShipMultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.GravityWellMultiblock
 import net.horizonsend.ion.server.features.player.CombatTimer
@@ -34,8 +35,12 @@ import net.horizonsend.ion.server.features.starship.control.controllers.ai.AICon
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.control.controllers.player.UnpilotedController
-import net.horizonsend.ion.server.features.starship.control.input.DirectControlHandler
-import net.horizonsend.ion.server.features.starship.control.input.ShiftFlightHandler
+import net.horizonsend.ion.server.features.starship.control.input.AIDirectControlInput
+import net.horizonsend.ion.server.features.starship.control.input.AIShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerDirectControlInput
+import net.horizonsend.ion.server.features.starship.control.input.PlayerShiftFlightInput
+import net.horizonsend.ion.server.features.starship.control.movement.DirectControlHandler
+import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipControl
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.damager.Damager
@@ -44,24 +49,31 @@ import net.horizonsend.ion.server.features.starship.event.movement.StarshipRotat
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
 import net.horizonsend.ion.server.features.starship.modules.PlayerShipSinkMessageFactory
 import net.horizonsend.ion.server.features.starship.modules.RewardsProvider
+import net.horizonsend.ion.server.features.starship.movement.KinematicEstimator
 import net.horizonsend.ion.server.features.starship.movement.RotationMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipBlockedException
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementForecast.displayForecast
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementForecast.forecast
+import net.horizonsend.ion.server.features.starship.movement.StarshipMovementForecast.logStatistics
 import net.horizonsend.ion.server.features.starship.movement.TranslateMovement
 import net.horizonsend.ion.server.features.starship.subsystem.StarshipSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.balancing.DefaultStarshipTypeWeaponBalancing
+import net.horizonsend.ion.server.features.starship.subsystem.balancing.StarshipWeaponBalancingManager
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.GravityWellSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.MagazineSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.NavCompSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.misc.PlanetDrillSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.misc.tractor.TractorBeamSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrustData
 import net.horizonsend.ion.server.features.starship.subsystem.thruster.ThrusterSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.FiredSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.WeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.CustomTurretSubsystem
 import net.horizonsend.ion.server.features.transport.manager.ShipTransportManager
 import net.horizonsend.ion.server.features.world.IonWorld
@@ -118,10 +130,14 @@ class Starship(
 	private val hitbox: ActiveStarshipHitbox,
 	carriedShips: Map<StarshipData, LongOpenHashSet> // map of carried ship to its blocks
 ) : ForwardingAudience {
+
 	// Data Aliases
 	val dataId: Oid<out StarshipData> = data._id
+
 	val type: StarshipType = data.starshipType.actualType
-	val balancing = type.balancingSupplier.get()
+	var balancingManager: StarshipWeaponBalancingManager = DefaultStarshipTypeWeaponBalancing(data.starshipType.actualType)
+	val balancing = type.balancing
+
 	val interdictionRange: Int = balancing.interdictionRange
 	val charIdentifier = randomString(5L) // Created once
 	/** Name is misleading, would be more accurate to call this `activationTime` */
@@ -144,6 +160,15 @@ class Starship(
 		controller.tick()
 
 		subsystems.forEach { it.tick() }
+		shiftKinematicEstimator.removeData()
+		cruiseKinematicEstimator.removeData()
+
+		if (forecastEnabled) {
+			displayForecast(this)
+		}
+		if (statsEnabled) {
+			logStatistics(this)
+		}
 	}
 
 	/** Called when a starship is removed. Any cleanup logic should be done here. */
@@ -231,6 +256,10 @@ class Starship(
 		return isInBounds(x, y, z) && blocks.contains(blockKey(x, y, z))
 	}
 
+	fun contains(pos: Vec3i): Boolean {
+		return isInBounds(pos.x, pos.y, pos.z) && blocks.contains(pos.toBlockKey())
+	}
+
 	fun isInternallyObstructed(origin: Vec3i, dir: Vector, maxDistance: Int? = null): Boolean {
 		var x = origin.x.toDouble() + 0.5
 		var y = origin.y.toDouble() + 0.5
@@ -266,6 +295,8 @@ class Starship(
 
 	val pendingRotations = LinkedBlockingQueue<PendingRotation>()
 	private val rotationTime get() = TimeUnit.MILLISECONDS.toNanos(50L + initialBlockCount / 30L)
+	// manual move is sneak/direct control
+	var lastRotation = System.nanoTime()
 
 	fun getTargetForward(): BlockFace {
 		val rotation = pendingRotations.peek()
@@ -302,7 +333,7 @@ class Starship(
 			if (pendingRotations.any()) {
 				scheduleRotation()
 			}
-
+			lastRotation = System.nanoTime() //TODO: change this to after the async call
 			moveAsync(RotationMovement(this, rotation.clockwise))
 		}
 	}
@@ -310,17 +341,51 @@ class Starship(
 
 	//region Movement
 	var cruiseData = StarshipCruising.CruiseData(this)
+
 	var lastBlockedTime: Long = 0
-	val manualMoveCooldownMillis: Long = (cbrt(initialBlockCount.toDouble()) * 40).toLong()
+
+	// To fix initialization order issue
+	val tractors = LinkedList<TractorBeamSubsystem>()
+
+	var manualMoveCooldownMillis: Long = calculateManualMoveCooldown()
+
+	fun recalculateManualMoveCooldown() {
+		if (!ActiveStarships.isActive(this)) return
+		manualMoveCooldownMillis = calculateManualMoveCooldown()
+	}
+
+	private fun calculateManualMoveCooldown(): Long {
+		val baseMass = (cbrt(initialBlockCount.toDouble()) * 40).toLong()
+
+		val towed = tractors.mapNotNull { subsystem -> subsystem.getTowed() }
+
+		if (towed.isEmpty()) return baseMass
+
+		val towedBlocks = towed.sumOf { it.blocks.size }
+		return baseMass + (cbrt(towedBlocks.toDouble()) * 40L).toLong()
+	}
+
 	var speedLimit = -1
+
 	// manual move is sneak/direct control
 	var lastManualMove = System.nanoTime() / 1_000_000
+
+	val shiftKinematicEstimator = KinematicEstimator(ship = this, expireTime = manualMoveCooldownMillis * 10, dataWeightFactor = 0.85, regulationfactor = 0.1, numTerms = 2)
+	val cruiseKinematicEstimator = KinematicEstimator(ship = this, expireTime = 20000L, numTerms = 3)
 
 	/**
 	 * Non-normalized vector containing the ships velocity
 	 * Used for target lead / speed estimations
 	 */
-	var velocity: Vector = Vector(0.0, 0.0, 0.0)
+	val velocity: Vector get() = forecast(this, System.currentTimeMillis(), 1)
+
+	/**
+	 * Non-normalized vector containing the ships acceleration
+	 * Used for target lead / speed estimations
+	 */
+	val accel: Vector get() = forecast(this, System.currentTimeMillis(), 2)
+
+	var isMoving: Boolean = false; private set
 
 	fun moveAsync(movement: StarshipMovement): CompletableFuture<Boolean> {
 		if (!ActiveStarships.isActive(this)) {
@@ -341,10 +406,12 @@ class Starship(
 
 		val future = CompletableFuture<Boolean>()
 		Tasks.async {
+			val oldWorld = world
+
 			val result = executeMovement(movement, pilot)
 			future.complete(result)
 			controller.onMove(movement)
-			subsystems.forEach { runCatching { it.onMovement(movement, result) } }
+			subsystems.forEach { runCatching { it.onMovement(oldWorld, movement, result) } }
 		}
 
 		return future
@@ -353,6 +420,7 @@ class Starship(
 	@Synchronized
 	private fun executeMovement(movement: StarshipMovement, controller: Controller): Boolean {
 		try {
+			isMoving = true
 			movement.execute()
 		} catch (e: StarshipMovementException) {
 			val location = if (e is StarshipBlockedException) e.location else null
@@ -371,6 +439,8 @@ class Starship(
 			e.printStackTrace()
 
 			return false
+		} finally {
+		    isMoving = false
 		}
 
 		return true
@@ -379,8 +449,7 @@ class Starship(
 
 	//region Direct Control
 	val isDirectControlEnabled: Boolean get() {
-		return controller is ActivePlayerController &&
-			(controller as ActivePlayerController).inputHandler is DirectControlHandler
+		return controller.movementHandler is DirectControlHandler
 	}
 
 	var directControlCenter: Location? = null
@@ -401,11 +470,19 @@ class Starship(
 	var directControlSlowExpiryFromHeavyLasers = 0L
 
 	fun setDirectControlEnabled(enabled: Boolean) {
-		if (controller !is ActivePlayerController) return
-		val controller = controller as ActivePlayerController
-
-		if (enabled) controller.inputHandler = DirectControlHandler(controller) else
-			controller.inputHandler = ShiftFlightHandler(controller)
+		when(controller) {
+			is ActivePlayerController -> {
+				val controller = controller as ActivePlayerController
+				if (enabled) controller.movementHandler = DirectControlHandler(controller, PlayerDirectControlInput(controller)) else
+					controller.movementHandler = ShiftFlightHandler(controller, PlayerShiftFlightInput(controller))
+			}
+			is AIController -> {
+				val controller = controller as AIController
+				if (enabled) controller.movementHandler = DirectControlHandler(controller, AIDirectControlInput(controller)) else
+					controller.movementHandler = ShiftFlightHandler(controller, AIShiftFlightInput(controller))
+			}
+			else -> return
+		}
 	}
 
 	//endregion
@@ -416,8 +493,8 @@ class Starship(
 
 	lateinit var reactor: ReactorSubsystem
 	val shields = LinkedList<ShieldSubsystem>()
-	val weapons = LinkedList<WeaponSubsystem>()
-	val turrets = LinkedList<TurretWeaponSubsystem>()
+	val weapons = LinkedList<FiredSubsystem>()
+	val turrets = LinkedList<TurretWeaponSubsystem<*, *>>()
 	val hyperdrives = LinkedList<HyperdriveSubsystem>()
 	val navComps = LinkedList<NavCompSubsystem>()
 	val thrusters = LinkedList<ThrusterSubsystem>()
@@ -429,7 +506,7 @@ class Starship(
 
 	val shieldBars = mutableMapOf<String, BossBar>()
 
-	val weaponSets: HashMultimap<String, WeaponSubsystem> = HashMultimap.create()
+	val weaponSets: HashMultimap<String, FiredSubsystem> = HashMultimap.create()
 	val weaponSetSelections: HashBiMap<UUID, String> = HashBiMap.create()
 
 	val autoTurretTargets = mutableMapOf<String, AutoTurretTargeting.AutoTurretTarget<*>>()
@@ -456,6 +533,7 @@ class Starship(
 	var targetedPosition: Location? = null
 	var beacon: ServerConfiguration.HyperspaceBeacon? = null
 	var forward: BlockFace = BlockFace.NORTH
+	var forwardOverride: BlockFace? = null
 	var isExploding = false
 
 	var isInterdicting = false; private set
@@ -501,7 +579,7 @@ class Starship(
 		val reductionBase = 0.85
 		val finalSpeedFactor = 1.0
 
-		val mass = this.mass
+		val mass = this.getTotalMass()
 		val totalAccel = 1.0 + faceThrusters.sumOf { it.type.accel }
 		val totalWeight = faceThrusters.sumOf { it.type.weight }.toDouble()
 		val reduction = reductionBase.pow(sqrt(totalWeight))
@@ -538,14 +616,18 @@ class Starship(
 		}
 	}
 
-	fun updatePower(sender: String, shield: Int, weapon: Int, thruster: Int) {
-		reactor.powerDistributor.setDivision(shield / 100.0, weapon / 100.0, thruster / 100.0)
+	fun updatePower(sender: String, shield: Double, weapon: Double, thruster: Double, bypassCheck : Boolean = false) {
+		reactor.powerDistributor.setDivision(shield, weapon, thruster, bypassCheck)
 
 		onlinePassengers.forEach { player ->
 			player.informationAction(
-				"<green>$sender</green> updated the power mode to <aqua>$shield% shield <red>$weapon% weapon <yellow>$thruster% thruster"
+				"<green>$sender</green> updated the power mode to <aqua>${(shield * 100).toInt()}% shield <red>${(weapon * 100).toInt()}% weapon <yellow>${(thruster * 100).toInt()}% thruster"
 			)
 		}
+	}
+
+	fun updatePower(sender: String, shield: Int, weapon: Int, thruster: Int) {
+		updatePower(sender,shield/100.0,weapon/100.0,thruster/100.0)
 	}
 
 	fun getEntryRange(planet: CachedPlanet): Int {
@@ -623,14 +705,14 @@ class Starship(
 
 	//region Display Name
 	/** Gets the minimessage display name of this starship */
-	fun getDisplayNameMiniMessage(): String = starshipNameSerializer.serialize(getDisplayName())
+	fun getDisplayNameMiniMessage(): String = getDisplayName().serialize(restrictedMiniMessageSerializer)
 
 	/** Gets the component display name of this starship */
 	fun getDisplayName(): Component {
 		return text()
 			.color(WHITE)
 			.decoration(TextDecoration.ITALIC, false)
-			.append(this.data.name?.let { starshipNameSerializer.deserialize(it) } ?: return type.displayNameComponent)
+			.append(this.data.name?.let { restrictedMiniMessageSerializer.deserialize(it) } ?: return type.displayNameComponent)
 			.hoverEvent(template(text("A {0} block {1}", HE_LIGHT_GRAY), initialBlockCount, type))
 			.build()
 	}
@@ -639,7 +721,16 @@ class Starship(
 	fun getDisplayNamePlain(): String = getDisplayName().plainText()
 	//endregion
 
-	fun isOversized() = this.initialBlockCount > this.type.maxSize && (this.initialBlockCount <= (this.type.maxSize * StarshipDetection.OVERSIZE_MODIFIER).toInt())
+	fun isOversized() =
+		this.initialBlockCount > this.type.maxSize
+		&& (this.initialBlockCount <= (this.type.maxSize * StarshipDetection.OVERSIZE_MODIFIER).toInt())
+
+	//Debugging tools
+
+	var forecastEnabled = false
+	var statsEnabled = false
+
+	//end Debug
 
 	init {
 		IonWorld[world].starships.add(this)
@@ -686,5 +777,16 @@ class Starship(
 			vec3i.y,
 			(vec3i.x.toDouble() * sinTheta + vec3i.z.toDouble() * cosTheta).roundToInt()
 		)
+	}
+
+	fun getTotalMass(): Double {
+		return mass + tractors.sumOf { it.getTowed()?.mass ?: 0.0 }
+	}
+
+	/**
+	 * Returns the starship block count + the towed block count
+	 **/
+	fun getTotalBlockCount(): Int {
+		return initialBlockCount + tractors.sumOf { it.getTowed()?.blocks?.size ?: 0 }
 	}
 }

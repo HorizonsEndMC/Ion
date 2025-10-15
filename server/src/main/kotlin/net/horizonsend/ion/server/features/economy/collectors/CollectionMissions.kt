@@ -1,7 +1,5 @@
 package net.horizonsend.ion.server.features.economy.collectors
 
-import com.github.stefvanschie.inventoryframework.gui.GuiItem
-import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.CacheLoader
 import com.google.common.cache.LoadingCache
@@ -16,16 +14,18 @@ import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.miscellaneous.randomRange
 import net.horizonsend.ion.common.utils.miscellaneous.toCreditsString
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.GlobalCompletions.stringItemCache
 import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.sharedDataFolder
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.cache.trade.EcoStations
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
-import net.horizonsend.ion.server.features.nations.gui.playerClicker
 import net.horizonsend.ion.server.features.progression.SLXP
-import net.horizonsend.ion.server.miscellaneous.utils.MenuHelper
+import net.horizonsend.ion.server.gui.invui.misc.util.input.ItemMenu
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
+import net.horizonsend.ion.server.gui.invui.utils.setTitle
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
@@ -35,6 +35,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.Component.textOfChildren
 import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.NamedTextColor.RED
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
@@ -43,6 +44,9 @@ import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.inventory.ItemStack
 import org.litote.kmongo.inc
+import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.item.impl.AbstractItem
+import xyz.xenondevs.invui.window.Window
 import java.util.Date
 import kotlin.jvm.optionals.getOrNull
 import kotlin.math.roundToInt
@@ -136,21 +140,21 @@ object CollectionMissions : IonServerComponent() {
 			return@async
 		}
 
+		val gui = Gui.empty(9, rows)
+
+		gui.addItems(*available.map { getMissionItem(it, ecoStation) }.toTypedArray())
+
 		Tasks.sync {
-			MenuHelper.apply {
-				val pane: OutlinePane = outlinePane(x = 0, y = 0, length = 9, height = rows)
-
-				for (mission: CollectionMission in available) {
-					val item: GuiItem = getMissionItem(mission, ecoStation)
-					pane.addItem(item)
-				}
-
-				gui(rows, title = "${ecoStation.name} Collection Missions").withPane(pane).show(player)
-			}
+			Window.single()
+				.setViewer(player)
+				.setTitle(text("${ecoStation.name} Collection Missions"))
+				.setGui(gui)
+				.build()
+				.open()
 		}
 	}
 
-	private fun MenuHelper.getMissionItem(mission: CollectionMission, ecoStation: EcoStation): GuiItem {
+	private fun getMissionItem(mission: CollectionMission, ecoStation: EcoStation): AbstractItem {
 		val itemStack: ItemStack = createItem(mission.item).clone()
 
 		itemStack.amount = mission.stacks
@@ -182,7 +186,7 @@ object CollectionMissions : IonServerComponent() {
 		).build()
 
 		val returnText = text().decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).append(
-			text("To tuArn the items in, click on this mission icon!", NamedTextColor.GRAY).decorate(TextDecoration.ITALIC)
+			text("To turn the items in, click on this mission icon!", NamedTextColor.GRAY).decorate(TextDecoration.ITALIC)
 		).build()
 
 		itemStack.updateLore(mutableListOf(
@@ -197,8 +201,8 @@ object CollectionMissions : IonServerComponent() {
 //			"&7&oTo turn the items in, click on this mission icon!".colorize()
 //		)
 
-		return guiButton(itemStack) {
-			onClickMissionButton(playerClicker, ecoStation, mission)
+		return itemStack.makeGuiButton { _, player ->
+			onClickMissionButton(player, ecoStation, mission)
 		}
 	}
 
@@ -218,34 +222,34 @@ object CollectionMissions : IonServerComponent() {
 
 		val freeSpace: Int = player.inventory.storageContents.count { it == null || it.type == Material.AIR }
 
-		MenuHelper.apply {
-			val buttons: List<GuiItem> = items.map { collectedItem ->
-				val icon: ItemStack = createItem(collectedItem).clone()
+		val buttons: List<AbstractItem> = items.map { collectedItem ->
+			val icon: ItemStack = createItem(collectedItem).clone()
 
-				val cost: String = getBuyCost(collectedItem).toCreditsString()
-				val fillCost: String = getBuyCost(collectedItem).times(freeSpace).toCreditsString()
-				val stock: Component = if (collectedItem.stock == 0) text(0, NamedTextColor.RED) else text(collectedItem.stock, NamedTextColor.GREEN)
+			val cost: String = getBuyCost(collectedItem).toCreditsString()
+			val fillCost: String = getBuyCost(collectedItem).times(freeSpace).toCreditsString()
+			val stock: Component = if (collectedItem.stock == 0) text(0, RED) else text(collectedItem.stock, NamedTextColor.GREEN)
 
-				icon.lore(
-					listOf(
-						text("Cost per stack: ").decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).color(NamedTextColor.GRAY).append(text(cost).color(NamedTextColor.RED)),
-						text("Cost to fill remaining slots: ").decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).color(NamedTextColor.GRAY).append(text(fillCost).color(NamedTextColor.RED)),
-						text("Available Stacks: ").decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).color(NamedTextColor.GRAY).append(stock),
-						text("(Left click to buy one stack)").decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC)),
-						text("(SHIFT left click to fill remaining slots)").decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC))
-					)
-				)
+			icon.lore(listOf(
+				text("Cost per stack: ").decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).color(NamedTextColor.GRAY).append(text(cost).color(RED)),
+				text("Cost to fill remaining slots: ").decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).color(NamedTextColor.GRAY).append(text(fillCost).color(RED)),
+				text("Available Stacks: ").decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).color(NamedTextColor.GRAY).append(stock),
+				text("(Left click to buy one stack)").decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC)),
+				text("(SHIFT left click to fill remaining slots)").decoration(TextDecoration.ITALIC, TextDecoration.State.FALSE).color(NamedTextColor.GRAY).style(Style.style(TextDecoration.ITALIC))
+			))
 
-				return@map guiButton(icon) {
-					val playerClicker = playerClicker
-					tryBuy(playerClicker, station._id, collectedItem, isShiftClick)
-					playerClicker.closeInventory()
-					openBuyMenu(playerClicker, station)
-				}
+			icon.makeGuiButton { clickType, clicker ->
+				tryBuy(clicker, station._id, collectedItem, clickType.isShiftClick)
+				clicker.closeInventory()
+				openBuyMenu(clicker, station)
 			}
-
-			player.openPaginatedMenu("${station.name} Exports", buttons)
 		}
+
+		ItemMenu(
+			title = text("${station.name} Exports"),
+			viewer = player,
+			guiItems = buttons,
+			backButtonHandler = { player.closeInventory() }
+		).openGui()
 	}
 
 	private fun tryCompleteMission(player: Player, stationId: Oid<EcoStation>, mission: CollectionMission) {
@@ -273,10 +277,10 @@ object CollectionMissions : IonServerComponent() {
 				val fullStackSlots: List<Int> = getMatchingFullStackSlots(itemStack, player, mission.stacks)
 
 				if (fullStackSlots.size < mission.stacks) {
-					player.sendMessage(text().append(
-						text("You don't have enough of ", NamedTextColor.RED),
+					player.sendMessage(template(text("You don't have enough of {0}! You need {1} stack(s), but only have {2} stack(s).", RED),
 						itemStack.displayNameComponent,
-						text(" You need ${mission.stacks} stack(s), but only have ${fullStackSlots.size} stack(s).", NamedTextColor.RED)
+						mission.stacks,
+						fullStackSlots.size,
 					))
 
 					return@sync

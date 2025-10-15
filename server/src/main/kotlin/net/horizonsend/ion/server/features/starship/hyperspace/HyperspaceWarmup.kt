@@ -6,12 +6,15 @@ import net.horizonsend.ion.common.extensions.informationAction
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.subsystem.misc.HyperdriveSubsystem
+import net.horizonsend.ion.server.miscellaneous.playDirectionalStarshipSound
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Vibration
@@ -26,7 +29,7 @@ class HyperspaceWarmup(
     val ship: ActiveStarship,
     var warmup: Int,
     val dest: Location,
-    val drive: HyperdriveSubsystem,
+    val drive: HyperdriveSubsystem?,
     private val useFuel: Boolean
 ) : BukkitRunnable() {
 	init {
@@ -46,14 +49,22 @@ class HyperspaceWarmup(
 	private var seconds = 0
 
 	override fun run() {
+		// Goofy aah solution to make this play once at the start (because this doesn't work in the init block)
+		if (seconds == 0) playChargeSound()
 		seconds++
+
+		if(Hyperspace.isMoving(ship)) {
+			ship.debug("Double queued warmup, canceling")
+			cancel()
+		}
+
 		ship.onlinePassengers.forEach { player ->
 			player.informationAction(
 				"Hyperdrive Warmup: $seconds/$warmup seconds"
 			)
 		}
 
-		if (!drive.isIntact()) {
+		if (drive != null && !drive.isIntact()) {
 			ship.onlinePassengers.forEach { player ->
 				player.alertAction(
 					"Drive damaged! Jump failed!"
@@ -86,13 +97,31 @@ class HyperspaceWarmup(
 
 		displayParticles()
 
+		// play the complete warmup sound 2 seconds before actually jumping
+		if (seconds == warmup - 2) {
+			playCompleteWarmupSound()
+		}
+
 		if (seconds < warmup) {
 			return
 		}
 
 		if (useFuel) {
-			require(drive.hasFuel()) { "Hyperdrive doesn't have fuel!" }
+			require(drive != null) {"No hyperdrive to pull fuel from (null state)"}
+
+			if (!drive.hasFuel()) {
+				ship.userError("Hyperdrive doesn't have fuel!")
+				cancel()
+				return
+			}
+
 			drive.useFuel()
+		}
+
+		// cancel the jump warmup sound
+		toPlayersInRadius(startLocation, 500.0 * 20.0) { player ->
+			player.stopSound(ship.balancing.shipSounds.jumpChargeNear.sound)
+			player.stopSound(ship.balancing.shipSounds.jumpChargeFar.sound)
 		}
 
 		ship.informationAction("Jumping")
@@ -103,7 +132,7 @@ class HyperspaceWarmup(
 	// 500 block starfighter would be 12 blocks
 	// 12000 block destroyer would be 42
 	private val particleRadius = ship.initialBlockCount.toDouble().pow(2.0/5.0)
-	private val startLocation = drive.pos.toLocation(ship.world)
+	private val startLocation = drive?.pos?.toLocation(ship.world) ?: ship.centerOfMass.toLocation(ship.world)
 	private val count = maxOf(100, 50 / (seconds - warmup) + 20)
 
 	private fun displayParticles() {
@@ -118,6 +147,30 @@ class HyperspaceWarmup(
 				100
 			)
 		)
+	}
+
+	private fun playChargeSound() {
+		toPlayersInRadius(startLocation, 500.0 * 20.0) { player ->
+			playDirectionalStarshipSound(
+				startLocation,
+				player,
+				ship.balancing.shipSounds.jumpChargeNear,
+				ship.balancing.shipSounds.jumpChargeFar,
+				500.0
+			)
+		}
+	}
+
+	private fun playCompleteWarmupSound() {
+		toPlayersInRadius(startLocation, 500.0 * 20.0) { player ->
+			playDirectionalStarshipSound(
+				startLocation,
+				player,
+				ship.balancing.shipSounds.jumpCompleteNear,
+				ship.balancing.shipSounds.jumpCompleteFar,
+				500.0
+			)
+		}
 	}
 
 	override fun cancel() {

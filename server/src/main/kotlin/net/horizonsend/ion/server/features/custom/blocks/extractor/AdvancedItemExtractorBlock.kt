@@ -1,16 +1,16 @@
 package net.horizonsend.ion.server.features.custom.blocks.extractor
 
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customItemDrop
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customItemDrop
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
 import net.horizonsend.ion.server.features.gui.GuiItems
 import net.horizonsend.ion.server.features.gui.GuiText
-import net.horizonsend.ion.server.features.gui.GuiWrapper
-import net.horizonsend.ion.server.features.gui.interactable.InteractableGUI.Companion.setTitle
 import net.horizonsend.ion.server.features.transport.items.SortingOrder
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ItemExtractorData
+import net.horizonsend.ion.server.gui.invui.InvUIWindowWrapper
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.MetaDataContainer
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -23,13 +23,12 @@ import org.bukkit.block.TileState
 import org.bukkit.block.data.type.Vault
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import xyz.xenondevs.inventoryaccess.component.AdventureComponentWrapper
 import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.item.impl.AbstractItem
 import xyz.xenondevs.invui.window.Window
 
 object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
-	"ADVANCED_ITEM_EXTRACTOR",
+	CustomBlockKeys.ADVANCED_ITEM_EXTRACTOR,
 	blockData = Material.VAULT.createBlockData { t ->
 		t as Vault
 		t.facing = BlockFace.SOUTH
@@ -38,9 +37,9 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 	},
 	BlockLoot(
 		requiredTool = { BlockLoot.Tool.PICKAXE },
-		drops = customItemDrop(CustomItemRegistry::ADVANCED_ITEM_EXTRACTOR)
+		drops = customItemDrop(CustomItemKeys.ADVANCED_ITEM_EXTRACTOR)
 	),
-	CustomItemRegistry::ADVANCED_ITEM_EXTRACTOR,
+	CustomItemKeys.ADVANCED_ITEM_EXTRACTOR,
 	ItemExtractorData::class
 ) {
 	override fun createExtractorData(pos: BlockKey): ItemExtractorData {
@@ -52,11 +51,11 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 	}
 
 	override fun openGUI(player: Player, block: Block, extractorData: ItemExtractorData) {
-		AdvancedItemExtractorGUI(player, block, extractorData).open()
+		AdvancedItemExtractorGUI(player, block, extractorData).openGui()
 	}
 
-	override fun placeCallback(placedItem: ItemStack, block: Block) {
-		val extractorData = placedItem.persistentDataContainer.get(NamespacedKeys.COMPLEX_EXTRACTORS, MetaDataContainer) ?: return
+	override fun placeCallback(placedItem: ItemStack?, block: Block) {
+		val extractorData = placedItem?.persistentDataContainer?.get(NamespacedKeys.COMPLEX_EXTRACTORS, MetaDataContainer) ?: return
 
 		val state = block.state
 		if (state !is TileState) return
@@ -65,8 +64,8 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 		state.update()
 	}
 
-	class AdvancedItemExtractorGUI(val viewer: Player, val block: Block, val extractorData: ItemExtractorData) : GuiWrapper {
-		override fun open() {
+	class AdvancedItemExtractorGUI(viewer: Player, val block: Block, private val extractorData: ItemExtractorData) : InvUIWindowWrapper(viewer) {
+		override fun buildWindow(): Window {
 			val gui = Gui.normal()
 				.setStructure(
 					"u u u u u u u u u",
@@ -75,13 +74,9 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 				)
 				.addIngredient('u', getTraverseButton(1))
 				.addIngredient('d', getTraverseButton(-1))
+				.build()
 
-			Window
-				.single()
-				.setGui(gui)
-				.setTitle(AdventureComponentWrapper(getSlotOverlay()))
-				.build(viewer)
-				.open()
+			return normalWindow(gui)
 		}
 
 		fun getOffset(offset: Int): SortingOrder {
@@ -90,7 +85,7 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 			return SortingOrder.entries[Math.floorMod(current.ordinal + offset, entries.size)]
 		}
 
-		fun getSlotOverlay(): Component = GuiText("Item Extractor Configuration")
+		override fun buildTitle(): Component = GuiText("Item Extractor Configuration")
 			.setSlotOverlay(
 				"# # # # # # # # #",
 				"# # # # # # # # #",
@@ -115,7 +110,7 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 			)
 			.build()
 
-		fun getTraverseButton(offset: Int): AbstractItem = GuiItems.createButton(GuiItems.blankItem) { _, player, event ->
+		private fun getTraverseButton(offset: Int): AbstractItem = GuiItems.createButton(GuiItems.blankItem) { _, player, event ->
 			val current = extractorData.metaData.sortingOrder
 			val entires = SortingOrder.entries
 
@@ -125,7 +120,7 @@ object AdvancedItemExtractorBlock : CustomExtractorBlock<ItemExtractorData>(
 
 			ExtractorManager.saveExtractor(block.world, block.x, block.y, block.z, extractorData)
 
-			event.view.setTitle(getSlotOverlay())
+			refreshTitle()
 		}
 	}
 }

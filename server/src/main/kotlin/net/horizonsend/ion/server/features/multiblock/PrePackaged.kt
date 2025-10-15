@@ -3,10 +3,10 @@ package net.horizonsend.ion.server.features.multiblock
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.ItemContainerContents
 import net.horizonsend.ion.common.extensions.userError
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.displayBlock
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendEntityPacket
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.misc.MultiblockToken
 import net.horizonsend.ion.server.features.custom.items.misc.PackagedMultiblock
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities.loadFromData
@@ -36,6 +36,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.updateData
 import net.horizonsend.ion.server.miscellaneous.utils.updateMeta
 import net.horizonsend.ion.server.miscellaneous.utils.updatePersistentDataContainer
 import net.kyori.adventure.text.Component.text
+import org.bukkit.Color
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -108,7 +109,7 @@ object PrePackaged : SLEventListener() {
 	val cooldown = PerPlayerCooldown(100L)
 
 	fun place(player: Player, origin: Block, direction: BlockFace, multiblock: Multiblock, itemSource: List<ItemStack>?, entityData: PersistentMultiblockData?) {
-		val requirements = multiblock.shape.getRequirementMap(direction)
+		val requirements = multiblock.getExampleShape().getRequirementMap(direction)
 		val placements = mutableMapOf<Block, BlockData>()
 
 		for ((offset, requirement) in requirements) {
@@ -158,7 +159,7 @@ object PrePackaged : SLEventListener() {
 		}
 
 		for ((block, placement) in placements) {
-			NewTransport.handleBlockEvent(block.world, block.x, block.y, block.z, block.blockData, placement)
+			NewTransport.handleBlockEvent(block.world, block.x, block.y, block.z, block.blockData, placement, player.uniqueId)
 			block.blockData = placement
 			val soundGroup = placement.soundGroup
 			origin.world.playSound(block.location, soundGroup.placeSound, soundGroup.volume, soundGroup.pitch)
@@ -173,7 +174,7 @@ object PrePackaged : SLEventListener() {
 		val signType = signItem?.type?.let { getWallSignType(it) } ?: Material.OAK_WALL_SIGN
 
 		// Add sign
-		val signPosition = origin.getRelative(direction.oppositeFace, if (multiblock.shape.signCentered) 0 else 1)
+		val signPosition = origin.getRelative(direction.oppositeFace, if (multiblock.getExampleShape().signCentered) 0 else 1)
 		val signData = signType.createBlockData { signData ->
 			signData as Directional
 			signData.facing = direction.oppositeFace
@@ -301,7 +302,7 @@ object PrePackaged : SLEventListener() {
 		var structureDirection = sign.getFacing().oppositeFace
 		val structureOrigin = multiblockType.getOriginBlock(sign)
 
-		if (multiblockType is TurretMultiblock) {
+		if (multiblockType is TurretMultiblock<*>) {
 			val newFace = multiblockType.getFacingSafe(sign)
 			if (newFace == null) {
 				player.userError("Turret not intact!")
@@ -312,12 +313,12 @@ object PrePackaged : SLEventListener() {
 		}
 
 		// Structure already checked to get the face if turret
-		if (multiblockType !is TurretMultiblock && !multiblockType.shape.checkRequirements(structureOrigin, structureDirection, false)) {
+		if (multiblockType !is TurretMultiblock<*> && !multiblockType.getExampleShape().checkRequirements(structureOrigin, structureDirection, false)) {
 			player.userError("Structure not intact!")
 			return
 		}
 
-		val requirements = multiblockType.shape.getRequirementMap(structureDirection)
+		val requirements = multiblockType.getExampleShape().getRequirementMap(structureDirection)
 
 		val toBreak = mutableListOf<Block>()
 		val items = mutableListOf<ItemStack>()
@@ -361,7 +362,7 @@ object PrePackaged : SLEventListener() {
 		sign.world.dropItem(sign.location.toCenterLocation(), item)
 	}
 
-	private fun getRequirements(multiblock: Multiblock): List<BlockRequirement> = multiblock.shape.getRequirementMap(BlockFace.NORTH).values.plus(signRequirement)
+	private fun getRequirements(multiblock: Multiblock): List<BlockRequirement> = multiblock.getExampleShape().getRequirementMap(BlockFace.NORTH).values.plus(signRequirement)
 
 	private val signRequirement = BlockRequirement(
 		"any sign",
@@ -403,7 +404,7 @@ object PrePackaged : SLEventListener() {
 		if (contents.size != 1) return
 
 		val item = contents.first() ?: return
-		if (item.customItem != CustomItemRegistry.PACKAGED_MULTIBLOCK) return
+		if (item.customItem != CustomItemKeys.PACKAGED_MULTIBLOCK) return
 
 		val multiblock = getTokenData(item) ?: return
 		event.inventory.result = MultiblockToken.constructFor(multiblock)
@@ -412,7 +413,7 @@ object PrePackaged : SLEventListener() {
 	fun tryPreview(livingEntity: LivingEntity, itemStack: ItemStack, event: PlayerInteractEvent) {
 		if (livingEntity !is Player) return
 
-		val packagedData = getTokenData(itemStack) ?: run {
+		val packagedData = PrePackaged.getTokenData(itemStack) ?: run {
 			livingEntity.userError("The packaged multiblock has no data!")
 			return
 		}
@@ -422,22 +423,22 @@ object PrePackaged : SLEventListener() {
 		val origin = getOriginFromPlacement(
 			event.clickedBlock ?: return,
 			face,
-			packagedData.shape
+			packagedData.getExampleShape()
 		)
 
-		packagedData.shape.getRequirementMap(face).forEach { (coords, requirement) ->
+		packagedData.getExampleShape().getRequirementMap(face).forEach { (coords, requirement) ->
 			val requirementX = coords.x
 			val requirementY = coords.y
 			val requirementZ = coords.z
 
-			val relative: Block = (if (!packagedData.shape.signCentered) origin else origin.getRelative(face.oppositeFace)).getRelative(requirementX, requirementY, requirementZ)
+			val relative: Block = (if (!packagedData.getExampleShape().signCentered) origin else origin.getRelative(face.oppositeFace)).getRelative(requirementX, requirementY, requirementZ)
 
 			val requirementMet = requirement(relative, face, false)
 
 			if (!requirementMet) {
 				val (xx, yy, zz) = Vec3i(relative.location)
 
-				sendEntityPacket(livingEntity, displayBlock(livingEntity.world.minecraft, requirement.getExample(face), Vector(xx, yy, zz), 0.5f, true), 10 * 20L)
+				sendEntityPacket(livingEntity, displayBlock(livingEntity.world.minecraft, requirement.getExample(face), Vector(xx, yy, zz), 0.5f, Color.WHITE), 10 * 20L)
 			}
 		}
 	}

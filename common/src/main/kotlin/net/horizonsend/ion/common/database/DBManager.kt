@@ -9,16 +9,21 @@ import com.mongodb.client.model.changestream.ChangeStreamDocument
 import net.horizonsend.ion.common.IonComponent
 import net.horizonsend.ion.common.database.schema.Cryopod
 import net.horizonsend.ion.common.database.schema.economy.BazaarItem
+import net.horizonsend.ion.common.database.schema.economy.BazaarOrder
 import net.horizonsend.ion.common.database.schema.economy.CargoCrate
 import net.horizonsend.ion.common.database.schema.economy.CargoCrateShipment
+import net.horizonsend.ion.common.database.schema.economy.ChestShop
 import net.horizonsend.ion.common.database.schema.economy.CityNPC
 import net.horizonsend.ion.common.database.schema.economy.CollectedItem
 import net.horizonsend.ion.common.database.schema.economy.CompletedCollectionMission
 import net.horizonsend.ion.common.database.schema.economy.EcoStation
+import net.horizonsend.ion.common.database.schema.economy.StationRentalZone
 import net.horizonsend.ion.common.database.schema.misc.Bookmark
-import net.horizonsend.ion.common.database.schema.misc.ClaimedBounty
+import net.horizonsend.ion.common.database.schema.misc.Message
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.database.schema.misc.Shuttle
+import net.horizonsend.ion.common.database.schema.misc.UniversalNPC
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
 import net.horizonsend.ion.common.database.schema.nations.CapturableStationSiege
 import net.horizonsend.ion.common.database.schema.nations.NPCTerritoryOwner
@@ -31,6 +36,7 @@ import net.horizonsend.ion.common.database.schema.nations.SettlementZone
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeData
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.database.schema.nations.Territory
+import net.horizonsend.ion.common.database.schema.nations.spacestation.NPCSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.NationSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.PlayerSpaceStation
 import net.horizonsend.ion.common.database.schema.nations.spacestation.SettlementSpaceStation
@@ -40,6 +46,7 @@ import net.horizonsend.ion.common.database.schema.space.RoguePlanet
 import net.horizonsend.ion.common.database.schema.space.Star
 import net.horizonsend.ion.common.database.schema.starships.AIStarshipData
 import net.horizonsend.ion.common.database.schema.starships.Blueprint
+import net.horizonsend.ion.common.database.schema.starships.PlayerSoldShip
 import net.horizonsend.ion.common.database.schema.starships.PlayerStarshipData
 import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import org.bson.BsonDocument
@@ -105,8 +112,10 @@ object DBManager : IonComponent() {
 
 		// misc
 		SLPlayer.init()
+		PlayerSettings.init()
 		Shuttle.init()
 		Bookmark.init()
+		Message.init()
 
 		// nations
 		CapturableStation.init()
@@ -116,6 +125,7 @@ object DBManager : IonComponent() {
 		Nation.init()
 		NationRelation.init()
 		NPCTerritoryOwner.init()
+		NPCSpaceStation.init()
 		SettlementRole.init()
 		NationRole.init()
 		Settlement.init()
@@ -136,18 +146,22 @@ object DBManager : IonComponent() {
 		CargoCrate.init()
 		CargoCrateShipment.init()
 		CityNPC.init()
+		UniversalNPC.init()
 		CollectedItem.init()
 		EcoStation.init()
 		CompletedCollectionMission.init()
+		StationRentalZone.init()
 		BazaarItem.init()
+		BazaarOrder.init()
+		ChestShop.init()
 
 		// starships
 		PlayerStarshipData.init()
 		AIStarshipData.init()
 		Blueprint.init()
+		PlayerSoldShip.init()
 
 		Cryopod.init()
-		ClaimedBounty.init()
 		Bookmark.init()
 	}
 

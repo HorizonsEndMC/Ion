@@ -1,8 +1,9 @@
 package net.horizonsend.ion.server.features.sidebar.tasks
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.plainText
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.CROSSHAIR_ICON
 import net.horizonsend.ion.server.features.sidebar.SidebarIcon.INTERDICTION_ICON
@@ -54,11 +55,15 @@ object StarshipsSidebar {
         )
     }
 
-    fun speedComponent(directControl: Boolean, cruising: Boolean, stopped: Boolean, blocked: Boolean): Component {
+    fun speedComponent(directControl: Boolean, directControlBoosting: Boolean, cruising: Boolean, stopped: Boolean, blocked: Boolean): Component {
         val component = Component.text()
 
         if (directControl) {
             component.append(Component.text("DC", GOLD))
+            if (directControlBoosting) {
+                component.appendSpace()
+                component.append(Component.text("BOOSTING", GOLD))
+            }
             component.appendSpace()
         }
         if (blocked) {
@@ -140,8 +145,8 @@ object StarshipsSidebar {
     fun compassComponent(starship: ActiveControlledStarship, player: Player): MutableList<MutableList<Component>> {
         val cruiseData = starship.cruiseData
         val vec = cruiseData.velocity
+        val rotateCompass = player.getSettingOrThrow(PlayerSettings::rotateCompass)
         val targetVec = cruiseData.targetDir
-        val rotateCompass = PlayerCache[player.uniqueId].rotateCompass
 
         val compass = mutableListOf<MutableList<Component>>(
             mutableListOf(

@@ -28,7 +28,7 @@ object FleetCommand : SLCommand() {
     fun onFleetDisband(sender: Player) {
         val fleet = getFleet(sender) ?: return
 
-        if (!(isFleetCommand(sender) ?: return)) {
+        if (!(isFleetLeader(sender) ?: return)) {
             sender.userError("You are not the commander of this fleet")
             return
         }
@@ -49,13 +49,14 @@ object FleetCommand : SLCommand() {
     fun onFleetLeave(sender: Player) {
         val fleet = getFleet(sender) ?: return
 
-        if (isFleetCommand(sender) ?: return) {
-            sender.userError("Transfer command of your fleet before leaving")
+        if (isFleetLeader(sender) ?: return) {
+            sender.userError("Transfer command of your fleet before leaving.")
             return
         }
 
-        fleet.remove(sender)
-        fleet.information("${sender.name} has left your fleet")
+        fleet.remove(sender.toFleetMember())
+        fleet.information("${sender.name} has left your fleet.")
+		sender.information("You have left the fleet.")
     }
 
     @Subcommand("kick")
@@ -63,7 +64,7 @@ object FleetCommand : SLCommand() {
     fun onFleetKick(sender: Player, memberName: String) {
         val fleet = getFleet(sender) ?: return
 
-        if (!(isFleetCommand(sender) ?: return)) {
+        if (!(isFleetLeader(sender) ?: return)) {
             sender.userError("You are not the commander of this fleet")
             return
         }
@@ -74,7 +75,7 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        if (!fleet.get(player)) {
+        if (!fleet.contains(player)) {
             sender.userError("Player ${player.name} is not in this fleet")
             return
         }
@@ -84,7 +85,7 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        fleet.remove(player)
+        fleet.remove(player.toFleetMember())
         player.userError("You were kicked from ${sender.name}'s fleet!")
         sender.success("Removed ${player.name} from fleet")
     }
@@ -94,7 +95,7 @@ object FleetCommand : SLCommand() {
     fun onFleetTransfer(sender: Player, memberName: String) {
         val fleet = getFleet(sender) ?: return
 
-        if (!(isFleetCommand(sender) ?: return)) {
+        if (!(isFleetLeader(sender) ?: return)) {
             sender.userError("You are not the commander of this fleet")
             return
         }
@@ -105,7 +106,7 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        if (!fleet.get(player)) {
+        if (!fleet.contains(player)) {
             sender.userError("Player ${player.name} is not in this fleet")
             return
         }
@@ -124,7 +125,7 @@ object FleetCommand : SLCommand() {
     fun onFleetInvite(sender: Player, inviteName: String) {
         val fleet = getFleet(sender) ?: return
 
-        if (!(isFleetCommand(sender) ?: return)) {
+        if (!(isFleetLeader(sender) ?: return)) {
             sender.userError("You are not the commander of this fleet")
             return
         }
@@ -135,12 +136,12 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        if (fleet.get(player)) {
+        if (fleet.contains(player)) {
             sender.userError("Player ${player.name} is already in this fleet")
             return
         }
 
-        fleet.invite(player)
+        fleet.invite(player.toFleetMember())
         player.information("You have been invited to join ${sender.name}'s fleet. Enter \"/fleet join ${sender.name}\" " +
                 "to join their fleet.")
         sender.success("Invited ${player.name} to your fleet")
@@ -151,7 +152,7 @@ object FleetCommand : SLCommand() {
     fun onFleetRemoveInvite(sender: Player, inviteName: String) {
         val fleet = getFleet(sender) ?: return
 
-        if (!(isFleetCommand(sender) ?: return)) {
+        if (!(isFleetLeader(sender) ?: return)) {
             sender.userError("You are not the commander of this fleet")
             return
         }
@@ -162,16 +163,16 @@ object FleetCommand : SLCommand() {
             return
         }
 
-        if (fleet.get(player)) {
+        if (fleet.contains(player)) {
             sender.userError("Player ${player.name} is already in this fleet")
             return
         }
 
-        if (!fleet.getInvite(player)) {
+        if (!fleet.isInvited(player.toFleetMember())) {
             sender.userError("Player ${player.name} has not been invited")
         }
 
-        fleet.removeInvite(player)
+        fleet.removeInvite(player.toFleetMember())
         player.userError("Your invite to ${sender.name}'s fleet has been removed.")
         sender.success("Removed fleet invite from ${player.name}")
     }
@@ -193,10 +194,10 @@ object FleetCommand : SLCommand() {
         for (fleet in fleetInvites) {
             val inviter = Bukkit.getPlayer(inviterName) ?: continue
 
-            if (fleet.leaderId == inviter.uniqueId) {
+            if (fleet.leader == inviter.toFleetMember()) {
                 fleet.information(("${sender.name} has joined your fleet"))
-                fleet.add(sender)
-                fleet.removeInvite(sender)
+                fleet.add(sender.toFleetMember())
+                fleet.removeInvite(sender.toFleetMember())
                 sender.success("Joined ${inviter.name}'s fleet")
                 return
             }
@@ -210,7 +211,7 @@ object FleetCommand : SLCommand() {
     fun onFleetClearBroadcast(sender: Player) {
         val fleet = getFleet(sender) ?: return
 
-        if (!(isFleetCommand(sender) ?: return)) {
+        if (!(isFleetLeader(sender) ?: return)) {
             sender.userError("You are not the commander of this fleet")
             return
         }
@@ -224,7 +225,7 @@ object FleetCommand : SLCommand() {
     fun onFleetBroadcast(sender: Player, broadcast: String) {
         val fleet = getFleet(sender) ?: return
 
-        if (!(isFleetCommand(sender) ?: return)) {
+        if (!(isFleetLeader(sender) ?: return)) {
             sender.userError("You are not the commander of this fleet")
             return
         }
@@ -238,7 +239,7 @@ object FleetCommand : SLCommand() {
     fun onFleetJump(sender: Player) {
         val fleet = getFleet(sender) ?: return
 
-        if (!(isFleetCommand(sender) ?: return)) {
+        if (!(isFleetLeader(sender) ?: return)) {
             sender.userError("You are not the commander of this fleet")
             return
         }
@@ -254,7 +255,7 @@ object FleetCommand : SLCommand() {
     fun onFleetJump(sender: Player, xCoordinate: String, zCoordinate: String) {
         val fleet = getFleet(sender) ?: return
 
-        if (!(isFleetCommand(sender) ?: return)) {
+        if (!(isFleetLeader(sender) ?: return)) {
             sender.userError("You are not the commander of this fleet")
             return
         }
@@ -263,6 +264,7 @@ object FleetCommand : SLCommand() {
         val z = zCoordinate.toIntOrNull() ?: fail { "Invalid X or Z coordinate! Must be a number." }
 
         fleet.information("Fleet Commander issuing fleet jump command")
+
         fleet.jumpFleet(x, z)
         sender.success("Jumping fleet")
     }
@@ -273,12 +275,13 @@ object FleetCommand : SLCommand() {
     fun onFleetJump(sender: Player, destination: String) {
         val fleet = getFleet(sender) ?: return
 
-        if (!(isFleetCommand(sender) ?: return)) {
+        if (!(isFleetLeader(sender) ?: return)) {
             sender.userError("You are not the commander of this fleet")
             return
         }
 
         fleet.information("Fleet Commander issuing fleet jump command")
+
         fleet.jumpFleet(destination)
         sender.success("Jumping fleet")
     }
@@ -288,7 +291,7 @@ object FleetCommand : SLCommand() {
     fun onFleetUseBeacon(sender: Player) {
         val fleet = getFleet(sender) ?: return
 
-        if (!(isFleetCommand(sender) ?: return)) {
+        if (!(isFleetLeader(sender) ?: return)) {
             sender.userError("You are not the commander of this fleet")
             return
         }
@@ -307,9 +310,9 @@ object FleetCommand : SLCommand() {
         } else return fleet
     }
 
-    private fun isFleetCommand(sender: Player): Boolean? {
+    private fun isFleetLeader(sender: Player): Boolean? {
         val fleet = Fleets.findByMember(sender) ?: return null
 
-        return fleet.leaderId == sender.uniqueId
+        return fleet.leader == sender.toFleetMember()
     }
 }

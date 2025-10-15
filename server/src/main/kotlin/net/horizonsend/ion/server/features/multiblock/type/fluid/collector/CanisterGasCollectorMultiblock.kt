@@ -2,12 +2,12 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid.collector
 
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.globalGassesConfiguration
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
+import net.horizonsend.ion.server.core.registration.registries.AtmosphericGasRegistry
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
 import net.horizonsend.ion.server.features.custom.items.type.GasCanister
-import net.horizonsend.ion.server.features.gas.Gasses
 import net.horizonsend.ion.server.features.gas.collection.CollectedGas
 import net.horizonsend.ion.server.features.gas.type.Gas
 import net.horizonsend.ion.server.features.multiblock.Multiblock
@@ -24,7 +24,7 @@ import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputsData
+import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.getRelativeIfLoaded
@@ -68,7 +68,7 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 	}
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
-		val available = Gasses.findAvailableGasses(sign.location).joinToString { it.identifier }
+		val available = AtmosphericGasRegistry.findAvailableGasses(sign.location).joinToString { it.identifier }
 
 		player.information("Available gasses: $available")
 	}
@@ -89,7 +89,7 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 		override val tickingManager: TickingManager = TickingManager(20)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
-		override val inputsData: InputsData = none()
+		override val ioData: IOData = none()
 
 		override val displayHandler = DisplayHandlers.newMultiblockSignOverlay(
 			this,
@@ -103,7 +103,7 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 				return
 			}
 
-			if (!Gasses.isCanister(furnaceInventory.fuel)) {
+			if (!AtmosphericGasRegistry.isCanister(furnaceInventory.fuel)) {
 				sleepWithStatus(text("No canister.", RED), configuration.collectorTickInterval)
 				return
 			}
@@ -158,18 +158,13 @@ object CanisterGasCollectorMultiblock : Multiblock(), EntityMultiblock<CanisterG
 			}
 
 			when (customItem) {
-				CustomItemRegistry.GAS_CANISTER_EMPTY -> fillEmptyCanister(furnaceInventory, gas, amount)
+				CustomItemKeys.GAS_CANISTER_EMPTY.getValue() -> fillEmptyCanister(furnaceInventory, gas, amount)
 				is GasCanister -> fillGasCanister(canisterItem, furnaceInventory, hopperInventory, amount) // Don't even bother with the gas
 			}
 		}
 
 		private fun fillEmptyCanister(furnaceInventory: FurnaceInventory, gas: Gas, amount: Int): Boolean {
-			val newType = CustomItemRegistry.getByIdentifier(gas.containerIdentifier) as? GasCanister
-			if (newType == null) {
-				sleepWithStatus(text("Invalid canister.", RED), configuration.collectorTickInterval)
-				return false
-			}
-
+			val newType = gas.containerKey.getValue()
 			val newCanister = newType.createWithFill(amount)
 
 			furnaceInventory.fuel = newCanister

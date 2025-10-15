@@ -1,24 +1,27 @@
 package net.horizonsend.ion.server.features.transport.manager
 
+import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.manager.ShipFilterCache
+import net.horizonsend.ion.server.features.transport.inputs.IOManager
+import net.horizonsend.ion.server.features.transport.inputs.ShipIOManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.ShipExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
+import net.horizonsend.ion.server.features.transport.manager.graph.FluidNetworkManager
+import net.horizonsend.ion.server.features.transport.manager.graph.GridEnergyGraphManager
 import net.horizonsend.ion.server.features.transport.manager.holders.ShipCacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
-import net.horizonsend.ion.server.features.transport.nodes.inputs.ShipInputManager
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.World
 
 class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheHolder<*>>() {
 	override val extractorManager: ShipExtractorManager = ShipExtractorManager(this)
 	override val filterCache: ShipFilterCache = ShipFilterCache(this)
-	val inputManager = ShipInputManager(this)
+	val ioManager = ShipIOManager(this)
 
 	override fun getWorld(): World = starship.world
 
@@ -58,8 +61,8 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 		cacheHolders.forEach { it.displace(movement) }
 	}
 
-	override fun getInputProvider(): InputManager {
-		return inputManager
+	override fun getInputProvider(): IOManager {
+		return ioManager
 	}
 
 	override fun getGlobalCoordinate(localVec3i: Vec3i): Vec3i {
@@ -75,7 +78,7 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 		filterCache.filters.clear()
 	}
 
-	override fun tick() {
+	override fun tickExtractors() {
 		tickNumber++
 
 		val extractors = extractorManager.getExtractors()
@@ -94,5 +97,21 @@ class ShipTransportManager(val starship: Starship) : TransportManager<ShipCacheH
 		}
 
 		solarPanelManager.cache.tickSolarPanels()
+	}
+
+	override fun tickGraphs() {}
+
+	override fun getFluidGraphTransportManager(): FluidNetworkManager {
+		TODO()
+//		return getWorld().ion.transportManager.fluidGraphManager
+	}
+
+	override fun getGridEnergyGraphTransportManager(): GridEnergyGraphManager {
+		TODO()
+//		return getWorld().ion.transportManager.fluidGraphManager
+	}
+
+	override fun getMultiblockmanager(globalVec3i: Vec3i): MultiblockManager? {
+		return starship.multiblockManager
 	}
 }

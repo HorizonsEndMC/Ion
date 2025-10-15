@@ -7,9 +7,7 @@ import net.minecraft.world.level.block.Rotation
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Location
-import org.bukkit.Material
 import org.bukkit.World
-import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.util.NumberConversions
 import org.bukkit.util.Vector
@@ -166,6 +164,20 @@ fun getSphereBlocks(radius: Int, lowerBoundOffset: Double = 0.0): List<Vec3i> =
 		return@getOrPut circleBlocks
 	}
 
+fun getPointsBetween(one: Vector, two: Vector, points: Int): List<Vector> {
+	val connecting = two.clone().subtract(one)
+
+	val locationList = mutableListOf<Vector>()
+
+	for (count in 0..points) {
+		val progression = one.clone().add(connecting.clone().multiply(count.toDouble() / points.toDouble()))
+
+		locationList.add(progression)
+	}
+
+	return locationList
+}
+
 /**
  * Returns a list of equally spaced locations along a vector
  *
@@ -254,6 +266,24 @@ fun Location.spherePoints(radius: Double, points: Int): List<Location> {
 	return coordinates
 }
 
+fun Location.circlePoints(radius: Double, points: Int, axis: Vector): List<Location> {
+	// Get an orthogonal vector to axis
+	val radiusVector = axis.getCrossProduct(Vector(0, 1, 0)).normalize().multiply(radius)
+	val angle = 2 * Math.PI / points
+	val coordinates = mutableListOf<Location>()
+
+	for (count in 0..points) {
+		val x = radiusVector.x
+		val y = radiusVector.y
+		val z = radiusVector.z
+
+		coordinates.add(Location(this.world, x, y, z).add(this))
+		radiusVector.rotateAroundAxis(axis, angle)
+	}
+
+	return coordinates
+}
+
 fun rotateBlockFace(blockFace: BlockFace, rotiation: Rotation): BlockFace {
 	return when (rotiation) {
 		Rotation.NONE -> blockFace
@@ -296,104 +326,15 @@ fun Location.conePoints(originalVector: Vector, angularOffsetDegrees: Double, po
 	return coordinates
 }
 
-private val directionArray = arrayOf(
-	BlockFace.EAST,
-	BlockFace.WEST,
-	BlockFace.SOUTH,
-	BlockFace.NORTH,
-	BlockFace.UP,
-	BlockFace.DOWN
-)
-
-fun isInside(location: Location, extraChecks: Int): Boolean {
-	fun getRelative(location: Location, direction: BlockFace, i: Int): Block? {
-		val x = (direction.modX * i).d()
-		val y = (direction.modY * i).d()
-		val z = (direction.modZ * i).d()
-		val newLocation = location.clone().add(x, y, z)
-
-		return when {
-			location.world.isChunkLoaded(newLocation.blockX shr 4, newLocation.blockZ shr 4) -> newLocation.block
-			else -> null
-		}
-	}
-
-	if (location.isChunkLoaded && !location.block.type.isAir) {
-		return true
-	}
-
-	val airBlocks = HashSet<Block>()
-
-	quickLoop@
-	for (direction in directionArray) {
-		if (direction.oppositeFace == direction) {
-			continue
-		}
-
-		var block: Block?
-
-		for (i in 1..189) {
-			block = getRelative(location, direction, i)
-
-			if (block == null) {
-				continue@quickLoop
-			}
-
-			if (block.type != Material.AIR) {
-				val relative = getRelative(location, direction, i - 1)
-
-				if (relative != null) {
-					airBlocks.add(relative)
-				}
-
-				continue@quickLoop
-			}
-		}
-		return false
-	}
-
-	var check = 0
-
-	while (check < extraChecks && airBlocks.isNotEmpty()) {
-		edgeLoop@ for (airBlock in airBlocks.toList()) {
-			for (direction in directionArray) {
-				if (direction.oppositeFace == direction) {
-					continue
-				}
-
-				var block: Block?
-
-				for (i in 0..189) {
-					block = getRelative(airBlock.location, direction, i)
-
-					if (block == null) {
-						break
-					}
-
-					if (block.type != Material.AIR) {
-						if (i != 0) {
-							airBlocks.add(airBlock.getRelative(direction, i))
-						}
-
-						airBlocks.remove(airBlock)
-						continue@edgeLoop
-					}
-				}
-
-				return false
-			}
-		}
-		check++
-	}
-
-	return true
-}
-
 fun BlockPos.toLocation(world: World?) = Location(world, this.x.toDouble(), this.y.toDouble(), this.z.toDouble())
 
 fun Location.toBlockPos() = BlockPos(this.x.roundToInt(), this.y.roundToInt(), this.z.roundToInt())
 
 fun Location.toVector3f(): Vector3f = Vector3f(this.x.toFloat(), this.y.toFloat(), this.z.toFloat())
+
+fun Vector.isNan() :Boolean {
+	return this.x.isNaN() || this.y.isNaN() || this.z.isNaN()
+}
 
 fun vectorToBlockFace(vector: Vector, includeVertical: Boolean = false): BlockFace {
 	val x = vector.x
@@ -438,26 +379,39 @@ fun yawToBlockFace(yawDegrees: Int): BlockFace = when (yawDegrees) {
 	else -> throw IllegalArgumentException("yaw $yawDegrees isn't within 0..360!")
 }
 
-fun vectorToPitchYaw(vector: Vector): Pair<Float, Float> {
+fun vectorToPitchYaw(vector: Vector, radians : Boolean= false): Pair<Float, Float> {
 	val pitch: Float
 	val yaw: Float
 
-	val twoPi = 2 * Math.PI
 	val x = vector.x
 	val z = vector.z
 
 	if (x == 0.0 && z == 0.0) {
+		if (radians) {
+			pitch = (if (vector.y > 0) -Math.PI else Math.PI).toFloat()
+			return pitch to 0F
+		}
 		pitch = if (vector.y > 0) -90F else 90F
 		return pitch to 0F
 	}
 
 	val theta = atan2(-x, z)
-	yaw = Math.toDegrees((theta + twoPi) % twoPi).toFloat()
 
 	val x2 = NumberConversions.square(x)
 	val z2 = NumberConversions.square(z)
 	val xz = sqrt(x2 + z2)
-	pitch = Math.toDegrees(atan(-vector.y / xz)).toFloat()
+
+	val phi = atan(-vector.y / xz)
+
+	val twoPi = 2 * Math.PI
+
+	if (radians) {
+		yaw = theta.toFloat()
+		pitch = phi.toFloat()
+	} else {
+		yaw = Math.toDegrees((theta + twoPi) % twoPi).toFloat()
+		pitch = Math.toDegrees(phi).toFloat()
+	}
 
 	return pitch to yaw
 }
@@ -503,6 +457,15 @@ fun Vector.orthogonalThird(other: Vector): Vector {
 	val ox = other.x; val oy = other.y; val oz = other.z
 
 	return Vector(+((y * oz) + (z * oy)), -((x * oz) - (z * ox)), +((x * oy) - (y * ox)))
+}
+
+/**
+ * Linearly interpolates [this] vector with the [other] vector based on a [percentage], where 0.0 is this vector and
+ * 1.0 is the [other] vector
+ */
+fun Vector.lerp(other: Vector, percentage: Double): Vector {
+	val coercedPercentage = percentage.coerceIn(0.0, 1.0)
+	return this.multiply(1 - coercedPercentage).add(other.clone().multiply(coercedPercentage))
 }
 
 fun helixAroundVector(

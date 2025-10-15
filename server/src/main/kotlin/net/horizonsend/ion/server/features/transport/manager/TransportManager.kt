@@ -4,25 +4,26 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import net.horizonsend.ion.server.features.transport.filters.manager.FilterCache
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.AdvancedExtractorData
+import net.horizonsend.ion.server.features.transport.manager.graph.FluidNetworkManager
+import net.horizonsend.ion.server.features.transport.manager.graph.GridEnergyGraphManager
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.PowerTransportCache
 import net.horizonsend.ion.server.features.transport.nodes.cache.SolarPanelCache
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
-import org.bukkit.World
 
-abstract class TransportManager<T: CacheHolder<*>> {
+abstract class TransportManager<T: CacheHolder<*>> : TransportHolder {
 	abstract val extractorManager: ExtractorManager
 	abstract val filterCache: FilterCache
 
 	abstract val powerNodeManager: CacheHolder<PowerTransportCache>
 	abstract val solarPanelManager: CacheHolder<SolarPanelCache>
 	abstract val itemPipeManager: CacheHolder<ItemTransportCache>
-//	abstract val fluidNodeManager: CacheHolder<FluidTransportCache>
 
 	abstract val cacheHolders: Array<T>
 	abstract val tickedHolders: Array<T>
+
+	abstract fun getFluidGraphTransportManager(): FluidNetworkManager
+	abstract fun getGridEnergyGraphTransportManager(): GridEnergyGraphManager
 
 	fun markReady() {
 		for (cacheHolder in cacheHolders) {
@@ -30,11 +31,9 @@ abstract class TransportManager<T: CacheHolder<*>> {
 		}
 	}
 
-	abstract fun getInputProvider(): InputManager
-
 	var tickNumber = 0; protected set
 
-	open fun tick() {
+	override fun tickExtractors() {
 		tickNumber++
 
 		val invalid = LongOpenHashSet()
@@ -44,7 +43,7 @@ abstract class TransportManager<T: CacheHolder<*>> {
 
 		for ((index, extractor) in extractors.withIndex()) {
 			if (!extractorManager.verifyExtractor(getWorld(), extractor.pos)) {
-				invalid.add(extractor.pos)
+//				invalid.add(extractor.pos)
 				continue
 			}
 
@@ -57,11 +56,8 @@ abstract class TransportManager<T: CacheHolder<*>> {
 
 		solarPanelManager.cache.tickSolarPanels()
 
-		invalid.forEach(extractorManager::removeExtractor)
+//		invalid.forEach(extractorManager::removeExtractor)
 	}
 
-	abstract fun getWorld(): World
-
-	open fun getGlobalCoordinate(localVec3i: Vec3i): Vec3i = localVec3i
-	open fun getLocalCoordinate(globalVec3i: Vec3i): Vec3i = globalVec3i
+	override fun tickGraphs() {}
 }

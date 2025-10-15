@@ -1,37 +1,31 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.configuration.starship.HeavyLaserBalancing
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.HeavyWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.PermissionWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyLaserProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import org.bukkit.Location
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
-import java.util.concurrent.TimeUnit
 
 class AIHeavyLaserWeaponSubsystem(
-	starship: ActiveStarship,
+	starship: Starship,
 	pos: Vec3i,
 	face: BlockFace
-) : TargetTrackingCannonWeaponSubsystem(starship, pos, face), HeavyWeaponSubsystem, PermissionWeaponSubsystem {
+) : TargetTrackingCannonWeaponSubsystem<HeavyLaserBalancing>(starship, pos, face, starship.balancingManager.getSubsystemSupplier(HeavyLaserWeaponSubsystem::class)), HeavyWeaponSubsystem, PermissionWeaponSubsystem {
 	override val permission: String = "ion.weapon.ai"
-	override val balancing: StarshipWeapons.StarshipWeapon = starship.balancing.weapons.aiHeavyLaser
-	val sound = balancing.soundName
+	override val length: Int = 8
 
-	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(balancing.boostChargeSeconds)
-
-	override val length: Int = balancing.length
-	override val powerUsage: Int = balancing.powerUsage
-	override val extraDistance: Int = balancing.extraDistance
-	override val aimDistance: Int = balancing.aimDistance
+	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
 
 	override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {
-		HeavyLaserProjectile(starship, getName(), loc, dir, shooter, target, aimDistance, sound).fire()
+		HeavyLaserProjectile(StarshipProjectileSource(starship), getName(), loc, dir, shooter, target, aimDistance).fire()
 	}
 
 	override fun getName(): Component {

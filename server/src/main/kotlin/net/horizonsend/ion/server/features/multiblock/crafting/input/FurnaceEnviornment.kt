@@ -13,10 +13,10 @@ import org.bukkit.inventory.ItemStack
 open class FurnaceEnviornment(
 	override val multiblock: MultiblockEntity,
 	val furnaceInventory: FurnaceInventory,
-	val powerStorage: PowerStorage,
+	override val powerStorage: PowerStorage,
 	val tickingManager: TickedMultiblockEntityParent.TickingManager,
 	val progress: ProgressMultiblock.ProgressManager
-) : ItemResultEnviornment, ProgressEnviornment {
+) : SingleItemResultEnviornment, ProgressEnviornment, PoweredEnviornment {
 	constructor(entity: MultiblockEntity) : this(
 		entity,
 		entity.getInventory(0, 0, 0) as FurnaceInventory,
@@ -25,15 +25,11 @@ open class FurnaceEnviornment(
 		(entity as ProgressMultiblock).progressManager
 	)
 
-	val items get() = listOf(furnaceInventory.smelting, furnaceInventory.fuel)
+	override fun getInputItems(): List<ItemStack?> = listOf(furnaceInventory.smelting, furnaceInventory.fuel)
 
-	override fun getItemSize(): Int = 2
-	override fun getItem(index: Int): ItemStack? {
-		return items[index]
-	}
-
-	override fun isEmpty(): Boolean {
-		return items.all { stack -> stack == null || stack.isEmpty }
+	override fun getInputItemSize(): Int = 2
+	override fun getInputItem(index: Int): ItemStack? {
+		return getInputItems()[index]
 	}
 
 	override fun getResultItem(): ItemStack? {

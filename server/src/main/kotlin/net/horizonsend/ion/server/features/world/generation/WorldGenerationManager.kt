@@ -18,7 +18,6 @@ import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.world.ChunkLoadEvent
 import org.bukkit.event.world.WorldInitEvent
-import kotlin.collections.set
 
 object WorldGenerationManager : SLEventListener() {
 	val worldGenerators: MutableMap<World, WorldGenerator?> = mutableMapOf()

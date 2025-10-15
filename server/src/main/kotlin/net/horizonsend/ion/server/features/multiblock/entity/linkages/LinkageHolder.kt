@@ -2,14 +2,11 @@ package net.horizonsend.ion.server.features.multiblock.entity.linkages
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
-import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 
 sealed interface LinkageHolder {
 	fun contains(holder: MultiblockEntity): Boolean
 	fun getOwners(): Set<MultiblockEntity>
 	fun getLinkages(): Set<MultiblockLinkage>
-
-	fun displace(movement: StarshipMovement)
 }
 
 data class SingleMultiblockLinkage(val linkage: MultiblockLinkage) : LinkageHolder {
@@ -19,8 +16,6 @@ data class SingleMultiblockLinkage(val linkage: MultiblockLinkage) : LinkageHold
 
 	override fun getOwners(): Set<MultiblockEntity> = setOf(linkage.owner)
 	override fun getLinkages(): Set<MultiblockLinkage> = setOf(linkage)
-
-	override fun displace(movement: StarshipMovement) = linkage.displace(movement)
 }
 
 class SharedMultiblockLinkage : LinkageHolder {
@@ -48,12 +43,13 @@ class SharedMultiblockLinkage : LinkageHolder {
 
 	fun getAllHolders() = linkages.clone()
 
-	override fun displace(movement: StarshipMovement) {
-		return linkages.forEach { it.displace(movement) }
-	}
-
 	companion object {
 		fun of(vararg entities: MultiblockLinkage): SharedMultiblockLinkage {
+			val new = SharedMultiblockLinkage()
+			entities.forEach(new::add)
+			return new
+		}
+		fun of(entities: Collection<MultiblockLinkage>): SharedMultiblockLinkage {
 			val new = SharedMultiblockLinkage()
 			entities.forEach(new::add)
 			return new

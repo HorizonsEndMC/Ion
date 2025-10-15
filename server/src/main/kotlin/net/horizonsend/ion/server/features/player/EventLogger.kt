@@ -2,14 +2,12 @@ package net.horizonsend.ion.server.features.player
 
 import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.WebhookClientBuilder
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
-import net.horizonsend.ion.server.features.progression.bounties.Bounties.hasActive
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.event.StarshipPilotedEvent
 import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotEvent
 import net.horizonsend.ion.server.miscellaneous.utils.listen
-import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import org.bukkit.event.entity.PlayerDeathEvent
 
 object EventLogger : IonServerComponent() {
@@ -32,18 +30,13 @@ object EventLogger : IonServerComponent() {
 			return
 		}
 
-		val webhook = ConfigurationFiles.serverConfiguration().eventLoggerWebhook ?: return
 		listen<PlayerDeathEvent> { event ->
 			val player = event.player
-
-			val killer = player.killer
-
-			val bounty = killer?.let { hasActive(player.slPlayerId, killer.slPlayerId) } ?: false
 
 			DutyModeMonitor.record(
 				client,
 				player,
-				"**died**: killer: ${event.player.killer}, nearby players: ${event.player.location.getNearbyPlayers(50.0).joinToString { it.name }}, bounty: $bounty"
+				"**died**: killer: ${event.player.killer}, nearby players: ${event.player.location.getNearbyPlayers(50.0).joinToString { it.name }}"
 			)
 		}
 

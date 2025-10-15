@@ -4,7 +4,7 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServer
-import net.horizonsend.ion.server.IonServerComponent
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -19,13 +19,17 @@ import net.horizonsend.ion.server.features.starship.event.StarshipUnpilotedEvent
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.FauxReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.AutoQueuedShot
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.fireQueuedShots
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
 import org.bukkit.Bukkit.getPluginManager
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
@@ -40,8 +44,6 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.dynmap.bukkit.DynmapPlugin
 import java.util.LinkedList
 import java.util.concurrent.TimeUnit
-import kotlin.collections.component1
-import kotlin.collections.component2
 
 object ActiveStarshipMechanics : IonServerComponent() {
 	override fun onEnable() {
@@ -76,12 +78,12 @@ object ActiveStarshipMechanics : IonServerComponent() {
 	private fun fireAutoWeapons() {
 		for (ship in ActiveStarships.all()) {
 			val queuedShots = queueAutoShots(ship)
-			StarshipWeapons.fireQueuedShots(queuedShots, ship)
+			fireQueuedShots(queuedShots, ship)
 		}
 	}
 
-	private fun queueAutoShots(ship: ActiveStarship): LinkedList<StarshipWeapons.AutoQueuedShot> {
-		val queuedShots = LinkedList<StarshipWeapons.AutoQueuedShot>()
+	private fun queueAutoShots(ship: ActiveStarship): LinkedList<AutoQueuedShot> {
+		val queuedShots = LinkedList<AutoQueuedShot>()
 
 		for ((node, target) in ship.autoTurretTargets) {
 			val targetLocation = target.location(ship) ?: continue
@@ -100,11 +102,11 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 				val dir = weapon.getAdjustedDir(direct, targetVec)
 
-				if (weapon is TurretWeaponSubsystem && !weapon.ensureOriented(dir)) continue
-				if (!weapon.isCooledDown()) continue
+				if (weapon is TurretWeaponSubsystem<*, *> && !weapon.ensureOriented(dir)) continue
+				if (weapon is BalancedWeaponSubsystem<*> && !weapon.isCooledDown()) continue
 				if (!weapon.canFire(dir, targetVec)) continue
 
-				queuedShots.add(StarshipWeapons.AutoQueuedShot(weapon, target, dir))
+				queuedShots.add(AutoQueuedShot(weapon, target, dir))
 			}
 		}
 
@@ -168,6 +170,13 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 		ActiveStarships.all().filter { it.type == StarshipType.BARGE && !it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) }.forEach { ship ->
 			if (ship.subsystems.filterIsInstance<BargeReactorSubsystem>().none { it.isIntact() }) {
+				ship.alert("All reactors are down, ship explosion imminent!")
+				StarshipDestruction.destroy(ship)
+			}
+		}
+
+		ActiveStarships.all().filter { it.type in enumSetOf(StarshipType.AI_BARGE, StarshipType.AI_BATTLECRUISER, StarshipType.AI_CRUISER) && !it.world.ion.hasFlag(WorldFlag.NO_SUPERCAPITAL_REQUIREMENTS) }.forEach { ship ->
+			if (ship.subsystems.filterIsInstance<FauxReactorSubsystem>().none { it.isIntact() }) {
 				ship.alert("All reactors are down, ship explosion imminent!")
 				StarshipDestruction.destroy(ship)
 			}

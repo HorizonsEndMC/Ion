@@ -8,9 +8,9 @@ import net.horizonsend.ion.server.features.multiblock.entity.linkages.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.AsyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.SyncTickingMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
+import net.horizonsend.ion.server.features.transport.inputs.IOManager
 import net.horizonsend.ion.server.features.transport.manager.TransportManager
 import net.horizonsend.ion.server.features.transport.nodes.cache.TransportCache
-import net.horizonsend.ion.server.features.transport.nodes.inputs.InputManager
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -37,7 +37,7 @@ abstract class MultiblockManager(val log: Logger) {
 
 	abstract val world: World
 
-	abstract fun getInputManager(): InputManager
+	abstract fun getInputManager(): IOManager
 
 	abstract fun getLinkageManager(): MultiblockLinkageManager
 
@@ -51,7 +51,7 @@ abstract class MultiblockManager(val log: Logger) {
 
 	abstract fun getNetwork(type: CacheType): TransportCache
 
-	abstract fun getSignUnsavedTime(): Long
+	abstract fun getSignUnsavedTime(time: Long? = null): Long
 
 	open fun markSignSaved() {}
 
@@ -69,6 +69,9 @@ abstract class MultiblockManager(val log: Logger) {
 		}
 
 		multiblockEntities.remove(entity.localBlockKey)?.processRemoval()
+		syncTickingMultiblockEntities.remove(entity.localBlockKey)
+		asyncTickingMultiblockEntities.remove(entity.localBlockKey)
+
 		multiblockEntities[entity.localBlockKey] = entity
 
 		entity.processLoad()

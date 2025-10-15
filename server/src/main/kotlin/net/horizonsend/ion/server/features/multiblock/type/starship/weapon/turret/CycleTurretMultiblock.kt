@@ -1,6 +1,8 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.CycleTurretBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipTurretWeaponBalancing
+import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -8,6 +10,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.CycleTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.CycleTurretProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.StarshipProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -15,20 +18,20 @@ import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
-sealed class CycleTurretMultiblock : TurretMultiblock() {
+sealed class CycleTurretMultiblock : TurretMultiblock<CycleTurretBalancing.CycleTurretProjectileBalancing>() {
 
     val slowedStarships = mutableMapOf<ActiveControlledStarship, Long>()
 
     override val displayName: Component get() = text("Cycle Turret (${if (getYFactor() == 1) "Top" else "Bottom"})")
     override val description: Component get() = text("Rotating weapon system effective against small targets. Rapid fire and slows ships down.")
 
-    override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TurretWeaponSubsystem {
+    override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): CycleTurretWeaponSubsystem {
         return CycleTurretWeaponSubsystem(starship, pos, getFacing(pos, starship), this)
     }
 
     protected abstract fun getYFactor(): Int
 
-    override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.cycleTurret
+    override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<CycleTurretBalancing.CycleTurretProjectileBalancing> = starship.balancingManager.getSubsystem(CycleTurretWeaponSubsystem::class)
 
     override fun buildFirePointOffsets(): List<Vec3i> = listOf(
         Vec3i(-2, getYFactor() * 4, +2),
@@ -139,36 +142,26 @@ sealed class CycleTurretMultiblock : TurretMultiblock() {
     }
 
     override fun shoot(
-        world: World,
-        pos: Vec3i,
-        face: BlockFace,
-        dir: Vector,
-        starship: ActiveStarship,
-        shooter: Damager,
-		subSystem: TurretWeaponSubsystem,
-        isAuto: Boolean
-    ) {
-        val speed = getProjectileSpeed(starship)
-
+		world: World,
+		pos: Vec3i,
+		face: BlockFace,
+		dir: Vector,
+		starship: ActiveStarship,
+		shooter: Damager,
+		subSystem: TurretWeaponSubsystem<out StarshipTurretWeaponBalancing<CycleTurretBalancing.CycleTurretProjectileBalancing>, CycleTurretBalancing.CycleTurretProjectileBalancing>,
+		isAuto: Boolean
+	) {
         for ((index, point) in getAdjustedFirePoints(pos, face).withIndex()) {
             if (starship.isInternallyObstructed(point, dir)) continue
 
             val loc = point.toLocation(world).toCenterLocation()
 
             CycleTurretProjectile(
-                starship,
+				StarshipProjectileSource(starship),
 				subSystem.getName(),
                 loc,
                 dir,
-                speed,
                 shooter.color,
-                getRange(starship),
-                getParticleThickness(starship),
-                getExplosionPower(starship),
-                getStarshipShieldDamageMultiplier(starship),
-                getAreaShieldDamageMultiplier(starship),
-                getSound(starship),
-                starship.balancing.weapons.cycleTurret, // Not used by anything
                 shooter,
                 index,
                 this

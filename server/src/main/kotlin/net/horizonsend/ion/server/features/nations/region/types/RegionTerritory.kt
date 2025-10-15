@@ -39,6 +39,7 @@ class RegionTerritory(territory: Territory) :
 	override var world: String = territory.world; private set
 	var settlement: Oid<Settlement>? = territory.settlement; private set
 	var nation: Oid<Nation>? = territory.nation; private set
+	var alias: String? = territory.alias; private set
 	var npcOwner: Oid<NPCTerritoryOwner>? = territory.npcOwner; private set
 	override val children: MutableSet<Region<*>> = ConcurrentHashMap.newKeySet()
 	var isProtected: Boolean = territory.isProtected; private set
@@ -72,6 +73,7 @@ class RegionTerritory(territory: Territory) :
 		}
 		delta[Territory::settlement]?.let { settlement = it.nullable()?.oid() }
 		delta[Territory::nation]?.let { nation = it.nullable()?.oid() }
+		delta[Territory::alias]?.let { alias = it.nullable()?.string() }
 		delta[Territory::npcOwner]?.let { npcOwner = it.nullable()?.oid() }
 		delta[Territory::isProtected]?.let {
 			isProtected = it.boolean()
@@ -176,14 +178,14 @@ class RegionTerritory(territory: Territory) :
 				return null
 			}
 
-			// if it's nation access, they can build if they're the same nation
-			if (settlementBuildAccess == Settlement.ForeignRelation.NATION_MEMBER && settlementNation == playerNation) {
-				return null
-			}
-
-			// if the min build access is ally, and they're at least an ally, they can build
 			if (settlementNation != null) {
-				if (RelationCache[settlementNation, playerNation].ordinal >= NationRelation.Level.ALLY.ordinal) {
+				// if it's nation access, they can build if they're the same nation
+				if (settlementBuildAccess == Settlement.ForeignRelation.NATION_MEMBER && settlementNation == playerNation) {
+					return null
+				}
+
+				// if the min build access is ally, and they're at least an ally (and not in the same nation), they can build
+				if (settlementBuildAccess == Settlement.ForeignRelation.ALLY && RelationCache[settlementNation, playerNation].ordinal >= NationRelation.Level.ALLY.ordinal) {
 					return null
 				}
 			}

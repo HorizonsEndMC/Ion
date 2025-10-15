@@ -6,7 +6,7 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.configuration.PVPBalancingConfiguration.EnergyWeapons.ProjectileBalancing
-import net.horizonsend.ion.server.configuration.StarshipSounds
+import net.horizonsend.ion.server.configuration.starship.StarshipSounds
 import net.horizonsend.ion.server.features.custom.items.type.tool.mods.armor.RocketBoostingMod.glideDisabledPlayers
 import net.horizonsend.ion.server.features.starship.damager.addToDamagers
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
@@ -83,7 +83,7 @@ class RayTracedParticleProjectile(
 			location.world.viewDistance.toDouble(),
 			FluidCollisionMode.NEVER,
 			true,
-			balancing.shotSize * 2
+			balancing.shotSize * 4
 		) { it != shooter && (it as? Player)?.isGliding == true }
 
 		// Block Check

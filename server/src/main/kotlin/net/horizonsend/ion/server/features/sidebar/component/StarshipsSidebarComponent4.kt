@@ -1,7 +1,8 @@
 package net.horizonsend.ion.server.features.sidebar.component
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.sidebar.tasks.StarshipsSidebar
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.control.controllers.player.ActivePlayerController
@@ -20,7 +21,7 @@ class StarshipsSidebarComponent4(private val starship: ActiveControlledStarship,
             starship.reactor.weaponCapacitor.capacity).times(100).toInt()
     private val boostTime = starship.reactor.heavyWeaponBooster.getWarmupTime()
     private val weaponset = starship.weaponSetSelections[(starship.controller as ActivePlayerController).player.uniqueId]
-    private val advancedStarshipInfo = PlayerCache[player.uniqueId].advancedStarshipInfo
+    private val advancedStarshipInfo = player.getSettingOrThrow(PlayerSettings::advancedStarshipInfo)
 
     private fun displayWeaponInfo() : TextComponent {
         return if (advancedStarshipInfo) {

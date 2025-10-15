@@ -1,29 +1,35 @@
 package net.horizonsend.ion.server.features.ai
 
-import net.horizonsend.ion.server.IonServerComponent
+import SteeringModule
+import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.features.ai.module.combat.AimingModule
+import net.horizonsend.ion.server.features.ai.module.combat.CombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.DefensiveCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.FrigateCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.MultiTargetFrigateCombatModule
 import net.horizonsend.ion.server.features.ai.module.combat.StarfighterCombatModule
 import net.horizonsend.ion.server.features.ai.module.misc.ContactsJammerModule
-import net.horizonsend.ion.server.features.ai.module.misc.FleeModule
+import net.horizonsend.ion.server.features.ai.module.misc.DifficultyModule
 import net.horizonsend.ion.server.features.ai.module.misc.GravityWellModule
-import net.horizonsend.ion.server.features.ai.module.misc.TrackingModule
-import net.horizonsend.ion.server.features.ai.module.movement.CruiseModule
-import net.horizonsend.ion.server.features.ai.module.pathfinding.SteeringPathfindingModule
-import net.horizonsend.ion.server.features.ai.module.positioning.AxisStandoffPositioningModule
-import net.horizonsend.ion.server.features.ai.module.positioning.BasicPositioningModule
-import net.horizonsend.ion.server.features.ai.module.positioning.StandoffPositioningModule
-import net.horizonsend.ion.server.features.ai.module.targeting.ClosestLargeStarshipTargetingModule
-import net.horizonsend.ion.server.features.ai.module.targeting.ClosestPlayerTargetingModule
-import net.horizonsend.ion.server.features.ai.module.targeting.ClosestSmallStarshipTargetingModule
-import net.horizonsend.ion.server.features.ai.module.targeting.ClosestTargetingModule
-import net.horizonsend.ion.server.features.ai.module.targeting.HighestDamagerTargetingModule
+import net.horizonsend.ion.server.features.ai.module.misc.NavigationModule
+import net.horizonsend.ion.server.features.ai.module.misc.PowerModeModule
+import net.horizonsend.ion.server.features.ai.module.misc.RandomGoalModule
+import net.horizonsend.ion.server.features.ai.module.steering.BasicSteeringModule
+import net.horizonsend.ion.server.features.ai.module.steering.CapitalSteeringModule
+import net.horizonsend.ion.server.features.ai.module.steering.DistancePositioningModule
+import net.horizonsend.ion.server.features.ai.module.steering.GunshipSteeringModule
+import net.horizonsend.ion.server.features.ai.module.steering.StarfighterSteeringModule
+import net.horizonsend.ion.server.features.ai.module.steering.SteeringSolverModule
+import net.horizonsend.ion.server.features.ai.module.steering.TravelSteeringModule
+import net.horizonsend.ion.server.features.ai.module.targeting.EnmityModule
 import net.horizonsend.ion.server.features.ai.module.targeting.TargetingModule
+import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.control.controllers.ai.AIController
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceToVector
+import net.horizonsend.ion.server.miscellaneous.utils.map
 import net.horizonsend.ion.server.miscellaneous.utils.orNull
 import java.util.Optional
 import kotlin.random.Random
@@ -31,19 +37,66 @@ import kotlin.random.Random
 @Suppress("unused") // Entry points
 object AIControllerFactories : IonServerComponent() {
 	val presetControllers = mutableMapOf<String, AIControllerFactory>()
+	val aiSteeringConfig get() = ConfigurationFiles.aiSteeringConfiguration()
+	val aiPowerModeConfig get() = ConfigurationFiles.aiPowerModeConfiguration()
 
 	val starfighter = registerFactory("STARFIGHTER") {
-		setControllerTypeName("Starfighter")
-		setModuleBuilder {
+		setCoreModuleBuilder { controller: AIController, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			val targetingOriginal = builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
-			builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val positioning = builder.addModule("positioning", AxisStandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 25.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			val flee = builder.addModule("flee", FleeModule(it, pathfinding::getDestination, targetingOriginal) { controller, _ -> controller.getMinimumShieldHealth() <= 0.2 }) // Flee if a shield reaches below 10%
-			builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val targeting = builder.addModule(EnmityModule::class, EnmityModule(
+				controller,
+				difficultyManager,
+				targetAI
+			))
+
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller, difficultyManager))
+			builder.addModule(CombatModule::class, StarfighterCombatModule(controller, difficultyManager, aiming, targeting::findTarget))
+
+			val distance = builder.addModule(
+				DistancePositioningModule::class, DistancePositioningModule(
+					controller, difficultyManager, targeting::findTarget
+				) { aiSteeringConfig.starfighterDistanceConfiguration })
+
+			val steering = builder.addModule(
+				SteeringModule::class, StarfighterSteeringModule(
+				controller,
+				difficultyManager,
+				targeting::findTarget,
+				distance::calcDistance,
+				configSupplier = { aiSteeringConfig.starfighterBasicSteeringConfiguration }
+			))
+
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering,
+					difficultyManager,
+					targeting::findTarget,
+					SteeringSolverModule.MovementType.DC
+				)
+			)
+
+			builder.addModule(
+				PowerModeModule::class, PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = { aiPowerModeConfig.starfighterPowerModeConfiguration }
+				)
+			)
+			if (difficultyManager.doNavigation) {
+				builder.addModule(
+					NavigationModule::class, NavigationModule(
+						controller,
+						targeting,
+						difficultyManager
+					)
+				)
+			}
 
 			builder
 		}
@@ -51,33 +104,124 @@ object AIControllerFactories : IonServerComponent() {
 	}
 
 	val gunship = registerFactory("GUNSHIP") {
-		setControllerTypeName("Gunship")
-		setModuleBuilder {
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
-			builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val targeting = builder.addModule(
+				EnmityModule::class, EnmityModule(
+					controller,
+					difficultyManager,
+					targetAI
+				)
+			)
+
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller, difficultyManager))
+			builder.addModule(CombatModule::class, StarfighterCombatModule(controller, difficultyManager, aiming, targeting::findTarget))
+
+			val distance = builder.addModule(
+				DistancePositioningModule::class, DistancePositioningModule(
+					controller, difficultyManager, targeting::findTarget,
+				) { aiSteeringConfig.gunshipDistanceConfiguration })
+
+			val steering = builder.addModule(
+				SteeringModule::class, GunshipSteeringModule(
+				controller,
+				difficultyManager,
+				targeting::findTarget,
+				distance::calcDistance,
+				configSupplier = { aiSteeringConfig.gunshipBasicSteeringConfiguration }
+			))
+
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering,
+					difficultyManager,
+					targeting::findTarget,
+					SteeringSolverModule.MovementType.DC
+				)
+			)
+
+			builder.addModule(
+				PowerModeModule::class, PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = { aiPowerModeConfig.gunshipPowerModeConfiguration }
+				)
+			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(
+					NavigationModule::class, NavigationModule(
+						controller,
+						targeting,
+						difficultyManager
+					)
+				)
+			}
 
 			builder
 		}
 		build()
-    }
+	}
 
-	val gunship_pulse = registerFactory("GUNSHIP_PULSE") {
-		setControllerTypeName("PulseGunship")
-		setModuleBuilder {
+	val basicship = registerFactory("BASICSHIP") {
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
-			builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val targeting = builder.addModule(
+				EnmityModule::class, EnmityModule(
+					controller,
+					difficultyManager,
+					targetAI
+				)
+			)
+
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller, difficultyManager))
+			builder.addModule(CombatModule::class, StarfighterCombatModule(controller, difficultyManager, aiming, targeting::findTarget))
+
+			val steering = builder.addModule(
+				SteeringModule::class, BasicSteeringModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget
+				)
+			)
+
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering,
+					difficultyManager,
+					targeting::findTarget,
+					SteeringSolverModule.MovementType.DC
+				)
+			)
+
+			builder.addModule(
+				PowerModeModule::class, PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+				)
+			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(
+					NavigationModule::class, NavigationModule(
+						controller,
+						targeting,
+						difficultyManager
+					)
+				)
+			}
 
 			builder
 		}
@@ -85,34 +229,132 @@ object AIControllerFactories : IonServerComponent() {
 	}
 
 	val jammingGunship = registerFactory("JAMMING_GUNSHIP") {
-		setControllerTypeName("JammingGunship")
-		setModuleBuilder {
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
-			builder.addModule("targeting", ClosestPlayerTargetingModule(it, 5000.0))
-			builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 250.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.MATCH_Y_WITH_OFFSET_150, 256.0))
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			builder.addModule("jamming", ContactsJammerModule(it, 300.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTargets() })
+			val targeting = builder.addModule(
+				EnmityModule::class, EnmityModule(
+					controller,
+					difficultyManager,
+					targetAI
+				)
+			)
 
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller, difficultyManager))
+			builder.addModule(CombatModule::class, StarfighterCombatModule(controller, difficultyManager, aiming, targeting::findTarget))
+
+
+			val distance = builder.addModule(
+				DistancePositioningModule::class, DistancePositioningModule(
+					controller, difficultyManager, targeting::findTarget,
+				) { aiSteeringConfig.gunshipDistanceConfiguration })
+			val steering = builder.addModule(
+				SteeringModule::class, GunshipSteeringModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					distance::calcDistance
+				)
+			)
+
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering,
+					difficultyManager,
+					targeting::findTarget,
+					SteeringSolverModule.MovementType.DC
+				)
+			)
+
+			builder.addModule(
+				PowerModeModule::class, PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = { aiPowerModeConfig.gunshipPowerModeConfiguration }
+				)
+			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(
+					NavigationModule::class, NavigationModule(
+						controller,
+						targeting,
+						difficultyManager
+					)
+				)
+			}
+
+			builder.addModule(ContactsJammerModule::class, ContactsJammerModule(controller, 300.0, controller.getCoreModuleSupplier<TargetingModule>(TargetingModule::class).map { it.findTargets() }))
 			builder
 		}
 		build()
 	}
 
 	val corvette = registerFactory("CORVETTE") {
-		setControllerTypeName("Corvette")
-		setModuleBuilder {
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			builder.addModule("targeting", ClosestTargetingModule(it, 500.0, null).apply { sticky = false })
-			builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val targeting = builder.addModule(
+				EnmityModule::class, EnmityModule(
+					controller,
+					difficultyManager,
+					targetAI
+				)
+			)
+
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller, difficultyManager))
+			builder.addModule(CombatModule::class, StarfighterCombatModule(controller, difficultyManager, aiming, targeting::findTarget))
+
+			val distance = builder.addModule(
+				DistancePositioningModule::class, DistancePositioningModule(
+					controller, difficultyManager, targeting::findTarget
+				) { aiSteeringConfig.corvetteDistanceConfiguration })
+
+			val steering = builder.addModule(
+				SteeringModule::class, GunshipSteeringModule(
+				controller,
+				difficultyManager,
+				targeting::findTarget,
+				distance::calcDistance,
+				configSupplier = { ConfigurationFiles.aiSteeringConfiguration().corvetteBasicSteeringConfiguration }
+			))
+
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering,
+					difficultyManager,
+					targeting::findTarget,
+					SteeringSolverModule.MovementType.DC
+				)
+			)
+
+			builder.addModule(
+				PowerModeModule::class, PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = { aiPowerModeConfig.corvettePowerModeConfiguration }
+				)
+			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(
+					NavigationModule::class, NavigationModule(
+						controller,
+						targeting,
+						difficultyManager
+					)
+				)
+			}
 
 			builder
 		}
@@ -120,152 +362,536 @@ object AIControllerFactories : IonServerComponent() {
 	}
 
 	val interdictionCorvette = registerFactory("INTERDICTION_CORVETTE") {
-		setControllerTypeName("Interdiction Corvette")
-		setModuleBuilder {
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			builder.addModule("targeting", ClosestTargetingModule(it, 2000.0, null).apply { sticky = false })
-			builder.addModule("combat", StarfighterCombatModule(it) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
-			builder.addModule("gravityWell", GravityWellModule(it, 1800.0, true) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 1500.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.MATCH_Y, 16_384.0))
+			val targeting = builder.addModule(
+				EnmityModule::class, EnmityModule(
+					controller,
+					difficultyManager,
+					targetAI
+				)
+			)
+
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller, difficultyManager))
+			builder.addModule(CombatModule::class, StarfighterCombatModule(controller, difficultyManager, aiming, targeting::findTarget))
+
+			val distance = builder.addModule(
+				DistancePositioningModule::class, DistancePositioningModule(
+					controller, difficultyManager, targeting::findTarget
+				) { aiSteeringConfig.interdictionCorvetteDistanceConfiguration })
+
+			val steering = builder.addModule(
+				SteeringModule::class, GunshipSteeringModule(
+				controller,
+				difficultyManager,
+				targeting::findTarget,
+				distance::calcDistance,
+				configSupplier = { ConfigurationFiles.aiSteeringConfiguration().corvetteBasicSteeringConfiguration }
+			))
+
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering,
+					difficultyManager,
+					targeting::findTarget,
+					SteeringSolverModule.MovementType.DC
+				)
+			)
+
+			builder.addModule(
+				PowerModeModule::class, PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = { aiPowerModeConfig.corvettePowerModeConfiguration }
+				)
+			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(
+					NavigationModule::class, NavigationModule(
+						controller,
+						targeting,
+						difficultyManager
+					)
+				)
+			}
 
 			builder
 		}
+
+		addUtilModule { controller -> GravityWellModule(controller, 1800.0, true, controller.getCoreModuleSupplier<TargetingModule>(TargetingModule::class).map { it.findTarget() }) }
+
 		build()
 	}
 
 	val logisticCorvette = registerFactory("LOGISTIC_CORVETTE") {
-		setControllerTypeName("Logistic Corvette")
-		setModuleBuilder {
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			builder.addModule("targeting", ClosestLargeStarshipTargetingModule(it, 2000.0, null, true).apply { sticky = false })
-			builder.addModule("combat", MultiTargetFrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TargetingModule>("targeting").get().findTargets() })
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 130.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.MATCH_Y_WITH_OFFSET_150, 16_384.0))
+			val targeting = builder.addModule(
+				EnmityModule::class, EnmityModule(
+					controller,
+					difficultyManager,
+					AITarget.TargetMode.AI_ONLY
+				)
+			)
+
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller, difficultyManager))
+			builder.addModule(CombatModule::class, MultiTargetFrigateCombatModule(controller, difficultyManager, toggleRandomTargeting = false, aiming) { targeting.findTargets() })
+
+			val distance = builder.addModule(
+				DistancePositioningModule::class, DistancePositioningModule(
+					controller, difficultyManager, targeting::findTarget
+				) { aiSteeringConfig.logisticCorvetteDistanceConfiguration })
+
+			val steering = builder.addModule(
+				SteeringModule::class, GunshipSteeringModule(
+				controller,
+				difficultyManager,
+				targeting::findTarget,
+				distance::calcDistance,
+				configSupplier = { ConfigurationFiles.aiSteeringConfiguration().corvetteBasicSteeringConfiguration }
+			))
+
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering,
+					difficultyManager,
+					targeting::findTarget,
+					SteeringSolverModule.MovementType.DC
+				)
+			)
+
+			builder.addModule(
+				PowerModeModule::class, PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = { aiPowerModeConfig.corvettePowerModeConfiguration }
+				)
+			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(
+					NavigationModule::class, NavigationModule(
+						controller,
+						targeting,
+						difficultyManager
+					)
+				)
+			}
+
 
 			builder
 		}
+
+		build()
+	}
+
+	val miniFrigate = registerFactory("MINI_FRIGATE") {//for 4.9k ships
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
+
+			val targeting = builder.addModule(
+				EnmityModule::class, EnmityModule(
+					controller,
+					difficultyManager,
+					targetAI
+				)
+			)
+
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller, difficultyManager))
+			builder.addModule(CombatModule::class, FrigateCombatModule(controller, difficultyManager, toggleRandomTargeting = true, aiming, targeting::findTarget))
+
+			val distance = builder.addModule(
+				DistancePositioningModule::class, DistancePositioningModule(
+					controller, difficultyManager, targeting::findTarget
+				) { aiSteeringConfig.miniFrigateDistanceConfiguration })
+
+			val steering = builder.addModule(
+				SteeringModule::class, GunshipSteeringModule(
+				controller,
+				difficultyManager,
+				targeting::findTarget,
+				distance::calcDistance,
+				configSupplier = { ConfigurationFiles.aiSteeringConfiguration().miniFrigateBasicSteeringConfiguration }
+			))
+
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering,
+					difficultyManager,
+					targeting::findTarget,
+					SteeringSolverModule.MovementType.DC
+				)
+			)
+
+			builder.addModule(
+				PowerModeModule::class, PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = { aiPowerModeConfig.corvettePowerModeConfiguration }
+				)
+			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(
+					NavigationModule::class, NavigationModule(
+						controller,
+						targeting,
+						difficultyManager
+					)
+				)
+			}
+
+			builder
+		}
+
 		build()
 	}
 
 	val frigate = registerFactory("FRIGATE") {
-        setControllerTypeName("Frigate")
-
-        setModuleBuilder {
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			builder.addModule("targeting", ClosestTargetingModule(it, 1500.0, null).apply { sticky = true })
-			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val targeting = builder.addModule(
+				EnmityModule::class, EnmityModule(
+					controller,
+					difficultyManager,
+					targetAI
+				)
+			)
 
-			builder
-        }
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller, difficultyManager))
+			builder.addModule(CombatModule::class, FrigateCombatModule(controller, difficultyManager, toggleRandomTargeting = true, aiming, targeting::findTarget))
 
-        build()
-    }
+			val distance = builder.addModule(
+				DistancePositioningModule::class, DistancePositioningModule(
+					controller, difficultyManager, targeting::findTarget
+				) { aiSteeringConfig.capitalDistanceConfiguration })
+			val steering = builder.addModule(
+				SteeringModule::class, CapitalSteeringModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					distance::calcDistance
+				)
+			)
 
-	val watcherSpecialFrigate = registerFactory("WATCHER_SPECIAL") {
-        setControllerTypeName("Frigate")
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering, difficultyManager,
+					targeting::findTarget,
+					SteeringSolverModule.MovementType.CRUISE
+				)
+			)
 
-        setModuleBuilder {
-			val builder = AIControllerFactory.Builder.ModuleBuilder()
+			builder.addModule(
+				PowerModeModule::class, PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = { aiPowerModeConfig.capitalPowerModeConfiguration }
+				)
+			)
 
-			val targeting = builder.addModule("targeting", ClosestTargetingModule(it, 1500.0, null).apply { sticky = true })
-			builder.addModule("gravityWell", GravityWellModule(it, 2400.0, true) { targeting.findTarget() })
-			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+			if (difficultyManager.doNavigation) {
+				builder.addModule(
+					NavigationModule::class, NavigationModule(
+						controller,
+						targeting,
+						difficultyManager
+					)
+				)
+			}
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
-
-			builder
-        }
-
-        build()
-    }
-
-	val advancedFrigate = registerFactory("ADVANCED_FRIGATE") {
-        setControllerTypeName("Advanced Frigate")
-
-        setModuleBuilder {
-			val builder = AIControllerFactory.Builder.ModuleBuilder()
-
-			builder.addModule("targeting", ClosestSmallStarshipTargetingModule(it, 700.0, null).apply { sticky = true })
-			builder.addModule("tracking", TrackingModule(it, 5, 1800.0, 15.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
-			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TrackingModule>("tracking").get().findTarget() })
-			builder.addModule("gravityWell", GravityWellModule(it, 2400.0, true) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
-
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 0.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
-
-			builder
-        }
-
-        build()
-	}
-
-	val destroyer = registerFactory("DESTROYER") {
-		setControllerTypeName("Destroyer")
-
-		setModuleBuilder {
-			val builder = AIControllerFactory.Builder.ModuleBuilder()
-
-			builder.addModule("targeting", ClosestTargetingModule(it, 5000.0, null).apply { sticky = true })
-			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
-
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 55.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
 
 			builder
 		}
+
+		build()
+	}
+
+	val advancedFrigate = registerFactory("ADVANCED_FRIGATE") {
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
+
+			val targeting = builder.addModule(
+				EnmityModule::class, EnmityModule(
+					controller,
+					difficultyManager,
+					targetAI
+				)
+			)
+
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller, difficultyManager))
+			builder.addModule(CombatModule::class, MultiTargetFrigateCombatModule(controller, difficultyManager, toggleRandomTargeting = true, aiming, targeting::findTargets))
+
+			val distance = builder.addModule(
+				DistancePositioningModule::class, DistancePositioningModule(
+					controller, difficultyManager, targeting::findTarget
+				) { aiSteeringConfig.advancedCapitalDistanceConfiguration })
+			val steering = builder.addModule(
+				SteeringModule::class, CapitalSteeringModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					distance::calcDistance
+				)
+			)
+
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering, difficultyManager,
+					targeting::findTarget,
+					SteeringSolverModule.MovementType.CRUISE
+				)
+			)
+
+			builder.addModule(
+				PowerModeModule::class, PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = { aiPowerModeConfig.capitalPowerModeConfiguration }
+				)
+			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(
+					NavigationModule::class, NavigationModule(
+						controller,
+						targeting,
+						difficultyManager
+					)
+				)
+			}
+
+
+			builder
+		}
+
+		addUtilModule { controller -> GravityWellModule(controller, 1800.0, true, controller.getCoreModuleSupplier<TargetingModule>(TargetingModule::class).map { it.findTarget() }) }
+
+		build()
+	}
+
+	val destroyer = registerFactory("DESTROYER") {
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
+
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
+
+			val targeting = builder.addModule(
+				EnmityModule::class, EnmityModule(
+					controller,
+					difficultyManager,
+					targetAI
+				)
+			)
+
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller, difficultyManager))
+			builder.addModule(CombatModule::class, FrigateCombatModule(controller, difficultyManager, toggleRandomTargeting = true, aiming, targeting::findTarget))
+
+			val distance = builder.addModule(
+				DistancePositioningModule::class, DistancePositioningModule(
+					controller, difficultyManager, targeting::findTarget
+				) { aiSteeringConfig.capitalDistanceConfiguration })
+			val steering = builder.addModule(
+				SteeringModule::class, CapitalSteeringModule(
+				controller,
+				difficultyManager,
+				targeting::findTarget,
+				distance::calcDistance,
+				configSupplier = { aiSteeringConfig.destroyerBasicSteeringConfiguration }
+			))
+
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering, difficultyManager,
+					targeting::findTarget,
+					SteeringSolverModule.MovementType.CRUISE
+				)
+			)
+
+			builder.addModule(
+				PowerModeModule::class, PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = { aiPowerModeConfig.capitalPowerModeConfiguration }
+				)
+			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(
+					NavigationModule::class, NavigationModule(
+						controller,
+						targeting,
+						difficultyManager
+					)
+				)
+			}
+
+
+			builder
+		}
+
 
 		build()
 	}
 
 	val advancedDestroyer = registerFactory("ADVANCED_DESTROYER") {
-		setControllerTypeName("Advanced Destroyer")
-
-		setModuleBuilder {
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			builder.addModule("targeting", ClosestLargeStarshipTargetingModule(it, 5000.0, null).apply { sticky = true })
-			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = false) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 0.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val targeting = builder.addModule(
+				EnmityModule::class, EnmityModule(
+					controller,
+					difficultyManager,
+					targetAI
+				)
+			)
+
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller, difficultyManager))
+			builder.addModule(CombatModule::class, MultiTargetFrigateCombatModule(controller, difficultyManager, toggleRandomTargeting = true, aiming, targeting::findTargets))
+
+			val distance = builder.addModule(
+				DistancePositioningModule::class, DistancePositioningModule(
+					controller, difficultyManager, targeting::findTarget
+				) { aiSteeringConfig.advancedCapitalDistanceConfiguration })
+			val steering = builder.addModule(
+				SteeringModule::class, CapitalSteeringModule(
+				controller,
+				difficultyManager,
+				targeting::findTarget,
+				distance::calcDistance,
+				configSupplier = { ConfigurationFiles.aiSteeringConfiguration().destroyerBasicSteeringConfiguration }
+			))
+
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering, difficultyManager,
+					targeting::findTarget,
+					SteeringSolverModule.MovementType.CRUISE
+				)
+			)
+
+			builder.addModule(
+				PowerModeModule::class, PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = { aiPowerModeConfig.capitalPowerModeConfiguration }
+				)
+			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(
+					NavigationModule::class, NavigationModule(
+						controller,
+						targeting,
+						difficultyManager
+					)
+				)
+			}
+
 
 			builder
 		}
+
 
 		build()
 	}
 
 	val battlecruiser = registerFactory("BATTLECRUISER") {
-		setControllerTypeName("Battlecruiser")
-
-		setModuleBuilder {
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-			builder.addModule("targeting", ClosestLargeStarshipTargetingModule(it, 5000.0, null, focusRange = 200.0).apply { sticky = true })
-			builder.addModule("tracking", TrackingModule(it, 5, 87.5, 35.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() })
-			builder.addModule("combat", FrigateCombatModule(it, toggleRandomTargeting = true) { builder.suppliedModule<TrackingModule>("tracking").get().findTarget() })
-//			builder.addModule("directControlWell", DirectControlWellModule(it, 200.0) { builder.suppliedModule<TargetingModule>("targeting").get().findTargets() })
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
 
-			val positioning = builder.addModule("positioning", StandoffPositioningModule(it, { builder.suppliedModule<TargetingModule>("targeting").get().findTarget() }, 0.0))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			builder.addModule("movement", CruiseModule(it, pathfinding, pathfinding::getDestination, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val targeting = builder.addModule(
+				EnmityModule::class, EnmityModule(
+					controller,
+					difficultyManager,
+					targetAI
+				)
+			)
+
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller, difficultyManager))
+			builder.addModule(CombatModule::class, FrigateCombatModule(controller, difficultyManager, toggleRandomTargeting = true, aiming, targeting::findTarget))
+
+			val distance = builder.addModule(
+				DistancePositioningModule::class, DistancePositioningModule(
+					controller, difficultyManager, targeting::findTarget
+				) { aiSteeringConfig.battlecruiserDistanceConfiguration })
+
+			val steering = builder.addModule(
+				SteeringModule::class, CapitalSteeringModule(
+				controller,
+				difficultyManager,
+				targeting::findTarget,
+				distance::calcDistance,
+				configSupplier = { aiSteeringConfig.battlecruiserBasicSteeringConfiguration }
+			))
+
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering, difficultyManager,
+					targeting::findTarget,
+					SteeringSolverModule.MovementType.CRUISE
+				)
+			)
+
+			builder.addModule(
+				PowerModeModule::class, PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = { aiPowerModeConfig.superCapitalPowerModeConfiguration }
+				)
+			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(
+					NavigationModule::class, NavigationModule(
+						controller,
+						targeting,
+						difficultyManager
+					)
+				)
+			}
 
 			builder
 		}
@@ -274,9 +900,77 @@ object AIControllerFactories : IonServerComponent() {
 	}
 
 	val passive_cruise = registerFactory("EXPLORER_CRUISE") {
-		setControllerTypeName("Starfighter")
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
+			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
-		val cruiseEndpoint: (AIController) -> Optional<Vec3i> = lambda@{ controller: AIController ->
+			// Combat handling
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
+
+			val targeting = builder.addModule(
+				EnmityModule::class, EnmityModule(
+					controller,
+					difficultyManager,
+					targetAI
+				)
+			)
+
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller, difficultyManager))
+			builder.addModule(CombatModule::class, DefensiveCombatModule(controller, difficultyManager, aiming, targeting::findTarget))
+
+			// Movement handling
+			val distance = builder.addModule(
+				DistancePositioningModule::class, DistancePositioningModule(
+					controller, difficultyManager, targeting::findTarget
+				) { aiSteeringConfig.interdictionCorvetteDistanceConfiguration })
+			val steering = builder.addModule(
+				SteeringModule::class, GunshipSteeringModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					distance::calcDistance
+				)
+			)
+
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering,
+					difficultyManager,
+					targeting::findTarget,
+					SteeringSolverModule.MovementType.DC
+				)
+			)
+
+			builder.addModule(
+				PowerModeModule::class, PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = { aiPowerModeConfig.gunshipPowerModeConfiguration }
+				)
+			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(
+					NavigationModule::class, NavigationModule(
+						controller,
+						targeting,
+						difficultyManager
+					)
+				)
+			}
+
+			builder
+		}
+
+		addUtilModule { RandomGoalModule(it) }
+
+		build()
+	}
+
+	val passive_cruise_legacy = registerFactory("EXPLORER_CRUISE_LEGACY") {
+		val cruiseEndpoint: (AIController) -> Optional<Vec3i> = lambda@{ controller ->
 			var iterations = 0
 			val origin = controller.getCenter()
 
@@ -312,18 +1006,67 @@ object AIControllerFactories : IonServerComponent() {
 			Optional.empty()
 		}
 
-		setModuleBuilder {
+		setCoreModuleBuilder { controller, difficulty, targetAI ->
 			val builder = AIControllerFactory.Builder.ModuleBuilder()
 
 			// Combat handling
-			val targeting = builder.addModule("targeting", HighestDamagerTargetingModule(it))
-			builder.addModule("combat", DefensiveCombatModule(it, targeting::findTarget))
+			val difficultyManager = builder.addModule(DifficultyModule::class, DifficultyModule(controller, internalDifficulty = difficulty))
+
+			val targeting = builder.addModule(
+				EnmityModule::class, EnmityModule(
+					controller,
+					difficultyManager,
+					targetAI
+				)
+			)
+
+			val aiming = builder.addModule(AimingModule::class, AimingModule(controller, difficultyManager))
+			builder.addModule(CombatModule::class, DefensiveCombatModule(controller, difficultyManager, aiming, targeting::findTarget))
 
 			// Movement handling
-			val positioning = builder.addModule("positioning", BasicPositioningModule(it, cruiseEndpoint.invoke(it).orNull() ?: Vec3i(0, 0, 0)))
-			val pathfinding = builder.addModule("pathfinding", SteeringPathfindingModule(it, positioning::findPosition))
-			val flee = builder.addModule("flee", FleeModule(it, positioning::getDestination, targeting) { controller, _ -> controller.getMinimumShieldHealth() <= 0.5 }) // Flee if there is a target found by the highest damage module
-			builder.addModule("movement", CruiseModule(it, pathfinding, flee, CruiseModule.ShiftFlightType.ALL, 256.0))
+			val distance = builder.addModule(
+				DistancePositioningModule::class, DistancePositioningModule(
+					controller, difficultyManager, targeting::findTarget
+				) { aiSteeringConfig.starfighterDistanceConfiguration })
+			val steering = builder.addModule(
+				SteeringModule::class, TravelSteeringModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					distance::calcDistance,
+					cruiseEndpoint.invoke(controller).orNull() ?: Vec3i(0, 0, 0)
+				)
+			)
+
+			builder.addModule(
+				SteeringSolverModule::class, SteeringSolverModule(
+					controller,
+					steering,
+					difficultyManager,
+					targeting::findTarget,
+					SteeringSolverModule.MovementType.DC
+				)
+			)
+
+			builder.addModule(
+				PowerModeModule::class, PowerModeModule(
+					controller,
+					difficultyManager,
+					targeting::findTarget,
+					steering,
+					configSupplier = { aiPowerModeConfig.gunshipPowerModeConfiguration }
+				)
+			)
+
+			if (difficultyManager.doNavigation) {
+				builder.addModule(
+					NavigationModule::class, NavigationModule(
+						controller,
+						targeting,
+						difficultyManager
+					)
+				)
+			}
 
 			builder
 		}

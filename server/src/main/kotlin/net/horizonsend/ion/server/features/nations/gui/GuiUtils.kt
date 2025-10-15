@@ -26,6 +26,7 @@ import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 fun GuiItem.name(text: String?): GuiItem = apply { if (text != null) item.updateDisplayName(text) }
+fun GuiItem.name(text: Component?): GuiItem = apply { if (text != null) item.updateDisplayName(text) }
 
 fun GuiItem.lore(text: String): GuiItem {
 	val meta = item.itemMeta

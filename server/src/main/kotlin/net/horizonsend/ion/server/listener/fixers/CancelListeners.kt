@@ -4,9 +4,9 @@ import com.destroystokyo.paper.event.player.PlayerLaunchProjectileEvent
 import io.papermc.paper.event.player.PlayerOpenSignEvent
 import net.horizonsend.ion.common.extensions.successActionMessage
 import net.horizonsend.ion.common.extensions.userError
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks
-import net.horizonsend.ion.server.features.custom.blocks.CustomBlocks.customBlock
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.type.FurnaceBasedMultiblockEntity
 import net.horizonsend.ion.server.listener.SLEventListener
@@ -16,12 +16,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.isBed
 import net.horizonsend.ion.server.miscellaneous.utils.isShulkerBox
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.trialspawner.PlayerDetector
 import net.minecraft.world.level.block.entity.vault.VaultConfig
-import net.minecraft.world.level.block.entity.vault.VaultServerData
 import net.minecraft.world.level.entity.EntityTypeTest
 import net.minecraft.world.phys.AABB
 import org.bukkit.Material
@@ -32,12 +32,14 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.block.Action
 import org.bukkit.event.block.BlockDispenseEvent
+import org.bukkit.event.block.BlockDispenseLootEvent
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.block.BlockFadeEvent
 import org.bukkit.event.block.BlockFormEvent
 import org.bukkit.event.block.BlockPistonExtendEvent
 import org.bukkit.event.block.BlockPistonRetractEvent
 import org.bukkit.event.block.BlockPlaceEvent
+import org.bukkit.event.block.VaultDisplayItemEvent
 import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 import org.bukkit.event.entity.PotionSplashEvent
@@ -48,8 +50,8 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerItemConsumeEvent
 import org.bukkit.event.player.PlayerKickEvent
 import org.bukkit.event.player.PlayerTeleportEvent
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause
 import org.bukkit.inventory.ItemStack
-import java.lang.reflect.Field
 import java.util.Optional
 import java.util.function.Predicate
 
@@ -212,12 +214,12 @@ class CancelListeners : SLEventListener() {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onExplode(event: EntityExplodeEvent) {
-		event.blockList().removeAll { it.customBlock == CustomBlocks.BATTLECRUISER_REACTOR_CORE || it.customBlock == CustomBlocks.CRUISER_REACTOR_CORE }
+		event.blockList().removeAll { it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE || it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE }
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	fun onExplode(event: BlockExplodeEvent) {
-		event.blockList().removeAll { it.customBlock == CustomBlocks.BATTLECRUISER_REACTOR_CORE || it.customBlock == CustomBlocks.CRUISER_REACTOR_CORE}
+		event.blockList().removeAll { it.customBlock?.key == CustomBlockKeys.BATTLECRUISER_REACTOR_CORE || it.customBlock?.key == CustomBlockKeys.CRUISER_REACTOR_CORE}
 	}
 
 	@EventHandler
@@ -245,13 +247,13 @@ class CancelListeners : SLEventListener() {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	fun onTrialVaultPlacement(event: BlockPlaceEvent) {
 		Tasks.sync {
-			val state = event.block.state
+			val state = event.block.getState(false)
 			if (state !is CraftVault) return@sync
 
 			val entity = state.tileEntity
 
 			entity.config = disabledVaultConfig
-			vaultServerDataResumeField.set(entity.getServerData(), Long.MAX_VALUE)
+			state.nextStateUpdateTime = Long.MAX_VALUE
 		}
 	}
 
@@ -262,8 +264,6 @@ class CancelListeners : SLEventListener() {
 		event.isCancelled = true
 	}
 
-	private val vaultServerDataResumeField: Field = VaultServerData::class.java.getDeclaredField("stateUpdatingResumesAt").apply { isAccessible = true }
-
 	private val emptyPlayerDetector = PlayerDetector { _, _, _, _, _ -> listOf() }
 	private val emptyEntitySelector = object : PlayerDetector.EntitySelector {
 		override fun getPlayers(p0: ServerLevel, p1: Predicate<in Player>): List<Player> = listOf()
@@ -271,7 +271,7 @@ class CancelListeners : SLEventListener() {
 	}
 
 	private val disabledVaultConfig = VaultConfig(
-		net.minecraft.world.entity.EntityType.BAT.defaultLootTable.get(),
+		EntityType.BAT.defaultLootTable.get(),
 		0.0,
 		0.0001,
 		net.minecraft.world.item.ItemStack(Blocks.BEDROCK),
@@ -279,4 +279,23 @@ class CancelListeners : SLEventListener() {
 		emptyPlayerDetector,
 		emptyEntitySelector,
 	)
+
+	@EventHandler
+	fun onVaultDispense(event: BlockDispenseLootEvent) {
+		(event.block.getState(false) as? CraftVault)?.nextStateUpdateTime = Long.MAX_VALUE
+
+		event.isCancelled = true
+	}
+
+	@EventHandler
+	fun onVaultDisplay(event: VaultDisplayItemEvent) {
+		(event.block.getState(false) as? CraftVault)?.nextStateUpdateTime = Long.MAX_VALUE
+
+		event.isCancelled = true
+	}
+
+	@EventHandler
+	fun onPortalTeleport(event: PlayerTeleportEvent) {
+		if (event.cause == TeleportCause.END_PORTAL) event.isCancelled = true
+	}
 }

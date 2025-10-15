@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.crafting.recipe
 
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.multiblock.crafting.input.FurnaceEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.PowerRequirement
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.RequirementHolder
@@ -19,24 +20,24 @@ import kotlin.reflect.KClass
  * @param fuelItem Requirement for the item in the bottom slot. If it is null, there will be a requirement for this slot to be empty.
  **/
 class FurnaceMultiblockRecipe(
-	identifier: String,
+	key: IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<FurnaceEnviornment>>,
 	clazz: KClass<out RecipeProcessingMultiblockEntity<FurnaceEnviornment>>,
 	smeltingItem: ItemRequirement?,
 	fuelItem: ItemRequirement?,
-	power: PowerRequirement,
+	power: PowerRequirement<FurnaceEnviornment>,
 	private val result: ResultHolder<FurnaceEnviornment, ItemResult<FurnaceEnviornment>>
-) : MultiblockRecipe<FurnaceEnviornment>(identifier, clazz) {
+) : MultiblockRecipe<FurnaceEnviornment>(key, clazz) {
 
 	override val requirements: Collection<RequirementHolder<FurnaceEnviornment, *, *>> = listOf(
 		// Furnace smelting item
 		RequirementHolder.itemConsumable(
-			getter = { it.getItem(0) },
+			getter = { it.getInputItem(0) },
 			requirement = smeltingItem ?: ItemRequirement.legacy(),
 			{ SlotModificationWrapper.furnaceSmelting(it.furnaceInventory) }
 		),
 		// Furnace fuel item
 		RequirementHolder.itemConsumable(
-			getter = { it.getItem(1) },
+			getter = { it.getInputItem(1) },
 			requirement = fuelItem ?: ItemRequirement.legacy(),
 			{ SlotModificationWrapper.furnaceFuel(it.furnaceInventory) }
 		),
@@ -47,9 +48,9 @@ class FurnaceMultiblockRecipe(
 		)
 	)
 
-	override fun assemble(enviornment: FurnaceEnviornment) {
-		if (!verifyAllRequirements(enviornment)) result
-		if (!result.verifySpace(enviornment)) return
+	override fun assemble(enviornment: FurnaceEnviornment): Boolean {
+		if (!verifyAllRequirements(enviornment, true)) return false
+		if (!result.verifySpace(enviornment)) return false
 
 		val resultEnviornment = ResultExecutionEnviornment(enviornment, this)
 
@@ -58,13 +59,14 @@ class FurnaceMultiblockRecipe(
 		try {
 			resultEnviornment.requirements.forEach { requirement -> requirement.consume(enviornment) }
 		} catch (e: Throwable) {
-			IonServer.slF4JLogger.error("There was an error executing multiblock recipe $identifier: ${e.message}")
+			IonServer.slF4JLogger.error("There was an error executing multiblock recipe $key: ${e.message}")
 			e.printStackTrace()
-			return
+			return false
 		}
 
 		// Once ingredients have been sucessfully consumed, execute the result
 		val executionResult = resultEnviornment.executeResult()
 		result.executeCallbacks(enviornment, executionResult)
+		return true
 	}
 }

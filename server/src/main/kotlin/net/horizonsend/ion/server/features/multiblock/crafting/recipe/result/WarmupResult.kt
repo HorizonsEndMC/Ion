@@ -2,19 +2,19 @@ package net.horizonsend.ion.server.features.multiblock.crafting.recipe.result
 
 import net.horizonsend.ion.server.features.multiblock.crafting.input.ProgressEnviornment
 import net.horizonsend.ion.server.features.multiblock.crafting.recipe.requirement.item.ItemRequirement
-import net.horizonsend.ion.server.features.multiblock.crafting.util.SlotModificationWrapper
 import org.bukkit.inventory.ItemStack
 import java.time.Duration
 
 class WarmupResult<E : ProgressEnviornment>(val duration: Duration, val normalResult: ItemResult<E>) : ItemResult<E> {
+	override fun asItem(): ItemStack = normalResult.asItem()
+
 	override fun verifySpace(enviornment: E): Boolean {
 		return normalResult.verifySpace(enviornment)
 	}
 
 	override fun buildTransaction(
 		recipeEnviornment: E,
-		resultEnviornment: ResultExecutionEnviornment<E>,
-		slotModificationWrapper: SlotModificationWrapper
+		resultEnviornment: ResultExecutionEnviornment<E>
 	) {
 		val progressManager = recipeEnviornment.getProgressManager()
 		val complete = progressManager.addProgress(duration)
@@ -36,7 +36,7 @@ class WarmupResult<E : ProgressEnviornment>(val duration: Duration, val normalRe
 			RecipeExecutionResult.SuccessExecutionResult
 		}
 
-		normalResult.buildTransaction(recipeEnviornment, resultEnviornment, slotModificationWrapper)
+		normalResult.buildTransaction(recipeEnviornment, resultEnviornment)
 	}
 
 	override fun getResultItem(enviornment: E): ItemStack? {

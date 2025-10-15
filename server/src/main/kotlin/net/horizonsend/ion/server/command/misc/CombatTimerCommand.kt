@@ -6,10 +6,12 @@ import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Optional
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.misc.SLPlayer
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.setSetting
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCooldown
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -23,9 +25,9 @@ object CombatTimerCommand : SLCommand() {
     @CommandCompletion("true|false")
     @Description("Toggle combat timer alerts")
     fun onToggle(sender: Player, @Optional toggle: Boolean?) {
-        val enableCombatTimerAlerts = toggle ?: !PlayerCache[sender].enableCombatTimerAlerts
+        val enableCombatTimerAlerts = toggle ?: !sender.getSettingOrThrow(PlayerSettings::enableCombatTimerAlerts)
         SLPlayer.updateById(sender.slPlayerId, setValue(SLPlayer::enableCombatTimerAlerts, enableCombatTimerAlerts))
-        PlayerCache[sender.uniqueId].enableCombatTimerAlerts = enableCombatTimerAlerts
+		sender.setSetting(PlayerSettings::enableCombatTimerAlerts, enableCombatTimerAlerts)
         sender.success("Changed enabled combat timer alerts to $enableCombatTimerAlerts")
         if (enableCombatTimerAlerts) {
             sender.success("You will be notified when you gain a combat timer")

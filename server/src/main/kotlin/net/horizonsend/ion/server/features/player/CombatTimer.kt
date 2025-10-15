@@ -2,20 +2,26 @@ package net.horizonsend.ion.server.features.player
 
 import com.destroystokyo.paper.event.player.PlayerPostRespawnEvent
 import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_GRAY
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.lineBreak
+import net.horizonsend.ion.common.utils.text.lineBreakWithCenterText
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.common.utils.text.template
-import net.horizonsend.ion.server.IonServerComponent
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
+import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.features.cache.PlayerCache
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSettingOrThrow
 import net.horizonsend.ion.server.features.nations.utils.toPlayersInRadius
 import net.horizonsend.ion.server.features.player.NewPlayerProtection.hasProtection
+import net.horizonsend.ion.server.features.progression.ShipKillXP
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.TypeCategory
@@ -26,6 +32,8 @@ import net.horizonsend.ion.server.features.starship.control.controllers.player.U
 import net.horizonsend.ion.server.features.starship.damager.AIShipDamager
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
+import net.horizonsend.ion.server.features.starship.event.StarshipSunkEvent
+import net.horizonsend.ion.server.features.starship.fleet.Fleets
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.listener.misc.ProtectionListener
@@ -61,6 +69,9 @@ object CombatTimer : IonServerComponent() {
 
 	private val npcTimer = mutableMapOf<UUID, Long>()
 	private val pvpTimer = mutableMapOf<UUID, Long>()
+	//TODO: save more than just the display name
+	private val killLog = mutableMapOf<UUID,  MutableList<Pair<Component,MutableMap<Damager, ShipKillXP.ShipDamageData>>>>()
+	private val announceLog = mutableSetOf<UUID>()
 
 	override fun onEnable() {
 		enabled = ConfigurationFiles.featureFlags().combatTimers
@@ -74,6 +85,7 @@ object CombatTimer : IonServerComponent() {
 				if (entry.value <= System.currentTimeMillis()) {
 					npcTimer.remove(entry.key)
 					Bukkit.getPlayer(entry.key)?.success("You are no longer in combat (NPC)")
+					if (!pvpTimer.contains(entry.key) && killLog.contains(entry.key)) announceLog.add(entry.key)
 				}
 			}
 
@@ -81,6 +93,7 @@ object CombatTimer : IonServerComponent() {
 				if (entry.value <= System.currentTimeMillis()) {
 					pvpTimer.remove(entry.key)
 					Bukkit.getPlayer(entry.key)?.success("You are no longer in combat (PvP)")
+					if (!npcTimer.contains(entry.key) && killLog.contains(entry.key)) announceLog.add(entry.key)
 				}
 			}
 
@@ -150,6 +163,7 @@ object CombatTimer : IonServerComponent() {
 					}
 				}
 			}
+			announceKillLog()
 		}
 
 		// Remove all combat tags on death
@@ -157,10 +171,14 @@ object CombatTimer : IonServerComponent() {
 			if (npcTimer[event.player.uniqueId] != null) {
 				event.player.success("You are no longer in combat (NPC)")
 				npcTimer.remove(event.player.uniqueId)
+				if (!pvpTimer.contains(event.player.uniqueId)
+					&& killLog.contains(event.player.uniqueId)) announceLog.add(event.player.uniqueId)
 			}
 			if (pvpTimer[event.player.uniqueId] != null) {
 				event.player.success("You are no longer in combat (PVP)")
 				pvpTimer.remove(event.player.uniqueId)
+				if (!npcTimer.contains(event.player.uniqueId)
+					&& killLog.contains(event.player.uniqueId)) announceLog.add(event.player.uniqueId)
 			}
 		}
 
@@ -168,10 +186,26 @@ object CombatTimer : IonServerComponent() {
 			if (npcTimer[event.player.uniqueId] != null) {
 				event.player.success("You are no longer in combat (NPC)")
 				npcTimer.remove(event.player.uniqueId)
+				if (!pvpTimer.contains(event.player.uniqueId)
+					&& killLog.contains(event.player.uniqueId)) announceLog.add(event.player.uniqueId)
 			}
 			if (pvpTimer[event.player.uniqueId] != null) {
 				event.player.success("You are no longer in combat (PVP)")
 				pvpTimer.remove(event.player.uniqueId)
+				if (!npcTimer.contains(event.player.uniqueId)
+					&& killLog.contains(event.player.uniqueId)) announceLog.add(event.player.uniqueId)
+			}
+		}
+
+		listen<StarshipSunkEvent> {event ->
+			val damagerData = event.starship.damagers
+
+			damagerData.keys.forEach { damager ->
+				val playerID = (damager as? PlayerDamager)?.player?.uniqueId ?: return@forEach
+				if (npcTimer.contains(playerID) || pvpTimer.contains(playerID)) {
+					if (!killLog.contains(playerID)) killLog[playerID] = mutableListOf()
+					killLog[playerID]?.add(event.starship.getDisplayName() to damagerData)
+				}
 			}
 		}
 	}
@@ -183,7 +217,7 @@ object CombatTimer : IonServerComponent() {
 	fun refreshNpcTimer(player: Player, reason: String) {
 		if (!enabled) return
 
-		if (!isNpcCombatTagged(player) && PlayerCache[player].enableCombatTimerAlerts) {
+		if (!isNpcCombatTagged(player) && player.getSettingOrThrow(PlayerSettings::enableCombatTimerAlerts)) {
 			player.alert("You are now in combat (NPC)")
 			player.sendMessage(npcTimerAlertComponent(reason))
 		}
@@ -197,7 +231,7 @@ object CombatTimer : IonServerComponent() {
 	fun refreshPvpTimer(player: Player, reason: String) {
 		if (!enabled) return
 
-		if (!isPvpCombatTagged(player) && PlayerCache[player].enableCombatTimerAlerts) {
+		if (!isPvpCombatTagged(player) && player.getSettingOrThrow(PlayerSettings::enableCombatTimerAlerts)) {
 			player.alert("You are now in combat (PVP)")
 			player.sendMessage(pvpTimerAlertComponent(reason))
 		}
@@ -216,6 +250,17 @@ object CombatTimer : IonServerComponent() {
 		if (attacker == defender) return
 
 		if (attacker.hasPermission("group.dutymode") || defender.hasPermission("group.dutymode")) return
+
+		// If the defender is an NPC, just give the attacker a combat NPC regardless
+		if (defender.hasMetadata("NPC") && tagAttacker) {
+			refreshPvpTimer(attacker, reason)
+			return
+		}
+
+		val attackerFleet = Fleets.findByMember(attacker)
+		val defenderFleet = Fleets.findByMember(defender)
+
+		if (attackerFleet != null && attackerFleet == defenderFleet ) return
 
 		val attackerData = PlayerCache[attacker]
 		val attackerNation = attackerData.nationOid
@@ -302,6 +347,7 @@ object CombatTimer : IonServerComponent() {
 	 */
 	fun removeNpcCombatTag(uuid: UUID) {
 		npcTimer.remove(uuid)
+		if (!pvpTimer.contains(uuid) && killLog.contains(uuid)) announceLog.add(uuid)
 	}
 
 	/**
@@ -309,6 +355,7 @@ object CombatTimer : IonServerComponent() {
 	 */
 	fun removePvpCombatTag(uuid: UUID) {
 		pvpTimer.remove(uuid)
+		if (!npcTimer.contains(uuid) && killLog.contains(uuid)) announceLog.add(uuid)
 	}
 
 	/**
@@ -399,5 +446,58 @@ object CombatTimer : IonServerComponent() {
 			newline(),
 			lineBreak(45),
 		)
+	}
+
+	private fun announceKillLog() {
+		announceLog.mapNotNull { Bukkit.getPlayer(it) }.forEach { announcePerPlayer(it) }
+		announceLog.clear()
+	}
+
+	private fun announcePerPlayer(player: Player) {
+
+		val data = killLog[player.uniqueId] ?: return
+
+		player.sendMessage(lineBreakWithCenterText(text("Kill Log", GOLD)))
+		data.forEach { entry ->
+
+			val topDamager = entry.second.entries.maxByOrNull { it.value.points.get() } ?: return
+			val lastDamager = entry.second.entries.maxByOrNull { it.value.lastDamaged } ?: return
+
+			val breakdown = entry.second.entries.sortedBy { -it.value.points.get() }.map { damagerWithData ->
+				val name = damagerWithData.key.starship?.getDisplayName() ?: damagerWithData.key.getDisplayName()
+				val pilot = damagerWithData.key.starship?.controller?.pilotName ?: damagerWithData.key.getDisplayName()
+				val points = damagerWithData.value.points
+				val color = if (damagerWithData.key == topDamager.key) HE_LIGHT_ORANGE
+					else if (isDamager(player,damagerWithData.key)) HE_LIGHT_BLUE else HE_MEDIUM_GRAY
+				template(
+					message = text("Damager: {0} piloted by {1} , Points: {2}\n", color),
+					paramColor = HE_LIGHT_GRAY,
+					useQuotesAroundObjects = false,
+					name,  // {0}
+					pilot, // {1}
+					points // {2}
+				)
+			}
+
+			val breakdownText = text("[Details]", HE_LIGHT_BLUE).hoverEvent(ofChildren(*breakdown.toTypedArray()))
+
+			val messageEntry = template(
+				message = text("{0} killed by: {1}, Top: {2} {3}.", HE_MEDIUM_GRAY),
+				paramColor = HE_LIGHT_GRAY,
+				useQuotesAroundObjects = false,
+				entry.first,                      // {0}
+				lastDamager.key.getDisplayName(), // {1}
+				topDamager.key.getDisplayName(),  // {2}
+				breakdownText                     // {3}
+			)
+			player.sendMessage(messageEntry)
+		}
+		player.sendMessage(lineBreak(44))
+		killLog.remove(player.uniqueId)
+	}
+
+	private fun isDamager(player: Player, damager: Damager) : Boolean{
+		if (damager !is PlayerDamager) return false
+		return player == damager.player
 	}
 }

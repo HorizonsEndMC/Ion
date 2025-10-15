@@ -66,6 +66,8 @@ abstract class Multiblock {
 
 	val shape by lazy { MultiblockShape().apply { buildStructure() } }
 
+	open fun getExampleShape(): MultiblockShape = shape
+
 	fun signMatchesStructure(sign: Sign, loadChunks: Boolean = true, particles: Boolean = false): Boolean {
 		val inward = sign.getFacing().oppositeFace
 		return signMatchesStructure(sign.location, inward, loadChunks, particles)

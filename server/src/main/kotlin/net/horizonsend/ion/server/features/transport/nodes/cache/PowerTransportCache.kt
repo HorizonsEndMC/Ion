@@ -1,10 +1,13 @@
 package net.horizonsend.ion.server.features.transport.nodes.cache
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.configuration.ConfigurationFiles.transportSettings
+import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PowerStorage
 import net.horizonsend.ion.server.features.multiblock.entity.type.power.PoweredMultiblockEntity
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.TransportTask
+import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.extractors.data.ExtractorMetaData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.PathfindResult
@@ -14,7 +17,9 @@ import net.horizonsend.ion.server.features.transport.nodes.types.PowerNode.Power
 import net.horizonsend.ion.server.features.transport.nodes.util.MonoDestinationCache
 import net.horizonsend.ion.server.features.transport.util.CacheType
 import net.horizonsend.ion.server.features.transport.util.CombinedSolarPanel
+import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import kotlin.math.roundToInt
 import kotlin.reflect.KClass
 
@@ -210,5 +215,42 @@ class PowerTransportCache(holder: CacheHolder<PowerTransportCache>) : TransportC
 		}
 
 		return remainingPower
+	}
+
+	/**
+	 * Gets the powered entities accessible from this location, assuming it is an input
+	 * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
+	 **/
+	fun getInputEntities(location: BlockKey): Set<MultiblockEntity> {
+		return holder.getInputManager().getPorts(IOType.POWER, location).mapTo(mutableSetOf()) { it.holder }
+	}
+
+	/**
+	 * Gets the powered entities accessible from this location, assuming it is an input
+	 * This method is used in conjunction with input registration to allow direct access via signs, and remote access via registered inputs
+	 **/
+	inline fun <reified T : Any> getInputEntitiesTyped(location: BlockKey): Set<T> {
+		return holder
+			.getInputManager()
+			.getPorts(IOType.POWER, location)
+			.mapNotNullTo(ObjectOpenHashSet<T>()) { it.holder as? T }
+	}
+
+	inline fun <reified T> getExtractorSourceEntities(extractorLocation: BlockKey, filterNot: (T) -> Boolean): List<T> {
+		val sources = mutableListOf<T>()
+
+		for (face in ADJACENT_BLOCK_FACES) {
+			val inputLocation = getRelative(extractorLocation, face)
+			if (holder.getOrCacheGlobalNode(inputLocation) !is PowerNode.PowerInputNode) continue
+			val entities = getInputEntities(inputLocation)
+
+			for (entity in entities) {
+				if (entity !is T) continue
+				if (filterNot.invoke(entity)) continue
+				sources.add(entity)
+			}
+		}
+
+		return sources
 	}
 }

@@ -9,10 +9,10 @@ object HyperdriveMultiblockClass1 : HyperdriveMultiblock() {
 	override val maxPower = 30_000
 
 	override val signText = createSignText(
-		line1 = "&7Class",
-		line2 = "&81",
-		line3 = "&bHyperdrive",
-		line4 = null
+		line1 = "&7Class &81",
+		line2 = "&bHyperdrive",
+		line3 = "&cClick for",
+		line4 = "&cNavigation",
 	)
 
 	override val displayName: Component get() = text("Class 1 Hyperdrive")

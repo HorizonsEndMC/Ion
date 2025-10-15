@@ -5,6 +5,7 @@ import com.google.inject.Inject
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent
+import com.velocitypowered.api.plugin.Dependency
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
 import com.velocitypowered.api.proxy.ProxyServer
@@ -13,7 +14,10 @@ import net.horizonsend.ion.common.extensions.prefixProvider
 import net.horizonsend.ion.common.utils.configuration.CommonConfig
 import net.horizonsend.ion.common.utils.configuration.Configuration
 import net.horizonsend.ion.common.utils.discord.DiscordConfiguration
+import net.horizonsend.ion.common.utils.text.bootstrapCustomTranslations
+import net.horizonsend.ion.proxy.commands.velocity.StandardCompletions
 import net.horizonsend.ion.proxy.configuration.ProxyConfiguration
+import net.horizonsend.ion.proxy.features.cache.Listener
 import net.horizonsend.ion.proxy.registration.commands
 import net.horizonsend.ion.proxy.registration.components
 import net.horizonsend.ion.proxy.wrappers.WrappedPlayer
@@ -29,7 +33,10 @@ lateinit var PLUGIN: IonProxy private set
 	id = "ion",
 	name = "IonProxy",
 	url = "https://github.com/HorizonsEndMC/Ion",
-	description = "Proxy plugin for the Horizon's End server."
+	description = "Proxy plugin for the Horizon's End server.",
+	dependencies = [
+		Dependency(id = "litebans", optional = true)
+	]
 )
 class IonProxy @Inject constructor(val server: ProxyServer, val logger: Logger, @DataDirectory val dataDirectory: Path) {
 	private val startTime = System.currentTimeMillis()
@@ -52,6 +59,8 @@ class IonProxy @Inject constructor(val server: ProxyServer, val logger: Logger, 
 				else -> "to [Unknown]: "
 			}
 		}
+
+		bootstrapCustomTranslations()
 	}
 
 	@Subscribe
@@ -61,12 +70,14 @@ class IonProxy @Inject constructor(val server: ProxyServer, val logger: Logger, 
 		val eventManager = server.eventManager
 
 		for (component in components) {
-			if (component is IonProxyComponent) eventManager.register(this@IonProxy, component)
+			if (component is Listener) eventManager.register(this@IonProxy, component)
 
 			component.onEnable()
 		}
 
 		commandManager = VelocityCommandManager(this.server, this)
+
+		StandardCompletions.registerStandardCompletions(commandManager)
 
 		for (command in commands) {
 			command.onEnable(commandManager)

@@ -1,9 +1,9 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret
 
-import net.horizonsend.ion.server.configuration.StarshipWeapons
+import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
+import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriTurretProjectileBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.TriTurretWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
@@ -12,8 +12,8 @@ import org.bukkit.Material.GRINDSTONE
 import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.block.BlockFace
 
-sealed class TriTurretMultiblock : TurretMultiblock() {
-	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TurretWeaponSubsystem {
+sealed class TriTurretMultiblock : TurretMultiblock<TriTurretProjectileBalancing>() {
+	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): TriTurretWeaponSubsystem {
 		return TriTurretWeaponSubsystem(starship, pos, getFacing(pos, starship), this)
 	}
 
@@ -22,7 +22,7 @@ sealed class TriTurretMultiblock : TurretMultiblock() {
 	override val displayName: Component get() = text("Tri Turret (${if (getYFactor() == 1) "Top" else "Bottom"})")
 	override val description: Component get() = text("Rotating weapon system effective against large targets. Can be auto-targeting.")
 
-	override fun getBalancing(starship: ActiveStarship): StarshipWeapons.StarshipWeapon = starship.balancing.weapons.triTurret
+	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<TriTurretProjectileBalancing> = starship.balancingManager.getSubsystem(TriTurretWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> = listOf(
 		Vec3i(-2, getYFactor() * 4, +3),

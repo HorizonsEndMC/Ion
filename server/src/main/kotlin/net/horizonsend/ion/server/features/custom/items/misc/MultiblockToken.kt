@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.custom.items.misc
 import io.papermc.paper.datacomponent.DataComponentTypes
 import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.ofChildren
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlocks
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
@@ -26,7 +27,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.ItemStack
 
 object MultiblockToken : CustomItem(
-	"MULTIBLOCK_TOKEN",
+	CustomItemKeys.MULTIBLOCK_TOKEN,
 	text("Pre-Packaged Multiblock"),
 	ItemFactory.unStackableCustomItem
 ) {
@@ -61,10 +62,10 @@ object MultiblockToken : CustomItem(
 		val origin = PrePackaged.getOriginFromPlacement(
 			event.clickedBlock ?: return,
 			livingEntity.facing,
-			packagedData.shape
+			packagedData.getExampleShape()
 		)
 
-		val obstructions = PrePackaged.checkObstructions(origin, livingEntity.facing, packagedData.shape, livingEntity.isSneaking)
+		val obstructions = PrePackaged.checkObstructions(origin, livingEntity.facing, packagedData.getExampleShape(), livingEntity.isSneaking)
 
 		if (obstructions.isNotEmpty()) {
 			livingEntity.userError("Placement is obstructed! Crouch to enable block sharing.")
@@ -80,10 +81,10 @@ object MultiblockToken : CustomItem(
 	}
 
 	override fun fromBazaarString(string: String): ItemStack {
-		return serializationManager.deserialize(this, string.substringAfter(identifier))
+		return serializationManager.deserialize(this, string.substringAfter(key.key))
 	}
 
 	override fun getBazaarString(itemStack: ItemStack): String {
-		return "$identifier${serializationManager.serialize(this, itemStack)}"
+		return "$key${serializationManager.serialize(this, itemStack)}"
 	}
 }

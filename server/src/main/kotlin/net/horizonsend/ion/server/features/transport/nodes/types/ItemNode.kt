@@ -1,11 +1,12 @@
 package net.horizonsend.ion.server.features.transport.nodes.types
 
-import net.horizonsend.ion.server.features.custom.items.CustomItemRegistry.customItem
+import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.transport.filters.FilterType
 import net.horizonsend.ion.server.features.transport.items.LegacyFilterData
 import net.horizonsend.ion.server.features.transport.manager.holders.CacheHolder
 import net.horizonsend.ion.server.features.transport.nodes.cache.ItemTransportCache
+import net.horizonsend.ion.server.features.transport.nodes.types.ItemNode.PipeChannel.entries
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.Companion.adjacentMinusBackwards
 import net.horizonsend.ion.server.features.transport.nodes.types.Node.NodePositionData
 import net.horizonsend.ion.server.features.transport.util.CacheType
@@ -71,12 +72,21 @@ interface ItemNode : Node {
 			val forward = backwards.oppositeFace
 
 			val filtered = mutableListOf<NodePositionData>()
+
+			var forwardPresent = false
 			for (node in nextNodes) {
-				if (node.type is InventoryNode) filtered.add(node)
-				if (node.offset == forward) filtered.add(node)
+				if (node.type is InventoryNode || node.type is FilterNode) {
+					filtered.add(node)
+					continue
+				}
+
+				if (node.offset == forward) {
+					forwardPresent = true
+					filtered.add(node)
+				}
 			}
 
-			if (filtered.isNotEmpty()) return filtered
+			if (filtered.isNotEmpty() && forwardPresent) return filtered
 
 			return nextNodes
 		}
