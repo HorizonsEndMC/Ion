@@ -19,7 +19,7 @@ class TestBoidWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace,
-) : CannonWeaponSubsystem<TestBoidCannonBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(TestBoidWeaponSubsystem::class)) {
+) : CannonWeaponSubsystem<TestBoidCannonBalancing>(starship, pos, face, starship.balancingManager.getSubsystemSupplier(TestBoidWeaponSubsystem::class)) {
     override val length: Int = 3
 
     override fun fire(loc: Location, dir: Vector, shooter: Damager, target: Vector) {

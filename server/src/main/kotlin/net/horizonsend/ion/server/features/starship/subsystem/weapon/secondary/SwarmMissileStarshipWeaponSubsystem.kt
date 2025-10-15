@@ -37,7 +37,7 @@ class SwarmMissileStarshipWeaponSubsystem(
     pos: Vec3i,
     override var face: BlockFace,
     private val multiblock: SwarmMissleStarshipWeaponMultiblock,
-) : BalancedWeaponSubsystem<SwarmMissileBalancing>(starship, pos, starship.balancingManager.getWeaponSupplier(SwarmMissileStarshipWeaponSubsystem::class)),
+) : BalancedWeaponSubsystem<SwarmMissileBalancing>(starship, pos, starship.balancingManager.getSubsystemSupplier(SwarmMissileStarshipWeaponSubsystem::class)),
     HeavyWeaponSubsystem,
     ManualWeaponSubsystem,
     DirectionalSubsystem,
