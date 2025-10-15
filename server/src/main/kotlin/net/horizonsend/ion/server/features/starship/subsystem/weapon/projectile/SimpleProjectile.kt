@@ -235,7 +235,7 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 		balancing.entityDamage.deal(entity, shooter, damageType)
 	}
 
-	protected fun addToDamagers(world: World, block: Block, shooter: Damager, points: Int = 1, explosionOccurred: Boolean = false) {
+	protected fun addToDamagers(world: World, block: Block, shooter: Damager, points: Int = 1, explosionOccurred: Boolean = false, runStarshipImpactEvent: Boolean = true) {
 		val x = block.x
 		val y = block.y
 		val z = block.z
@@ -263,7 +263,9 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 
 			otherStarship.lastWeaponName = name
 
-			onImpactStarship(otherStarship, block.location)
+			if (runStarshipImpactEvent) {
+				onImpactStarship(otherStarship, block.location)
+			}
 
 			if (!ProtectionListener.isProtectedCity(block.location)) {
 				CombatTimer.evaluateSvs(shooter, otherStarship)
