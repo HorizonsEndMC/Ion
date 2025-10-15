@@ -270,7 +270,7 @@ object StarshipCruising : IonServerComponent() {
 				controller.userErrorAction("Starship is decelerating")
 			} else {
 				if (starship.isDirectControlEnabled) return
-				controller.userErrorAction("Starship is not cruising")
+				if (!Hyperspace.isWarmingUp(starship)) controller.userErrorAction("Starship is not cruising")
 			}
 			return
 		}

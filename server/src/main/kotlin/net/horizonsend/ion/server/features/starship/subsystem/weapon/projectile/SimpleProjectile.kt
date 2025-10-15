@@ -176,7 +176,7 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 			AreaShields.withExplosionPowerOverride(fraction * explosionPower * areaShieldDamageMultiplier) {
 				if (!hasHit) {
 					// shields/area shields cancel explosion damage
-					explosionOccurred = world.createExplosion(newLoc, explosionPower)
+					explosionOccurred = if (explosionPower > 0.0) world.createExplosion(newLoc, explosionPower) else false
 
 					if (explosionPower > 0) {
 						val base = explosionPower.coerceAtLeast(1f)
@@ -185,7 +185,7 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 						toPlayersInRadius(newLoc, /* visibility radius */ 500.0) { player ->
 							val useAlt = player.getSetting(PlayerSettings::useAlternateShieldHitParticle) ?: return@toPlayersInRadius
 
-							if (useAlt == true) {
+							if (useAlt != true) {
 								// Original behavior (large single flash)
 								player.spawnParticle(
 									Particle.FLASH,
@@ -235,7 +235,7 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 		balancing.entityDamage.deal(entity, shooter, damageType)
 	}
 
-	protected fun addToDamagers(world: World, block: Block, shooter: Damager, points: Int = 1, explosionOccurred: Boolean = false) {
+	protected fun addToDamagers(world: World, block: Block, shooter: Damager, points: Int = 1, explosionOccurred: Boolean = false, runStarshipImpactEvent: Boolean = true) {
 		val x = block.x
 		val y = block.y
 		val z = block.z
@@ -263,7 +263,9 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 
 			otherStarship.lastWeaponName = name
 
-			onImpactStarship(otherStarship, block.location)
+			if (runStarshipImpactEvent) {
+				onImpactStarship(otherStarship, block.location)
+			}
 
 			if (!ProtectionListener.isProtectedCity(block.location)) {
 				CombatTimer.evaluateSvs(shooter, otherStarship)

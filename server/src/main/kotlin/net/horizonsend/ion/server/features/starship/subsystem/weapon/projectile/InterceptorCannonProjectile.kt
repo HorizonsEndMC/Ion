@@ -31,7 +31,7 @@ class InterceptorCannonProjectile(
 			impactLocation.createExplosion(calcExplosionSize)
 
 			// explosionOccurred only controls the hull hitmarker sound; just use this to increase damager points on the target
-			addToDamagers(impactLocation.world, impactLocation.block, shooter, calcExplosionSize.roundToInt(), false)
+			addToDamagers(impactLocation.world, impactLocation.block, shooter, calcExplosionSize.roundToInt(), explosionOccurred = false, runStarshipImpactEvent = false)
 		}
 	}
 

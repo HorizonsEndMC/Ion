@@ -55,11 +55,15 @@ object StarshipsSidebar {
         )
     }
 
-    fun speedComponent(directControl: Boolean, cruising: Boolean, stopped: Boolean, blocked: Boolean): Component {
+    fun speedComponent(directControl: Boolean, directControlBoosting: Boolean, cruising: Boolean, stopped: Boolean, blocked: Boolean): Component {
         val component = Component.text()
 
         if (directControl) {
             component.append(Component.text("DC", GOLD))
+            if (directControlBoosting) {
+                component.appendSpace()
+                component.append(Component.text("BOOSTING", GOLD))
+            }
             component.appendSpace()
         }
         if (blocked) {

@@ -69,6 +69,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlin.math.ceil
+import kotlin.plus
 
 @CommandAlias("bazaar|ah|auctionhouse|shop|buy")
 object BazaarCommand : SLCommand() {
@@ -266,7 +267,7 @@ object BazaarCommand : SLCommand() {
 
 		if (items.isEmpty()) return@asyncCommand sender.userError("This city does not have any items listed on the bazaar.")
 
-		exportSellOrders(items, sender)
+		exportSellOrders(items, sender, true)
 	}
 
 	@Subcommand("export")
@@ -284,7 +285,7 @@ object BazaarCommand : SLCommand() {
 
 		if (items.isEmpty()) return@asyncCommand sender.userError("This city does not have any items listed on the bazaar.")
 
-		exportSellOrders(items, sender)
+		exportSellOrders(items, sender, false)
 	}
 
 	@Suppress("Unused")
@@ -471,7 +472,7 @@ object BazaarCommand : SLCommand() {
 		val items = BazaarOrder.find(BazaarOrder::player eq sender.slPlayerId).toList()
 
 		if (items.isEmpty()) return@asyncCommand sender.userError("This city does not have any orders on the bazaar.")
-		exportBuyOrders(items, sender)
+		exportBuyOrders(items, sender, true)
 	}
 
 	@Subcommand("order export")
@@ -488,24 +489,25 @@ object BazaarCommand : SLCommand() {
 		val items = BazaarOrder.find(BazaarOrder::cityTerritory eq city.territoryId).toList()
 
 		if (items.isEmpty()) return@asyncCommand sender.userError("This city does not have any orders on the bazaar.")
-		exportBuyOrders(items, sender)
+		exportBuyOrders(items, sender, false)
 	}
 
 	private fun exportSellOrders(
 		items: List<BazaarItem>,
-		sender: Player
+		sender: Player,
+		showPrivateInfo: Boolean
 	) {
 		// Construct CSV string
-		val stringBuilder: StringBuilder = StringBuilder("Seller,Trade City,Item,Price,Stock,Balance").appendLine()
+		val stringBuilder: StringBuilder = StringBuilder("Seller,Trade City,Item,Price,Stock" + if (showPrivateInfo) ",Balance" else "").appendLine()
 
 		for (item in items) {
 			stringBuilder.appendLine(
-				sender.name + ',' +
+				SLPlayer[item.seller]?.lastKnownName + ',' +
 						cityName(Regions[item.cityTerritory]) + ',' +
 						item.itemString + ',' +
 						item.price.roundToHundredth() + ',' +
 						item.stock + ',' +
-						item.balance.roundToHundredth()
+						if (showPrivateInfo) item.balance.roundToHundredth() else ""
 			)
 		}
 
@@ -531,19 +533,20 @@ object BazaarCommand : SLCommand() {
 	
 	private fun exportBuyOrders(
 		items: List<BazaarOrder>,
-		sender: Player
+		sender: Player,
+		showPrivateInfo: Boolean
 	) {
 		// Construct CSV string
 		val stringBuilder: StringBuilder =
-			StringBuilder("Buyer,Trade City,Item,Price,Balance,Requested Quantity,Fulfilled Quantity,Stock").appendLine()
+			StringBuilder("Buyer,Trade City,Item,Price" + if (showPrivateInfo) ",Balance" else "" + ",Requested Quantity,Fulfilled Quantity,Stock").appendLine()
 
 		for (item in items) {
 			stringBuilder.appendLine(
-				sender.name + ',' +
+				SLPlayer[item.player]?.lastKnownName + ',' +
 						cityName(Regions[item.cityTerritory]) + ',' +
 						item.itemString + ',' +
 						item.pricePerItem.roundToHundredth() + ',' +
-						item.balance.roundToHundredth() + ',' +
+						if (showPrivateInfo) item.balance.roundToHundredth().toString() + ',' else "" +
 						item.requestedQuantity + ',' +
 						item.fulfilledQuantity + ',' +
 						item.stock

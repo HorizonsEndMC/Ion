@@ -56,7 +56,7 @@ object StarshipWeapons {
 		if (queuedShots.any { it.weapon is HeavyWeaponSubsystem }) {
 			ship.debug("we have heavy weapons")
 
-			val heavyWeaponTypes = queuedShots.filter { it.weapon is HeavyWeaponSubsystem }.map { it.javaClass.simpleName }.distinct()
+			val heavyWeaponTypes = queuedShots.filter { it.weapon is HeavyWeaponSubsystem }.map { it.weapon.javaClass.simpleName }.distinct()
 
 			ship.debug("heavyWeaponTypes = ${heavyWeaponTypes.joinToString(", ")}")
 

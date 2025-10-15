@@ -92,7 +92,8 @@ object SubsystemDetector {
 				type == Material.REDSTONE_LAMP ||
 				type == Material.SEA_LANTERN ||
 				type == Material.MAGMA_BLOCK ||
-				type.isFroglight
+				type.isFroglight ||
+				type == Material.SHROOMLIGHT
 			) {
 				potentialThrusterBlocks += block
 			}
@@ -172,6 +173,8 @@ object SubsystemDetector {
 		}
 
 		if (multiblock == null) return
+
+		if (!multiblock.signMatchesStructure(sign)) return
 
 		when (multiblock) {
 			is SphereShieldMultiblock -> {

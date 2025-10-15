@@ -118,7 +118,7 @@ object ItemFilterBlock : DirectionalCustomBlock(
 		val filterData = (filterManager.getFilter(key) ?: filterManager.registerFilter(key, this)) as FilterData<ItemStack, ItemFilterMeta>
 
 		if (event.player.isSneaking && clickedItem != null) {
-			if (clickedItem.customItem == CustomItemKeys.WRENCH) return // Being removed
+			if (clickedItem.customItem?.key == CustomItemKeys.WRENCH) return // Being removed
 
 			val filtered = filterData.matchesFilter(clickedItem)
 			event.player.information("Item passes filter: $filtered")

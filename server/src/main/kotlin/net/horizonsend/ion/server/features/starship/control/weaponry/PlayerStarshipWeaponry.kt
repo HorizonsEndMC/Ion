@@ -1,8 +1,10 @@
 package net.horizonsend.ion.server.features.starship.control.weaponry
 
+import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.command.admin.debugBanner
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.cache.PlayerSettingsCache.getSetting
 import net.horizonsend.ion.server.features.starship.AutoTurretTargeting
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
@@ -53,7 +55,11 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 
 		player.debug("player is rclicking")
 
-		if (event.action.isRightClick) {
+		val setting = player.getSetting(PlayerSettings::alternateFireButtons)
+		val firingLightWeapons = if (setting == true && event.action.isRightClick) true else if (setting == false && event.action.isLeftClick) true else false
+		val firingHeavyWeapons = if (setting == true && event.action.isLeftClick) true else if (setting == false && event.action.isRightClick) true else false
+
+		if (firingHeavyWeapons) {
 			val damager = player.damager()
 			val elapsedSinceRightClick = System.nanoTime() - rightClickTimes.getOrDefault(damager, 0)
 
@@ -73,7 +79,7 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 
 		player.debug("Didn't click sign, trying to fire")
 
-		manualFire(player, starship, event.action.isLeftClick, player.inventory.itemInMainHand)
+		manualFire(player, starship, firingLightWeapons, player.inventory.itemInMainHand)
 
 		player.debugBanner("END")
 	}
@@ -152,7 +158,7 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 	fun manualFire(
 		player: Player,
 		starship: ActiveStarship,
-		leftClick: Boolean,
+		lightWeapons: Boolean,
 		clock: ItemStack
 	) {
 		// Mantain multicrew capabilities by creating a player damager if they're not the pilot
@@ -185,7 +191,7 @@ object PlayerStarshipWeaponry : IonServerComponent() {
 		manualFire(
 			damager,
 			starship,
-			leftClick,
+			lightWeapons,
 			playerFacing,
 			dir,
 			target,

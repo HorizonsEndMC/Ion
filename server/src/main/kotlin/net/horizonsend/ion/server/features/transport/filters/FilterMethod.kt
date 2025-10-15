@@ -43,7 +43,7 @@ enum class FilterMethod(val icon: ItemStack) {
 		override fun matches(data: ItemStack, target: ItemStack): Boolean {
 			val customItem = target.customItem
 			if (customItem != null) {
-				return data.customItem == customItem
+				return data.customItem?.key == customItem.key
 			}
 
 			return target.type == data.type

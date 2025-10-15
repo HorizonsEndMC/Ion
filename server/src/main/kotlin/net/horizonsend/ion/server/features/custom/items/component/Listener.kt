@@ -94,7 +94,7 @@ class Listener<E: Event, T: CustomItem>(
 			preCheck = { event, customItem, itemStack ->
 				val damager = event.damager as? LivingEntity ?: return@Listener false
 				val itemInHand = damager.equipment?.itemInMainHand ?: return@Listener false
-				itemInHand.customItem == customItem
+				itemInHand.customItem?.key == customItem.key
 			},
 			eventReceiver =  handleEvent
 		)
