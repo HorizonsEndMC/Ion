@@ -7,8 +7,12 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.starship.Mass
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
+import net.horizonsend.ion.server.features.starship.movement.StarshipOutOfBoundsException
 import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
@@ -74,6 +78,8 @@ class TowedBlocks private constructor(
 		Tasks.async {
 			try {
 				subsystem.starship.debug("Moving ${blocks.size} blocks")
+
+				validateNewExtents(minPoint, maxPoint, transformationAccessor.newWorld ?: oldWorld, transformationAccessor)
 
 				transformationAccessor.execute(
 					positions = blocks,
@@ -238,6 +244,18 @@ class TowedBlocks private constructor(
                 maxPoint = Vec3i(maxX, maxY, maxZ),
                 mass = totalMass
 			))
+		}
+
+		private fun validateNewExtents(min: Vec3i, max: Vec3i, world2: World, transformationAccessor: TransformationAccessor) {
+			val newMin = transformationAccessor.displaceVec3i(min).toLocation(world2)
+			val newMax = transformationAccessor.displaceVec3i(max).toLocation(world2)
+
+			if (!world2.worldBorder.isInside(newMin) || !world2.worldBorder.isInside(newMax))
+			// Handle cases where there are no pilots
+				throw StarshipOutOfBoundsException("Towed load would be outside the world border!")
+
+			if (Regions.find(newMin).any { region -> region is RegionSolarSiegeZone || region is RegionCapturableStation }) throw StarshipOutOfBoundsException("Towed loads can't enter siege zones!")
+			if (Regions.find(newMax).any { region -> region is RegionSolarSiegeZone || region is RegionCapturableStation }) throw StarshipOutOfBoundsException("Towed loads can't enter siege zones!")
 		}
 	}
 }
