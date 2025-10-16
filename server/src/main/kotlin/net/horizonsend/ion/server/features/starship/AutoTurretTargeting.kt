@@ -16,11 +16,7 @@ object AutoTurretTargeting : IonServerComponent() {
 			val player = Bukkit.getPlayer(name)
 			if (player != null) {
 				val starship = ActiveStarships.findByPilot(player)
-				if (starship != null) {
-					starship.blocks.random()?.let { Vec3i(it).toLocation(starship.world) }
-				} else {
-					Bukkit.getPlayer(name)?.location
-				}
+                starship?.centerOfMass?.toLocation(starship.world) ?: Bukkit.getPlayer(name)?.location
 			} else {
 				Bukkit.getPlayer(name)?.location
 			}
