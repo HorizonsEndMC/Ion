@@ -54,7 +54,7 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.DisposalMultiblo
 import net.horizonsend.ion.server.features.multiblock.type.misc.DisposalMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.misc.ElevatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ExpandableAirlock
-import net.horizonsend.ion.server.features.multiblock.type.misc.ExpandableBoardingRampMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.misc.ExpandableBoardingRampBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ItemSplitterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.LargeElevatorMultiblock
@@ -447,7 +447,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableRight)
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableLeft)
 
-		registerMultiblock(ExpandableBoardingRampMultiblock)
+		registerMultiblock(ExpandableBoardingRampBaseMultiblock)
 
 		registerMultiblock(AntiAirCannonBaseMultiblock)
 
