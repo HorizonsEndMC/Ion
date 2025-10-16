@@ -403,9 +403,11 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(HyperdriveMultiblockClass3)
 		registerMultiblock(HyperdriveMultiblockClass4)
 
-		registerMultiblock(TractorBeamBaseMultiblock.HorizontalTractorBeamBaseMultiblock)
-		registerMultiblock(TractorBeamBaseMultiblock.UpTractorBeamBaseMultiblock)
-		registerMultiblock(TractorBeamBaseMultiblock.DownTractorBeamBaseMultiblock)
+		if (ConfigurationFiles.featureFlags().tractorBeams) {
+			registerMultiblock(TractorBeamBaseMultiblock.HorizontalTractorBeamBaseMultiblock)
+			registerMultiblock(TractorBeamBaseMultiblock.UpTractorBeamBaseMultiblock)
+			registerMultiblock(TractorBeamBaseMultiblock.DownTractorBeamBaseMultiblock)
+		}
 
 		// Starship shields
 		registerMultiblock(ShieldMultiblockClass08Right)
@@ -447,14 +449,14 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableRight)
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableLeft)
 
-		registerMultiblock(ExpandableBoardingRampBaseMultiblock)
+		if (ConfigurationFiles.featureFlags().boardingRamps) registerMultiblock(ExpandableBoardingRampBaseMultiblock)
 
 		registerMultiblock(AntiAirCannonBaseMultiblock)
 
 		registerMultiblock(BasicFluidStorageTankMultiblock)
 		registerMultiblock(CanisterUnloaderMultiblock)
 
-		if (ConfigurationFiles.featureFlags().graphTransfer) {
+		if (ConfigurationFiles.featureFlags().bigUpdateMultiblocks) {
 			registerMultiblock(ChemicalProcessorMultiblock)
 			registerMultiblock(PumpMultiblock)
 
