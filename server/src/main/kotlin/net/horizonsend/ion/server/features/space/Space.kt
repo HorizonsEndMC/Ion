@@ -67,6 +67,33 @@ object Space : IonServerComponent() {
 			}
 		)
 
+	fun isCelestialBody(world: World, x: Double, y: Double, z: Double): Boolean {
+		fun check(loc: Vec3i, radius: Int): Boolean {
+			return distanceSquared(
+				x,
+				y,
+				z,
+				loc.x.toDouble(),
+				loc.y.toDouble(),
+				loc.z.toDouble()
+			) <= radius.squared()
+		}
+
+		for (star in getStars(world)) {
+			if (check(star.location, star.outerSphereRadius)) {
+				return true
+			}
+		}
+
+		for (planet in getAllPlanets(world)) {
+			if (check(planet.location, planet.atmosphereRadius)) {
+				return true
+			}
+		}
+
+		return false
+	}
+
 	override fun onEnable() {
 		reload()
 
@@ -81,30 +108,7 @@ object Space : IonServerComponent() {
 			val y = event.block.y.toDouble()
 			val z = event.block.z.toDouble()
 
-			fun check(loc: Vec3i, radius: Int): Boolean {
-				return distanceSquared(
-					x,
-					y,
-					z,
-					loc.x.toDouble(),
-					loc.y.toDouble(),
-					loc.z.toDouble()
-				) <= radius.squared()
-			}
-
-			for (star in getStars()) {
-				if (check(star.location, star.outerSphereRadius)) {
-					event.isCancelled = true
-					return@listen
-				}
-			}
-
-			for (planet in getAllPlanets()) {
-				if (check(planet.location, planet.atmosphereRadius)) {
-					event.isCancelled = true
-					return@listen
-				}
-			}
+			if (isCelestialBody(world, x, y, z)) event.isCancelled = true
 		}
 
 		listen<BlockFadeEvent> { event ->

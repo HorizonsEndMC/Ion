@@ -5,7 +5,9 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield
 import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TractorBeamBaseMultiblock
+import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -227,13 +229,23 @@ class TractorBeamSubsystem(
 			return false
 		}
 
-		if (block.world.ion.detectionForbiddenBlocks.contains(toBlockKey(block.x, block.y, block.z))) return false
+		if (block.world.ion.detectionForbiddenBlocks.contains(toBlockKey(block.x, block.y, block.z))) {
+			return false
+		}
 
 		if (ActiveStarships.findByBlock(block) != null) {
 			return false
 		}
 
 		if (DeactivatedPlayerStarships.getContaining(block.world, block.x, block.y, block.z) != null) {
+			return false
+		}
+
+		if (Space.isCelestialBody(starship.world, block.x.toDouble(), block.y.toDouble(), block.z.toDouble())) {
+			return false
+		}
+
+		if (starship.world.ion.multiblockManager.getMultiblockEntity(block.x, block.y, block.z) is AreaShield.AreaShieldEntity) {
 			return false
 		}
 
