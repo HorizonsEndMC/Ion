@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.features.starship.movement.StarshipMovementExc
 import net.horizonsend.ion.server.features.starship.movement.StarshipOutOfBoundsException
 import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
+import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
@@ -28,6 +29,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
@@ -79,7 +81,8 @@ class TowedBlocks private constructor(
 			try {
 				subsystem.starship.debug("Moving ${blocks.size} blocks")
 
-				validateNewExtents(minPoint, maxPoint, transformationAccessor.newWorld ?: oldWorld, transformationAccessor)
+				val pilot = subsystem.starship.playerPilot ?: throw StarshipMovementException("")
+				validateNewExtents(minPoint, maxPoint, transformationAccessor.newWorld ?: oldWorld, transformationAccessor, pilot)
 
 				transformationAccessor.execute(
 					positions = blocks,
@@ -246,7 +249,7 @@ class TowedBlocks private constructor(
 			))
 		}
 
-		private fun validateNewExtents(min: Vec3i, max: Vec3i, world2: World, transformationAccessor: TransformationAccessor) {
+		private fun validateNewExtents(min: Vec3i, max: Vec3i, world2: World, transformationAccessor: TransformationAccessor, player: Player) {
 			val newMin = transformationAccessor.displaceVec3i(min).toLocation(world2)
 			val newMax = transformationAccessor.displaceVec3i(max).toLocation(world2)
 
@@ -254,8 +257,20 @@ class TowedBlocks private constructor(
 			// Handle cases where there are no pilots
 				throw StarshipOutOfBoundsException("Towed load would be outside the world border!")
 
-			if (Regions.find(newMin).any { region -> region is RegionSolarSiegeZone || region is RegionCapturableStation }) throw StarshipOutOfBoundsException("Towed loads can't enter siege zones!")
-			if (Regions.find(newMax).any { region -> region is RegionSolarSiegeZone || region is RegionCapturableStation }) throw StarshipOutOfBoundsException("Towed loads can't enter siege zones!")
+			fun checkRegions(location: Location) {
+				val regions = Regions.find(location)
+
+				for (region in regions) {
+					when (region) {
+						is RegionSolarSiegeZone -> throw StarshipOutOfBoundsException("Towed loads can't enter siege zones!")
+						is RegionCapturableStation -> throw StarshipOutOfBoundsException("Towed loads can't enter siege zones!")
+						else -> if (ProtectionListener.isRegionDenied(player, location)) throw StarshipOutOfBoundsException("You don't have access to that territory!")
+					}
+				}
+			}
+
+			checkRegions(newMin)
+			checkRegions(newMax)
 		}
 	}
 }
