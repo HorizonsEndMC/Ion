@@ -33,6 +33,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -223,7 +224,12 @@ class TractorBeamSubsystem(
 
 	fun verifyBlock(player: Player, block: Block): Boolean {
 		val type = block.getTypeSafe() ?: return false
-		if (type.isAir) return false
+
+		when {
+			type.isAir -> return false
+			type == Material.WATER -> return false
+			type == Material.LAVA -> return false
+		}
 
 		if (starship.contains(block.x, block.y, block.z)) {
 			return false
