@@ -35,6 +35,9 @@ dependencies:
   - name: LiteBans
     required: false
 
+  - name: WorldGuard
+    required: false
+
 load-after:
   - name: WorldEdit
   - name: Citizens

@@ -4,6 +4,9 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandCompletion
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Subcommand
+import com.sk89q.worldguard.WorldGuard
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin
+import com.sk89q.worldguard.protection.flags.Flags
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.common.extensions.userError
@@ -264,5 +267,15 @@ object StarshipDebugCommand : SLCommand() {
 
 		ship.forecastEnabled = !ship.forecastEnabled
 		sender.information("Toggled forecast for $shipIdentifier to ${ship.forecastEnabled}")
+	}
+
+	@Suppress("Unused")
+	@Subcommand("testworldguard")
+	@CommandCompletion("@autoTurretTargets")
+	fun testAny(sender: Player) {
+		val worldguard = WorldGuard.getInstance()
+		val wrappedPlayer = WorldGuardPlugin.inst().wrapPlayer(sender)
+		val canBuild = worldguard.platform.regionContainer.createQuery().testState(wrappedPlayer.location, wrappedPlayer, Flags.BUILD, Flags.BLOCK_BREAK)
+		sender.information(canBuild.toString())
 	}
 }

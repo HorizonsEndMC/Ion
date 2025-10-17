@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.misc.tractor
 
+import com.sk89q.worldguard.protection.flags.Flags
 import io.papermc.paper.raytracing.RayTraceTarget
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
@@ -32,6 +33,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
+import net.horizonsend.ion.server.miscellaneous.utils.hooks.isWorldGuardDenied
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -252,6 +254,10 @@ class TractorBeamSubsystem(
 		}
 
 		if (starship.world.ion.multiblockManager.getMultiblockEntity(block.x, block.y, block.z) is AreaShield.AreaShieldEntity) {
+			return false
+		}
+
+		if (isWorldGuardDenied(player, block.location, Flags.BUILD, Flags.BLOCK_BREAK)) {
 			return false
 		}
 

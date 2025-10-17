@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.misc.tractor
 
+import com.sk89q.worldguard.protection.flags.Flags
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -27,6 +28,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.hooks.isWorldGuardDenied
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
@@ -256,6 +258,9 @@ class TowedBlocks private constructor(
 			if (!world2.worldBorder.isInside(newMin) || !world2.worldBorder.isInside(newMax))
 			// Handle cases where there are no pilots
 				throw StarshipOutOfBoundsException("Towed load would be outside the world border!")
+
+			if (isWorldGuardDenied(player, newMin, Flags.BUILD, Flags.BLOCK_BREAK)) throw StarshipOutOfBoundsException("You don't have access to that area!")
+			if (isWorldGuardDenied(player, newMax, Flags.BUILD, Flags.BLOCK_BREAK)) throw StarshipOutOfBoundsException("You don't have access to that area!")
 
 			fun checkRegions(location: Location) {
 				val regions = Regions.find(location)
