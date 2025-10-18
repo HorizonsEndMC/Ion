@@ -189,7 +189,12 @@ data class HeavyLaserBalancing(
 
 @Serializable
 data class PhaserBalancing(
-	override val fireRestrictions: FireRestrictions = FireRestrictions(maxBlockCount = 12000),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(maxBlockCount = 12000, incompatibleMultiblocks = listOf(
+		IncompatibleSubsystemInfo(
+			SwarmMissileStarshipWeaponSubsystem::class.java,
+			"Phasers are incompatible with swarm missiles!"
+		)
+	)),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(10),
 	override val firePowerConsumption: Int = 50000,
 	override val isForwardOnly: Boolean = false,
@@ -259,7 +264,12 @@ data class ArsenalRocketBalancing(
 @Serializable
 data class SwarmMissileBalancing(
 	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(6),
-	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, incompatibleMultiblocks = listOf(
+		IncompatibleSubsystemInfo(
+			PhaserWeaponSubsystem::class.java,
+			"Swarm missiles are incompatible with phasers!"
+		)
+	)),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override val firePowerConsumption: Int = 32846,
 	override val isForwardOnly: Boolean = false,

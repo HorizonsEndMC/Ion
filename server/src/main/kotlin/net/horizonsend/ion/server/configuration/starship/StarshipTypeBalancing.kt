@@ -534,6 +534,19 @@ data class RequiredSubsystemInfo(
 }
 
 @Serializable
+data class IncompatibleSubsystemInfo(
+	@Serializable(with = SubsystemSerializer::class) val subsystem: Class<out @Contextual StarshipSubsystem>,
+	val failMessage: String,
+) {
+	/**
+	 * Tests whether the starship subsystems contain incompatible multiblocks
+	 **/
+	fun checkRequirements(subsystems: LinkedList<StarshipSubsystem>): Boolean {
+		return (subsystems.groupBy { it.javaClass }[subsystem]?.count() ?: 0) <= 0
+	}
+}
+
+@Serializable
 data class StarshipSounds(
 	val pilot: SoundInfo = SoundInfo("minecraft:block.beacon.activate", volume = 5f, pitch = 0.05f),
 	val release: SoundInfo = SoundInfo("minecraft:block.beacon.deactivate", volume = 5f, pitch = 0.05f),
@@ -697,7 +710,8 @@ sealed interface StarshipWeaponBalancing<T : StarshipProjectileBalancing> {
 	data class FireRestrictions(
 		val canFire: Boolean = true,
 		val minBlockCount: Int = 0,
-		val maxBlockCount: Int = Int.MAX_VALUE
+		val maxBlockCount: Int = Int.MAX_VALUE,
+		val incompatibleMultiblocks: List<IncompatibleSubsystemInfo> = listOf(),
 	)
 }
 

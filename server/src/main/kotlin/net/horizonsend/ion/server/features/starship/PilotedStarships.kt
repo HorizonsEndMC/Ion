@@ -40,6 +40,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.misc.MiningLaserSu
 import net.horizonsend.ion.server.features.starship.subsystem.reactor.ReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.ShieldSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.playSoundInRadius
@@ -415,6 +416,17 @@ object PilotedStarships : IonServerComponent() {
 				for (requiredSubsystem in activePlayerStarship.balancing.requiredMultiblocks) {
 					if (!requiredSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
 						player.userError("Subsystem requirement not met! ${requiredSubsystem.failMessage}")
+						DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
+						return@activateAsync
+					}
+				}
+			}
+
+			for (subsystem in activePlayerStarship.weapons) {
+				if (subsystem !is BalancedWeaponSubsystem<*>) continue
+				for (incompatibleSubsystem in subsystem.balancing.fireRestrictions.incompatibleMultiblocks) {
+					if (!incompatibleSubsystem.checkRequirements(activePlayerStarship.subsystems)) {
+						player.userError("Subsystem requirement not met! ${incompatibleSubsystem.failMessage}")
 						DeactivatedPlayerStarships.deactivateAsync(activePlayerStarship)
 						return@activateAsync
 					}
