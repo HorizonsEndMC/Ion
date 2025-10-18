@@ -190,10 +190,12 @@ data class HeavyLaserBalancing(
 @Serializable
 data class PhaserBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(maxBlockCount = 12000, incompatibleMultiblocks = listOf(
+		/*
 		IncompatibleSubsystemInfo(
 			SwarmMissileStarshipWeaponSubsystem::class.java,
 			"Phasers are incompatible with swarm missiles!"
 		)
+		 */
 	)),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(10),
 	override val firePowerConsumption: Int = 50000,
@@ -265,10 +267,12 @@ data class ArsenalRocketBalancing(
 data class SwarmMissileBalancing(
 	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(6),
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, incompatibleMultiblocks = listOf(
+		/*
 		IncompatibleSubsystemInfo(
 			PhaserWeaponSubsystem::class.java,
 			"Swarm missiles are incompatible with phasers!"
 		)
+		 */
 	)),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
 	override val firePowerConsumption: Int = 32846,
@@ -286,8 +290,8 @@ data class SwarmMissileBalancing(
 		override val range: Double = 170.0,
 		override val speed: Double = 100.0,
 		override val explosionPower: Float = 2.0f,
-		override val starshipShieldDamageMultiplier: Double = 2.0,
-		override val areaShieldDamageMultiplier: Double = 1.25,
+		override val starshipShieldDamageMultiplier: Double = 5.8,
+		override val areaShieldDamageMultiplier: Double = 4.0,
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.swarm_missile.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.swarm_missile.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
