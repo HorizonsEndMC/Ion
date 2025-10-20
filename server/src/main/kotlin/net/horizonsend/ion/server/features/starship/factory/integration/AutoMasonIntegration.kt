@@ -24,16 +24,12 @@ class AutoMasonIntegration(
 	private var recipeEnviornment: AutoMasonRecipeEnviornment? = null
 	private val recipes = multimapOf<Material, AutoMasonRecipe>()
 
+	private val inventoryReference = integratedEntity.getInputInventory()?.let(InventoryReference::wrap)
 	private var availableItems: Map<PrintItem, AvailableItemInformation> = mapOf()
 
 	override fun syncSetup(task: ShipFactoryPrintTask) {
 		recipeEnviornment = buildRecipeEnviornment()
 		recipeEnviornment?.wildcard = true
-
-		availableItems = ShipFactoryPrintTask.getAvailableItems(
-			setOfNotNull(integratedEntity.getInputInventory()?.let(InventoryReference::wrap)),
-			taskEntity.settings
-		)
 	}
 
 	override fun asyncSetup(task: ShipFactoryPrintTask) {
@@ -55,6 +51,11 @@ class AutoMasonIntegration(
 	private var transaction: MutableMap<Material, MutableMap<BlockKey, Int>>? = null
 
 	override fun startNewTransaction(task: ShipFactoryPrintTask) {
+		availableItems = ShipFactoryPrintTask.getAvailableItems(
+			setOfNotNull(inventoryReference),
+			taskEntity.settings
+		)
+
 		transaction = mutableMapOf()
 	}
 
