@@ -28,6 +28,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.hooks.isPlotDenied
 import net.horizonsend.ion.server.miscellaneous.utils.hooks.isWorldGuardDenied
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -261,6 +262,9 @@ class TowedBlocks private constructor(
 
 			if (isWorldGuardDenied(player, newMin, Flags.BUILD, Flags.BLOCK_BREAK)) throw StarshipOutOfBoundsException("You don't have access to that area!")
 			if (isWorldGuardDenied(player, newMax, Flags.BUILD, Flags.BLOCK_BREAK)) throw StarshipOutOfBoundsException("You don't have access to that area!")
+
+			if (isPlotDenied(player, newMin)) throw StarshipOutOfBoundsException("You don't have access to that plot!")
+			if (isPlotDenied(player, newMax)) throw StarshipOutOfBoundsException("You don't have access to that plot!")
 
 			fun checkRegions(location: Location) {
 				val regions = Regions.find(location)

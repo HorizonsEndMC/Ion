@@ -33,6 +33,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
+import net.horizonsend.ion.server.miscellaneous.utils.hooks.isPlotDenied
 import net.horizonsend.ion.server.miscellaneous.utils.hooks.isWorldGuardDenied
 import org.bukkit.Location
 import org.bukkit.Material
@@ -258,6 +259,10 @@ class TractorBeamSubsystem(
 		}
 
 		if (isWorldGuardDenied(player, block.location, Flags.BUILD, Flags.BLOCK_BREAK)) {
+			return false
+		}
+
+		if (isPlotDenied(player, block.location)) {
 			return false
 		}
 

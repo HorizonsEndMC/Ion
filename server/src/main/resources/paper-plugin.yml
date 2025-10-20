@@ -38,6 +38,9 @@ dependencies:
   - name: WorldGuard
     required: false
 
+  - name: PlotSquared
+    required: false
+
 load-after:
   - name: WorldEdit
   - name: Citizens
