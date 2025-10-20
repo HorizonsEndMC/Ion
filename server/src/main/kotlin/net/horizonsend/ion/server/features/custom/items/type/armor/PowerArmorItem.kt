@@ -98,7 +98,10 @@ class PowerArmorItem(
 		if (power <= 0) return
 
 		val attributes = getAttributes(itemStack)
-		for (attribute in attributes.filterIsInstance<PotionEffectAttribute>()) attribute.addPotionEffect(entity, this, itemStack)
+		for (attribute in attributes.filterIsInstance<PotionEffectAttribute>()) {
+			if (!attribute.requiredSlot.contains(slot)) continue
+			attribute.addPotionEffect(entity, this, itemStack)
+		}
 
 		if (!getComponent(MOD_MANAGER).getModKeys(itemStack).contains(ItemModKeys.ROCKET_BOOSTING)) return
 		if (entity !is Player) return

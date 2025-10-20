@@ -12,6 +12,7 @@ import net.horizonsend.ion.server.features.custom.items.type.tool.mods.ItemModif
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.potion.PotionEffectType.WATER_BREATHING
 import kotlin.reflect.KClass
 
@@ -23,5 +24,5 @@ object EnvironmentMod : ItemModification {
 	override val crouchingDisables: Boolean = false
 	override val displayName: Component = ofChildren(Component.text("Environment", GRAY), Component.text(" Module", GOLD))
 
-	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(WATER_BREATHING, 20, 1, 1) { _, _, _ -> true })
+	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(setOf(EquipmentSlot.HEAD), WATER_BREATHING, 20, 1, 1) { _, _, _ -> true })
 }

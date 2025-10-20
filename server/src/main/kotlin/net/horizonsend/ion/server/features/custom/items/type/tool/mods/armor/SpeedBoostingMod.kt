@@ -16,6 +16,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor.GOLD
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.entity.Player
+import org.bukkit.inventory.EquipmentSlot
 import org.bukkit.potion.PotionEffectType.SPEED
 import kotlin.reflect.KClass
 
@@ -27,7 +28,7 @@ object SpeedBoostingMod : ItemModification {
 	override val crouchingDisables: Boolean = false
 	override val displayName: Component = ofChildren(Component.text("Speed Boosting", GRAY), Component.text(" Module", GOLD))
 
-	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(SPEED, 60, 2, 1) { entity, _, _ ->
+	override fun getAttributes(): List<CustomItemAttribute> = listOf(PotionEffectAttribute(setOf(EquipmentSlot.LEGS), SPEED, 60, 2, 1) { entity, _, _ ->
 		entity is Player
 			&& hasMovedInLastSecond(entity)
 			&& !entity.world.hasFlag(WorldFlag.ARENA)
