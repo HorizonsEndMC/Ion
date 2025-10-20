@@ -77,7 +77,6 @@ class PlayerDirectControlInput(override val controller: PlayerController) : Dire
 		player.walkSpeed = 0.2f // default
 		player.flySpeed = 0.06f
 		player.isFlying = false
-		player.allowFlight = false
 	}
 
 	override fun handlePlayerHoldItem(event: PlayerItemHeldEvent) {

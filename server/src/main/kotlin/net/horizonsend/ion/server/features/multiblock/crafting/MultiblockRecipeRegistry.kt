@@ -289,7 +289,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 				inputItem = MaterialRequirement(input),
 				centerCheck = category::matches,
 				power = PowerRequirement(10),
-				result = ResultHolder.of(ItemResult.simpleResult(output))
+				result = ResultHolder.of(ItemResult.simpleResult(output, if (category == CenterType.SLAB) 2 else 1))
 			))
 		}
 	}

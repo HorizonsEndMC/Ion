@@ -98,16 +98,13 @@ object CustomBlockListeners : SLEventListener() {
         val itemUsed = event.player.inventory.itemInMainHand
         val location = block.location.toCenterLocation()
 
-        if (itemUsed.enchantments.containsKey(Enchantment.SILK_TOUCH)) Tasks.sync {
-			// Make sure future custom blocks use the same identifier as its custom block identifier
-			for (drop in customBlock.drops.getDrops(itemUsed, true)) {
+		// Make sure future custom blocks use the same identifier as its custom block identifier
+		Tasks.sync {
+			for (drop in customBlock.drops.getDrops(tool = itemUsed, silkTouch = itemUsed.enchantments.containsKey(Enchantment.SILK_TOUCH))) {
 				block.world.dropItem(location, drop)
 			}
-        } else Tasks.sync {
-			for (drop in customBlock.drops.getDrops(itemUsed, false)) {
-				block.world.dropItem(location, drop)
-			}
-        }
+		}
+
 
 		customBlock.removeCallback(block)
     }
