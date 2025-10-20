@@ -32,6 +32,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.hooks.isPlotDenied
 import net.horizonsend.ion.server.miscellaneous.utils.hooks.isWorldGuardDenied
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
@@ -260,11 +261,15 @@ class TowedBlocks private constructor(
 			// Handle cases where there are no pilots
 				throw StarshipOutOfBoundsException("Towed load would be outside the world border!")
 
-			if (isWorldGuardDenied(player, newMin, Flags.BUILD, Flags.BLOCK_BREAK)) throw StarshipOutOfBoundsException("You don't have access to that area!")
-			if (isWorldGuardDenied(player, newMax, Flags.BUILD, Flags.BLOCK_BREAK)) throw StarshipOutOfBoundsException("You don't have access to that area!")
+				if (Bukkit.getPluginManager().isPluginEnabled("worldguard")) {
+					if (isWorldGuardDenied(player, newMin, Flags.BUILD, Flags.BLOCK_BREAK)) throw StarshipOutOfBoundsException("You don't have access to that area!")
+					if (isWorldGuardDenied(player, newMax, Flags.BUILD, Flags.BLOCK_BREAK)) throw StarshipOutOfBoundsException("You don't have access to that area!")
+				}
 
-			if (isPlotDenied(player, newMin)) throw StarshipOutOfBoundsException("You don't have access to that plot!")
-			if (isPlotDenied(player, newMax)) throw StarshipOutOfBoundsException("You don't have access to that plot!")
+				if (Bukkit.getPluginManager().isPluginEnabled("plotsquared")) {
+					if (isPlotDenied(player, newMin)) throw StarshipOutOfBoundsException("You don't have access to that plot!")
+					if (isPlotDenied(player, newMax)) throw StarshipOutOfBoundsException("You don't have access to that plot!")
+				}
 
 			fun checkRegions(location: Location) {
 				val regions = Regions.find(location)

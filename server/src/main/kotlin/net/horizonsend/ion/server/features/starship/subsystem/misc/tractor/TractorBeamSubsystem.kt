@@ -35,6 +35,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
 import net.horizonsend.ion.server.miscellaneous.utils.hooks.isPlotDenied
 import net.horizonsend.ion.server.miscellaneous.utils.hooks.isWorldGuardDenied
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -258,11 +259,11 @@ class TractorBeamSubsystem(
 			return false
 		}
 
-		if (isWorldGuardDenied(player, block.location, Flags.BUILD, Flags.BLOCK_BREAK)) {
+		if (Bukkit.getPluginManager().isPluginEnabled("worldguard") && isWorldGuardDenied(player, block.location, Flags.BUILD, Flags.BLOCK_BREAK)) {
 			return false
 		}
 
-		if (isPlotDenied(player, block.location)) {
+		if (Bukkit.getPluginManager().isPluginEnabled("plotsquared") && isPlotDenied(player, block.location)) {
 			return false
 		}
 

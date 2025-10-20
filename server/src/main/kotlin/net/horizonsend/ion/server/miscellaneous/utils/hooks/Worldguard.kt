@@ -8,6 +8,7 @@ import org.bukkit.Location
 import org.bukkit.entity.Player
 
 fun isWorldGuardDenied(player: Player, location: Location, vararg flags: StateFlag): Boolean = runCatching {
+
 	val worldguard = WorldGuard.getInstance()
 	val wrappedPlayer = WorldGuardPlugin.inst().wrapPlayer(player)
 	return !worldguard.platform.regionContainer.createQuery().testState(BukkitAdapter.adapt(location), wrappedPlayer, *flags)
