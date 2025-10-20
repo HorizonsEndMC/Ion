@@ -50,7 +50,8 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.UP)),
                 drops = BlockLoot(
                     requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_ALUMINUM)
+                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_ALUMINUM),
+					silkTouchDrops = customItemDrop(CustomItemKeys.ALUMINUM_ORE)
                 ),
                 CustomItemKeys.ALUMINUM_ORE
             )
@@ -84,7 +85,8 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.NORTH, BlockFace.UP)),
                 drops = BlockLoot(
                     requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.CHETHERITE)
+                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.CHETHERITE),
+					silkTouchDrops = customItemDrop(CustomItemKeys.CHETHERITE_ORE)
                 ),
                 CustomItemKeys.CHETHERITE_ORE
             )
@@ -107,7 +109,8 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.WEST)),
                 drops = BlockLoot(
                     requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_TITANIUM)
+                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_TITANIUM),
+					silkTouchDrops = customItemDrop(CustomItemKeys.TITANIUM_ORE)
                 ),
                 CustomItemKeys.TITANIUM_ORE
             )
@@ -141,7 +144,8 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 blockData = mushroomBlockData(setOf(BlockFace.UP)),
                 drops = BlockLoot(
                     requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_URANIUM)
+                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_URANIUM),
+					silkTouchDrops = customItemDrop(CustomItemKeys.URANIUM_ORE)
                 ),
                 CustomItemKeys.URANIUM_ORE
             )
