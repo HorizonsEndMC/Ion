@@ -159,7 +159,10 @@ object Wrench : CustomItem(
 		else updateHudEntity(player, projectedLocation, text, scale)
 
 		Tasks.asyncDelay(FLUID_TICK_INTERVAL.toLong()) async2@{
-			if (player.inventory.itemInMainHand.customItem?.key != CustomItemKeys.WRENCH) return@async2 removeEntity(player)
+			if (
+				player.inventory.itemInMainHand.customItem?.key != CustomItemKeys.WRENCH &&
+				player.inventory.itemInOffHand.customItem?.key != CustomItemKeys.WRENCH
+				) return@async2 removeEntity(player)
 
 			val hitResult: RayTraceResult? = player.rayTraceBlocks(7.0, FluidCollisionMode.NEVER)
 			val targeted = hitResult?.hitBlock ?: return@async2 removeEntity(player)
