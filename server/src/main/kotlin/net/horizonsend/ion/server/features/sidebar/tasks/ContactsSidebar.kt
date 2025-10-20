@@ -6,6 +6,7 @@ import net.horizonsend.ion.common.database.schema.misc.Bookmark
 import net.horizonsend.ion.common.database.schema.misc.PlayerSettings
 import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.utils.miscellaneous.squared
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.common.utils.text.repeatString
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.configuration.ServerConfiguration
@@ -37,6 +38,7 @@ import net.horizonsend.ion.server.features.space.spacestations.SpaceStationCache
 import net.horizonsend.ion.server.features.starship.Interdiction
 import net.horizonsend.ion.server.features.starship.LastPilotedStarship
 import net.horizonsend.ion.server.features.starship.PilotedStarships
+import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -134,7 +136,8 @@ object ContactsSidebar {
         }
     }
 
-    private fun playerRelationColor(player: Player, otherController: Controller): NamedTextColor {
+    private fun playerRelationColor(player: Player, otherController: Controller, inFleet: Boolean): NamedTextColor {
+        if (inFleet) return BLUE
         when (otherController) {
             is NoOpController -> return GRAY
             is AIController -> return GRAY
@@ -144,6 +147,19 @@ object ContactsSidebar {
                 return RelationCache[viewerNation, otherNation].color
             }
             else -> return GRAY
+        }
+    }
+
+    private fun shieldStatusColor(percent: Double): NamedTextColor {
+        return when {
+            percent <= 0.05 -> RED
+            percent <= 0.10 -> GOLD
+            percent <= 0.25 -> YELLOW
+            percent <= 0.40 -> GREEN
+            percent <= 0.55 -> DARK_GREEN
+            percent <= 0.70 -> AQUA
+            percent <= 0.85 -> DARK_AQUA
+            else -> BLUE
         }
     }
 
@@ -386,31 +402,32 @@ object ContactsSidebar {
             val direction = getDirectionToObject(vector.clone().subtract(playerVector).normalize())
             val height = vector.y.toInt()
 
+            val fleet = Fleets.findByMember(player)
+            val otherPlayer = if (otherController is ActivePlayerController) otherController.player else null
+            val inFleet = otherPlayer?.let { fleet?.contains(it) } ?: false
+            val fleetStatusEnabled = player.takeIf { it.isOnline }?.getSettingOrThrow(PlayerSettings::fleetStatus) ?: true
+
             val nameString = starship.identifier.take(maxLength)
             val priority = getPriority(player, nameString)
             val color = if (priority && priorityColorChange()) WHITE else when (colorSetting) {
                 ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
-                ContactsColoring.BY_RELATION.ordinal -> playerRelationColor(player, otherController)
+                ContactsColoring.BY_RELATION.ordinal -> playerRelationColor(player, otherController, inFleet)
                 ContactsColoring.MIXED.ordinal -> distanceColor(distance)
                 else -> distanceColor(distance)
             }
             val prefixColor = when (colorSetting) {
-                ContactsColoring.BY_DISTANCE.ordinal -> playerRelationColor(player, otherController)
+                ContactsColoring.BY_DISTANCE.ordinal -> playerRelationColor(player, otherController, inFleet)
                 ContactsColoring.BY_RELATION.ordinal -> distanceColor(distance)
-                ContactsColoring.MIXED.ordinal -> playerRelationColor(player, otherController)
-                else -> playerRelationColor(player, otherController)
+                ContactsColoring.MIXED.ordinal -> playerRelationColor(player, otherController, inFleet)
+                else -> playerRelationColor(player, otherController, inFleet)
             }
             val nameColor = if (priority && priorityColorChange()) WHITE else when (colorSetting) {
                 ContactsColoring.BY_DISTANCE.ordinal -> distanceColor(distance)
-                ContactsColoring.BY_RELATION.ordinal -> playerRelationColor(player, otherController)
-                ContactsColoring.MIXED.ordinal -> playerRelationColor(player, otherController)
+                ContactsColoring.BY_RELATION.ordinal -> playerRelationColor(player, otherController, inFleet)
+                ContactsColoring.MIXED.ordinal -> playerRelationColor(player, otherController, inFleet)
                 else -> distanceColor(distance)
             }
             val name = text(nameString, nameColor)
-
-            val fleet = Fleets.findByMember(player)
-            val otherPlayer = if (otherController is ActivePlayerController) otherController.player else null
-            val inFleet = otherPlayer?.let { fleet?.contains(it) } ?: false
 
             contactsList.add(
                 ContactsData(
@@ -427,9 +444,15 @@ object ContactsSidebar {
                             interdictionTextComponent(interdictionDistance, Interdiction.starshipInterdictionRangeEquation(starship).toInt(), true)
                         } else empty(),
                         if (inFleet) {
-                            if (fleet != null && otherPlayer != null && fleet.leader == otherPlayer.uniqueId) {
-                                fleetCommanderTextComponent()
-                            } else fleetTextComponent()
+                            ofChildren(
+                                if (fleet != null && fleet.leader == otherPlayer.uniqueId) {
+                                    fleetCommanderTextComponent()
+                                } else fleetTextComponent(),
+                                if (fleetStatusEnabled) ofChildren(
+                                    Component.space(),
+                                    fleetStatusTextComponent(starship)
+                                ) else empty(),
+                            )
                         } else empty()
                     ),
                     heading = constructHeadingTextComponent(direction, color),
@@ -859,7 +882,7 @@ object ContactsSidebar {
     private fun constructPrefixTextComponent(icon: String, color: NamedTextColor) =
         text(icon)
             .font(fontKey)
-            .color(color) as TextComponent
+            .color(color)
 
     private fun constructSuffixTextComponent(vararg components: Component): TextComponent {
         val returnComponent = text()
@@ -902,6 +925,23 @@ object ContactsSidebar {
 
     private fun fleetCommanderTextComponent() = text(FLEET_COMMANDER_ICON.text, GOLD).font(fontKey)
 
+    private fun fleetStatusTextComponent(starship: Starship): Component {
+        val totalShieldPercent = starship.shields.sumOf { it.power }.toDouble() / starship.shields.sumOf { it.maxPower }.toDouble()
+        val lowestShield = starship.shields.minByOrNull { it.power }
+        val lowestShieldName = lowestShield?.name ?: "NONE"
+        val lowestShieldPercent = if (lowestShield == null) 0.0 else lowestShield.power.toDouble() / lowestShield.maxPower.toDouble()
+
+        return ofChildren(
+            text((totalShieldPercent * 100).toInt(), shieldStatusColor(totalShieldPercent)),
+            text("/", GRAY),
+            text(lowestShieldName, shieldStatusColor(lowestShieldPercent)),
+            Component.space(),
+            text((lowestShieldPercent * 100).toInt(), shieldStatusColor(lowestShieldPercent)),
+            text("/", GRAY),
+            StarshipsSidebar.hullIntegrityComponent((starship.hullIntegrity * 100).toInt()),
+        )
+    }
+
     private fun beaconTextComponent(text: String?) =
         if (text?.contains("⚠") == true) text("⚠", RED)
         else empty()
@@ -939,7 +979,6 @@ object ContactsSidebar {
             NationRelation.Level.ALLY -> ContactsRelation.ALLY
             NationRelation.Level.NATION -> ContactsRelation.NATION
             NationRelation.Level.NONE -> ContactsRelation.NONE
-            else -> ContactsRelation.AI
         }
     }
 

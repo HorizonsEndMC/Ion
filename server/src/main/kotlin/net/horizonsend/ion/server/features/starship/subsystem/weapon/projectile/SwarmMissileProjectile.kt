@@ -126,7 +126,7 @@ class SwarmMissileProjectile(
         return when {
             distanceRatio <= 0.0 -> 1.0 // projectile is basically inside the target
             distanceRatio >= 1.0 -> 0.0 // projectile is further than the proximity range
-            else -> 1.00262 * 0.0511657.pow(distance / proximityRange) /*1 - distanceRatio*/
+            else -> /*1.00262 * 0.0511657.pow(distance / proximityRange)*/ 1 - distanceRatio
         }
     }
 
@@ -155,6 +155,7 @@ class SwarmMissileProjectile(
         }
     }
 
+    /*
     override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
         if (starship.type != StarshipType.STARFIGHTER) {
             impactLocation.createExplosion(ADDITIONAL_EXPLOSION_POWER)
@@ -164,4 +165,5 @@ class SwarmMissileProjectile(
             )
         }
     }
+     */
 }
