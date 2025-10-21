@@ -10,6 +10,7 @@ import net.horizonsend.ion.common.database.trx
 import org.litote.kmongo.Id
 import org.litote.kmongo.addToSet
 import org.litote.kmongo.and
+import org.litote.kmongo.combine
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
@@ -78,7 +79,7 @@ abstract class SpaceStationCompanion<Owner: DbObject, T: SpaceStationInterface<O
 	fun rename(id: Oid<T>, newName: String) = col.updateOneById(id, setValue(nameProperty, newName))
 
 	fun setLocation(id: Oid<T>, newX: Int, newZ: Int, newWorld: String) = col.updateOneById(
-		id, and(setValue(xProperty, newX), setValue(zProperty, newZ), setValue(worldProperty, newWorld))
+		id, combine(setValue(xProperty, newX), setValue(zProperty, newZ), setValue(worldProperty, newWorld))
 	)
 
 	fun setRadius(id: Oid<T>, newRadius: Int) = col.updateOneById(id, setValue(radiusProperty, newRadius))

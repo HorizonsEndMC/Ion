@@ -326,7 +326,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		markerSet.findAreaMarker(station.name)?.deleteMarker()
+		markerSet.findAreaMarker("${station.name} Solar Siege Zone")?.deleteMarker()
 	}
 
 	fun updateSolarSiege(station: RegionSolarSiegeZone): Unit = syncOnly {

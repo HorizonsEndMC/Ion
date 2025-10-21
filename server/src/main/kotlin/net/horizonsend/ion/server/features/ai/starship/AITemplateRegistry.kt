@@ -4,7 +4,6 @@ import net.horizonsend.ion.common.utils.text.colors.ABYSSAL_DESATURATED_RED
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_LIGHT_TEAL
 import net.horizonsend.ion.common.utils.text.colors.PRIVATEER_MEDIUM_TEAL
-import net.horizonsend.ion.common.utils.text.colors.WATCHER_ACCENT
 import net.horizonsend.ion.common.utils.text.colors.WATCHER_STANDARD
 import net.horizonsend.ion.common.utils.text.colors.吃饭人_STANDARD
 import net.horizonsend.ion.server.configuration.util.IntegerAmount
@@ -1557,6 +1556,8 @@ object AITemplateRegistry {
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.55))
 			.addRewardProvider(CreditRewardProviderConfiguration(3500.0))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = Material.ROTTEN_FLESH.name, dropChance = 0.5f, amount = VariableIntegerAmount(2, 20)))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.HEAVY_CORE.name, StaticIntegerAmount(1), 0.0125f))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.BREEZE_ROD.name, VariableIntegerAmount(1, 2), 0.125f))))
 			.build()
 	)
 
@@ -1589,6 +1590,8 @@ object AITemplateRegistry {
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.NETHER_STAR.name, StaticIntegerAmount(1), 0.25f))))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.SNIFFER_EGG.name, StaticIntegerAmount(1), 0.25f))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.HEAVY_CORE.name, StaticIntegerAmount(1), 0.0125f))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.BREEZE_ROD.name, VariableIntegerAmount(1, 2), 0.125f))))
 			.build()
 	)
 
@@ -1621,6 +1624,8 @@ object AITemplateRegistry {
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.NETHER_STAR.name, StaticIntegerAmount(1), 0.25f))))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.SNIFFER_EGG.name, StaticIntegerAmount(1), 0.25f))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.HEAVY_CORE.name, StaticIntegerAmount(1), 0.0125f))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.BREEZE_ROD.name, VariableIntegerAmount(1, 2), 0.125f))))
 			.build()
 	)
 
@@ -1652,6 +1657,8 @@ object AITemplateRegistry {
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.NETHER_STAR.name, StaticIntegerAmount(1), 0.25f))))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.SNIFFER_EGG.name, StaticIntegerAmount(1), 0.25f))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.HEAVY_CORE.name, StaticIntegerAmount(1), 0.0125f))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.BREEZE_ROD.name, VariableIntegerAmount(1, 2), 0.125f))))
 			.build()
 	)
 
@@ -1683,6 +1690,8 @@ object AITemplateRegistry {
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem("energy_sword_black", StaticIntegerAmount(1), 0.25f))))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.NETHER_STAR.name, StaticIntegerAmount(1), 0.25f))))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.SNIFFER_EGG.name, StaticIntegerAmount(1), 0.25f))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.HEAVY_CORE.name, StaticIntegerAmount(1), 0.0125f))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.BREEZE_ROD.name, VariableIntegerAmount(1, 2), 0.125f))))
 			.build()
 	)
 
@@ -1695,10 +1704,11 @@ object AITemplateRegistry {
 		)
 			.addFactionConfiguration(PUMPKINS)
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.55))
-			.addRewardProvider(CreditRewardProviderConfiguration(3500.0))
+			.addRewardProvider(CreditRewardProviderConfiguration(6500.0))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.ACACIA_SAPLING.name, VariableIntegerAmount(3, 5), 0.25f))))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(CustomItemKeys.PUMPKIN_GRENADE.key, VariableIntegerAmount(0, 3), 1.05f))))
-			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 0.5f, amount = StaticIntegerAmount(1)))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(itemString = CustomItemKeys.SUPERCONDUCTOR.key, dropChance = 0.5f, amount = VariableIntegerAmount(1, 2)))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.RESIN_CLUMP.name, VariableIntegerAmount(5, 7), 0.5f))))
 			.build()
 	)
 
@@ -1711,9 +1721,10 @@ object AITemplateRegistry {
 		)
 			.addFactionConfiguration(PUMPKINS)
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.35))
-			.addRewardProvider(CreditRewardProviderConfiguration(1500.0))
+			.addRewardProvider(CreditRewardProviderConfiguration(5500.0))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.ACACIA_SAPLING.name, VariableIntegerAmount(3, 5), 0.25f))))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(CustomItemKeys.PUMPKIN_GRENADE.key, VariableIntegerAmount(0, 3), 1.0f))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.RESIN_CLUMP.name, VariableIntegerAmount(5, 7), 0.5f))))
 			.build()
 	)
 
@@ -1726,9 +1737,14 @@ object AITemplateRegistry {
 		)
 			.addFactionConfiguration(SKELETONS)
 			.addRewardProvider(SLXPRewardProviderConfiguration(0.35))
-			.addRewardProvider(CreditRewardProviderConfiguration(300.0))
+			.addRewardProvider(CreditRewardProviderConfiguration(700.0))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.BONE.name, VariableIntegerAmount(3, 5), 0.5f))))
 			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.SKELETON_SKULL.name, StaticIntegerAmount(1), 0.25f))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.PALE_OAK_SAPLING.name, VariableIntegerAmount(3, 5), 0.25f))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.OPEN_EYEBLOSSOM.name, VariableIntegerAmount(3, 5), 0.25f))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.PALE_HANGING_MOSS.name, VariableIntegerAmount(3, 5), 0.25f))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.PALE_MOSS_BLOCK.name, VariableIntegerAmount(3, 5), 0.25f))))
+			.addRewardProvider(ItemRewardProviderConfiguration(listOf(DroppedItem(Material.BREEZE_ROD.name, VariableIntegerAmount(1, 2), 0.125f))))
 			.build()
 	)
 
