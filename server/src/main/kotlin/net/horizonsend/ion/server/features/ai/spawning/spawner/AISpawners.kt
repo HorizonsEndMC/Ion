@@ -1284,7 +1284,7 @@ object AISpawners : IonServerComponent(true) {
 					return@Supplier formatLocationSupplier(occupiedWorld, 1000.0, 3000.0).get()
 				},
 				budget = VariableIntegerAmount(3, 5),
-				groupMessage = "<$EXPLORER_LIGHT_CYAN>Horizon Transit Lines<${HE_MEDIUM_GRAY}> {0} spawned at {1}, {3}, in {4}".miniMessage(),
+				groupMessage = "<DARK_RED>A Skuttle swarm<${HE_MEDIUM_GRAY}> {0} has been spotted at {1}, {3}, in {4}!".miniMessage(),
 				individualSpawnMessage = null,
 				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 				targetModeSupplier = { AITarget.TargetMode.MIXED },
@@ -1306,7 +1306,7 @@ object AISpawners : IonServerComponent(true) {
 				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 				targetModeSupplier = { AITarget.TargetMode.MIXED },
 				fleetSupplier = { null },
-				spawnMessage = SpawnMessage.ChatMessage("<#FFA500>A... {0}? has been spotted at {1}, {3}, in {4}".miniMessage())
+				spawnMessage = SpawnMessage.WorldMessage("<#FFA500>A... {0}? has been spotted at {1}, {3}, in {4}".miniMessage())
 			)
 		)}
 
@@ -1329,7 +1329,7 @@ object AISpawners : IonServerComponent(true) {
 				difficultySupplier = DifficultyModule::regularSpawnDifficultySupplier,
 				targetModeSupplier = { AITarget.TargetMode.MIXED },
 				fleetSupplier = { null },
-				spawnMessage = SpawnMessage.ChatMessage("<$ABYSSAL_DESATURATED_RED>We arrive in your \"{4}\".".miniMessage())
+				spawnMessage = SpawnMessage.WorldMessage("<$ABYSSAL_DESATURATED_RED>We arrive in your \"{4}\".".miniMessage())
 			)
 		)}
 
