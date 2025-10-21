@@ -145,6 +145,7 @@ import org.bukkit.Material.CHAINMAIL_HELMET
 import org.bukkit.Material.CHARCOAL
 import org.bukkit.Material.CHERRY_LEAVES
 import org.bukkit.Material.COAL
+import org.bukkit.Material.COBBLESTONE
 import org.bukkit.Material.COBWEB
 import org.bukkit.Material.COMPOSTER
 import org.bukkit.Material.COPPER_BLOCK
@@ -204,6 +205,7 @@ import org.bukkit.Material.RAW_GOLD
 import org.bukkit.Material.REDSTONE
 import org.bukkit.Material.REDSTONE_BLOCK
 import org.bukkit.Material.RED_TERRACOTTA
+import org.bukkit.Material.RESIN_CLUMP
 import org.bukkit.Material.SADDLE
 import org.bukkit.Material.SEA_LANTERN
 import org.bukkit.Material.SHROOMLIGHT
@@ -297,6 +299,7 @@ object Crafting : IonServerComponent() {
 		shapedMaterial("small_dripleaf" , Material.SMALL_DRIPLEAF, shape1 = "xx ", shape2 = " y ", shape3 = "   ", CraftingBookCategory.BUILDING,'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
 		shapedMaterial("big_dripleaf" , Material.BIG_DRIPLEAF, shape1 = "xxx", shape2 = "  y", shape3 = "  y", CraftingBookCategory.BUILDING, 'x' to Material.OAK_LEAVES, 'y' to Material.BAMBOO)
 		shapeless("glowstone_dust", ItemStack(GLOWSTONE_DUST, 4), CraftingBookCategory.MISC, GLOWSTONE)
+		shapeless("resin", ItemStack(RESIN_CLUMP), CraftingBookCategory.MISC, ItemStack(HONEYCOMB, 2), ItemStack(COBBLESTONE, 2))
 
 		Bukkit.removeRecipe(Material.ENDER_CHEST.key)
 		Bukkit.removeRecipe(Material.CHAIN.key)
