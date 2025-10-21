@@ -16,7 +16,7 @@ import java.io.DataOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
-import java.net.URL
+import java.net.URI
 import java.net.URLEncoder
 import java.util.Optional
 import java.util.UUID
@@ -47,7 +47,7 @@ object Skins : IonServerComponent() {
 
 	private fun getFromURL(url: String): SkinData? {
 		return try {
-			val connection: HttpURLConnection = URL("https://api.mineskin.org/generate/url")
+			val connection: HttpURLConnection = URI("https://api.mineskin.org/generate/url").toURL()
 				.openConnection()
 				.apply {
 					doOutput = true
@@ -92,7 +92,7 @@ object Skins : IonServerComponent() {
 				val textureProperty: ProfileProperty = profile.properties.first { it.name == "textures" }
 				return SkinData(id, textureProperty.value, textureProperty.signature!!)
 			}
-		} catch (e: Exception) {
+		} catch (_: Exception) {
 			// mojang's limits can do weird things, move on to the next method!
 		}
 
@@ -101,7 +101,7 @@ object Skins : IonServerComponent() {
 		try {
 			val response: User
 
-			URL(url)
+			URI(url).toURL()
 				.openConnection()
 				.apply {
 					doInput = true
@@ -111,7 +111,7 @@ object Skins : IonServerComponent() {
 				}
 
 			return SkinData(id, response.data.texture.value, response.data.texture.value)
-		} catch (e: IOException) {
+		} catch (_: IOException) {
 			return null
 		}
 	}
