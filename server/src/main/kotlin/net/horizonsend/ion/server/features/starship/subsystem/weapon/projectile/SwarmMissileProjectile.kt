@@ -19,6 +19,7 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
+import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
@@ -58,9 +59,9 @@ class SwarmMissileProjectile(
     override fun tick() {
         if (!flightPath1Completed) {
             // Initial launch - fly straight out of the multiblock
-            direction = initialDir.clone().multiply(0.25) // make the projectile launch parallel from the launcher, and slower
+            direction = initialDir.clone().multiply(5.0 - (TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - firedAtNanos) * 1 / 50)) // make the projectile launch parallel from the launcher; approx. every tick, slow down by 1x speed
 
-            if (distance > 10) {
+            if (distance > 50) {
                 distance = 0.0
                 flightPath1Completed = true
             }
