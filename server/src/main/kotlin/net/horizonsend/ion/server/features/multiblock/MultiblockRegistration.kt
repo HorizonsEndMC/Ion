@@ -218,9 +218,9 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(PowerBankMultiblockTier1)
 		registerMultiblock(PowerBankMultiblockTier2)
 		registerMultiblock(PowerBankMultiblockTier3)
-		registerMultiblock(PowerBankMultiblockTier1, "NewPowerBankMultiblockTier1") //TODO testing only - remove on live
-		registerMultiblock(PowerBankMultiblockTier2, "NewPowerBankMultiblockTier2") //TODO testing only - remove on live
-		registerMultiblock(PowerBankMultiblockTier3, "NewPowerBankMultiblockTier3") //TODO testing only - remove on live
+		registerMultiblockAlias(PowerBankMultiblockTier1, "NewPowerBankMultiblockTier1") //TODO testing only - remove on live
+		registerMultiblockAlias(PowerBankMultiblockTier2, "NewPowerBankMultiblockTier2") //TODO testing only - remove on live
+		registerMultiblockAlias(PowerBankMultiblockTier3, "NewPowerBankMultiblockTier3") //TODO testing only - remove on live
 		registerMultiblock(PowerCellMultiblock)
 
 		registerMultiblock(CreativePowerSourceMultiblock)
@@ -316,9 +316,9 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(MiningLaserMultiblockTier4SideMirrored)
 
 		// Gas
-		registerMultiblock(CanisterGasCollectorMultiblock, "GasCollectorMultiblock")
+		registerMultiblockAlias(CanisterGasCollectorMultiblock, "GasCollectorMultiblock")
 		registerMultiblock(CanisterGasCollectorMultiblock)
-		registerMultiblock(CanisterVentMultiblock, "VentMultiblock")
+		registerMultiblockAlias(CanisterVentMultiblock, "VentMultiblock")
 		registerMultiblock(CanisterVentMultiblock)
 		registerMultiblock(GasPowerPlantMultiblock)
 
@@ -396,7 +396,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(NavigationComputerMultiblockBasic)
 		registerMultiblock(VerticalNavigationComputerMultiblockAdvanced)
 		registerMultiblock(HorizontalNavigationComputerMultiblockAdvanced)
-		registerMultiblock(HorizontalNavigationComputerMultiblockAdvanced, "NavigationComputerMultiblockAdvanced")
+		registerMultiblockAlias(HorizontalNavigationComputerMultiblockAdvanced, "NavigationComputerMultiblockAdvanced")
 
 		registerMultiblock(HyperdriveMultiblockClass1)
 		registerMultiblock(HyperdriveMultiblockClass2)
@@ -441,9 +441,13 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(CryoPodMultiblock)
 		registerMultiblock(AirlockMultiblock)
 		registerMultiblock(ExpandableAirlock)
-		registerMultiblock(ElevatorMultiblock, "TractorBeamMultiblock")
-		registerMultiblock(MediumElevatorMultiblock, "MediumTractorBeamMultiblock")
-		registerMultiblock(LargeElevatorMultiblock, "LargeTractorBeamMultiblock")
+
+		registerMultiblock(ElevatorMultiblock)
+		registerMultiblock(MediumElevatorMultiblock)
+		registerMultiblock(LargeElevatorMultiblock)
+		registerMultiblockAlias(ElevatorMultiblock, "TractorBeamMultiblock") // Legacy alias
+		registerMultiblockAlias(MediumElevatorMultiblock, "MediumTractorBeamMultiblock") // Legacy alias
+		registerMultiblockAlias(LargeElevatorMultiblock, "LargeTractorBeamMultiblock") // Legacy alias
 
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockStandard)
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableRight)
@@ -496,7 +500,7 @@ object MultiblockRegistration : IonServerComponent() {
 	/**
 	 * Registers a multiblock under a different storage identifier. This is to be used in the case a class has to be renamed, or similar.
 	 **/
-	private fun registerMultiblock(multiblock: Multiblock, storageAlias: String) {
+	private fun registerMultiblockAlias(multiblock: Multiblock, storageAlias: String) {
 		if (multiblocks.containsKey(storageAlias)) {
 			throw IllegalArgumentException("Attempted to register duplicate multiblock name! Exisitng: ${multiblocks[storageAlias]}, new: $multiblock")
 		}
