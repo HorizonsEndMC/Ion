@@ -51,6 +51,7 @@ data class SLPlayer(
 
 	var xp: Int = 0,
 	val level: Int = 1,
+	var power: Int = 20,
 
 	var settlement: Oid<Settlement>? = null,
 	var nation: Oid<Nation>? = null,
@@ -165,6 +166,8 @@ data class SLPlayer(
 
 		fun getLevel(id: SLPlayerId): Int? = findPropById(id, SLPlayer::level)
 
+		fun getPower(id: SLPlayerId): Int? = findPropById(id, SLPlayer::power)
+
 		fun getXPAndLevel(id: SLPlayerId): Pair<Int, Int>? {
 			val results: ProjectedResults = findPropsById(
 				id, SLPlayer::xp, SLPlayer::level
@@ -181,6 +184,9 @@ data class SLPlayer(
 
 		fun addXP(id: SLPlayerId, addition: Int): UpdateResult =
 			updateById(id, inc(SLPlayer::xp, addition))
+
+		fun changePower(id: SLPlayerId, addition: Int): UpdateResult =
+			updateById(id, inc(SLPlayer::power, addition))
 
 		fun setXP(id: SLPlayerId, xp: Int): UpdateResult =
 			updateById(id, org.litote.kmongo.setValue(SLPlayer::xp, xp))

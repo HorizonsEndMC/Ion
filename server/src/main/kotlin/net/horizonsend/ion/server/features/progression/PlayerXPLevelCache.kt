@@ -121,6 +121,11 @@ object PlayerXPLevelCache : IonServerComponent() {
 		SLPlayer.addXP(uniqueId.slPlayerId, amount)
 	}
 
+	/** Adds XP to a player in the database, then refreshes the changes */
+	fun addPower(uniqueId: UUID, amount: Int) {
+		SLPlayer.changePower(uniqueId.slPlayerId, amount)
+	}
+
 	/** Sets a player's XP in the database, then refreshes the changes */
 	fun setSLXP(uniqueId: UUID, amount: Int) {
 		SLPlayer.setXP(uniqueId.slPlayerId, amount)
