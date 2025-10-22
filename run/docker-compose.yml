@@ -27,9 +27,7 @@ services:
     container_name: "velocity"
     depends_on:
       - "mongo"
-    ports:
-      - "25565:25577"
-      - "5005:5005"
+    ports: [ 25565:25577 ]
     tty: true
     stdin_open: true
     volumes:
@@ -40,7 +38,6 @@ services:
     environment:
       TYPE: "VELOCITY"
       JVM_XX_OPTS: "-XX:+UseG1GC -XX:G1HeapRegionSize=4M -XX:+UnlockExperimentalVMOptions -XX:+ParallelRefProcEnabled -XX:+AlwaysPreTouch"
-      JVM_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
 
   paper:
     image: "itzg/minecraft-server:java21"
@@ -48,7 +45,7 @@ services:
     depends_on:
       - "mongo"
     ports:
-      #- "5005:5005"
+      - "5005:5005"
       - "8123:8123"
     tty: true
     stdin_open: true
@@ -65,7 +62,7 @@ services:
       USE_AIKAR_FLAGS: "TRUE"
       COPY_CONFIG_DEST: "/data"
       SYNC_SKIP_NEWER_IN_DESTINATION: "FALSE"
-      #JVM_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+      JVM_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
       CREATE_CONSOLE_IN_PIPE: "TRUE"
       FORCE_REDOWNLOAD: false
       PAPER_BUILD: 232
