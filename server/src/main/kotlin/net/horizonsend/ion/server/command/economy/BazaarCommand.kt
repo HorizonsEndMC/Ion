@@ -30,7 +30,6 @@ import net.horizonsend.ion.common.utils.text.toCreditComponent
 import net.horizonsend.ion.server.command.GlobalCompletions.fromItemString
 import net.horizonsend.ion.server.command.GlobalCompletions.toItemString
 import net.horizonsend.ion.server.command.SLCommand
-import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars
 import net.horizonsend.ion.server.features.economy.bazaar.Bazaars.cityName
 import net.horizonsend.ion.server.features.economy.bazaar.Merchants
@@ -45,6 +44,7 @@ import net.horizonsend.ion.server.gui.invui.bazaar.purchase.manage.ListListingMa
 import net.horizonsend.ion.server.gui.invui.misc.util.input.ItemMenu
 import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.utils.VAULT_ECO
+import net.horizonsend.ion.server.miscellaneous.utils.createPastebinHttpRequest
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameComponent
 import net.horizonsend.ion.server.miscellaneous.utils.displayNameString
 import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
@@ -55,9 +55,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.DARK_PURPLE
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.NamedTextColor.LIGHT_PURPLE
-import okhttp3.FormBody
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.bukkit.DyeColor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -576,20 +574,5 @@ object BazaarCommand : SLCommand() {
 	private fun exportOnCooldown(sender: Player): Boolean {
 		val cooldownMillis = exportCooldown[sender.uniqueId]
 		return cooldownMillis != null && Duration.ofMillis(System.currentTimeMillis() - cooldownMillis).toMinutes() < TIME_BETWEEN_EXPORTS_MIN
-	}
-
-	private fun createPastebinHttpRequest(body: String, name: String): Request {
-		val body = FormBody.Builder()
-			.add("api_dev_key", ConfigurationFiles.serverConfiguration().pastebinApiDevKey ?: "")
-			.add("api_option", "paste")
-			.add("api_paste_code", body)
-			.add("api_paste_private", "1")
-			.add("api_paste_expire_date", "10M")
-			.add("api_paste_name", name)
-			.build()
-		return Request.Builder()
-			.url("https://pastebin.com/api/api_post.php")
-			.post(body)
-			.build()
 	}
 }
