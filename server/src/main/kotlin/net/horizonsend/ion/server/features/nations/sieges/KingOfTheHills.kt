@@ -154,19 +154,9 @@ object KingOfTheHills : IonServerComponent() {
 			val world: World = Bukkit.getWorld(kothRegion.world) ?: return
 			if (kothRegion.contains(event.starship.centerOfMass.toLocation(world))) {
 				val pointsGained = when {
-					event.starship.type == StarshipType.STARFIGHTER -> 1
-					event.starship.type == StarshipType.GUNSHIP -> 1
-					event.starship.type == StarshipType.CORVETTE -> 1
-
-					event.starship.type == StarshipType.FRIGATE -> 2
-					event.starship.type == StarshipType.DESTROYER -> 2
-
-					event.starship.type == StarshipType.CRUISER -> 4
-					event.starship.type == StarshipType.BATTLECRUISER -> 4
-
-					event.starship.type == StarshipType.SHUTTLE -> 1
-					event.starship.type == StarshipType.TRANSPORT -> 1
-					event.starship.type == StarshipType.LIGHT_FREIGHTER -> 1
+					event.starship.initialBlockCount <= 4000 -> 1
+					event.starship.initialBlockCount in 4001..12000 -> 2
+					event.starship.initialBlockCount >= 12001 -> 4
 
 					else -> return log.error("Pilot is flying something hitherto unknown to mankind.")
 				}

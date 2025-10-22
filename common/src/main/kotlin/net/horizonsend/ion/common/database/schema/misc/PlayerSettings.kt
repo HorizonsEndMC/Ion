@@ -11,7 +11,7 @@ import org.litote.kmongo.id.StringId
 data class PlayerSettings(
 	override val _id: StringId<PlayerSettings>,
 
-	var contactsDistance: Int = 6000,
+	var contactsDistance: Int = 2500,
 	var contactsMaxNameLength: Int = 64,
 	var contactsSort: Int = 0,
 	var contactsColoring: Int = 0,

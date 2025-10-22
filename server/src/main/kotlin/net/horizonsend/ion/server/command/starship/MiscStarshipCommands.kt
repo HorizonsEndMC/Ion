@@ -664,11 +664,11 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			val size: Int = starship.initialBlockCount
 			totalBlocks += size
 
-			var worldName = starship.world.key.toString().substringAfterLast(":").replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+		//	var worldName = starship.world.key.toString().substringAfterLast(":").replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
-			if (worldName == "Overworld") {
-				worldName = starship.world.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
-			}
+		//	if (worldName == "Overworld") {
+		//		worldName = starship.world.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+		//	}
 
 			val name: Component = when (controller) {
 				is PlayerController -> {
@@ -692,7 +692,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 				starship.getDisplayName(),
 				name,
 				bracketed(text(starship.initialBlockCount, WHITE)),
-				worldName
+			//	worldName
 			).hoverEvent(ofChildren(text("${starship.initialBlockCount} block "), starship.type.displayNameComponent))
 
 			sender.sendMessage(line)

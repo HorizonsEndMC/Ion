@@ -4,7 +4,15 @@ import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.userErrorAction
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.horizonsend.ion.server.IonServer
+import net.horizonsend.ion.server.configuration.ServerConfiguration
 import net.horizonsend.ion.server.core.IonServerComponent
+import net.horizonsend.ion.server.features.nations.NationsBalancing
+import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
+import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
+import net.horizonsend.ion.server.features.player.CombatTimer
+import net.horizonsend.ion.server.features.sidebar.tasks.ContactsSidebar
+import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.PilotedStarships
 import net.horizonsend.ion.server.features.starship.StarshipType
@@ -25,12 +33,16 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWea
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.StarshipWeapons.fireQueuedShots
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.interfaces.AutoWeaponSubsystem
+import net.horizonsend.ion.server.features.world.IonWorld.Companion.hasFlag
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.distanceSquared
 import net.horizonsend.ion.server.miscellaneous.utils.enumSetOf
+import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPluginManager
+import org.bukkit.World
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.entity.Projectile
@@ -44,6 +56,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.dynmap.bukkit.DynmapPlugin
 import java.util.LinkedList
 import java.util.concurrent.TimeUnit
+
 
 object ActiveStarshipMechanics : IonServerComponent() {
 	override fun onEnable() {
@@ -282,9 +295,40 @@ object ActiveStarshipMechanics : IonServerComponent() {
 
 		val isNoStarship = starship == null
 		val isHoldingController = isHoldingController(player)
-		val isInvisible = isNoStarship && !isHoldingController
+		val isInPOI = isInPOI(player, starship)
+		val shouldBeVisible = isInSuperPOI(player, starship)
+
+		val isInvisible = isNoStarship && !isHoldingController && !isInPOI && !shouldBeVisible
 		DynmapPlugin.plugin.assertPlayerInvisibility(player, isInvisible, IonServer)
 	}
+
+	private fun isInPOI(player: Player, starship: ActiveControlledStarship?): Boolean {
+		val stars = Space.getStars()
+		val moons = Space.getMoons()
+		val playerContacts = ContactsSidebar.getPlayerContacts(player)
+		val beacons = mutableListOf<ServerConfiguration.HyperspaceBeacon>()
+		for (contact in playerContacts) {
+			if (contact == ServerConfiguration.HyperspaceBeacon) beacons.plus(contact)
+		}
+		for (moon in moons) if (distanceSquared(moon.location, starship!!.centerOfMass) <= 2500) return true
+		for (star in stars) if (distanceSquared(star.location, starship!!.centerOfMass) <= 2500) return true
+		for (beacon in beacons) if (distanceSquared(beacon.spaceLocation.toVec3i(), starship!!.centerOfMass) <= 2500) return true
+		return false
+	}
+
+	private fun isInSuperPOI(player: Player, starship: ActiveControlledStarship?): Boolean {
+		val world = player.world
+		val playerLocation = player.location
+		if (world.hasFlag(WorldFlag.PLANET_WORLD) || world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) return true
+		for (koth in KingOfTheHills.getKOTHS()) {
+			val thisKoth = koth.kothId
+			val kothRegion: RegionKothZone = Regions[thisKoth]
+			if (kothRegion.contains(playerLocation)) return true
+			}
+		if (CombatTimer.isPvpCombatTagged(player)) return true
+		return false
+	}
+
 
 	private fun updateGlowing(player: Player, starship: ActiveControlledStarship?) {
 		val shouldGlow = starship != null

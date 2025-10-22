@@ -87,10 +87,10 @@ object ContactsSidebar {
     fun distanceColor(distance: Int): NamedTextColor {
         return when {
             distance < 500 -> RED
-            distance < 1500 -> GOLD
-            distance < 2500 -> YELLOW
-            distance < 3500 -> DARK_GREEN
-            distance < 6000 -> GREEN
+            distance < 1500 -> YELLOW
+            distance < 2500 -> GREEN
+ //           distance < 3500 -> DARK_GREEN unneeded as max contacts is 2500
+ //           distance < 6000 -> GREEN
             else -> GREEN
         }
     }
