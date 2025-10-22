@@ -277,12 +277,36 @@ object KingOfTheHills : IonServerComponent() {
 	}
 
 	private fun endKoth(koths: Koths) = asyncLocked {
+		val topThree = determineWinner(koths)
 		activeKoths.remove(koths)
 
 		val kothName = KothStation.findPropById(koths.kothId, KothStation::name) ?: "??NULL??"
 
-		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>The King of the Hill has ended!"))
-		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "King of the Hill event has ended!")
+		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>The King of the Hill has ended!\n" +
+			"<gold><bold>First place: ${topThree[0]}\n" +
+			"<grey><bold>Second place: ${topThree[1]}\n" +
+			"<orange><bold>Third place: ${topThree[3]}"))
+		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "The King of the Hill has ended!\n" +
+			"First place: ${topThree[0]}\n" +
+			"Second place: ${topThree[1]}\n" +
+			"Third place: ${topThree[3]}")
+	}
+
+	private fun determineWinner(koths: Koths): MutableList<String> {
+		val rawScores = kothScores[koths.kothId]
+		if (rawScores?.isEmpty() == true) {
+			Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>The King of the Hill has ended, nobody participated!"))
+			Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "King of the Hill event has ended, nobody participated!")
+			check(!rawScores.isEmpty()) {"Empty score, leaving"}
+		}
+		val leaderboard = rawScores?.entries
+			?.sortedByDescending { it.value }
+			?.associate { it.key to it.value }
+		val firstPlace = leaderboard?.entries?.elementAt(0).toString()
+		val secondPlace = leaderboard?.entries?.elementAt(1).toString()
+		val thirdPlace = leaderboard?.entries?.elementAt(2).toString()
+		val topThree = mutableListOf(firstPlace, secondPlace, thirdPlace)
+		return topThree
 	}
 
 	fun beginKoth() = asyncLocked {
