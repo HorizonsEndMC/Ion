@@ -20,7 +20,7 @@ abstract class Mutes: IonComponent() {
 			val db = Database.get()
 			isLitebansEnabled = true
 			db
-		} catch (e: Exception) { throw Error("Litebans is not installed. Mutes will not be checked, but chat will still function.", e) }
+		} catch (e: Throwable) { throw Error("Litebans is not installed. Mutes will not be checked, but chat will still function.", e) }
 	}
 
 	private val muteCache: LoadingCache<UUID, Boolean> = CacheBuilder.newBuilder()
