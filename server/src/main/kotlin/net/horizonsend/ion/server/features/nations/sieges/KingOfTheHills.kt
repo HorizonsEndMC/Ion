@@ -285,11 +285,11 @@ object KingOfTheHills : IonServerComponent() {
 		Notify.chatAndGlobal(MiniMessage.miniMessage().deserialize("<gold>The King of the Hill has ended!\n" +
 			"<gold><bold>First place: ${topThree[0]}\n" +
 			"<grey><bold>Second place: ${topThree[1]}\n" +
-			"<orange><bold>Third place: ${topThree[3]}"))
+			"<orange><bold>Third place: ${topThree[2]}"))
 		Discord.sendMessage(ConfigurationFiles.discordSettings().eventsChannel, "The King of the Hill has ended!\n" +
 			"First place: ${topThree[0]}\n" +
 			"Second place: ${topThree[1]}\n" +
-			"Third place: ${topThree[3]}")
+			"Third place: ${topThree[2]}")
 	}
 
 	private fun determineWinner(koths: Koths): MutableList<String> {
