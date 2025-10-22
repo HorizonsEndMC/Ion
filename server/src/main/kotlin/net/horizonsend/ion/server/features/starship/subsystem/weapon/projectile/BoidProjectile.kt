@@ -14,6 +14,7 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
     name: Component,
     loc: Location,
     dir: Vector,
+    val target: Vector,
     shooter: Damager,
     val otherBoids: MutableList<BoidProjectile<*>>,
     damageType: DamageType
@@ -72,7 +73,7 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
             .add(separationVector.clone().multiply(separationFactor))
             .add(alignVector.clone().subtract(oldDirection).multiply(alignFactor))
             .add(averagePosition.clone().subtract(location.toVector()).multiply(centerFactor))
-            .add(originalDir.clone().multiply(originalDirectionFactor))
+            .add(target.clone().subtract(location.toVector()).normalize().multiply(originalDirectionFactor))
         if (newDirection.lengthSquared() > maxSpeedFactor.pow(2)) {
             newDirection.normalize().multiply(maxSpeedFactor)
         } else if (newDirection.lengthSquared() < (minSpeedFactor).pow(2)) {

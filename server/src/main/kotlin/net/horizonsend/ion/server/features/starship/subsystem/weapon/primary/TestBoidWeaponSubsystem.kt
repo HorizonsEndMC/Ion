@@ -37,6 +37,7 @@ class TestBoidWeaponSubsystem(
                 getName(),
                 randomLoc,
                 randomDir,
+                target,
                 shooter,
                 projectileList,
                 TestBoidCannonStarshipWeaponMultiblock.damageType

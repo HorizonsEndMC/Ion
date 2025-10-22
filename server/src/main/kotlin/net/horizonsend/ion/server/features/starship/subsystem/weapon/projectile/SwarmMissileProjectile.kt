@@ -7,8 +7,6 @@ import net.horizonsend.ion.server.configuration.starship.SwarmMissileBalancing
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.features.client.display.teleportDuration
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
-import net.horizonsend.ion.server.features.starship.StarshipType
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
@@ -19,9 +17,6 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
-import java.util.concurrent.TimeUnit
-import kotlin.math.pow
-import kotlin.math.roundToInt
 
 class SwarmMissileProjectile(
     source: ProjectileSource,
@@ -29,11 +24,12 @@ class SwarmMissileProjectile(
     loc: Location,
     val dir: Vector,
     val initialDir: Vector,
+    target: Vector,
     val color: Color,
     shooter: Damager,
     otherBoids: MutableList<BoidProjectile<*>>,
     damageType: DamageType
-) : BoidProjectile<SwarmMissileBalancing.SwarmMissileProjectileBalancing>(source, name, loc, dir, shooter, otherBoids, damageType), ProximityProjectile {
+) : BoidProjectile<SwarmMissileBalancing.SwarmMissileProjectileBalancing>(source, name, loc, dir, target, shooter, otherBoids, damageType), ProximityProjectile {
     companion object {
         private const val ADDITIONAL_EXPLOSION_POWER = 2.0f
     }
@@ -57,11 +53,12 @@ class SwarmMissileProjectile(
     }
 
     override fun tick() {
+
         if (!flightPath1Completed) {
             // Initial launch - fly straight out of the multiblock
-            direction = initialDir.clone().multiply(5.0 - (TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - firedAtNanos) * 1 / 50)) // make the projectile launch parallel from the launcher; approx. every tick, slow down by 1x speed
+            direction = initialDir.clone().multiply(1) // make the projectile launch parallel from the launcher, and slower
 
-            if (distance > 50) {
+            if (distance > 30) {
                 distance = 0.0
                 flightPath1Completed = true
             }

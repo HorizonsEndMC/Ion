@@ -15,9 +15,10 @@ abstract class BoidParticleProjectile<T: StarshipBoidProjectileBalancing>(
     loc: Location,
     dir: Vector,
     shooter: Damager,
+    target: Vector,
     otherBoids: MutableList<BoidProjectile<*>>,
     damageType: DamageType
-) : BoidProjectile<T>(source, name, loc, dir, shooter, otherBoids, damageType) {
+) : BoidProjectile<T>(source, name, loc, dir, target, shooter, otherBoids, damageType) {
     override fun moveVisually(oldLocation: Location, newLocation: Location, travel: Double) {
         for (lineLoc in oldLocation.alongVector(newLocation.toVector().subtract(oldLocation.toVector()), 10)) {
             spawnParticle(lineLoc.x, lineLoc.y, lineLoc.z, true)
