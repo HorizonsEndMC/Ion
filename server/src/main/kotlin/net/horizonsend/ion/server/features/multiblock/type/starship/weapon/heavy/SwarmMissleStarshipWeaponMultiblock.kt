@@ -35,7 +35,7 @@ object HorizontalSwarmMissileStarshipWeaponMultiblock : SwarmMissleStarshipWeapo
     override val displayName: Component
         get() = Component.text("Swarm Missile Launcher (Side)")
 
-    override fun getFirePointOffset(): Vec3i = Vec3i(+0, +0, +6)
+    override fun getFirePointOffset(): Vec3i = Vec3i(+0, +0, +8)
 
     override fun MultiblockShape.buildStructure() {
         z(5) {
@@ -123,7 +123,7 @@ object TopSwarmMissileStarshipWeaponMultiblock : SwarmMissleStarshipWeaponMultib
     override val displayName: Component
         get() = Component.text("Swarm Missile Launcher (Top)")
 
-    override fun getFirePointOffset(): Vec3i = Vec3i(+0, +6, +0)
+    override fun getFirePointOffset(): Vec3i = Vec3i(+0, +8, +0)
 
     override fun MultiblockShape.buildStructure() {
         z(1) {
@@ -205,7 +205,7 @@ object BottomSwarmMissileStarshipWeaponMultiblock : SwarmMissleStarshipWeaponMul
     override val displayName: Component
         get() = Component.text("Swarm Missile Launcher (Bottom)")
 
-    override fun getFirePointOffset(): Vec3i = Vec3i(+0, -6, +0)
+    override fun getFirePointOffset(): Vec3i = Vec3i(+0, -8, +0)
 
     override fun MultiblockShape.buildStructure() {
         z(-1) {
