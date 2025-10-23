@@ -56,6 +56,7 @@ import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.player.DutyModeMonitor
 import net.horizonsend.ion.server.features.player.EventLogger
 import net.horizonsend.ion.server.features.player.NMSAchievements
+import net.horizonsend.ion.server.features.player.Power
 import net.horizonsend.ion.server.features.player.ServerMutesHook
 import net.horizonsend.ion.server.features.player.WaypointVisibility
 import net.horizonsend.ion.server.features.progression.Bounties
@@ -237,5 +238,6 @@ val components: List<IonComponent> = listOf(
 	ServerMutesHook,
 	ChestShops,
     SequenceManager,
-	Environments
+	Environments,
+	Power,
 )
