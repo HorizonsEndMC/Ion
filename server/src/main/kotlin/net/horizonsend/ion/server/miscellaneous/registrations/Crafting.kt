@@ -58,6 +58,9 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.GUN_BARR
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.HORIZON_FRIED_EGG
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ICE_CREAM_MIXTURE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ITEM_FILTER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LARGE_REACTOR_CORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MEDIUM_REACTOR_CORE
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MINI_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.LETTUCE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MOTHERBOARD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.MULTIBLOCK_WORKBENCH
@@ -99,6 +102,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.RIFLE_RE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SALAD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SALAMI
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SHOTGUN_RECEIVER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMALL_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMB_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMOKE_GRENADE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SNIPER_RECEIVER
@@ -714,6 +718,30 @@ object Crafting : IonServerComponent() {
 			setIngredient('x', REACTOR_CONTROL.getValue().constructItemStack())
 			setIngredient('y', SUPERCONDUCTOR_CORE.getValue().constructItemStack())
 			setIngredient('z', FUEL_CONTROL.getValue().constructItemStack())
+		}
+
+		shaped("minireactorCore", MINI_REACTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.BUILDING) {
+			shape(" x ", " x ", " x ")
+
+			setIngredient('x', STICK)
+		}
+
+		shaped("smallreactorCore", SMALL_REACTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.BUILDING) {
+			shape(" x ", " x ", " x ")
+
+			setIngredient('x', GOLD_INGOT)
+		}
+
+		shaped("mediumreactorCore", MEDIUM_REACTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.BUILDING) {
+			shape(" x ", " x ", " x ")
+
+			setIngredient('x', IRON_INGOT)
+		}
+
+		shaped("largereactorCore", LARGE_REACTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.BUILDING) {
+			shape(" x ", " x ", " x ")
+
+			setIngredient('x', COPPER_INGOT)
 		}
 
 		shaped("multiblock_workbench", MULTIBLOCK_WORKBENCH.getValue().constructItemStack(), CraftingBookCategory.MISC) {

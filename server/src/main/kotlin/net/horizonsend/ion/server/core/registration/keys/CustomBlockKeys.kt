@@ -33,6 +33,11 @@ object CustomBlockKeys : KeyRegistry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS, Cu
 	val BATTLECRUISER_REACTOR_CORE = registerKey("BATTLECRUISER_REACTOR_CORE")
 	val BARGE_REACTOR_CORE = registerKey("BARGE_REACTOR_CORE")
 	val CRUISER_REACTOR_CORE = registerKey("CRUISER_REACTOR_CORE")
+	val MINI_REACTOR_CORE = registerKey("MINI_REACTOR_CORE")
+	val SMALL_REACTOR_CORE = registerKey("SMALL_REACTOR_CORE")
+	val MEDIUM_REACTOR_CORE = registerKey("MEDIUM_REACTOR_CORE")
+	val LARGE_REACTOR_CORE = registerKey("LARGE_REACTOR_CORE")
+
 
 	val MULTIBLOCK_WORKBENCH = registerTypedKey<MultiblockWorkbench>("MULTIBLOCK_WORKBENCH")
 	val ADVANCED_ITEM_EXTRACTOR = registerTypedKey<AdvancedItemExtractorBlock>("ADVANCED_ITEM_EXTRACTOR")

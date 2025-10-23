@@ -566,6 +566,30 @@ object DataMigrators : IonServerComponent() {
 				.build()
 			)
 			.addMigrator(AspectMigrator
+				.builder(CustomItemKeys.MINI_REACTOR_CORE)
+				.pullModel(CustomItemKeys.MINI_REACTOR_CORE)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemKeys.SMALL_REACTOR_CORE)
+				.pullModel(CustomItemKeys.SMALL_REACTOR_CORE)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemKeys.MEDIUM_REACTOR_CORE)
+				.pullModel(CustomItemKeys.MEDIUM_REACTOR_CORE)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
+				.build()
+			)
+			.addMigrator(AspectMigrator
+				.builder(CustomItemKeys.LARGE_REACTOR_CORE)
+				.pullModel(CustomItemKeys.LARGE_REACTOR_CORE)
+				.setItemMaterial(Material.WARPED_WART_BLOCK)
+				.build()
+			)
+			.addMigrator(AspectMigrator
 				.builder(CustomItemKeys.ARSENAL_MISSILE)
 				.pullModel(CustomItemKeys.ARSENAL_MISSILE)
 				.setItemMaterial(Material.WARPED_FUNGUS_ON_A_STICK)

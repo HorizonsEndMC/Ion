@@ -251,6 +251,50 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 CustomItemKeys.CRUISER_REACTOR_CORE
             )
         )
+		register(
+		CustomBlockKeys.MINI_REACTOR_CORE, CustomBlock(
+		key = CustomBlockKeys.MINI_REACTOR_CORE,
+		blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.WEST, BlockFace.WEST)),
+		drops = BlockLoot(
+			requiredTool = null,
+			drops = customItemDrop(CustomItemKeys.MINI_REACTOR_CORE)
+		),
+		CustomItemKeys.MINI_REACTOR_CORE
+		)
+		)
+		register(
+			CustomBlockKeys.SMALL_REACTOR_CORE, CustomBlock(
+				key = CustomBlockKeys.SMALL_REACTOR_CORE,
+				blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.WEST, BlockFace.WEST)),
+				drops = BlockLoot(
+					requiredTool = null,
+					drops = customItemDrop(CustomItemKeys.SMALL_REACTOR_CORE)
+				),
+				CustomItemKeys.SMALL_REACTOR_CORE
+			)
+		)
+		register(
+			CustomBlockKeys.MEDIUM_REACTOR_CORE, CustomBlock(
+				key = CustomBlockKeys.MEDIUM_REACTOR_CORE,
+				blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST)),
+				drops = BlockLoot(
+					requiredTool = null,
+					drops = customItemDrop(CustomItemKeys.MEDIUM_REACTOR_CORE)
+				),
+				CustomItemKeys.MEDIUM_REACTOR_CORE
+			)
+		)
+		register(
+			CustomBlockKeys.LARGE_REACTOR_CORE, CustomBlock(
+				key = CustomBlockKeys.LARGE_REACTOR_CORE,
+				blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST)),
+				drops = BlockLoot(
+					requiredTool = null,
+					drops = customItemDrop(CustomItemKeys.LARGE_REACTOR_CORE)
+				),
+				CustomItemKeys.LARGE_REACTOR_CORE
+			)
+		)
 
 		register(CustomBlockKeys.MULTIBLOCK_WORKBENCH, MultiblockWorkbench)
 		register(CustomBlockKeys.ADVANCED_ITEM_EXTRACTOR, AdvancedItemExtractorBlock)

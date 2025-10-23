@@ -15,6 +15,10 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.BargeRea
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.BattlecruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.LargeReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.MediumReactorSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.checklist.MiniReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.Projectile
 import net.kyori.adventure.key.Key
@@ -222,6 +226,55 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
 			)
 		),
+		val scrambler_starfighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 4,
+			maxSneakFlyAccel = 4,
+			interdictionRange = 10,
+			jumpStrength = 1.0,
+			wellStrength = 0.0,
+			hyperspaceRangeMultiplier = 1.5,
+			cruiseSpeedMultiplier = 0.95,
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					MiniReactorSubsystem::class.java,
+					1,
+					"Tech 2 starfighters require a mini reactor to pilot!"
+				)),
+			weaponOverrides = listOf(
+				PlasmaCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+			),
+			shieldPowerMultiplier = 0.75,
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
+			)
+		),
+		val recon_starfighter: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 4,
+			maxSneakFlyAccel = 4,
+			interdictionRange = 10,
+			jumpStrength = 1.0,
+			wellStrength = 0.0,
+			hyperspaceRangeMultiplier = 1.5,
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					MiniReactorSubsystem::class.java,
+					1,
+					"Tech 2 starfighters require a mini reactor to pilot!"
+				)),
+			weaponOverrides = listOf(
+				PlasmaCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+			),
+			shieldPowerMultiplier = 0.75,
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
+			)
+		),
 		val interceptor: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 4,
 			maxSneakFlyAccel = 4,
@@ -245,7 +298,7 @@ data class NewStarshipBalancing(
 		val gunship: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 5,
 			maxSneakFlyAccel = 2,
-			interdictionRange = 1200,
+			interdictionRange = 10,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.6,
@@ -259,10 +312,60 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
 			)
 		),
+		val assault_gunship: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 5,
+			maxSneakFlyAccel = 2,
+			interdictionRange = 10,
+			jumpStrength = 1.0,
+			wellStrength = 1.0,
+			hyperspaceRangeMultiplier = 1.6,
+			cruiseSpeedMultiplier = 0.9,
+			shieldPowerMultiplier = 1.3,
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					MiniReactorSubsystem::class.java,
+					1,
+					"Tech 2 gunships require a mini reactor to pilot!"
+				)),
+			weaponOverrides = listOf(
+				LightTurretBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1750, maxBlockCount = 12000)),
+				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				HeavyLaserBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false))
+				),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
+			)
+		),
+		val interdictor_gunship: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 5,
+			maxSneakFlyAccel = 2,
+			interdictionRange = 500,
+			jumpStrength = 1.0,
+			wellStrength = 1.0,
+			hyperspaceRangeMultiplier = 1.6,
+			cruiseSpeedMultiplier = 1.0,
+			shieldPowerMultiplier = 0.75,
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					MiniReactorSubsystem::class.java,
+					1,
+					"Tech 2 gunships require a mini reactor to pilot!"
+				)),
+			weaponOverrides = listOf(
+				LightTurretBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1750, maxBlockCount = 12000)),
+				PulseCannonBalancing(fireRestrictions = FireRestrictions(minBlockCount = 1000, maxBlockCount = 4000))
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
+			)
+		),
 		val corvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
-			interdictionRange = 1800,
+			interdictionRange = 10,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.7,
@@ -280,10 +383,125 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
 			)
 		),
+		val interdictor_corvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 6,
+			maxSneakFlyAccel = 2,
+			interdictionRange = 1000,
+			jumpStrength = 1.0,
+			wellStrength = 2.0,
+			cruiseSpeedMultiplier = 1.05,
+			hyperspaceRangeMultiplier = 1.7,
+			shieldPowerMultiplier = 1.0,
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					SmallReactorSubsystem::class.java,
+					1,
+					"Tech 2 corvettes require a small reactor to pilot!"
+				)),
+			weaponOverrides = listOf(
+				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, maxBlockCount = 12000)),
+				TriTurretBalancing(
+					fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 3400),
+					boostChargeNanos = TimeUnit.SECONDS.toNanos(7)
+				),
+				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 1000, maxBlockCount = 4000), maxPerShot = 2)
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
+			)
+		),
+		val stasis_corvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 6,
+			maxSneakFlyAccel = 2,
+			interdictionRange = 10,
+			jumpStrength = 1.0,
+			wellStrength = 1.0,
+			cruiseSpeedMultiplier = 0.75,
+			hyperspaceRangeMultiplier = 1.7,
+			shieldPowerMultiplier = 1.0,
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					SmallReactorSubsystem::class.java,
+					1,
+					"Tech 2 corvettes require a small reactor to pilot!"
+				)),
+			weaponOverrides = listOf(
+				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000)),
+				TriTurretBalancing(
+					fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 3400),
+					boostChargeNanos = TimeUnit.SECONDS.toNanos(7)
+				),
+				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 1000, maxBlockCount = 4000)),
+				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false))
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
+			)
+		),
+		val assault_corvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 6,
+			maxSneakFlyAccel = 2,
+			interdictionRange = 10,
+			jumpStrength = 1.0,
+			wellStrength = 1.0,
+			cruiseSpeedMultiplier = 0.75,
+			hyperspaceRangeMultiplier = 1.7,
+			shieldPowerMultiplier = 1.25,
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					SmallReactorSubsystem::class.java,
+					1,
+					"Tech 2 corvettes require a small reactor to pilot!"
+				)),
+			weaponOverrides = listOf(
+				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = true, maxBlockCount = 12000)),
+				TriTurretBalancing(
+					fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 3400),
+					boostChargeNanos = TimeUnit.SECONDS.toNanos(7)
+				),
+				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 1000, maxBlockCount = 4000)),
+				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false))
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
+			)
+		),
+		val logistics_corvette: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 6,
+			maxSneakFlyAccel = 2,
+			interdictionRange = 10,
+			jumpStrength = 1.0,
+			wellStrength = 1.0,
+			cruiseSpeedMultiplier = 0.75,
+			hyperspaceRangeMultiplier = 1.7,
+			shieldPowerMultiplier = 0.75,
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					SmallReactorSubsystem::class.java,
+					1,
+					"Tech 2 corvettes require a small reactor to pilot!"
+				)),
+			weaponOverrides = listOf(
+				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = false, maxBlockCount = 12000)),
+				TriTurretBalancing(
+					fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 3400),
+					boostChargeNanos = TimeUnit.SECONDS.toNanos(7)
+				),
+				PulseCannonBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 1000, maxBlockCount = 4000)),
+				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false))
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.small.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.small.far")
+			)
+		),
 		val frigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 6,
 			maxSneakFlyAccel = 2,
-			interdictionRange = 2400,
+			interdictionRange = 10,
 			jumpStrength = 1.0,
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
@@ -291,6 +509,83 @@ data class NewStarshipBalancing(
 			weaponOverrides = listOf(
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 420),
 				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 4500, maxBlockCount = 8000), maxPerShot = 1, boostChargeNanos = TimeUnit.SECONDS.toNanos(6))
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
+			)
+		),
+		val assault_frigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 6,
+			maxSneakFlyAccel = 2,
+			interdictionRange = 10,
+			jumpStrength = 1.0,
+			wellStrength = 1.0,
+			hyperspaceRangeMultiplier = 1.8,
+			shieldPowerMultiplier = 1.25,
+			cruiseSpeedMultiplier = 0.8,
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					LargeReactorSubsystem::class.java,
+					1,
+					"Tech 2 frigates require a small reactor to pilot!"
+				)),
+			weaponOverrides = listOf(
+				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 420),
+				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 4500, maxBlockCount = 8000), maxPerShot = 1, boostChargeNanos = TimeUnit.SECONDS.toNanos(6))
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
+			)
+		),
+		val blackOps_frigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 6,
+			maxSneakFlyAccel = 2,
+			interdictionRange = 10,
+			jumpStrength = 1.0,
+			wellStrength = 1.0,
+			hyperspaceRangeMultiplier = 1.8,
+			shieldPowerMultiplier = 0.8,
+			cruiseSpeedMultiplier = 1.25,
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					LargeReactorSubsystem::class.java,
+					1,
+					"Tech 2 frigates require a small reactor to pilot!"
+				)),
+			weaponOverrides = listOf(
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 420),
+				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 4500, maxBlockCount = 8000), maxPerShot = 1, boostChargeNanos = TimeUnit.SECONDS.toNanos(6))
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
+			)
+		),
+		val missile_frigate: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 6,
+			maxSneakFlyAccel = 2,
+			interdictionRange = 10,
+			jumpStrength = 1.0,
+			wellStrength = 1.0,
+			hyperspaceRangeMultiplier = 1.8,
+			shieldPowerMultiplier = 0.8,
+			cruiseSpeedMultiplier = 0.8,
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					LargeReactorSubsystem::class.java,
+					1,
+					"Tech 2 frigates require a small reactor to pilot!"
+				)),
+			weaponOverrides = listOf(
+				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				LightTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				TriTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false), firePowerConsumption = 420),
+				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 4500, maxBlockCount = 8000), maxPerShot = 3, boostChargeNanos = TimeUnit.SECONDS.toNanos(6))
 			),
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
@@ -306,6 +601,55 @@ data class NewStarshipBalancing(
 			hyperspaceRangeMultiplier = 1.9,
 			shieldPowerMultiplier = 1.0,
 			weaponOverrides = listOf(
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 360),
+				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 8000, maxBlockCount = 12000), maxPerShot = 2, boostChargeNanos = TimeUnit.SECONDS.toNanos(8))
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
+			)
+		),
+		val assault_destroyer: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 5,
+			maxSneakFlyAccel = 3,
+			interdictionRange = 10,
+			jumpStrength = 1.0,
+			wellStrength = 1.0,
+			cruiseSpeedMultiplier = 0.85,
+			hyperspaceRangeMultiplier = 1.9,
+			shieldPowerMultiplier = 1.25,
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					LargeReactorSubsystem::class.java,
+					1,
+					"Tech 2 destroyers require a small reactor to pilot!"
+				)),
+			weaponOverrides = listOf(
+				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 360),
+				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 8000, maxBlockCount = 12000), maxPerShot = 2, boostChargeNanos = TimeUnit.SECONDS.toNanos(8))
+			),
+			shipSounds = StarshipSounds(
+				explodeNear = SoundInfo("horizonsend:starship.explosion.large.near"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.large.far")
+			)
+		),
+		val interdictor_destroyer: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 5,
+			maxSneakFlyAccel = 3,
+			interdictionRange = 2000,
+			jumpStrength = 1.0,
+			wellStrength = 3.0,
+			hyperspaceRangeMultiplier = 1.9,
+			shieldPowerMultiplier = 0.8,
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					LargeReactorSubsystem::class.java,
+					1,
+					"Tech 2 destroyers require a small reactor to pilot!"
+				)),
+			weaponOverrides = listOf(
+				PhaserBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = true), firePowerConsumption = 360),
 				SwarmMissileBalancing(fireRestrictions = FireRestrictions(canFire = true, minBlockCount = 8000, maxBlockCount = 12000), maxPerShot = 2, boostChargeNanos = TimeUnit.SECONDS.toNanos(8))
 			),
@@ -349,6 +693,78 @@ data class NewStarshipBalancing(
 				explodeFar = SoundInfo("horizonsend:starship.explosion.cruiser"),
 			)
 		),
+		val logistics_cruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 5,
+			maxSneakFlyAccel = 3,
+			interdictionRange = 10,
+			jumpStrength = 2.0,
+			wellStrength = 2.0,
+			hyperspaceRangeMultiplier = 1.9,
+			cruiseSpeedMultiplier = 0.92,
+			shieldPowerMultiplier = 0.95,
+			weaponOverrides = listOf(
+				IonTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				TriTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+			),
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					FuelTankSubsystem::class.java,
+					1,
+					"Cruisers require a fuel tank to pilot!"
+				),
+				RequiredSubsystemInfo(
+					LargeReactorSubsystem::class.java,
+					1,
+					"Tech 2 cruisers require a large reactor to pilot!"
+				)
+			),
+			shipSounds = StarshipSounds(
+				pilot = SoundInfo("horizonsend:starship.pilot.cruiser", volume = 5f),
+				release = SoundInfo("horizonsend:starship.release.cruiser", volume = 5f),
+				enterHyperspace = SoundInfo("horizonsend:starship.supercapital.hyperspace_enter"),
+				explodeNear = SoundInfo("horizonsend:starship.explosion.cruiser"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.cruiser"),
+			)
+		),
+		val drone_cruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 5,
+			maxSneakFlyAccel = 3,
+			interdictionRange = 10,
+			jumpStrength = 2.0,
+			wellStrength = 2.0,
+			hyperspaceRangeMultiplier = 1.9,
+			cruiseSpeedMultiplier = 0.98,
+			shieldPowerMultiplier = 1.15,
+			weaponOverrides = listOf(
+				IonTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				TriTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+			),
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					FuelTankSubsystem::class.java,
+					1,
+					"Cruisers require a fuel tank to pilot!"
+				),
+				RequiredSubsystemInfo(
+					LargeReactorSubsystem::class.java,
+					1,
+					"Tech 2 cruisers require a large reactor to pilot!"
+				)
+			),
+			shipSounds = StarshipSounds(
+				pilot = SoundInfo("horizonsend:starship.pilot.cruiser", volume = 5f),
+				release = SoundInfo("horizonsend:starship.release.cruiser", volume = 5f),
+				enterHyperspace = SoundInfo("horizonsend:starship.supercapital.hyperspace_enter"),
+				explodeNear = SoundInfo("horizonsend:starship.explosion.cruiser"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.cruiser"),
+			)
+		),
 		val battlecruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
 			sneakFlyAccelDistance = 3,
 			maxSneakFlyAccel = 3,
@@ -372,6 +788,44 @@ data class NewStarshipBalancing(
 					BattlecruiserReactorSubsystem::class.java,
 					1,
 					"Battlecruisers require a reactor to pilot!"
+				),
+				RequiredSubsystemInfo(
+					FuelTankSubsystem::class.java,
+					1,
+					"Battlecruisers require fuel to pilot!"
+				)
+			),
+			shipSounds = StarshipSounds(
+				pilot = SoundInfo("horizonsend:starship.pilot.battlecruiser", volume = 7f),
+				release = SoundInfo("horizonsend:starship.release.battlecruiser", volume = 7f),
+				enterHyperspace = SoundInfo("horizonsend:starship.supercapital.hyperspace_enter"),
+				explodeNear = SoundInfo("horizonsend:starship.explosion.battlecruiser"),
+				explodeFar = SoundInfo("horizonsend:starship.explosion.battlecruiser")
+			)
+		),
+		val lancer_battlecruiser: StarshipTypeBalancing = StanrdardStarshipTypeBalancing(
+			sneakFlyAccelDistance = 3,
+			maxSneakFlyAccel = 3,
+			interdictionRange = 10,
+			jumpStrength = 5.0,
+			wellStrength = 3.0,
+			hyperspaceRangeMultiplier = 2.5,
+			cruiseSpeedMultiplier = 0.75,
+			shieldPowerMultiplier = 1.60,
+			weaponOverrides = listOf(
+				QuadTurretBalancing(fireRestrictions = FireRestrictions(canFire = false, minBlockCount = 17500)),
+				TriTurretBalancing(
+					fireRestrictions = FireRestrictions(canFire = true),
+					projectile = TriTurretProjectileBalancing(speed = 110.0)
+				),
+				ArsenalRocketBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+				LaserCannonBalancing(fireRestrictions = FireRestrictions(canFire = false)),
+			),
+			requiredMultiblocks = listOf(
+				RequiredSubsystemInfo(
+					LargeReactorSubsystem::class.java,
+					1,
+					"Tech 2 battlecruisers require a large reactor to pilot!"
 				),
 				RequiredSubsystemInfo(
 					FuelTankSubsystem::class.java,

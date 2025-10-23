@@ -339,6 +339,26 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
             NamedTextColor.WHITE,
             TextDecoration.BOLD
         ), customBlock = CustomBlockKeys.CRUISER_REACTOR_CORE)
+		customBlockItem(key = CustomItemKeys.MINI_REACTOR_CORE, model = "starship/mini_reactor_core", displayName = Component.text(
+			"Mini Reactor Core",
+			NamedTextColor.WHITE,
+			TextDecoration.BOLD
+		), customBlock = CustomBlockKeys.MINI_REACTOR_CORE)
+		customBlockItem(key = CustomItemKeys.SMALL_REACTOR_CORE, model = "starship/small_reactor_core", displayName = Component.text(
+			"Small Reactor Core",
+			NamedTextColor.WHITE,
+			TextDecoration.BOLD
+		), customBlock = CustomBlockKeys.SMALL_REACTOR_CORE)
+		customBlockItem(key = CustomItemKeys.MEDIUM_REACTOR_CORE, model = "starship/medium_reactor_core", displayName = Component.text(
+			"Medium Reactor Core",
+			NamedTextColor.WHITE,
+			TextDecoration.BOLD
+		), customBlock = CustomBlockKeys.MEDIUM_REACTOR_CORE)
+		customBlockItem(key = CustomItemKeys.LARGE_REACTOR_CORE, model = "starship/large_reactor_core", displayName = Component.text(
+			"Large Reactor Core",
+			NamedTextColor.WHITE,
+			TextDecoration.BOLD
+		), customBlock = CustomBlockKeys.LARGE_REACTOR_CORE)
 	}
 
 	fun registerPipes() {

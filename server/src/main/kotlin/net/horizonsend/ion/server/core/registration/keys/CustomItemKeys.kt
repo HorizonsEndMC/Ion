@@ -117,6 +117,10 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val BATTLECRUISER_REACTOR_CORE = registerTypedKey<CustomBlockItem>("BATTLECRUISER_REACTOR_CORE")
 	val BARGE_REACTOR_CORE = registerTypedKey<CustomBlockItem>("BARGE_REACTOR_CORE")
 	val CRUISER_REACTOR_CORE = registerTypedKey<CustomBlockItem>("CRUISER_REACTOR_CORE")
+	val MINI_REACTOR_CORE = registerTypedKey<CustomBlockItem>("MINI_REACTOR_CORE")
+	val SMALL_REACTOR_CORE = registerTypedKey<CustomBlockItem>("SMALL_REACTOR_CORE")
+	val MEDIUM_REACTOR_CORE = registerTypedKey<CustomBlockItem>("MEDIUM_REACTOR_CORE")
+	val LARGE_REACTOR_CORE = registerTypedKey<CustomBlockItem>("LARGE_REACTOR_CORE")
 
 	val GAS_CANISTER_EMPTY = registerKey("GAS_CANISTER_EMPTY")
 	val GAS_CANISTER_HYDROGEN = registerTypedKey<GasCanister>("GAS_CANISTER_HYDROGEN")

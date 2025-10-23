@@ -107,6 +107,10 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.Ba
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.BattleCruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.CruiserReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.FauxReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.LargeReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.MediumReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.MiniReactorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.SmallReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.AmplifiedGravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.StandardGravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass1
@@ -373,6 +377,10 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(BattleCruiserReactorMultiblock)
 		registerMultiblock(CruiserReactorMultiblock)
 		registerMultiblock(BargeReactorMultiBlock)
+		registerMultiblock(MiniReactorMultiblock)
+		registerMultiblock(SmallReactorMultiblock)
+		registerMultiblock(MediumReactorMultiblock)
+		registerMultiblock(LargeReactorMultiblock)
 		registerMultiblock(FuelTankMultiblock)
 
 		registerMultiblock(OdometerMultiblock)
