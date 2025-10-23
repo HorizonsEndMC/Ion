@@ -185,11 +185,14 @@ data class SLPlayer(
 		fun addXP(id: SLPlayerId, addition: Int): UpdateResult =
 			updateById(id, inc(SLPlayer::xp, addition))
 
-		fun changePower(id: SLPlayerId, addition: Int): UpdateResult =
-			updateById(id, inc(SLPlayer::power, addition))
-
 		fun setXP(id: SLPlayerId, xp: Int): UpdateResult =
 			updateById(id, org.litote.kmongo.setValue(SLPlayer::xp, xp))
+
+		fun addPower(id: SLPlayerId, addition: Int): UpdateResult =
+			updateById(id, inc(SLPlayer::power, addition))
+
+		fun setPower(id: SLPlayerId, power: Int): UpdateResult =
+			updateById(id, org.litote.kmongo.setValue(SLPlayer::power, power))
 
 		fun isSettlementLeader(slPlayerId: SLPlayerId): Boolean = !Settlement.none(Settlement::leader eq slPlayerId)
 

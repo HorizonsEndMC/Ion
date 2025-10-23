@@ -126,6 +126,51 @@ object AdvanceAdminCommand : net.horizonsend.ion.server.command.SLCommand() {
 		sender.success("Subtracted $amount from ${sender.name}.")
 	}
 
+	@Subcommand("power get")
+	@CommandCompletion("@players @nothing")
+	@CommandPermission("advance.admin.power")
+	fun onPowerGet(sender: CommandSender, player: String) = asyncCommand(sender) {
+		val playerId: UUID = resolveOfflinePlayer(player)
+
+		val power: Int = SLPlayer.getPower(playerId.slPlayerId) ?: throw InvalidCommandArgument("Player not stored")
+
+		sender.information("$player has $power power")
+
+		Bukkit.getPlayer(playerId)?.let {
+			val cached: PlayerXPLevelCache.CachedAdvancePlayer = PlayerXPLevelCache[playerId]
+				?: throw ConditionFailedException("$player has no cache!")
+
+			if (cached.power != power) {
+				throw ConditionFailedException("$player's cached power is ${cached.power} instead of $power")
+			}
+		}
+	}
+
+	@Subcommand("power give")
+	@CommandCompletion("@players @nothing")
+	@CommandPermission("advance.admin.power")
+	fun onPowerGive(sender: CommandSender, player: String, amount: Int) = asyncCommand(sender) {
+		val playerId: UUID = resolveOfflinePlayer(player)
+
+		val currentPower = SLPlayer.getPower(playerId.slPlayerId) ?: throw InvalidCommandArgument("Player not stored")
+		val powerToAdd = (currentPower + amount).coerceIn(-20, 20) - currentPower // ensure that power cannot go below -20 or above 20
+
+		PlayerXPLevelCache.addPower(playerId, powerToAdd)
+
+		val newPower: Int = PlayerXPLevelCache.fetchPower(playerId)
+		sender.success("Gave $powerToAdd power to $player. Now they have $newPower XP.")
+	}
+
+	@Subcommand("power set")
+	@CommandCompletion("@players @nothing")
+	@CommandPermission("advance.admin.power")
+	fun onPowerSet(sender: CommandSender, player: String, amount: Int) = asyncCommand(sender) {
+		val playerId = resolveOfflinePlayer(player)
+		val oldPower = PlayerXPLevelCache.fetchPower(playerId)
+		SLXP.setPowerAsync(playerId, amount.coerceIn(-20, 20))
+		sender.success("Changed $player's power from $oldPower to $amount.")
+	}
+
 	@Suppress("Unused")
 	@Subcommand("rebalance")
 	@Description("Reload the levels config")

@@ -44,6 +44,22 @@ object SLXP : IonServerComponent() {
 	}
 
 	/**
+	 * Gives [amount] of power to the specified player's [uuid], then sends them a [message] if online.
+	 * Not guaranteed to update instantly.
+	 */
+	fun addPowerAsync(uuid: UUID, amount: Int, message: Boolean = true): Future<*> = PlayerXPLevelCache.async {
+		val currentPower = fetchPower(uuid)
+		val powerToAdd = (currentPower + amount).coerceIn(-20, 20) - currentPower // ensure that power cannot go below -20 or above 20
+		addPower(uuid, powerToAdd)
+
+		val player = Bukkit.getPlayer(uuid) ?: return@async
+
+		if (message) {
+			player.success("Gained $amount power")
+		}
+	}
+
+	/**
 	 * Sets the XP of the specified player.
 	 * Not guaranteed to update instantly.
 	 *
@@ -61,6 +77,10 @@ object SLXP : IonServerComponent() {
 	 * @param newValue What to set the XP to
 	 */
 	fun setAsync(uuid: UUID, newValue: Int): Future<*> = PlayerXPLevelCache.async { setSLXP(uuid, newValue) }
+
+	fun setPowerAsync(uuid: UUID, newValue: Int): Future<*> = PlayerXPLevelCache.async {
+		setPower(uuid, newValue)
+	}
 
 	/**
 	 * Get cached XP of an online player.
