@@ -45,6 +45,8 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.proje
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.MiniPhaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.PumpkinCannonProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.event.projectile.SonicMissileProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.ACAPTurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.AssaultTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.CycleTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.DisintegratorBeamWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.DoomsdayDeviceWeaponSubsystem
@@ -413,6 +415,70 @@ data class HeavyTurretBalancing(
 }
 
 @Serializable
+data class AssaultTurretBalancing(
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, minBlockCount = 6500, maxBlockCount = 12000),
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
+	override val firePowerConsumption: Int = 2667,
+	override val isForwardOnly: Boolean = false,
+	override val inaccuracyDegrees: Double = 2.0,
+	override val maxPerShot: Int? = null,
+	override val applyCooldownToAll: Boolean = true,
+
+	override val projectile: AssaultTurretProjectileBalancing = AssaultTurretProjectileBalancing()
+) : StarshipTurretWeaponBalancing<AssaultTurretBalancing.AssaultTurretProjectileBalancing> {
+	@Transient
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = AssaultTurretWeaponSubsystem::class
+
+	@Serializable
+	data class AssaultTurretProjectileBalancing(
+		override val range: Double = 500.0,
+		override val speed: Double = 200.0,
+		override val explosionPower: Float = 3f,
+		override val starshipShieldDamageMultiplier: Double = 1.0,
+		override val areaShieldDamageMultiplier: Double = 1.0,
+		override val entityDamage: EntityDamage = RegularDamage(10.0),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
+		override val particleThickness: Double = 0.3
+	) : StarshipParticleProjectileBalancing {
+		@Transient
+		override val clazz: KClass<out Projectile> = TurretLaserProjectile::class
+	}
+}
+
+@Serializable
+data class GaussCannonBalancing(
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, minBlockCount = 6500, maxBlockCount = 12000),
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
+	override val firePowerConsumption: Int = 2667,
+	override val isForwardOnly: Boolean = false,
+	override val inaccuracyDegrees: Double = 2.0,
+	override val maxPerShot: Int? = null,
+	override val applyCooldownToAll: Boolean = true,
+
+	override val projectile: GaussCannonProjectileBalancing = GaussCannonProjectileBalancing()
+) : StarshipTurretWeaponBalancing<GaussCannonBalancing.GaussCannonProjectileBalancing> {
+	@Transient
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = AssaultTurretWeaponSubsystem::class
+
+	@Serializable
+	data class GaussCannonProjectileBalancing(
+		override val range: Double = 500.0,
+		override val speed: Double = 200.0,
+		override val explosionPower: Float = 3f,
+		override val starshipShieldDamageMultiplier: Double = 1.0,
+		override val areaShieldDamageMultiplier: Double = 1.0,
+		override val entityDamage: EntityDamage = RegularDamage(10.0),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
+		override val particleThickness: Double = 0.3
+	) : StarshipParticleProjectileBalancing {
+		@Transient
+		override val clazz: KClass<out Projectile> = TurretLaserProjectile::class
+	}
+}
+
+@Serializable
 data class QuadTurretBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, minBlockCount = 18500),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
@@ -438,6 +504,38 @@ data class QuadTurretBalancing(
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override val particleThickness: Double = 0.6
+	) : StarshipParticleProjectileBalancing {
+		@Transient
+		override val clazz: KClass<out Projectile> = TurretLaserProjectile::class
+	}
+}
+
+@Serializable
+data class ACAPTurretBalancing(
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, minBlockCount = 18500),
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(3000),
+	override val firePowerConsumption: Int = 3000,
+	override val isForwardOnly: Boolean = false,
+	override val inaccuracyDegrees: Double = 2.0,
+	override val maxPerShot: Int = 3,
+	override val applyCooldownToAll: Boolean = true,
+
+	override val projectile: ACAPTurretProjectileBalancing = ACAPTurretProjectileBalancing()
+) : StarshipTurretWeaponBalancing<ACAPTurretBalancing.ACAPTurretProjectileBalancing> {
+	@Transient
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = ACAPTurretWeaponSubsystem::class
+
+	@Serializable
+	data class ACAPTurretProjectileBalancing(
+		override val range: Double = 500.0,
+		override val speed: Double = 55.0,
+		override val explosionPower: Float = 5f,
+		override val starshipShieldDamageMultiplier: Double = 6.3,
+		override val areaShieldDamageMultiplier: Double = 6.0,
+		override val entityDamage: EntityDamage = RegularDamage(10.0),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.quad_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
+		override val particleThickness: Double = 0.6
 	) : StarshipParticleProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = TurretLaserProjectile::class

@@ -172,12 +172,18 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockTop
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.BottomACAPTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.BottomAssaultTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.BottomGaussCannonMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.BottomHeavyTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.BottomIonTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.BottomLightTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.BottomQuadTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.BottomTriTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.CustomTurretBaseMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TopACAPTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TopAssaultTurretMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TopGaussCannonMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TopHeavyTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TopIonTurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TopLightTurretMultiblock
@@ -338,12 +344,18 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(BottomLightTurretMultiblock)
 		registerMultiblock(TopHeavyTurretMultiblock)
 		registerMultiblock(BottomHeavyTurretMultiblock)
+		registerMultiblock(TopAssaultTurretMultiblock)
+		registerMultiblock(BottomAssaultTurretMultiblock)
 		registerMultiblock(TopTriTurretMultiblock)
 		registerMultiblock(BottomTriTurretMultiblock)
 		registerMultiblock(TopIonTurretMultiblock)
 		registerMultiblock(BottomIonTurretMultiblock)
 		registerMultiblock(TopQuadTurretMultiblock)
 		registerMultiblock(BottomQuadTurretMultiblock)
+		registerMultiblock(TopACAPTurretMultiblock)
+		registerMultiblock(BottomACAPTurretMultiblock)
+		registerMultiblock(TopGaussCannonMultiblock)
+		registerMultiblock(BottomGaussCannonMultiblock)
 		registerMultiblock(HorizontalRocketStarshipWeaponMultiblock)
 		registerMultiblock(CustomTurretBaseMultiblock.CustomTurretBaseMultiblockTop)
 		registerMultiblock(CustomTurretBaseMultiblock.CustomTurretBaseMultiblockBottom)
