@@ -84,10 +84,21 @@ class LocusScheduler(
 		if (!active) {
 			// Interval from the end of the last one
 			val interval = System.currentTimeMillis() - (lastActiveTime + lastDuration.toMillis())
-			if (interval + ANNOUCE_WORLD.toMillis() > lastSeparation.toMillis() && center == null) center = calculateNewCenter()
+
+			if (interval + ANNOUCE_WORLD.toMillis() > lastSeparation.toMillis() && center == null) {
+				val newCenter = calculateNewCenter()
+				if (center == null) {
+					end()
+					return
+				}
+
+				center = newCenter
+			}
+
 			if (interval + ANNOUCE_DIFFICULTY.toMillis() > lastSeparation.toMillis() && difficulty == null) {
 				difficulty = difficultySupplier(center!!.world).get()
 			}
+
 			// Start the locus if the separation has passed
 			if (interval > lastSeparation.toMillis()) start()
 		} else {
@@ -110,7 +121,8 @@ class LocusScheduler(
 		active = true
 		markDynmapZone()
 		addGravityWell()
-		if (center == null) center = calculateNewCenter()
+		if (center == null) center = calculateNewCenter() ?: return end()
+
 		if (difficulty == null) difficulty = difficultySupplier(center!!.world).get()
 
 		if (announcementMessage != null) Notify.chatAndGlobal(
@@ -150,9 +162,10 @@ class LocusScheduler(
 		getSpawner().trigger(logger, AISpawningManager.context)
 	}
 
-	private fun calculateNewCenter(): Location {
+	private fun calculateNewCenter(): Location? {
 		// If you make a world with nothing but a planet in a tiny world border this will crash your server, but that is on you
-		val world = Bukkit.getWorld(worlds.random())!!
+		val world = Bukkit.getWorld(worlds.random()) ?: return null
+
 		val border = world.worldBorder
 
 		val planets = Space.getAllPlanets()
