@@ -92,12 +92,12 @@ class LocusScheduler(
 
 			if (interval + ANNOUCE_WORLD.toMillis() > lastSeparation.toMillis() && center == null) {
 				val newCenter = calculateNewCenter()
+				center = newCenter
+
 				if (center == null) {
 					end()
 					return
 				}
-
-				center = newCenter
 			}
 
 			if (interval + ANNOUCE_DIFFICULTY.toMillis() > lastSeparation.toMillis() && difficulty == null) {
@@ -169,7 +169,7 @@ class LocusScheduler(
 
 	private fun calculateNewCenter(): Location? {
 		// If you make a world with nothing but a planet in a tiny world border this will crash your server, but that is on you
-		val world = worlds.random() ?: return null
+		val world = worlds.randomOrNull() ?: return null
 
 		val border = world.worldBorder
 
