@@ -29,6 +29,9 @@ class Vec3i: DBVec3i {
 	fun distance(x: Int, y: Int, z: Int): Double = distance(this.x, this.y, this.z, x, y, z)
 	fun distance(other: Vec3i): Double = distance(this.x, this.y, this.z, other.x, other.y, other.z)
 
+	fun distanceSquared(x: Int, y: Int, z: Int): Long = distanceSquared(this.x, this.y, this.z, x, y, z)
+	fun distanceSquared(other: Vec3i): Long = distanceSquared(this.x, this.y, this.z, other.x, other.y, other.z)
+
 	/**
 	 * @param other Vector that should be added from this one
 	 * @return A new vector with the values added
