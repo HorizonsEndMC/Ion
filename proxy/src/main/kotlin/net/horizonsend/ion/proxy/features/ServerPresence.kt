@@ -45,7 +45,7 @@ object ServerPresence : IonProxyComponent() {
 		val response = event.ping.asBuilder()
 		val clientVersion = event.connection.protocolVersion
 
-		if (clientVersion.isSupported) {
+		if (clientVersion in supportedProtocol) {
 			response.version(ServerPing.Version(clientVersion.protocol, clientVersion.name))
 		} else {
 			response.version(ServerPing.Version(primaryVersion.protocol, primaryVersion.name))
