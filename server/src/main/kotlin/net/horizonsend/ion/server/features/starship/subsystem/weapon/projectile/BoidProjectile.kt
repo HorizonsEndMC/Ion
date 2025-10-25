@@ -47,7 +47,6 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
 
             if (location.distanceSquared(boid.location) < separationDistance * separationDistance) {
                 // Steer away from other boids
-                //println("STEERING AWAY")
                 separationVector.x += location.x - boid.location.x
                 separationVector.y += location.y - boid.location.y
                 separationVector.z += location.z - boid.location.z

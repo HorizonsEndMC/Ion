@@ -117,7 +117,6 @@ open class TravelSteeringModule(
 		// magnitude then it will lead to an agent jittering under a certain ship.velocity threshold.
 		//mixing
 		val rotationMovementPrior = (ship.velocity.length() / controller.maxSpeed).coerceIn(0.0, 1.0)
-		//println(rotationMovementPrior)
 		val movementMix = { ratio: Double ->
 			(ratio + 0.1).coerceIn(0.0, 1.0).pow(config.defaultRotationBleed)
 		}

@@ -60,7 +60,6 @@ abstract class CombatModule<T>(
 		lastFire = System.nanoTime()
 
 		val targetPos = target.getVec3i()
-		//println("targetPos : $targetPos")
 		val targetOffset = target.getVec3i(aimAtRandom, difficulty.targetLowestShield).minus(targetPos)
 
 		//account for opponent size
@@ -77,9 +76,7 @@ abstract class CombatModule<T>(
 			} else {
 				targetPos.toVector()
 			}
-			//println("weaponset: ${weaponSet?.name?.lowercase()}")
 			correctedHeavyTarget.add(targetOffset.toVector())
-			//println("correctedHeavyTarget : $correctedHeavyTarget")
 			val heavyDirection = aiming.sampleDirection(correctedHeavyTarget.clone().subtract(origin.toVector()).normalize(), distance)
 
 			val correctedLightTarget = if (target is StarshipTarget) {
@@ -87,10 +84,8 @@ abstract class CombatModule<T>(
 			} else {
 				targetPos.toVector()
 			}
-			//println("correctedLightTarget : $correctedLightTarget")
 			correctedLightTarget.add(targetOffset.toVector())
 			val lightDirection = aiming.sampleDirection(correctedLightTarget.clone().subtract(origin.toVector()).normalize(), distance)
-			//println("lightDirection : $lightDirection")
 			Tasks.sync {
 				starship.debug("Firing manual weapons: Set: ${weaponSet?.name?.lowercase()}")
 				fireHeavyWeapons(heavyDirection, correctedHeavyTarget, weaponSet = weaponSet?.name?.lowercase(), true)

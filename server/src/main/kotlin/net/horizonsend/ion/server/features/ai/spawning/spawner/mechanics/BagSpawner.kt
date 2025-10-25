@@ -32,7 +32,6 @@ class BagSpawner(
 
 	override fun getShips(): List<SpawnedShip> {
 		var points = budget.get()
-		println("Bag Spawn Points: $points")
 		val ships = mutableListOf<SpawnedShip>()
 
 		while (points > 0) {

@@ -51,9 +51,6 @@ class ReactorSubsystem(
 		for (shield in starship.shields) {
 			val missing = shield.maxPower - shield.power
 			shield.recentDamage = ((shield.pastPower - shield.power).toDouble() / shield.maxPower)
-			//if (starship.controller is AIController) {
-			//	println(shield.recentDamage)
-			//}
 			shield.pastPower = shield.power
 
 			if (missing == 0) {

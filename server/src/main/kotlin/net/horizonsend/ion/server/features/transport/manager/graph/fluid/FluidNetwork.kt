@@ -10,6 +10,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.roundToTenThousanth
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidInputMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
@@ -442,7 +443,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			iterations++
 
 			if (iterations > 20) {
-				println("BFS took too long!")
+				IonServer.slF4JLogger.warn("BFS took too long!")
 				break
 			}
 
