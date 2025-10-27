@@ -13,7 +13,7 @@ import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 
-object PlatePressMultiblock : Multiblock(), EntityMultiblock<PlatePressMultiblock.PlatePressMultiblockEntity>, DisplayNameMultilblock {
+object PressMultiblock : Multiblock(), EntityMultiblock<PressMultiblock.PressMultiblockEntity>, DisplayNameMultilblock {
 	override fun MultiblockShape.buildStructure() {
 		z(+0) {
 			y(-1) {
@@ -101,7 +101,9 @@ object PlatePressMultiblock : Multiblock(), EntityMultiblock<PlatePressMultibloc
 		}
 	}
 
-	override val name = "platepress"
+	override val name = "press"
+
+	override val alternativeDetectionNames: Array<String> = arrayOf("platepress")
 
 	override val signText = createSignText(
 		line1 = "&5Plate Press",
@@ -110,14 +112,14 @@ object PlatePressMultiblock : Multiblock(), EntityMultiblock<PlatePressMultibloc
 		line4 = null
 	)
 
-	override val displayName: Component get() = text("Plate Press")
-	override val description: Component get() = text("Compresses metal and other materials into refined plates.")
+	override val displayName: Component get() = text("Press")
+	override val description: Component get() = text("Compresses metal and other materials.")
 
-	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): PlatePressMultiblockEntity {
-		return PlatePressMultiblockEntity(data, manager, x, y, z, world, structureDirection)
+	override fun createEntity(manager: MultiblockManager, data: PersistentMultiblockData, world: World, x: Int, y: Int, z: Int, structureDirection: BlockFace): PressMultiblockEntity {
+		return PressMultiblockEntity(data, manager, x, y, z, world, structureDirection)
 	}
 
-	class PlatePressMultiblockEntity(
+	class PressMultiblockEntity(
 		data: PersistentMultiblockData,
 		manager: MultiblockManager,
 		x: Int,
@@ -125,5 +127,5 @@ object PlatePressMultiblock : Multiblock(), EntityMultiblock<PlatePressMultibloc
 		z: Int,
 		world: World,
 		structureFace: BlockFace
-	) : IndustryEntity(data, PlatePressMultiblock, manager, x, y, z, world, structureFace, 300_000)
+	) : IndustryEntity(data, PressMultiblock, manager, x, y, z, world, structureFace, 300_000)
 }

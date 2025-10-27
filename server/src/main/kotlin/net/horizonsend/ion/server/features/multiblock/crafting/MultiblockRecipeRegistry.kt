@@ -33,7 +33,7 @@ import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMu
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.industry.PressMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.processing.automason.CenterType
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -84,7 +84,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 
 		register(MultiblockRecipeKeys.REACTIVE_PLATING_PRESSING, FurnaceMultiblockRecipe(
 			key = MultiblockRecipeKeys.REACTIVE_PLATING_PRESSING,
-			clazz = PlatePressMultiblock.PlatePressMultiblockEntity::class,
+			clazz = PressMultiblock.PressMultiblockEntity::class,
 			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.REACTIVE_PLATING),
 			fuelItem = null,
 			power = PowerRequirement(10),
@@ -99,7 +99,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 
 		register(MultiblockRecipeKeys.STEEL_PLATE_PRESSING, FurnaceMultiblockRecipe(
 			key = MultiblockRecipeKeys.STEEL_PLATE_PRESSING,
-			clazz = PlatePressMultiblock.PlatePressMultiblockEntity::class,
+			clazz = PressMultiblock.PressMultiblockEntity::class,
 			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.STEEL_PLATE),
 			fuelItem = null,
 			power = PowerRequirement(10),

@@ -46,7 +46,7 @@ import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMu
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.industry.PressMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
@@ -280,7 +280,8 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(CompressorMultiblock)
 		registerMultiblock(FabricatorMultiblock)
 		registerMultiblock(CircuitfabMultiblock)
-		registerMultiblock(PlatePressMultiblock)
+		registerMultiblock(PressMultiblock)
+		registerMultiblockAlias(PressMultiblock, "PlatePressMultiblock")
 		registerMultiblock(GasFurnaceMultiblock)
 		registerMultiblock(MissileLoaderMultiblock)
 		registerMultiblock(AmmoLoaderMultiblock)
