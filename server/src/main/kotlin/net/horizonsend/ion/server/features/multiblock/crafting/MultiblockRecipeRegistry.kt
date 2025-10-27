@@ -112,6 +112,24 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 				.updateFurnace()
 		))
 
+		register(MultiblockRecipeKeys.COPPER_BLOCK_PRESSING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.COPPER_BLOCK_PRESSING,
+			clazz = PressMultiblock.PressMultiblockEntity::class,
+			smeltingItem = ItemRequirement.any(
+				MaterialRequirement(Material.WAXED_COPPER_BLOCK),
+				MaterialRequirement(Material.COPPER_BLOCK),
+			),
+			fuelItem = null,
+			power = PowerRequirement(150),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+					Tick.of(20L * 5L), // 5 seconds
+					ItemResult.simpleResult(CustomItemKeys.COPPER_WIRE),
+				))
+				.playSound(Sound.sound(NamespacedKeys.packKey("industry.press"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
+				.updateProgressText()
+				.updateFurnace()
+		))
+
 		register(MultiblockRecipeKeys.FUEL_ROD_CORE_FABRICATION, FurnaceMultiblockRecipe(
 			key = MultiblockRecipeKeys.FUEL_ROD_CORE_FABRICATION,
 			clazz = FabricatorMultiblock.FabricatorMultiblockEntity::class,
