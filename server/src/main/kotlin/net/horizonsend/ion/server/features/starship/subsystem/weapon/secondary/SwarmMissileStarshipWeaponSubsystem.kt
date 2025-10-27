@@ -99,6 +99,7 @@ class SwarmMissileStarshipWeaponSubsystem(
                     randomLoc.toLocation(starship.world),
                     dir,
                     randomInitialDir,
+                    target,
                     shooter.color,
                     shooter,
                     otherMissiles,

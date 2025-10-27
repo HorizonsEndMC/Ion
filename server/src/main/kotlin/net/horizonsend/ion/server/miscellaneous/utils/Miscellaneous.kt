@@ -5,6 +5,7 @@ import io.papermc.paper.util.Tick
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.admin.IonCommand
 import net.horizonsend.ion.server.command.admin.debug
+import net.horizonsend.ion.server.configuration.ConfigurationFiles
 import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.audience.ForwardingAudience
@@ -24,6 +25,8 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.border.WorldBorder
 import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.level.chunk.status.ChunkStatus
+import okhttp3.FormBody
+import okhttp3.Request
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Color
@@ -201,3 +204,18 @@ fun getRandomDuration(minimum: Duration, maximum: Duration): Duration {
 }
 
 fun <T, Z> Supplier<T>.map(map: (T) -> Z): Supplier<Z> = Supplier { map(get()) }
+
+fun createPastebinHttpRequest(body: String, name: String): Request {
+	val body = FormBody.Builder()
+		.add("api_dev_key", ConfigurationFiles.serverConfiguration().pastebinApiDevKey ?: "")
+		.add("api_option", "paste")
+		.add("api_paste_code", body)
+		.add("api_paste_private", "1")
+		.add("api_paste_expire_date", "10M")
+		.add("api_paste_name", name)
+		.build()
+	return Request.Builder()
+		.url("https://pastebin.com/api/api_post.php")
+		.post(body)
+		.build()
+}

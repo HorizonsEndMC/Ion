@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.ai.reward
 
+import io.papermc.paper.util.ItemComponentSanitizer.override
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.common.utils.miscellaneous.randomFloat
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
@@ -20,6 +21,7 @@ import org.bukkit.inventory.ItemStack
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.function.Supplier
 import kotlin.math.cbrt
 
 class AIItemBagRewardProvider(
@@ -27,9 +29,6 @@ class AIItemBagRewardProvider(
 	val configuration: AITemplate.ItemBagRewardProviderConfiguration
 ) : AIRewardsProvider {
 	override val log: Logger = LoggerFactory.getLogger(javaClass)
-	val items = configuration.items.associate { (string, count, weight) ->
-		fromItemString(string).apply { amount = count.get() } to weight
-	}
 
 	override fun processDamagerRewards(
 		damager: PlayerDamager,
@@ -69,16 +68,25 @@ class AIItemBagRewardProvider(
 		var points = budget
 		val bag = mutableSetOf<ItemStack>()//TODO: Combine items into one itemstack
 
+		val items = getItems()
+
 		while (points > 0) {
 			val remainingAvailable = items.filter { it.value <= points }
 			if (remainingAvailable.isEmpty()) break
 
-			val item = remainingAvailable.toList().random()
+			val (stackSupplier, weight) = remainingAvailable.toList().random()
 
-			points -= item.second
-			bag += item.first
+			points -= weight
+
+			val stack = stackSupplier.get()
+			if (stack.isEmpty) continue
+			bag += stack
 		}
 
 		return bag
+	}
+
+	fun getItems(): Map<Supplier<ItemStack>, Float> = configuration.items.associate { (string, count, weight) ->
+		Supplier { fromItemString(string).apply { amount = count.get() } } to weight
 	}
 }

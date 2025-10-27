@@ -15,10 +15,11 @@ class TestBoidProjectile(
     name: Component,
     loc: Location,
     dir: Vector,
+    target: Vector,
     shooter: Damager,
     otherBoids: MutableList<BoidProjectile<*>>,
     damageType: DamageType
-) : BoidParticleProjectile<TestBoidCannonBalancing.TestBoidCannonProjectileBalancing>(source, name, loc, dir, shooter, otherBoids, damageType) {
+) : BoidParticleProjectile<TestBoidCannonBalancing.TestBoidCannonProjectileBalancing>(source, name, loc, dir, shooter, target, otherBoids, damageType) {
     var age = 0
 
     override fun spawnParticle(x: Double, y: Double, z: Double, force: Boolean) {

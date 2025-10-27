@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
 import net.horizonsend.ion.common.utils.miscellaneous.roundToTenThousanth
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
+import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.sendText
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
@@ -432,6 +433,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 			iterations++
 
 			if (iterations > 20) {
+				IonServer.slF4JLogger.warn("BFS took too long!")
 				break
 			}
 
