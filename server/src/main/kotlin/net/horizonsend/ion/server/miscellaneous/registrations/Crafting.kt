@@ -5,6 +5,7 @@ import io.papermc.paper.datacomponent.item.ItemEnchantments
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ADVANCED_ITEM_EXTRACTOR
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ALUMINUM_INGOT
@@ -30,6 +31,8 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERI
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CIRCUITRY
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CIRCUIT_BOARD
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.COPPER_COIL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.COPPER_WIRE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRATE_PLACER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.DETONATOR
@@ -221,6 +224,7 @@ import org.bukkit.Material.TURTLE_EGG
 import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.YELLOW_CONCRETE
 import org.bukkit.NamespacedKey
+import org.bukkit.craftbukkit.legacy.MaterialRerouting.setIngredient
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
@@ -243,6 +247,7 @@ object Crafting : IonServerComponent() {
 		registerOreFurnaceRecipes()
 		registerTools()
 		registerMisc()
+		registerIndustry()
 
 		// Prismarine Bricks
 		val primarineBricksFurnaceRecipe = FurnaceRecipe(
@@ -924,6 +929,14 @@ object Crafting : IonServerComponent() {
 		blackDyeRecipe.category = CookingBookCategory.MISC
 		Bukkit.addRecipe(blackDyeRecipe)
 		listOfCustomRecipes.add(blackDyeRecipe.key)
+	}
+
+	fun registerIndustry() {
+		shaped("copper_coil", COPPER_COIL, CraftingBookCategory.BUILDING) {
+			shape("wiw", "wiw", "wiw")
+			setIngredient('w', COPPER_WIRE)
+			setIngredient('i', IRON_INGOT)
+		}
 	}
 
 	// Different names due to signature problems from type erasure
