@@ -93,6 +93,8 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val SUPERCONDUCTOR_BLOCK = registerKey("SUPERCONDUCTOR_BLOCK")
 	val SUPERCONDUCTOR_CORE = registerKey("SUPERCONDUCTOR_CORE")
 
+	val COPPER_WIRE = registerKey("COPPER_WIRE")
+
 	val STEEL_INGOT = registerKey("STEEL_INGOT")
 	val STEEL_BLOCK = registerTypedKey<CustomBlockItem>("STEEL_BLOCK")
 	val STEEL_PLATE = registerKey("STEEL_PLATE")

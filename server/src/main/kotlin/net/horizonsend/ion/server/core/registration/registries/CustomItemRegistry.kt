@@ -311,6 +311,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		unStackable(key = CustomItemKeys.REINFORCED_FRAME, model = "industry/reinforced_frame", displayName = Component.text("Reinforced Frame"))
 		unStackable(key = CustomItemKeys.REACTOR_FRAME, model = "industry/reactor_frame", displayName = Component.text("Reactor Frame", NamedTextColor.YELLOW))
 
+		unStackable(key = CustomItemKeys.COPPER_WIRE, model = "industry/copper_wire", displayName = Component.text("Copper Wire"))
+
 		unStackable(key = CustomItemKeys.UNLOADED_SHELL, model = "industry/unloaded_shell", displayName = Component.text("Unloaded Shell"))
 		stackable(key = CustomItemKeys.LOADED_SHELL, model = "industry/loaded_shell", displayName = Component.text("Loaded Shell"))
 		unStackable(key = CustomItemKeys.UNCHARGED_SHELL, model = "industry/uncharged_shell", displayName = Component.text("Uncharged Shell"))
