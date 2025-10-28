@@ -7,9 +7,14 @@ import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetw
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
+import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.faces
+import org.bukkit.Axis
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
+import org.bukkit.block.data.Directional
+import org.bukkit.block.data.MultipleFacing
 
 abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : TransportNode(location, type) {
 	private lateinit var graph: GridEnergyNetwork
@@ -19,19 +24,32 @@ abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : 
 		this.graph = graph as GridEnergyNetwork
 	}
 
-	class GridEnergyPort(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_PORT.getValue()) {
+	class GridEnergyPortNode(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_PORT.getValue()) {
 		override fun isIntact(): Boolean? {
-			return getBlock()?.blockData?.customBlock?.key == CustomBlockKeys.GRID_ENERGY_PORT
+			val block = getBlock() ?: return null
+			return block.blockData.customBlock?.key == CustomBlockKeys.GRID_ENERGY_PORT
 		}
 
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
 	}
 
-	class GridEnergyJunction(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_JUNCTION.getValue()) {
+	class GridEnergyJunctionNode(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_JUNCTION.getValue()) {
 		override fun isIntact(): Boolean? {
-			return getBlock()?.type == Material.SPONGE
+			val block = getBlock() ?: return null
+			return block.type == Material.SPONGE
 		}
 
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
+	}
+
+	class GridEnergyLinearNode(location: BlockKey, val axis: Axis) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_LINEAR.getValue()) {
+		override fun isIntact(): Boolean? {
+			val block = getBlock() ?: return null
+			val data = block.blockData
+			return data.material == Material.END_ROD && (data as Directional).facing.axis == axis
+		}
+
+		private val dirs = setOf(axis.faces.first, axis.faces.second)
+		override fun getPipableDirections(): Set<BlockFace> = dirs
 	}
 }

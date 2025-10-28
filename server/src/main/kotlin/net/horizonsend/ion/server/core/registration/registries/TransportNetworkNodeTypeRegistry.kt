@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTyp
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_PORT
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.FLUID_VALVE
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.GRID_ENERGY_JUNCTION
+import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.GRID_ENERGY_LINEAR
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.GRID_ENERGY_PORT
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.TEMPERATURE_GAUGE
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
@@ -22,8 +23,9 @@ import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNo
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedJunctionPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedLinearPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.TemperatureGauge
-import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyJunction
-import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyPort
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyJunctionNode
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyLinearNode
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyPortNode
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode.Companion.NODE_POSITION
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CONTENTS
@@ -42,9 +44,9 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return node
 			}
 
-			override fun serializeData(complex: FluidPort, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(node: FluidPort, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
-				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
 				return pdc
 			}
 		})
@@ -54,9 +56,9 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return node
 			}
 
-			override fun serializeData(complex: FluidValve, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(node: FluidValve, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
-				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
 				return pdc
 			}
 		})
@@ -66,9 +68,9 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return node
 			}
 
-			override fun serializeData(complex: TemperatureGauge, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(node: TemperatureGauge, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
-				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
 				return pdc
 			}
 		})
@@ -79,10 +81,10 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return node
 			}
 
-			override fun serializeData(complex: RegularJunctionPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(node: RegularJunctionPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
-				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
-				pdc.set(CONTENTS, FluidStack, complex.contents)
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
+				pdc.set(CONTENTS, FluidStack, node.contents)
 				return pdc
 			}
 		})
@@ -93,11 +95,11 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return node
 			}
 
-			override fun serializeData(complex: RegularLinearPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(node: RegularLinearPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
-				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
-				pdc.set(CONTENTS, FluidStack, complex.contents)
-				pdc.set(NamespacedKeys.AXIS, axisType, complex.axis)
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
+				pdc.set(CONTENTS, FluidStack, node.contents)
+				pdc.set(NamespacedKeys.AXIS, axisType, node.axis)
 				return pdc
 			}
 		})
@@ -108,10 +110,10 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return node
 			}
 
-			override fun serializeData(complex: ReinforcedJunctionPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(node: ReinforcedJunctionPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
-				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
-				pdc.set(CONTENTS, FluidStack, complex.contents)
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
+				pdc.set(CONTENTS, FluidStack, node.contents)
 				return pdc
 			}
 		})
@@ -122,35 +124,48 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				return node
 			}
 
-			override fun serializeData(complex: ReinforcedLinearPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(node: ReinforcedLinearPipe, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
-				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
-				pdc.set(CONTENTS, FluidStack, complex.contents)
-				pdc.set(NamespacedKeys.AXIS, axisType, complex.axis)
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
+				pdc.set(CONTENTS, FluidStack, node.contents)
+				pdc.set(NamespacedKeys.AXIS, axisType, node.axis)
 				return pdc
 			}
 		})
-		register(GRID_ENERGY_PORT, object : TransportNodeType<GridEnergyPort>(GRID_ENERGY_PORT) {
-			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): GridEnergyPort {
-				val node = GridEnergyPort(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
+		register(GRID_ENERGY_PORT, object : TransportNodeType<GridEnergyPortNode>(GRID_ENERGY_PORT) {
+			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): GridEnergyPortNode {
+				val node = GridEnergyPortNode(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
 				return node
 			}
 
-			override fun serializeData(complex: GridEnergyPort, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(node: GridEnergyPortNode, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
-				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
 				return pdc
 			}
 		})
-		register(GRID_ENERGY_JUNCTION, object : TransportNodeType<GridEnergyJunction>(GRID_ENERGY_JUNCTION) {
-			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): GridEnergyJunction {
-				val node = GridEnergyJunction(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
+		register(GRID_ENERGY_JUNCTION, object : TransportNodeType<GridEnergyJunctionNode>(GRID_ENERGY_JUNCTION) {
+			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): GridEnergyJunctionNode {
+				val node = GridEnergyJunctionNode(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
 				return node
 			}
 
-			override fun serializeData(complex: GridEnergyJunction, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+			override fun serializeData(node: GridEnergyJunctionNode, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 				val pdc = adapterContext.newPersistentDataContainer()
-				pdc.set(NODE_POSITION, PersistentDataType.LONG, complex.location)
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
+				return pdc
+			}
+		})
+		register(GRID_ENERGY_LINEAR, object : TransportNodeType<GridEnergyLinearNode>(GRID_ENERGY_LINEAR) {
+			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): GridEnergyLinearNode {
+				val node = GridEnergyLinearNode(data.get(NODE_POSITION, PersistentDataType.LONG)!!, data.get(NamespacedKeys.AXIS, axisType)!!)
+				return node
+			}
+
+			override fun serializeData(node: GridEnergyLinearNode, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+				val pdc = adapterContext.newPersistentDataContainer()
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
+				pdc.set(NamespacedKeys.AXIS, axisType, node.axis)
 				return pdc
 			}
 		})
