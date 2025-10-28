@@ -88,6 +88,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTOR_
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTOR_FRAME
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REINFORCED_FRAME
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.RIFLE_RECEIVER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ROTATION_SHAFT
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SHOTGUN_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMB_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMOKE_GRENADE
@@ -936,6 +937,12 @@ object Crafting : IonServerComponent() {
 			shape("wiw", "wiw", "wiw")
 			setIngredient('w', COPPER_WIRE)
 			setIngredient('i', IRON_INGOT)
+		}
+
+		shaped("rotation_shaft", ROTATION_SHAFT, CraftingBookCategory.BUILDING) {
+			shape("wiw", "wiw", "wiw")
+			setIngredient('w', TITANIUM_INGOT)
+			setIngredient('i', STEEL_INGOT)
 		}
 	}
 
