@@ -13,6 +13,8 @@ import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.Gr
 import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyJunctionNode
 import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyLinearNode
 import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyPortNode
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.HighCapacityGridEnergyJunctionNode
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.UltraHighCapacityGridEnergyJunctionNode
 
 object TransportNetworkNodeTypeKeys : KeyRegistry<TransportNodeType<*>>(TRANSPORT_NETWORK_NODE_TYPE, TransportNodeType::class) {
 	val FLUID_JUNCTION_REGULAR = registerTypedKey<TransportNodeType<RegularJunctionPipe>>("FLUID_JUNCTION_REGULAR")
@@ -26,4 +28,6 @@ object TransportNetworkNodeTypeKeys : KeyRegistry<TransportNodeType<*>>(TRANSPOR
 	val GRID_ENERGY_PORT = registerTypedKey<TransportNodeType<GridEnergyPortNode>>("GRID_ENERGY_PORT")
 	val GRID_ENERGY_JUNCTION = registerTypedKey<TransportNodeType<GridEnergyJunctionNode>>("GRID_ENERGY_JUNCTION")
 	val GRID_ENERGY_LINEAR = registerTypedKey<TransportNodeType<GridEnergyLinearNode>>("GRID_ENERGY_LINEAR")
+	val HIGH_CAPACITY_GRID_ENERGY_JUNCTION = registerTypedKey<TransportNodeType<HighCapacityGridEnergyJunctionNode>>("HIGH_CAPACITY_GRID_ENERGY_JUNCTION")
+	val ULTRA_HIGH_CAPACITY_GRID_ENERGY_JUNCTION = registerTypedKey<TransportNodeType<UltraHighCapacityGridEnergyJunctionNode>>("ULTRA_HIGH_CAPACITY_GRID_ENERGY_JUNCTION")
 }

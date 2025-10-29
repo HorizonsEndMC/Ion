@@ -26,7 +26,7 @@ abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : 
 	}
 
 	class GridEnergyPortNode(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_PORT.getValue()) {
-		override val flowCapacity: Double = 10000.0
+		override val flowCapacity: Double = 24000.0 // 24 kw
 
 		override fun isIntact(): Boolean? {
 			val block = getBlock() ?: return null
@@ -37,7 +37,7 @@ abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : 
 	}
 
 	class GridEnergyJunctionNode(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_JUNCTION.getValue()) {
-		override val flowCapacity: Double = 10000.0
+		override val flowCapacity: Double = 24000.0 // 24 kw
 
 		override fun isIntact(): Boolean? {
 			val block = getBlock() ?: return null
@@ -48,7 +48,7 @@ abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : 
 	}
 
 	class GridEnergyLinearNode(location: BlockKey, val axis: Axis) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_LINEAR.getValue()) {
-		override val flowCapacity: Double = 10000.0
+		override val flowCapacity: Double = 24000.0 // 24 kw
 
 		override fun isIntact(): Boolean? {
 			val block = getBlock() ?: return null
@@ -58,5 +58,27 @@ abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : 
 
 		private val dirs = setOf(axis.faces.first, axis.faces.second)
 		override fun getPipableDirections(): Set<BlockFace> = dirs
+	}
+
+	class HighCapacityGridEnergyJunctionNode(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.HIGH_CAPACITY_GRID_ENERGY_JUNCTION.getValue()) {
+		override val flowCapacity: Double = 120000.0 // 120 kw
+
+		override fun isIntact(): Boolean? {
+			val block = getBlock() ?: return null
+			return block.type == Material.IRON_BLOCK // TODO temp
+		}
+
+		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
+	}
+
+	class UltraHighCapacityGridEnergyJunctionNode(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.ULTRA_HIGH_CAPACITY_GRID_ENERGY_JUNCTION.getValue()) {
+		override val flowCapacity: Double = Double.MAX_VALUE // infinite
+
+		override fun isIntact(): Boolean? {
+			val block = getBlock() ?: return null
+			return block.type == Material.NETHERITE_BLOCK // TODO temp
+		}
+
+		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
 	}
 }

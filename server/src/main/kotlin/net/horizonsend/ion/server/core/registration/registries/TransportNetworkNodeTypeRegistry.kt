@@ -13,7 +13,9 @@ import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTyp
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.GRID_ENERGY_JUNCTION
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.GRID_ENERGY_LINEAR
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.GRID_ENERGY_PORT
+import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.HIGH_CAPACITY_GRID_ENERGY_JUNCTION
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.TEMPERATURE_GAUGE
+import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys.ULTRA_HIGH_CAPACITY_GRID_ENERGY_JUNCTION
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.FluidPort
@@ -23,9 +25,12 @@ import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNo
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedJunctionPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedLinearPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.TemperatureGauge
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode
 import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyJunctionNode
 import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyLinearNode
 import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyPortNode
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.HighCapacityGridEnergyJunctionNode
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.UltraHighCapacityGridEnergyJunctionNode
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode.Companion.NODE_POSITION
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.CONTENTS
@@ -166,6 +171,30 @@ class TransportNetworkNodeTypeRegistry : Registry<TransportNodeType<*>>(Registry
 				val pdc = adapterContext.newPersistentDataContainer()
 				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
 				pdc.set(NamespacedKeys.AXIS, axisType, node.axis)
+				return pdc
+			}
+		})
+		register(HIGH_CAPACITY_GRID_ENERGY_JUNCTION, object : TransportNodeType<HighCapacityGridEnergyJunctionNode>(HIGH_CAPACITY_GRID_ENERGY_JUNCTION) {
+			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): HighCapacityGridEnergyJunctionNode {
+				val node = HighCapacityGridEnergyJunctionNode(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
+				return node
+			}
+
+			override fun serializeData(node: HighCapacityGridEnergyJunctionNode, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+				val pdc = adapterContext.newPersistentDataContainer()
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
+				return pdc
+			}
+		})
+		register(ULTRA_HIGH_CAPACITY_GRID_ENERGY_JUNCTION, object : TransportNodeType<UltraHighCapacityGridEnergyJunctionNode>(ULTRA_HIGH_CAPACITY_GRID_ENERGY_JUNCTION) {
+			override fun deserialize(data: PersistentDataContainer, adapterContext: PersistentDataAdapterContext): UltraHighCapacityGridEnergyJunctionNode {
+				val node = UltraHighCapacityGridEnergyJunctionNode(data.get(NODE_POSITION, PersistentDataType.LONG)!!)
+				return node
+			}
+
+			override fun serializeData(node: UltraHighCapacityGridEnergyJunctionNode, adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
+				val pdc = adapterContext.newPersistentDataContainer()
+				pdc.set(NODE_POSITION, PersistentDataType.LONG, node.location)
 				return pdc
 			}
 		})

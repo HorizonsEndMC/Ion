@@ -26,8 +26,10 @@ class GridEnergyGraphManager(manager: TransportHolder) : NetworkManager<GridEner
 
 		@JvmStatic
 		val cache: BlockBasedCacheFactory<GridEnergyNode, NetworkManager<GridEnergyNode, TransportNetwork<GridEnergyNode>>> = BlockBasedCacheFactory.builder<GridEnergyNode, NetworkManager<GridEnergyNode, TransportNetwork<GridEnergyNode>>>()
-			.addDataHandler<MultipleFacing>(CustomBlockKeys.GRID_ENERGY_PORT, Material.BROWN_MUSHROOM_BLOCK) { _, pos, holder -> GridEnergyNode.GridEnergyPortNode(pos) }
+			.addDataHandler<MultipleFacing>(CustomBlockKeys.GRID_ENERGY_PORT, Material.BROWN_MUSHROOM_BLOCK) { _, pos, _ -> GridEnergyNode.GridEnergyPortNode(pos) }
 			.addSimpleNode(Material.SPONGE) { pos, _, _ -> GridEnergyNode.GridEnergyJunctionNode(pos) }
+			.addSimpleNode(Material.IRON_BLOCK) { pos, _, _ -> GridEnergyNode.HighCapacityGridEnergyJunctionNode(pos) }
+			.addSimpleNode(Material.NETHERITE_BLOCK) { pos, _, _ -> GridEnergyNode.UltraHighCapacityGridEnergyJunctionNode(pos) }
 			.addDataHandler<Directional>(Material.END_ROD) { data, pos, _ -> GridEnergyNode.GridEnergyLinearNode(pos, data.facing.axis) }
 			.build()
 	}
