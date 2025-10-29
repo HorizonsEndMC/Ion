@@ -1,20 +1,28 @@
 package net.horizonsend.ion.server.features.transport.manager.graph.gridenergy
 
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyPortMetaData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
+import net.horizonsend.ion.server.features.transport.inputs.IOPort.RegisteredMetaDataInput
 import net.horizonsend.ion.server.features.transport.inputs.IOType
+import net.horizonsend.ion.server.features.transport.manager.graph.FlowNode
+import net.horizonsend.ion.server.features.transport.manager.graph.FlowTrackingTransportGraph
 import net.horizonsend.ion.server.features.transport.manager.graph.NetworkManager
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidGraphEdge
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import java.util.UUID
 
-class GridEnergyNetwork(uuid: UUID, override val manager: NetworkManager<GridEnergyNode, TransportNetwork<GridEnergyNode>>) : TransportNetwork<GridEnergyNode>(uuid, manager) {
+class GridEnergyNetwork(
+	uuid: UUID,
+	override val manager: NetworkManager<GridEnergyNode, TransportNetwork<GridEnergyNode>>
+) : FlowTrackingTransportGraph<GridEnergyNode, RegisteredMetaDataInput<GridEnergyPortMetaData>>(uuid, manager, IOType.GRID_ENERGY) {
 	override fun createEdge(
         nodeOne: GridEnergyNode,
         nodeTwo: GridEnergyNode
@@ -23,7 +31,6 @@ class GridEnergyNetwork(uuid: UUID, override val manager: NetworkManager<GridEne
 	}
 
 	private var lastStructureTick: Long = System.currentTimeMillis()
-	private var lastDisplayTick: Long = System.currentTimeMillis()
 
 	override fun handleTick() {
 		val now = System.currentTimeMillis()
@@ -31,8 +38,11 @@ class GridEnergyNetwork(uuid: UUID, override val manager: NetworkManager<GridEne
 		if (now - lastStructureTick > STRUCTURE_INTERVAL) {
 			lastStructureTick = now
 
-			// Discover any strucural changes and check integrity of the network
+			// Discover any structural changes and check integrity of the network
 			discoverNetwork()
+
+			// Determine the direction and capacity for flow through the network
+			edmondsKarp()
 		}
 
 		reCalculatePower()
@@ -45,13 +55,6 @@ class GridEnergyNetwork(uuid: UUID, override val manager: NetworkManager<GridEne
 
 		val availableInput = getNetworkInputPower(outputs)
 		return checkPowerConsumption(inputs, availableInput)
-	}
-
-	fun hasAvailablePower(bonusConsumption: Double): Double {
-		val (inputs, outputs) = trackIO()
-
-		val availableInput = getNetworkInputPower(outputs)
-		return checkPowerConsumption(inputs, availableInput, update = false, bonusConsumption = bonusConsumption)
 	}
 
 	private fun getNetworkInputPower(multiblockOutputs: ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>>): Double {
@@ -71,18 +74,19 @@ class GridEnergyNetwork(uuid: UUID, override val manager: NetworkManager<GridEne
 		return provided
 	}
 
-	private fun checkPowerConsumption(multiblockInputs: ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>>, availablePower: Double, update: Boolean = true, bonusConsumption: Double = 0.0): Double {
+	private fun checkPowerConsumption(multiblockInputs: Long2ObjectOpenHashMap<RegisteredMetaDataInput<GridEnergyPortMetaData>>, availablePower: Double, update: Boolean = true, bonusConsumption: Double = 0.0): Double {
 		val checkedEntities = ObjectOpenHashSet<GridEnergyMultiblock>()
 
 		var consumed = 0.0
 
-		for (input in multiblockInputs) {
+		for ((inputLoc, input) in multiblockInputs) {
 			val entity = input.holder
 			if (entity !is GridEnergyMultiblock) continue
 			if (checkedEntities.contains(entity)) continue
 			checkedEntities.add(entity)
 
-			consumed += entity.getTotalGridEnergyConsumption()
+			val flow = getFlow(inputLoc)
+			consumed += minOf(entity.getTotalGridEnergyConsumption(), flow)
 		}
 
 		val availablePercentage = availablePower / (consumed + bonusConsumption)
@@ -99,6 +103,14 @@ class GridEnergyNetwork(uuid: UUID, override val manager: NetworkManager<GridEne
 		return availablePercentage
 	}
 
+	fun getAvailablePowerPercentage(portLocation: BlockKey, bonusConsumption: Double): Double {
+		val (inputs, outputs) = trackIO()
+
+		val availableInput = getNetworkInputPower(outputs)
+		val flow = getFlow(portLocation)
+		return checkPowerConsumption(inputs, minOf(flow, availableInput), update = false, bonusConsumption = bonusConsumption)
+	}
+
 	override fun save(adapterContext: PersistentDataAdapterContext): PersistentDataContainer {
 		return adapterContext.newPersistentDataContainer()
 	}
@@ -106,16 +118,16 @@ class GridEnergyNetwork(uuid: UUID, override val manager: NetworkManager<GridEne
 	/**
 	 * Returns a pair of a location map of inputs, and a location map of outputs
 	 **/
-	private fun trackIO(): Pair<ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>>, ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>>> {
-		val inputs = ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>>()
-		val outputs = ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>>()
+	private fun trackIO(): Pair<Long2ObjectOpenHashMap<RegisteredMetaDataInput<GridEnergyPortMetaData>>, ObjectOpenHashSet<RegisteredMetaDataInput<GridEnergyPortMetaData>>> {
+		val inputs = Long2ObjectOpenHashMap<RegisteredMetaDataInput<GridEnergyPortMetaData>>()
+		val outputs = ObjectOpenHashSet<RegisteredMetaDataInput<GridEnergyPortMetaData>>()
 
 		for (node in getGraphNodes()) {
-			val ports: ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>> = manager.transportManager.getInputProvider().getPorts(IOType.GRID_ENERGY, node.location)
+			val ports: ObjectOpenHashSet<RegisteredMetaDataInput<GridEnergyPortMetaData>> = manager.transportManager.getInputProvider().getPorts(IOType.GRID_ENERGY, node.location)
 
 			for (port in ports) {
 				val metaData = port.metaData
-				if (metaData.inputAllowed) inputs.add(port)
+				if (metaData.inputAllowed) inputs[node.location] = port
 				if (metaData.outputAllowed) outputs.add(port)
 			}
 		}
@@ -125,6 +137,13 @@ class GridEnergyNetwork(uuid: UUID, override val manager: NetworkManager<GridEne
 
 	companion object {
 		private const val STRUCTURE_INTERVAL = 1000L
-		private const val DISPLAY_INTERVAL = 250L
+	}
+
+	override fun isSink(node: FlowNode, ioData: RegisteredMetaDataInput<GridEnergyPortMetaData>): Boolean {
+		return ioData.metaData.inputAllowed
+	}
+
+	override fun isSource(node: FlowNode, ioData: RegisteredMetaDataInput<GridEnergyPortMetaData>): Boolean {
+		return ioData.metaData.outputAllowed
 	}
 }

@@ -1,10 +1,12 @@
 package net.horizonsend.ion.server.features.transport.manager.graph
 
+import com.google.common.collect.Multimap
 import com.google.common.graph.MutableValueGraph
 import com.google.common.graph.ValueGraph
 import com.google.common.graph.ValueGraphBuilder
 import it.unimi.dsi.fastutil.longs.Long2DoubleOpenHashMap
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.server.IonServer
@@ -12,7 +14,9 @@ import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidGraphEdge
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
+import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import java.util.UUID
 import kotlin.jvm.optionals.getOrDefault
 import kotlin.jvm.optionals.getOrNull
@@ -22,7 +26,15 @@ abstract class FlowTrackingTransportGraph<T : FlowNode, P : IOPort>(uuid: UUID, 
 	/**
 	 * A map of each node location to the maximum flow achievable at that node
 	 **/
-	private var flowMap = Long2DoubleOpenHashMap()
+	protected var flowMap = Long2DoubleOpenHashMap(); private set
+
+	// Array of unique paths that contribute flow
+	protected var paths: Array<List<BlockKey>> = arrayOf(); private set
+	// Multimap of nodes to indexes of paths that use that node
+	protected var nodePathLookup = Long2ObjectOpenHashMap<IntArray>(); private set
+
+	protected var lastSinks: ObjectOpenHashSet<T> = ObjectOpenHashSet(); private set
+	protected var lastSources: ObjectOpenHashSet<T> = ObjectOpenHashSet(); private set
 
 	fun getFlow(position: Long) = flowMap.getOrDefault(position, 0.0)
 
@@ -53,6 +65,9 @@ abstract class FlowTrackingTransportGraph<T : FlowNode, P : IOPort>(uuid: UUID, 
 			if (manager.transportManager.getInputProvider().getPorts(ioType, node.location).any { input -> isSource(node, input) }) sources.add(node)
 		}
 
+		lastSinks = sinks
+		lastSources = sources
+
 		if (sources.isEmpty()) {
 			for (node in sinks) {
 				flowMap[node.location] = node.flowCapacity
@@ -76,6 +91,9 @@ abstract class FlowTrackingTransportGraph<T : FlowNode, P : IOPort>(uuid: UUID, 
 
 		val endpointFlows = Long2DoubleOpenHashMap()
 
+		val paths = mutableListOf<List<BlockKey>>()
+		val lookup = multimapOf<BlockKey, Int>()
+
 		var iterations = 0
 		while (bfs(valueGraph, parentRelationMap))	{
 			iterations++
@@ -88,6 +106,7 @@ abstract class FlowTrackingTransportGraph<T : FlowNode, P : IOPort>(uuid: UUID, 
 			var pathFlow = Double.MAX_VALUE
 			var node: BlockKey = SUPER_SINK
 
+			// Set flow across path
 			while (node != SUPER_SOURCE) {
 				val parentOfNode: Long = parentRelationMap.getOrDefault(node, null) ?: break
 
@@ -112,12 +131,19 @@ abstract class FlowTrackingTransportGraph<T : FlowNode, P : IOPort>(uuid: UUID, 
 
 			v = SUPER_SINK
 
+			val path = mutableListOf<BlockKey>()
+			val nextIndex = paths.size
+
+			// Update additional info
 			while (v != SUPER_SOURCE) {
 				endpointFlows[v] = maxOf(endpointFlows.getOrDefault(v, 0.0), maxFlow)
 
 				val parentOfNode: Long = parentRelationMap.getOrDefault(v, null) ?: break
 
 				if (v == parentOfNode) break
+
+				path.add(v)
+				lookup[v].add(nextIndex)
 
 				val parentNode = getNodeAtLocation(parentOfNode)
 				val node = getNodeAtLocation(v)
@@ -135,9 +161,14 @@ abstract class FlowTrackingTransportGraph<T : FlowNode, P : IOPort>(uuid: UUID, 
 
 				v = parentOfNode
 			}
+
+			paths.add(path)
 		}
 
 		flowMap = endpointFlows
+
+		nodePathLookup = lookup.asMap().entries.associateTo(Long2ObjectOpenHashMap()) { it.key to it.value.toIntArray() }
+		this.paths = paths.toTypedArray()
 	}
 
 	fun getValueGraphRepresentation(): MutableValueGraph<BlockKey, Double> {

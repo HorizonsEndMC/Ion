@@ -90,7 +90,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 		if (now - lastStructureTick > STRUCTURE_INTERVAL) {
 			lastStructureTick = now
 
-			// Discover any strucural changes and check integrity of the network
+			// Discover any structural changes and check integrity of the network
 			discoverNetwork()
 
 			// Determine the direction and capacity for flow through the network

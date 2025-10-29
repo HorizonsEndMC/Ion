@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.manager.graph.gridenergy
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.features.transport.manager.graph.FlowNode
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
 import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
@@ -16,7 +17,7 @@ import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Directional
 import org.bukkit.block.data.MultipleFacing
 
-abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : TransportNode(location, type) {
+abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : FlowNode(location, type) {
 	private lateinit var graph: GridEnergyNetwork
 
 	override fun getNetwork(): TransportNetwork<*> = graph
@@ -25,6 +26,8 @@ abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : 
 	}
 
 	class GridEnergyPortNode(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_PORT.getValue()) {
+		override val flowCapacity: Double = 10000.0
+
 		override fun isIntact(): Boolean? {
 			val block = getBlock() ?: return null
 			return block.blockData.customBlock?.key == CustomBlockKeys.GRID_ENERGY_PORT
@@ -34,6 +37,8 @@ abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : 
 	}
 
 	class GridEnergyJunctionNode(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_JUNCTION.getValue()) {
+		override val flowCapacity: Double = 10000.0
+
 		override fun isIntact(): Boolean? {
 			val block = getBlock() ?: return null
 			return block.type == Material.SPONGE
@@ -43,6 +48,8 @@ abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : 
 	}
 
 	class GridEnergyLinearNode(location: BlockKey, val axis: Axis) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_LINEAR.getValue()) {
+		override val flowCapacity: Double = 10000.0
+
 		override fun isIntact(): Boolean? {
 			val block = getBlock() ?: return null
 			val data = block.blockData
