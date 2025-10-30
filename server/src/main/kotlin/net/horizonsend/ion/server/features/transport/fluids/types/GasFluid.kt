@@ -22,6 +22,7 @@ import org.bukkit.Particle.Trail
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
 abstract class GasFluid(
@@ -32,6 +33,8 @@ abstract class GasFluid(
 	val pressureBars: Double = 1.0
 ) : FluidType(key) {
 	override val categories: Array<FluidCategory> = arrayOf(FluidCategory.GAS)
+
+	open val plumeMultiplier: Double = 1.0
 
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
 		val trailOptions = Trail(
@@ -56,12 +59,12 @@ abstract class GasFluid(
 
 		val start = smokeLocation.clone().add(offset)
 
-		val destination = start.clone().add(offset).add(leakingDirection.direction.multiply(5)).add(world.ion.enviornmentManager.weatherManager.getWindVector(world, smokeLocation.x, smokeLocation.y, smokeLocation.z))
+		val destination = start.clone().add(offset).add(leakingDirection.direction.multiply(5 * plumeMultiplier)).add(world.ion.enviornmentManager.weatherManager.getWindVector(world, smokeLocation.x, smokeLocation.y, smokeLocation.z))
 
 		val trial = Trail(
 			/* target = */ destination,
 			/* color = */ color,
-			/* duration = */ 40
+			/* duration = */ (40 * plumeMultiplier).roundToInt()
 		)
 
 		world.spawnParticle(Particle.TRAIL, start, 1, 0.0, 0.0, 0.0, 2.125, trial, true)
