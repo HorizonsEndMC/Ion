@@ -217,7 +217,7 @@ object Wrench : CustomItem(
 		val text = ofChildren(
 			ofChildren(text(formatProgressString(network.getAvailablePowerPercentage(hitKey, 0.0))), text("% Of Branch", HE_MEDIUM_GRAY)), Component.newline(),
 			ofChildren(text("Wire Usage: ", HE_MEDIUM_GRAY), formatUnits(network.getFlow(hitKey))), Component.newline(),
-			ofChildren(text("Node Capacity: ", HE_MEDIUM_GRAY), formatUnits(network.getFlowCapacity(network.getNodeAtLocation(hitKey)!!))), Component.newline(),
+			ofChildren(text("Node Capacity: ", HE_MEDIUM_GRAY), formatUnits(network.getFlowCapacity(network.getNodeAtLocation(hitKey)!!).let { if (it == Double.MAX_VALUE) Double.POSITIVE_INFINITY else it })), Component.newline(),
 			ofChildren(text("+", NamedTextColor.GREEN), formatUnits(network.lastProduction)), Component.newline(),
 			ofChildren(text("-", NamedTextColor.RED), formatUnits(network.lastTotalGridConsumption)),
 		)

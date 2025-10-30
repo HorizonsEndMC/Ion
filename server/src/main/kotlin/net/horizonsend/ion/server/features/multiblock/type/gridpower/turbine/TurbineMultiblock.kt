@@ -96,7 +96,7 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			{ StatusDisplayModule(it, statusManager) },
 		)
 
-		override val ioData: IOData = IOData.Companion.builder(this)
+		override val ioData: IOData = IOData.builder(this)
 			// Output
 			.addPort(IOType.FLUID, -3, 0, 1) { IOPort.RegisteredMetaDataInput(this, FluidPortMetadata(connectedStore = steamInput, inputAllowed = true, outputAllowed = false)) }
 			.addPort(IOType.FLUID, 3, 0, 1) { IOPort.RegisteredMetaDataInput(this, FluidPortMetadata(connectedStore = steamOutput, inputAllowed = false, outputAllowed = true)) }
