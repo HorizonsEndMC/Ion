@@ -105,7 +105,6 @@ class GridEnergyNetwork(
 			val flow = getFlow(inputLoc)
 			val individualPercentage = (minOf(availablePower, flow) / entity.getTotalGridEnergyConsumption()).takeIf { it.isFinite() } ?: 0.0
 
-			debugAudience.highlightBlock(toVec3i(inputLoc), 20L)
 			entity.markPowerShortage(individualPercentage)
 			entity.gridEnergyManager.runUpdates()
 		}
