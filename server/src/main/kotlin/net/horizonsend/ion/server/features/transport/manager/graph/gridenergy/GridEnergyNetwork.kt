@@ -17,7 +17,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import java.util.UUID
-import kotlin.collections.component2
 
 class GridEnergyNetwork(
 	uuid: UUID,
@@ -145,7 +144,8 @@ class GridEnergyNetwork(
 		private const val STRUCTURE_INTERVAL = 1000L
 	}
 
-	override fun isSink(node: FlowNode, ioData: RegisteredMetaDataInput<GridEnergyPortMetaData>): Boolean {
+	override fun isSink(node: FlowNode, ioData: RegisteredMetaDataInput<GridEnergyPortMetaData>?): Boolean {
+		if (ioData == null) return false
 		return ioData.metaData.inputAllowed
 	}
 

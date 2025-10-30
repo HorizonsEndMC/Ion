@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
+import net.horizonsend.ion.server.features.transport.fluids.types.GasFluid
 import net.horizonsend.ion.server.features.transport.fluids.types.Lava
 import net.horizonsend.ion.server.features.transport.fluids.types.LegacyGasFluid
 import net.horizonsend.ion.server.features.transport.fluids.types.SimpleFluid
@@ -105,14 +106,6 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 			heatCapacity = 2.0, // TODO
 			molarMass = 18.01528, // TODO
 			density = 0.479, // TODO
-		))
-		register(FluidTypeKeys.POLLUTION, SimpleFluid(
-			FluidTypeKeys.POLLUTION,
-			text("Pollution", NamedTextColor.BLACK),
-			categories = arrayOf(FluidCategory.GAS),
-			heatCapacity = 2.0,
-			molarMass = 18.01528,
-			density = 0.479,
 			defaultProperties = mapOf(
 				FluidPropertyTypeKeys.FLAMMABILITY to FluidProperty.Flammability(
 					joulesPerLiter = 39600000.0,
@@ -121,5 +114,14 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 				)
 			)
 		))
+		register(FluidTypeKeys.POLLUTION, object : GasFluid(
+			FluidTypeKeys.POLLUTION,
+			Color.GRAY,
+			heatCapacity = 2.0,
+			molarMass = 18.01528
+		) {
+			override fun getDisplayName(stack: FluidStack): Component = text("Pollution", NamedTextColor.GRAY)
+			override val plumeMultiplier: Double = 3.5
+		})
 	}
 }

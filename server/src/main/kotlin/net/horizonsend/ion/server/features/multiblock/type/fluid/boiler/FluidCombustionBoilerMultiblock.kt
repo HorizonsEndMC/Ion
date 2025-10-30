@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys.FLAMMABILITY
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
@@ -15,6 +16,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.FluidCombustionBoilerMultiblock.FluidBoilerEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
@@ -407,12 +409,12 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 		z: Int,
 		structureDirection: BlockFace
 	) : BoilerMultiblockEntity(manager, data, FluidCombustionBoilerMultiblock, world, x, y, z, structureDirection) {
-		val fuelStorage = FluidStorageContainer(data, "fuel_storage", text("Fuel Storage"), NamespacedKeys.key("fuel_storage"), 100_000.0, FluidRestriction.Unlimited)
+		val fuelStorage = FluidStorageContainer(data, "fuel_storage", text("Fuel Storage"), NamespacedKeys.key("fuel_storage"), 100_000.0, FluidRestriction.FluidPropertyWhitelist(FLAMMABILITY))
+		val pollutionStorage = FluidStorageContainer(data, "pollution_out", text("Pollution Output"), NamespacedKeys.key("pollution_out"), 100_000.0, FluidRestriction.Unlimited)
 
-		override fun IOData.Builder.registerAdditionalIO(): IOData.Builder {
-			// Fuel input
-			return addPort(IOType.FLUID, 0, -1, 0) { IOPort.RegisteredMetaDataInput(this@FluidBoilerEntity, FluidPortMetadata(connectedStore = fuelStorage, inputAllowed = true, outputAllowed = false)) }
-		}
+		override fun IOData.Builder.registerAdditionalIO(): IOData.Builder =
+				addPort(IOType.FLUID, 0, -1, 0) { IOPort.RegisteredMetaDataInput(this@FluidBoilerEntity, FluidPortMetadata(connectedStore = fuelStorage, inputAllowed = true, outputAllowed = false)) }
+				.addPort(IOType.FLUID, 0, 1, 6) { IOPort.RegisteredMetaDataInput(this@FluidBoilerEntity, FluidPortMetadata(connectedStore = pollutionStorage, inputAllowed = false, outputAllowed = true)) }
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(this,
 			{ ComplexFluidDisplayModule(handler = it, container = fluidInput, title = text("Input"), offsetLeft = 3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.RIGHT) },
@@ -421,15 +423,38 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 		)
 
 		override fun getStores(): List<FluidStorageContainer> {
-			return listOf(fluidInput, fluidOutput, fuelStorage)
+			return listOf(fluidInput, fluidOutput, fuelStorage, pollutionStorage)
 		}
 
 		override fun getHeatProductionJoulesPerSecond(): Double {
-			return 10000.0
+			return lastHeatValue
+		}
+
+		private var lastHeatValue = 0.0
+
+		override fun preTick(deltaSeconds: Double): Boolean {
+			val combustionContents = fuelStorage.getContents()
+			if (combustionContents.isEmpty()) return false
+
+			val combustionResult = combustionContents.getData(FLAMMABILITY) ?: return false
+			val burnedAmount = minOf(BURNED_PER_SECOND * deltaSeconds, combustionContents.amount)
+
+			val pollutionStack = FluidStack(combustionResult.resultFluid, burnedAmount * combustionResult.resultVolumeMultiplier)
+			if (!pollutionStorage.canAdd(pollutionStack)) return false
+
+			fuelStorage.removeAmount(burnedAmount)
+			pollutionStorage.addFluid(pollutionStack, location)
+			lastHeatValue = combustionResult.joulesPerLiter * burnedAmount
+
+			return true
 		}
 
 		override fun postTick() {
 
+		}
+
+		companion object {
+			private const val BURNED_PER_SECOND = 0.5
 		}
 	}
 }

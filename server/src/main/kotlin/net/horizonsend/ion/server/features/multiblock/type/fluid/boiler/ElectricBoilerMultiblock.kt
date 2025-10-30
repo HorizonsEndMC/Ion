@@ -435,7 +435,7 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 			}
 		}
 
-		override fun preTick(): Boolean {
+		override fun preTick(deltaSeconds: Double): Boolean {
 			tickGauges()
 			return true
 		}

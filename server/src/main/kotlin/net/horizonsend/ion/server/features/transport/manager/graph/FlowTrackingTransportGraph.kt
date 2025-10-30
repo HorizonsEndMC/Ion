@@ -40,7 +40,7 @@ abstract class FlowTrackingTransportGraph<T : FlowNode, P : IOPort>(uuid: UUID, 
 		private const val SUPER_SINK = Long.MIN_VALUE
 	}
 
-	abstract fun isSink(node: FlowNode, ioData: P): Boolean
+	abstract fun isSink(node: FlowNode, ioData: P?): Boolean
 
 	abstract fun isSource(node: FlowNode, ioData: P): Boolean
 
@@ -57,7 +57,7 @@ abstract class FlowTrackingTransportGraph<T : FlowNode, P : IOPort>(uuid: UUID, 
 		val sinks = ObjectOpenHashSet<T>()
 
 		getGraphNodes().forEach { node ->
-			if (manager.transportManager.getInputProvider().getPorts(ioType, node.location).any { input -> isSink(node, input) }) sinks.add(node)
+			if (manager.transportManager.getInputProvider().getPorts(ioType, node.location).plus(null).any { input -> isSink(node, input) }) sinks.add(node)
 
 			if (manager.transportManager.getInputProvider().getPorts(ioType, node.location).any { input -> isSource(node, input) }) sources.add(node)
 		}
@@ -65,9 +65,11 @@ abstract class FlowTrackingTransportGraph<T : FlowNode, P : IOPort>(uuid: UUID, 
 		lastSinks = sinks
 		lastSources = sources
 
+		if ((sinks.isEmpty())) return
+
 		if (sources.isEmpty()) {
 			for (node in sinks) {
-				flowMap[node.location] = node.flowCapacity
+				flowMap[node.location] = getFlowCapacity(node)
 			}
 			return
 		}
@@ -187,7 +189,7 @@ abstract class FlowTrackingTransportGraph<T : FlowNode, P : IOPort>(uuid: UUID, 
 		return copied
 	}
 
-	private fun bfs(valueGraphReprestation: ValueGraph<BlockKey, Double>, parents: Long2LongOpenHashMap): Boolean {
+	private fun bfs(valueGraphRepresentation: ValueGraph<BlockKey, Double>, parents: Long2LongOpenHashMap): Boolean {
 		val visited = LongOpenHashSet()
 		val queue = ArrayDeque<BlockKey>()
 
@@ -201,16 +203,16 @@ abstract class FlowTrackingTransportGraph<T : FlowNode, P : IOPort>(uuid: UUID, 
 
 			iterations++
 
-			for (successor in valueGraphReprestation.successors(parent)) {
+			for (successor in valueGraphRepresentation.successors(parent)) {
 				if (visited.contains(successor)) continue
 
-				val capacity = valueGraphReprestation.edgeValue(parent, successor).getOrNull() ?: continue
+				val capacity = valueGraphRepresentation.edgeValue(parent, successor).getOrNull() ?: continue
 				if (capacity <= 0.0) continue
 
 				visited.add(successor)
 				queue.addLast(successor)
 
-				parents[successor] = (parent)
+				parents[successor] = parent
 			}
 		}
 

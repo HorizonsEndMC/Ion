@@ -80,6 +80,10 @@ class FluidStack(
 		return getAllProperties()[type]?.let { type.castUnsafe(it) }
 	}
 
+	fun <T : FluidProperty> getData(key: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<T>>) : T? {
+		return getAllProperties()[key.getValue()]?.let { key.getValue().castUnsafe(it) }
+	}
+
 	fun <T : FluidProperty> getDataOrDefault(type: FluidPropertyType<T>, location: Location?) : T {
 		return getAllProperties()[type]?.let { type.castUnsafe(it) } ?: type.getDefaultProperty(location)
 	}

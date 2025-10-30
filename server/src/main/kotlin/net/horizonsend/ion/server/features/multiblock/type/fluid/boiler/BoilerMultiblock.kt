@@ -47,8 +47,8 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 		val fluidOutput = FluidStorageContainer(data, "primaryout", text("Primary Output"), NamespacedKeys.key("primaryout"), 100.0, FluidRestriction.Unlimited)
 
 		override val ioData: IOData = IOData.builder(this)
-			.addPort(IOType.FLUID, -3, 0, 3) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = fluidInput, inputAllowed = true, outputAllowed = false)) }
-			.addPort(IOType.FLUID, 3, 0, 3) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = fluidOutput, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, -3, 0, 3) { IOPort.RegisteredMetaDataInput(this, FluidPortMetadata(connectedStore = fluidInput, inputAllowed = true, outputAllowed = false)) }
+			.addPort(IOType.FLUID, 3, 0, 3) { IOPort.RegisteredMetaDataInput(this, FluidPortMetadata(connectedStore = fluidOutput, inputAllowed = false, outputAllowed = true)) }
 			.registerAdditionalIO()
 			.build()
 
@@ -64,6 +64,7 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 
 		override fun tickAsync() {
 			bootstrapFluidNetwork()
+			val deltaT = deltaTMS / 1000.0
 
 			val outputContents = fluidOutput.getContents()
 			if (outputContents.isNotEmpty()) {
@@ -80,16 +81,14 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 				}
 			}
 
-			if (!preTick()) return
-			heatFluid()
+			if (!preTick(deltaT)) return
+			heatFluid(deltaT)
 			postTick()
 		}
 
-		open fun preTick(): Boolean = true
+		open fun preTick(deltaSeconds: Double): Boolean = true
 
-		fun heatFluid() {
-			val deltaT = deltaTMS / 1000.0
-
+		fun heatFluid(deltaSeconds: Double) {
 			val input = fluidInput.getContents()
 			if (input.isEmpty()) {
 				setRunning(false)
@@ -102,7 +101,7 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 			val heatingResult = input.type.getValue().getHeatingResult(
 				stack = input,
 				resultContainer = fluidOutput,
-				appliedEnergyJoules = getHeatProductionJoulesPerSecond() * deltaT,
+				appliedEnergyJoules = getHeatProductionJoulesPerSecond() * deltaSeconds,
 				maximumTemperature = 650.0,
 				location = location
 			)
