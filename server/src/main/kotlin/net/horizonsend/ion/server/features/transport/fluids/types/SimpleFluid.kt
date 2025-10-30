@@ -4,6 +4,8 @@ import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
+import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
+import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork.Companion.PIPE_INTERIOR_PADDING
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
 import net.horizonsend.ion.server.miscellaneous.utils.axis
@@ -24,7 +26,8 @@ class SimpleFluid(
 	override val categories: Array<FluidCategory>,
 	private val heatCapacity: Double,
 	private val molarMass: Double,
-	private val density: Double
+	private val density: Double,
+	override val defaultProperties: Map<FluidPropertyType<*>, FluidProperty> = emptyMap()
 ) : FluidType(key) {
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
 		val trailOptions = Trail(

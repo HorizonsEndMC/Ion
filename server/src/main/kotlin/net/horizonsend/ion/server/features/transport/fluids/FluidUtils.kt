@@ -23,7 +23,7 @@ object FluidUtils {
 
 		var lines = 0
 
-		for ((key, property) in fluidStack.getDataMap()) {
+		for ((key, property) in fluidStack.getCustomDataMap()) {
 			lines++
 
 			text.append(Component.newline())

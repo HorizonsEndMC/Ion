@@ -15,7 +15,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
-import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
@@ -84,11 +83,6 @@ abstract class GasFluid(
 //				cloud.basePotionType = PotionType.STRONG_POISON
 //			}
 //		}
-	}
-
-	companion object {
-		//TODO
-		val windDirection: Vector get() = Bukkit.getPlayer("GutinGongoozler")?.location?.direction ?: Vector.getRandom()
 	}
 
 	override fun getIsobaricHeatCapacity(stack: FluidStack): Double {

@@ -104,6 +104,7 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 			heatCapacity = 2.0,
 			molarMass = 18.01528,
 			density = 0.479,
+			defaultProperties = mapOf()
 		))
 	}
 }

@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 import net.horizonsend.ion.server.features.transport.fluids.FluidType.HeatingResult.Companion.HEATING_RATE_MULTIPLIER
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
+import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
@@ -48,6 +49,8 @@ abstract class FluidType(override val key: IonRegistryKey<FluidType, out FluidTy
 	 * Returns the molar mass of this fluid, in grams per mole
 	 **/
 	abstract fun getMolarMass(): Double
+
+	open val defaultProperties: Map<FluidPropertyType<*>, FluidProperty> = emptyMap()
 
 	/**
 	 * Returns result when a fluid stack of this type is heated
