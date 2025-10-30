@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.features.transport.nodes.graph
 
+import net.horizonsend.ion.server.features.transport.inputs.IOManager
+import net.horizonsend.ion.server.features.transport.inputs.IOPort
+import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -33,4 +36,6 @@ abstract class TransportNode(val location: BlockKey, val type: TransportNodeType
 		val globalVec3i = getNetwork().manager.transportManager.getGlobalCoordinate(toVec3i(location))
 		return getBlockIfLoaded(world, globalVec3i.x, globalVec3i.y, globalVec3i.z) ?: return null
 	}
+
+	fun <T : IOPort> getIO(type: IOType<T>): Set<T> = getNetwork().manager.transportManager.getInputProvider().getPorts(type, location)
 }

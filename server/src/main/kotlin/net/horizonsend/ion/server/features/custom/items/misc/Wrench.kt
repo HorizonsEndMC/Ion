@@ -3,11 +3,9 @@ package net.horizonsend.ion.server.features.custom.items.misc
 import io.papermc.paper.adventure.PaperAdventure
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.miscellaneous.roundToHundredth
-import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_DARK_GRAY
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_MEDIUM_GRAY
 import net.horizonsend.ion.common.utils.text.ofChildren
-import net.horizonsend.ion.common.utils.text.toComponent
 import net.horizonsend.ion.server.command.misc.MultiblockCommand
 import net.horizonsend.ion.server.command.qol.FixExtractorsCommand
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
@@ -44,7 +42,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
-import net.minecraft.advancements.critereon.FluidPredicate.Builder.fluid
 import net.minecraft.world.entity.Display
 import org.bukkit.Color
 import org.bukkit.FluidCollisionMode
@@ -219,9 +216,10 @@ object Wrench : CustomItem(
 
 		val text = ofChildren(
 			ofChildren(text(formatProgressString(network.getAvailablePowerPercentage(hitKey, 0.0))), text("% Available", HE_MEDIUM_GRAY)), Component.newline(),
-			ofChildren(text("Wire Capacity: ", HE_MEDIUM_GRAY), formatUnits(network.getFlow(hitKey))), Component.newline(),
+			ofChildren(text("Wire Usage: ", HE_MEDIUM_GRAY), formatUnits(network.getFlow(hitKey))), Component.newline(),
+			ofChildren(text("Node Capacity: ", HE_MEDIUM_GRAY), formatUnits(network.getFlowCapacity(network.getNodeAtLocation(hitKey)!!))), Component.newline(),
 			ofChildren(text("+", NamedTextColor.GREEN), formatUnits(network.lastProduction)), Component.newline(),
-			ofChildren(text("-", NamedTextColor.RED), formatUnits(network.lastConsumption)),
+			ofChildren(text("-", NamedTextColor.RED), formatUnits(network.lastTotalGridConsumption)),
 		)
 
 		val projectedLocation = hitLocation.add(player.location.direction.clone().multiply(-1)).toLocation(player.world).add(0.0, 0.3, 0.0)

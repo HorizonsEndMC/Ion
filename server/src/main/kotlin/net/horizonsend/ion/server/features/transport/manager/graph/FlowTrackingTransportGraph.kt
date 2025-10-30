@@ -81,7 +81,7 @@ abstract class FlowTrackingTransportGraph<T : FlowNode, P : IOPort>(uuid: UUID, 
 
 		// Connect all sinks to a super sink, with a maximum capcity between
 		for (sink in sinks) {
-			valueGraph.putEdgeValue(sink.location, SUPER_SINK, Double.MAX_VALUE)
+			valueGraph.putEdgeValue(sink.location, SUPER_SINK, getFlowCapacity(sink))
 		}
 
 		var maxFlow = 0.0

@@ -2,10 +2,10 @@ package net.horizonsend.ion.server.features.transport.manager.graph.gridenergy
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyPortMetaData
-import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOPort.RegisteredMetaDataInput
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.graph.FlowNode
@@ -15,9 +15,12 @@ import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetw
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidGraphEdge
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import java.util.UUID
+import kotlin.collections.component2
 
 class GridEnergyNetwork(
 	uuid: UUID,
@@ -48,7 +51,8 @@ class GridEnergyNetwork(
 		reCalculatePower()
 	}
 
-	var lastConsumption = 0.0; private set
+	// Grid Stats
+	var lastTotalGridConsumption = 0.0; private set
 	var lastProduction = 0.0; private set
 
 	fun reCalculatePower(): Double {
@@ -77,28 +81,32 @@ class GridEnergyNetwork(
 	}
 
 	private fun checkPowerConsumption(multiblockInputs: Long2ObjectOpenHashMap<RegisteredMetaDataInput<GridEnergyPortMetaData>>, availablePower: Double, update: Boolean = true, bonusConsumption: Double = 0.0): Double {
-		val checkedEntities = ObjectOpenHashSet<GridEnergyMultiblock>()
+		val checkedEntities = mutableMapOf<GridEnergyMultiblock, BlockKey>()
 
 		var consumed = 0.0
 
 		for ((inputLoc, input) in multiblockInputs) {
 			val entity = input.holder
 			if (entity !is GridEnergyMultiblock) continue
-			if (checkedEntities.contains(entity)) continue
-			checkedEntities.add(entity)
+			if (checkedEntities.containsKey(entity)) continue
+			checkedEntities[entity] = inputLoc
 
 			val flow = getFlow(inputLoc)
 			consumed += minOf(entity.getTotalGridEnergyConsumption(), flow)
 		}
 
-		val availablePercentage = availablePower / (consumed + bonusConsumption)
+		val availablePercentage = (availablePower / (consumed + bonusConsumption)).takeIf { it.isFinite() } ?: 0.0
 
-		lastConsumption = consumed
+		lastTotalGridConsumption = consumed
 
 		if (!update) return availablePercentage
 
-		for (entity in checkedEntities) {
-			entity.markPowerShortage(availablePercentage)
+		for ((entity, inputLoc) in checkedEntities) {
+			val flow = getFlow(inputLoc)
+			val individualPercentage = (minOf(availablePower, flow) / entity.getTotalGridEnergyConsumption()).takeIf { it.isFinite() } ?: 0.0
+
+			debugAudience.highlightBlock(toVec3i(inputLoc), 20L)
+			entity.markPowerShortage(individualPercentage)
 			entity.gridEnergyManager.runUpdates()
 		}
 
@@ -147,5 +155,15 @@ class GridEnergyNetwork(
 
 	override fun isSource(node: FlowNode, ioData: RegisteredMetaDataInput<GridEnergyPortMetaData>): Boolean {
 		return ioData.metaData.outputAllowed
+	}
+
+	override fun getFlowCapacity(node: GridEnergyNode): Double {
+		val base = super.getFlowCapacity(node)
+
+		val io = node.getIO(IOType.GRID_ENERGY).filter { it.metaData.inputAllowed }
+		if (io.isEmpty()) return base
+
+		val consumed = io.sumOf { (it.holder as GridEnergyMultiblock).getTotalGridEnergyConsumption() }
+		return minOf(base, consumed)
 	}
 }

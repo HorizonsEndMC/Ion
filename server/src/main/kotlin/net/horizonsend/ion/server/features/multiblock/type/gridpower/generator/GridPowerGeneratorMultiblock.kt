@@ -79,7 +79,7 @@ abstract class GridPowerGeneratorMultiblock : Multiblock(), EntityMultiblock<Gri
 		}
 
 		override fun getSlowingJoules(): Double {
-			return getConnectedNetworks().values.sumOf { network -> network.lastConsumption }
+			return getConnectedNetworks().values.sumOf { network -> network.lastTotalGridConsumption }
 		}
 
 		override fun tickAsync() {

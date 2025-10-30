@@ -3,6 +3,8 @@ package net.horizonsend.ion.server.features.transport.manager.graph.gridenergy
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTypeKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
+import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock
+import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.graph.FlowNode
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
@@ -26,7 +28,10 @@ abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : 
 	}
 
 	class GridEnergyPortNode(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_PORT.getValue()) {
-		override val flowCapacity: Double = 24000.0 // 24 kw
+		override val flowCapacity: Double get() = getIO(IOType.GRID_ENERGY).sumOf {
+			if (it.metaData.inputAllowed) (it.holder as GridEnergyMultiblock).getTotalGridEnergyConsumption()
+			else (it.holder as GridEnergyMultiblock).getGridEnergyOutput()
+		}
 
 		override fun isIntact(): Boolean? {
 			val block = getBlock() ?: return null

@@ -158,7 +158,7 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 
 			val resistance = sqrt(rotationalEnergy)
 
-			println("Slowed by ${(slowingJoules + resistance)}, $rotationalEnergy total")
+//			println("Slowed by ${(slowingJoules + resistance)}, $rotationalEnergy total")
 			rotationalEnergy -= (slowingJoules + resistance)
 
 			if (rotationalEnergy <= 0) {
@@ -210,7 +210,7 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			// Simply multiply the work per mass flow by the mass flow
 			val work = workPerMassFlow * massFlow
 
-			println("Added $work")
+//			println("Added $work")
 			var rotationalEnergy = getRotationalEnergy()
 			rotationalEnergy += work
 
