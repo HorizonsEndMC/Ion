@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys.F
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
+import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SimpleFluidDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.getLinePos
@@ -422,6 +423,7 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 			{ ComplexFluidDisplayModule(handler = it, container = fluidInput, title = text("Input"), offsetLeft = 3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.RIGHT) },
 			{ ComplexFluidDisplayModule(handler = it, container = fluidOutput, title = text("Output"), offsetLeft = -3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.LEFT) },
 			{ SimpleFluidDisplayModule(handler = it, storage = fuelStorage, offsetLeft = 0.0, offsetUp = getLinePos(2), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
+			{ StatusDisplayModule(handler = it, statusSupplier = statusManager, offsetLeft = 0.0, offsetUp = getLinePos(4), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) }
 		)
 
 		override fun getStores(): List<FluidStorageContainer> {
