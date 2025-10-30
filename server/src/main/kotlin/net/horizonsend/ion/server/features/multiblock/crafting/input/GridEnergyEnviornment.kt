@@ -7,8 +7,6 @@ import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.Gr
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 
 interface GridEnergyEnviornment : RecipeEnviornment {
-	val powerInputs: List<RegisteredMetaDataInput<GridEnergyPortMetaData>>
-
 	val gridEnergyNetworkManager get() = multiblock.manager.getTransportManager().getGridEnergyGraphTransportManager()
 
 	fun getConnectedNetworks(): Map<BlockKey, GridEnergyNetwork> = (multiblock as GridEnergyMultiblock).getConnectedNetworks()

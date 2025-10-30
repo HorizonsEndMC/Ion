@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.transport.manager.graph
 
-import com.google.common.collect.Multimap
 import com.google.common.graph.MutableValueGraph
 import com.google.common.graph.ValueGraph
 import com.google.common.graph.ValueGraphBuilder
@@ -13,8 +12,6 @@ import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidGraphEdge
-import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
-import net.horizonsend.ion.server.features.transport.nodes.types.Node
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import java.util.UUID
@@ -47,7 +44,7 @@ abstract class FlowTrackingTransportGraph<T : FlowNode, P : IOPort>(uuid: UUID, 
 
 	abstract fun isSource(node: FlowNode, ioData: P): Boolean
 
-	open fun getFlowCapacity(node: T): Double = (node as FluidNode).flowCapacity
+	open fun getFlowCapacity(node: T): Double = node.flowCapacity
 
 	/**
 	 * Runs a multi node and multi sink implementation of the Edmonds-Karp algorithm to determine flow direction and magnitude throughout the network
@@ -152,7 +149,7 @@ abstract class FlowTrackingTransportGraph<T : FlowNode, P : IOPort>(uuid: UUID, 
 					val edgeConnecting = getGraph().edgeConnecting(parentNode, node).getOrNull()
 
 					edgeConnecting?.let { edge ->
-						edge as FluidGraphEdge
+						if (edge !is FluidGraphEdge) return@let
 
 						val newFlow = maxOf(edge.netFlow, maxFlow)
 						edge.netFlow = newFlow
