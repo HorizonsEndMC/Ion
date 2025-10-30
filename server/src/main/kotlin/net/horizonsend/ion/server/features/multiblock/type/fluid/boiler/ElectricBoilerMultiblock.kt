@@ -426,7 +426,7 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 			return POWER_DRAW_WATTS * 10
 		}
 
-		override fun postTick() {
+		override fun postTick(deltaSeconds: Double) {
 			if (isRunning) {
 				setActiveDuration(Duration.ofSeconds(2))
 				setActiveGridEnergyConsumption(POWER_DRAW_WATTS)

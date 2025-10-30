@@ -96,6 +96,10 @@ class FluidStack(
 		return getData(type) ?: throw NullPointerException()
 	}
 
+	fun <T : FluidProperty> getDataOrThrow(type: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<T>>) : T {
+		return getData(type) ?: throw NullPointerException()
+	}
+
 	fun hasData(type: FluidPropertyType<*>) : Boolean {
 		return getAllProperties().keys.contains(type)
 	}

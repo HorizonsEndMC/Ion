@@ -25,11 +25,13 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
+import kotlin.random.Random
 
 object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 	override val signText: Array<Component?> = createSignText(
@@ -142,7 +144,7 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 			y(0) {
 				x(-3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.BACKWARD))
 				x(-2).redstoneBlock()
-				x(0).anyPipedInventory()
+				x(0).dispenser()
 				x(2).redstoneBlock()
 				x(3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.BACKWARD, RelativeFace.LEFT))
 			}
@@ -255,7 +257,7 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 			y(0) {
 				x(-3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.BACKWARD))
 				x(-2).redstoneBlock()
-				x(0).anyPipedInventory()
+				x(0).dispenser()
 				x(2).redstoneBlock()
 				x(3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.BACKWARD, RelativeFace.LEFT))
 			}
@@ -440,17 +442,39 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 			val burnedAmount = minOf(BURNED_PER_SECOND * deltaSeconds, combustionContents.amount)
 
 			val pollutionStack = FluidStack(combustionResult.resultFluid, burnedAmount * combustionResult.resultVolumeMultiplier)
-			if (!pollutionStorage.canAdd(pollutionStack)) return false
+			return pollutionStorage.canAdd(pollutionStack)
+		}
+
+		override fun postTick(deltaSeconds: Double) {
+			if (!isRunning) return
+
+			consumeFuel(deltaSeconds)
+			displayBurningParticles()
+		}
+
+		fun consumeFuel(deltaSeconds: Double) {
+			val combustibleContents = fuelStorage.getContents()
+			val combustionResult = combustibleContents.getDataOrThrow(FLAMMABILITY)
+			val burnedAmount = minOf(BURNED_PER_SECOND * deltaSeconds, combustibleContents.amount)
+
+			val pollutionStack = FluidStack(combustionResult.resultFluid, burnedAmount * combustionResult.resultVolumeMultiplier)
+			if (!pollutionStorage.canAdd(pollutionStack)) return
 
 			fuelStorage.removeAmount(burnedAmount)
 			pollutionStorage.addFluid(pollutionStack, location)
 			lastHeatValue = combustionResult.joulesPerLiter * burnedAmount
-
-			return true
 		}
 
-		override fun postTick() {
+		fun displayBurningParticles() {
+			val location = getBlockRelative(0, 0, 3).location.toCenterLocation()
 
+			repeat(2) {
+				val offsetX = Random.nextDouble(-1.5, 1.5)
+				val offsetY = Random.nextDouble(-0.5, 0.5)
+				val offsetZ = Random.nextDouble(-1.5, 1.5)
+
+				world.spawnParticle(Particle.FLAME, location.x + offsetX, location.y + offsetY, location.z + offsetZ, 1, 0.0, 0.0, 0.0, 0.0, null)
+			}
 		}
 
 		companion object {

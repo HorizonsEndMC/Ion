@@ -83,7 +83,7 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 
 			if (!preTick(deltaT)) return
 			heatFluid(deltaT)
-			postTick()
+			postTick(deltaT)
 		}
 
 		open fun preTick(deltaSeconds: Double): Boolean = true
@@ -127,7 +127,7 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 			}
 		}
 
-		open fun postTick() {}
+		open fun postTick(deltaSeconds: Double) {}
 
 		/**
 		 * Returns the heat currently being produced, in joules
