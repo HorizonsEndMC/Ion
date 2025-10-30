@@ -207,8 +207,19 @@ object Wrench : CustomItem(
 	}
 
 	fun giveE2Tips(player: Player, hitLocation: Vector, hitKey: BlockKey, network: GridEnergyNetwork) {
+		if (player.isSneaking) {
+			for (node in network.getGraphNodes()) {
+				val flowText = ofChildren(formatUnits(network.getFlow(node.location).roundToHundredth()))
+
+				player.sendText(node.getCenter().toLocation(player.world).add(0.0, 0.75, 0.0), flowText, FLUID_TICK_INTERVAL.toLong() + 1L, backgroundColor = Color.fromARGB(255, 0, 0 ,0))
+			}
+
+			return removeEntity(player)
+		}
+
 		val text = ofChildren(
 			ofChildren(text(formatProgressString(network.getAvailablePowerPercentage(hitKey, 0.0))), text("% Available", HE_MEDIUM_GRAY)), Component.newline(),
+			ofChildren(text("Wire Capacity: ", HE_MEDIUM_GRAY), formatUnits(network.getFlow(hitKey))), Component.newline(),
 			ofChildren(text("+", NamedTextColor.GREEN), formatUnits(network.lastProduction)), Component.newline(),
 			ofChildren(text("-", NamedTextColor.RED), formatUnits(network.lastConsumption)),
 		)
