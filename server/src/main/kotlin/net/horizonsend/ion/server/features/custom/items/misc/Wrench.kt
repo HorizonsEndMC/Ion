@@ -65,7 +65,7 @@ object Wrench : CustomItem(
 		.setCustomModel("tool/wrench")
 		.build()
 ) {
-	private const val FLUID_TICK_INTERVAL = 2
+	private const val DISPLAY_TICK_INTERVAL = 2
 
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@Wrench) { event, _, _ ->
@@ -76,7 +76,7 @@ object Wrench : CustomItem(
 			checkStructure(event.player, event)
 		})
 
-		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(FLUID_TICK_INTERVAL) { entity, _, _, _ ->
+		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(DISPLAY_TICK_INTERVAL) { entity, _, _, _ ->
 			giveTips(entity as? Player ?: return@TickReceiverModule)
 		})
 	}
@@ -148,7 +148,7 @@ object Wrench : CustomItem(
 			for (node in network.getGraphNodes()) {
 				val flowText = ofChildren(text(network.getFlow(hitKey).roundToHundredth()), text(" L/s", HE_MEDIUM_GRAY))
 
-				player.sendText(node.getCenter().toLocation(player.world).add(0.0, 0.75, 0.0), flowText, FLUID_TICK_INTERVAL.toLong() + 1L, backgroundColor = Color.fromARGB(255, 0, 0 ,0))
+				player.sendText(node.getCenter().toLocation(player.world).add(0.0, 0.75, 0.0), flowText, DISPLAY_TICK_INTERVAL.toLong() + 1L, backgroundColor = Color.fromARGB(255, 0, 0 ,0))
 			}
 
 			return removeEntity(player)
@@ -172,7 +172,7 @@ object Wrench : CustomItem(
 			createHudEntity(player, projectedLocation, text, scale)
 		else updateHudEntity(player, projectedLocation, text, scale)
 
-		Tasks.asyncDelay(FLUID_TICK_INTERVAL.toLong()) async2@{
+		Tasks.asyncDelay(DISPLAY_TICK_INTERVAL.toLong()) async2@{
 			if (
 				player.inventory.itemInMainHand.customItem?.key != CustomItemKeys.WRENCH &&
 				player.inventory.itemInOffHand.customItem?.key != CustomItemKeys.WRENCH
@@ -208,7 +208,7 @@ object Wrench : CustomItem(
 			for (node in network.getGraphNodes()) {
 				val flowText = ofChildren(formatUnits(network.getFlow(node.location).roundToHundredth()))
 
-				player.sendText(node.getCenter().toLocation(player.world).add(0.0, 0.75, 0.0), flowText, FLUID_TICK_INTERVAL.toLong() + 1L, backgroundColor = Color.fromARGB(255, 0, 0 ,0))
+				player.sendText(node.getCenter().toLocation(player.world).add(0.0, 0.75, 0.0), flowText, DISPLAY_TICK_INTERVAL.toLong() + 1L, backgroundColor = Color.fromARGB(255, 0, 0 ,0))
 			}
 
 			return removeEntity(player)
@@ -229,7 +229,7 @@ object Wrench : CustomItem(
 			createHudEntity(player, projectedLocation, text, scale)
 		else updateHudEntity(player, projectedLocation, text, scale)
 
-		Tasks.asyncDelay(FLUID_TICK_INTERVAL.toLong()) async2@{
+		Tasks.asyncDelay(DISPLAY_TICK_INTERVAL.toLong()) async2@{
 			if (
 				player.inventory.itemInMainHand.customItem?.key != CustomItemKeys.WRENCH &&
 				player.inventory.itemInOffHand.customItem?.key != CustomItemKeys.WRENCH
@@ -252,7 +252,7 @@ object Wrench : CustomItem(
 		val entity = ClientDisplayEntities.createTextEntity(
 			location,
 			info,
-			FLUID_TICK_INTERVAL.toLong() + 1,
+			DISPLAY_TICK_INTERVAL.toLong() + 1,
 			scale = scale,
 			backgroundColor = Color.fromARGB(255, 0, 0, 0),
 			seeThrough = true,
@@ -274,8 +274,8 @@ object Wrench : CustomItem(
 			Quaternionf()
 		)
 
-		nmsEntity.transformationInterpolationDuration = FLUID_TICK_INTERVAL
-		nmsEntity.teleportDuration = FLUID_TICK_INTERVAL
+		nmsEntity.transformationInterpolationDuration = DISPLAY_TICK_INTERVAL
+		nmsEntity.teleportDuration = DISPLAY_TICK_INTERVAL
 
 		ClientDisplayEntities.moveDisplayEntityPacket(player.minecraft, nmsEntity, location.x, location.y, location.z)
 		ClientDisplayEntities.transformDisplayEntityPacket(player, nmsEntity, transformation)

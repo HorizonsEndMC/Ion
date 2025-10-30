@@ -31,7 +31,7 @@ import org.bukkit.block.data.type.Stairs
 
 object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 	override val signText: Array<Component?> = createSignText(
-		Component.text("Fluid Burner"),
+		text("Fluid Burner"),
 		null,
 		null,
 		null
@@ -411,7 +411,7 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 
 		override fun IOData.Builder.registerAdditionalIO(): IOData.Builder {
 			// Fuel input
-			return addPort(IOType.FLUID, 0, -1, 0) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this@FluidBoilerEntity, FluidPortMetadata(connectedStore = fuelStorage, inputAllowed = true, outputAllowed = false)) }
+			return addPort(IOType.FLUID, 0, -1, 0) { IOPort.RegisteredMetaDataInput(this@FluidBoilerEntity, FluidPortMetadata(connectedStore = fuelStorage, inputAllowed = true, outputAllowed = false)) }
 		}
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(this,
