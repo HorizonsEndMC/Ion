@@ -2,7 +2,6 @@ package net.horizonsend.ion.server.features.transport.manager.graph.gridenergy
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
-import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyPortMetaData
@@ -15,8 +14,6 @@ import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetw
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidGraphEdge
 import net.horizonsend.ion.server.features.transport.nodes.graph.GraphEdge
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
-import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
-import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataContainer
 import java.util.UUID
