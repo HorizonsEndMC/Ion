@@ -50,7 +50,7 @@ abstract class FluidType(override val key: IonRegistryKey<FluidType, out FluidTy
 	 **/
 	abstract fun getMolarMass(): Double
 
-	open val defaultProperties: Map<FluidPropertyType<*>, FluidProperty> = emptyMap()
+	open val defaultProperties: Map<IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<*>>, FluidProperty> = emptyMap()
 
 	/**
 	 * Returns result when a fluid stack of this type is heated

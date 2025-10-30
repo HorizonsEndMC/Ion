@@ -54,7 +54,7 @@ class FluidStack(
 
 	/** Returns an immutable map of all properties contained by this fluid stack */
 	fun getAllProperties(): Map<FluidPropertyType<*>, FluidProperty> = Object2ObjectOpenHashMap<FluidPropertyType<*>, FluidProperty>().apply {
-		putAll(type.getValue().defaultProperties)
+		putAll(type.getValue().defaultProperties.mapKeys { it.key.getValue() })
 		putAll(dataComponents) // Add patch second to override default values
 	}
 

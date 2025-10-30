@@ -2,12 +2,14 @@ package net.horizonsend.ion.server.core.registration.registries
 
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_BLUE
 import net.horizonsend.ion.server.core.registration.keys.AtmosphericGasKeys
+import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
+import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
 import net.horizonsend.ion.server.features.transport.fluids.types.Lava
 import net.horizonsend.ion.server.features.transport.fluids.types.LegacyGasFluid
 import net.horizonsend.ion.server.features.transport.fluids.types.SimpleFluid
@@ -96,15 +98,28 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 			conversionCost = Double.MAX_VALUE,
 			conversionTemperature = Double.MAX_VALUE
 		))
-
 		register(FluidTypeKeys.CRUDE_OIL, SimpleFluid(
 			FluidTypeKeys.CRUDE_OIL,
 			text("Crude Oil", NamedTextColor.BLACK),
 			categories = arrayOf(FluidCategory.GAS),
+			heatCapacity = 2.0, // TODO
+			molarMass = 18.01528, // TODO
+			density = 0.479, // TODO
+		))
+		register(FluidTypeKeys.POLLUTION, SimpleFluid(
+			FluidTypeKeys.POLLUTION,
+			text("Pollution", NamedTextColor.BLACK),
+			categories = arrayOf(FluidCategory.GAS),
 			heatCapacity = 2.0,
 			molarMass = 18.01528,
 			density = 0.479,
-			defaultProperties = mapOf()
+			defaultProperties = mapOf(
+				FluidPropertyTypeKeys.FLAMMABILITY to FluidProperty.Flammability(
+					joulesPerLiter = 39600000.0,
+					resultFluid = FluidTypeKeys.POLLUTION,
+					resultVolumeMultiplier = 5.0 //TODO
+				)
+			)
 		))
 	}
 }

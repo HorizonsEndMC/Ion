@@ -27,7 +27,7 @@ class SimpleFluid(
 	private val heatCapacity: Double,
 	private val molarMass: Double,
 	private val density: Double,
-	override val defaultProperties: Map<FluidPropertyType<*>, FluidProperty> = emptyMap()
+	override val defaultProperties: Map<IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<*>>, FluidProperty> = emptyMap()
 ) : FluidType(key) {
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
 		val trailOptions = Trail(

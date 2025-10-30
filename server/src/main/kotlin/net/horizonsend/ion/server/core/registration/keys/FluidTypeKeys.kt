@@ -24,4 +24,8 @@ object FluidTypeKeys : KeyRegistry<FluidType>(RegistryKeys.FLUID_TYPE, FluidType
 	val ULTRA_DENSE_STEAM = registerKey("ULTRA_DENSE_STEAM")
 
 	val CRUDE_OIL = registerKey("CRUDE_OIL")
+
+	val POLLUTION = registerKey("POLLUTION")
+//	val HAZARDOUS_POLLUTION = registerKey("HAZARDOUS_POLLUTION")
+//	val DANGEROUS_POLLUTION = registerKey("DANGEROUS_POLLUTION")
 }
