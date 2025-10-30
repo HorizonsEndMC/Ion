@@ -14,4 +14,9 @@ object FluidPropertyTypeKeys : KeyRegistry<FluidPropertyType<*>>(FLUID_PROPERTY_
 	 * Stores salinity, in percent
 	 **/
 	val SALINITY = registerTypedKey<FluidPropertyType<FluidProperty.Salinity>>("SALINITY")
+
+	/**
+	 * Stores flammability properties
+	 **/
+	val FLAMMABILITY = registerTypedKey<FluidPropertyType<FluidProperty.Flammability>>("FLAMMABILITY")
 }

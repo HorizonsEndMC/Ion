@@ -59,16 +59,19 @@ class FluidStack(
 	}
 
 	fun <T : FluidProperty> setData(type: FluidPropertyType<T>, data: T): FluidStack {
+		if (!type.canBeCustom()) throw IllegalArgumentException("Fluid property $type cannot be used in custom data!")
 		dataComponents[type] = data
 		return this
 	}
 
 	fun <T : FluidProperty> setData(type: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<T>>, data: T): FluidStack {
+		if (!type.getValue().canBeCustom()) throw IllegalArgumentException("Fluid property $type cannot be used in custom data!")
 		dataComponents[type.getValue()] = data
 		return this
 	}
 
 	private fun setDataUnsafe(type: FluidPropertyType<*>, data: FluidProperty): FluidStack {
+		if (!type.canBeCustom()) throw IllegalArgumentException("Fluid property $type cannot be used in custom data!")
 		dataComponents[type] = data
 		return this
 	}
