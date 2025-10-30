@@ -49,15 +49,17 @@ class GridEnergyNetwork(
 	}
 
 	var lastConsumption = 0.0; private set
+	var lastProduction = 0.0; private set
 
 	fun reCalculatePower(): Double {
 		val (inputs, outputs) = trackIO()
 
 		val availableInput = getNetworkInputPower(outputs)
+		lastProduction = availableInput
 		return checkPowerConsumption(inputs, availableInput)
 	}
 
-	private fun getNetworkInputPower(multiblockOutputs: ObjectOpenHashSet<IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>>): Double {
+	private fun getNetworkInputPower(multiblockOutputs: ObjectOpenHashSet<RegisteredMetaDataInput<GridEnergyPortMetaData>>): Double {
 		val checkedEntities = ObjectOpenHashSet<MultiblockEntity>()
 
 		var provided = 0.0
