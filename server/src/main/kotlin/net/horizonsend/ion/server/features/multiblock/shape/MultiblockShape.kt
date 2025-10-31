@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.shape
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
@@ -279,6 +281,33 @@ class MultiblockShape {
 			)
 
 			complete(requirement)
+		}
+
+		fun anyCustomBlock(vararg types: IonRegistryKey<CustomBlock, out CustomBlock>, alias: String, edit: BlockRequirement.() -> Unit = {}) {
+			val set = ObjectOpenHashSet.of(*types)
+
+			val requirement = BlockRequirement(
+				alias = alias,
+				example = types.first().getValue().blockData,
+				syncCheck = { block, _, loadChunks ->
+					val customBlockKey = if (loadChunks) block.customBlock?.key else { getBlockDataSafe(block.world, block.x, block.y, block.z)?.customBlock?.key }
+					if (customBlockKey == null) return@BlockRequirement false
+					set.contains(customBlockKey)
+				},
+				itemRequirement = BlockRequirement.ItemRequirement(
+					itemCheck = {
+						val customItem = it.customItem
+						customItem is CustomBlockItem && set.contains(customItem.getCustomBlock().key)
+					},
+					amountConsumed = { 1 },
+					toBlock = { item -> item.type.createBlockData() },
+					toItemStack = { block -> ItemStack(block.material) }
+				)
+			)
+
+			complete(requirement)
+
+			edit(requirement)
 		}
 
 		fun anyType(alias: String, types: Iterable<Material>, edit: BlockRequirement.() -> Unit = {}) = anyType(
@@ -578,6 +607,11 @@ class MultiblockShape {
 			Material.QUARTZ_BRICKS,
 			Material.QUARTZ_BLOCK,
 			alias = "stone bricks"
+		)
+
+		fun anyGauge() = anyCustomBlock(
+			CustomBlockKeys.TEMPERATURE_GAUGE,
+			alias = "any gauge"
 		)
 	}
 }

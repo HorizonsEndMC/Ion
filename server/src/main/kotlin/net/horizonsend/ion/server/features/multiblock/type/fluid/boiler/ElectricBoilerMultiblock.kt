@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 
-import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
@@ -162,13 +161,13 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 		}
 		z(3) {
 			y(-1) {
-				x(-3).customBlock(CustomBlockKeys.TEMPERATURE_GAUGE.getValue())
+				x(-3).anyGauge()
 				x(-2).type(Material.MUD_BRICKS)
 				x(-1).type(Material.MUD_BRICKS)
 				x(0).type(Material.MUD_BRICKS)
 				x(1).type(Material.MUD_BRICKS)
 				x(2).type(Material.MUD_BRICKS)
-				x(3).customBlock(CustomBlockKeys.TEMPERATURE_GAUGE.getValue())
+				x(3).anyGauge()
 			}
 			y(0) {
 				x(-3).fluidPort()
