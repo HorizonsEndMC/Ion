@@ -421,6 +421,7 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 
 		override val gauges: MultiblockGauges = MultiblockGauges.builder(this)
 			.addGauge(3, -1, 3, GaugedMultiblockEntity.GaugeData.fluidTemperatureGauge(fluidOutput, this))
+			.addGauge(3, -1, 3, GaugedMultiblockEntity.GaugeData.onOffGauge { isRunning })
 			.build()
 
 		override fun IOData.Builder.registerAdditionalIO(): IOData.Builder =
@@ -456,6 +457,8 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 		}
 
 		override fun postTick(deltaSeconds: Double) {
+			tickGauges()
+
 			if (!isRunning) return
 
 			consumeFuel(deltaSeconds)

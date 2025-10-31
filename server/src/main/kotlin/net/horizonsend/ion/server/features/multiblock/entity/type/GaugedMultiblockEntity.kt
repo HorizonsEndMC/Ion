@@ -6,9 +6,12 @@ import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
+import net.horizonsend.ion.server.miscellaneous.utils.isCopperBulb
 import net.horizonsend.ion.server.miscellaneous.utils.multimapOf
 import org.bukkit.block.Block
+import org.bukkit.block.data.type.CopperBulb
 import kotlin.math.roundToInt
 
 interface GaugedMultiblockEntity {
@@ -63,6 +66,22 @@ interface GaugedMultiblockEntity {
 				claimOwnership = { entity, block -> CustomBlockKeys.TEMPERATURE_GAUGE.getValue().setMultiblockOwner(entity.manager, Vec3i(block.x, block.y, block.z), entity) },
 				readValue = { store.getContents().getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE, multiblock.location).value.roundToInt().coerceIn(0, 15) },
 				applyValue = { signal, block -> CustomBlockKeys.TEMPERATURE_GAUGE.getValue().setSignalOutput(signal, block.world, Vec3i(block.x, block.y, block.z)) }
+			)
+			fun onOffGauge(activeSignal: () -> Boolean) = GaugeData(
+				blockMatch = { it.type.isCopperBulb },
+				claimOwnership = { _, _ ->  },
+				readValue = { if (activeSignal.invoke()) 15 else 0 },
+				applyValue = { signal, block ->
+					val existing = block.blockData as CopperBulb
+					if (existing.isLit == (signal == 15)) return@GaugeData true
+
+					existing.isLit = signal == 15
+
+					Tasks.sync {
+						block.blockData = existing
+					}
+					true
+				}
 			)
 		}
 	}

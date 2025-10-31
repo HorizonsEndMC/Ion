@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.STANDARD_EXTRACTOR_TYPE
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.COPPER_BULB_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
@@ -656,8 +657,9 @@ class MultiblockShape {
 			alias = "stone bricks"
 		)
 
-		fun anyGauge() = anyCustomBlock(
-			CustomBlockKeys.TEMPERATURE_GAUGE,
+		fun anyGauge() = anyCustomBlockOrMaterial(
+			listOf(CustomBlockKeys.TEMPERATURE_GAUGE),
+			listOf(*COPPER_BULB_TYPES.toTypedArray()),
 			alias = "any gauge"
 		)
 	}
