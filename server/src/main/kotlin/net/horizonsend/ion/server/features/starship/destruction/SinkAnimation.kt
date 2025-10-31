@@ -12,8 +12,10 @@ import net.horizonsend.ion.server.features.client.display.modular.DisplayWrapper
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.transport.items.util.DYEABLE_CUBE_MONO
+import net.horizonsend.ion.server.features.transport.items.util.EXPLOSION_RING
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.features.world.WorldFlag
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.orthogonalVectors
 import net.horizonsend.ion.server.miscellaneous.utils.updateData
@@ -54,7 +56,7 @@ class SinkAnimation(
 	fun addExplosion() {
 		val referenceCenter = origin.toCenterVector()
 
-		val explosionBlockCount = (sqrt(size.toDouble()) * 5 * scale).roundToInt()
+		val explosionBlockCount = (cbrt(size.toDouble()) * 2 * scale).roundToInt()
 
 		repeat(explosionBlockCount) {
 			val origin = Vec3i(starship.blocks.random()).toCenterVector()
@@ -95,36 +97,25 @@ class SinkAnimation(
 	}
 
 	fun addShockwave() {
-		val shockwavePoints = (90 * scale).roundToInt()
+		val explosionRing = EXPLOSION_RING.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(Color.WHITE, false)) }
+		val ringDisplayContainer = ItemDisplayContainer(world, 0.1f, origin.toCenterVector(), Vector(0, 1, 0), explosionRing, playerFilter = playerFilter)
+		ringDisplayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
 
-		repeat(shockwavePoints) { iteration ->
-			val degrees = (shockwavePoints / iteration.toDouble()) * 360.0
-			val vector = BlockFace.NORTH.direction.rotateAroundY(Math.toRadians(degrees)).normalize().multiply(3).multiply(scale)
-
-			val item = DYEABLE_CUBE_MONO.construct { t -> t.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(Color.GRAY, false)) }
-			val displayContainer = ItemDisplayContainer(world, 1.0f, origin.toCenterVector(), Vector.getRandom(), item, playerFilter = playerFilter)
-			displayContainer.getEntity().brightnessOverride = Brightness.FULL_BRIGHT
-
-			blockWrappers.add(ColoredSinkAnimationBlock(
-				duration = (baseDuration * 1.5).roundToLong(),
-				wrapper = displayContainer,
-				direction = vector,
-				initialScale = 1.0 * scale,
-				finalScale = 3.0 * scale,
-				rotationAxis = Vector(
-					Random.nextDouble(-0.05, 0.05),
-					Random.nextDouble(-0.05, 0.05),
-					Random.nextDouble(-0.05, 0.05)
-				),
-				rotationDegrees = 360.0 / 20.0,
-				colors = mapOf(
-					Color.WHITE to 4,
-					Color.SILVER to 3,
-					Color.GRAY to 2,
-					Color.BLACK to 1,
-				)
-			))
-		}
+		blockWrappers.add(ColoredSinkAnimationBlock(
+			duration = (baseDuration * 1.0).roundToLong(),
+			wrapper = ringDisplayContainer,
+			direction = Vector(0, 0, 0),
+			initialScale = 0.1,
+			finalScale = 300.0,
+			rotationAxis = Vector(0, 0, 0),
+			rotationDegrees = 0.0,
+			colors = mapOf(
+				Color.WHITE to 4,
+				Color.SILVER to 3,
+				Color.GRAY to 2,
+				Color.BLACK to 1,
+			)
+		))
 	}
 
 	fun playRandomBlocks() {
