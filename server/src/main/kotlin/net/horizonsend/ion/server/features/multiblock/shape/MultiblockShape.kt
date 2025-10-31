@@ -570,6 +570,8 @@ class MultiblockShape {
 		fun hopper() = type(Material.HOPPER)
 		fun anyPipedInventory() = filteredTypes("any container block", edit = { setExample(Material.CHEST.createBlockData()) }) { it.isPipedInventory }
 		fun dispenser() = type(Material.DISPENSER)
+		fun dropper() = type(Material.DROPPER)
+		fun dropperOrDispenser() = anyType("dropper or dispenser", listOf(Material.DROPPER, Material.DISPENSER))
 
 		fun netheriteCasing() = customBlock(CustomBlockKeys.NETHERITE_CASING.getValue())
 

@@ -149,7 +149,7 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 			y(0) {
 				x(-3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.BACKWARD))
 				x(-2).redstoneBlock()
-				x(0).dispenser()
+				x(0).dropperOrDispenser()
 				x(2).redstoneBlock()
 				x(3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.BACKWARD, RelativeFace.LEFT))
 			}
@@ -262,7 +262,7 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 			y(0) {
 				x(-3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.BACKWARD))
 				x(-2).redstoneBlock()
-				x(0).dispenser()
+				x(0).dropperOrDispenser()
 				x(2).redstoneBlock()
 				x(3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.BACKWARD, RelativeFace.LEFT))
 			}
