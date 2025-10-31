@@ -81,7 +81,11 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 				}
 			}
 
-			if (!preTick(deltaT)) return
+			if (!preTick(deltaT)) {
+				setRunning(false)
+				return
+			}
+
 			heatFluid(deltaT)
 			postTick(deltaT)
 		}

@@ -18,6 +18,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.FluidCombustionBoilerMultiblock.FluidBoilerEntity
+import net.horizonsend.ion.server.features.multiblock.util.ControlSignalManager
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.inputs.IOData
@@ -419,6 +420,10 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 		val fuelStorage = FluidStorageContainer(data, "fuel_storage", text("Fuel Storage"), NamespacedKeys.key("fuel_storage"), 100_000.0, FluidRestriction.FluidPropertyWhitelist(FLAMMABILITY))
 		val pollutionStorage = FluidStorageContainer(data, "pollution_out", text("Pollution Output"), NamespacedKeys.key("pollution_out"), 100_000.0, FluidRestriction.Unlimited)
 
+		val controlSignalInput = ControlSignalManager.builder(this)
+			.addSignInputs()
+			.build()
+
 		override val gauges: MultiblockGauges = MultiblockGauges.builder(this)
 			.addGauge(3, -1, 3, GaugedMultiblockEntity.GaugeData.fluidTemperatureGauge(fluidOutput, this))
 			.addGauge(3, -1, 3, GaugedMultiblockEntity.GaugeData.onOffGauge { isRunning })
@@ -446,6 +451,9 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 		private var lastHeatValue = 0.0
 
 		override fun preTick(deltaSeconds: Double): Boolean {
+			tickGauges()
+			if (!controlSignalInput.hasAnyIndirectPower()) return false
+
 			val combustionContents = fuelStorage.getContents()
 			if (combustionContents.isEmpty()) return false
 
