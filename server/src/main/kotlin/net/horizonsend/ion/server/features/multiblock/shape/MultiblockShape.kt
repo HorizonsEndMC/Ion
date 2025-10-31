@@ -300,8 +300,55 @@ class MultiblockShape {
 						customItem is CustomBlockItem && set.contains(customItem.getCustomBlock().key)
 					},
 					amountConsumed = { 1 },
-					toBlock = { item -> item.type.createBlockData() },
-					toItemStack = { block -> ItemStack(block.material) }
+					toBlock = { item -> (item.customItem as CustomBlockItem).getCustomBlock().blockData },
+					toItemStack = { blockData -> blockData.customBlock?.customItem?.constructItemStack() ?: ItemStack(Material.AIR) }
+				)
+			)
+
+			complete(requirement)
+
+			edit(requirement)
+		}
+
+		fun anyCustomBlockOrMaterial(
+			customBlocks: Collection<IonRegistryKey<CustomBlock, out CustomBlock>>,
+			materials: Collection<Material>,
+			alias: String,
+			edit: BlockRequirement.() -> Unit = {}
+		) {
+			val customBlockSet = ObjectOpenHashSet(customBlocks)
+			val typeSet = EnumSet.copyOf(materials)
+
+			val requirement = BlockRequirement(
+				alias = alias,
+				example = customBlocks.first().getValue().blockData,
+				syncCheck = { block, _, loadChunks ->
+					if (typeSet.contains(if (loadChunks) block.type else block.getTypeSafe() ?: return@BlockRequirement false)) return@BlockRequirement true
+
+					val customBlockKey = if (loadChunks) block.customBlock?.key else { getBlockDataSafe(block.world, block.x, block.y, block.z)?.customBlock?.key }
+					if (customBlockKey == null) return@BlockRequirement false
+					customBlockSet.contains(customBlockKey)
+				},
+				itemRequirement = BlockRequirement.ItemRequirement(
+					itemCheck = {
+						if (typeSet.contains(it.type)) return@ItemRequirement true
+
+						val customItem = it.customItem
+						customItem is CustomBlockItem && customBlockSet.contains(customItem.getCustomBlock().key)
+					},
+					amountConsumed = { 1 },
+					toBlock = { item ->
+						val customItem = item.customItem
+						if (customItem != null && customItem is CustomBlockItem) return@ItemRequirement customItem.getCustomBlock().blockData
+
+						item.type.createBlockData()
+					},
+					toItemStack = { block ->
+						val customBlock = block.customBlock
+						if (customBlock != null) return@ItemRequirement customBlock.customItem.constructItemStack()
+
+						ItemStack(block.material)
+					}
 				)
 			)
 
