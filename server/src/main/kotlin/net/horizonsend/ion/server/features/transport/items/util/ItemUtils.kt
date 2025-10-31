@@ -209,3 +209,4 @@ fun canAddAll(inventory: Inventory, stacks: Collection<ItemStack>): Boolean {
 }
 
 val DYEABLE_CUBE_MONO = ItemFactory.unStackableCustomItem("misc/dyeable_cube")
+val EXPLOSION_RING = ItemFactory.unStackableCustomItem("effect/explosion_ring")

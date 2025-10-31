@@ -126,7 +126,7 @@ class ItemDisplayContainer(
 
 		transformation = org.bukkit.util.Transformation(
             Vector3f(0f),
-            ClientDisplayEntities.rotateToFaceVector2d(heading.toVector3f()),
+            ClientDisplayEntities.rotateToFaceVector(heading.toVector3f()),
 			scale.toVector3f(),
             Quaternionf()
         )
