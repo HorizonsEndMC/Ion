@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.RedstoneControlledMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidStoringMultiblock
@@ -16,6 +17,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedM
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblock.BoilerMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.util.ControlSignalManager
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
 import net.horizonsend.ion.server.features.transport.inputs.IOData
@@ -40,9 +42,15 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace
-	) : MultiblockEntity(manager, multiblock, world, x, y, z, structureDirection), DisplayMultiblockEntity, AsyncTickingMultiblockEntity, FluidStoringMultiblock, StatusMultiblockEntity {
+	) : MultiblockEntity(manager, multiblock, world, x, y, z, structureDirection), DisplayMultiblockEntity, AsyncTickingMultiblockEntity, FluidStoringMultiblock, StatusMultiblockEntity, RedstoneControlledMultiblock {
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(2)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
+
+		override var controlMode: RedstoneControlledMultiblock.ControlMode = loadControlMode(data)
+		override val primaryControlInputs: ControlSignalManager = ControlSignalManager.builder(this)
+			.addSignInputs()
+			.addSignalInput(-2, 0, 0)
+			.build()
 
 		val fluidInput = FluidStorageContainer(data, "primaryin", text("Primary Input"), NamespacedKeys.key("primaryin"), 10_000.0, FluidRestriction.Unlimited)
 		val fluidOutput = FluidStorageContainer(data, "primaryout", text("Primary Output"), NamespacedKeys.key("primaryout"), 100.0, FluidRestriction.Unlimited)
@@ -61,6 +69,7 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 
 		override fun storeAdditionalData(store: PersistentMultiblockData, adapterContext: PersistentDataAdapterContext) {
 			saveStorageData(store)
+			saveControlMode(store)
 		}
 
 		override fun tickAsync() {
@@ -82,7 +91,7 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 				}
 			}
 
-			if (!preTick(deltaSeconds)) {
+			if (!isRedstoneEnabled() || !preTick(deltaSeconds)) {
 				setRunning(false)
 				reduceInputTemperature(deltaSeconds)
 				return

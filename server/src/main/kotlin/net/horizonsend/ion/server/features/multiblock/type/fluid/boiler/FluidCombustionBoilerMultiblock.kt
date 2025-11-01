@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys.FLAMMABILITY
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
@@ -12,13 +13,14 @@ import net.horizonsend.ion.server.features.client.display.modular.display.getLin
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.GaugedMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.GaugedMultiblockEntity.MultiblockGauges
+import net.horizonsend.ion.server.features.multiblock.entity.type.RedstoneControlledMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
+import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.FluidCombustionBoilerMultiblock.FluidBoilerEntity
-import net.horizonsend.ion.server.features.multiblock.util.ControlSignalManager
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.inputs.IOData
@@ -34,12 +36,15 @@ import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.block.BlockFace
+import org.bukkit.block.Sign
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
+import org.bukkit.entity.Player
+import org.bukkit.event.player.PlayerInteractEvent
 import kotlin.random.Random
 
-object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
+object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>(), InteractableMultiblock {
 	override val signText: Array<Component?> = createSignText(
 		text("Fluid Burner"),
 		null,
@@ -401,6 +406,12 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 		}
 	}
 
+	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
+		val entity = getMultiblockEntity(sign = sign, ignoreShips = false) ?: return
+		entity.controlMode = RedstoneControlledMultiblock.ControlMode[(entity.controlMode.ordinal + 1) % RedstoneControlledMultiblock.ControlMode.entries.size]
+		player.information("Updated control mode to {0}", entity.controlMode)
+	}
+
 	override fun createEntity(
 		manager: MultiblockManager,
 		data: PersistentMultiblockData,
@@ -424,11 +435,6 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 	) : BoilerMultiblockEntity(manager, data, FluidCombustionBoilerMultiblock, world, x, y, z, structureDirection), GaugedMultiblockEntity {
 		val fuelStorage = FluidStorageContainer(data, "fuel_storage", text("Fuel Storage"), NamespacedKeys.key("fuel_storage"), 100_000.0, FluidRestriction.FluidPropertyWhitelist(FLAMMABILITY))
 		val pollutionStorage = FluidStorageContainer(data, "pollution_out", text("Pollution Output"), NamespacedKeys.key("pollution_out"), 100_000.0, FluidRestriction.Unlimited)
-
-		private val controlSignalInput = ControlSignalManager.builder(this)
-			.addSignInputs()
-			.addSignalInput(-2, 0, 0)
-			.build()
 
 		override val gauges: MultiblockGauges = MultiblockGauges.builder(this)
 			.addGauge(3, -1, 3, GaugedMultiblockEntity.GaugeData.fluidTemperatureGauge(fluidOutput, this))
@@ -458,7 +464,6 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 
 		override fun preTick(deltaSeconds: Double): Boolean {
 			tickGauges()
-			if (!controlSignalInput.hasAnyIndirectPower()) return false
 
 			val combustionContents = fuelStorage.getContents()
 			if (combustionContents.isEmpty()) return false
