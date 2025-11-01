@@ -379,7 +379,12 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 			}
 			y(0) {
 				x(-3).anyWall()
-				x(-2).ironBlock()
+				x(-2).anyCustomBlockOrMaterial(
+					listOf(CustomBlockKeys.REDSTONE_CONTROL_PORT),
+					listOf(Material.IRON_BLOCK),
+					"redstone control port or iron block"
+				) { setExample(CustomBlockKeys.REDSTONE_CONTROL_PORT.getValue().blockData) }
+
 				x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.LEFT))
 				x(0).anyGlass()
 				x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.LEFT))

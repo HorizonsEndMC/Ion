@@ -264,6 +264,8 @@ class MultiblockShape {
 			edit(requirement)
 		}
 
+		fun customBlock(key: IonRegistryKey<CustomBlock, out CustomBlock>) = customBlock(key.getValue())
+
 		fun customBlock(customBlock: CustomBlock) {
 			val requirement = BlockRequirement(
 				alias = customBlock.key.key,
