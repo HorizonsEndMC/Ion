@@ -374,7 +374,7 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 	override fun getFlowCapacity(node: FluidNode): Double {
 		if (!leakingPipes.contains(node.location)) return super.getFlowCapacity(node)
-		return 1.0
+		return 5.0
 	}
 
 	companion object {
