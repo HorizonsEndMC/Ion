@@ -1,11 +1,12 @@
 package net.horizonsend.ion.server.features.multiblock.util
 
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
-import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.getBlockDataSafe
 import net.horizonsend.ion.server.miscellaneous.utils.minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Vec3i
-import org.bukkit.block.Block
 
 class ControlSignalManager private constructor(val multiblockEntity: MultiblockEntity) {
 	private lateinit var signalLocations: List<RegisteredControlSignal>
@@ -21,45 +22,43 @@ class ControlSignalManager private constructor(val multiblockEntity: MultiblockE
 	) {
 		val realPosition get() = multiblockEntity.getPosRelative(offsetRight, offsetUp, offsetForward)
 
-		val block: Block? get() {
+		fun getSignal(): Int? {
 			val (x, y, z) = realPosition
-			return getBlockIfLoaded(multiblockEntity.world, x, y, z)
-		}
-
-		fun getSignal(): Int {
-			val (x, y, z) = realPosition
+			if (getBlockDataSafe(multiblockEntity.world, x, y, z)?.customBlock?.key != CustomBlockKeys.REDSTONE_CONTROL_PORT) return null
 			return multiblockEntity.world.minecraft.getDirectSignalTo(BlockPos(x, y, z))
 		}
 
-		fun getStrongestIndirectSignal(): Int {
+		fun getStrongestIndirectSignal(): Int? {
 			val (x, y, z) = realPosition
+			if (getBlockDataSafe(multiblockEntity.world, x, y, z)?.customBlock?.key != CustomBlockKeys.REDSTONE_CONTROL_PORT) return null
 			return multiblockEntity.world.minecraft.getBestNeighborSignal(BlockPos(x, y, z))
 		}
 
-		fun isDirectlyPowered(): Boolean {
-			return getSignal() > 0
+		fun isDirectlyPowered(): Boolean? {
+			return (getSignal() ?: return null) > 0
 		}
 
-		fun isIndirectlyPowered(): Boolean {
+		fun isIndirectlyPowered(): Boolean? {
 			val (x, y, z) = realPosition
+			if (getBlockDataSafe(multiblockEntity.world, x, y, z)?.customBlock?.key != CustomBlockKeys.REDSTONE_CONTROL_PORT) return null
 			return multiblockEntity.world.minecraft.hasNeighborSignal(BlockPos(x, y, z))
 		}
 	}
 
-	fun getStrongestSignal(): Int {
-		return signalLocations.maxOf { it.getSignal() }
+	fun getStrongestSignal(): Int? {
+		return signalLocations.mapNotNull { it.getSignal() }.maxOrNull()
 	}
 
-	fun getStrongestIndirectSignal(): Int {
-		return signalLocations.maxOf { it.getStrongestIndirectSignal() }
+	fun getStrongestIndirectSignal(): Int? {
+		return signalLocations.mapNotNull { it.getStrongestIndirectSignal() }.maxOrNull()
 	}
 
 	fun hasAnyDirectPower(): Boolean {
-		return signalLocations.any { it.isDirectlyPowered() }
+		return signalLocations.any { it.isDirectlyPowered() ?: false }
 	}
 
 	fun hasAnyIndirectPower(): Boolean {
-		return signalLocations.any { it.isIndirectlyPowered() }
+		return signalLocations.any { it.isIndirectlyPowered() ?: false }
 	}
 
 	companion object {
