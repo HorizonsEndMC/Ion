@@ -320,6 +320,16 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 			),
 			CustomItemKeys.ROTATION_SHAFT
 		))
+
+		register(CustomBlockKeys.REDSTONE_CONTROL_PORT, CustomBlock(
+			key = CustomBlockKeys.REDSTONE_CONTROL_PORT,
+			blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.WEST, BlockFace.SOUTH)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.REDSTONE_CONTROL_PORT)
+			),
+			CustomItemKeys.REDSTONE_CONTROL_PORT
+		))
 	}
 
 	override fun registerAdditional(key: IonRegistryKey<CustomBlock, *>, value: CustomBlock) {

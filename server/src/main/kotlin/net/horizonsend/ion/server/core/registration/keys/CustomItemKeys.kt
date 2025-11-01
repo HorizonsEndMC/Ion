@@ -240,4 +240,5 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 
 	val COPPER_COIL = registerTypedKey<CustomBlockItem>("COPPER_COIL")
 	val ROTATION_SHAFT = registerTypedKey<CustomBlockItem>("ROTATION_SHAFT")
+	val REDSTONE_CONTROL_PORT = registerTypedKey<CustomBlockItem>("REDSTONE_CONTROL_PORT")
 }
