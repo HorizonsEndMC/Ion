@@ -425,8 +425,9 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>() {
 		val fuelStorage = FluidStorageContainer(data, "fuel_storage", text("Fuel Storage"), NamespacedKeys.key("fuel_storage"), 100_000.0, FluidRestriction.FluidPropertyWhitelist(FLAMMABILITY))
 		val pollutionStorage = FluidStorageContainer(data, "pollution_out", text("Pollution Output"), NamespacedKeys.key("pollution_out"), 100_000.0, FluidRestriction.Unlimited)
 
-		val controlSignalInput = ControlSignalManager.builder(this)
+		private val controlSignalInput = ControlSignalManager.builder(this)
 			.addSignInputs()
+			.addSignalInput(-2, 0, 0)
 			.build()
 
 		override val gauges: MultiblockGauges = MultiblockGauges.builder(this)
