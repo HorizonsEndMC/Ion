@@ -34,14 +34,14 @@ class FluidNetworkManager(manager: TransportHolder) : NetworkManager<FluidNode, 
 				FluidNode.RegularJunctionPipe(pos)
 			}
 			.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_PIPE, Material.CHORUS_PLANT) { data, pos, holder ->
-				val axis = (data.customBlock as FluidPipeBlock).getFace(data)
+				val axis = (data.customBlock as FluidPipeBlock).getAxis(data)
 				FluidNode.RegularLinearPipe(pos, axis)
 			}
 			.addDataHandler<MultipleFacing>(CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION, Material.CHORUS_PLANT) { _, pos, holder ->
 				FluidNode.ReinforcedJunctionPipe(pos)
 			}
 			.addDataHandler<MultipleFacing>(CustomBlockKeys.REINFORCED_FLUID_PIPE, Material.CHORUS_PLANT) { data, pos, holder ->
-				val axis = (data.customBlock as ReinforcedFluidPipeBlock).getFace(data)
+				val axis = (data.customBlock as ReinforcedFluidPipeBlock).getAxis(data)
 				FluidNode.ReinforcedLinearPipe(pos, axis)
 			}
 			.addDataHandler<MultipleFacing>(CustomBlockKeys.FLUID_PORT, Material.BROWN_MUSHROOM_BLOCK) { _, pos, holder -> FluidPort(pos) }

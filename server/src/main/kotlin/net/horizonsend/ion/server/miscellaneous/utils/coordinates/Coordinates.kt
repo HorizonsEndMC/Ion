@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Rotation
+import org.bukkit.Axis
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Location
@@ -284,8 +285,8 @@ fun Location.circlePoints(radius: Double, points: Int, axis: Vector): List<Locat
 	return coordinates
 }
 
-fun rotateBlockFace(blockFace: BlockFace, rotiation: Rotation): BlockFace {
-	return when (rotiation) {
+fun rotateBlockFace(blockFace: BlockFace, rotation: Rotation): BlockFace {
+	return when (rotation) {
 		Rotation.NONE -> blockFace
 		Rotation.CLOCKWISE_90 -> when (blockFace) {
 			BlockFace.NORTH -> BlockFace.EAST
@@ -308,6 +309,23 @@ fun rotateBlockFace(blockFace: BlockFace, rotiation: Rotation): BlockFace {
 			BlockFace.EAST -> BlockFace.NORTH
 			else -> blockFace
 		}
+	}
+}
+
+fun rotateAxis(axis: Axis, rotation: Rotation): Axis {
+	return when (rotation) {
+		Rotation.NONE -> axis
+		Rotation.CLOCKWISE_90 -> when (axis) {
+			Axis.X -> Axis.Z
+			Axis.Z -> Axis.X
+			else -> Axis.Y
+		}
+		Rotation.COUNTERCLOCKWISE_90 -> when (axis) {
+			Axis.X -> Axis.Z
+			Axis.Z -> Axis.X
+			else -> Axis.Y
+		}
+		Rotation.CLOCKWISE_180 -> axis
 	}
 }
 

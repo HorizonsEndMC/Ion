@@ -25,6 +25,7 @@ import net.horizonsend.ion.server.features.custom.blocks.pipe.ReinforcedFluidPip
 import net.horizonsend.ion.server.features.custom.blocks.pipe.TemperatureGaugeBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.space.encounters.SecondaryChest.Companion.random
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateAxis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.Rotation
@@ -406,6 +407,11 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 					val face = customBlock.getFace(blockState)
 					val newFace = rotateBlockFace(face, rotation)
 					customBlock.faceData[newFace]!!.nms
+				}
+				is OrientableCustomBlock -> {
+					val axis = customBlock.getAxis(blockState)
+					val newAxis = rotateAxis(axis, rotation)
+					customBlock.axisData[newAxis]!!.nms
 				}
 				else -> blockState
 			}

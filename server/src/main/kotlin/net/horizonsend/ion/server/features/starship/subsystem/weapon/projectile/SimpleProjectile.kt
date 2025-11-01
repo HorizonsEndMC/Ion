@@ -89,7 +89,19 @@ abstract class SimpleProjectile<out B : StarshipProjectileBalancing>(
 		if (!predictedNewLoc.isChunkLoaded) {
 			return onDespawn()
 		}
-		val result: RayTraceResult? = location.world.rayTrace(location, direction, delta * speed, FluidCollisionMode.NEVER, true, 0.1) { it.type != EntityType.ITEM_DISPLAY }
+		val result: RayTraceResult? = location.world.rayTrace(
+			location,
+			direction,
+			delta * speed,
+			FluidCollisionMode.NEVER,
+			true,
+			0.1,
+			{ it.type != EntityType.ITEM_DISPLAY },
+			{
+				if (source !is StarshipProjectileSource) true // projectile was not fired from a starship
+				else !source.starship.contains(it.x, it.y, it.z) // can collide with any block that is not part of the firing starship
+			}
+		)
 		val newLoc = result?.hitPosition?.toLocation(location.world) ?: predictedNewLoc
 		val travel = location.distance(newLoc)
 
