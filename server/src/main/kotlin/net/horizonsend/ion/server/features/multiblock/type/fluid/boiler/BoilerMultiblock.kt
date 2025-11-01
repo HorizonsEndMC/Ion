@@ -17,6 +17,7 @@ import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblock.BoilerMultiblockEntity
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
+import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
@@ -64,7 +65,7 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 
 		override fun tickAsync() {
 			bootstrapFluidNetwork()
-			val deltaT = deltaTMS / 1000.0
+			val deltaSeconds = deltaTMS / 1000.0
 
 			val outputContents = fluidOutput.getContents()
 			if (outputContents.isNotEmpty()) {
@@ -81,13 +82,14 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 				}
 			}
 
-			if (!preTick(deltaT)) {
+			if (!preTick(deltaSeconds)) {
 				setRunning(false)
+				reduceInputTemperature(deltaSeconds)
 				return
 			}
 
-			heatFluid(deltaT)
-			postTick(deltaT)
+			heatFluid(deltaSeconds)
+			postTick(deltaSeconds)
 		}
 
 		open fun preTick(deltaSeconds: Double): Boolean = true
@@ -151,6 +153,28 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 			if (!running) startedRunning = null
 			// Only set the start time if it hasn't been set
 			else if (startedRunning == null) startedRunning = System.currentTimeMillis()
+		}
+
+		fun reduceInputTemperature(deltaSeconds: Double) {
+			val inputStack = fluidInput.getContents()
+			if (inputStack.isEmpty()) return
+
+			val speedMultiplier = 10.0 / inputStack.amount
+			val baseRate = 10.0 * deltaSeconds
+			val adjustedRate = baseRate * speedMultiplier
+
+			val finalRate = minOf(adjustedRate, baseRate)
+
+			val currentTemperature = inputStack.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE, location)
+			val default = FluidPropertyTypeKeys.TEMPERATURE.getValue().getDefaultProperty(location)
+
+			val newTemperature = FluidProperty.Temperature(maxOf(default.value, currentTemperature.value - finalRate))
+			inputStack.setData(FluidPropertyTypeKeys.TEMPERATURE, newTemperature)
+			setStatus(FluidPropertyTypeKeys.TEMPERATURE.getValue().formatValue(newTemperature))
+		}
+
+		companion object {
+			private val HEAT_LOST_PER_SECOND get() = 10.0
 		}
 	}
 }
