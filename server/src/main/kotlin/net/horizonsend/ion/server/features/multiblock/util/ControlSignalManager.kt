@@ -22,7 +22,7 @@ class ControlSignalManager private constructor(val multiblockEntity: MultiblockE
 	) {
 		val realPosition get() = multiblockEntity.getPosRelative(offsetRight, offsetUp, offsetForward)
 
-		fun getSignal(): Int? {
+		fun getDirectSignal(): Int? {
 			val (x, y, z) = realPosition
 			if (getBlockDataSafe(multiblockEntity.world, x, y, z)?.customBlock?.key != CustomBlockKeys.REDSTONE_CONTROL_PORT) return null
 			return multiblockEntity.world.minecraft.getDirectSignalTo(BlockPos(x, y, z))
@@ -35,7 +35,7 @@ class ControlSignalManager private constructor(val multiblockEntity: MultiblockE
 		}
 
 		fun isDirectlyPowered(): Boolean? {
-			return (getSignal() ?: return null) > 0
+			return (getDirectSignal() ?: return null) > 0
 		}
 
 		fun isIndirectlyPowered(): Boolean? {
@@ -46,7 +46,7 @@ class ControlSignalManager private constructor(val multiblockEntity: MultiblockE
 	}
 
 	fun getStrongestSignal(): Int? {
-		return signalLocations.mapNotNull { it.getSignal() }.maxOrNull()
+		return signalLocations.mapNotNull { it.getDirectSignal() }.maxOrNull()
 	}
 
 	fun getStrongestIndirectSignal(): Int? {

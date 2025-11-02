@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.multiblock.entity.type
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.util.ControlSignalManager
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.kyori.adventure.text.Component
 import org.bukkit.persistence.PersistentDataType
 
 interface RedstoneControlledMultiblock {
@@ -22,20 +23,20 @@ interface RedstoneControlledMultiblock {
 		return controlMode.checkRedstoneSignal(primaryControlInputs)
 	}
 
-	enum class ControlMode {
-		DISABLED {
+	enum class ControlMode(val displayName: Component) {
+		DISABLED(Component.text("Disabled")) {
 			override fun checkRedstoneSignal(input: ControlSignalManager): Boolean = true
 		},
-		STRONG_SIGNAL_REQUIRED {
+		STRONG_SIGNAL_REQUIRED(Component.text("Strong Signal Required")) {
 			override fun checkRedstoneSignal(input: ControlSignalManager): Boolean = input.hasAnyDirectPower()
 		},
-		WEAK_SIGNAL_REQUIRED {
+		WEAK_SIGNAL_REQUIRED(Component.text("Weak Signal Required")) {
 			override fun checkRedstoneSignal(input: ControlSignalManager): Boolean = input.hasAnyIndirectPower()
 		},
-		STRONG_SIGNAL_DISABLES {
+		STRONG_SIGNAL_DISABLES(Component.text("Strong Signal Disables")) {
 			override fun checkRedstoneSignal(input: ControlSignalManager): Boolean = !input.hasAnyDirectPower()
 		},
-		WEAK_SIGNAL_DISABLES {
+		WEAK_SIGNAL_DISABLES(Component.text("Weak Signal Disables")) {
 			override fun checkRedstoneSignal(input: ControlSignalManager): Boolean = !input.hasAnyIndirectPower()
 		};
 
