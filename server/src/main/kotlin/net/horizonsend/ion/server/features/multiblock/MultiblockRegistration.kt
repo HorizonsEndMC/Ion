@@ -32,9 +32,9 @@ import net.horizonsend.ion.server.features.multiblock.type.fluid.CanisterVentMul
 import net.horizonsend.ion.server.features.multiblock.type.fluid.ChemicalProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.PumpMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.ElectricBoilerMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.FluidCombustionBoilerMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.ItemCombustionBoilerMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblockElectric
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblockFluidFuel
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblockItemFuel
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.BasicFluidStorageTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.gridpower.generator.GridGeneratorMultiblockLarge
@@ -470,9 +470,12 @@ object MultiblockRegistration : IonServerComponent() {
 			registerMultiblock(GridGeneratorMultiblockLarge)
 			registerMultiblock(TemporaryTurbineMultiblock)
 
-			registerMultiblock(ElectricBoilerMultiblock)
-			registerMultiblock(FluidCombustionBoilerMultiblock)
-			registerMultiblock(ItemCombustionBoilerMultiblock)
+			registerMultiblock(BoilerMultiblockElectric)
+			registerMultiblockAlias(BoilerMultiblockElectric, "ElectricBoilerMultiblock")
+			registerMultiblock(BoilerMultiblockFluidFuel)
+			registerMultiblockAlias(BoilerMultiblockFluidFuel, "FluidCombustionBoilerMultiblock")
+			registerMultiblock(BoilerMultiblockItemFuel)
+			registerMultiblockAlias(BoilerMultiblockItemFuel, "ItemCombustionBoilerMultiblock")
 		}
 	}
 

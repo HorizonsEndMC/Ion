@@ -1,72 +1,103 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.getLinePos
-import net.horizonsend.ion.server.features.client.display.modular.display.gridenergy.GridEnergyDisplay
+import net.horizonsend.ion.server.features.industry.ItemFuelProperties
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock
-import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock.MultiblockGridEnergyManager
-import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyPortMetaData
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
+import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.ElectricBoilerMultiblock.ElectricBoilerEntity
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblockItemFuel.ItemBoilerEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
-import net.horizonsend.ion.server.miscellaneous.utils.GLASS_PANE_TYPES
+import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.block.BlockFace
-import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Slab
-import org.bukkit.block.data.type.Stairs
-import java.time.Duration
+import org.bukkit.inventory.ItemStack
+import kotlin.random.Random
 
-object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
+object BoilerMultiblockItemFuel : BoilerMultiblock<ItemBoilerEntity>() {
 	override val signText: Array<Component?> = createSignText(
-		text("Electric Burner"),
+		text("Item Burner"),
 		null,
 		null,
 		null
 	)
 
 	override fun MultiblockShape.buildStructure() {
-		z(5) {
+		z(6) {
 			y(-1) {
-				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-				x(-2).steelBlock()
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
-				x(2).steelBlock()
-				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(-3).anySlab(PrepackagedPreset.slab(Slab.Type.TOP))
+				x(-2).titaniumBlock()
+				x(-1).titaniumBlock()
+				x(0).titaniumBlock()
+				x(1).titaniumBlock()
+				x(2).titaniumBlock()
+				x(3).anySlab(PrepackagedPreset.slab(Slab.Type.TOP))
 			}
 			y(0) {
-				x(-3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.BACKWARD))
-				x(-2).anyGlass()
+				x(-3).anyWall()
+				x(-2).type(Material.MUD_BRICKS)
 				x(-1).type(Material.MUD_BRICKS)
 				x(0).type(Material.MUD_BRICKS)
 				x(1).type(Material.MUD_BRICKS)
-				x(2).anyGlass()
-				x(3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD, RelativeFace.LEFT))
+				x(2).type(Material.MUD_BRICKS)
+				x(3).anyWall()
 			}
 			y(1) {
-				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(-2).steelBlock()
+				x(-3).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+				x(-2).titaniumBlock()
+				x(-1).titaniumBlock()
+				x(0).fluidPort()
+				x(1).titaniumBlock()
+				x(2).titaniumBlock()
+				x(3).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+			}
+			y(2) {
+				x(0).anyFluidPipe()
+			}
+		}
+		z(5) {
+			y(-1) {
+				x(-3).titaniumBlock()
+				x(-2).titaniumBlock()
 				x(-1).type(Material.MUD_BRICKS)
 				x(0).type(Material.MUD_BRICKS)
 				x(1).type(Material.MUD_BRICKS)
-				x(2).steelBlock()
-				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(2).titaniumBlock()
+				x(3).titaniumBlock()
+			}
+			y(0) {
+				x(-3).type(Material.MUD_BRICKS)
+				x(-2).type(Material.MUD_BRICKS)
+				x(2).type(Material.MUD_BRICKS)
+				x(3).type(Material.MUD_BRICKS)
+			}
+			y(1) {
+				x(-3).titaniumBlock()
+				x(-2).titaniumBlock()
+				x(-1).type(Material.MUD_BRICKS)
+				x(0).type(Material.MUD_BRICKS)
+				x(1).type(Material.MUD_BRICKS)
+				x(2).titaniumBlock()
+				x(3).titaniumBlock()
 			}
 			y(2) {
 				x(-1).steelBlock()
@@ -101,34 +132,27 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 		}
 		z(4) {
 			y(-1) {
-				x(-3).aluminumBlock()
+				x(-3).titaniumBlock()
 				x(-2).type(Material.MUD_BRICKS)
-				x(-1).redstoneBlock()
+				x(-1).type(Material.MUD_BRICKS)
 				x(0).type(Material.MUD_BRICKS)
-				x(1).redstoneBlock()
+				x(1).type(Material.MUD_BRICKS)
 				x(2).type(Material.MUD_BRICKS)
-				x(3).aluminumBlock()
+				x(3).titaniumBlock()
 			}
 			y(0) {
-				x(-3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.BACKWARD))
-				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.PALE_OAK_WOOD)
-				x(1).type(Material.PALE_OAK_WOOD)
-				x(2).type(Material.MUD_BRICKS)
-				x(3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.BACKWARD, RelativeFace.LEFT))
+				x(-3).type(Material.MUD_BRICKS)
+				x(3).type(Material.MUD_BRICKS)
 			}
 			y(1) {
-				x(-3).aluminumBlock()
+				x(-3).titaniumBlock()
 				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.PALE_OAK_WOOD)
-				x(1).type(Material.PALE_OAK_WOOD)
+				x(0).type(Material.MUD_BRICKS)
 				x(2).type(Material.MUD_BRICKS)
-				x(3).aluminumBlock()
+				x(3).titaniumBlock()
 			}
 			y(2) {
 				x(-2).steelBlock()
-				x(-1).type(Material.PALE_OAK_WOOD)
-				x(1).type(Material.PALE_OAK_WOOD)
 				x(2).steelBlock()
 			}
 			y(3) {
@@ -161,25 +185,26 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 		}
 		z(3) {
 			y(-1) {
-				x(-3).anyGauge()
+				x(-3).titaniumBlock()
 				x(-2).type(Material.MUD_BRICKS)
 				x(-1).type(Material.MUD_BRICKS)
 				x(0).type(Material.MUD_BRICKS)
 				x(1).type(Material.MUD_BRICKS)
 				x(2).type(Material.MUD_BRICKS)
-				x(3).anyGauge()
+				x(3).titaniumBlock()
 			}
 			y(0) {
 				x(-3).fluidPort()
-				x(-2).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
 				x(3).fluidPort()
 			}
 			y(1) {
-				x(-3).type(Material.WAXED_COPPER_BLOCK)
+				x(-3).titaniumBlock()
 				x(-2).type(Material.MUD_BRICKS)
+				x(-1).type(Material.MUD_BRICKS)
+				x(0).type(Material.TARGET)
+				x(1).type(Material.MUD_BRICKS)
 				x(2).type(Material.MUD_BRICKS)
-				x(3).type(Material.WAXED_COPPER_BLOCK)
+				x(3).titaniumBlock()
 			}
 			y(2) {
 				x(-2).steelBlock()
@@ -213,34 +238,27 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 		}
 		z(2) {
 			y(-1) {
-				x(-3).aluminumBlock()
+				x(-3).titaniumBlock()
 				x(-2).type(Material.MUD_BRICKS)
-				x(-1).redstoneBlock()
+				x(-1).type(Material.MUD_BRICKS)
 				x(0).type(Material.MUD_BRICKS)
-				x(1).redstoneBlock()
+				x(1).type(Material.MUD_BRICKS)
 				x(2).type(Material.MUD_BRICKS)
-				x(3).aluminumBlock()
+				x(3).titaniumBlock()
 			}
 			y(0) {
-				x(-3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.BACKWARD))
-				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.PALE_OAK_WOOD)
-				x(1).type(Material.PALE_OAK_WOOD)
-				x(2).type(Material.MUD_BRICKS)
-				x(3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.BACKWARD, RelativeFace.LEFT))
+				x(-3).type(Material.MUD_BRICKS)
+				x(3).type(Material.MUD_BRICKS)
 			}
 			y(1) {
-				x(-3).aluminumBlock()
+				x(-3).titaniumBlock()
 				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.PALE_OAK_WOOD)
-				x(1).type(Material.PALE_OAK_WOOD)
+				x(0).type(Material.MUD_BRICKS)
 				x(2).type(Material.MUD_BRICKS)
-				x(3).aluminumBlock()
+				x(3).titaniumBlock()
 			}
 			y(2) {
 				x(-2).steelBlock()
-				x(-1).type(Material.PALE_OAK_WOOD)
-				x(1).type(Material.PALE_OAK_WOOD)
 				x(2).steelBlock()
 			}
 			y(3) {
@@ -273,31 +291,31 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 		}
 		z(1) {
 			y(-1) {
-				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-				x(-2).steelBlock()
+				x(-3).titaniumBlock()
+				x(-2).titaniumBlock()
 				x(-1).type(Material.MUD_BRICKS)
 				x(0).type(Material.MUD_BRICKS)
 				x(1).type(Material.MUD_BRICKS)
-				x(2).steelBlock()
-				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(2).titaniumBlock()
+				x(3).titaniumBlock()
 			}
 			y(0) {
-				x(-3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT))
-				x(-2).anyGlass()
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
-				x(2).anyGlass()
-				x(3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.LEFT))
+				x(-3).type(Material.MUD_BRICKS)
+				x(-2).type(Material.MUD_BRICKS)
+				x(-1).type(Material.IRON_BARS)
+				x(0).type(Material.IRON_BARS)
+				x(1).type(Material.IRON_BARS)
+				x(2).type(Material.MUD_BRICKS)
+				x(3).type(Material.MUD_BRICKS)
 			}
 			y(1) {
-				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(-2).steelBlock()
+				x(-3).titaniumBlock()
+				x(-2).titaniumBlock()
 				x(-1).type(Material.MUD_BRICKS)
 				x(0).type(Material.MUD_BRICKS)
 				x(1).type(Material.MUD_BRICKS)
-				x(2).steelBlock()
-				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(2).titaniumBlock()
+				x(3).titaniumBlock()
 			}
 			y(2) {
 				x(-1).steelBlock()
@@ -330,59 +348,41 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 			}
 		}
-		z(6) {
-			y(-1) {
-				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-				x(-1).aluminumBlock()
-				x(0).type(Material.WAXED_COPPER_BLOCK)
-				x(1).aluminumBlock()
-				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-			}
-			y(0) {
-				x(-2).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.BACKWARD))
-				x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.BACKWARD, RelativeFace.LEFT))
-				x(0).sponge()
-				x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.BACKWARD, RelativeFace.LEFT))
-				x(2).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD, RelativeFace.LEFT))
-			}
-			y(1) {
-				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(-1).aluminumBlock()
-				x(0).type(Material.WAXED_COPPER_BLOCK)
-				x(1).aluminumBlock()
-				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-			}
-		}
 		z(0) {
 			y(-1) {
-				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
-				x(-1).aluminumBlock()
-				x(0).gridEnergyPort()
-				x(1).aluminumBlock()
-				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
+				x(-3).anySlab(PrepackagedPreset.slab(Slab.Type.TOP))
+				x(-2).titaniumBlock()
+				x(-1).titaniumBlock()
+				x(0).anyPipedInventory()
+				x(1).titaniumBlock()
+				x(2).titaniumBlock()
+				x(3).anySlab(PrepackagedPreset.slab(Slab.Type.TOP))
 			}
 			y(0) {
+				x(-3).anyWall()
 				x(-2).anyCustomBlockOrMaterial(
 					listOf(CustomBlockKeys.REDSTONE_CONTROL_PORT),
-					GLASS_PANE_TYPES,
-					"redstone control port or any glass pane",
+					listOf(Material.MUD_BRICKS),
+					"redstone control port or mud bricks",
 				) { setExample(CustomBlockKeys.REDSTONE_CONTROL_PORT.getValue().blockData) }
 				x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.LEFT))
 				x(0).anyGlass()
 				x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.LEFT))
 				x(2).anyCustomBlockOrMaterial(
 					listOf(CustomBlockKeys.REDSTONE_CONTROL_PORT),
-					GLASS_PANE_TYPES,
-					"redstone control port or any glass pane",
-					PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT)
-				)
+					listOf(Material.MUD_BRICKS),
+					"redstone control port or mud bricks",
+				) { setExample(Material.MUD_BRICKS) }
+				x(3).anyWall()
 			}
 			y(1) {
-				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(-1).aluminumBlock()
-				x(0).type(Material.WAXED_COPPER_BLOCK)
-				x(1).aluminumBlock()
-				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
+				x(-3).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
+				x(-2).titaniumBlock()
+				x(-1).titaniumBlock()
+				x(0).titaniumBlock()
+				x(1).titaniumBlock()
+				x(2).titaniumBlock()
+				x(3).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 			}
 		}
 	}
@@ -395,11 +395,11 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace
-	): ElectricBoilerEntity {
-		return ElectricBoilerEntity(manager, data, world, x, y, z, structureDirection)
+	): ItemBoilerEntity {
+		return ItemBoilerEntity(manager, data, world, x, y, z, structureDirection)
 	}
 
-	class ElectricBoilerEntity(
+	class ItemBoilerEntity(
 		manager: MultiblockManager,
 		data: PersistentMultiblockData,
 		world: World,
@@ -407,45 +407,104 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace
-	) : BoilerMultiblockEntity(manager, data, ElectricBoilerMultiblock, world, x, y, z, structureDirection), GridEnergyMultiblock {
-		override val gridEnergyManager: MultiblockGridEnergyManager = MultiblockGridEnergyManager(this)
+	) : BoilerMultiblockEntity(manager, data, BoilerMultiblockItemFuel, world, x, y, z, structureDirection) {
+		val pollutionStorage = FluidStorageContainer(data, "pollution_out", text("Pollution Output"), NamespacedKeys.key("pollution_out"), 100_000.0, FluidRestriction.Unlimited)
 
-		override fun IOData.Builder.registerAdditionalIO(): IOData.Builder {
-			return addPort(IOType.GRID_ENERGY, 0, -1, 0) { IOPort.RegisteredMetaDataInput(this@ElectricBoilerEntity, GridEnergyPortMetaData(inputAllowed = false, outputAllowed = true)) }
-		}
+		override fun IOData.Builder.registerAdditionalIO(): IOData.Builder =
+			addPort(IOType.FLUID, 0, 1, 6) { IOPort.RegisteredMetaDataInput(this@ItemBoilerEntity, FluidPortMetadata(connectedStore = pollutionStorage, inputAllowed = false, outputAllowed = true)) }
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(this,
 			{ ComplexFluidDisplayModule(handler = it, container = fluidInput, title = text("Input"), offsetLeft = 3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.RIGHT) },
 			{ ComplexFluidDisplayModule(handler = it, container = fluidOutput, title = text("Output"), offsetLeft = -3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.LEFT) },
-			{ GridEnergyDisplay(handler = it, multiblock = this, offsetLeft = 0.0, offsetUp = getLinePos(3), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE, relativeFace = RelativeFace.FORWARD) },
 			{ StatusDisplayModule(handler = it, statusSupplier = statusManager, offsetLeft = 0.0, offsetUp = getLinePos(4), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
 		)
-
 		override fun tickAsync() {
-			bootstrapGridEnergyNetwork()
-			super<BoilerMultiblockEntity>.tickAsync()
-		}
+			bootstrapFluidNetwork()
+			val deltaSeconds = deltaTMS / 1000.0
 
-		override fun getHeatProductionJoulesPerSecond(): Double {
-			return POWER_DRAW_WATTS * 2.5
-		}
+			val outputContents = fluidOutput.getContents()
+			if (outputContents.isNotEmpty()) {
+				val temperature = outputContents.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE, location).value
+				if (temperature > 600.0 && fluidOutput.getRemainingRoom() <= 0) {
+					Tasks.sync {
+						val location = getBlockRelative(0, 5, 3).location.toCenterLocation()
+						world.createExplosion(location, 30.0f)
+					}
+					fluidOutput.clear()
+					fluidInput.clear()
 
-		override fun postTick(deltaSeconds: Double) {
-			if (isRunning) {
-				setActiveDuration(Duration.ofSeconds(2))
-				setActiveGridEnergyConsumption(POWER_DRAW_WATTS)
-			} else {
-				setActiveGridEnergyConsumption(0.0)
+					return
+				}
+			}
+
+			tickGauges()
+
+			Tasks.sync {
+				val preTickResult = preTick(deltaSeconds)
+
+				Tasks.async {
+					if (!isRedstoneEnabled() || !preTickResult) {
+						setRunning(false)
+						reduceInputTemperature(deltaSeconds)
+						return@async
+					}
+
+					heatFluid(deltaSeconds)
+					postTick(deltaSeconds)
+				}
 			}
 		}
 
-		override fun preTick(deltaSeconds: Double): Boolean {
-			tickGauges()
-			return true
+		private var burningEnds = 0L
+		private var burningOutput = 0.0
+
+		override fun getHeatProductionJoulesPerSecond(): Double {
+			return burningOutput
 		}
 
-		override fun getPassiveGridEnergyConsumption(): Double = 20.0
+		override fun preTick(deltaSeconds: Double): Boolean {
+			val now = System.currentTimeMillis()
+			if (burningEnds > now) return true
 
-		private val POWER_DRAW_WATTS get() = 500_000.0 // Watts
+			val fuelInput = getInventory(0, -1, 0) ?: return false
+
+			for (itemStack: ItemStack? in fuelInput.contents) {
+				if (itemStack == null) continue
+
+				val fuelProperties = ItemFuelProperties[itemStack] ?: continue
+
+				val pollutionStack = fuelProperties.pollutionResult.clone()
+				if (!pollutionStorage.canAdd(pollutionStack)) continue
+
+				burningEnds = now + fuelProperties.burnDurationMillis
+				burningOutput = fuelProperties.heatOutputJoulesPerSecond
+
+				itemStack.amount--
+
+				pollutionStorage.addFluid(pollutionStack, location)
+
+				return true
+			}
+
+			return false
+		}
+
+		override fun postTick(deltaSeconds: Double) {
+			if (!isRunning) return
+
+			displayBurningParticles()
+		}
+
+		fun displayBurningParticles() {
+			val location = getBlockRelative(0, 0, 3).location.toCenterLocation()
+
+			repeat(2) {
+				val offsetX = Random.nextDouble(-2.5, 2.5)
+				val offsetY = Random.nextDouble(-0.45, 0.45)
+				val offsetZ = Random.nextDouble(-2.5, 2.5)
+
+				world.spawnParticle(Particle.FLAME, location.x + offsetX, location.y + offsetY, location.z + offsetZ, 1, 0.0, 0.0, 0.0, 0.0, null)
+			}
+		}
 	}
 }

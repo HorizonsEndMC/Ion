@@ -17,7 +17,7 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.InteractableMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.FluidCombustionBoilerMultiblock.FluidBoilerEntity
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblockFluidFuel.FluidBoilerEntity
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.inputs.IOData
@@ -43,7 +43,7 @@ import xyz.xenondevs.invui.gui.Gui
 import xyz.xenondevs.invui.window.Window
 import kotlin.random.Random
 
-object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>(), InteractableMultiblock {
+object BoilerMultiblockFluidFuel : BoilerMultiblock<FluidBoilerEntity>(), InteractableMultiblock {
 	override val signText: Array<Component?> = createSignText(
 		text("Fluid Burner"),
 		null,
@@ -440,7 +440,7 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>(), 
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace
-	) : BoilerMultiblockEntity(manager, data, FluidCombustionBoilerMultiblock, world, x, y, z, structureDirection) {
+	) : BoilerMultiblockEntity(manager, data, BoilerMultiblockFluidFuel, world, x, y, z, structureDirection) {
 		val fuelStorage = FluidStorageContainer(data, "fuel_storage", text("Fuel Storage"), NamespacedKeys.key("fuel_storage"), 100_000.0, FluidRestriction.FluidPropertyWhitelist(FLAMMABILITY))
 		val pollutionStorage = FluidStorageContainer(data, "pollution_out", text("Pollution Output"), NamespacedKeys.key("pollution_out"), 100_000.0, FluidRestriction.Unlimited)
 
