@@ -112,6 +112,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.Me
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.MiniReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.SmallReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.AmplifiedGravityWellMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.InterdictionWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.StandardGravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass1
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass2
@@ -144,10 +145,12 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.HorizontalNavigationComputerMultiblockAdvanced
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.VerticalNavigationComputerMultiblockAdvanced
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.ArtilleryStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.InterceptorCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.LaserCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.PulseCannonStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.ScramblerStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CapitalBeamStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CthulhuBeamStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CthulhuBeamStarshipWeaponMultiblockSide
@@ -165,6 +168,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HorizontalRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HorizontalSwarmMissileStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.NeutralizerStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.PhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopArsenalStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TorpedoStarshipWeaponMultiblock
@@ -369,6 +373,9 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(HorizontalSwarmMissileStarshipWeaponMultiblock)
 		//registerMultiblock(TopSwarmMissileStarshipWeaponMultiblock)
 		//registerMultiblock(BottomSwarmMissileStarshipWeaponMultiblock)
+		registerMultiblock(NeutralizerStarshipWeaponMultiblock)
+		registerMultiblock(ScramblerStarshipWeaponMultiblock)
+		registerMultiblock(ArtilleryStarshipWeaponMultiblock)
 
 		// Starship event weapons
 		registerMultiblock(SonicMissileWeaponMultiblock)
@@ -426,6 +433,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(StandardGravityWellMultiblock)
 		registerMultiblock(AmplifiedGravityWellMultiblock)
 		registerMultiblock(HornMultiblock)
+		registerMultiblock(InterdictionWellMultiblock)
 
 		// Machine
 		registerMultiblock(ShipFactoryMultiblock)
