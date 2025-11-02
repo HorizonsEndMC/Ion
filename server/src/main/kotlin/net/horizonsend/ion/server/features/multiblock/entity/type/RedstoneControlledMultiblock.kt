@@ -31,16 +31,16 @@ interface RedstoneControlledMultiblock {
 		DISABLED(Component.text("Disabled"), GuiItem.CANCEL) {
 			override fun checkRedstoneSignal(input: ControlSignalManager): Boolean = true
 		},
-		STRONG_SIGNAL_REQUIRED(Component.text("Strong Signal Required"), GuiItem.DOWN) {
+		DIRECT_SIGNAL_REQUIRED(Component.text("Direct Signal Required"), GuiItem.DOWN) {
 			override fun checkRedstoneSignal(input: ControlSignalManager): Boolean = input.hasAnyDirectPower()
 		},
-		WEAK_SIGNAL_REQUIRED(Component.text("Weak Signal Required"), GuiItem.RIGHT) {
+		INDIRECT_SIGNAL_REQUIRED(Component.text("Indirect Signal Required"), GuiItem.RIGHT) {
 			override fun checkRedstoneSignal(input: ControlSignalManager): Boolean = input.hasAnyIndirectPower()
 		},
-		STRONG_SIGNAL_DISABLES(Component.text("Strong Signal Disables"), GuiItem.DOWN) {
+		DIRECT_SIGNAL_DISABLES(Component.text("Direct Signal Disables"), GuiItem.DOWN) {
 			override fun checkRedstoneSignal(input: ControlSignalManager): Boolean = !input.hasAnyDirectPower()
 		},
-		WEAK_SIGNAL_DISABLES(Component.text("Weak Signal Disables"), GuiItem.LEFT) {
+		INDIRECT_SIGNAL_DISABLES(Component.text("Indirect Signal Disables"), GuiItem.LEFT) {
 			override fun checkRedstoneSignal(input: ControlSignalManager): Boolean = !input.hasAnyIndirectPower()
 		};
 
