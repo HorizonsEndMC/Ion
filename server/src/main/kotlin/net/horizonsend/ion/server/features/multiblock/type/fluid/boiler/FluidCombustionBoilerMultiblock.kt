@@ -79,7 +79,7 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>(), 
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(2) {
-				x(0).customBlock(CustomBlockKeys.FLUID_PIPE.getValue())
+				x(0).anyFluidPipe()
 			}
 		}
 		z(5) {
@@ -95,9 +95,9 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>(), 
 			y(0) {
 				x(-3).ironBlock()
 				x(-2).type(Material.WAXED_COPPER_BLOCK)
-				x(-1).customBlock(CustomBlockKeys.FLUID_PIPE.getValue())
+				x(-1).anyFluidPipe()
 				x(0).customBlock(CustomBlockKeys.FLUID_VALVE.getValue())
-				x(1).customBlock(CustomBlockKeys.FLUID_PIPE.getValue())
+				x(1).anyFluidPipe()
 				x(2).type(Material.WAXED_COPPER_BLOCK)
 				x(3).ironBlock()
 			}
@@ -325,9 +325,9 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>(), 
 			y(0) {
 				x(-3).ironBlock()
 				x(-2).type(Material.WAXED_COPPER_BLOCK)
-				x(-1).customBlock(CustomBlockKeys.FLUID_PIPE.getValue())
-				x(0).customBlock(CustomBlockKeys.FLUID_VALVE.getValue())
-				x(1).customBlock(CustomBlockKeys.FLUID_PIPE.getValue())
+				x(-1).anyFluidPipe()
+				x(0).anyFluidPipe()
+				x(1).anyFluidPipe()
 				x(2).type(Material.WAXED_COPPER_BLOCK)
 				x(3).ironBlock()
 			}

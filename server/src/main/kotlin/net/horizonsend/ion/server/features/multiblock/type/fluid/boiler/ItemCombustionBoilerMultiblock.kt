@@ -65,7 +65,7 @@ object ItemCombustionBoilerMultiblock : BoilerMultiblock<ItemBoilerEntity>() {
 				x(3).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 			}
 			y(2) {
-				x(0).customBlock(CustomBlockKeys.FLUID_PIPE.getValue())
+				x(0).anyFluidPipe()
 			}
 		}
 		z(5) {

@@ -48,8 +48,8 @@ object CustomBlockKeys : KeyRegistry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS, Cu
 	val TEMPERATURE_GAUGE = registerTypedKey<TemperatureGaugeBlock>("TEMPERATURE_GAUGE")
 
 	val COPPER_COIL = registerKey("COPPER_COIL")
-
-	val GRID_ENERGY_PORT = registerKey("GRID_ENERGY_PORT")
 	val ROTATION_SHAFT = registerKey("ROTATION_SHAFT")
 	val REDSTONE_CONTROL_PORT = registerKey("REDSTONE_CONTROL_PORT")
+
+	val GRID_ENERGY_PORT = registerKey("GRID_ENERGY_PORT")
 }

@@ -666,5 +666,15 @@ class MultiblockShape {
 			listOf(*COPPER_BULB_TYPES.toTypedArray()),
 			alias = "any gauge"
 		)
+
+		fun anyFluidPipe() = anyCustomBlock(
+			CustomBlockKeys.FLUID_PIPE,
+			CustomBlockKeys.FLUID_PIPE_JUNCTION,
+			CustomBlockKeys.REINFORCED_FLUID_PIPE,
+			CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION,
+			CustomBlockKeys.FLUID_VALVE,
+			CustomBlockKeys.TEMPERATURE_GAUGE,
+			alias = "any fluid pipe",
+		) { setExample(CustomBlockKeys.FLUID_PIPE.getValue().blockData) }
 	}
 }
