@@ -296,9 +296,9 @@ object ItemCombustionBoilerMultiblock : BoilerMultiblock<ItemBoilerEntity>() {
 			y(0) {
 				x(-3).type(Material.MUD_BRICKS)
 				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.PISTON)
-				x(1).type(Material.MUD_BRICKS)
+				x(-1).type(Material.IRON_BARS)
+				x(0).type(Material.IRON_BARS)
+				x(1).type(Material.IRON_BARS)
 				x(2).type(Material.MUD_BRICKS)
 				x(3).type(Material.MUD_BRICKS)
 			}
