@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
@@ -23,6 +25,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.GLASS_PANE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.World
 import org.bukkit.block.BlockFace
@@ -33,7 +36,7 @@ import java.time.Duration
 
 object BoilerMultiblockElectric : BoilerMultiblock<ElectricBoilerEntity>() {
 	override val signText: Array<Component?> = createSignText(
-		text("Electric Burner"),
+		ofChildren(text("Electric ", NamedTextColor.AQUA), text("Boiler", HEColorScheme.HE_MEDIUM_GRAY)),
 		null,
 		null,
 		null

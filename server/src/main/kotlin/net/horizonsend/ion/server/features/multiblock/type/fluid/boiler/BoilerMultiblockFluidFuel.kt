@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
+import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys.FLAMMABILITY
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
@@ -28,6 +30,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Axis
 import org.bukkit.Material
 import org.bukkit.Particle
@@ -45,7 +48,7 @@ import kotlin.random.Random
 
 object BoilerMultiblockFluidFuel : BoilerMultiblock<FluidBoilerEntity>(), InteractableMultiblock {
 	override val signText: Array<Component?> = createSignText(
-		text("Fluid Burner"),
+		ofChildren(text("Fluid ", NamedTextColor.GOLD), text("Boiler", HEColorScheme.HE_MEDIUM_GRAY)),
 		null,
 		null,
 		null
