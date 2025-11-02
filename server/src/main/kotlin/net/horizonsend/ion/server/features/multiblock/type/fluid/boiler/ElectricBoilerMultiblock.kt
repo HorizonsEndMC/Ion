@@ -8,8 +8,6 @@ import net.horizonsend.ion.server.features.client.display.modular.display.fluid.
 import net.horizonsend.ion.server.features.client.display.modular.display.getLinePos
 import net.horizonsend.ion.server.features.client.display.modular.display.gridenergy.GridEnergyDisplay
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.GaugedMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.GaugedMultiblockEntity.MultiblockGauges
 import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyMultiblock.MultiblockGridEnergyManager
 import net.horizonsend.ion.server.features.multiblock.entity.type.gridenergy.GridEnergyPortMetaData
@@ -398,15 +396,11 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace
-	) : BoilerMultiblockEntity(manager, data, ElectricBoilerMultiblock, world, x, y, z, structureDirection), GridEnergyMultiblock, GaugedMultiblockEntity {
+	) : BoilerMultiblockEntity(manager, data, ElectricBoilerMultiblock, world, x, y, z, structureDirection), GridEnergyMultiblock {
 		override val gridEnergyManager: MultiblockGridEnergyManager = MultiblockGridEnergyManager(this)
 
-		override val gauges: MultiblockGauges = MultiblockGauges.builder(this)
-			.addGauge(3, -1, 3, GaugedMultiblockEntity.GaugeData.fluidTemperatureGauge(fluidOutput, this))
-			.build()
-
 		override fun IOData.Builder.registerAdditionalIO(): IOData.Builder {
-			return addPort(IOType.GRID_ENERGY, 0, -1, 0) { IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>(this@ElectricBoilerEntity, GridEnergyPortMetaData(inputAllowed = false, outputAllowed = true)) }
+			return addPort(IOType.GRID_ENERGY, 0, -1, 0) { IOPort.RegisteredMetaDataInput(this@ElectricBoilerEntity, GridEnergyPortMetaData(inputAllowed = false, outputAllowed = true)) }
 		}
 
 		override val displayHandler: TextDisplayHandler = DisplayHandlers.newMultiblockSignOverlay(this,
@@ -417,12 +411,12 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 		)
 
 		override fun tickAsync() {
-			super<BoilerMultiblockEntity>.tickAsync()
 			bootstrapGridEnergyNetwork()
+			super<BoilerMultiblockEntity>.tickAsync()
 		}
 
 		override fun getHeatProductionJoulesPerSecond(): Double {
-			return POWER_DRAW_WATTS * 10
+			return POWER_DRAW_WATTS * 2.5
 		}
 
 		override fun postTick(deltaSeconds: Double) {
@@ -439,7 +433,7 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 			return true
 		}
 
-		override fun getPassiveGridEnergyConsumption(): Double = 1.0
+		override fun getPassiveGridEnergyConsumption(): Double = 20.0
 
 		private val POWER_DRAW_WATTS get() = 500_000.0 // Watts
 	}
