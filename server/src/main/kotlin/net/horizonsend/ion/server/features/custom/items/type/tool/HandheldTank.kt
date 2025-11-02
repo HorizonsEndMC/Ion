@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool
 
+import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
@@ -24,6 +25,7 @@ import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
+import net.horizonsend.ion.server.miscellaneous.utils.text.itemName
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.FluidCollisionMode
@@ -78,6 +80,7 @@ object HandheldTank : CustomItem(
 		clone.amount -= multiblockStore.removeAmount(toRemove)
 
 		fluidStorage.addContents(item, this, clone, player.location)
+		player.information("Withdrew {0} {1}", clone.amount, clone.getDisplayName())
 	}
 
 	fun tryDeposit(player: Player, item: ItemStack, event: PlayerInteractEvent) = Tasks.async {
@@ -97,6 +100,7 @@ object HandheldTank : CustomItem(
 		stack.amount -= fluidStorage.removeAmount(item, this, toDeposit)
 
 		multiblockStore.addFluid(stack, player.location)
+		player.information("Deposited {0} {1}", stack.amount, stack.getDisplayName().itemName)
 	}
 
 	private fun giveTips(player: Player) = Tasks.async {
