@@ -20,7 +20,7 @@ import org.bukkit.block.data.type.Slab
 
 object ItemCombustionBoilerMultiblock : BoilerMultiblock<ItemBoilerEntity>() {
 	override val signText: Array<Component?> = createSignText(
-		Component.text("Item Burner"),
+		text("Item Burner"),
 		null,
 		null,
 		null
@@ -345,11 +345,19 @@ object ItemCombustionBoilerMultiblock : BoilerMultiblock<ItemBoilerEntity>() {
 			}
 			y(0) {
 				x(-3).anyWall()
-				x(-2).type(Material.MUD_BRICKS)
+				x(-2).anyCustomBlockOrMaterial(
+					listOf(CustomBlockKeys.REDSTONE_CONTROL_PORT),
+					listOf(Material.MUD_BRICKS),
+					"redstone control port or mud bricks",
+				) { setExample(CustomBlockKeys.REDSTONE_CONTROL_PORT.getValue().blockData) }
 				x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.LEFT))
 				x(0).anyGlass()
 				x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.LEFT))
-				x(2).type(Material.MUD_BRICKS)
+				x(2).anyCustomBlockOrMaterial(
+					listOf(CustomBlockKeys.REDSTONE_CONTROL_PORT),
+					listOf(Material.MUD_BRICKS),
+					"redstone control port or mud bricks",
+				) { setExample(Material.MUD_BRICKS) }
 				x(3).anyWall()
 			}
 			y(1) {
