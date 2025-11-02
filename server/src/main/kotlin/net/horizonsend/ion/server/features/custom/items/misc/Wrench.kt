@@ -76,7 +76,7 @@ object Wrench : CustomItem(
 			checkStructure(event.player, event)
 		})
 
-		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(DISPLAY_TICK_INTERVAL) { entity, _, _, _ ->
+		addComponent(CustomComponentTypes.TICK_RECEIVER, TickReceiverModule(DISPLAY_TICK_INTERVAL) { entity, _, _, _ ->
 			giveTips(entity as? Player ?: return@TickReceiverModule)
 		})
 	}

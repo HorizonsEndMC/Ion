@@ -52,9 +52,14 @@ class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> pr
 		val MOD_MANAGER = newComponentType<ModManager, OnlyOne<ModManager>>(ComponentType.ONLY_ONE)
 
 		/**
-		 * Specifiies a result from smelting this item
+		 * Specifies a result from smelting this item
 		 **/
 		val MULTIBLOCK_TYPE = newComponentType<StoredMultiblock, OnlyOne<StoredMultiblock>>(ComponentType.ONLY_ONE)
+
+		/**
+		 * Specifies a stored fluid
+		 **/
+		val STORED_FLUID = newComponentType<FluidStorage, OnlyOne<FluidStorage>>(ComponentType.ONLY_ONE)
 
 		/**
 		 * General interact listener
@@ -92,8 +97,8 @@ class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> pr
 		val LISTENER_ENTITY_SHOOT_BOW = newComponentType<Listener<EntityShootBowEvent, *>, AllowMultiple<Listener<EntityShootBowEvent, *>>>(ComponentType.ALLOW_MULTIPLE)
 
 		/**
-		 * Recieves ticks, when held by a player
+		 * Receives ticks, when held by a player
 		 **/
-		val TICK_RECIEVER = newComponentType<TickReceiverModule, AllowMultiple<TickReceiverModule>>(ComponentType.ALLOW_MULTIPLE)
+		val TICK_RECEIVER = newComponentType<TickReceiverModule, AllowMultiple<TickReceiverModule>>(ComponentType.ALLOW_MULTIPLE)
 	}
 }
