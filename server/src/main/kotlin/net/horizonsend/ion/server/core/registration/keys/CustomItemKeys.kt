@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorIte
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
 import net.horizonsend.ion.server.features.custom.items.type.tool.CratePlacer
+import net.horizonsend.ion.server.features.custom.items.type.tool.HandheldTank
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
@@ -241,4 +242,6 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val COPPER_COIL = registerTypedKey<CustomBlockItem>("COPPER_COIL")
 	val ROTATION_SHAFT = registerTypedKey<CustomBlockItem>("ROTATION_SHAFT")
 	val REDSTONE_CONTROL_PORT = registerTypedKey<CustomBlockItem>("REDSTONE_CONTROL_PORT")
+
+	val HANDHELD_TANK = registerTypedKey<HandheldTank>("HANDHELD_TANK")
 }

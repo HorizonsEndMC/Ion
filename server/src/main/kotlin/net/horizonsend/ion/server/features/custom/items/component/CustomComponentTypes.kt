@@ -59,7 +59,7 @@ class CustomComponentTypes<T : CustomItemComponent, Z : ComponentTypeData<T>> pr
 		/**
 		 * Specifies a stored fluid
 		 **/
-		val STORED_FLUID = newComponentType<FluidStorage, OnlyOne<FluidStorage>>(ComponentType.ONLY_ONE)
+		val FLUID_STORAGE = newComponentType<FluidStorage, OnlyOne<FluidStorage>>(ComponentType.ONLY_ONE)
 
 		/**
 		 * General interact listener

@@ -31,6 +31,7 @@ import net.horizonsend.ion.server.features.custom.items.type.throwables.thrown.T
 import net.horizonsend.ion.server.features.custom.items.type.throwables.thrown.ThrownSmokeGrenade
 import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
 import net.horizonsend.ion.server.features.custom.items.type.tool.CratePlacer
+import net.horizonsend.ion.server.features.custom.items.type.tool.HandheldTank
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
@@ -489,7 +490,7 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		register(
             CustomItemKeys.POWER_HOE_BASIC, PowerHoe(
                 key = CustomItemKeys.POWER_HOE_BASIC,
-                displayName = formatToolName("Basic", HEColorScheme.Companion.HE_LIGHT_ORANGE, "Hoe"),
+                displayName = formatToolName("Basic", HEColorScheme.HE_LIGHT_ORANGE, "Hoe"),
                 modLimit = 2,
                 basePowerCapacity = 50_000,
                 model = "tool/power_hoe_basic"
@@ -548,6 +549,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
                 EquipmentSlot.FEET
             )
         )
+
+		register(CustomItemKeys.HANDHELD_TANK, HandheldTank)
 	}
 
 	private fun registerEnergySwords() {

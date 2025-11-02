@@ -65,7 +65,7 @@ object Wrench : CustomItem(
 		.setCustomModel("tool/wrench")
 		.build()
 ) {
-	private const val DISPLAY_TICK_INTERVAL = 2
+	const val DISPLAY_TICK_INTERVAL = 2
 
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.LISTENER_PLAYER_INTERACT, rightClickListener(this@Wrench) { event, _, _ ->
@@ -126,7 +126,7 @@ object Wrench : CustomItem(
 		)
 	}
 
-	fun giveTips(player: Player) = Tasks.async {
+	private fun giveTips(player: Player) = Tasks.async {
 		val hitResult: RayTraceResult? = player.rayTraceBlocks(7.0, FluidCollisionMode.NEVER)
 		val targeted = hitResult?.hitBlock ?: return@async removeEntity(player)
 		val targetedLocation = hitResult.hitPosition
@@ -203,7 +203,7 @@ object Wrench : CustomItem(
 		return ofChildren(text(format.format(amount)), text(unit))
 	}
 
-	fun giveE2Tips(player: Player, hitLocation: Vector, hitKey: BlockKey, network: GridEnergyNetwork) {
+	private fun giveE2Tips(player: Player, hitLocation: Vector, hitKey: BlockKey, network: GridEnergyNetwork) {
 		if (player.isSneaking) {
 			for (node in network.getGraphNodes()) {
 				val flowText = ofChildren(formatUnits(network.getFlow(node.location).roundToHundredth()))
