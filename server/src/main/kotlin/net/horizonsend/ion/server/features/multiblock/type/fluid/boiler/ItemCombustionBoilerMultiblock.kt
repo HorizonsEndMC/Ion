@@ -473,7 +473,7 @@ object ItemCombustionBoilerMultiblock : BoilerMultiblock<ItemBoilerEntity>() {
 
 				val fuelProperties = ItemFuelProperties[itemStack] ?: continue
 
-				val pollutionStack = fuelProperties.pollutionResult
+				val pollutionStack = fuelProperties.pollutionResult.clone()
 				if (!pollutionStorage.canAdd(pollutionStack)) continue
 
 				burningEnds = now + fuelProperties.burnDurationMillis

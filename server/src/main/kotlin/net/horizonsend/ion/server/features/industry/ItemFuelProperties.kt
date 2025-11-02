@@ -13,6 +13,10 @@ import kotlin.jvm.optionals.getOrNull
 
 enum class ItemFuelProperties(val type: ItemType, val burnDurationMillis: Long, val heatOutputJoulesPerSecond: Double, val pollutionResult: FluidStack) {
 	COAL(type = ItemType.SimpleMaterial(Material.COAL), burnDurationMillis = 2000, heatOutputJoulesPerSecond = 4000000.0, pollutionResult = FluidStack(FluidTypeKeys.POLLUTION, 20.0)),
+	COAL_BLOCK(type = ItemType.SimpleMaterial(Material.COAL_BLOCK), burnDurationMillis = 18000, heatOutputJoulesPerSecond = 3500000.0, pollutionResult = FluidStack(FluidTypeKeys.POLLUTION, 20.0)),
+	//TODO coal dust
+	DRIED_KELP_BLOCK(type = ItemType.SimpleMaterial(Material.DRIED_KELP_BLOCK), burnDurationMillis = 250 * 9, heatOutputJoulesPerSecond = 40000.0, pollutionResult = FluidStack(FluidTypeKeys.POLLUTION, 20.0)),
+	DRIED_KELP(type = ItemType.SimpleMaterial(Material.DRIED_KELP), burnDurationMillis = 250, heatOutputJoulesPerSecond = 40000.0, pollutionResult = FluidStack(FluidTypeKeys.POLLUTION, 20.0)),
 
 	;
 
