@@ -1,10 +1,14 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type
 
+import net.horizonsend.ion.server.features.gui.GuiItem
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.util.ControlSignalManager
+import net.horizonsend.ion.server.gui.invui.utils.buttons.BuildableCycleButton
+import net.horizonsend.ion.server.gui.invui.utils.buttons.makeGuiButton
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.kyori.adventure.text.Component
 import org.bukkit.persistence.PersistentDataType
+import xyz.xenondevs.invui.item.impl.CycleItem
 
 interface RedstoneControlledMultiblock {
 	val primaryControlInputs: ControlSignalManager
@@ -23,20 +27,20 @@ interface RedstoneControlledMultiblock {
 		return controlMode.checkRedstoneSignal(primaryControlInputs)
 	}
 
-	enum class ControlMode(val displayName: Component) {
-		DISABLED(Component.text("Disabled")) {
+	enum class ControlMode(val displayName: Component, val icon: GuiItem) {
+		DISABLED(Component.text("Disabled"), GuiItem.CANCEL) {
 			override fun checkRedstoneSignal(input: ControlSignalManager): Boolean = true
 		},
-		STRONG_SIGNAL_REQUIRED(Component.text("Strong Signal Required")) {
+		STRONG_SIGNAL_REQUIRED(Component.text("Strong Signal Required"), GuiItem.DOWN) {
 			override fun checkRedstoneSignal(input: ControlSignalManager): Boolean = input.hasAnyDirectPower()
 		},
-		WEAK_SIGNAL_REQUIRED(Component.text("Weak Signal Required")) {
+		WEAK_SIGNAL_REQUIRED(Component.text("Weak Signal Required"), GuiItem.RIGHT) {
 			override fun checkRedstoneSignal(input: ControlSignalManager): Boolean = input.hasAnyIndirectPower()
 		},
-		STRONG_SIGNAL_DISABLES(Component.text("Strong Signal Disables")) {
+		STRONG_SIGNAL_DISABLES(Component.text("Strong Signal Disables"), GuiItem.DOWN) {
 			override fun checkRedstoneSignal(input: ControlSignalManager): Boolean = !input.hasAnyDirectPower()
 		},
-		WEAK_SIGNAL_DISABLES(Component.text("Weak Signal Disables")) {
+		WEAK_SIGNAL_DISABLES(Component.text("Weak Signal Disables"), GuiItem.LEFT) {
 			override fun checkRedstoneSignal(input: ControlSignalManager): Boolean = !input.hasAnyIndirectPower()
 		};
 
@@ -49,6 +53,16 @@ interface RedstoneControlledMultiblock {
 			operator fun get(index: Int): ControlMode = entries[index]
 
 			val storageKey = NamespacedKeys.key("control_mode")
+
+			fun getCycleButton(entity: RedstoneControlledMultiblock): CycleItem {
+				val button = BuildableCycleButton.builder()
+
+				for (mode in entries) {
+					button.addButton(mode.icon.makeItem(mode.displayName).makeGuiButton { _, _ -> entity.controlMode = mode })
+				}
+
+				return button.build(startState = entity.controlMode.ordinal)
+			}
 		}
 	}
 }

@@ -1,6 +1,5 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 
-import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys.FLAMMABILITY
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
@@ -42,6 +41,8 @@ import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
 import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerInteractEvent
+import xyz.xenondevs.invui.gui.Gui
+import xyz.xenondevs.invui.window.Window
 import kotlin.random.Random
 
 object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>(), InteractableMultiblock {
@@ -408,8 +409,13 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>(), 
 
 	override fun onSignInteract(sign: Sign, player: Player, event: PlayerInteractEvent) {
 		val entity = getMultiblockEntity(sign = sign, ignoreShips = false) ?: return
-		entity.controlMode = RedstoneControlledMultiblock.ControlMode[(entity.controlMode.ordinal + 1) % RedstoneControlledMultiblock.ControlMode.entries.size]
-		player.information("Updated control mode to {0}", entity.controlMode)
+
+		val gui = Gui.normal()
+			.setStructure(". . . . # . . . .")
+			.addIngredient('#', RedstoneControlledMultiblock.ControlMode.getCycleButton(entity))
+			.build()
+
+		Window.single().setGui(gui).build(player).open()
 	}
 
 	override fun createEntity(

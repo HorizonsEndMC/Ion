@@ -11,14 +11,19 @@ import xyz.xenondevs.invui.item.impl.CycleItem
  * Cycle button that handles the click logic when selected
  **/
 class BuildableCycleButton private constructor(
-	private val buttons: List<Item>
-) : CycleItem() {
+	private val buttons: List<Item>,
+	startState: Int = 0
+) : CycleItem(startState, *Array(buttons.size) { buttons[it].itemProvider }) {
 	override fun handleClick(clickType: ClickType, player: Player, event: InventoryClickEvent) {
 		super.handleClick(clickType, player, event)
 		buttons[state].handleClick(clickType, player, event)
 	}
 
-	class Builder private constructor(private val buttons: MutableList<Item> = mutableListOf()) {
+	companion object {
+		fun builder(): Builder = Builder()
+	}
+
+	class Builder(private val buttons: MutableList<Item> = mutableListOf()) {
 		fun addButton(item: Item): Builder {
 			buttons.add(item)
 			return this
@@ -29,6 +34,6 @@ class BuildableCycleButton private constructor(
 			return this
 		}
 
-		fun build(): BuildableCycleButton = BuildableCycleButton(buttons)
+		fun build(startState: Int = 0): BuildableCycleButton = BuildableCycleButton(buttons, startState)
 	}
 }
