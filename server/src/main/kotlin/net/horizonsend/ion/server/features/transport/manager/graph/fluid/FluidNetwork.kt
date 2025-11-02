@@ -149,7 +149,8 @@ class FluidNetwork(uuid: UUID, override val manager: NetworkManager<FluidNode, T
 
 				runCatching { type.getValue().playLeakEffects(manager.transportManager.getWorld(), node, direction) }.onFailure { exception -> exception.printStackTrace() }
 
-				networkContents.amount -= removeAmount
+				if (networkContents.amount < 0) return@withLock
+				networkContents.amount -= minOf(removeAmount, networkContents.amount)
 
 				// Handle pollution
 				type.getValue().onLeak(manager.transportManager.getWorld(), toVec3i(node.location).getRelative(direction), removeAmount)

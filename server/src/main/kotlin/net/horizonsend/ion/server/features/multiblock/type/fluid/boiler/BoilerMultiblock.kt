@@ -6,6 +6,8 @@ import net.horizonsend.ion.server.features.multiblock.Multiblock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.DisplayMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.GaugedMultiblockEntity
+import net.horizonsend.ion.server.features.multiblock.entity.type.GaugedMultiblockEntity.MultiblockGauges
 import net.horizonsend.ion.server.features.multiblock.entity.type.RedstoneControlledMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.StatusMultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
@@ -42,7 +44,7 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace
-	) : MultiblockEntity(manager, multiblock, world, x, y, z, structureDirection), DisplayMultiblockEntity, AsyncTickingMultiblockEntity, FluidStoringMultiblock, StatusMultiblockEntity, RedstoneControlledMultiblock {
+	) : MultiblockEntity(manager, multiblock, world, x, y, z, structureDirection), DisplayMultiblockEntity, AsyncTickingMultiblockEntity, FluidStoringMultiblock, StatusMultiblockEntity, RedstoneControlledMultiblock, GaugedMultiblockEntity {
 		override val tickingManager: TickedMultiblockEntityParent.TickingManager = TickedMultiblockEntityParent.TickingManager(2)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
@@ -54,6 +56,11 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 
 		val fluidInput = FluidStorageContainer(data, "primaryin", text("Primary Input"), NamespacedKeys.key("primaryin"), 10_000.0, FluidRestriction.Unlimited)
 		val fluidOutput = FluidStorageContainer(data, "primaryout", text("Primary Output"), NamespacedKeys.key("primaryout"), 100.0, FluidRestriction.Unlimited)
+
+		override val gauges: MultiblockGauges = MultiblockGauges.builder(this)
+			.addGauge(3, -1, 3, GaugedMultiblockEntity.GaugeData.fluidTemperatureGauge(fluidOutput, this))
+			.addGauge(3, -1, 3, GaugedMultiblockEntity.GaugeData.onOffGauge { isRunning })
+			.build()
 
 		override val ioData: IOData = IOData.builder(this)
 			.addPort(IOType.FLUID, -3, 0, 3) { IOPort.RegisteredMetaDataInput(this, FluidPortMetadata(connectedStore = fluidInput, inputAllowed = true, outputAllowed = false)) }
@@ -90,6 +97,8 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 					return
 				}
 			}
+
+			tickGauges()
 
 			if (!isRedstoneEnabled() || !preTick(deltaSeconds)) {
 				setRunning(false)
@@ -169,7 +178,7 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 			if (inputStack.isEmpty()) return
 
 			val speedMultiplier = 10.0 / inputStack.amount
-			val baseRate = 10.0 * deltaSeconds
+			val baseRate = HEAT_LOST_PER_SECOND * deltaSeconds
 			val adjustedRate = baseRate * speedMultiplier
 
 			val finalRate = minOf(adjustedRate, baseRate)
@@ -183,7 +192,7 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 		}
 
 		companion object {
-			private val HEAT_LOST_PER_SECOND get() = 10.0
+			private const val HEAT_LOST_PER_SECOND = 100.0
 		}
 	}
 }

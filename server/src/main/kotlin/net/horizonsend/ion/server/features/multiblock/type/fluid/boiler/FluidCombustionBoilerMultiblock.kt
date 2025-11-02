@@ -10,8 +10,6 @@ import net.horizonsend.ion.server.features.client.display.modular.display.fluid.
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.SimpleFluidDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.getLinePos
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
-import net.horizonsend.ion.server.features.multiblock.entity.type.GaugedMultiblockEntity
-import net.horizonsend.ion.server.features.multiblock.entity.type.GaugedMultiblockEntity.MultiblockGauges
 import net.horizonsend.ion.server.features.multiblock.entity.type.RedstoneControlledMultiblock
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
@@ -438,14 +436,9 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>(), 
 		y: Int,
 		z: Int,
 		structureDirection: BlockFace
-	) : BoilerMultiblockEntity(manager, data, FluidCombustionBoilerMultiblock, world, x, y, z, structureDirection), GaugedMultiblockEntity {
+	) : BoilerMultiblockEntity(manager, data, FluidCombustionBoilerMultiblock, world, x, y, z, structureDirection) {
 		val fuelStorage = FluidStorageContainer(data, "fuel_storage", text("Fuel Storage"), NamespacedKeys.key("fuel_storage"), 100_000.0, FluidRestriction.FluidPropertyWhitelist(FLAMMABILITY))
 		val pollutionStorage = FluidStorageContainer(data, "pollution_out", text("Pollution Output"), NamespacedKeys.key("pollution_out"), 100_000.0, FluidRestriction.Unlimited)
-
-		override val gauges: MultiblockGauges = MultiblockGauges.builder(this)
-			.addGauge(3, -1, 3, GaugedMultiblockEntity.GaugeData.fluidTemperatureGauge(fluidOutput, this))
-			.addGauge(3, -1, 3, GaugedMultiblockEntity.GaugeData.onOffGauge { isRunning })
-			.build()
 
 		override fun IOData.Builder.registerAdditionalIO(): IOData.Builder =
 			addPort(IOType.FLUID, 0, -1, 0) { IOPort.RegisteredMetaDataInput(this@FluidBoilerEntity, FluidPortMetadata(connectedStore = fuelStorage, inputAllowed = true, outputAllowed = false)) }
@@ -469,8 +462,6 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>(), 
 		private var lastHeatValue = 0.0
 
 		override fun preTick(deltaSeconds: Double): Boolean {
-			tickGauges()
-
 			val combustionContents = fuelStorage.getContents()
 			if (combustionContents.isEmpty()) return false
 
@@ -482,8 +473,6 @@ object FluidCombustionBoilerMultiblock : BoilerMultiblock<FluidBoilerEntity>(), 
 		}
 
 		override fun postTick(deltaSeconds: Double) {
-			tickGauges()
-
 			if (!isRunning) return
 
 			consumeFuel(deltaSeconds)
