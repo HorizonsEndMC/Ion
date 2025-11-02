@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
@@ -18,6 +19,7 @@ import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
+import net.horizonsend.ion.server.miscellaneous.utils.GLASS_PANE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
@@ -360,11 +362,20 @@ object ElectricBoilerMultiblock : BoilerMultiblock<ElectricBoilerEntity>() {
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
-				x(-2).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT))
+				x(-2).anyCustomBlockOrMaterial(
+					listOf(CustomBlockKeys.REDSTONE_CONTROL_PORT),
+					GLASS_PANE_TYPES,
+					"redstone control port or any glass pane",
+				) { setExample(CustomBlockKeys.REDSTONE_CONTROL_PORT.getValue().blockData) }
 				x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.LEFT))
 				x(0).anyGlass()
 				x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.LEFT))
-				x(2).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.LEFT))
+				x(2).anyCustomBlockOrMaterial(
+					listOf(CustomBlockKeys.REDSTONE_CONTROL_PORT),
+					GLASS_PANE_TYPES,
+					"redstone control port or any glass pane",
+					PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT)
+				)
 			}
 			y(1) {
 				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
