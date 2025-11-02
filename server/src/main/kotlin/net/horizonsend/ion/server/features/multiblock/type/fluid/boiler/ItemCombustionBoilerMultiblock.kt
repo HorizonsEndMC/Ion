@@ -1,12 +1,14 @@
 package net.horizonsend.ion.server.features.multiblock.type.fluid.boiler
 
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
+import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
 import net.horizonsend.ion.server.features.client.display.modular.display.MATCH_SIGN_FONT_SIZE
 import net.horizonsend.ion.server.features.client.display.modular.display.StatusDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.fluid.ComplexFluidDisplayModule
 import net.horizonsend.ion.server.features.client.display.modular.display.getLinePos
+import net.horizonsend.ion.server.features.industry.ItemFuelProperties
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.FluidPortMetadata
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
@@ -19,13 +21,17 @@ import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.type.Slab
+import org.bukkit.inventory.ItemStack
+import kotlin.random.Random
 
 object ItemCombustionBoilerMultiblock : BoilerMultiblock<ItemBoilerEntity>() {
 	override val signText: Array<Component?> = createSignText(
@@ -412,9 +418,93 @@ object ItemCombustionBoilerMultiblock : BoilerMultiblock<ItemBoilerEntity>() {
 			{ ComplexFluidDisplayModule(handler = it, container = fluidOutput, title = text("Output"), offsetLeft = -3.5, offsetUp = 1.15, offsetBack = -4.0 + 0.39, scale = 0.7f, RelativeFace.LEFT) },
 			{ StatusDisplayModule(handler = it, statusSupplier = statusManager, offsetLeft = 0.0, offsetUp = getLinePos(4), offsetBack = 0.0, scale = MATCH_SIGN_FONT_SIZE) },
 		)
+		override fun tickAsync() {
+			bootstrapFluidNetwork()
+			val deltaSeconds = deltaTMS / 1000.0
+
+			val outputContents = fluidOutput.getContents()
+			if (outputContents.isNotEmpty()) {
+				val temperature = outputContents.getDataOrDefault(FluidPropertyTypeKeys.TEMPERATURE, location).value
+				if (temperature > 600.0 && fluidOutput.getRemainingRoom() <= 0) {
+					Tasks.sync {
+						val location = getBlockRelative(0, 5, 3).location.toCenterLocation()
+						world.createExplosion(location, 30.0f)
+					}
+					fluidOutput.clear()
+					fluidInput.clear()
+
+					return
+				}
+			}
+
+			tickGauges()
+
+			Tasks.sync {
+				val preTickResult = preTick(deltaSeconds)
+
+				Tasks.async {
+					if (!isRedstoneEnabled() || !preTickResult) {
+						setRunning(false)
+						reduceInputTemperature(deltaSeconds)
+						return@async
+					}
+
+					heatFluid(deltaSeconds)
+					postTick(deltaSeconds)
+				}
+			}
+		}
+
+		private var burningEnds = 0L
+		private var burningOutput = 0.0
 
 		override fun getHeatProductionJoulesPerSecond(): Double {
-			return 10000.0
+			return burningOutput
+		}
+
+		override fun preTick(deltaSeconds: Double): Boolean {
+			val now = System.currentTimeMillis()
+			if (burningEnds > now) return true
+
+			val fuelInput = getInventory(0, -1, 0) ?: return false
+
+			for (itemStack: ItemStack? in fuelInput.contents) {
+				if (itemStack == null) continue
+
+				val fuelProperties = ItemFuelProperties[itemStack] ?: continue
+
+				val pollutionStack = fuelProperties.pollutionResult
+				if (!pollutionStorage.canAdd(pollutionStack)) continue
+
+				burningEnds = now + fuelProperties.burnDurationMillis
+				burningOutput = fuelProperties.heatOutputJoulesPerSecond
+
+				itemStack.amount--
+
+				pollutionStorage.addFluid(pollutionStack, location)
+
+				return true
+			}
+
+			return false
+		}
+
+		override fun postTick(deltaSeconds: Double) {
+			if (!isRunning) return
+
+			displayBurningParticles()
+		}
+
+		fun displayBurningParticles() {
+			val location = getBlockRelative(0, 0, 3).location.toCenterLocation()
+
+			repeat(2) {
+				val offsetX = Random.nextDouble(-2.5, 2.5)
+				val offsetY = Random.nextDouble(-0.45, 0.45)
+				val offsetZ = Random.nextDouble(-2.5, 2.5)
+
+				world.spawnParticle(Particle.FLAME, location.x + offsetX, location.y + offsetY, location.z + offsetZ, 1, 0.0, 0.0, 0.0, 0.0, null)
+			}
 		}
 	}
 }

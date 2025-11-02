@@ -110,7 +110,7 @@ abstract class BoilerMultiblock<T : BoilerMultiblockEntity> : Multiblock(), Enti
 			postTick(deltaSeconds)
 		}
 
-		open fun preTick(deltaSeconds: Double): Boolean = true
+		abstract fun preTick(deltaSeconds: Double): Boolean
 
 		fun heatFluid(deltaSeconds: Double) {
 			val input = fluidInput.getContents()
