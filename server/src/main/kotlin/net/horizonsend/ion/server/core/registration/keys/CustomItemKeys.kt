@@ -244,4 +244,8 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val REDSTONE_CONTROL_PORT = registerTypedKey<CustomBlockItem>("REDSTONE_CONTROL_PORT")
 
 	val HANDHELD_TANK = registerTypedKey<HandheldTank>("HANDHELD_TANK")
+
+	val REFRACTORY_BRICK = registerKey("REFRACTORY_BRICK")
+	val REFRACTORY_MIX = registerKey("REFRACTORY_MIX")
+	val REFRACTORY_BRICKS = registerTypedKey<CustomBlockItem>("REFRACTORY_BRICKS")
 }

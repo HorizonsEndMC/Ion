@@ -52,4 +52,6 @@ object CustomBlockKeys : KeyRegistry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS, Cu
 	val REDSTONE_CONTROL_PORT = registerKey("REDSTONE_CONTROL_PORT")
 
 	val GRID_ENERGY_PORT = registerKey("GRID_ENERGY_PORT")
+
+	val REFRACTORY_BRICKS = registerKey("REFRACTORY_BRICKS")
 }

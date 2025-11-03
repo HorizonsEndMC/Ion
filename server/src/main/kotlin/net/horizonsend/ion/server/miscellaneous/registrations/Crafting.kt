@@ -225,7 +225,6 @@ import org.bukkit.Material.TURTLE_EGG
 import org.bukkit.Material.VERDANT_FROGLIGHT
 import org.bukkit.Material.YELLOW_CONCRETE
 import org.bukkit.NamespacedKey
-import org.bukkit.craftbukkit.legacy.MaterialRerouting.setIngredient
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.event.EventHandler
 import org.bukkit.event.player.PlayerJoinEvent
@@ -944,6 +943,21 @@ object Crafting : IonServerComponent() {
 			setIngredient('w', TITANIUM_INGOT)
 			setIngredient('i', STEEL_INGOT)
 		}
+
+		shapeless(name = "refractory_mix", result = CustomItemKeys.REFRACTORY_MIX, category = CraftingBookCategory.MISC, ItemStack(Material.CLAY_BALL), RAW_ALUMINUM.getValue().constructItemStack())
+
+		val refractoryBrickRecipe = FurnaceRecipe(
+			NamespacedKeys.key("refractory_brick"),
+			CustomItemKeys.REFRACTORY_BRICK.getValue().constructItemStack(),
+			RecipeChoice.ExactChoice(CustomItemKeys.REFRACTORY_MIX.getValue().constructItemStack()),
+			1f,
+			200
+		)
+		refractoryBrickRecipe.category = CookingBookCategory.BLOCKS
+		Bukkit.addRecipe(refractoryBrickRecipe)
+		listOfCustomRecipes.add(refractoryBrickRecipe.key)
+
+		shapeless(name = "refractory_bricks", result = CustomItemKeys.REFRACTORY_BRICKS, category = CraftingBookCategory.BUILDING, CustomItemKeys.REFRACTORY_BRICK.getValue().constructItemStack(9))
 	}
 
 	// Different names due to signature problems from type erasure
@@ -1042,6 +1056,14 @@ object Crafting : IonServerComponent() {
 		recipe.category = category
 		Bukkit.addRecipe(recipe)
 		listOfCustomRecipes.add(NamespacedKeys.key(name))
+	}
+
+	private fun shapeless(name: String, result: IonRegistryKey<CustomItem, out CustomItem>, category: CraftingBookCategory = CraftingBookCategory.MISC, vararg ingredients: IonRegistryKey<CustomItem, out CustomItem>) {
+		return shapeless(name, result.getValue().constructItemStack(), category, *ingredients)
+	}
+
+	private fun shapeless(name: String, result: IonRegistryKey<CustomItem, out CustomItem>, category: CraftingBookCategory = CraftingBookCategory.MISC, vararg ingredients: ItemStack) {
+		return shapeless(name, result.getValue().constructItemStack(), category, *ingredients)
 	}
 
 	private fun ShapedRecipe.setIngredient(key: Char, customItem: IonRegistryKey<CustomItem, out CustomItem>) = setIngredient(key, customItem.getValue().constructItemStack())

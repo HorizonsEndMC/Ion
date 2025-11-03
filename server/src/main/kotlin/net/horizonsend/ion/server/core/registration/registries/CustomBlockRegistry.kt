@@ -330,6 +330,16 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 			),
 			CustomItemKeys.REDSTONE_CONTROL_PORT
 		))
+
+		register(CustomBlockKeys.REFRACTORY_BRICKS, CustomBlock(
+			key = CustomBlockKeys.REFRACTORY_BRICKS,
+			blockData = mushroomBlockData(setOf(BlockFace.WEST, BlockFace.SOUTH, BlockFace.EAST, BlockFace.UP, BlockFace.DOWN)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.REFRACTORY_BRICKS)
+			),
+			CustomItemKeys.REFRACTORY_BRICKS
+		))
 	}
 
 	override fun registerAdditional(key: IonRegistryKey<CustomBlock, *>, value: CustomBlock) {

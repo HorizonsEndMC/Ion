@@ -327,6 +327,10 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		customBlockItem(CustomItemKeys.COPPER_COIL, "industry/copper_coil", Component.text("Copper Coil").itemName, CustomBlockKeys.COPPER_COIL)
 		customBlockItem(CustomItemKeys.ROTATION_SHAFT, "industry/rotation_shaft", Component.text("Rotation Shaft").itemName, CustomBlockKeys.ROTATION_SHAFT)
 		customBlockItem(CustomItemKeys.REDSTONE_CONTROL_PORT, "industry/redstone_control_port", Component.text("Redstone Control Port").itemName, CustomBlockKeys.REDSTONE_CONTROL_PORT)
+
+		customBlockItem(CustomItemKeys.REFRACTORY_BRICKS, "industry/refractory_bricks", Component.text("Refractory Bricks").itemName, CustomBlockKeys.REFRACTORY_BRICKS)
+		stackable(CustomItemKeys.REFRACTORY_BRICK, Component.text("Refractory Brick").itemName, "industry/refractory_brick")
+		stackable(CustomItemKeys.REFRACTORY_MIX, Component.text("Refractory Mix").itemName, "industry/refractory_mix")
 	}
 
 	private fun registerShipCores() {
