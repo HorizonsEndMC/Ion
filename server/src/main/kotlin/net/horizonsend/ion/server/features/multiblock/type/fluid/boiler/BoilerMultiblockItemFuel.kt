@@ -204,7 +204,7 @@ object BoilerMultiblockItemFuel : BoilerMultiblock<ItemBoilerEntity>() {
 				x(-3).titaniumBlock()
 				x(-2).refractoryBricks()
 				x(-1).refractoryBricks()
-				x(0).type(Material.TARGET)
+				x(0).refractoryBricks()
 				x(1).refractoryBricks()
 				x(2).refractoryBricks()
 				x(3).titaniumBlock()
