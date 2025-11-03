@@ -188,13 +188,13 @@ object BoilerMultiblockItemFuel : BoilerMultiblock<ItemBoilerEntity>() {
 		}
 		z(3) {
 			y(-1) {
-				x(-3).titaniumBlock()
+				x(-3).anyGaugeOrBlank(customBlockBlanks = arrayOf(CustomBlockKeys.TITANIUM_BLOCK))
 				x(-2).refractoryBricks()
 				x(-1).refractoryBricks()
 				x(0).refractoryBricks()
 				x(1).refractoryBricks()
 				x(2).refractoryBricks()
-				x(3).titaniumBlock()
+				x(3).anyGaugeOrBlank(customBlockBlanks = arrayOf(CustomBlockKeys.TITANIUM_BLOCK))
 			}
 			y(0) {
 				x(-3).fluidPort()

@@ -21,6 +21,7 @@ import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
+import net.horizonsend.ion.server.miscellaneous.utils.COPPER_BLOCK_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.GLASS_PANE_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
@@ -164,13 +165,13 @@ object BoilerMultiblockElectric : BoilerMultiblock<ElectricBoilerEntity>() {
 		}
 		z(3) {
 			y(-1) {
-				x(-3).anyGauge()
+				x(-3).anyGaugeOrBlank(materialBlanks = COPPER_BLOCK_TYPES.toTypedArray())
 				x(-2).refractoryBricks()
 				x(-1).refractoryBricks()
 				x(0).refractoryBricks()
 				x(1).refractoryBricks()
 				x(2).refractoryBricks()
-				x(3).anyGauge()
+				x(3).anyGaugeOrBlank(materialBlanks = COPPER_BLOCK_TYPES.toTypedArray())
 			}
 			y(0) {
 				x(-3).fluidPort()

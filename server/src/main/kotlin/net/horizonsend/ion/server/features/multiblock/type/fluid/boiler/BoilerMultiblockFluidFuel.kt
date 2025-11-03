@@ -26,6 +26,7 @@ import net.horizonsend.ion.server.features.transport.inputs.IOData
 import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
@@ -204,13 +205,13 @@ object BoilerMultiblockFluidFuel : BoilerMultiblock<FluidBoilerEntity>(), Intera
 		}
 		z(3) {
 			y(-1) {
-				x(-3).anyGauge()
+				x(-3).anyGaugeOrBlank(materialBlanks = TERRACOTTA_TYPES.toTypedArray())
 				x(-2).refractoryBricks()
 				x(-1).refractoryBricks()
 				x(0).refractoryBricks()
 				x(1).refractoryBricks()
 				x(2).refractoryBricks()
-				x(3).anyGauge()
+				x(3).anyGaugeOrBlank(materialBlanks = TERRACOTTA_TYPES.toTypedArray())
 			}
 			y(0) {
 				x(-3).fluidPort()

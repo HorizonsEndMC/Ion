@@ -667,6 +667,12 @@ class MultiblockShape {
 			alias = "any gauge"
 		)
 
+		fun anyGaugeOrBlank(customBlockBlanks: Array<IonRegistryKey<CustomBlock, out CustomBlock>> = arrayOf(), materialBlanks: Array<Material> = arrayOf()) = anyCustomBlockOrMaterial(
+			listOf(CustomBlockKeys.TEMPERATURE_GAUGE, *customBlockBlanks),
+			listOf(*COPPER_BULB_TYPES.toTypedArray(), *materialBlanks),
+			alias = "any gauge"
+		)
+
 		fun anyFluidPipe() = anyCustomBlock(
 			CustomBlockKeys.FLUID_PIPE,
 			CustomBlockKeys.FLUID_PIPE_JUNCTION,
