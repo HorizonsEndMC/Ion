@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.fluids.types
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
+import net.horizonsend.ion.server.features.transport.fluids.DisplayProperties
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.FluidUtils.GAS_CONSTANT
@@ -15,7 +16,6 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
-import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
@@ -27,7 +27,7 @@ import kotlin.random.Random
 
 abstract class GasFluid(
 	key: IonRegistryKey<FluidType, out FluidType>,
-	val color: Color,
+	override val displayProperties: DisplayProperties,
 	private val heatCapacity: Double,
 	private val molarMass: Double,
 	val pressureBars: Double = 1.0
@@ -39,7 +39,7 @@ abstract class GasFluid(
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
 		val trailOptions = Trail(
 			/* target = */ destination.toLocation(world),
-			/* color = */ color,
+			/* color = */ displayProperties.color,
 			/* duration = */ 20
 		)
 
@@ -63,7 +63,7 @@ abstract class GasFluid(
 
 		val trial = Trail(
 			/* target = */ destination,
-			/* color = */ color,
+			/* color = */ displayProperties.color,
 			/* duration = */ (40 * plumeMultiplier).roundToInt()
 		)
 

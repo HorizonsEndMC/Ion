@@ -17,7 +17,7 @@ import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import org.bukkit.Location
 import org.bukkit.inventory.ItemStack
 
-class FluidStorage(val capacity: Double, val restriction: FluidRestriction) : CustomItemComponent, LoreManager {
+class FluidStorage(val capacity: Double, val restriction: FluidRestriction, val changeCallback: (ItemStack, FluidStack) -> Unit) : CustomItemComponent, LoreManager {
 	override val priority: Int = 100
 
 	override fun decorateBase(baseItem: ItemStack, customItem: CustomItem) {
@@ -55,6 +55,7 @@ class FluidStorage(val capacity: Double, val restriction: FluidRestriction) : Cu
 	fun setContents(itemStack: ItemStack, customItem: CustomItem, newContents: FluidStack) {
 		itemStack.updatePersistentDataContainer { set(storageKey, FluidStack, newContents) }
 		customItem.refreshLore(itemStack)
+		changeCallback.invoke(itemStack, newContents)
 	}
 
 	fun canAdd(itemStack: ItemStack, type: IonRegistryKey<FluidType, out FluidType>): Boolean {

@@ -1,5 +1,8 @@
 package net.horizonsend.ion.server.features.custom.items.type.tool
 
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.CustomModelData
+import io.papermc.paper.datacomponent.item.DyedItemColor
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -20,6 +23,7 @@ import net.horizonsend.ion.server.features.custom.items.misc.Wrench.removeEntity
 import net.horizonsend.ion.server.features.custom.items.misc.Wrench.updateHudEntity
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidRestriction
+import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidUtils
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.world.IonWorld.Companion.ion
@@ -42,7 +46,7 @@ object HandheldTank : CustomItem(
 		.setCustomModel("tool/handheld_tank")
 		.build()
 ) {
-	private val fluidStorage = FluidStorage(100.0, FluidRestriction.Unlimited)
+	private val fluidStorage = FluidStorage(100.0, FluidRestriction.Unlimited, ::resetColor)
 
 	override val customComponents: CustomItemComponentManager = CustomItemComponentManager(serializationManager).apply {
 		addComponent(CustomComponentTypes.FLUID_STORAGE, fluidStorage)
@@ -141,5 +145,15 @@ object HandheldTank : CustomItem(
 
 			if (player.world.ion.inputManager.getPorts(IOType.FLUID, newKey).isEmpty()) return@async2 removeEntity(player)
 		}
+	}
+
+	fun resetColor(itemStack: ItemStack, contents: FluidStack) {
+		if (contents.isEmpty()) {
+			itemStack.unsetData(DataComponentTypes.DYED_COLOR)
+			itemStack.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData().addString("transparent_liquid"))
+			return
+		}
+		itemStack.setData(DataComponentTypes.DYED_COLOR, DyedItemColor.dyedItemColor(contents.type.getValue().displayProperties.color, false))
+		itemStack.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData().addString(contents.type.getValue().displayProperties.tankKey))
 	}
 }

@@ -16,6 +16,8 @@ import org.bukkit.block.BlockFace
 import org.bukkit.util.Vector
 
 abstract class FluidType(override val key: IonRegistryKey<FluidType, out FluidType>) : Keyed<FluidType> {
+	abstract val displayProperties: DisplayProperties
+
 	abstract val categories: Array<FluidCategory>
 
 	/**

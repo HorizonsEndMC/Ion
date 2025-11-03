@@ -4,6 +4,7 @@ import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
+import net.horizonsend.ion.server.features.transport.fluids.DisplayProperties
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.FluidType.HeatingResult.Companion.HEATING_RATE_MULTIPLIER
@@ -29,7 +30,7 @@ class Steam(
 	val turbineWorkPerLiter: Double,
 	val conversionCost: Double,
 	val conversionTemperature: Double
-) : GasFluid(key, color, heatCapacity, 18.01528, pressureBars) {
+) : GasFluid(key, DisplayProperties(color, "transparent_gas"), heatCapacity, 18.01528, pressureBars) {
 	override val categories: Array<FluidCategory> = arrayOf(FluidCategory.GAS, FluidCategory.STEAM)
 
 	override fun getDisplayName(stack: FluidStack): Component {
