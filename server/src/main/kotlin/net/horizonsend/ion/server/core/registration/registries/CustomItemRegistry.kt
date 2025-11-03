@@ -325,9 +325,9 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 
 		register(CustomItemKeys.PROGRESS_HOLDER, ProgressHolder)
 		customBlockItem(CustomItemKeys.COPPER_COIL, "industry/copper_coil", Component.text("Copper Coil").itemName, CustomBlockKeys.COPPER_COIL)
+
 		customBlockItem(CustomItemKeys.ROTATION_SHAFT, "industry/rotation_shaft", Component.text("Rotation Shaft").itemName, CustomBlockKeys.ROTATION_SHAFT)
 		customBlockItem(CustomItemKeys.REDSTONE_CONTROL_PORT, "industry/redstone_control_port", Component.text("Redstone Control Port").itemName, CustomBlockKeys.REDSTONE_CONTROL_PORT)
-
 		customBlockItem(CustomItemKeys.REFRACTORY_BRICKS, "industry/refractory_bricks", Component.text("Refractory Bricks").itemName, CustomBlockKeys.REFRACTORY_BRICKS)
 		stackable(CustomItemKeys.REFRACTORY_BRICK, Component.text("Refractory Brick").itemName, "industry/refractory_brick")
 		stackable(CustomItemKeys.REFRACTORY_MIX, Component.text("Refractory Mix").itemName, "industry/refractory_mix")
@@ -355,6 +355,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		customBlockItem(CustomItemKeys.REINFORCED_FLUID_PIPE, "pipe/reinforced_fluid_pipe", Component.text("Reinforced Fluid Pipe").itemName, CustomBlockKeys.REINFORCED_FLUID_PIPE)
 		customBlockItem(CustomItemKeys.REINFORCED_FLUID_PIPE_JUNCTION, "pipe/reinforced_fluid_pipe_junction", Component.text("Reinforced Fluid Pipe Junction").itemName, CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION)
 		customBlockItem(CustomItemKeys.TEMPERATURE_GAUGE, "pipe/temperature_gauge", Component.text("Temperature Gauge").itemName, CustomBlockKeys.TEMPERATURE_GAUGE)
+		customBlockItem(CustomItemKeys.GRID_ENERGY_CABLE, "pipe/grid_energy_cable", Component.text("Grid Energy Cable").itemName, CustomBlockKeys.GRID_ENERGY_CABLE)
+		customBlockItem(CustomItemKeys.GRID_ENERGY_CABLE_JUNCTION, "pipe/grid_energy_cable_junction", Component.text("Grid Energy Cable Junction").itemName, CustomBlockKeys.GRID_ENERGY_CABLE_JUNCTION)
 	}
 
 	fun registerGridEnergyWires() {
