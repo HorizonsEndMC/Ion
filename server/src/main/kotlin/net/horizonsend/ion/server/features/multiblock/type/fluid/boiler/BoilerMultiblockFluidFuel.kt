@@ -89,9 +89,9 @@ object BoilerMultiblockFluidFuel : BoilerMultiblock<FluidBoilerEntity>(), Intera
 			y(-1) {
 				x(-3).ironBlock()
 				x(-2).ironBlock()
-				x(-1).type(Material.MUD_BRICKS)
+				x(-1).refractoryBricks()
 				x(0).ironBlock()
-				x(1).type(Material.MUD_BRICKS)
+				x(1).refractoryBricks()
 				x(2).ironBlock()
 				x(3).ironBlock()
 			}
@@ -107,9 +107,9 @@ object BoilerMultiblockFluidFuel : BoilerMultiblock<FluidBoilerEntity>(), Intera
 			y(1) {
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-2).ironBlock()
-				x(-1).type(Material.MUD_BRICKS)
+				x(-1).refractoryBricks()
 				x(0).ironBlock()
-				x(1).type(Material.MUD_BRICKS)
+				x(1).refractoryBricks()
 				x(2).ironBlock()
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
@@ -147,11 +147,11 @@ object BoilerMultiblockFluidFuel : BoilerMultiblock<FluidBoilerEntity>(), Intera
 		z(4) {
 			y(-1) {
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
@@ -163,11 +163,11 @@ object BoilerMultiblockFluidFuel : BoilerMultiblock<FluidBoilerEntity>(), Intera
 			}
 			y(1) {
 				x(-3).anyTerracotta()
-				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).anyTerracotta()
 			}
 			y(2) {
@@ -205,26 +205,26 @@ object BoilerMultiblockFluidFuel : BoilerMultiblock<FluidBoilerEntity>(), Intera
 		z(3) {
 			y(-1) {
 				x(-3).anyGauge()
-				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).anyGauge()
 			}
 			y(0) {
 				x(-3).fluidPort()
-				x(-2).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).fluidPort()
 			}
 			y(1) {
 				x(-3).anyTerracotta()
-				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).anyTerracotta()
 			}
 			y(2) {
@@ -260,11 +260,11 @@ object BoilerMultiblockFluidFuel : BoilerMultiblock<FluidBoilerEntity>(), Intera
 		z(2) {
 			y(-1) {
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
@@ -276,11 +276,11 @@ object BoilerMultiblockFluidFuel : BoilerMultiblock<FluidBoilerEntity>(), Intera
 			}
 			y(1) {
 				x(-3).anyTerracotta()
-				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).anyTerracotta()
 			}
 			y(2) {
@@ -319,9 +319,9 @@ object BoilerMultiblockFluidFuel : BoilerMultiblock<FluidBoilerEntity>(), Intera
 			y(-1) {
 				x(-3).ironBlock()
 				x(-2).ironBlock()
-				x(-1).type(Material.MUD_BRICKS)
+				x(-1).refractoryBricks()
 				x(0).ironBlock()
-				x(1).type(Material.MUD_BRICKS)
+				x(1).refractoryBricks()
 				x(2).ironBlock()
 				x(3).ironBlock()
 			}
@@ -337,9 +337,9 @@ object BoilerMultiblockFluidFuel : BoilerMultiblock<FluidBoilerEntity>(), Intera
 			y(1) {
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-2).ironBlock()
-				x(-1).type(Material.MUD_BRICKS)
+				x(-1).refractoryBricks()
 				x(0).ironBlock()
-				x(1).type(Material.MUD_BRICKS)
+				x(1).refractoryBricks()
 				x(2).ironBlock()
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}

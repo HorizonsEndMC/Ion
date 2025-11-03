@@ -47,27 +47,27 @@ object BoilerMultiblockElectric : BoilerMultiblock<ElectricBoilerEntity>() {
 			y(-1) {
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 				x(-2).steelBlock()
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
 				x(2).steelBlock()
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
 				x(-3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.BACKWARD))
 				x(-2).anyGlass()
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
 				x(2).anyGlass()
 				x(3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD, RelativeFace.LEFT))
 			}
 			y(1) {
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-2).steelBlock()
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
 				x(2).steelBlock()
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
@@ -105,27 +105,27 @@ object BoilerMultiblockElectric : BoilerMultiblock<ElectricBoilerEntity>() {
 		z(4) {
 			y(-1) {
 				x(-3).aluminumBlock()
-				x(-2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
 				x(-1).redstoneBlock()
-				x(0).type(Material.MUD_BRICKS)
+				x(0).refractoryBricks()
 				x(1).redstoneBlock()
-				x(2).type(Material.MUD_BRICKS)
+				x(2).refractoryBricks()
 				x(3).aluminumBlock()
 			}
 			y(0) {
 				x(-3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.BACKWARD))
-				x(-2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
 				x(-1).type(Material.PALE_OAK_WOOD)
 				x(1).type(Material.PALE_OAK_WOOD)
-				x(2).type(Material.MUD_BRICKS)
+				x(2).refractoryBricks()
 				x(3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.BACKWARD, RelativeFace.LEFT))
 			}
 			y(1) {
 				x(-3).aluminumBlock()
-				x(-2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
 				x(-1).type(Material.PALE_OAK_WOOD)
 				x(1).type(Material.PALE_OAK_WOOD)
-				x(2).type(Material.MUD_BRICKS)
+				x(2).refractoryBricks()
 				x(3).aluminumBlock()
 			}
 			y(2) {
@@ -165,23 +165,23 @@ object BoilerMultiblockElectric : BoilerMultiblock<ElectricBoilerEntity>() {
 		z(3) {
 			y(-1) {
 				x(-3).anyGauge()
-				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).anyGauge()
 			}
 			y(0) {
 				x(-3).fluidPort()
-				x(-2).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).fluidPort()
 			}
 			y(1) {
 				x(-3).type(Material.WAXED_COPPER_BLOCK)
-				x(-2).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).type(Material.WAXED_COPPER_BLOCK)
 			}
 			y(2) {
@@ -217,27 +217,27 @@ object BoilerMultiblockElectric : BoilerMultiblock<ElectricBoilerEntity>() {
 		z(2) {
 			y(-1) {
 				x(-3).aluminumBlock()
-				x(-2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
 				x(-1).redstoneBlock()
-				x(0).type(Material.MUD_BRICKS)
+				x(0).refractoryBricks()
 				x(1).redstoneBlock()
-				x(2).type(Material.MUD_BRICKS)
+				x(2).refractoryBricks()
 				x(3).aluminumBlock()
 			}
 			y(0) {
 				x(-3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.BACKWARD))
-				x(-2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
 				x(-1).type(Material.PALE_OAK_WOOD)
 				x(1).type(Material.PALE_OAK_WOOD)
-				x(2).type(Material.MUD_BRICKS)
+				x(2).refractoryBricks()
 				x(3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.BACKWARD, RelativeFace.LEFT))
 			}
 			y(1) {
 				x(-3).aluminumBlock()
-				x(-2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
 				x(-1).type(Material.PALE_OAK_WOOD)
 				x(1).type(Material.PALE_OAK_WOOD)
-				x(2).type(Material.MUD_BRICKS)
+				x(2).refractoryBricks()
 				x(3).aluminumBlock()
 			}
 			y(2) {
@@ -278,27 +278,27 @@ object BoilerMultiblockElectric : BoilerMultiblock<ElectricBoilerEntity>() {
 			y(-1) {
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 				x(-2).steelBlock()
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
 				x(2).steelBlock()
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(0) {
 				x(-3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT))
 				x(-2).anyGlass()
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
 				x(2).anyGlass()
 				x(3).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.LEFT))
 			}
 			y(1) {
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-2).steelBlock()
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
 				x(2).steelBlock()
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}

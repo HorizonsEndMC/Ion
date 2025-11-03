@@ -57,11 +57,11 @@ object BoilerMultiblockItemFuel : BoilerMultiblock<ItemBoilerEntity>() {
 			}
 			y(0) {
 				x(-3).anyWall()
-				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).anyWall()
 			}
 			y(1) {
@@ -81,24 +81,24 @@ object BoilerMultiblockItemFuel : BoilerMultiblock<ItemBoilerEntity>() {
 			y(-1) {
 				x(-3).titaniumBlock()
 				x(-2).titaniumBlock()
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
 				x(2).titaniumBlock()
 				x(3).titaniumBlock()
 			}
 			y(0) {
-				x(-3).type(Material.MUD_BRICKS)
-				x(-2).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
-				x(3).type(Material.MUD_BRICKS)
+				x(-3).refractoryBricks()
+				x(-2).refractoryBricks()
+				x(2).refractoryBricks()
+				x(3).refractoryBricks()
 			}
 			y(1) {
 				x(-3).titaniumBlock()
 				x(-2).titaniumBlock()
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
 				x(2).titaniumBlock()
 				x(3).titaniumBlock()
 			}
@@ -136,22 +136,22 @@ object BoilerMultiblockItemFuel : BoilerMultiblock<ItemBoilerEntity>() {
 		z(4) {
 			y(-1) {
 				x(-3).titaniumBlock()
-				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).titaniumBlock()
 			}
 			y(0) {
-				x(-3).type(Material.MUD_BRICKS)
-				x(3).type(Material.MUD_BRICKS)
+				x(-3).refractoryBricks()
+				x(3).refractoryBricks()
 			}
 			y(1) {
 				x(-3).titaniumBlock()
-				x(-2).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(0).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).titaniumBlock()
 			}
 			y(2) {
@@ -189,11 +189,11 @@ object BoilerMultiblockItemFuel : BoilerMultiblock<ItemBoilerEntity>() {
 		z(3) {
 			y(-1) {
 				x(-3).titaniumBlock()
-				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).titaniumBlock()
 			}
 			y(0) {
@@ -202,11 +202,11 @@ object BoilerMultiblockItemFuel : BoilerMultiblock<ItemBoilerEntity>() {
 			}
 			y(1) {
 				x(-3).titaniumBlock()
-				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(-1).refractoryBricks()
 				x(0).type(Material.TARGET)
-				x(1).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(1).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).titaniumBlock()
 			}
 			y(2) {
@@ -242,22 +242,22 @@ object BoilerMultiblockItemFuel : BoilerMultiblock<ItemBoilerEntity>() {
 		z(2) {
 			y(-1) {
 				x(-3).titaniumBlock()
-				x(-2).type(Material.MUD_BRICKS)
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).titaniumBlock()
 			}
 			y(0) {
-				x(-3).type(Material.MUD_BRICKS)
-				x(3).type(Material.MUD_BRICKS)
+				x(-3).refractoryBricks()
+				x(3).refractoryBricks()
 			}
 			y(1) {
 				x(-3).titaniumBlock()
-				x(-2).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(2).type(Material.MUD_BRICKS)
+				x(-2).refractoryBricks()
+				x(0).refractoryBricks()
+				x(2).refractoryBricks()
 				x(3).titaniumBlock()
 			}
 			y(2) {
@@ -296,27 +296,27 @@ object BoilerMultiblockItemFuel : BoilerMultiblock<ItemBoilerEntity>() {
 			y(-1) {
 				x(-3).titaniumBlock()
 				x(-2).titaniumBlock()
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
 				x(2).titaniumBlock()
 				x(3).titaniumBlock()
 			}
 			y(0) {
-				x(-3).type(Material.MUD_BRICKS)
-				x(-2).type(Material.MUD_BRICKS)
+				x(-3).refractoryBricks()
+				x(-2).refractoryBricks()
 				x(-1).type(Material.IRON_BARS)
 				x(0).type(Material.IRON_BARS)
 				x(1).type(Material.IRON_BARS)
-				x(2).type(Material.MUD_BRICKS)
-				x(3).type(Material.MUD_BRICKS)
+				x(2).refractoryBricks()
+				x(3).refractoryBricks()
 			}
 			y(1) {
 				x(-3).titaniumBlock()
 				x(-2).titaniumBlock()
-				x(-1).type(Material.MUD_BRICKS)
-				x(0).type(Material.MUD_BRICKS)
-				x(1).type(Material.MUD_BRICKS)
+				x(-1).refractoryBricks()
+				x(0).refractoryBricks()
+				x(1).refractoryBricks()
 				x(2).titaniumBlock()
 				x(3).titaniumBlock()
 			}
