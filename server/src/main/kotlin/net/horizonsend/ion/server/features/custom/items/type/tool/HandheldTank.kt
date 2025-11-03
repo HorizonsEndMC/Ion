@@ -100,6 +100,8 @@ object HandheldTank : CustomItem(
 		val itemContents = fluidStorage.getContents(item)
 		if (itemContents.amount <= 0) return@async
 
+		if (!multiblockStore.canAdd(itemContents)) return@async
+
 		val toDeposit = minOf(multiblockStore.getRemainingRoom(), WITHDRAW_AMOUNT, itemContents.amount)
 		val stack = itemContents.asAmount(toDeposit)
 		stack.amount -= fluidStorage.removeAmount(item, this, toDeposit)
