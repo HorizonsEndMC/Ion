@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities
 import net.horizonsend.ion.server.features.client.display.HudIcons.FLUID_INFO_ID
+import net.horizonsend.ion.server.features.client.display.modular.display.fluid.FluidDisplayModule.Companion.format
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.custom.items.component.CustomComponentTypes
 import net.horizonsend.ion.server.features.custom.items.component.CustomItemComponentManager
@@ -120,7 +121,7 @@ object HandheldTank : CustomItem(
 		val store = input.metaData.connectedStore
 
 		val text = Component.text()
-			.append(ofChildren(store.getContents().getDisplayName(), Component.text(": ", HEColorScheme.HE_DARK_GRAY), Component.text(store.getContents().amount, NamedTextColor.WHITE), Component.text("/", HEColorScheme.HE_DARK_GRAY), Component.text(store.capacity, NamedTextColor.WHITE)))
+			.append(ofChildren(store.getContents().getDisplayName(), Component.text(": ", HEColorScheme.HE_DARK_GRAY), Component.text(format.format(store.getContents().amount), NamedTextColor.WHITE), Component.text("/", HEColorScheme.HE_DARK_GRAY), Component.text(store.capacity, NamedTextColor.WHITE)))
 			.append(FluidUtils.formatFluidProperties(store.getContents()))
 			.append(Component.newline(), Component.text("Left-click to withdraw", HEColorScheme.HE_MEDIUM_GRAY))
 			.append(Component.newline(), Component.text("Right-click to deposit", HEColorScheme.HE_MEDIUM_GRAY))
