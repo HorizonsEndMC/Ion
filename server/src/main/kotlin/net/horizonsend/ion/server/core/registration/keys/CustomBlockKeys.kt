@@ -1,6 +1,7 @@
 package net.horizonsend.ion.server.core.registration.keys
 
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.cable.GridEnergyCable
 import net.horizonsend.ion.server.features.custom.blocks.extractor.AdvancedItemExtractorBlock
 import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.MultiblockWorkbench
@@ -38,6 +39,7 @@ object CustomBlockKeys : KeyRegistry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS, Cu
 	val MULTIBLOCK_WORKBENCH = registerTypedKey<MultiblockWorkbench>("MULTIBLOCK_WORKBENCH")
 	val ADVANCED_ITEM_EXTRACTOR = registerTypedKey<AdvancedItemExtractorBlock>("ADVANCED_ITEM_EXTRACTOR")
 	val ITEM_FILTER = registerTypedKey<ItemFilterBlock>("ITEM_FILTER")
+	val REDSTONE_CONTROL_PORT = registerKey("REDSTONE_CONTROL_PORT")
 
 	val FLUID_PORT = registerKey("FLUID_PORT")
 	val FLUID_VALVE = registerKey("FLUID_VALVE")
@@ -47,11 +49,11 @@ object CustomBlockKeys : KeyRegistry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS, Cu
 	val REINFORCED_FLUID_PIPE_JUNCTION = registerTypedKey<ReinforcedFluidPipeJunctionBlock>("REINFORCED_FLUID_PIPE_JUNCTION")
 	val TEMPERATURE_GAUGE = registerTypedKey<TemperatureGaugeBlock>("TEMPERATURE_GAUGE")
 
+	val GRID_ENERGY_PORT = registerKey("GRID_ENERGY_PORT")
+	val GRID_ENERGY_CABLE = registerTypedKey<GridEnergyCable>("GRID_ENERGY_CABLE")
+	val GRID_ENERGY_CABLE_JUNCTION = registerKey("GRID_ENERGY_CABLE_JUNCTION")
+
 	val COPPER_COIL = registerKey("COPPER_COIL")
 	val ROTATION_SHAFT = registerKey("ROTATION_SHAFT")
-	val REDSTONE_CONTROL_PORT = registerKey("REDSTONE_CONTROL_PORT")
-
-	val GRID_ENERGY_PORT = registerKey("GRID_ENERGY_PORT")
-
 	val REFRACTORY_BRICKS = registerKey("REFRACTORY_BRICKS")
 }

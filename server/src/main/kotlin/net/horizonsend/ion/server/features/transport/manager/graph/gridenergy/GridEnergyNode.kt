@@ -8,7 +8,6 @@ import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.graph.FlowNode
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
-import net.horizonsend.ion.server.features.transport.nodes.graph.TransportNode
 import net.horizonsend.ion.server.miscellaneous.utils.ADJACENT_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -17,7 +16,6 @@ import org.bukkit.Axis
 import org.bukkit.Material
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Directional
-import org.bukkit.block.data.MultipleFacing
 
 abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : FlowNode(location, type) {
 	private lateinit var graph: GridEnergyNetwork
@@ -65,15 +63,28 @@ abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : 
 		override fun getPipableDirections(): Set<BlockFace> = dirs
 	}
 
-	class HighCapacityGridEnergyJunctionNode(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.HIGH_CAPACITY_GRID_ENERGY_JUNCTION.getValue()) {
+	class GridEnergyCableJunction(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_CABLE_JUNCTION.getValue()) {
 		override val flowCapacity: Double = 120000.0 // 120 kw
 
 		override fun isIntact(): Boolean? {
 			val block = getBlock() ?: return null
-			return block.type == Material.IRON_BLOCK // TODO temp
+			return block.customBlock?.key == CustomBlockKeys.GRID_ENERGY_CABLE_JUNCTION
 		}
 
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
+	}
+
+	class GridEnergyCable(location: BlockKey, val axis: Axis) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_CABLE.getValue()) {
+		override val flowCapacity: Double = 24000.0 // 24 kw
+
+		override fun isIntact(): Boolean? {
+			val block = getBlock() ?: return null
+			val data = block.blockData
+			return data.customBlock?.key == CustomBlockKeys.GRID_ENERGY_CABLE_JUNCTION
+		}
+
+		private val dirs = setOf(axis.faces.first, axis.faces.second)
+		override fun getPipableDirections(): Set<BlockFace> = dirs
 	}
 
 	class UltraHighCapacityGridEnergyJunctionNode(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.ULTRA_HIGH_CAPACITY_GRID_ENERGY_JUNCTION.getValue()) {

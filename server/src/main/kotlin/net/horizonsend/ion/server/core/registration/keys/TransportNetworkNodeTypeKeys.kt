@@ -9,11 +9,11 @@ import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNo
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedJunctionPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.ReinforcedLinearPipe
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode.TemperatureGauge
-import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyCable
+import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyCableJunction
 import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyJunctionNode
 import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyLinearNode
 import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.GridEnergyPortNode
-import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.HighCapacityGridEnergyJunctionNode
 import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode.UltraHighCapacityGridEnergyJunctionNode
 
 object TransportNetworkNodeTypeKeys : KeyRegistry<TransportNodeType<*>>(TRANSPORT_NETWORK_NODE_TYPE, TransportNodeType::class) {
@@ -28,6 +28,7 @@ object TransportNetworkNodeTypeKeys : KeyRegistry<TransportNodeType<*>>(TRANSPOR
 	val GRID_ENERGY_PORT = registerTypedKey<TransportNodeType<GridEnergyPortNode>>("GRID_ENERGY_PORT")
 	val GRID_ENERGY_JUNCTION = registerTypedKey<TransportNodeType<GridEnergyJunctionNode>>("GRID_ENERGY_JUNCTION")
 	val GRID_ENERGY_LINEAR = registerTypedKey<TransportNodeType<GridEnergyLinearNode>>("GRID_ENERGY_LINEAR")
-	val HIGH_CAPACITY_GRID_ENERGY_JUNCTION = registerTypedKey<TransportNodeType<HighCapacityGridEnergyJunctionNode>>("HIGH_CAPACITY_GRID_ENERGY_JUNCTION")
+	val GRID_ENERGY_CABLE_JUNCTION = registerTypedKey<TransportNodeType<GridEnergyCableJunction>>("HIGH_CAPACITY_GRID_ENERGY_JUNCTION")
+	val GRID_ENERGY_CABLE = registerTypedKey<TransportNodeType<GridEnergyCable>>("HIGH_CAPACITY_GRID_ENERGY")
 	val ULTRA_HIGH_CAPACITY_GRID_ENERGY_JUNCTION = registerTypedKey<TransportNodeType<UltraHighCapacityGridEnergyJunctionNode>>("ULTRA_HIGH_CAPACITY_GRID_ENERGY_JUNCTION")
 }

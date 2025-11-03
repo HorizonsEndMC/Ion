@@ -12,6 +12,8 @@ import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.cable.GridEnergyCable
+import net.horizonsend.ion.server.features.custom.blocks.cable.GridEnergyCableJunction
 import net.horizonsend.ion.server.features.custom.blocks.extractor.AdvancedItemExtractorBlock
 import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
@@ -300,6 +302,8 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		), WrenchRemovable {
 			override fun decorateItem(itemStack: ItemStack, block: Block) {}
 		})
+		register(CustomBlockKeys.GRID_ENERGY_CABLE_JUNCTION, GridEnergyCableJunction)
+		register(CustomBlockKeys.GRID_ENERGY_CABLE, GridEnergyCable)
 
 		register(CustomBlockKeys.COPPER_COIL, CustomBlock(
 			key = CustomBlockKeys.COPPER_COIL,

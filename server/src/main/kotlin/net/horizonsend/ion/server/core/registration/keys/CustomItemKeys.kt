@@ -238,6 +238,8 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val TEMPERATURE_GAUGE = registerTypedKey<CustomBlockItem>("TEMPERATURE_GAUGE")
 
 	val GRID_ENERGY_PORT = registerTypedKey<CustomBlockItem>("GRID_ENERGY_PORT")
+	val GRID_ENERGY_CABLE = registerTypedKey<CustomBlockItem>("GRID_ENERGY_CABLE")
+	val GRID_ENERGY_CABLE_JUNCTION = registerTypedKey<CustomBlockItem>("GRID_ENERGY_CABLE_JUNCTION")
 
 	val COPPER_COIL = registerTypedKey<CustomBlockItem>("COPPER_COIL")
 	val ROTATION_SHAFT = registerTypedKey<CustomBlockItem>("ROTATION_SHAFT")
