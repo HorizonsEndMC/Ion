@@ -248,6 +248,7 @@ object Crafting : IonServerComponent() {
 		registerTools()
 		registerMisc()
 		registerIndustry()
+		registerPipes()
 
 		// Prismarine Bricks
 		val primarineBricksFurnaceRecipe = FurnaceRecipe(
@@ -958,6 +959,28 @@ object Crafting : IonServerComponent() {
 		listOfCustomRecipes.add(refractoryBrickRecipe.key)
 
 		shapeless(name = "refractory_bricks", result = CustomItemKeys.REFRACTORY_BRICKS, category = CraftingBookCategory.BUILDING, CustomItemKeys.REFRACTORY_BRICK.getValue().constructItemStack(9))
+	}
+
+	fun registerPipes() {
+		shaped("fluid_pipe", CustomItemKeys.FLUID_PIPE.getValue().constructItemStack(4), category = CraftingBookCategory.BUILDING) {
+			shape(
+				" g ",
+				"ici",
+				" g ",
+			)
+			setIngredient('g', GLASS)
+			setIngredient('i', IRON_INGOT)
+			setIngredient('c', COPPER_INGOT)
+		}
+		shaped("fluid_pipe_JUNCTION", CustomItemKeys.FLUID_PIPE_JUNCTION, category = CraftingBookCategory.BUILDING) {
+			shape(
+				" i ",
+				"ici",
+				" i ",
+			)
+			setIngredient('i', IRON_INGOT)
+			setIngredient('c', COPPER_INGOT)
+		}
 	}
 
 	// Different names due to signature problems from type erasure
