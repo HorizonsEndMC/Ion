@@ -22,6 +22,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.WHITE
+import net.kyori.adventure.text.format.ShadowColor
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.World
@@ -104,7 +105,7 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 		))
 		register(FluidTypeKeys.CRUDE_OIL, SimpleFluid(
 			FluidTypeKeys.CRUDE_OIL,
-			text("Crude Oil", NamedTextColor.BLACK),
+			text("Crude Oil", NamedTextColor.BLACK).shadowColor(ShadowColor.shadowColor(128, 128, 128, 255)),
 			categories = arrayOf(FluidCategory.GAS),
 			heatCapacity = 2.0, // TODO
 			molarMass = 18.01528, // TODO
