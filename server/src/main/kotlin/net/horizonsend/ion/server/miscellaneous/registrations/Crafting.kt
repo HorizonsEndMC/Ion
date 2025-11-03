@@ -972,7 +972,7 @@ object Crafting : IonServerComponent() {
 			setIngredient('i', IRON_INGOT)
 			setIngredient('c', COPPER_INGOT)
 		}
-		shaped("fluid_pipe_JUNCTION", CustomItemKeys.FLUID_PIPE_JUNCTION, category = CraftingBookCategory.BUILDING) {
+		shaped("fluid_pipe_junction", CustomItemKeys.FLUID_PIPE_JUNCTION, category = CraftingBookCategory.BUILDING) {
 			shape(
 				" i ",
 				"ici",
@@ -980,6 +980,16 @@ object Crafting : IonServerComponent() {
 			)
 			setIngredient('i', IRON_INGOT)
 			setIngredient('c', COPPER_INGOT)
+		}
+		shaped("fluid_valve", CustomItemKeys.FLUID_VALVE, category = CraftingBookCategory.BUILDING) {
+			shape(
+				" r ",
+				"ici",
+				" r ",
+			)
+			setIngredient('i', IRON_INGOT)
+			setIngredient('r', REDSTONE)
+			setIngredient('c', CustomItemKeys.FLUID_PIPE_JUNCTION)
 		}
 	}
 
