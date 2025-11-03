@@ -991,6 +991,16 @@ object Crafting : IonServerComponent() {
 			setIngredient('r', REDSTONE)
 			setIngredient('c', CustomItemKeys.FLUID_PIPE_JUNCTION)
 		}
+		shaped("fluid_port", CustomItemKeys.FLUID_PORT, category = CraftingBookCategory.BUILDING) {
+			shape(
+				"ici",
+				"cjc",
+				"ici",
+			)
+			setIngredient('i', IRON_INGOT)
+			setIngredient('c', COPPER_INGOT)
+			setIngredient('j', CustomItemKeys.FLUID_PIPE_JUNCTION)
+		}
 	}
 
 	// Different names due to signature problems from type erasure
