@@ -445,7 +445,7 @@ object BoilerMultiblockElectric : BoilerMultiblock<ElectricBoilerEntity>() {
 
 		override fun preTick(deltaSeconds: Double): Boolean {
 			tickGauges()
-			return true
+			return hasFullPower()
 		}
 
 		override fun getPassiveGridEnergyConsumption(): Double = 20.0

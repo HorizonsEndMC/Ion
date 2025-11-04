@@ -27,7 +27,6 @@ class Steam(
 	pressureBars: Double = 1.0,
 	val conversionResult: IonRegistryKey<FluidType, out FluidType>,
 	val turbineResult: IonRegistryKey<FluidType, out FluidType>,
-	val turbineWorkPerLiter: Double,
 	val conversionCost: Double,
 	val conversionTemperature: Double
 ) : GasFluid(key, DisplayProperties(color, "transparent_gas"), heatCapacity, 18.01528, pressureBars) {

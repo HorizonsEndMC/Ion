@@ -58,9 +58,9 @@ abstract class GridPowerGeneratorMultiblock : Multiblock(), EntityMultiblock<Gri
 		override val gridEnergyManager: GridEnergyMultiblock.MultiblockGridEnergyManager = GridEnergyMultiblock.MultiblockGridEnergyManager(this)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
-		override val ioData: IOData = IOData.Companion.builder(this)
+		override val ioData: IOData = IOData.builder(this)
 			// Output
-			.addPort(IOType.GRID_ENERGY, 0, -1, 0) { IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>(this, GridEnergyPortMetaData(inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.GRID_ENERGY, 0, -1, 0) { IOPort.RegisteredMetaDataInput(this, GridEnergyPortMetaData(inputAllowed = false, outputAllowed = true)) }
 			.build()
 
 		override val displayHandler: TextDisplayHandler= DisplayHandlers.newMultiblockSignOverlay(

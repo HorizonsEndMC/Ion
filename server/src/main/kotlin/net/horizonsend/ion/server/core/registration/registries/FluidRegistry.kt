@@ -57,15 +57,15 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 		register(FluidTypeKeys.WATER, Water)
 		register(FluidTypeKeys.LAVA, Lava)
 
-		register(FluidTypeKeys.LOW_PRESSURE_STEAM, SimpleFluid(
+		register(FluidTypeKeys.LOW_PRESSURE_STEAM, object : GasFluid(
 			FluidTypeKeys.LOW_PRESSURE_STEAM,
-			text("Low Pressure Steam"),
-			categories = arrayOf(FluidCategory.GAS),
+			DisplayProperties(Color.WHITE, "transparent_gas"),
 			heatCapacity = 2.0,
 			molarMass = 18.01528,
-			density = 0.479,
-			displayProperties = DisplayProperties(Color.WHITE, "transparent_gas")
-		))
+			pressureBars = 0.2,
+		) {
+			override fun getDisplayName(stack: FluidStack): Component  = text("Low Pressure Steam")
+		})
 		register(FluidTypeKeys.DENSE_STEAM, Steam(
 			key = FluidTypeKeys.DENSE_STEAM,
 			prefix = text("Dense", HE_LIGHT_BLUE),
@@ -73,8 +73,7 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 			heatCapacity = 2.030,
 			pressureBars = 5.0,
 			conversionResult = FluidTypeKeys.SUPER_DENSE_STEAM,
-			turbineWorkPerLiter = 2675.8,
-			turbineResult = FluidTypeKeys.LOW_PRESSURE_STEAM,
+            turbineResult = FluidTypeKeys.LOW_PRESSURE_STEAM,
 			conversionCost = 2257.0 * 2,
 			conversionTemperature = 450.0
 		))
@@ -85,8 +84,7 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 			heatCapacity = 2.030,
 			pressureBars = 20.0,
 			conversionResult = FluidTypeKeys.ULTRA_DENSE_STEAM,
-			turbineWorkPerLiter = 3358.2,
-			turbineResult = FluidTypeKeys.DENSE_STEAM,
+            turbineResult = FluidTypeKeys.DENSE_STEAM,
 			conversionCost = 2257.0 * 4,
 			conversionTemperature = 600.0
 		))
@@ -99,8 +97,7 @@ class FluidTypeRegistry : Registry<FluidType>(RegistryKeys.FLUID_TYPE) {
 			// Does not convert
 			conversionResult = FluidTypeKeys.EMPTY,
 			turbineResult = FluidTypeKeys.SUPER_DENSE_STEAM,
-			turbineWorkPerLiter = 3670.9,
-			conversionCost = Double.MAX_VALUE,
+            conversionCost = Double.MAX_VALUE,
 			conversionTemperature = Double.MAX_VALUE
 		))
 		register(FluidTypeKeys.CRUDE_OIL, SimpleFluid(
