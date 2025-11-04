@@ -26,9 +26,9 @@ object TransportNetworkNodeTypeKeys : KeyRegistry<TransportNodeType<*>>(TRANSPOR
 	val TEMPERATURE_GAUGE = registerTypedKey<TransportNodeType<TemperatureGauge>>("TEMPERATURE_GAUGE")
 
 	val GRID_ENERGY_PORT = registerTypedKey<TransportNodeType<GridEnergyPortNode>>("GRID_ENERGY_PORT")
-	val GRID_ENERGY_JUNCTION = registerTypedKey<TransportNodeType<GridEnergyJunctionNode>>("GRID_ENERGY_JUNCTION")
-	val GRID_ENERGY_LINEAR = registerTypedKey<TransportNodeType<GridEnergyLinearNode>>("GRID_ENERGY_LINEAR")
-	val GRID_ENERGY_CABLE_JUNCTION = registerTypedKey<TransportNodeType<GridEnergyCableJunction>>("HIGH_CAPACITY_GRID_ENERGY_JUNCTION")
-	val GRID_ENERGY_CABLE = registerTypedKey<TransportNodeType<GridEnergyCable>>("HIGH_CAPACITY_GRID_ENERGY")
+	val GRID_ENERGY_END_ROD = registerTypedKey<TransportNodeType<GridEnergyLinearNode>>("GRID_ENERGY_END_ROD")
+	val GRID_ENERGY_SPONGE = registerTypedKey<TransportNodeType<GridEnergyJunctionNode>>("GRID_ENERGY_SPONGE")
+	val GRID_ENERGY_CABLE = registerTypedKey<TransportNodeType<GridEnergyCable>>("GRID_ENERGY_CABLE")
+	val GRID_ENERGY_CABLE_JUNCTION = registerTypedKey<TransportNodeType<GridEnergyCableJunction>>("GRID_ENERGY_CABLE_JUNCTION")
 	val ULTRA_HIGH_CAPACITY_GRID_ENERGY_JUNCTION = registerTypedKey<TransportNodeType<UltraHighCapacityGridEnergyJunctionNode>>("ULTRA_HIGH_CAPACITY_GRID_ENERGY_JUNCTION")
 }

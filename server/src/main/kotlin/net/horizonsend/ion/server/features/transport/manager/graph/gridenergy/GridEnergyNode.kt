@@ -39,7 +39,7 @@ abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : 
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
 	}
 
-	class GridEnergyJunctionNode(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_JUNCTION.getValue()) {
+	class GridEnergyJunctionNode(location: BlockKey) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_SPONGE.getValue()) {
 		override val flowCapacity: Double = 24000.0 // 24 kw
 
 		override fun isIntact(): Boolean? {
@@ -50,7 +50,7 @@ abstract class GridEnergyNode(location: BlockKey, type: TransportNodeType<*>) : 
 		override fun getPipableDirections(): Set<BlockFace> = ADJACENT_BLOCK_FACES
 	}
 
-	class GridEnergyLinearNode(location: BlockKey, val axis: Axis) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_LINEAR.getValue()) {
+	class GridEnergyLinearNode(location: BlockKey, val axis: Axis) : GridEnergyNode(location, TransportNetworkNodeTypeKeys.GRID_ENERGY_END_ROD.getValue()) {
 		override val flowCapacity: Double = 24000.0 // 24 kw
 
 		override fun isIntact(): Boolean? {
