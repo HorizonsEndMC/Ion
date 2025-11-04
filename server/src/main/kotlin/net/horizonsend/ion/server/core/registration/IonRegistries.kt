@@ -23,6 +23,7 @@ object IonRegistries : IonComponent() {
 			log.info("Bootstrapping ${registry.id.key}")
 			registry.boostrap()
 			registry.getKeySet().allkeys().forEach { key -> key.checkBound() }
+			log.info("Registered ${registry.getAll().size} entries.")
 		}
 	}
 
