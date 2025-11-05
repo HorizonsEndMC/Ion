@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.configuration.util.FloatAmount
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.sequences.Sequence
+import net.horizonsend.ion.server.features.sequences.SequenceContext
 import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.VisualProjectile
@@ -28,87 +29,109 @@ import kotlin.jvm.optionals.getOrNull
 import kotlin.reflect.KClass
 
 abstract class SequencePhaseEffect(val timing: EffectTiming?) {
-	abstract fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>)
+	abstract fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext)
 
 	class EndSequence(timing: EffectTiming?) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { SequenceManager.endPhase(player, sequenceKey) }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { SequenceManager.endPhase(player, sequenceKey) }
 	}
 
 	class GoToPhase(val phase: IonRegistryKey<SequencePhase, SequencePhase>, timing: EffectTiming?) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { SequenceManager.startPhase(player, sequenceKey, phase) }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { SequenceManager.startPhase(player, sequenceKey, phase) }
 	}
 
 	class GoToPreviousPhase(timing: EffectTiming?) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { SequenceManager.startPhase(player, sequenceKey, SequenceManager.getSequenceData(player, sequenceKey).get<IonRegistryKey<SequencePhase, SequencePhase>>("last_phase").get()) }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { SequenceManager.startPhase(player, sequenceKey, SequenceManager.getSequenceData(player, sequenceKey).get<IonRegistryKey<SequencePhase, SequencePhase>>("last_phase").get()) }
 	}
 
 	class ClearSequenceData(timing: EffectTiming?) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { SequenceManager.clearSequenceData(player) }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { SequenceManager.clearSequenceData(player) }
 	}
 
 	class SetSequenceData<T : Any>(val key: String, val value: T, val valueClass: KClass<T>, timing: EffectTiming?) : SequencePhaseEffect(timing) {
 		@OptIn(InternalSerializationApi::class)
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) {
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
 			SequenceManager.getSequenceData(player, sequenceKey).set<T>(key, value)
 		}
 	}
 
 	class DataConditionalEffect<T : Any>(val key: String, val condition: (Optional<T>) -> Boolean, val effect: SequencePhaseEffect) : SequencePhaseEffect(effect.timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { if (condition(SequenceManager.getSequenceData(player, sequenceKey).get<T>(key))) effect.playEffect(player, sequenceKey) }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { if (condition(SequenceManager.getSequenceData(player, sequenceKey).get<T>(key))) effect.playEffect(
+			player,
+			sequenceKey,
+			context
+		) }
 	}
 
 	class DataConditionalEffects<T : Any>(val key: String, val condition: (Optional<T>) -> Boolean, timing: EffectTiming, vararg val effects: SequencePhaseEffect) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { if (condition(SequenceManager.getSequenceData(player, sequenceKey).get<T>(key))) effects.forEach { it.playEffect(player, sequenceKey) } }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { if (condition(SequenceManager.getSequenceData(player, sequenceKey).get<T>(key))) effects.forEach { it.playEffect(
+			player,
+			sequenceKey,
+			context
+		) } }
 	}
 
 	class ConditionalEffects(val condition: (Player) -> Boolean, timing: EffectTiming, vararg val effects: SequencePhaseEffect) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { if (condition(player)) effects.forEach { it.playEffect(player, sequenceKey) } }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { if (condition(player)) effects.forEach { it.playEffect(
+			player,
+			sequenceKey,
+			context
+		) } }
 	}
 
 	class DelayEffect<T : Any>(val delay: Long, val effect: SequencePhaseEffect) : SequencePhaseEffect(effect.timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { Tasks.syncDelay(delay) { effect.playEffect(player, sequenceKey) } }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { Tasks.syncDelay(delay) { effect.playEffect(player, sequenceKey, context) } }
 	}
 
 	class Chance(val effect: SequencePhaseEffect, val chance: Double) : SequencePhaseEffect(effect.timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { if (testRandom(chance)) effect.playEffect(player, sequenceKey) }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { if (testRandom(chance)) effect.playEffect(player, sequenceKey, context) }
 	}
 
 	class OnTickInterval(val effect: SequencePhaseEffect, val interval: Int) : SequencePhaseEffect(effect.timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { if (MinecraftServer.getServer().tickCount % interval == 0) effect.playEffect(player, sequenceKey) }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { if (MinecraftServer.getServer().tickCount % interval == 0) effect.playEffect(
+			player,
+			sequenceKey,
+			context
+		) }
 	}
 
 	class SendMessage(val message: Component, timing: EffectTiming?) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { player.sendMessage(message) }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { player.sendMessage(message) }
 	}
 
 	class SendTitle(val title: Title, timing: EffectTiming?) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { player.showTitle(title) }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { player.showTitle(title) }
 	}
 
 	class PlaySetSound(val sound: Sound, timing: EffectTiming?) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { player.playSound(sound) }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { player.playSound(sound) }
 	}
 
 	class PlaySound(val key: Key, val volume: FloatAmount, val pitch: FloatAmount, timing: EffectTiming?) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { player.playSound(Sound.sound(key, Sound.Source.AMBIENT, volume.get(), pitch.get())) }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { player.playSound(Sound.sound(key, Sound.Source.AMBIENT, volume.get(), pitch.get())) }
 	}
 
-	class PlayVisualProjectile(val origin: Location, val direction: Vector, val color: Color, timing: EffectTiming?) : SequencePhaseEffect(timing) {
+	class PlayVisualProjectile(val location: Location, val direction: Vector, val color: Color, timing: EffectTiming?) : SequencePhaseEffect(timing) {
 		constructor(origin: Location, destination: Location, color: Color, playPhase: EffectTiming) : this(origin, destination.toVector().subtract(origin.toVector()), color, playPhase)
 
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { VisualProjectile(origin, direction, 100.0, 10.0, color, 1.0f, 0) }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
+			VisualProjectile(location.clone().add(context.getOrigin().toLocation(location.world)), direction, 100.0, 10.0, color, 1.0f, 0)
+		}
 	}
 
 	class PlayParticle(val particle: Particle, val location: Location, val extraParticles: Int, val dx: Double, val dy: Double, val dz: Double, val options: ParticleOptions, timing: EffectTiming?) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { player.spawnParticle(particle, location, extraParticles, dx, dy, dz, options) }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
+			player.spawnParticle(particle, location.clone().add(context.getOrigin().toLocation(location.world)), extraParticles, dx, dy, dz, options)
+		}
 	}
 
 	class HighlightBlock(val position: Vec3i, val duration: Long, timing: EffectTiming?) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) { player.highlightBlock(position, duration) }
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
+			player.highlightBlock(position.plus(context.getOrigin()), duration)
+		}
 	}
 
 	class RunCode(val block: (player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) -> Unit, timing: EffectTiming?) : SequencePhaseEffect(timing) {
-		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>) = block.invoke(player, sequenceKey)
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) = block.invoke(player, sequenceKey)
 	}
 
 	companion object {
