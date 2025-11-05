@@ -6,6 +6,9 @@ import net.horizonsend.ion.server.core.registration.IonBindableResourceKey
 import net.horizonsend.ion.server.core.registration.IonRegistries
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.registries.Registry
+import org.bukkit.persistence.ListPersistentDataType
+import org.bukkit.persistence.PersistentDataAdapterContext
+import org.bukkit.persistence.PersistentDataType
 import org.bukkit.NamespacedKey
 import kotlin.reflect.KClass
 
@@ -17,7 +20,6 @@ abstract class KeyRegistry<T : Any>(private val registryId: IonBindableResourceK
 	protected val namespaced = Object2ObjectOpenHashMap<NamespacedKey, IonRegistryKey<T, out T>>()
 	protected val allKeys = ObjectOpenHashSet<IonRegistryKey<T, out T>>()
 
-	val serializer: IonRegistryKey.Serializer<T> = IonRegistryKey.Serializer(this)
 
 	protected inline fun <reified Z : T> registerTypedKey(key: String): IonRegistryKey<T, Z> {
 		val registryKey = registry.createKey(key, Z::class)
@@ -42,4 +44,7 @@ abstract class KeyRegistry<T : Any>(private val registryId: IonBindableResourceK
 
 	fun allStrings() = keys.keys
 	fun allkeys() = allKeys
+
+	val serializer: IonRegistryKey.Serializer<T> = IonRegistryKey.Serializer(this)
+	val listSerializer: ListPersistentDataType<String, IonRegistryKey<T, out T>> = PersistentDataType.LIST.listTypeFrom(serializer)
 }

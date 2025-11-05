@@ -13,6 +13,8 @@ import net.horizonsend.ion.server.core.registration.registries.TransportNetworkN
 import net.horizonsend.ion.server.core.registration.registries.WeatherTypeRegistry
 import net.horizonsend.ion.server.core.registration.registries.WrappedListenerRegistry
 import net.horizonsend.ion.server.features.multiblock.crafting.MultiblockRecipeRegistry
+import net.horizonsend.ion.server.features.sequences.SequenceRegistry
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseRegistry
 
 object IonRegistries : IonComponent() {
 	private val allRegistries = mutableListOf<Registry<*>>()
@@ -36,6 +38,9 @@ object IonRegistries : IonComponent() {
 	val FLUID_PROPERTY_TYPE = register(FluidPropertyTypeRegistry())
 	val WRAPPED_LISTENER_TYPE = register(WrappedListenerRegistry())
 	val WEATHER_TYPE = register(WeatherTypeRegistry())
+
+	val SEQUENCE_PHASE = register(SequencePhaseRegistry())
+	val SEQUENCE = register(SequenceRegistry())
 
 	private fun <T : Registry<*>> register(registry: T): T {
 		byId[registry.id] = registry

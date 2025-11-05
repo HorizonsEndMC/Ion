@@ -131,6 +131,9 @@ object NamespacedKeys {
 	val BLUEPRINT_NAME = key("blueprint_name")
 	val BLUEPRINT_ID = key("blueprint_id")
 
+	val SEQUENCES = key("sequences")
+	val CONTENT = key("content")
+
 	val FIRST_POINT = key("first_point")
 	val SECOND_POINT = key("second_point")
 

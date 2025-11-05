@@ -47,7 +47,6 @@ import net.horizonsend.ion.server.features.nations.region.Regions
 import net.horizonsend.ion.server.features.nations.sieges.SolarSieges
 import net.horizonsend.ion.server.features.nations.sieges.StationSieges
 import net.horizonsend.ion.server.features.npcs.NPCDisplay
-import net.horizonsend.ion.server.features.npcs.TutorialNPCs
 import net.horizonsend.ion.server.features.npcs.database.UniversalNPCs
 import net.horizonsend.ion.server.features.npcs.traits.NPCTraits
 import net.horizonsend.ion.server.features.ores.generation.OreGeneration
@@ -62,6 +61,7 @@ import net.horizonsend.ion.server.features.progression.Levels
 import net.horizonsend.ion.server.features.progression.PlayerXPLevelCache
 import net.horizonsend.ion.server.features.progression.SLXP
 import net.horizonsend.ion.server.features.progression.ShipKillXP
+import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sidebar.Sidebar
 import net.horizonsend.ion.server.features.sidebar.tasks.ContactsJammingSidebar
 import net.horizonsend.ion.server.features.space.Orbits
@@ -92,7 +92,6 @@ import net.horizonsend.ion.server.features.starship.movement.PlanetTeleportCoold
 import net.horizonsend.ion.server.features.starship.subsystem.shield.StarshipShields
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.filters.FilterType
-import net.horizonsend.ion.server.features.tutorial.Tutorials
 import net.horizonsend.ion.server.features.waypoint.WaypointManager
 import net.horizonsend.ion.server.features.world.IonWorld
 import net.horizonsend.ion.server.features.world.data.DataFixers
@@ -181,12 +180,10 @@ val components: List<IonComponent> = listOf(
 	StarshipCruising,
 	Hangars,
 	StarshipFactories,
-	Tutorials,
 	Interdiction,
 	UniversalNPCs,
 	NPCDisplay,
 	StarshipDealers,
-	TutorialNPCs,
 	ShipKillXP,
 
 	ChatChannel.ChannelActions,
@@ -229,6 +226,7 @@ val components: List<IonComponent> = listOf(
 	MultiBlockDisplay,
 	StationRentalZones,
 	ServerInboxes,
+	SequenceManager,
 	ServerMutesHook,
 	ChestShops,
 	Environments,
