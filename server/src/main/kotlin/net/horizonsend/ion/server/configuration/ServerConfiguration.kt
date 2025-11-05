@@ -67,7 +67,7 @@ data class ServerConfiguration(
 		/**
 		 * @param weight: Number of rolls for this Palette
 		 * @param materials: Map of Materials to their Weight
-		 * @param ores:  list of Palettes used for ore placement
+		 * @param ores: list of Palettes used for ore placement
 		 *
 		 * Each Palette is a set of materials, and their weights that might make up an asteroid. Asteroids may pick from a list of Palettes.
 		 */
