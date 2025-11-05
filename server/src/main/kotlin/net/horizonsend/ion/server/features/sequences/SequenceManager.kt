@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys.SEQUENCES
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import org.bukkit.Bukkit
 import org.bukkit.Bukkit.getPlayer
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -132,4 +133,6 @@ object SequenceManager : IonServerComponent() {
 	fun endSequence(player: Player, sequence: Sequence) {
 		phaseMap.remove(player.uniqueId, sequence.key)
 	}
+
+	fun allPlayers() = phaseMap.rowKeySet().mapNotNull(Bukkit::getPlayer)
 }
