@@ -30,7 +30,7 @@ object SequenceManager : IonServerComponent() {
 	}
 
 	fun getSequenceData(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>): SequenceDataStore {
-		return sequenceData.getOrPut(player.uniqueId, sequenceKey) { SequenceDataStore() }
+		return sequenceData.getOrPut(player.uniqueId, sequenceKey) { SequenceDataStore(context = sequenceKey.getValue().getContext()) }
 	}
 
 	fun clearSequenceData(player: Player) {
