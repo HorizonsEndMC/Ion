@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.sequences.trigger
 
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.sequences.Sequence
+import net.horizonsend.ion.server.features.sequences.SequenceContext
 import net.horizonsend.ion.server.features.sequences.SequenceManager.getCurrentSequences
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.PlayerLocationPredicate
 import net.horizonsend.ion.server.features.sequences.trigger.ShipManualFlightTrigger.ShiftFlightTriggerSettings
@@ -19,9 +20,9 @@ object ShipManualFlightTrigger : SequenceTriggerType<ShiftFlightTriggerSettings>
 		}
 	}
 
-	class ShiftFlightTriggerSettings(val predicates: List<PlayerLocationPredicate> = listOf<PlayerLocationPredicate>()) : TriggerSettings() {
-		override fun shouldProceed(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>, callingTrigger: SequenceTriggerType<*>): Boolean {
-			return predicates.all { predicate -> predicate.check(player) }
+	class ShiftFlightTriggerSettings(val predicates: List<PlayerLocationPredicate> = listOf()) : TriggerSettings() {
+		override fun shouldProceed(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>, callingTrigger: SequenceTriggerType<*>, context: SequenceContext): Boolean {
+			return predicates.all { predicate -> predicate.check(player, context) }
 		}
 	}
 }
