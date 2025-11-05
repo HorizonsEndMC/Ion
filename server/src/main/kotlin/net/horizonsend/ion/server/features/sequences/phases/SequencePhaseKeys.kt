@@ -19,5 +19,5 @@ object SequencePhaseKeys : KeyRegistry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 	val RECEIVED_CHETHERITE = registerKey("RECEIVED_CHETHERITE")
 	val BRANCH_CARGO_CRATES = registerKey("BRANCH_CARGO_CRATES")
 	val ENTERED_ESCAPE_POD = registerKey("ENTERED_ESCAPE_POD")
-	val JUMP_TO_HYPERSPACE = registerKey("JUMP_TO_HYPERSPACE")
+	val SHIFT_FLIGHT = registerKey("SHIFT_FLIGHT")
 }
