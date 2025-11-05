@@ -98,7 +98,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
                     type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-                    settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(84, 358, 26, 85, 360, 26, Vec3i(93, 359, 82)))),
+                    settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(Vec3i(-9, -1, -56), Vec3i(-8, 1, -56)))),
                     triggerResult = SequenceTrigger.startPhase(EXIT_CRYOPOD_ROOM)
                 )
             ),
@@ -116,7 +116,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
                     SequenceTriggerTypes.PLAYER_MOVEMENT,
-                    MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(92, 357, 13, 94, 362, 10, Vec3i(93, 359, 82)), distance = 4.5)),
+                    MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(-1, -2, -69), Vec3i(1, 3, -72)), distance = 4.5)),
                     triggerResult = SequenceTrigger.startPhase(BROKEN_ELEVATOR)
                 ),
                 SequenceTrigger(
@@ -124,7 +124,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         // If looking out window
                         SequenceTrigger(
                             SequenceTriggerTypes.PLAYER_MOVEMENT,
-                            MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(-13, 358, -47, 48, 383, 75, Vec3i(93, 359, 82)), distance = 100.0)),
+                            MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(-106, -1, -129), Vec3i(-45, 24, -7)), distance = 100.0)),
                             triggerResult = SequenceTrigger.startPhase(BRANCH_LOOK_OUTSIDE)
                         ),
                         // Only trigger this branch if first time
@@ -147,7 +147,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     SendMessage(text("Proceed to the elevator down to the hangar bay!"), null),
                     SendMessage(Component.empty(), null),
                 ),
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(93.relativeX(93), 359.relativeY(359), 11.relativeZ(82)), 10L, EffectTiming.TICKED), 10)
+                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(0, 0, -71), 10L, EffectTiming.TICKED), 10)
             )
         )
 
@@ -157,7 +157,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
                     SequenceTriggerTypes.PLAYER_MOVEMENT,
-                    MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(96, 357, 62, 98, 362, 64, Vec3i(93, 359, 82)), distance = 3.5)),
+                    MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(3, -2, -20), Vec3i(5, 3, -18)), distance = 3.5)),
                     triggerResult = SequenceTrigger.startPhase(LOOK_AT_TRACTOR)
                 ),
                 SequenceTrigger(
@@ -165,7 +165,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         // If looking out window
                         SequenceTrigger(
                             SequenceTriggerTypes.PLAYER_MOVEMENT,
-                            MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(96, 358, 69, 96, 361, 72, Vec3i(93, 359, 82)), distance = 5.0)),
+                            MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(3, -1, -13), Vec3i(3, 2, -10)), distance = 5.0)),
                             triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
                         ),
                         // Only trigger this branch if first time
@@ -181,7 +181,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         // If looking out window
                         SequenceTrigger(
                             SequenceTriggerTypes.PLAYER_MOVEMENT,
-                            MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(96, 358, 78, 88, 363, 87, Vec3i(93, 359, 82)), distance = 3.0)),
+                            MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(3, -1, -4), Vec3i(-5, 4, 5)), distance = 3.0)),
                             triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
                         ),
                         // Only trigger this branch if first time
@@ -207,7 +207,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     SendMessage(Component.empty(), null),
                 ),
 
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97.relativeX(93), 359.relativeY(359), 63.relativeZ(82)), 10L, EffectTiming.TICKED), 10)
+                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(4, 0, -19), 10L, EffectTiming.TICKED), 10)
             )
         )
 
@@ -220,7 +220,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     // If looking out window
                     SequenceTrigger(
                         SequenceTriggerTypes.PLAYER_MOVEMENT,
-                        MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(96, 358, 69, 96, 361, 72, Vec3i(93, 359, 82)), distance = 5.0)),
+                        MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(3, -1, -13), Vec3i(3, 2, -10)), distance = 5.0)),
                         triggerResult = SequenceTrigger.startPhase(BRANCH_DYNMAP)
                     ),
                     // Only trigger this branch if first time
@@ -234,7 +234,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                         // If looking out window
                         SequenceTrigger(
                             SequenceTriggerTypes.PLAYER_MOVEMENT,
-                            MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(96, 358, 78, 88, 363, 87, Vec3i(93, 359, 82)), distance = 3.0)),
+                            MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(3, -1, -4), Vec3i(-5, 4, 5)), distance = 3.0)),
                             triggerResult = SequenceTrigger.startPhase(BRANCH_SHIP_COMPUTER)
                         ),
                         // Only trigger this branch if first time
@@ -266,7 +266,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
 					type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(94, 355, 61, 95, 352, 65, Vec3i(93, 359, 82)))),
+					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(Vec3i(1, -4, -21), Vec3i(2, -7, -17)))),
 					triggerResult = SequenceTrigger.startPhase(FIRE_OBSTACLE)
                 )
             ),
@@ -289,7 +289,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
                 SequenceTrigger(
 					type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(91, 351, 24, 95, 354, 24, Vec3i(93, 359, 82)))),
+					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(Vec3i(-2, -8, -58), Vec3i(2, -5, -58)))),
 					triggerResult = SequenceTrigger.startPhase(GET_CHETHERITE)
                 ),
 				SequenceTrigger(
@@ -297,7 +297,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 						// If looking out window
 						SequenceTrigger(
 							SequenceTriggerTypes.PLAYER_MOVEMENT,
-							MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(90, 351, 48, 84, 356, 43, Vec3i(93, 359, 82)), distance = 10.0)),
+							MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(-3, -8, -34), Vec3i(-9, -3, -39)), distance = 10.0)),
 							triggerResult = SequenceTrigger.startPhase(BRANCH_NAVIGATION)
 						),
 						// Only trigger this branch if first time
@@ -312,7 +312,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 						// If looking out window
 						SequenceTrigger(
 							SequenceTriggerTypes.PLAYER_MOVEMENT,
-							MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(96, 351, 51, 100, 356, 41, Vec3i(93, 359, 82)), distance = 10.0)),
+							MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(3, -8, -31), Vec3i(7, -3, -41)), distance = 10.0)),
 							triggerResult = SequenceTrigger.startPhase(BRANCH_MULTIBLOCKS)
 						),
 						// Only trigger this branch if first time
@@ -349,7 +349,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
                 NEXT_PHASE_SOUND,
-                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(97.relativeX(93), 352.relativeY(359), 16.relativeZ(82)), 10L, EffectTiming.TICKED), 10),
+                SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(4, -7, -66), 10L, EffectTiming.TICKED), 10),
                 SendMessage(Component.empty(), EffectTiming.START),
                 SendMessage(text("Quick, you'll need to grab some fuel for the escape pod's emergancy hyperdrive. You can find some in that gargo container.", GRAY, ITALIC), EffectTiming.START),
                 SendMessage(Component.empty(), EffectTiming.START),
@@ -360,7 +360,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 			RECEIVED_CHETHERITE, SequenceKeys.TUTORIAL, listOf(
 				SequenceTrigger(
 					type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(92, 355, -9, 94, 358, -9, Vec3i(93, 359, 82)))),
+					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(Vec3i(-1, -4, -91), Vec3i(1, -1, -91)))),
 					triggerResult = SequenceTrigger.startPhase(ENTERED_ESCAPE_POD)
 				),
 				SequenceTrigger(
@@ -368,7 +368,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 						// If looking out window
 						SequenceTrigger(
 							SequenceTriggerTypes.PLAYER_MOVEMENT,
-							MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(79, 352, -1, 81, 355, -1, Vec3i(93, 359, 82)), distance = 5.0)),
+							MovementTriggerSettings(lookingAtBoundingBox(box = fullBoundingBox(Vec3i(-14, -7, -83), Vec3i(-12, -4, -83)), distance = 5.0)),
 							triggerResult = SequenceTrigger.startPhase(BRANCH_CARGO_CRATES)
 						),
 						// Only trigger this branch if first time
@@ -380,7 +380,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				)
 			), listOf(
 				RANDOM_EXPLOSION_SOUND,
-				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(93.relativeX(93), 356.relativeY(359), (-16).relativeZ(82)), 10L, EffectTiming.TICKED), 10),
+				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(0, 3, -98), 10L, EffectTiming.TICKED), 10),
 
 				ifPreviousPhase(
 					GET_CHETHERITE,
@@ -401,7 +401,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SequenceTrigger(
 					SequenceTriggerTypes.STARSHIP_MANUAL_FLIGHT,
 					ShipManualFlightTrigger.ShiftFlightTriggerSettings(listOf(
-						inBoundingBox(fullBoundingBox(192, 239, -240, 11, 44, -377, Vec3i(93, 192, 82)))
+						inBoundingBox(fullBoundingBox(Vec3i(99, -120, -322), Vec3i(-82, -315, -459)))
 					)),
 					triggerResult = SequenceTrigger.startPhase(JUMP_TO_HYPERSPACE)
 				)
@@ -475,7 +475,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                     text("This is a starship computer. It is the primary point of interface for ships. They allow piloting, detection, and manage settings.", GRAY, ITALIC),
                     EffectTiming.START
                 ),
-                SequencePhaseEffect.HighlightBlock(Vec3i(93.relativeX(93), 359.relativeY(359), 82.relativeZ(82)), 60L, EffectTiming.START),
+                SequencePhaseEffect.HighlightBlock(Vec3i(0, 0, 0), 60L, EffectTiming.START),
                 SendMessage(Component.empty(), EffectTiming.START),
 
                 GoToPreviousPhase(EffectTiming.START),
@@ -537,22 +537,17 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 		)
     }
 
-	private fun fullBoundingBox(x1: Int, y1: Int, z1: Int, x2: Int, y2: Int, z2: Int, spawnOrigin: Vec3i): BoundingBox {
-		val minX: Double = (minOf(x1.relativeX(spawnOrigin.x), x2.relativeX(spawnOrigin.x))).toDouble()
-		val minY: Double = (minOf(y1.relativeY(spawnOrigin.y), y2.relativeY(spawnOrigin.y))).toDouble()
-		val minZ: Double = (minOf(z1.relativeZ(spawnOrigin.z), z2.relativeZ(spawnOrigin.z))).toDouble()
-		val maxX: Double = (maxOf(x1.relativeX(spawnOrigin.x), x2.relativeX(spawnOrigin.x)) + 1).toDouble()
-		val maxY: Double = (maxOf(y1.relativeY(spawnOrigin.y), y2.relativeY(spawnOrigin.y)) + 1).toDouble()
-		val maxZ: Double = (maxOf(z1.relativeZ(spawnOrigin.z), z2.relativeZ(spawnOrigin.z)) + 1).toDouble()
+	private fun fullBoundingBox(pos1: Vec3i, pos2: Vec3i): BoundingBox {
+		val (x1: Int, y1: Int, z1: Int) = pos1
+		val (x2: Int, y2: Int, z2: Int) = pos2
+
+		val minX: Double = (minOf(x1, x2)).toDouble()
+		val minY: Double = (minOf(y1, y2)).toDouble()
+		val minZ: Double = (minOf(z1, z2)).toDouble()
+		val maxX: Double = (maxOf(x1, x2) + 1).toDouble()
+		val maxY: Double = (maxOf(y1, y2) + 1).toDouble()
+		val maxZ: Double = (maxOf(z1, z2) + 1).toDouble()
 
 		return BoundingBox(minX, minY, minZ, maxX, maxY, maxZ)
 	}
-
-	// 93
-	// 359
-	// 82
-
-	private fun Int.relativeX(relativeTo: Int): Int = (this - relativeTo) + ConfigurationFiles.serverConfiguration().tutorialOrigin.x
-	private fun Int.relativeY(relativeTo: Int): Int = (this - relativeTo) + ConfigurationFiles.serverConfiguration().tutorialOrigin.y
-	private fun Int.relativeZ(relativeTo: Int): Int = (this - relativeTo) + ConfigurationFiles.serverConfiguration().tutorialOrigin.z
 }

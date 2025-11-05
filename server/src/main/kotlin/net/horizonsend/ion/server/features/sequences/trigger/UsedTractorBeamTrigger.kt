@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.sequences.trigger
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.event.multiblock.PlayerUseTractorBeamEvent
 import net.horizonsend.ion.server.features.sequences.Sequence
+import net.horizonsend.ion.server.features.sequences.SequenceContext
 import net.horizonsend.ion.server.features.sequences.SequenceManager.getCurrentSequences
 import net.horizonsend.ion.server.features.sequences.trigger.UsedTractorBeamTrigger.TractorBeamTriggerSettings
 import net.horizonsend.ion.server.miscellaneous.utils.listen
@@ -15,7 +16,7 @@ object UsedTractorBeamTrigger : SequenceTriggerType<TractorBeamTriggerSettings>(
 
 	class TractorBeamTriggerSettings(
 	) : TriggerSettings() {
-		override fun shouldProceed(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>, callingTrigger: SequenceTriggerType<*>): Boolean {
+		override fun shouldProceed(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>, callingTrigger: SequenceTriggerType<*>, context: SequenceContext): Boolean {
 			return callingTrigger == UsedTractorBeamTrigger
 		}
 	}

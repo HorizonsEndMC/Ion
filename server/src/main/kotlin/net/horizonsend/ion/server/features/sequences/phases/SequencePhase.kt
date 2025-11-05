@@ -21,15 +21,15 @@ class SequencePhase(
 	private val endEffects = effects.filter { effect -> effect.timing == EffectTiming.END }
 
 	fun start(player: Player) {
-		startEffects.forEach { it.playEffect(player, sequenceKey) }
+		startEffects.forEach { it.playEffect(player, sequenceKey, SequenceManager.getSequenceData(player, sequenceKey).context) }
 	}
 
 	fun tick(player: Player) {
-		tickedEffects.forEach { it.playEffect(player, sequenceKey) }
+		tickedEffects.forEach { it.playEffect(player, sequenceKey, SequenceManager.getSequenceData(player, sequenceKey).context) }
 	}
 
 	fun end(player: Player) {
-		endEffects.forEach { it.playEffect(player, sequenceKey) }
+		endEffects.forEach { it.playEffect(player, sequenceKey, SequenceManager.getSequenceData(player, sequenceKey).context) }
 		SequenceManager.getSequenceData(player, sequenceKey).set("last_phase", phaseKey)
 	}
 
