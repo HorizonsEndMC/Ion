@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
-import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registration.keys.MultiblockRecipeKeys
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
@@ -445,7 +444,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 			}
 			y(10) {
-				x(0).customBlock(CustomBlockKeys.FLUID_PIPE.getValue())
+				x(0).anyFluidPipe()
 			}
 		}
 		z(7) {
