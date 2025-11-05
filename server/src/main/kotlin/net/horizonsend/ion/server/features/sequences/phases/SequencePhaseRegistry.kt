@@ -380,7 +380,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				)
 			), listOf(
 				RANDOM_EXPLOSION_SOUND,
-				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(0, 3, -98), 10L, EffectTiming.TICKED), 10),
+				SequencePhaseEffect.OnTickInterval(SequencePhaseEffect.HighlightBlock(Vec3i(0, -3, -98), 10L, EffectTiming.TICKED), 10),
 
 				ifPreviousPhase(
 					GET_CHETHERITE,
