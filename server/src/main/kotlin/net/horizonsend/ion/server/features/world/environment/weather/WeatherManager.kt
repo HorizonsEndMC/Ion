@@ -103,7 +103,7 @@ class WeatherManager(val environmentManager: WorldEnvironmentManager) {
 		val windSpeed = 2.0 * if (weatherState is Active) weatherState.weatherType.getWindSpeedMultiplier() else 1.0
 
 		val xDir = backgroundWindNoise.noise(x, gameTime, windScale, windSpeed)
-		val yDir = backgroundWindNoise.noise(y, gameTime, windScale, windSpeed)
+		val yDir = backgroundWindNoise.noise(y, gameTime, windScale, windSpeed) * 0.05
 		val zDir = backgroundWindNoise.noise(z, gameTime, windScale, windSpeed)
 
 		return Vector(xDir, yDir, zDir)

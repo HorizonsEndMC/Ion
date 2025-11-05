@@ -6,6 +6,7 @@ import net.horizonsend.ion.server.core.registration.keys.TransportNetworkNodeTyp
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
+import net.horizonsend.ion.server.features.transport.manager.graph.FlowNode
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNetwork
 import net.horizonsend.ion.server.features.transport.manager.graph.TransportNodeType
 import net.horizonsend.ion.server.features.transport.nodes.GaugeNode.CommandBlockGaugeNode
@@ -23,10 +24,8 @@ import org.bukkit.Axis
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 
-abstract class FluidNode(location: BlockKey, type: TransportNodeType<*>, val volume: Double) : TransportNode(location, type) {
+abstract class FluidNode(location: BlockKey, type: TransportNodeType<*>, val volume: Double) : FlowNode(location, type) {
 	private lateinit var graph: FluidNetwork
-
-	abstract val flowCapacity: Double
 
 	override fun getNetwork(): TransportNetwork<*> = graph
 	override fun setNetworkOwner(graph: TransportNetwork<*>) {

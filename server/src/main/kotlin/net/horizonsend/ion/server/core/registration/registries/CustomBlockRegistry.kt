@@ -12,6 +12,8 @@ import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.cable.GridEnergyCable
+import net.horizonsend.ion.server.features.custom.blocks.cable.GridEnergyCableJunction
 import net.horizonsend.ion.server.features.custom.blocks.extractor.AdvancedItemExtractorBlock
 import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
@@ -300,6 +302,8 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		), WrenchRemovable {
 			override fun decorateItem(itemStack: ItemStack, block: Block) {}
 		})
+		register(CustomBlockKeys.GRID_ENERGY_CABLE_JUNCTION, GridEnergyCableJunction)
+		register(CustomBlockKeys.GRID_ENERGY_CABLE, GridEnergyCable)
 
 		register(CustomBlockKeys.COPPER_COIL, CustomBlock(
 			key = CustomBlockKeys.COPPER_COIL,
@@ -319,6 +323,26 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 				drops = customItemDrop(CustomItemKeys.ROTATION_SHAFT)
 			),
 			CustomItemKeys.ROTATION_SHAFT
+		))
+
+		register(CustomBlockKeys.REDSTONE_CONTROL_PORT, CustomBlock(
+			key = CustomBlockKeys.REDSTONE_CONTROL_PORT,
+			blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.WEST, BlockFace.SOUTH)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.REDSTONE_CONTROL_PORT)
+			),
+			CustomItemKeys.REDSTONE_CONTROL_PORT
+		))
+
+		register(CustomBlockKeys.REFRACTORY_BRICKS, CustomBlock(
+			key = CustomBlockKeys.REFRACTORY_BRICKS,
+			blockData = mushroomBlockData(setOf(BlockFace.WEST, BlockFace.SOUTH, BlockFace.EAST, BlockFace.UP, BlockFace.DOWN)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.REFRACTORY_BRICKS)
+			),
+			CustomItemKeys.REFRACTORY_BRICKS
 		))
 	}
 

@@ -6,8 +6,10 @@ import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.Gr
 import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNode
 import net.horizonsend.ion.server.features.transport.nodes.util.BlockBasedCacheFactory
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
+import net.horizonsend.ion.server.miscellaneous.utils.axis
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.block.data.Directional
 import org.bukkit.block.data.MultipleFacing
 import java.util.UUID
 
@@ -24,8 +26,15 @@ class GridEnergyGraphManager(manager: TransportHolder) : NetworkManager<GridEner
 
 		@JvmStatic
 		val cache: BlockBasedCacheFactory<GridEnergyNode, NetworkManager<GridEnergyNode, TransportNetwork<GridEnergyNode>>> = BlockBasedCacheFactory.builder<GridEnergyNode, NetworkManager<GridEnergyNode, TransportNetwork<GridEnergyNode>>>()
-			.addDataHandler<MultipleFacing>(CustomBlockKeys.GRID_ENERGY_PORT, Material.BROWN_MUSHROOM_BLOCK) { _, pos, holder -> GridEnergyNode.GridEnergyPort(pos) }
-			.addSimpleNode(Material.SPONGE) { pos, _, holder -> GridEnergyNode.GridEnergyJunction(pos) }
+			.addDataHandler<MultipleFacing>(CustomBlockKeys.GRID_ENERGY_PORT, Material.BROWN_MUSHROOM_BLOCK) { _, pos, _ -> GridEnergyNode.GridEnergyPortNode(pos) }
+			.addSimpleNode(Material.SPONGE) { pos, _, _ -> GridEnergyNode.GridEnergyJunctionNode(pos) }
+			.addDataHandler<MultipleFacing>(CustomBlockKeys.GRID_ENERGY_CABLE_JUNCTION, Material.CHORUS_PLANT) { _, pos, _ -> GridEnergyNode.GridEnergyCableJunction(pos) }
+			.addDataHandler<MultipleFacing>(CustomBlockKeys.GRID_ENERGY_CABLE, Material.CHORUS_PLANT) { data, pos, _ ->
+				val axis = CustomBlockKeys.GRID_ENERGY_CABLE.getValue().getAxis(data)
+				GridEnergyNode.GridEnergyCable(pos, axis)
+			}
+			.addSimpleNode(Material.NETHERITE_BLOCK) { pos, _, _ -> GridEnergyNode.UltraHighCapacityGridEnergyJunctionNode(pos) }
+			.addDataHandler<Directional>(Material.END_ROD) { data, pos, _ -> GridEnergyNode.GridEnergyLinearNode(pos, data.facing.axis) }
 			.build()
 	}
 }

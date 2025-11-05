@@ -70,7 +70,7 @@ object MultimeterItem : CustomItem(
 			setFirstPoint(event.player, itemStack, event)
 		})
 
-		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(10) { entity, itemStack, _, _ ->
+		addComponent(CustomComponentTypes.TICK_RECEIVER, TickReceiverModule(10) { entity, itemStack, _, _ ->
 			if (entity !is Player) return@TickReceiverModule
 
 			getFirstPoint(itemStack)?.let {
@@ -89,7 +89,7 @@ object MultimeterItem : CustomItem(
 			}
 		})
 
-		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(100) { entity, itemStack, _, _ ->
+		addComponent(CustomComponentTypes.TICK_RECEIVER, TickReceiverModule(100) { entity, itemStack, _, _ ->
 			tickPath(entity, entity.world, itemStack)
 		})
 	}

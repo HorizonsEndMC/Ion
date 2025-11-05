@@ -4,6 +4,7 @@ import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
+import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 
 sealed interface FluidRestriction {
 	fun canAdd(fluid: FluidStack): Boolean
@@ -69,6 +70,19 @@ sealed interface FluidRestriction {
 		}
 		override fun canAdd(type: IonRegistryKey<FluidType, out FluidType>): Boolean {
 			return !disallowedFluids.contains(type)
+		}
+
+		override fun canRemove(fluid: FluidStack): Boolean {
+			return true
+		}
+	}
+
+	class FluidPropertyWhitelist(val requiredProperty: IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<*>>): FluidRestriction {
+		override fun canAdd(fluid: FluidStack): Boolean {
+			return fluid.getAllProperties().containsKey(requiredProperty.getValue())
+		}
+		override fun canAdd(type: IonRegistryKey<FluidType, out FluidType>): Boolean {
+			return type.getValue().defaultProperties.containsKey(requiredProperty)
 		}
 
 		override fun canRemove(fluid: FluidStack): Boolean {

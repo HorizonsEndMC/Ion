@@ -3,7 +3,6 @@ package net.horizonsend.ion.server.features.multiblock.type.fluid
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.plainText
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
-import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registration.keys.MultiblockRecipeKeys
 import net.horizonsend.ion.server.features.client.display.modular.DisplayHandlers
 import net.horizonsend.ion.server.features.client.display.modular.TextDisplayHandler
@@ -445,7 +444,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 			}
 			y(10) {
-				x(0).customBlock(CustomBlockKeys.FLUID_PIPE.getValue())
+				x(0).anyFluidPipe()
 			}
 		}
 		z(7) {
@@ -546,25 +545,25 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		override val gridEnergyManager: GridEnergyMultiblock.MultiblockGridEnergyManager = GridEnergyMultiblock.MultiblockGridEnergyManager(this)
 		override val statusManager: StatusMultiblockEntity.StatusManager = StatusMultiblockEntity.StatusManager()
 
-		override val ioData: IOData = IOData.Companion.builder(this)
+		override val ioData: IOData = IOData.builder(this)
 			// Inputs
-			.addPort(IOType.FLUID, -4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = primaryInput, inputAllowed = true, outputAllowed = false)) }
+			.addPort(IOType.FLUID, -4, 0, 3) { IOPort.RegisteredMetaDataInput(this, FluidPortMetadata(connectedStore = primaryInput, inputAllowed = true, outputAllowed = false)) }
 			.addPort(IOType.FLUID, -4, 0, 5) {
-                IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = secondaryInput, inputAllowed = true, outputAllowed = false))
+                IOPort.RegisteredMetaDataInput(this, FluidPortMetadata(connectedStore = secondaryInput, inputAllowed = true, outputAllowed = false))
             }
 
 			// Outputs
-			.addPort(IOType.FLUID, 4, 0, 3) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = primaryOutput, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, 4, 0, 3) { IOPort.RegisteredMetaDataInput(this, FluidPortMetadata(connectedStore = primaryOutput, inputAllowed = false, outputAllowed = true)) }
 			.addPort(IOType.FLUID, 4, 0, 5) {
-                IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = secondaryOutput, inputAllowed = false, outputAllowed = true))
+                IOPort.RegisteredMetaDataInput(this, FluidPortMetadata(connectedStore = secondaryOutput, inputAllowed = false, outputAllowed = true))
             }
 
 			.addPort(IOType.FLUID, 0, 9, 6) {
-                IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = pollutionOutput, inputAllowed = false, outputAllowed = true))
+                IOPort.RegisteredMetaDataInput(this, FluidPortMetadata(connectedStore = pollutionOutput, inputAllowed = false, outputAllowed = true))
             }
 
 			.addPort(IOType.GRID_ENERGY, 0, -1, 0) {
-                IOPort.RegisteredMetaDataInput<GridEnergyPortMetaData>(this, GridEnergyPortMetaData(inputAllowed = true, outputAllowed = false))
+                IOPort.RegisteredMetaDataInput(this, GridEnergyPortMetaData(inputAllowed = true, outputAllowed = false))
             }
 
 			.build()
@@ -573,7 +572,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		val secondaryInput = FluidStorageContainer(data, "secondaryin", text("Secondary Input"), NamespacedKeys.key("secondaryin"), 100_000.0, FluidRestriction.Unlimited)
 		val primaryOutput = FluidStorageContainer(data, "primaryout", text("Primary Output"), NamespacedKeys.key("primaryout"), 100_000.0, FluidRestriction.Unlimited)
 		val secondaryOutput = FluidStorageContainer(data, "secondaryout", text("Secondary Output"), NamespacedKeys.key("secondaryout"), 100_000.0, FluidRestriction.Unlimited)
-		val pollutionOutput = FluidStorageContainer(data, "pollutionout", text("Pollution Output"), NamespacedKeys.key("pollutionout"), 100_000.0, FluidRestriction.Unlimited)
+		val pollutionOutput = FluidStorageContainer(data, "pollution_out", text("Pollution Output"), NamespacedKeys.key("pollution_out"), 100_000.0, FluidRestriction.Unlimited)
 
 		val settings = SettingsContainer.multiblockSettings(data,
 			SettingsProperty(ChemicalProcessorEntity::lockedRecipe, MultiblockRecipeKeys.serializer, null),
@@ -604,7 +603,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 						key as IonRegistryKey<MultiblockRecipe<*>, out MultiblockRecipe<ChemicalProcessorEnviornment>>
 						val recipe: ChemicalProcessorRecipe = key.getValue() as ChemicalProcessorRecipe
 
-						listOfNotNull<String>(
+						listOfNotNull(
 							key.key,
 							recipe.fluidRequirementOne?.asFluidStack()?.getDisplayName()?.plainText(),
 							recipe.fluidRequirementTwo?.asFluidStack()?.getDisplayName()?.plainText(),
@@ -727,7 +726,7 @@ object ChemicalProcessorMultiblock : Multiblock(), EntityMultiblock<ChemicalProc
 		}
 
 		override fun getPassiveGridEnergyConsumption(): Double {
-			return 10.0
+			return 8000.0
 		}
 
 		override fun tickAsync() {

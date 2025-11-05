@@ -83,11 +83,11 @@ class PowerArmorItem(
 			modManger.openMenu(event.player, this@PowerArmorItem, item)
 		})
 
-		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(20) { entity, itemStack, _, _ ->
+		addComponent(CustomComponentTypes.TICK_RECEIVER, TickReceiverModule(20) { entity, itemStack, _, _ ->
 			tickPowerMods(entity, itemStack)
 		})
 
-		addComponent(CustomComponentTypes.TICK_RECIEVER, TickReceiverModule(1) { entity, itemStack, _, equipmentSlot ->
+		addComponent(CustomComponentTypes.TICK_RECEIVER, TickReceiverModule(1) { entity, itemStack, _, equipmentSlot ->
 			tickRocketBoots(entity, itemStack, equipmentSlot)
 		})
 	}

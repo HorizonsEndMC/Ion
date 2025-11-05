@@ -70,7 +70,7 @@ open class EnmityModule(
 		decayEnmity()
 		generateEnmity()
 		updateAggro()
-		debugAudience.debug("Number of targets: ${enmityList.size}, agrooed: ${enmityList.filter { it.aggroed }.size}")
+//		debugAudience.debug("Number of targets: ${enmityList.size}, agrooed: ${enmityList.filter { it.aggroed }.size}")
 		sortEnmity()
 	}
 

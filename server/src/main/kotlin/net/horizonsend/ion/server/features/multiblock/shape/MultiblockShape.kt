@@ -1,5 +1,7 @@
 package net.horizonsend.ion.server.features.multiblock.shape
 
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
+import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys
 import net.horizonsend.ion.server.core.registration.registries.CustomBlockRegistry.Companion.customBlock
 import net.horizonsend.ion.server.core.registration.registries.CustomItemRegistry.Companion.customItem
@@ -8,6 +10,7 @@ import net.horizonsend.ion.server.features.custom.items.type.CustomBlockItem
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager.Companion.STANDARD_EXTRACTOR_TYPE
 import net.horizonsend.ion.server.miscellaneous.utils.CARDINAL_BLOCK_FACES
 import net.horizonsend.ion.server.miscellaneous.utils.CONCRETE_TYPES
+import net.horizonsend.ion.server.miscellaneous.utils.COPPER_BULB_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.MATERIALS
 import net.horizonsend.ion.server.miscellaneous.utils.TERRACOTTA_TYPES
 import net.horizonsend.ion.server.miscellaneous.utils.blockFace
@@ -261,6 +264,8 @@ class MultiblockShape {
 			edit(requirement)
 		}
 
+		fun customBlock(key: IonRegistryKey<CustomBlock, out CustomBlock>) = customBlock(key.getValue())
+
 		fun customBlock(customBlock: CustomBlock) {
 			val requirement = BlockRequirement(
 				alias = customBlock.key.key,
@@ -279,6 +284,80 @@ class MultiblockShape {
 			)
 
 			complete(requirement)
+		}
+
+		fun anyCustomBlock(vararg types: IonRegistryKey<CustomBlock, out CustomBlock>, alias: String, edit: BlockRequirement.() -> Unit = {}) {
+			val set = ObjectOpenHashSet.of(*types)
+
+			val requirement = BlockRequirement(
+				alias = alias,
+				example = types.first().getValue().blockData,
+				syncCheck = { block, _, loadChunks ->
+					val customBlockKey = if (loadChunks) block.customBlock?.key else { getBlockDataSafe(block.world, block.x, block.y, block.z)?.customBlock?.key }
+					if (customBlockKey == null) return@BlockRequirement false
+					set.contains(customBlockKey)
+				},
+				itemRequirement = BlockRequirement.ItemRequirement(
+					itemCheck = {
+						val customItem = it.customItem
+						customItem is CustomBlockItem && set.contains(customItem.getCustomBlock().key)
+					},
+					amountConsumed = { 1 },
+					toBlock = { item -> (item.customItem as CustomBlockItem).getCustomBlock().blockData },
+					toItemStack = { blockData -> blockData.customBlock?.customItem?.constructItemStack() ?: ItemStack(Material.AIR) }
+				)
+			)
+
+			complete(requirement)
+
+			edit(requirement)
+		}
+
+		fun anyCustomBlockOrMaterial(
+			customBlocks: Collection<IonRegistryKey<CustomBlock, out CustomBlock>>,
+			materials: Collection<Material>,
+			alias: String,
+			edit: BlockRequirement.() -> Unit = {}
+		) {
+			val customBlockSet = ObjectOpenHashSet(customBlocks)
+			val typeSet = EnumSet.copyOf(materials)
+
+			val requirement = BlockRequirement(
+				alias = alias,
+				example = customBlocks.first().getValue().blockData,
+				syncCheck = { block, _, loadChunks ->
+					if (typeSet.contains(if (loadChunks) block.type else block.getTypeSafe() ?: return@BlockRequirement false)) return@BlockRequirement true
+
+					val customBlockKey = if (loadChunks) block.customBlock?.key else { getBlockDataSafe(block.world, block.x, block.y, block.z)?.customBlock?.key }
+					if (customBlockKey == null) return@BlockRequirement false
+					customBlockSet.contains(customBlockKey)
+				},
+				itemRequirement = BlockRequirement.ItemRequirement(
+					itemCheck = {
+						if (typeSet.contains(it.type)) return@ItemRequirement true
+
+						val customItem = it.customItem
+						customItem is CustomBlockItem && customBlockSet.contains(customItem.getCustomBlock().key)
+					},
+					amountConsumed = { 1 },
+					toBlock = { item ->
+						val customItem = item.customItem
+						if (customItem != null && customItem is CustomBlockItem) return@ItemRequirement customItem.getCustomBlock().blockData
+
+						item.type.createBlockData()
+					},
+					toItemStack = { block ->
+						val customBlock = block.customBlock
+						if (customBlock != null) return@ItemRequirement customBlock.customItem.constructItemStack()
+
+						ItemStack(block.material)
+					}
+				)
+			)
+
+			complete(requirement)
+
+			edit(requirement)
 		}
 
 		fun anyType(alias: String, types: Iterable<Material>, edit: BlockRequirement.() -> Unit = {}) = anyType(
@@ -493,6 +572,8 @@ class MultiblockShape {
 		fun hopper() = type(Material.HOPPER)
 		fun anyPipedInventory() = filteredTypes("any container block", edit = { setExample(Material.CHEST.createBlockData()) }) { it.isPipedInventory }
 		fun dispenser() = type(Material.DISPENSER)
+		fun dropper() = type(Material.DROPPER)
+		fun dropperOrDispenser() = anyType("dropper or dispenser", listOf(Material.DROPPER, Material.DISPENSER))
 
 		fun netheriteCasing() = customBlock(CustomBlockKeys.NETHERITE_CASING.getValue())
 
@@ -579,5 +660,29 @@ class MultiblockShape {
 			Material.QUARTZ_BLOCK,
 			alias = "stone bricks"
 		)
+
+		fun anyGauge() = anyCustomBlockOrMaterial(
+			listOf(CustomBlockKeys.TEMPERATURE_GAUGE),
+			listOf(*COPPER_BULB_TYPES.toTypedArray()),
+			alias = "any gauge"
+		)
+
+		fun anyGaugeOrBlank(customBlockBlanks: Array<IonRegistryKey<CustomBlock, out CustomBlock>> = arrayOf(), materialBlanks: Array<Material> = arrayOf()) = anyCustomBlockOrMaterial(
+			listOf(CustomBlockKeys.TEMPERATURE_GAUGE, *customBlockBlanks),
+			listOf(*COPPER_BULB_TYPES.toTypedArray(), *materialBlanks),
+			alias = "any gauge"
+		)
+
+		fun anyFluidPipe() = anyCustomBlock(
+			CustomBlockKeys.FLUID_PIPE,
+			CustomBlockKeys.FLUID_PIPE_JUNCTION,
+			CustomBlockKeys.REINFORCED_FLUID_PIPE,
+			CustomBlockKeys.REINFORCED_FLUID_PIPE_JUNCTION,
+			CustomBlockKeys.FLUID_VALVE,
+			CustomBlockKeys.TEMPERATURE_GAUGE,
+			alias = "any fluid pipe",
+		) { setExample(CustomBlockKeys.FLUID_PIPE.getValue().blockData) }
+
+		fun refractoryBricks() = customBlock(CustomBlockKeys.REFRACTORY_BRICKS.getValue())
 	}
 }

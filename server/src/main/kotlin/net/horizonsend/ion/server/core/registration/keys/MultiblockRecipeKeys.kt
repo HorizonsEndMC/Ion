@@ -18,6 +18,7 @@ object MultiblockRecipeKeys : KeyRegistry<MultiblockRecipe<*>>(RegistryKeys.MULT
 	val LOADED_SHELL_LOADING = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("LOADED_SHELL_LOADING")
 	val UNCHARGED_SHELL_CHARGING = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("UNCHARGED_SHELL_CHARGING")
 	val ARSENAL_MISSILE_LOADING = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("ARSENAL_MISSILE_LOADING")
+	val COPPER_BLOCK_PRESSING = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("COPPER_BLOCK_PRESSING")
 
 	val COPPER_BLOCK_OXIDATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("COPPER_BLOCK_OXIDATION")
 	val EXPOSED_COPPER_OXIDATION = registerTypedKey<MultiblockRecipe<FurnaceEnviornment>>("EXPOSED_COPPER_OXIDATION")

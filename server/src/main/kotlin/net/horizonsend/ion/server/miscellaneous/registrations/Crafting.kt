@@ -5,6 +5,7 @@ import io.papermc.paper.datacomponent.item.ItemEnchantments
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ADVANCED_ITEM_EXTRACTOR
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ALUMINUM_INGOT
@@ -30,6 +31,8 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERI
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CHETHERITE_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CIRCUITRY
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CIRCUIT_BOARD
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.COPPER_COIL
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.COPPER_WIRE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRATE_PLACER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.CRUISER_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.DETONATOR
@@ -85,6 +88,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTOR_
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REACTOR_FRAME
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REINFORCED_FRAME
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.RIFLE_RECEIVER
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ROTATION_SHAFT
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SHOTGUN_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMB_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMOKE_GRENADE
@@ -243,6 +247,8 @@ object Crafting : IonServerComponent() {
 		registerOreFurnaceRecipes()
 		registerTools()
 		registerMisc()
+		registerIndustry()
+		registerPipes()
 
 		// Prismarine Bricks
 		val primarineBricksFurnaceRecipe = FurnaceRecipe(
@@ -926,6 +932,77 @@ object Crafting : IonServerComponent() {
 		listOfCustomRecipes.add(blackDyeRecipe.key)
 	}
 
+	fun registerIndustry() {
+		shaped("copper_coil", COPPER_COIL, CraftingBookCategory.BUILDING) {
+			shape("wiw", "wiw", "wiw")
+			setIngredient('w', COPPER_WIRE)
+			setIngredient('i', IRON_INGOT)
+		}
+
+		shaped("rotation_shaft", ROTATION_SHAFT, CraftingBookCategory.BUILDING) {
+			shape("wiw", "wiw", "wiw")
+			setIngredient('w', TITANIUM_INGOT)
+			setIngredient('i', STEEL_INGOT)
+		}
+
+		shapeless(name = "refractory_mix", result = CustomItemKeys.REFRACTORY_MIX, category = CraftingBookCategory.MISC, ItemStack(Material.CLAY_BALL), RAW_ALUMINUM.getValue().constructItemStack())
+
+		val refractoryBrickRecipe = FurnaceRecipe(
+			NamespacedKeys.key("refractory_brick"),
+			CustomItemKeys.REFRACTORY_BRICK.getValue().constructItemStack(),
+			RecipeChoice.ExactChoice(CustomItemKeys.REFRACTORY_MIX.getValue().constructItemStack()),
+			1f,
+			200
+		)
+		refractoryBrickRecipe.category = CookingBookCategory.BLOCKS
+		Bukkit.addRecipe(refractoryBrickRecipe)
+		listOfCustomRecipes.add(refractoryBrickRecipe.key)
+
+		shapeless(name = "refractory_bricks", result = CustomItemKeys.REFRACTORY_BRICKS, category = CraftingBookCategory.BUILDING, CustomItemKeys.REFRACTORY_BRICK.getValue().constructItemStack(9))
+	}
+
+	fun registerPipes() {
+		shaped("fluid_pipe", CustomItemKeys.FLUID_PIPE.getValue().constructItemStack(4), category = CraftingBookCategory.BUILDING) {
+			shape(
+				" g ",
+				"ici",
+				" g ",
+			)
+			setIngredient('g', GLASS)
+			setIngredient('i', IRON_INGOT)
+			setIngredient('c', COPPER_INGOT)
+		}
+		shaped("fluid_pipe_junction", CustomItemKeys.FLUID_PIPE_JUNCTION, category = CraftingBookCategory.BUILDING) {
+			shape(
+				" i ",
+				"ici",
+				" i ",
+			)
+			setIngredient('i', IRON_INGOT)
+			setIngredient('c', COPPER_INGOT)
+		}
+		shaped("fluid_valve", CustomItemKeys.FLUID_VALVE, category = CraftingBookCategory.BUILDING) {
+			shape(
+				" r ",
+				"ici",
+				" r ",
+			)
+			setIngredient('i', IRON_INGOT)
+			setIngredient('r', REDSTONE)
+			setIngredient('c', CustomItemKeys.FLUID_PIPE_JUNCTION)
+		}
+		shaped("fluid_port", CustomItemKeys.FLUID_PORT, category = CraftingBookCategory.BUILDING) {
+			shape(
+				"ici",
+				"cjc",
+				"ici",
+			)
+			setIngredient('i', IRON_INGOT)
+			setIngredient('c', COPPER_INGOT)
+			setIngredient('j', CustomItemKeys.FLUID_PIPE_JUNCTION)
+		}
+	}
+
 	// Different names due to signature problems from type erasure
 	private fun shapedMaterial(name: String, result: Material, shape1: String, shape2: String, shape3: String, category: CraftingBookCategory = CraftingBookCategory.MISC, vararg ingredients: Pair<Char, Material>) {
 		val recipe = ShapedRecipe(NamespacedKeys.key(name), ItemStack(result))
@@ -1022,6 +1099,14 @@ object Crafting : IonServerComponent() {
 		recipe.category = category
 		Bukkit.addRecipe(recipe)
 		listOfCustomRecipes.add(NamespacedKeys.key(name))
+	}
+
+	private fun shapeless(name: String, result: IonRegistryKey<CustomItem, out CustomItem>, category: CraftingBookCategory = CraftingBookCategory.MISC, vararg ingredients: IonRegistryKey<CustomItem, out CustomItem>) {
+		return shapeless(name, result.getValue().constructItemStack(), category, *ingredients)
+	}
+
+	private fun shapeless(name: String, result: IonRegistryKey<CustomItem, out CustomItem>, category: CraftingBookCategory = CraftingBookCategory.MISC, vararg ingredients: ItemStack) {
+		return shapeless(name, result.getValue().constructItemStack(), category, *ingredients)
 	}
 
 	private fun ShapedRecipe.setIngredient(key: Char, customItem: IonRegistryKey<CustomItem, out CustomItem>) = setIngredient(key, customItem.getValue().constructItemStack())

@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.transport.fluids.properties
 
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
+import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 
@@ -25,9 +26,7 @@ interface FluidProperty {
 			const val DEFAULT_TEMPERATURE = 15.0
 		}
 
-		override fun clone(): Temperature {
-			return copy()
-		}
+		override fun clone(): Temperature = copy()
 	}
 
 	data class Salinity(val value: Double) : FluidProperty {
@@ -43,8 +42,22 @@ interface FluidProperty {
 			const val DEFAULT_SALINITY = 0.0
 		}
 
-		override fun clone(): Salinity {
-			return copy()
+		override fun clone(): Salinity = copy()
+	}
+
+	data class Flammability(
+		val joulesPerLiter: Double,
+		val resultFluid: IonRegistryKey<FluidType, out FluidType>,
+		val resultVolumeMultiplier: Double
+	) : FluidProperty {
+		init {
+			check(joulesPerLiter.isFinite() && joulesPerLiter >= 0.0) { "Joules per liter must be between positive and finite!" }
+			check(joulesPerLiter.isFinite() && joulesPerLiter >= 0.0) { "Result volume multiplier must be between positive and finite!" }
 		}
+
+		override val typeKey: IonRegistryKey<FluidPropertyType<*>, FluidPropertyType<Flammability>> = FluidPropertyTypeKeys.FLAMMABILITY
+
+		override fun clone(): Flammability = copy()
+
 	}
 }
