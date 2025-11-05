@@ -25,8 +25,8 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.util.Vector
 import java.util.Optional
+import java.util.function.Supplier
 import kotlin.jvm.optionals.getOrNull
-import kotlin.reflect.KClass
 
 abstract class SequencePhaseEffect(val timing: EffectTiming?) {
 	abstract fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext)
@@ -47,10 +47,17 @@ abstract class SequencePhaseEffect(val timing: EffectTiming?) {
 		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { SequenceManager.clearSequenceData(player) }
 	}
 
-	class SetSequenceData<T : Any>(val key: String, val value: T, val valueClass: KClass<T>, timing: EffectTiming?) : SequencePhaseEffect(timing) {
+	class SetSequenceData<T : Any>(val key: String, val value: T, timing: EffectTiming?) : SequencePhaseEffect(timing) {
 		@OptIn(InternalSerializationApi::class)
 		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
-			SequenceManager.getSequenceData(player, sequenceKey).set<T>(key, value)
+			SequenceManager.getSequenceData(player, sequenceKey).set(key, value)
+		}
+	}
+
+	class SuppliedSetSequenceData<T : Any>(val key: String, val valueProvider: Supplier<T>, timing: EffectTiming?) : SequencePhaseEffect(timing) {
+		@OptIn(InternalSerializationApi::class)
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) {
+			SequenceManager.getSequenceData(player, sequenceKey).set(key, valueProvider.get())
 		}
 	}
 

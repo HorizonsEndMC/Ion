@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.sequences.phases
 
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
+import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
@@ -32,9 +33,9 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.EN
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.EXIT_CRYOPOD_ROOM
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FIRE_OBSTACLE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GET_CHETHERITE
-import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.JUMP_TO_HYPERSPACE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.LOOK_AT_TRACTOR
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.RECEIVED_CHETHERITE
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.SHIFT_FLIGHT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TUTORIAL_START
 import net.horizonsend.ion.server.features.sequences.trigger.CombinedAndTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.ContainsItemTrigger
@@ -44,20 +45,23 @@ import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigg
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.lookingAtBoundingBox
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
-import net.horizonsend.ion.server.features.sequences.trigger.ShipManualFlightTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.UsedTractorBeamTrigger.TractorBeamTriggerSettings
+import net.horizonsend.ion.server.features.sequences.trigger.WaitTimeTrigger
 import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
 import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Sound
+import org.bukkit.Sound.ENTITY_BREEZE_WIND_BURST
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import org.bukkit.util.BoundingBox
+import java.util.concurrent.TimeUnit
 
 class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHASE) {
     override fun getKeySet(): KeyRegistry<SequencePhase> = SequencePhaseKeys
@@ -360,7 +364,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 			RECEIVED_CHETHERITE, SequenceKeys.TUTORIAL, listOf(
 				SequenceTrigger(
 					type = SequenceTriggerTypes.PLAYER_MOVEMENT,
-					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(Vec3i(-1, -4, -91), Vec3i(1, -1, -91)))),
+					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(Vec3i(-1, -4, -93), Vec3i(1, -1, -93)))),
 					triggerResult = SequenceTrigger.startPhase(ENTERED_ESCAPE_POD)
 				),
 				SequenceTrigger(
@@ -399,11 +403,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             sequenceKey = SequenceKeys.TUTORIAL,
             triggers = listOf(
 				SequenceTrigger(
-					SequenceTriggerTypes.STARSHIP_MANUAL_FLIGHT,
-					ShipManualFlightTrigger.ShiftFlightTriggerSettings(listOf(
-						inBoundingBox(fullBoundingBox(Vec3i(99, -120, -322), Vec3i(-82, -315, -459)))
-					)),
-					triggerResult = SequenceTrigger.startPhase(JUMP_TO_HYPERSPACE)
+					SequenceTriggerTypes.WAIT_TIME,
+					WaitTimeTrigger.WaitTimeTriggerSettings("ENTERED_ESCAPE_POD_START", TimeUnit.SECONDS.toMillis(7)),
+					triggerResult = SequenceTrigger.startPhase(SHIFT_FLIGHT)
 				)
 			),
             effects = listOf(
@@ -413,21 +415,34 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 						StarshipDealers.loadDealerShipUnchecked(player, NPCDealerShip(ConfigurationFiles.serverConfiguration().tutorialEscapePodShip))
 					}
 				}, EffectTiming.START),
-				SequencePhaseEffect.RunCode({ player, _ ->
-					player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 1))
-				}, EffectTiming.START),
+				SequencePhaseEffect.RunCode({ player, _ -> player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 1)) }, EffectTiming.START),
+				SequencePhaseEffect.PlaySound(
+					org.bukkit.Registry.SOUNDS.getKeyOrThrow(ENTITY_BREEZE_WIND_BURST).key(),
+					StaticFloatAmount(1.0f),
+					StaticFloatAmount(0.0f),
+					EffectTiming.START
+				),
+
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(text("You are now piloting the scale pod!", NamedTextColor.YELLOW, BOLD), EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(text("Through the speaker in our shuttle, you hear the panicked voice of the captain once again.", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(text("Attention all escape pods, the Horizon’s End Transit Hub is within range! Go *TODO* and fly through the asteroid belt!", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
+
+				SequencePhaseEffect.SuppliedSetSequenceData("ENTERED_ESCAPE_POD_START", { System.currentTimeMillis() }, EffectTiming.START),
             )
         )
 
 		bootstrapPhase(
-			phaseKey = JUMP_TO_HYPERSPACE,
+			phaseKey = SHIFT_FLIGHT,
 			sequenceKey = SequenceKeys.TUTORIAL,
 			triggers = listOf(
 				//TODO
 			),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
-
+				SendMessage(text("Starting shift flight", GRAY, ITALIC), EffectTiming.START),
 			)
 		)
     }
@@ -445,7 +460,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
                 GoToPreviousPhase(EffectTiming.START),
 
-                SequencePhaseEffect.SetSequenceData("seen_pirates", true, Boolean::class, EffectTiming.END),
+                SequencePhaseEffect.SetSequenceData("seen_pirates", true, EffectTiming.END),
             )
         )
 
@@ -460,7 +475,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SendMessage(Component.empty(), EffectTiming.START),
 
                 GoToPreviousPhase(EffectTiming.START),
-                SequencePhaseEffect.SetSequenceData("seen_dynmap", true, Boolean::class, EffectTiming.END),
+                SequencePhaseEffect.SetSequenceData("seen_dynmap", true, EffectTiming.END),
             )
         )
 
@@ -479,7 +494,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SendMessage(Component.empty(), EffectTiming.START),
 
                 GoToPreviousPhase(EffectTiming.START),
-                SequencePhaseEffect.SetSequenceData("seen_ship_computer", true, Boolean::class, EffectTiming.END),
+                SequencePhaseEffect.SetSequenceData("seen_ship_computer", true, EffectTiming.END),
             )
         )
 
@@ -496,7 +511,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
 				GoToPreviousPhase(EffectTiming.START),
 
-				SequencePhaseEffect.SetSequenceData("seen_navigation", true, Boolean::class, EffectTiming.END),
+				SequencePhaseEffect.SetSequenceData("seen_navigation", true, EffectTiming.END),
 			)
 		)
 
@@ -513,7 +528,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
 				GoToPreviousPhase(EffectTiming.START),
 
-				SequencePhaseEffect.SetSequenceData("seen_multiblocks", true, Boolean::class, EffectTiming.END),
+				SequencePhaseEffect.SetSequenceData("seen_multiblocks", true, EffectTiming.END),
 			)
 		)
 
@@ -532,7 +547,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 
 				GoToPreviousPhase(EffectTiming.START),
 
-				SequencePhaseEffect.SetSequenceData("seen_crates", true, Boolean::class, EffectTiming.END),
+				SequencePhaseEffect.SetSequenceData("seen_crates", true, EffectTiming.END),
 			)
 		)
     }
