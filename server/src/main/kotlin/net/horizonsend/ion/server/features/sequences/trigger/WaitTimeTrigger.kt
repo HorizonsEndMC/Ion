@@ -12,7 +12,7 @@ object WaitTimeTrigger : SequenceTriggerType<WaitTimeTrigger.WaitTimeTriggerSett
 		listen<ServerTickEndEvent> {
 			for (player in SequenceManager.allPlayers()) {
 				for (sequenceKey in getCurrentSequences(player)) {
-					checkPhaseTriggers(player, sequenceKey)
+					checkPhaseTriggers(player, sequenceKey, null)
 				}
 			}
 		}

@@ -12,7 +12,7 @@ object ShipManualFlightTrigger : SequenceTriggerType<ShiftFlightTriggerSettings>
 		listen<StarshipTranslateEvent> {
 			val player = it.ship.playerPilot ?: return@listen
 			if (it.movement.source != TranslateMovement.MovementSource.MANUAL) return@listen
-			checkAllSequences(player)
+			checkAllSequences(player, it)
 		}
 	}
 

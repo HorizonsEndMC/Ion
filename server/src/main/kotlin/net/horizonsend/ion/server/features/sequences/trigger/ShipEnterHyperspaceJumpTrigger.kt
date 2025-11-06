@@ -9,7 +9,7 @@ object ShipEnterHyperspaceJumpTrigger : SequenceTriggerType<ShipEnterHyperspaceJ
 	override fun setupChecks() {
 		listen<StarshipEnterHyperspaceEvent> {
 			val player = it.starship.playerPilot ?: return@listen
-			checkAllSequences(player)
+			checkAllSequences(player, it)
 		}
 	}
 
