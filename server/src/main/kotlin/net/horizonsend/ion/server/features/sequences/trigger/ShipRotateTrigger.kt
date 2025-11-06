@@ -9,7 +9,7 @@ object ShipRotateTrigger : SequenceTriggerType<ShipRotationTriggerSettings>() {
 	override fun setupChecks() {
 		listen<StarshipRotateEvent> {
 			val player = it.ship.playerPilot ?: return@listen
-			checkAllSequences(player)
+			checkAllSequences(player, it)
 		}
 	}
 

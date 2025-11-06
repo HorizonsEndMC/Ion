@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerMoveEvent
 import org.bukkit.util.BoundingBox
 
 object PlayerMovementTrigger : SequenceTriggerType<MovementTriggerSettings>() {
-	override fun setupChecks() = listen<PlayerMoveEvent> { checkAllSequences(it.player) }
+	override fun setupChecks() = listen<PlayerMoveEvent> { checkAllSequences(it.player, it) }
 
 	class MovementTriggerSettings(
 		vararg val predicates: PlayerLocationPredicate
