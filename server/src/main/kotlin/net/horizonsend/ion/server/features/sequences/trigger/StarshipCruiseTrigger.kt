@@ -16,8 +16,7 @@ object StarshipCruiseTrigger : SequenceTriggerType<CruseTriggerSettings>() {
 		}
 	}
 
-	class CruseTriggerSettings(
-	) : TriggerSettings() {
+	class CruseTriggerSettings() : TriggerSettings() {
 		override fun shouldProceed(player: Player, context: TriggerContext): Boolean {
 			return context.callingTrigger == StarshipCruiseTrigger
 		}

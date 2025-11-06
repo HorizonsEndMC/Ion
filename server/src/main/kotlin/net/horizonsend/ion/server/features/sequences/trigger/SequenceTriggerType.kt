@@ -30,7 +30,7 @@ abstract class SequenceTriggerType<T : SequenceTriggerType.TriggerSettings> {
 		for (trigger in currentPhase.triggers) {
 			if (!trigger.shouldProceed(player, triggerContext)) continue
 
-			trigger.trigger(player)
+			trigger.trigger(player, triggerContext)
 			break
 		}
 	}
