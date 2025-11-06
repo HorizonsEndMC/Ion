@@ -5,24 +5,25 @@ import net.horizonsend.ion.server.features.sequences.Sequence
 import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sequences.SequenceManager.getCurrentSequences
 import org.bukkit.entity.Player
+import org.bukkit.event.Event
 
 abstract class SequenceTriggerType<T : SequenceTriggerType.TriggerSettings> {
 	open fun setupChecks() {}
 
-	fun checkAllSequences(player: Player) {
+	fun checkAllSequences(player: Player, event: Event?) {
 		for (sequenceKey in getCurrentSequences(player)) {
-			checkPhaseTriggers(player, sequenceKey)
+			checkPhaseTriggers(player, sequenceKey, event)
 		}
 	}
 
-	protected fun checkPhaseTriggers(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>) {
+	protected fun checkPhaseTriggers(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>, event: Event?) {
 		val currentPhase = SequenceManager.getCurrentPhase(player, sequenceKey)?.getValue() ?: return
 
 		val triggerContext = TriggerContext(
 			sequence = sequenceKey,
 			callingTrigger = this,
 			sequenceContext = SequenceManager.getSequenceData(player, sequenceKey).context,
-			event = null
+			event = event
 		)
 
 		// Find all triggers for children on the current phase

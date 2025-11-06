@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.listen
 import org.bukkit.entity.Player
 
 object UsedTractorBeamTrigger : SequenceTriggerType<TractorBeamTriggerSettings>() {
-	override fun setupChecks() = listen<PlayerUseTractorBeamEvent> { checkAllSequences(it.player) }
+	override fun setupChecks() = listen<PlayerUseTractorBeamEvent> { checkAllSequences(it.player, it) }
 
 	class TractorBeamTriggerSettings() : TriggerSettings() {
 		override fun shouldProceed(player: Player, context: TriggerContext): Boolean {

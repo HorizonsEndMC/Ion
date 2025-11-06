@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack
 object ContainsItemTrigger : SequenceTriggerType<ContainsItemTrigger.ContainsItemTriggerSettings>() {
 	override fun setupChecks() {
 		// Check every time the client is ticked
-		listen<ClientTickEndEvent> { checkAllSequences(it.player) }
+		listen<ClientTickEndEvent> { checkAllSequences(it.player, it) }
 	}
 
 	class ContainsItemTriggerSettings(private val itemPredicate: (ItemStack?) -> Boolean) : TriggerSettings() {
