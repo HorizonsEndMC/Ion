@@ -10,6 +10,7 @@ import net.horizonsend.ion.server.features.sequences.SequenceKeys
 import net.horizonsend.ion.server.features.sequences.SequenceManager
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import org.bukkit.entity.Player
 
 @CommandAlias("sequenceadmin")
@@ -53,5 +54,22 @@ object SequenceAdminCommand : SLCommand() {
 	fun getSequenceInfo(sender: Player, sequence: Sequence) {
 		val data = SequenceManager.getSequenceData(sender, sequence.key)
 		sender.information(data.keyedData.entries.joinToString(separator = "\n") { "${it.key} = ${it.value}" })
+	}
+
+	@Subcommand("get local coordinate")
+	fun getLocalCoordinate(sender: Player, sequence: Sequence) {
+		val pos = Vec3i(sender.location).minus(sequence.getOrigin())
+
+		sender.information("Foot location: {0}", pos)
+	}
+
+	@Subcommand("get local region")
+	fun getLocalRegion(sender: Player, sequence: Sequence) {
+		val selection = requireSelection(sender)
+
+		val minPoint = Vec3i(selection.minimumPoint.x(), selection.minimumPoint.y(), selection.minimumPoint.z()).minus(sequence.getOrigin())
+		val maxPoint = Vec3i(selection.maximumPoint.x(), selection.maximumPoint.y(), selection.maximumPoint.z()).minus(sequence.getOrigin())
+
+		sender.information("Minimum: {0}, Maximum: {1}", minPoint, maxPoint)
 	}
 }
