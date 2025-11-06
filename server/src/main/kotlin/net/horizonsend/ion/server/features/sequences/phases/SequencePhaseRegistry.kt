@@ -412,7 +412,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 NEXT_PHASE_SOUND,
 				SequencePhaseEffect.RunCode({ player, _ ->
 					Tasks.async {
-						StarshipDealers.loadDealerShipUnchecked(player, NPCDealerShip(ConfigurationFiles.serverConfiguration().tutorialEscapePodShip))
+						StarshipDealers.loadDealerShipUnchecked(player, NPCDealerShip(ConfigurationFiles.serverConfiguration().tutorialEscapePodShip), silent = true)
 					}
 				}, EffectTiming.START),
 				SequencePhaseEffect.RunCode({ player, _ -> player.addPotionEffect(PotionEffect(PotionEffectType.BLINDNESS, 40, 1)) }, EffectTiming.START),
