@@ -15,6 +15,7 @@ object SequenceTriggerTypes {
 	val STARSHIP_ROTATE = register(ShipRotateTrigger)
 	val STARSHIP_ENTER_HYPERSPACE = register(ShipEnterHyperspaceJumpTrigger)
 	val WAIT_TIME = register(WaitTimeTrigger)
+	val PRE_EXIT_HYPERSPACE = register(ShipPreExitHyperspaceJumpTrigger)
 
 	fun <T : SequenceTriggerType<*>> register(type: T): T {
 		types.add(type)

@@ -44,11 +44,14 @@ import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigg
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.inBoundingBox
 import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigger.lookingAtBoundingBox
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
+import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger.Companion.handleEvent
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
+import net.horizonsend.ion.server.features.sequences.trigger.ShipPreExitHyperspaceJumpTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.UsedTractorBeamTrigger.TractorBeamTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.WaitTimeTrigger
 import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
 import net.horizonsend.ion.server.features.starship.dealers.StarshipDealers
+import net.horizonsend.ion.server.features.starship.event.StarshipPreExitHyperspaceEvent
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
@@ -438,6 +441,15 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 			phaseKey = FLIGHT_SHIFT,
 			sequenceKey = SequenceKeys.TUTORIAL,
 			triggers = listOf(
+				SequenceTrigger(
+					SequenceTriggerTypes.PRE_EXIT_HYPERSPACE,
+					ShipPreExitHyperspaceJumpTrigger.ShipPreExitHyperspaceJumpTriggerSettings(),
+					triggerResult = handleEvent<StarshipPreExitHyperspaceEvent> { _, _, event ->
+						event.exitLocation.x = 0.0
+						event.exitLocation.y = 205.0
+						event.exitLocation.z = 0.0
+					}
+				)
 				//TODO
 			),
 			effects = listOf(
