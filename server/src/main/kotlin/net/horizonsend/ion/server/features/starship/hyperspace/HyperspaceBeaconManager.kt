@@ -41,9 +41,7 @@ object HyperspaceBeaconManager : SLEventListener() {
 
 	@EventHandler
 	fun onStarshipExitHyperspace(event: StarshipExitHyperspaceEvent) {
-		if (event.starship is ActiveControlledStarship) {
-			detectNearbyBeacons(event.starship, 0, 0)
-		}
+		detectNearbyBeacons(event.starship, 0, 0)
 	}
 
 	fun detectNearbyBeacons(starship: ActiveControlledStarship, x: Int, z: Int) {
