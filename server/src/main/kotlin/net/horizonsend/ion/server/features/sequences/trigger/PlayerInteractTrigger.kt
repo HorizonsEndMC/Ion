@@ -7,7 +7,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 
 object PlayerInteractTrigger : SequenceTriggerType<InteractTriggerSettings>() {
 	override fun setupChecks() {
-		listen<PlayerInteractEvent> { checkAllSequences(it.player) }
+		listen<PlayerInteractEvent> { checkAllSequences(it.player, it) }
 	}
 
 	class InteractTriggerSettings(
