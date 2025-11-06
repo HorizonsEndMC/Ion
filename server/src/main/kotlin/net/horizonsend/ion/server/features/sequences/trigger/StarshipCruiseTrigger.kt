@@ -1,8 +1,5 @@
 package net.horizonsend.ion.server.features.sequences.trigger
 
-import net.horizonsend.ion.server.core.registration.IonRegistryKey
-import net.horizonsend.ion.server.features.sequences.Sequence
-import net.horizonsend.ion.server.features.sequences.SequenceContext
 import net.horizonsend.ion.server.features.sequences.SequenceManager.getCurrentSequences
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipCruiseTrigger.CruseTriggerSettings
 import net.horizonsend.ion.server.features.starship.event.movement.StarshipTranslateEvent
@@ -21,8 +18,8 @@ object StarshipCruiseTrigger : SequenceTriggerType<CruseTriggerSettings>() {
 
 	class CruseTriggerSettings(
 	) : TriggerSettings() {
-		override fun shouldProceed(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>, callingTrigger: SequenceTriggerType<*>, context: SequenceContext): Boolean {
-			return callingTrigger == StarshipCruiseTrigger
+		override fun shouldProceed(player: Player, context: TriggerContext): Boolean {
+			return context.callingTrigger == StarshipCruiseTrigger
 		}
 	}
 }

@@ -41,7 +41,7 @@ object StarshipDealers : IonServerComponent(false) {
 		}
 	}
 
-	fun loadDealerShipUnchecked(player: Player, ship: DealerShip) {
+	fun loadDealerShipUnchecked(player: Player, ship: DealerShip, silent: Boolean = false) {
 		val schematic = ship.getClipboard()
 
 		var target = player.location
@@ -61,7 +61,7 @@ object StarshipDealers : IonServerComponent(false) {
 				ship.postPilot(player, starship)
 			}
 
-			player.success("Successfully bought a {0} (Cost: {1} Remaining Balance: {2})", ship.displayName, ship.price.toCreditComponent(), player.getMoneyBalance().toCreditComponent())
+			if (!silent) player.success("Successfully bought a {0} (Cost: {1} Remaining Balance: {2})", ship.displayName, ship.price.toCreditComponent(), player.getMoneyBalance().toCreditComponent())
 			player.rewardAchievement(Achievement.BUY_SPAWN_SHUTTLE)
 		}
 	}
