@@ -12,7 +12,7 @@ object StarshipCruiseTrigger : SequenceTriggerType<CruseTriggerSettings>() {
 		listen<StarshipTranslateEvent> {
 			val player = it.ship.playerPilot ?: return@listen
 			if (it.movement.source != TranslateMovement.MovementSource.CRUISE) return@listen
-			for (sequenceKey in getCurrentSequences(player)) { checkPhaseTriggers(player, sequenceKey) }
+			for (sequenceKey in getCurrentSequences(player)) { checkPhaseTriggers(player, sequenceKey, it) }
 		}
 	}
 
