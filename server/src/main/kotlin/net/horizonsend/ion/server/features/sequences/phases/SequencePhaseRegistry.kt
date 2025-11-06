@@ -33,8 +33,8 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.EN
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.EXIT_CRYOPOD_ROOM
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FIRE_OBSTACLE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GET_CHETHERITE
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GO_TO_ESCAPE_POD
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.LOOK_AT_TRACTOR
-import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.RECEIVED_CHETHERITE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.SHIFT_FLIGHT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TUTORIAL_START
 import net.horizonsend.ion.server.features.sequences.trigger.CombinedAndTrigger
@@ -347,7 +347,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SequenceTrigger(
 					type = SequenceTriggerTypes.CONTAINS_ITEM,
 					settings = ContainsItemTrigger.ContainsItemTriggerSettings { it?.customItem?.key == CustomItemKeys.CHETHERITE },
-					triggerResult = SequenceTrigger.startPhase(RECEIVED_CHETHERITE)
+					triggerResult = SequenceTrigger.startPhase(GO_TO_ESCAPE_POD)
                 )
             ),
             effects = listOf(
@@ -361,7 +361,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
         )
 
         bootstrapPhase(
-			RECEIVED_CHETHERITE, SequenceKeys.TUTORIAL, listOf(
+			GO_TO_ESCAPE_POD, SequenceKeys.TUTORIAL, listOf(
 				SequenceTrigger(
 					type = SequenceTriggerTypes.PLAYER_MOVEMENT,
 					settings = MovementTriggerSettings(inBoundingBox(box = fullBoundingBox(Vec3i(-1, -4, -93), Vec3i(1, -1, -93)))),
