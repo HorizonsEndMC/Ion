@@ -404,7 +404,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
             triggers = listOf(
 				SequenceTrigger(
 					SequenceTriggerTypes.WAIT_TIME,
-					WaitTimeTrigger.WaitTimeTriggerSettings("ENTERED_ESCAPE_POD_START", TimeUnit.SECONDS.toMillis(7)),
+					WaitTimeTrigger.WaitTimeTriggerSettings("ENTERED_ESCAPE_POD_START", TimeUnit.SECONDS.toMillis(5)),
 					triggerResult = SequenceTrigger.startPhase(SHIFT_FLIGHT)
 				)
 			),
