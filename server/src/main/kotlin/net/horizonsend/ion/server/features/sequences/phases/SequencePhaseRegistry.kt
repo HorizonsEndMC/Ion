@@ -32,10 +32,10 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.CR
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.ENTERED_ESCAPE_POD
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.EXIT_CRYOPOD_ROOM
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FIRE_OBSTACLE
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_SHIFT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GET_CHETHERITE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GO_TO_ESCAPE_POD
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.LOOK_AT_TRACTOR
-import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.SHIFT_FLIGHT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.TUTORIAL_START
 import net.horizonsend.ion.server.features.sequences.trigger.CombinedAndTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.ContainsItemTrigger
@@ -405,7 +405,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SequenceTrigger(
 					SequenceTriggerTypes.WAIT_TIME,
 					WaitTimeTrigger.WaitTimeTriggerSettings("ENTERED_ESCAPE_POD_START", TimeUnit.SECONDS.toMillis(5)),
-					triggerResult = SequenceTrigger.startPhase(SHIFT_FLIGHT)
+					triggerResult = SequenceTrigger.startPhase(FLIGHT_SHIFT)
 				)
 			),
             effects = listOf(
@@ -435,7 +435,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
         )
 
 		bootstrapPhase(
-			phaseKey = SHIFT_FLIGHT,
+			phaseKey = FLIGHT_SHIFT,
 			sequenceKey = SequenceKeys.TUTORIAL,
 			triggers = listOf(
 				//TODO
