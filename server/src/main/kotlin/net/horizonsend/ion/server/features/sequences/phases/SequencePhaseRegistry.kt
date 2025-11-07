@@ -34,7 +34,8 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.EN
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.EXIT_CRYOPOD_ROOM
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FIRE_OBSTACLE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_INTERMISSION
-import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_ROTATION
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_ROTATION_LEFT
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_ROTATION_RIGHT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_SHIFT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GET_CHETHERITE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GO_TO_ESCAPE_POD
@@ -463,7 +464,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SequenceTrigger(
 					SequenceTriggerTypes.STARSHIP_MANUAL_FLIGHT,
 					ShipManualFlightTrigger.ShiftFlightTriggerSettings(),
-					triggerResult = SequenceTrigger.startPhase(FLIGHT_ROTATION)
+					triggerResult = SequenceTrigger.startPhase(FLIGHT_ROTATION_LEFT)
 				)
 			),
 			effects = listOf(
@@ -485,9 +486,27 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				)
 			)
 		)
-
 		bootstrapPhase(
-			phaseKey = FLIGHT_ROTATION,
+			phaseKey = FLIGHT_ROTATION_LEFT,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			triggers = listOf(
+				SequenceTrigger(
+					SequenceTriggerTypes.STARSHIP_ROTATE,
+					ShipRotationTriggerSettings(),
+					triggerResult = SequenceTrigger.startPhase(FLIGHT_ROTATION_RIGHT)
+				)
+			),
+			effects = listOf(
+				NEXT_PHASE_SOUND,
+
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(ofChildren(janePrefix, text("Very well! You can turn your ship by pressing "), Component.keybind("key.drop"), text(" and "), Component.keybind("key.swapOffhand"), text(", turning the ship 90° to the left or right respectively"), janeTitle), EffectTiming.START),
+				SequencePhaseEffect.SendDelayedMessage(ofChildren(janePrefix, text("Now give it a try! Press" ), Component.keybind("key.drop"), text(" to turn left.")), 40L, EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
+			)
+		)
+		bootstrapPhase(
+			phaseKey = FLIGHT_ROTATION_RIGHT,
 			sequenceKey = SequenceKeys.TUTORIAL,
 			triggers = listOf(
 				SequenceTrigger(
@@ -500,12 +519,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				NEXT_PHASE_SOUND,
 
 				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("Very well! You can turn your ship by pressing "), Component.keybind("key.drop"), text(" and "), Component.keybind("key.swapOffhand"), text(", turning the ship 90° to the left or right respectively"), janeTitle), EffectTiming.START),
-				SequencePhaseEffect.SendDelayedMessage(ofChildren(janePrefix, text("Now give it a try! Press" ), Component.keybind("key.drop"), text(" to turn left.")), 40L, EffectTiming.START),
+				SequencePhaseEffect.SendDelayedMessage(ofChildren(janePrefix, text("Now press" ), Component.keybind("key.swapOffhand"), text(" to turn right.")), 40L, EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
 			)
 		)
-
 		bootstrapPhase(
 			phaseKey = FLIGHT_INTERMISSION,
 			sequenceKey = SequenceKeys.TUTORIAL,
@@ -515,7 +532,6 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				NEXT_PHASE_SOUND,
 			)
 		)
-
     }
 
     private fun registerTutorialBranches() {
