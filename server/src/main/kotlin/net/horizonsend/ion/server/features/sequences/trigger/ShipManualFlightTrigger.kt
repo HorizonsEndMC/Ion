@@ -18,7 +18,7 @@ object ShipManualFlightTrigger : SequenceTriggerType<ShiftFlightTriggerSettings>
 
 	class ShiftFlightTriggerSettings(val predicates: List<PlayerLocationPredicate> = listOf()) : TriggerSettings() {
 		override fun shouldProceed(player: Player, context: TriggerContext): Boolean {
-			return predicates.all { predicate -> predicate.check(player, context) }
+			return context.callingTrigger == ShipManualFlightTrigger
 		}
 	}
 }

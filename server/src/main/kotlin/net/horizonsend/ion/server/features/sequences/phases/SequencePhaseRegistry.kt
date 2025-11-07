@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.sequences.phases
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import net.horizonsend.ion.common.utils.text.BOLD
+import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.formatLink
 import net.horizonsend.ion.common.utils.text.ofChildren
 import net.horizonsend.ion.server.configuration.ConfigurationFiles
@@ -32,6 +33,8 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.CR
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.ENTERED_ESCAPE_POD
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.EXIT_CRYOPOD_ROOM
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FIRE_OBSTACLE
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_INTERMISSION
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_ROTATION
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_SHIFT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GET_CHETHERITE
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.GO_TO_ESCAPE_POD
@@ -46,7 +49,9 @@ import net.horizonsend.ion.server.features.sequences.trigger.PlayerMovementTrigg
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTrigger.Companion.handleEvent
 import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerTypes
+import net.horizonsend.ion.server.features.sequences.trigger.ShipManualFlightTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.ShipPreExitHyperspaceJumpTrigger
+import net.horizonsend.ion.server.features.sequences.trigger.ShipRotateTrigger.ShipRotationTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.UsedTractorBeamTrigger.TractorBeamTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.WaitTimeTrigger
 import net.horizonsend.ion.server.features.starship.dealers.NPCDealerShip
@@ -58,6 +63,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.NamedTextColor.GRAY
+import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration.ITALIC
 import org.bukkit.Sound
 import org.bukkit.Sound.ENTITY_BREEZE_WIND_BURST
@@ -427,7 +433,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				),
 
 				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(text("You are now piloting the scale pod!", NamedTextColor.YELLOW, BOLD), EffectTiming.START),
+				SendMessage(text("You are now piloting the escape pod!", NamedTextColor.YELLOW, BOLD), EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
 				SendMessage(text("Through the speaker in our shuttle, you hear the panicked voice of the captain once again.", GRAY, ITALIC), EffectTiming.START),
 				SendMessage(text("Attention all escape pods, the Horizon’s End Transit Hub is within range! Go *TODO* and fly through the asteroid belt!", GRAY, ITALIC), EffectTiming.START),
@@ -436,6 +442,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SequencePhaseEffect.SuppliedSetSequenceData("ENTERED_ESCAPE_POD_START", { System.currentTimeMillis() }, EffectTiming.START),
             )
         )
+
+		val janeColor = TextColor.color(45, 45, 170)
+		val janeTitle = text("J.A.N.E.", janeColor)
+		val janePrefix = ofChildren(janeTitle, text(" » ", HEColorScheme.HE_DARK_GRAY))
 
 		bootstrapPhase(
 			phaseKey = FLIGHT_SHIFT,
@@ -449,14 +459,63 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 						event.exitLocation.y = 205.0
 						event.exitLocation.z = 0.0
 					}
+				), //TODO - remove this
+				SequenceTrigger(
+					SequenceTriggerTypes.STARSHIP_MANUAL_FLIGHT,
+					ShipManualFlightTrigger.ShiftFlightTriggerSettings(),
+					triggerResult = SequenceTrigger.startPhase(FLIGHT_ROTATION)
 				)
-				//TODO
 			),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
-				SendMessage(text("Starting shift flight", GRAY, ITALIC), EffectTiming.START),
+
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(text("A light starts flickering on the control panel of your escape pod, and a robot voice starts to speak.", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(ofChildren(janePrefix, text("Hello! My name is Journey Assistive Navigational Educator, or "), janeTitle), EffectTiming.START),
+				SequencePhaseEffect.SendDelayedMessage(ofChildren(janePrefix, text("I am here to assist you and teach you how to pilot this spacecraft.")), 40L, EffectTiming.START),
+				SequencePhaseEffect.SendDelayedMessage(
+					ofChildren(
+						janePrefix,
+						ofChildren(text("When you are piloting a ship, you can move in any direction by holding a clock and pressing your "), Component.keybind("key.sneak"), text(" key in order to move in the direction you are looking. Try it out!")),
+						Component.newline(),
+						text("You can do this to move diagonally, upwards and downwards too."),
+						Component.newline(),
+					), 80L, EffectTiming.START
+				)
 			)
 		)
+
+		bootstrapPhase(
+			phaseKey = FLIGHT_ROTATION,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			triggers = listOf(
+				SequenceTrigger(
+					SequenceTriggerTypes.STARSHIP_ROTATE,
+					ShipRotationTriggerSettings(),
+					triggerResult = SequenceTrigger.startPhase(FLIGHT_INTERMISSION)
+				)
+			),
+			effects = listOf(
+				NEXT_PHASE_SOUND,
+
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(ofChildren(janePrefix, text("Very well! You can turn your ship by pressing "), Component.keybind("key.drop"), text(" and "), Component.keybind("key.swapOffhand"), text(", turning the ship 90° to the left or right respectively"), janeTitle), EffectTiming.START),
+				SequencePhaseEffect.SendDelayedMessage(ofChildren(janePrefix, text("Now give it a try! Press" ), Component.keybind("key.drop"), text(" to turn left.")), 40L, EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
+			)
+		)
+
+		bootstrapPhase(
+			phaseKey = FLIGHT_INTERMISSION,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			triggers = listOf(
+			),
+			effects = listOf(
+				NEXT_PHASE_SOUND,
+			)
+		)
+
     }
 
     private fun registerTutorialBranches() {
