@@ -6,6 +6,11 @@ import org.bukkit.entity.Player
 object CombinedOrTrigger : SequenceTriggerType<CombinedOrTriggerSettings>() {
 	override fun setupChecks() {}
 
+	override fun matches(trigger: SequenceTrigger<*>, matchAgainst: SequenceTriggerType<*>): Boolean {
+		val settings = trigger.settings as? CombinedOrTriggerSettings
+		return settings?.children?.any { it.type.matches(it, matchAgainst) } ?: false
+	}
+
 	class CombinedOrTriggerSettings(
 		val children: Collection<SequenceTrigger<*>>
 	) : TriggerSettings() {
