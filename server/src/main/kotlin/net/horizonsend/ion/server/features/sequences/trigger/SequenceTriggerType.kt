@@ -16,8 +16,15 @@ abstract class SequenceTriggerType<T : SequenceTriggerType.TriggerSettings> {
 		}
 	}
 
+	/**
+	 * Checks if this type, with the trigger set up as the one passed in, matches the matchAgainst value for checks
+	 **/
+	open fun matches(trigger: SequenceTrigger<*>, matchAgainst: SequenceTriggerType<*>): Boolean = this == matchAgainst
+
 	protected fun checkPhaseTriggers(player: Player, sequenceKey: IonRegistryKey<Sequence, out Sequence>, event: Event?) {
 		val currentPhase = SequenceManager.getCurrentPhase(player, sequenceKey)?.getValue() ?: return
+
+		if (currentPhase.triggers.none { it.type.matches(it, this) }) return
 
 		val triggerContext = TriggerContext(
 			sequence = sequenceKey,

@@ -105,6 +105,11 @@ abstract class SequencePhaseEffect(val timing: EffectTiming?) {
 		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { player.sendMessage(message) }
 	}
 
+
+	class SendDelayedMessage(val message: Component, val delayTicks: Long, timing: EffectTiming?) : SequencePhaseEffect(timing) {
+		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { Tasks.asyncDelay(delayTicks) { player.sendMessage(message) } }
+	}
+
 	class SendTitle(val title: Title, timing: EffectTiming?) : SequencePhaseEffect(timing) {
 		override fun playEffect(player: Player, sequenceKey: IonRegistryKey<Sequence, Sequence>, context: SequenceContext) { player.showTitle(title) }
 	}

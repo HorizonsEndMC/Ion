@@ -6,7 +6,7 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhase
 import org.bukkit.entity.Player
 import org.bukkit.event.Event
 
-class SequenceTrigger<T : SequenceTriggerType.TriggerSettings>(val type: SequenceTriggerType<T>, private val settings: T, private var triggerResult: (Player, TriggerContext) -> Unit) {
+class SequenceTrigger<T : SequenceTriggerType.TriggerSettings>(val type: SequenceTriggerType<T>, val settings: T, private var triggerResult: (Player, TriggerContext) -> Unit) {
 	fun trigger(player: Player, context: TriggerContext) {
 		triggerResult.invoke(player, context)
 	}
