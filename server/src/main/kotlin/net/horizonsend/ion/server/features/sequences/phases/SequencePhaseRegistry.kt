@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.sequences.phases
 
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
+import net.horizonsend.ion.common.extensions.userError
 import net.horizonsend.ion.common.utils.text.BOLD
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme
 import net.horizonsend.ion.common.utils.text.formatLink
@@ -492,7 +493,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 			triggers = listOf(
 				SequenceTrigger(
 					SequenceTriggerTypes.STARSHIP_ROTATE,
-					ShipRotationTriggerSettings(),
+					ShipRotationTriggerSettings { player, movement -> if (!movement.clockwise) true else {
+						player.userError("Not quite! Try the other direction.")
+						false
+					} },
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_ROTATION_RIGHT)
 				)
 			),
@@ -500,7 +504,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				NEXT_PHASE_SOUND,
 
 				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("Very well! You can turn your ship by pressing "), Component.keybind("key.drop"), text(" and "), Component.keybind("key.swapOffhand"), text(", turning the ship 90° to the left or right respectively"), janeTitle), EffectTiming.START),
+				SendMessage(ofChildren(janePrefix, text("Very well! You can turn your ship by pressing "), Component.keybind("key.drop"), text(" and "), Component.keybind("key.swapOffhand"), text(", turning the ship 90° to the left or right respectively")), EffectTiming.START),
 				SequencePhaseEffect.SendDelayedMessage(ofChildren(janePrefix, text("Now give it a try! Press" ), Component.keybind("key.drop"), text(" to turn left.")), 40L, EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
 			)
@@ -511,7 +515,10 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 			triggers = listOf(
 				SequenceTrigger(
 					SequenceTriggerTypes.STARSHIP_ROTATE,
-					ShipRotationTriggerSettings(),
+					ShipRotationTriggerSettings { player, movement -> if (movement.clockwise) true else {
+						player.userError("Not quite! Try the other direction.")
+						false
+					} },
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_INTERMISSION)
 				)
 			),
@@ -519,7 +526,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				NEXT_PHASE_SOUND,
 
 				SendMessage(Component.empty(), EffectTiming.START),
-				SequencePhaseEffect.SendDelayedMessage(ofChildren(janePrefix, text("Now press" ), Component.keybind("key.swapOffhand"), text(" to turn right.")), 40L, EffectTiming.START),
+				SendMessage(ofChildren(janePrefix, text("Now press " ), Component.keybind("key.swapOffhand"), text(" to turn right.")), EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
 			)
 		)
@@ -530,6 +537,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 			),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
+
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(ofChildren(janePrefix, text("Now you know the basics, it is time for you to start moving towards your destination.\nMove upwards and fly over the cruiser, heading *insert wind direction*" )), EffectTiming.START), //TODO
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(text("The comms crackle to life and you hear the voice of the captain", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(text("The pirates are too busy shooting the cruiser, go now!", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
 			)
 		)
     }
