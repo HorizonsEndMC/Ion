@@ -11,6 +11,8 @@ object SequenceTriggerTypes {
 	val USE_TRACTOR_BEAM = register(UsedTractorBeamTrigger)
 	val CONTAINS_ITEM = register(ContainsItemTrigger)
 	val STARSHIP_CRUISE = register(StarshipCruiseTrigger)
+	val STARSHIP_CRUISE_START = register(StarshipCruiseStartTrigger)
+	val STARSHIP_CRUISE_STOP = register(StarshipCruiseStopTrigger)
 	val STARSHIP_MANUAL_FLIGHT = register(ShipManualFlightTrigger)
 	val STARSHIP_ROTATE = register(ShipRotateTrigger)
 	val STARSHIP_ENTER_HYPERSPACE = register(ShipEnterHyperspaceJumpTrigger)
