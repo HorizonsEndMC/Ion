@@ -22,6 +22,7 @@ import net.horizonsend.ion.server.features.sequences.effect.EffectTiming
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.Companion.ifPreviousPhase
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.GoToPreviousPhase
+import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendDelayedMessage
 import net.horizonsend.ion.server.features.sequences.effect.SequencePhaseEffect.SendMessage
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_CARGO_CRATES
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.BRANCH_DYNMAP
@@ -34,6 +35,8 @@ import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.CR
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.ENTERED_ESCAPE_POD
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.EXIT_CRYOPOD_ROOM
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FIRE_OBSTACLE
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CRUISE_START
+import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_CRUISE_TURN
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_INTERMISSION
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_ROTATION_LEFT
 import net.horizonsend.ion.server.features.sequences.phases.SequencePhaseKeys.FLIGHT_ROTATION_RIGHT
@@ -54,6 +57,7 @@ import net.horizonsend.ion.server.features.sequences.trigger.SequenceTriggerType
 import net.horizonsend.ion.server.features.sequences.trigger.ShipManualFlightTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.ShipPreExitHyperspaceJumpTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.ShipRotateTrigger.ShipRotationTriggerSettings
+import net.horizonsend.ion.server.features.sequences.trigger.StarshipCruiseStartTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.StarshipUnpilotTrigger
 import net.horizonsend.ion.server.features.sequences.trigger.UsedTractorBeamTrigger.TractorBeamTriggerSettings
 import net.horizonsend.ion.server.features.sequences.trigger.WaitTimeTrigger
@@ -372,7 +376,6 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
                 SendMessage(Component.empty(), EffectTiming.START),
             )
         )
-
         bootstrapPhase(
 			GO_TO_ESCAPE_POD, SequenceKeys.TUTORIAL, listOf(
 				SequenceTrigger(
@@ -410,7 +413,6 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				)
 			)
 		)
-
         bootstrapPhase(
             phaseKey = ENTERED_ESCAPE_POD,
             sequenceKey = SequenceKeys.TUTORIAL,
@@ -487,8 +489,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SendMessage(text("A light starts flickering on the control panel of your escape pod, and a robot voice starts to speak.", GRAY, ITALIC), EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
 				SendMessage(ofChildren(janePrefix, text("Hello! My name is Journey Assistive Navigational Educator, or "), janeTitle), EffectTiming.START),
-				SequencePhaseEffect.SendDelayedMessage(ofChildren(janePrefix, text("I am here to assist you and teach you how to pilot this spacecraft.")), 40L, EffectTiming.START),
-				SequencePhaseEffect.SendDelayedMessage(
+				SendDelayedMessage(ofChildren(janePrefix, text("I am here to assist you and teach you how to pilot this spacecraft.")), 40L, EffectTiming.START),
+				SendDelayedMessage(
 					ofChildren(
 						janePrefix,
 						ofChildren(text("When you are piloting a ship, you can move in any direction by holding a clock and pressing your "), Component.keybind("key.sneak"), text(" key in order to move in the direction you are looking. Try it out!")),
@@ -521,8 +523,8 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				NEXT_PHASE_SOUND,
 
 				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("Very well! You can turn your ship by pressing "), Component.keybind("key.drop"), text(" and "), Component.keybind("key.swapOffhand"), text(", turning the ship 90° to the left or right respectively")), EffectTiming.START),
-				SequencePhaseEffect.SendDelayedMessage(ofChildren(janePrefix, text("Now give it a try! Press " ), Component.keybind("key.drop"), text(" to turn left.")), 40L, EffectTiming.START),
+				SendMessage(ofChildren(janePrefix, text("Very well! You can turn your ship by pressing "), Component.keybind("key.drop"), text(" and "), Component.keybind("key.swapOffhand"), text(", turning the ship 90° to the left or right respectively.")), EffectTiming.START),
+				SendDelayedMessage(ofChildren(janePrefix, text("Now give it a try! Press " ), Component.keybind("key.drop"), text(" to turn left.")), 40L, EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
 			)
 		)
@@ -560,16 +562,93 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					SequenceTriggerTypes.STARSHIP_UNPILOT,
 					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
 					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
-				)
+				),
+				SequenceTrigger(
+					SequenceTriggerTypes.WAIT_TIME,
+					WaitTimeTrigger.WaitTimeTriggerSettings("FLIGHT_INTERMISSION_START", TimeUnit.SECONDS.toMillis(5)),
+					triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_START)
+				) // TODO replace
 			),
 			effects = listOf(
 				NEXT_PHASE_SOUND,
+				SequencePhaseEffect.SuppliedSetSequenceData("FLIGHT_INTERMISSION_START", { System.currentTimeMillis() }, EffectTiming.START),
 
 				SendMessage(Component.empty(), EffectTiming.START),
 				SendMessage(ofChildren(janePrefix, text("Now you know the basics, it is time for you to start moving towards your destination.\nMove upwards and fly over the cruiser, heading *insert wind direction*" )), EffectTiming.START), //TODO
 				SendMessage(Component.empty(), EffectTiming.START),
 				SendMessage(text("The comms crackle to life and you hear the voice of the captain", GRAY, ITALIC), EffectTiming.START),
 				SendMessage(text("The pirates are too busy shooting the cruiser, go now!", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendDelayedMessage(ofChildren(janePrefix, text("I've marked an escape route on the starship's HUD, move there and we can engage cruise to escape!")), 40L, EffectTiming.START),
+				// TODO some kind of objective marker
+				SendMessage(Component.empty(), EffectTiming.START),
+			)
+		)
+//		bootstrapPhase(
+//			phaseKey = GO_TO_CRUISE_START,
+//			sequenceKey = SequenceKeys.TUTORIAL,
+//			triggers = listOf(
+//				SequenceTrigger(
+//					SequenceTriggerTypes.STARSHIP_UNPILOT,
+//					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+//					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+//				),
+//				SequenceTrigger(
+//					SequenceTriggerTypes.STARSHIP_CRUISE_START,
+//					StarshipCruiseStartTrigger.StartCruseTriggerSettings(),
+//					triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_TURN)
+//				),
+//			),
+//			effects = listOf(
+//				NEXT_PHASE_SOUND,
+//
+//				SendMessage(Component.empty(), EffectTiming.START),
+//				//TODO
+//				SendMessage(Component.empty(), EffectTiming.START),
+//			)
+//		)
+		bootstrapPhase(
+			phaseKey = FLIGHT_CRUISE_START,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			triggers = listOf(
+				SequenceTrigger(
+					SequenceTriggerTypes.STARSHIP_UNPILOT,
+					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+				),
+				SequenceTrigger(
+					SequenceTriggerTypes.STARSHIP_CRUISE_START,
+					StarshipCruiseStartTrigger.StartCruseTriggerSettings(),
+					triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_TURN)
+				),
+			),
+			effects = listOf(
+				NEXT_PHASE_SOUND,
+
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendMessage(ofChildren(janePrefix, text("In order to arrive safely at the Transit Hub, you must fly through the asteroid field, but we must move quickly.")), EffectTiming.START),
+				SendDelayedMessage(ofChildren(janePrefix, text("Cruising lets your ship move faster than manual flight, you can engage it by "), Component.keybind("key.use"), text("ing the cruise control sign, or using the /cruise command.")), 40L, EffectTiming.START),
+				SendDelayedMessage(ofChildren(janePrefix, text("When cruise is engaged, your ship will start to accelerate up to its cruise speed, in the direction you were looking when it started. You can cruise diagonally at full speed, but you " +
+					"need thrusters to cruise in other directions.")), 80L, EffectTiming.START),
+				SendDelayedMessage(ofChildren(janePrefix, text("You can stop cruising by "), Component.keybind("key.destroy"), text("ing the cruise control sign, or repeating the /cruise command.")), 80L, EffectTiming.START),
+				SendMessage(Component.empty(), EffectTiming.START),
+			)
+		)
+		bootstrapPhase(
+			phaseKey = FLIGHT_CRUISE_TURN,
+			sequenceKey = SequenceKeys.TUTORIAL,
+			triggers = listOf(
+				SequenceTrigger(
+					SequenceTriggerTypes.STARSHIP_UNPILOT,
+					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+				),
+			),
+			effects = listOf(
+				NEXT_PHASE_SOUND,
+
+				SendMessage(Component.empty(), EffectTiming.START),
+				SendDelayedMessage(ofChildren(janePrefix, text("turn")), 0L, EffectTiming.START), //TODO
 				SendMessage(Component.empty(), EffectTiming.START),
 			)
 		)
@@ -579,7 +658,13 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
         bootstrapPhase(
             phaseKey = BRANCH_LOOK_OUTSIDE,
             sequenceKey = SequenceKeys.TUTORIAL,
-            triggers = listOf(),
+            triggers = listOf(
+				SequenceTrigger(
+					SequenceTriggerTypes.STARSHIP_UNPILOT,
+					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
+					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
+				)
+			),
             effects = listOf(
                 RANDOM_EXPLOSION_SOUND,
                 SendMessage(Component.empty(), EffectTiming.START),
