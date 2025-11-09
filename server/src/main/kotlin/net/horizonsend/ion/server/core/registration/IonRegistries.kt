@@ -19,11 +19,18 @@ object IonRegistries : IonComponent() {
 	private val byId = Object2ObjectOpenHashMap<IonBindableResourceKey<out Registry<*>>, Registry<*>>()
 
 	override fun onEnable() {
-		allRegistries.forEach { registry ->
-			log.info("Bootstrapping ${registry.id.key}")
-			registry.boostrap()
-			registry.getKeySet().allkeys().forEach { key -> key.checkBound() }
-		}
+		bootstrapAll()
+	}
+
+	fun bootstrapAll() {
+		allRegistries.forEach(::bootstrap)
+	}
+
+	fun bootstrap(registry: Registry<*>) {
+		log.info("Bootstrapping ${registry.id.key}")
+		registry.boostrap()
+		registry.getKeySet().allkeys().forEach { key -> key.checkBound() }
+		log.info("Registered ${registry.getAll().size} entries.")
 	}
 
 	val FLUID_TYPE = register(FluidTypeRegistry())
