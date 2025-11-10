@@ -171,7 +171,7 @@ data class HeavyLaserBalancing(
 
 	@Serializable
 	data class HeavyLaserProjectileBalancing(
-		override val range: Double = 200.0,
+		override val range: Double = 220.0,
 		override val speed: Double = 80.0,
 		override val explosionPower: Float = 12f,
 		override val starshipShieldDamageMultiplier: Double = 2.0,
