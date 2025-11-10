@@ -458,7 +458,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SendMessage(text("You are now piloting the escape pod!", NamedTextColor.YELLOW, BOLD), EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
 				SendMessage(text("Through the speaker in our shuttle, you hear the panicked voice of the captain once again.", GRAY, ITALIC), EffectTiming.START),
-				SendMessage(text("Attention all escape pods, the Horizon’s End Transit Hub is within range! Go *TODO* and fly through the asteroid belt!", GRAY, ITALIC), EffectTiming.START),
+				SendMessage(text("Attention all escape pods, the Horizon’s End Transit Hub is within range! Go *TODO* and fly through the asteroid belt!", GRAY, ITALIC), EffectTiming.START), //TODO - finalize direction
 				SendMessage(Component.empty(), EffectTiming.START),
 
 				SequencePhaseEffect.SuppliedSetSequenceData("ENTERED_ESCAPE_POD_START", { System.currentTimeMillis() }, EffectTiming.START),
@@ -576,7 +576,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SequencePhaseEffect.SuppliedSetSequenceData("FLIGHT_INTERMISSION_START", { System.currentTimeMillis() }, EffectTiming.START),
 
 				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("Now you know the basics, it is time for you to start moving towards your destination.\nMove upwards and fly over the cruiser, heading *insert wind direction*" )), EffectTiming.START), //TODO
+				SendMessage(ofChildren(janePrefix, text("Now you know the basics, it is time for you to start moving towards your destination.\nMove upwards and fly over the cruiser, heading *insert wind direction*" )), EffectTiming.START), //TODO - finalize direction
 				SendMessage(Component.empty(), EffectTiming.START),
 				SendMessage(text("The comms crackle to life and you hear the voice of the captain", GRAY, ITALIC), EffectTiming.START),
 				SendMessage(text("The pirates are too busy shooting the cruiser, go now!", GRAY, ITALIC), EffectTiming.START),
@@ -586,29 +586,6 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SendMessage(Component.empty(), EffectTiming.START),
 			)
 		)
-//		bootstrapPhase(
-//			phaseKey = GO_TO_CRUISE_START,
-//			sequenceKey = SequenceKeys.TUTORIAL,
-//			triggers = listOf(
-//				SequenceTrigger(
-//					SequenceTriggerTypes.STARSHIP_UNPILOT,
-//					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
-//					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
-//				),
-//				SequenceTrigger(
-//					SequenceTriggerTypes.STARSHIP_CRUISE_START,
-//					StarshipCruiseStartTrigger.StartCruseTriggerSettings(),
-//					triggerResult = SequenceTrigger.startPhase(FLIGHT_CRUISE_TURN)
-//				),
-//			),
-//			effects = listOf(
-//				NEXT_PHASE_SOUND,
-//
-//				SendMessage(Component.empty(), EffectTiming.START),
-//				//TODO
-//				SendMessage(Component.empty(), EffectTiming.START),
-//			)
-//		)
 		bootstrapPhase(
 			phaseKey = FLIGHT_CRUISE_START,
 			sequenceKey = SequenceKeys.TUTORIAL,
@@ -656,9 +633,9 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				SequencePhaseEffect.SuppliedSetSequenceData("FLIGHT_CRUISE_TURN_START", { System.currentTimeMillis() }, EffectTiming.START),
 
 				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, template(text("To steer your ship while cruising, turning using {0} or {1} will cause the ship to start to accelerate in the new forward direction."), Component.keybind("key.drop"), Component.keybind("key.swapOffhand"))), EffectTiming.START), //TODO
-				SendDelayedMessage(ofChildren(janePrefix, text("Manual flight is also possible during cruise, and can be used to make small adjustments.")), 0L, EffectTiming.START), //TODO
-				SendDelayedMessage(ofChildren(janePrefix, text("Now make your way through the asteroid belt.")), 0L, EffectTiming.START), //TODO
+				SendMessage(ofChildren(janePrefix, template(text("To steer your ship while cruising, turning using {0} or {1} will cause the ship to start to accelerate in the new forward direction."), Component.keybind("key.drop"), Component.keybind("key.swapOffhand"))), EffectTiming.START),
+				SendDelayedMessage(ofChildren(janePrefix, text("Manual flight is also possible during cruise, and can be used to make small adjustments.")), 0L, EffectTiming.START), //TODO - redo messages
+				SendDelayedMessage(ofChildren(janePrefix, text("Now make your way through the asteroid belt.")), 0L, EffectTiming.START), //TODO - redo messages
 				SendDelayedMessage(Component.empty(), 0L, EffectTiming.START),
 			)
 		)
@@ -671,7 +648,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 					StarshipUnpilotTrigger.ShipUnpilotTriggerSettings(),
 					triggerResult = handleEvent<StarshipUnpilotEvent> { player, _, event -> event.isCancelled = true; player.userError("You can't release your ship right now!") }
 				),
-				SequenceTrigger( // TODO location predicate
+				SequenceTrigger( // TODO - location predicate
 					SequenceTriggerTypes.STARSHIP_CRUISE_STOP,
 					StarshipCruiseStopTrigger.StopCruseTriggerSettings(),
 					triggerResult = SequenceTrigger.startPhase(FLIGHT_CHETHERITE)
@@ -681,7 +658,7 @@ class SequencePhaseRegistry : Registry<SequencePhase>(RegistryKeys.SEQUENCE_PHAS
 				NEXT_PHASE_SOUND,
 
 				SendMessage(Component.empty(), EffectTiming.START),
-				SendMessage(ofChildren(janePrefix, text("You have cleared the asteroid field, congratulations! You can now stop cruising and prepare to jump to hyperspace.")), EffectTiming.START), //TODO
+				SendMessage(ofChildren(janePrefix, text("You have cleared the asteroid field, congratulations! You can now stop cruising and prepare to jump to hyperspace.")), EffectTiming.START), //TODO - better messages
 				SendMessage(ofChildren(janePrefix, text("You can stop cruising by "), Component.keybind("key.destroy"), text("ing the cruise control sign, or repeating the /cruise command.")), EffectTiming.START),
 				SendMessage(Component.empty(), EffectTiming.START),
 			)
