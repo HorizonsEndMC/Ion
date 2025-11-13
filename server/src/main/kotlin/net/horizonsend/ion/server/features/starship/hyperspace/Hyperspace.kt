@@ -131,8 +131,6 @@ object Hyperspace : IonServerComponent() {
 	fun cancelJumpWarmup(warmup: HyperspaceWarmup) {
 		check(warmupTasks.remove(warmup.ship, warmup)) { "Warmup wasn't in the map!" }
 
-		val drive: HyperdriveSubsystem? = warmup.drive
-		if (drive != null && drive.isIntact()) drive.restoreFuel()
 		warmup.ship.information("Canceled Jump Warmup")
 	}
 
