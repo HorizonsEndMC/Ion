@@ -116,7 +116,7 @@ object Hyperspace : IonServerComponent() {
 		destinationWorld: World,
 		useFuel: Boolean
 	) {
-		val dest = Location(destinationWorld, x.toDouble(), 192.0, z.toDouble())
+		val dest = Location(destinationWorld, x.toDouble(), starship.centerOfMass.y.toDouble(), z.toDouble())
 		val mass = starship.mass
 		val speed = if (hyperdrive != null) {calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)}
 			else calculateSpeed(3, mass)
