@@ -21,19 +21,24 @@ object FluidUtils {
 		text.append(fluidStack.getDisplayName())
 		text.append(Component.space(), bracketed(ofChildren(text(format.format(fluidStack.amount), NamedTextColor.GRAY), text("L", NamedTextColor.GRAY))))
 
-		var lines = 0
+		text.append(formatFluidProperties(fluidStack))
 
-		for ((key, property) in fluidStack.getDataMap()) {
-			lines++
+		return text.build()
+	}
 
+	fun formatFluidProperties(fluidStack: FluidStack): List<Component> {
+		val built = mutableListOf<Component>()
+		for ((key, property) in fluidStack.getCustomDataMap()) {
+			val text = text()
 			text.append(Component.newline())
 			text.append(text(" • ", HE_MEDIUM_GRAY))
 			text.append(key.getDisplayName())
 			text.append(text(": ", HE_DARK_GRAY))
 			text.append(key.formatValueUnsafe(property))
+			built.add(text.build())
 		}
 
-		return text.build()
+		return built
 	}
 
 	/** Returns the weight of this fluid stack, in grams */

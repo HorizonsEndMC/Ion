@@ -8,6 +8,7 @@ import net.horizonsend.ion.server.features.transport.inputs.IOPort.RegisteredMet
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.features.transport.manager.graph.gridenergy.GridEnergyNetwork
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
 import java.time.Duration
@@ -91,13 +92,18 @@ interface GridEnergyMultiblock : AsyncTickingMultiblockEntity {
 		}
 	}
 
-	fun getConnectedNetworks(): Set<GridEnergyNetwork> {
-		return getGridEnergyInputs().mapNotNullTo(ObjectOpenHashSet()) { data ->
+	fun getConnectedNetworks(): Map<BlockKey, GridEnergyNetwork> {
+		val map = mutableMapOf<BlockKey, GridEnergyNetwork>()
+
+		getGridEnergyInputs().forEach { data ->
 			val portLocation = data.getRealPos(this as MultiblockEntity)
 			val localPosition = toBlockKey((this as MultiblockEntity).manager.getTransportManager().getLocalCoordinate(toVec3i(portLocation)))
 
-			(this as MultiblockEntity).manager.getTransportManager().getGridEnergyGraphTransportManager().getByLocation(localPosition) as GridEnergyNetwork?
+			val network = (this as MultiblockEntity).manager.getTransportManager().getGridEnergyGraphTransportManager().getByLocation(localPosition) as GridEnergyNetwork? ?: return@forEach
+			map[portLocation] = network
 		}
+
+		return map
 	}
 
 	override fun tickAsync() {

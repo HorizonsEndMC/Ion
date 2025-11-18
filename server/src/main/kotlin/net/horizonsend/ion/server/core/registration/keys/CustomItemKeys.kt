@@ -13,6 +13,7 @@ import net.horizonsend.ion.server.features.custom.items.type.armor.PowerArmorIte
 import net.horizonsend.ion.server.features.custom.items.type.throwables.ThrowableCustomItem
 import net.horizonsend.ion.server.features.custom.items.type.tool.Battery
 import net.horizonsend.ion.server.features.custom.items.type.tool.CratePlacer
+import net.horizonsend.ion.server.features.custom.items.type.tool.HandheldTank
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerChainsaw
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerDrill
 import net.horizonsend.ion.server.features.custom.items.type.tool.PowerHoe
@@ -92,6 +93,8 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val SUPERCONDUCTOR = registerKey("SUPERCONDUCTOR")
 	val SUPERCONDUCTOR_BLOCK = registerKey("SUPERCONDUCTOR_BLOCK")
 	val SUPERCONDUCTOR_CORE = registerKey("SUPERCONDUCTOR_CORE")
+
+	val COPPER_WIRE = registerKey("COPPER_WIRE")
 
 	val STEEL_INGOT = registerKey("STEEL_INGOT")
 	val STEEL_BLOCK = registerTypedKey<CustomBlockItem>("STEEL_BLOCK")
@@ -235,7 +238,16 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val TEMPERATURE_GAUGE = registerTypedKey<CustomBlockItem>("TEMPERATURE_GAUGE")
 
 	val GRID_ENERGY_PORT = registerTypedKey<CustomBlockItem>("GRID_ENERGY_PORT")
+	val GRID_ENERGY_CABLE = registerTypedKey<CustomBlockItem>("GRID_ENERGY_CABLE")
+	val GRID_ENERGY_CABLE_JUNCTION = registerTypedKey<CustomBlockItem>("GRID_ENERGY_CABLE_JUNCTION")
 
 	val COPPER_COIL = registerTypedKey<CustomBlockItem>("COPPER_COIL")
 	val ROTATION_SHAFT = registerTypedKey<CustomBlockItem>("ROTATION_SHAFT")
+	val REDSTONE_CONTROL_PORT = registerTypedKey<CustomBlockItem>("REDSTONE_CONTROL_PORT")
+
+	val HANDHELD_TANK = registerTypedKey<HandheldTank>("HANDHELD_TANK")
+
+	val REFRACTORY_BRICK = registerKey("REFRACTORY_BRICK")
+	val REFRACTORY_MIX = registerKey("REFRACTORY_MIX")
+	val REFRACTORY_BRICKS = registerTypedKey<CustomBlockItem>("REFRACTORY_BRICKS")
 }

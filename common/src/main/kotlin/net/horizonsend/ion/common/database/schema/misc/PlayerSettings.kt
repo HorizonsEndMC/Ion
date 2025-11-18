@@ -93,6 +93,7 @@ data class PlayerSettings(
 	var alternateFireButtons: Boolean = false,
 	var chestShopDisplays: Boolean = true,
 	var miningLaserEffectLevel: Int = 3,
+	var fleetStatus: Boolean = true,
 ) : DbObject {
 	companion object : DbObjectCompanion<PlayerSettings, StringId<PlayerSettings>>(PlayerSettings::class, setup = {}) {
 		fun create(id: StringId<PlayerSettings>): InsertOneResult = trx { session ->

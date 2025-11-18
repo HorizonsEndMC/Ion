@@ -14,6 +14,7 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
     name: Component,
     loc: Location,
     dir: Vector,
+    val target: Vector,
     shooter: Damager,
     val otherBoids: MutableList<BoidProjectile<*>>,
     damageType: DamageType
@@ -46,7 +47,6 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
 
             if (location.distanceSquared(boid.location) < separationDistance * separationDistance) {
                 // Steer away from other boids
-                //println("STEERING AWAY")
                 separationVector.x += location.x - boid.location.x
                 separationVector.y += location.y - boid.location.y
                 separationVector.z += location.z - boid.location.z
@@ -72,7 +72,7 @@ abstract class BoidProjectile<B : StarshipBoidProjectileBalancing>(
             .add(separationVector.clone().multiply(separationFactor))
             .add(alignVector.clone().subtract(oldDirection).multiply(alignFactor))
             .add(averagePosition.clone().subtract(location.toVector()).multiply(centerFactor))
-            .add(originalDir.clone().multiply(originalDirectionFactor))
+            .add(target.clone().subtract(location.toVector()).normalize().multiply(originalDirectionFactor))
         if (newDirection.lengthSquared() > maxSpeedFactor.pow(2)) {
             newDirection.normalize().multiply(maxSpeedFactor)
         } else if (newDirection.lengthSquared() < (minSpeedFactor).pow(2)) {

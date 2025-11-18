@@ -133,7 +133,6 @@ open class BasicSteeringModule(
 		//mixing
 		val rotationMovementPrior = (ship.velocity.length() / controller.maxSpeed).coerceIn(0.05, 1.0)
 		//starship.debug("speed ratio: $rotationMovementPrior")
-		//println(rotationMovementPrior)
 		val movementMix = { ratio: Double ->
 			(ratio + 0.1).coerceIn(0.0, 1.0).pow(config.defaultRotationBleed)
 		}

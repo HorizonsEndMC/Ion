@@ -72,7 +72,9 @@ class IonProxy @Inject constructor(val server: ProxyServer, val logger: Logger, 
 		for (component in components) {
 			if (component is Listener) eventManager.register(this@IonProxy, component)
 
-			component.onEnable()
+			try {
+				component.onEnable()
+			} catch (e: Throwable) { logger.warning("Proxy component could not initialize properly: ${e.message}") }
 		}
 
 		commandManager = VelocityCommandManager(this.server, this)

@@ -59,6 +59,7 @@ class SettingsMainMenuGui(player: Player) : SettingsPageGui(player, "Settings") 
 				DBCachedBooleanToggle(text("Enable Beacons"), "", GuiItem.BEACON, true, PlayerSettings::beaconsEnabled),
 				DBCachedBooleanToggle(text("Enable Stations"), "", GuiItem.STATION, true, PlayerSettings::stationsEnabled),
 				DBCachedBooleanToggle(text("Enable Bookmarks"), "", GuiItem.BOOKMARK, true, PlayerSettings::bookmarksEnabled),
+				DBCachedBooleanToggle(text("Enable Fleet Status"), "", GuiItem.LIST, true, PlayerSettings::fleetStatus),
 				DBCachedBooleanToggle(text("Enable AI Starships"), "", GuiItem.GUNSHIP, true, PlayerSettings::relationAiEnabled),
 				DBCachedBooleanToggle(text("Enable No Relation Starships"), "", GuiItem.GUNSHIP, true, PlayerSettings::relationNoneEnabled),
 				DBCachedBooleanToggle(text("Enable Enemy Starships"), "", GuiItem.GUNSHIP, true, PlayerSettings::relationEnemyEnabled),

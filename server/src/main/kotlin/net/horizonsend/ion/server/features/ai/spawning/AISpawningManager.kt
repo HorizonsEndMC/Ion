@@ -55,8 +55,6 @@ object AISpawningManager : IonServerComponent(true) {
 
 	private fun despawnOldAIShips() {
 		for (starship in ActiveStarships.all()) {
-			starship
-
 			if (meetsDespawnCriteria(starship)) {
 				despawn(starship)
 			}
@@ -64,9 +62,9 @@ object AISpawningManager : IonServerComponent(true) {
 	}
 
 	// The AI ship must be at least 30 minutes old
-	val timeLivedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(30)
+	val timeLivedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(10)
 
-	// And not damaged within the last 15 minutes
+	// And not damaged within the last 7 minutes
 	val lastDamagedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(7)
 
 	private fun meetsDespawnCriteria(starship: ActiveControlledStarship): Boolean {

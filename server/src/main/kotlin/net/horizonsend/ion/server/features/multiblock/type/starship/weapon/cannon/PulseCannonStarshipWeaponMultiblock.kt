@@ -19,7 +19,7 @@ object PulseCannonStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<Pu
 	override val displayName: Component
 		get() = text("Pulse Cannon")
 	override val description: Component
-		get() = text("A weapon designed to destroy small starships. Only mountable on Gunship and Frigate.")
+		get() = text("A weapon designed to destroy small starships. Only mountable on Gunship and Corvette.")
 
 	override fun MultiblockShape.buildStructure() {
 		at(+0, +0, +0).sponge()

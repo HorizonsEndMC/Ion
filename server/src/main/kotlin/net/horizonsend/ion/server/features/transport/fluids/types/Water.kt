@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.fluids.types
 import net.horizonsend.ion.server.core.registration.keys.FluidPropertyTypeKeys
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
+import net.horizonsend.ion.server.features.transport.fluids.DisplayProperties
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.FluidType.HeatingResult.Companion.HEATING_RATE_MULTIPLIER
@@ -28,6 +29,7 @@ import org.bukkit.util.Vector
 import kotlin.random.Random
 
 object Water : FluidType(FluidTypeKeys.WATER) {
+	override val displayProperties: DisplayProperties = DisplayProperties(Color.fromRGB(63, 118, 228), "transparent_liquid")
 	override val categories: Array<FluidCategory> = arrayOf()
 
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {

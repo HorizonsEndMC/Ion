@@ -45,6 +45,10 @@ dependencies {
 	compileOnly("net.luckperms:api:5.5")
 	compileOnly("xyz.xenondevs.invui:invui:1.46") // Downloaded via paper library manager for remapping
 	compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
+	compileOnly("com.sk89q.worldguard:worldguard-bukkit:7.0.14") { exclude("*") }
+	compileOnly("com.sk89q.worldguard:worldguard-core:7.0.14") { exclude("*") }
+	compileOnly("com.intellectualsites.plotsquared:plotsquared-core")
+	compileOnly("com.intellectualsites.plotsquared:plotsquared-bukkit") { isTransitive = false }
 
 	// Included Dependencies
 	implementation("com.manya:persistent-data-types:1.0.25")

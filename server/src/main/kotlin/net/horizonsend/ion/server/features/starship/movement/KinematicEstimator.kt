@@ -39,7 +39,6 @@ class KinematicEstimator(
 			referenceTime = System.currentTimeMillis()
 			return
 		}
-		//println("# of movements : ${movements.size}")
 		needsUpdate = false
 		referenceTime = movements[0].time
 		referncePos = movements[0].origin.clone().add(Vector(-movements[0].dx, -movements[0].dy, -movements[0].dz))
@@ -76,11 +75,6 @@ class KinematicEstimator(
 		val yCum = yData.runningReduce { sum, el -> sum + el }
 		val zCum = zData.runningReduce { sum, el -> sum + el }
 
-		//println("first time: ${times[0]}, last time: ${times.last()}")
-		//println("first x: ${xCum[0]}, last x: ${xCum.last()}")
-		//println("first y: ${yCum[0]}, last y: ${yCum.last()}")
-		//println("first z: ${zCum[0]}, last z: ${zCum.last()}")
-
 		val resultX = polynomialRegression(times.zip(xCum), numTerms)
 		val resultY = polynomialRegression(times.zip(yCum), numTerms)
 		val resultZ = polynomialRegression(times.zip(zCum), numTerms)
@@ -90,16 +84,12 @@ class KinematicEstimator(
 			yCoefficients[i] = resultY[i]
 			zCoefficients[i] = resultZ[i]
 		}
-		//println("xCoeffs: ${xCoefficients.contentToString()}")
-		//println("yCoeffs: ${yCoefficients.contentToString()}")
-		//println("zCoeffs: ${zCoefficients.contentToString()}")
 	}
 
 	fun getDerivative(time: Long, order: Int): Vector {
 		if (order >= numTerms) throw IndexOutOfBoundsException("Derivative order exceeds available terms")
 		estimateCoeffs()
 		val timeOffset = (time - referenceTime - expireTime).toDouble() / 1000 // place time in relation to data
-		//println(timeOffset)
 		return evaluatePolynomial(timeOffset, order)[order]
 	}
 

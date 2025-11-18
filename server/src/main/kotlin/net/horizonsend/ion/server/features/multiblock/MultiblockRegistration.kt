@@ -32,9 +32,9 @@ import net.horizonsend.ion.server.features.multiblock.type.fluid.CanisterVentMul
 import net.horizonsend.ion.server.features.multiblock.type.fluid.ChemicalProcessorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.GasPowerPlantMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.PumpMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.ElectricBoilerMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.FluidCombustionBoilerMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.ItemCombustionBoilerMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblockElectric
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblockFluidFuel
+import net.horizonsend.ion.server.features.multiblock.type.fluid.boiler.BoilerMultiblockItemFuel
 import net.horizonsend.ion.server.features.multiblock.type.fluid.collector.CanisterGasCollectorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.BasicFluidStorageTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.gridpower.generator.GridGeneratorMultiblockLarge
@@ -46,7 +46,7 @@ import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMu
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.industry.PressMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.AirlockMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.CryoPodMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.DecomposerMultiblock
@@ -54,6 +54,7 @@ import net.horizonsend.ion.server.features.multiblock.type.misc.DisposalMultiblo
 import net.horizonsend.ion.server.features.multiblock.type.misc.DisposalMultiblockMirrored
 import net.horizonsend.ion.server.features.multiblock.type.misc.ElevatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ExpandableAirlock
+import net.horizonsend.ion.server.features.multiblock.type.misc.ExpandableBoardingRampBaseMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.FuelTankMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.ItemSplitterMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.misc.LargeElevatorMultiblock
@@ -217,9 +218,9 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(PowerBankMultiblockTier1)
 		registerMultiblock(PowerBankMultiblockTier2)
 		registerMultiblock(PowerBankMultiblockTier3)
-		registerMultiblock(PowerBankMultiblockTier1, "NewPowerBankMultiblockTier1") //TODO testing only - remove on live
-		registerMultiblock(PowerBankMultiblockTier2, "NewPowerBankMultiblockTier2") //TODO testing only - remove on live
-		registerMultiblock(PowerBankMultiblockTier3, "NewPowerBankMultiblockTier3") //TODO testing only - remove on live
+		registerMultiblockAlias(PowerBankMultiblockTier1, "NewPowerBankMultiblockTier1") //TODO testing only - remove on live
+		registerMultiblockAlias(PowerBankMultiblockTier2, "NewPowerBankMultiblockTier2") //TODO testing only - remove on live
+		registerMultiblockAlias(PowerBankMultiblockTier3, "NewPowerBankMultiblockTier3") //TODO testing only - remove on live
 		registerMultiblock(PowerCellMultiblock)
 
 		registerMultiblock(CreativePowerSourceMultiblock)
@@ -279,7 +280,8 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(CompressorMultiblock)
 		registerMultiblock(FabricatorMultiblock)
 		registerMultiblock(CircuitfabMultiblock)
-		registerMultiblock(PlatePressMultiblock)
+		registerMultiblock(PressMultiblock)
+		registerMultiblockAlias(PressMultiblock, "PlatePressMultiblock")
 		registerMultiblock(GasFurnaceMultiblock)
 		registerMultiblock(MissileLoaderMultiblock)
 		registerMultiblock(AmmoLoaderMultiblock)
@@ -315,9 +317,9 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(MiningLaserMultiblockTier4SideMirrored)
 
 		// Gas
-		registerMultiblock(CanisterGasCollectorMultiblock, "GasCollectorMultiblock")
+		registerMultiblockAlias(CanisterGasCollectorMultiblock, "GasCollectorMultiblock")
 		registerMultiblock(CanisterGasCollectorMultiblock)
-		registerMultiblock(CanisterVentMultiblock, "VentMultiblock")
+		registerMultiblockAlias(CanisterVentMultiblock, "VentMultiblock")
 		registerMultiblock(CanisterVentMultiblock)
 		registerMultiblock(GasPowerPlantMultiblock)
 
@@ -395,16 +397,18 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(NavigationComputerMultiblockBasic)
 		registerMultiblock(VerticalNavigationComputerMultiblockAdvanced)
 		registerMultiblock(HorizontalNavigationComputerMultiblockAdvanced)
-		registerMultiblock(HorizontalNavigationComputerMultiblockAdvanced, "NavigationComputerMultiblockAdvanced")
+		registerMultiblockAlias(HorizontalNavigationComputerMultiblockAdvanced, "NavigationComputerMultiblockAdvanced")
 
 		registerMultiblock(HyperdriveMultiblockClass1)
 		registerMultiblock(HyperdriveMultiblockClass2)
 		registerMultiblock(HyperdriveMultiblockClass3)
 		registerMultiblock(HyperdriveMultiblockClass4)
 
-		registerMultiblock(TractorBeamBaseMultiblock.HorizontalTractorBeamBaseMultiblock)
-		registerMultiblock(TractorBeamBaseMultiblock.UpTractorBeamBaseMultiblock)
-		registerMultiblock(TractorBeamBaseMultiblock.DownTractorBeamBaseMultiblock)
+		if (ConfigurationFiles.featureFlags().tractorBeams) {
+			registerMultiblock(TractorBeamBaseMultiblock.HorizontalTractorBeamBaseMultiblock)
+			registerMultiblock(TractorBeamBaseMultiblock.UpTractorBeamBaseMultiblock)
+			registerMultiblock(TractorBeamBaseMultiblock.DownTractorBeamBaseMultiblock)
+		}
 
 		// Starship shields
 		registerMultiblock(ShieldMultiblockClass08Right)
@@ -438,20 +442,26 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(CryoPodMultiblock)
 		registerMultiblock(AirlockMultiblock)
 		registerMultiblock(ExpandableAirlock)
-		registerMultiblock(ElevatorMultiblock, "TractorBeamMultiblock")
-		registerMultiblock(MediumElevatorMultiblock, "MediumTractorBeamMultiblock")
-		registerMultiblock(LargeElevatorMultiblock, "LargeTractorBeamMultiblock")
+
+		registerMultiblock(ElevatorMultiblock)
+		registerMultiblock(MediumElevatorMultiblock)
+		registerMultiblock(LargeElevatorMultiblock)
+		registerMultiblockAlias(ElevatorMultiblock, "TractorBeamMultiblock") // Legacy alias
+		registerMultiblockAlias(MediumElevatorMultiblock, "MediumTractorBeamMultiblock") // Legacy alias
+		registerMultiblockAlias(LargeElevatorMultiblock, "LargeTractorBeamMultiblock") // Legacy alias
 
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockStandard)
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableRight)
 		registerMultiblock(BazaarTerminalMultiblock.BazaarTerminalMultiblockMergeableLeft)
+
+		if (ConfigurationFiles.featureFlags().boardingRamps) registerMultiblock(ExpandableBoardingRampBaseMultiblock)
 
 		registerMultiblock(AntiAirCannonBaseMultiblock)
 
 		registerMultiblock(BasicFluidStorageTankMultiblock)
 		registerMultiblock(CanisterUnloaderMultiblock)
 
-		if (ConfigurationFiles.featureFlags().graphTransfer) {
+		if (ConfigurationFiles.featureFlags().bigUpdateMultiblocks) {
 			registerMultiblock(ChemicalProcessorMultiblock)
 			registerMultiblock(PumpMultiblock)
 
@@ -460,9 +470,12 @@ object MultiblockRegistration : IonServerComponent() {
 			registerMultiblock(GridGeneratorMultiblockLarge)
 			registerMultiblock(TemporaryTurbineMultiblock)
 
-			registerMultiblock(ElectricBoilerMultiblock)
-			registerMultiblock(FluidCombustionBoilerMultiblock)
-			registerMultiblock(ItemCombustionBoilerMultiblock)
+			registerMultiblock(BoilerMultiblockElectric)
+			registerMultiblockAlias(BoilerMultiblockElectric, "ElectricBoilerMultiblock")
+			registerMultiblock(BoilerMultiblockFluidFuel)
+			registerMultiblockAlias(BoilerMultiblockFluidFuel, "FluidCombustionBoilerMultiblock")
+			registerMultiblock(BoilerMultiblockItemFuel)
+			registerMultiblockAlias(BoilerMultiblockItemFuel, "ItemCombustionBoilerMultiblock")
 		}
 	}
 
@@ -491,7 +504,7 @@ object MultiblockRegistration : IonServerComponent() {
 	/**
 	 * Registers a multiblock under a different storage identifier. This is to be used in the case a class has to be renamed, or similar.
 	 **/
-	private fun registerMultiblock(multiblock: Multiblock, storageAlias: String) {
+	private fun registerMultiblockAlias(multiblock: Multiblock, storageAlias: String) {
 		if (multiblocks.containsKey(storageAlias)) {
 			throw IllegalArgumentException("Attempted to register duplicate multiblock name! Exisitng: ${multiblocks[storageAlias]}, new: $multiblock")
 		}

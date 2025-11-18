@@ -146,7 +146,7 @@ object NationsMasterTasks : IonServerComponent() {
 				Nation.deposit(nationId, solarSiegeIncome)
 				Notify.nationCrossServer(
 					nationId,
-					template(Component.text("Your nation received {0} credits of hourly income for owning {0} solar siege zones.", HE_MEDIUM_GRAY), solarSiegeIncome.toCreditComponent(), stationCount)
+					template(Component.text("Your nation received {0} credits of hourly income for owning {1} solar siege zones.", HE_MEDIUM_GRAY), solarSiegeIncome.toCreditComponent(), stationCount)
 				)
 			}
 

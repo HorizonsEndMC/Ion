@@ -27,8 +27,6 @@ import net.horizonsend.ion.server.features.multiblock.entity.type.ticked.TickedM
 import net.horizonsend.ion.server.features.multiblock.manager.MultiblockManager
 import net.horizonsend.ion.server.features.multiblock.type.EntityMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.gridpower.turbine.TurbineMultiblock.TurbineMultiblockEntity
-import net.horizonsend.ion.server.features.transport.fluids.FluidStack
-import net.horizonsend.ion.server.features.transport.fluids.FluidUtils
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
 import net.horizonsend.ion.server.features.transport.fluids.types.steam.Steam
@@ -37,36 +35,28 @@ import net.horizonsend.ion.server.features.transport.inputs.IOPort
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
-import net.horizonsend.ion.server.miscellaneous.utils.getAngularVelocity
-import net.horizonsend.ion.server.miscellaneous.utils.getRotationalEnergy
-import net.horizonsend.ion.server.miscellaneous.utils.gramsToKilograms
-import net.horizonsend.ion.server.miscellaneous.utils.hertzToRPM
 import net.horizonsend.ion.server.miscellaneous.utils.metersCubedToLiters
-import net.horizonsend.ion.server.miscellaneous.utils.solveForAngularVelocity
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.persistence.PersistentDataAdapterContext
 import org.bukkit.persistence.PersistentDataType
-import kotlin.math.PI
-import kotlin.math.sqrt
 
 abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultiblockEntity> {
 	override val name: String = "turbine"
 
 	/**
-	 * The cross-sectional area of the steam input, in meters squared
+	 * The amount of fluid processed from the input per second
 	 **/
-	abstract val inletCrossSectionArea: Double
+	abstract val flowRate: Double
 
 	abstract val efficiency: Double
 
 	/**
 	 * The moment of inertia of the rotor
 	 **/
-	abstract val rotorMomentOfInertia: Double
+	abstract val energyOutputAtTarget: Double
 
 	abstract val targetRPM: Double
 
@@ -106,10 +96,10 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			{ StatusDisplayModule(it, statusManager) },
 		)
 
-		override val ioData: IOData = IOData.Companion.builder(this)
+		override val ioData: IOData = IOData.builder(this)
 			// Output
-			.addPort(IOType.FLUID, -3, 0, 1) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = steamInput, inputAllowed = true, outputAllowed = false)) }
-			.addPort(IOType.FLUID, 3, 0, 1) { IOPort.RegisteredMetaDataInput<FluidPortMetadata>(this, FluidPortMetadata(connectedStore = steamOutput, inputAllowed = false, outputAllowed = true)) }
+			.addPort(IOType.FLUID, -3, 0, 1) { IOPort.RegisteredMetaDataInput(this, FluidPortMetadata(connectedStore = steamInput, inputAllowed = true, outputAllowed = false)) }
+			.addPort(IOType.FLUID, 3, 0, 1) { IOPort.RegisteredMetaDataInput(this, FluidPortMetadata(connectedStore = steamOutput, inputAllowed = false, outputAllowed = true)) }
 			.build()
 
 		override fun getStores(): List<FluidStorageContainer> = arrayListOf(steamInput, steamOutput)
@@ -142,35 +132,15 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			tickSteam(deltaSeconds)
 		}
 
-		override fun getRotationInertia(): Double {
-			return getRotationalEnergy()
+		override fun getOutputEnergy(): Double {
+			return (minOf(multiblock.targetRPM, rpm) / multiblock.targetRPM) * multiblock.energyOutputAtTarget
 		}
-
-		val minimumSlowingJoules get() = 1000.0
 
 		fun decreaseRPM(deltaSeconds: Double) {
 			if (rpm <= 0.0) return
 
-			val opposingForce = (rotationLinkage.get() as? RotationConsumer)?.getSlowingJoules()
-			val slowingJoules = maxOf(minimumSlowingJoules, opposingForce ?: 0.0) * deltaSeconds
-
-			var rotationalEnergy = getRotationalEnergy()
-
-			val resistance = sqrt(rotationalEnergy)
-
-			println("Slowed by ${(slowingJoules + resistance)}, $rotationalEnergy total")
-			rotationalEnergy -= (slowingJoules + resistance)
-
-			if (rotationalEnergy <= 0) {
-				rpm = 0.0
-				return
-			}
-
-			// Decrease energy and solve for new rpm
-			val newRPM = getRPM(rotationalEnergy)
-
 			// Decrement by 1
-			rpm = maxOf(0.0, newRPM)
+			rpm = maxOf(0.0, rpm - 50.0 * deltaSeconds)
 		}
 
 		fun tickSteam(deltaSeconds: Double) {
@@ -192,37 +162,9 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 			}
 
 			val type = steamStack.type.getValue() as Steam
+			val massFlow = minOf(steamStack.amount, multiblock.flowRate * deltaSeconds)
 
-			// The mass flow, in kilograms
-			val inputWeight = gramsToKilograms(FluidUtils.getFluidWeight(steamStack, location))
-			val massFlow = minOf(inputWeight, getMassFlowRate(steamStack, location) * deltaSeconds)
-
-			// The specific enthalpy, in joules per kilogram
-			val specificEnthalpy = type.turbineWorkPerKilogram
-
-			// The amount of work that can be done is calculated by the difference in energy
-			// between the input and output. Here, the output energy efficiency is hardcoded,
-			// so the amount of work done is equal to specific enthalpy divded the remaining energy of
-			// the output
-			// Stored in
-			val workPerMassFlow = multiblock.efficiency * specificEnthalpy
-
-			// Simply multiply the work per mass flow by the mass flow
-			val work = workPerMassFlow * massFlow
-
-			println("Added $work")
-			var rotationalEnergy = getRotationalEnergy()
-			rotationalEnergy += work
-
-			// Increase energy and solve for new rpm
-			var newRPM = getRPM(rotationalEnergy)
-
-			// Decrease the mass flow if speed is going beyond target
-			if (newRPM > multiblock.targetRPM) { //TODO deduplicate
-				newRPM = multiblock.targetRPM
-			}
-
-			rpm = newRPM
+			rpm = if (rpm < multiblock.targetRPM) minOf(multiblock.targetRPM, rpm + (100 * deltaSeconds)) else rpm
 
 			// Get the removed volume using the density of the steam and the mass flow rate
 			val idealRemoved = metersCubedToLiters(massFlow / steamStack.type.getValue().getDensity(steamStack, location))
@@ -241,26 +183,6 @@ abstract class TurbineMultiblock : Multiblock(), EntityMultiblock<TurbineMultibl
 
 			steamOutput.addFluid(new, location)
 			setStatus(Component.text("Working", NamedTextColor.GREEN))
-		}
-
-		/**
-		 * Returns the mass flow rate, in kilograms per second
-		 **/
-		fun getMassFlowRate(stack: FluidStack, location: Location?): Double {
-			val density = stack.type.getValue().getDensity(stack, location) // kg/m^3
-			val crossSectionArea = (multiblock.inletCrossSectionArea) // m^2
-			val velocity = 25.0 // m/s
-
-			return density * crossSectionArea * velocity
-		}
-
-		fun getRotationalEnergy(): Double {
-			return getRotationalEnergy(getAngularVelocity(rpm), multiblock.rotorMomentOfInertia)
-		}
-
-		fun getRPM(rotationalEnergy: Double): Double {
-			val solved = solveForAngularVelocity(rotationalEnergy, multiblock.rotorMomentOfInertia)
-			return hertzToRPM(solved / (2.0 * PI))
 		}
 	}
 }

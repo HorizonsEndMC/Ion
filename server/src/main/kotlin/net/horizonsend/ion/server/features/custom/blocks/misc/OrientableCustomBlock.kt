@@ -19,10 +19,10 @@ abstract class OrientableCustomBlock(
 	val bukkitAxisLookup = axisData.entries.associateTo(Object2ObjectOpenHashMap()) { entry -> entry.value to entry.key }
 	val nmsAxisLookup = axisData.entries.associateTo(Object2ObjectOpenHashMap()) { entry -> entry.value.nms to entry.key }
 
-	fun getFace(data: BlockData): Axis {
+	fun getAxis(data: BlockData): Axis {
 		return bukkitAxisLookup[data] ?: throw NoSuchElementException("Face for $data does not exist")
 	}
-	fun getFace(data: BlockState): Axis {
+	fun getAxis(data: BlockState): Axis {
 		return nmsAxisLookup[data] ?: throw NoSuchElementException("Face for $data does not exist")
 	}
 }

@@ -1,15 +1,17 @@
 package net.horizonsend.ion.server.features.transport.fluids.types
 
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.features.transport.fluids.DisplayProperties
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
+import net.horizonsend.ion.server.features.transport.fluids.properties.FluidProperty
+import net.horizonsend.ion.server.features.transport.fluids.properties.type.FluidPropertyType
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNetwork.Companion.PIPE_INTERIOR_PADDING
 import net.horizonsend.ion.server.features.transport.manager.graph.fluid.FluidNode
 import net.horizonsend.ion.server.miscellaneous.utils.axis
 import net.kyori.adventure.text.Component
 import org.bukkit.Axis
-import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.Particle.Trail
@@ -21,15 +23,17 @@ import kotlin.random.Random
 class SimpleFluid(
 	key: IonRegistryKey<FluidType, out FluidType>,
 	val displayName: Component,
+	override val displayProperties: DisplayProperties,
 	override val categories: Array<FluidCategory>,
 	private val heatCapacity: Double,
 	private val molarMass: Double,
-	private val density: Double
+	private val density: Double,
+	override val defaultProperties: Map<IonRegistryKey<FluidPropertyType<*>, out FluidPropertyType<*>>, FluidProperty> = emptyMap()
 ) : FluidType(key) {
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
 		val trailOptions = Trail(
 			/* target = */ destination.toLocation(world),
-			/* color = */ Color.WHITE,
+			/* color = */ displayProperties.color,
 			/* duration = */ 20
 		)
 

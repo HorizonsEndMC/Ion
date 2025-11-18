@@ -141,6 +141,8 @@ object NamespacedKeys {
 	val FEATURE_META_DATA = key("feature_meta_data")
 	val SIZE = key("size")
 
+	val BOARDING_RAMP_STATE = key("boarding_ramp_state")
+
 	fun key(key: String) = NamespacedKey(IonServer, key)
 
 	// Used for datapacks and resource packs

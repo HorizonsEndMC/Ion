@@ -33,7 +33,7 @@ import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMu
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.GasFurnaceMultiblock
-import net.horizonsend.ion.server.features.multiblock.type.industry.PlatePressMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.industry.PressMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.processing.automason.CenterType
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
@@ -84,7 +84,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 
 		register(MultiblockRecipeKeys.REACTIVE_PLATING_PRESSING, FurnaceMultiblockRecipe(
 			key = MultiblockRecipeKeys.REACTIVE_PLATING_PRESSING,
-			clazz = PlatePressMultiblock.PlatePressMultiblockEntity::class,
+			clazz = PressMultiblock.PressMultiblockEntity::class,
 			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.REACTIVE_PLATING),
 			fuelItem = null,
 			power = PowerRequirement(10),
@@ -99,7 +99,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 
 		register(MultiblockRecipeKeys.STEEL_PLATE_PRESSING, FurnaceMultiblockRecipe(
 			key = MultiblockRecipeKeys.STEEL_PLATE_PRESSING,
-			clazz = PlatePressMultiblock.PlatePressMultiblockEntity::class,
+			clazz = PressMultiblock.PressMultiblockEntity::class,
 			smeltingItem = ItemRequirement.CustomItemRequirement(CustomItemKeys.STEEL_PLATE),
 			fuelItem = null,
 			power = PowerRequirement(10),
@@ -107,6 +107,24 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 				Tick.of(60L * 60L * 20L),
 				ItemResult.simpleResult(CustomItemKeys.STEEL_CHASSIS),
 			))
+				.playSound(Sound.sound(NamespacedKeys.packKey("industry.press"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
+				.updateProgressText()
+				.updateFurnace()
+		))
+
+		register(MultiblockRecipeKeys.COPPER_BLOCK_PRESSING, FurnaceMultiblockRecipe(
+			key = MultiblockRecipeKeys.COPPER_BLOCK_PRESSING,
+			clazz = PressMultiblock.PressMultiblockEntity::class,
+			smeltingItem = ItemRequirement.any(
+				MaterialRequirement(Material.WAXED_COPPER_BLOCK),
+				MaterialRequirement(Material.COPPER_BLOCK),
+			),
+			fuelItem = null,
+			power = PowerRequirement(150),
+			result = ResultHolder.of(WarmupResult<FurnaceEnviornment>(
+					Tick.of(20L * 5L), // 5 seconds
+					ItemResult.simpleResult(CustomItemKeys.COPPER_WIRE),
+				))
 				.playSound(Sound.sound(NamespacedKeys.packKey("industry.press"), SoundCategory.BLOCKS, 1.0f, 1.0f), true)
 				.updateProgressText()
 				.updateFurnace()
@@ -289,7 +307,7 @@ class MultiblockRecipeRegistry : Registry<MultiblockRecipe<*>>(RegistryKeys.MULT
 				inputItem = MaterialRequirement(input),
 				centerCheck = category::matches,
 				power = PowerRequirement(10),
-				result = ResultHolder.of(ItemResult.simpleResult(output))
+				result = ResultHolder.of(ItemResult.simpleResult(output, if (category == CenterType.SLAB) 2 else 1))
 			))
 		}
 	}

@@ -7,6 +7,7 @@ import net.horizonsend.ion.server.features.ai.AIControllerFactory
 import net.horizonsend.ion.server.features.ai.configuration.WeaponSet
 import net.horizonsend.ion.server.features.ai.module.AIModule
 import net.horizonsend.ion.server.features.ai.module.debug.AIDebugModule
+import net.horizonsend.ion.server.features.ai.module.misc.CaravanModule
 import net.horizonsend.ion.server.features.ai.util.AITarget
 import net.horizonsend.ion.server.features.ai.util.PlayerTarget
 import net.horizonsend.ion.server.features.ai.util.StarshipTarget
@@ -16,6 +17,7 @@ import net.horizonsend.ion.server.features.starship.control.controllers.Controll
 import net.horizonsend.ion.server.features.starship.control.input.AIShiftFlightInput
 import net.horizonsend.ion.server.features.starship.control.movement.MovementHandler
 import net.horizonsend.ion.server.features.starship.control.movement.ShiftFlightHandler
+import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovement
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
@@ -83,7 +85,6 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 
 	/** use only in special cases */
 	fun addCoreModule(module: AIModule) = run { coreModules[module::class] = module }
-
 
 	/** Util modules provide less heavy-duty functions like the glow and don't need to be accessed often. */
 	private val utilModules: MutableSet<AIModule> = mutableSetOf()
@@ -157,8 +158,19 @@ class AIController private constructor(starship: ActiveStarship, damager: Damage
 		return coreModules.values.union(utilModules)
 	}
 
+	companion object {
+		private const val ACTIVITY_RANGE = 1000
+		private const val ACTIVITY_RANGE_SQUARED = ACTIVITY_RANGE * ACTIVITY_RANGE
+	}
+
 	// Functionality
 	override fun tick() {
+		val caravanPresent = getUtilModule(CaravanModule::class.java) != null
+		if (!caravanPresent && getWorld().players.none { player -> Vec3i(player.location).distanceSquared(starship.centerOfMass) <= ACTIVITY_RANGE_SQUARED })  {
+			if (ActiveStarships.isActive(starship)) StarshipCruising.stopCruising(this, starship)
+			return
+		}
+
 		for ((_, module) in coreModules) {
 			module.tick()
 		}

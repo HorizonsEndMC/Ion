@@ -3,6 +3,7 @@ package net.horizonsend.ion.server.features.transport.fluids.types
 import net.horizonsend.ion.common.utils.miscellaneous.testRandom
 import net.horizonsend.ion.common.utils.text.colors.HEColorScheme.Companion.HE_LIGHT_ORANGE
 import net.horizonsend.ion.server.core.registration.keys.FluidTypeKeys
+import net.horizonsend.ion.server.features.transport.fluids.DisplayProperties
 import net.horizonsend.ion.server.features.transport.fluids.FluidStack
 import net.horizonsend.ion.server.features.transport.fluids.FluidType
 import net.horizonsend.ion.server.features.transport.fluids.properties.FluidCategory
@@ -22,6 +23,13 @@ import org.bukkit.util.Vector
 import kotlin.random.Random
 
 object Lava : FluidType(FluidTypeKeys.LAVA) {
+	override val displayProperties: DisplayProperties = DisplayProperties(Color.fromRGB(Integer.parseInt("F5451D", 16)), "lava")
+	val colors = setOf(
+		displayProperties.color,
+		Color.fromRGB(Integer.parseInt("FC5C38", 16)),
+		Color.fromRGB(Integer.parseInt("DE2E07", 16))
+	)
+
 	override val categories: Array<FluidCategory> = arrayOf()
 
 	override fun getDisplayName(stack: FluidStack): Component {
@@ -29,12 +37,6 @@ object Lava : FluidType(FluidTypeKeys.LAVA) {
 	}
 
 	override fun displayInPipe(world: World, origin: Vector, destination: Vector) {
-		val colors = setOf(
-			Color.fromRGB(Integer.parseInt("F5451D", 16)),
-			Color.fromRGB(Integer.parseInt("FC5C38", 16)),
-			Color.fromRGB(Integer.parseInt("DE2E07", 16))
-		)
-
 		val trailOptions = Trail(
 			/* target = */ destination.toLocation(world),
 			/* color = */ colors.random(),

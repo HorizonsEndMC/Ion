@@ -7,8 +7,6 @@ import net.horizonsend.ion.server.configuration.starship.SwarmMissileBalancing
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
 import net.horizonsend.ion.server.features.client.display.teleportDuration
 import net.horizonsend.ion.server.features.custom.items.util.ItemFactory
-import net.horizonsend.ion.server.features.starship.StarshipType
-import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
@@ -19,8 +17,6 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.damage.DamageType
 import org.bukkit.util.Vector
-import kotlin.math.pow
-import kotlin.math.roundToInt
 
 class SwarmMissileProjectile(
     source: ProjectileSource,
@@ -28,11 +24,12 @@ class SwarmMissileProjectile(
     loc: Location,
     val dir: Vector,
     val initialDir: Vector,
+    target: Vector,
     val color: Color,
     shooter: Damager,
     otherBoids: MutableList<BoidProjectile<*>>,
     damageType: DamageType
-) : BoidProjectile<SwarmMissileBalancing.SwarmMissileProjectileBalancing>(source, name, loc, dir, shooter, otherBoids, damageType), ProximityProjectile {
+) : BoidProjectile<SwarmMissileBalancing.SwarmMissileProjectileBalancing>(source, name, loc, dir, target, shooter, otherBoids, damageType), ProximityProjectile {
     companion object {
         private const val ADDITIONAL_EXPLOSION_POWER = 2.0f
     }
@@ -56,11 +53,12 @@ class SwarmMissileProjectile(
     }
 
     override fun tick() {
+
         if (!flightPath1Completed) {
             // Initial launch - fly straight out of the multiblock
-            direction = initialDir.clone().multiply(0.25) // make the projectile launch parallel from the launcher, and slower
+            direction = initialDir.clone().multiply(1) // make the projectile launch parallel from the launcher, and slower
 
-            if (distance > 10) {
+            if (distance > 30) {
                 distance = 0.0
                 flightPath1Completed = true
             }
@@ -126,7 +124,7 @@ class SwarmMissileProjectile(
         return when {
             distanceRatio <= 0.0 -> 1.0 // projectile is basically inside the target
             distanceRatio >= 1.0 -> 0.0 // projectile is further than the proximity range
-            else -> 1.00262 * 0.0511657.pow(distance / proximityRange) /*1 - distanceRatio*/
+            else -> /*1.00262 * 0.0511657.pow(distance / proximityRange)*/ 1 - distanceRatio
         }
     }
 
@@ -155,6 +153,7 @@ class SwarmMissileProjectile(
         }
     }
 
+    /*
     override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
         if (starship.type != StarshipType.STARFIGHTER) {
             impactLocation.createExplosion(ADDITIONAL_EXPLOSION_POWER)
@@ -164,4 +163,5 @@ class SwarmMissileProjectile(
             )
         }
     }
+     */
 }

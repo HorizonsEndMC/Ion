@@ -12,6 +12,8 @@ import net.horizonsend.ion.server.core.registration.keys.KeyRegistry
 import net.horizonsend.ion.server.core.registration.keys.RegistryKeys
 import net.horizonsend.ion.server.features.custom.blocks.BlockLoot
 import net.horizonsend.ion.server.features.custom.blocks.CustomBlock
+import net.horizonsend.ion.server.features.custom.blocks.cable.GridEnergyCable
+import net.horizonsend.ion.server.features.custom.blocks.cable.GridEnergyCableJunction
 import net.horizonsend.ion.server.features.custom.blocks.extractor.AdvancedItemExtractorBlock
 import net.horizonsend.ion.server.features.custom.blocks.filter.ItemFilterBlock
 import net.horizonsend.ion.server.features.custom.blocks.misc.DirectionalCustomBlock
@@ -25,6 +27,7 @@ import net.horizonsend.ion.server.features.custom.blocks.pipe.ReinforcedFluidPip
 import net.horizonsend.ion.server.features.custom.blocks.pipe.TemperatureGaugeBlock
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.features.space.encounters.SecondaryChest.Companion.random
+import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateAxis
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.rotateBlockFace
 import net.horizonsend.ion.server.miscellaneous.utils.nms
 import net.minecraft.world.level.block.Rotation
@@ -51,7 +54,8 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.UP)),
                 drops = BlockLoot(
                     requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_ALUMINUM)
+                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_ALUMINUM),
+					silkTouchDrops = customItemDrop(CustomItemKeys.ALUMINUM_ORE)
                 ),
                 CustomItemKeys.ALUMINUM_ORE
             )
@@ -85,7 +89,8 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 blockData = mushroomBlockData(setOf(BlockFace.EAST, BlockFace.NORTH, BlockFace.UP)),
                 drops = BlockLoot(
                     requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.CHETHERITE)
+                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.CHETHERITE),
+					silkTouchDrops = customItemDrop(CustomItemKeys.CHETHERITE_ORE)
                 ),
                 CustomItemKeys.CHETHERITE_ORE
             )
@@ -108,7 +113,8 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.WEST)),
                 drops = BlockLoot(
                     requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_TITANIUM)
+                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_TITANIUM),
+					silkTouchDrops = customItemDrop(CustomItemKeys.TITANIUM_ORE)
                 ),
                 CustomItemKeys.TITANIUM_ORE
             )
@@ -142,7 +148,8 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
                 blockData = mushroomBlockData(setOf(BlockFace.UP)),
                 drops = BlockLoot(
                     requiredTool = { BlockLoot.Tool.PICKAXE },
-                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_URANIUM)
+                    drops = fortuneEnabledCustomItemDrop(CustomItemKeys.RAW_URANIUM),
+					silkTouchDrops = customItemDrop(CustomItemKeys.URANIUM_ORE)
                 ),
                 CustomItemKeys.URANIUM_ORE
             )
@@ -295,6 +302,8 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		), WrenchRemovable {
 			override fun decorateItem(itemStack: ItemStack, block: Block) {}
 		})
+		register(CustomBlockKeys.GRID_ENERGY_CABLE_JUNCTION, GridEnergyCableJunction)
+		register(CustomBlockKeys.GRID_ENERGY_CABLE, GridEnergyCable)
 
 		register(CustomBlockKeys.COPPER_COIL, CustomBlock(
 			key = CustomBlockKeys.COPPER_COIL,
@@ -314,6 +323,26 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 				drops = customItemDrop(CustomItemKeys.ROTATION_SHAFT)
 			),
 			CustomItemKeys.ROTATION_SHAFT
+		))
+
+		register(CustomBlockKeys.REDSTONE_CONTROL_PORT, CustomBlock(
+			key = CustomBlockKeys.REDSTONE_CONTROL_PORT,
+			blockData = mushroomBlockData(setOf(BlockFace.UP, BlockFace.DOWN, BlockFace.WEST, BlockFace.SOUTH)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.REDSTONE_CONTROL_PORT)
+			),
+			CustomItemKeys.REDSTONE_CONTROL_PORT
+		))
+
+		register(CustomBlockKeys.REFRACTORY_BRICKS, CustomBlock(
+			key = CustomBlockKeys.REFRACTORY_BRICKS,
+			blockData = mushroomBlockData(setOf(BlockFace.WEST, BlockFace.SOUTH, BlockFace.EAST, BlockFace.UP, BlockFace.DOWN)),
+			drops = BlockLoot(
+				requiredTool = null,
+				drops = customItemDrop(CustomItemKeys.REFRACTORY_BRICKS)
+			),
+			CustomItemKeys.REFRACTORY_BRICKS
 		))
 	}
 
@@ -402,6 +431,11 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 					val face = customBlock.getFace(blockState)
 					val newFace = rotateBlockFace(face, rotation)
 					customBlock.faceData[newFace]!!.nms
+				}
+				is OrientableCustomBlock -> {
+					val axis = customBlock.getAxis(blockState)
+					val newAxis = rotateAxis(axis, rotation)
+					customBlock.axisData[newAxis]!!.nms
 				}
 				else -> blockState
 			}

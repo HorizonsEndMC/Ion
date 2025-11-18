@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.entity.type.fluids
 
+import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
 import net.horizonsend.ion.server.features.multiblock.entity.PersistentMultiblockData
 import net.horizonsend.ion.server.features.multiblock.entity.type.fluids.storage.FluidStorageContainer
@@ -9,6 +10,7 @@ import net.horizonsend.ion.server.features.transport.inputs.IOPort.RegisteredMet
 import net.horizonsend.ion.server.features.transport.inputs.IOType
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toVec3i
+import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 
 interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
 	override fun iterator(): Iterator<FluidStorageContainer> {
@@ -42,11 +44,11 @@ interface FluidStoringMultiblock : Iterable<FluidStorageContainer> {
 
 		for (portLocation: BuiltInputData<RegisteredMetaDataInput<FluidPortMetadata>> in ioData.getOfType(IOType.FLUID)) {
 			val localPosition = toBlockKey(fluidManager.transportManager.getLocalCoordinate(toVec3i(portLocation.getRealPos(this))))
+			debugAudience.highlightBlock(toVec3i(portLocation.getRealPos(this)), 200L)
 			if (portLocation.get(this)?.metaData?.outputAllowed != true) continue
-
 			val network = fluidManager.getByLocation(localPosition)
 
-			if (network != null) return
+			if (network != null) continue
 
 			fluidManager.registerNewPosition(localPosition)
 		}

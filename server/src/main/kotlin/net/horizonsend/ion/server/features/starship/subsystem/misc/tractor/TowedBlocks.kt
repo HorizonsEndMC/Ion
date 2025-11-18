@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.misc.tractor
 
+import com.sk89q.worldguard.protection.flags.Flags
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet
 import net.horizonsend.ion.common.utils.text.ofChildren
@@ -7,10 +8,15 @@ import net.horizonsend.ion.common.utils.text.template
 import net.horizonsend.ion.server.command.admin.debug
 import net.horizonsend.ion.server.features.multiblock.MultiblockEntities
 import net.horizonsend.ion.server.features.multiblock.entity.MultiblockEntity
+import net.horizonsend.ion.server.features.nations.region.Regions
+import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionSolarSiegeZone
 import net.horizonsend.ion.server.features.starship.Mass
 import net.horizonsend.ion.server.features.starship.movement.StarshipMovementException
+import net.horizonsend.ion.server.features.starship.movement.StarshipOutOfBoundsException
 import net.horizonsend.ion.server.features.starship.movement.TransformationAccessor
 import net.horizonsend.ion.server.gui.invui.misc.util.input.validator.ValidatorResult
+import net.horizonsend.ion.server.listener.misc.ProtectionListener
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.blockKey
@@ -22,8 +28,12 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getY
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getZ
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.getBlockIfLoaded
+import net.horizonsend.ion.server.miscellaneous.utils.hooks.isPlotDenied
+import net.horizonsend.ion.server.miscellaneous.utils.hooks.isWorldGuardDenied
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.entity.Player
 import java.util.concurrent.CompletableFuture
@@ -74,6 +84,9 @@ class TowedBlocks private constructor(
 		Tasks.async {
 			try {
 				subsystem.starship.debug("Moving ${blocks.size} blocks")
+
+				val pilot = subsystem.starship.playerPilot ?: throw StarshipMovementException("")
+				validateNewExtents(minPoint, maxPoint, transformationAccessor.newWorld ?: oldWorld, transformationAccessor, pilot)
 
 				transformationAccessor.execute(
 					positions = blocks,
@@ -238,6 +251,40 @@ class TowedBlocks private constructor(
                 maxPoint = Vec3i(maxX, maxY, maxZ),
                 mass = totalMass
 			))
+		}
+
+		private fun validateNewExtents(min: Vec3i, max: Vec3i, world2: World, transformationAccessor: TransformationAccessor, player: Player) {
+			val newMin = transformationAccessor.displaceVec3i(min).toLocation(world2)
+			val newMax = transformationAccessor.displaceVec3i(max).toLocation(world2)
+
+			if (!world2.worldBorder.isInside(newMin) || !world2.worldBorder.isInside(newMax))
+			// Handle cases where there are no pilots
+				throw StarshipOutOfBoundsException("Towed load would be outside the world border!")
+
+				if (Bukkit.getPluginManager().isPluginEnabled("worldguard")) {
+					if (isWorldGuardDenied(player, newMin, Flags.BUILD, Flags.BLOCK_BREAK)) throw StarshipOutOfBoundsException("You don't have access to that area!")
+					if (isWorldGuardDenied(player, newMax, Flags.BUILD, Flags.BLOCK_BREAK)) throw StarshipOutOfBoundsException("You don't have access to that area!")
+				}
+
+				if (Bukkit.getPluginManager().isPluginEnabled("plotsquared")) {
+					if (isPlotDenied(player, newMin)) throw StarshipOutOfBoundsException("You don't have access to that plot!")
+					if (isPlotDenied(player, newMax)) throw StarshipOutOfBoundsException("You don't have access to that plot!")
+				}
+
+			fun checkRegions(location: Location) {
+				val regions = Regions.find(location)
+
+				for (region in regions) {
+					when (region) {
+						is RegionSolarSiegeZone -> throw StarshipOutOfBoundsException("Towed loads can't enter siege zones!")
+						is RegionCapturableStation -> throw StarshipOutOfBoundsException("Towed loads can't enter siege zones!")
+						else -> if (ProtectionListener.isRegionDenied(player, location)) throw StarshipOutOfBoundsException("You don't have access to that territory!")
+					}
+				}
+			}
+
+			checkRegions(newMin)
+			checkRegions(newMax)
 		}
 	}
 }

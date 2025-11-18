@@ -27,10 +27,6 @@ object StarshipMovementForecast {
 			val shiftForecast = shiftKinematicEstimator.getDerivative(time,order)
 			val cruiseForecast = cruiseKinematicEstimator.getDerivative(time,order)
 
-			//println("shift ref pos: ${shiftKinematicEstimator.referncePos}")
-			//println("cruise ref pos: ${cruiseKinematicEstimator.referncePos}")
-			//println("shift forcast: $shiftForecast")
-			//println("cruise forcast: $cruiseForecast")
 			val reference = if (shiftKinematicEstimator.referenceTime < cruiseKinematicEstimator.referenceTime) {
 				shiftKinematicEstimator.referncePos
 			} else {cruiseKinematicEstimator.referncePos}

@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.starship.control.signs
 
 import net.horizonsend.ion.server.command.starship.MiscStarshipCommands
-import net.horizonsend.ion.server.features.starship.BoardingRamps
 import net.horizonsend.ion.server.features.starship.active.ActiveControlledStarship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
 import net.horizonsend.ion.server.features.starship.control.movement.StarshipCruising
@@ -110,15 +109,6 @@ enum class StarshipSigns(val undetectedText: String, val baseLines: Array<String
 				return false
 			}
 			return true
-		}
-	},
-	BOARDING_RAMP("[boardingramp]", arrayOf(BoardingRamps.FIRST_LINE, null, null, null)) {
-		override fun onDetect(player: Player, sign: Sign): Boolean {
-			return BoardingRamps.shut(player, sign)
-		}
-
-		override fun onClick(player: Player, sign: Sign, rightClick: Boolean) {
-			BoardingRamps.toggle(player, sign)
 		}
 	},
 	DIRECT_CONTROL("[directcontrol]", arrayOf("&2Direct".colorize(), "&8Control".colorize(), null, null)) {

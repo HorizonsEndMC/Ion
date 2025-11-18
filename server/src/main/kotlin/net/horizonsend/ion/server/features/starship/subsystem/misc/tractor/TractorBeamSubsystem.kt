@@ -1,11 +1,14 @@
 package net.horizonsend.ion.server.features.starship.subsystem.misc.tractor
 
+import com.sk89q.worldguard.protection.flags.Flags
 import io.papermc.paper.raytracing.RayTraceTarget
 import net.horizonsend.ion.common.extensions.alert
 import net.horizonsend.ion.common.extensions.information
 import net.horizonsend.ion.server.configuration.starship.NewStarshipBalancing
 import net.horizonsend.ion.server.features.client.display.ClientDisplayEntities.highlightBlock
+import net.horizonsend.ion.server.features.multiblock.type.defense.passive.areashield.AreaShield
 import net.horizonsend.ion.server.features.multiblock.type.starship.misc.TractorBeamBaseMultiblock
+import net.horizonsend.ion.server.features.space.Space
 import net.horizonsend.ion.server.features.starship.DeactivatedPlayerStarships
 import net.horizonsend.ion.server.features.starship.Starship
 import net.horizonsend.ion.server.features.starship.active.ActiveStarships
@@ -30,7 +33,11 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.getRelative
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.toBlockKey
 import net.horizonsend.ion.server.miscellaneous.utils.debugAudience
 import net.horizonsend.ion.server.miscellaneous.utils.getTypeSafe
+import net.horizonsend.ion.server.miscellaneous.utils.hooks.isPlotDenied
+import net.horizonsend.ion.server.miscellaneous.utils.hooks.isWorldGuardDenied
+import org.bukkit.Bukkit
 import org.bukkit.Location
+import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.World
 import org.bukkit.block.Block
@@ -221,19 +228,42 @@ class TractorBeamSubsystem(
 
 	fun verifyBlock(player: Player, block: Block): Boolean {
 		val type = block.getTypeSafe() ?: return false
-		if (type.isAir) return false
+
+		when {
+			type.isAir -> return false
+			type == Material.WATER -> return false
+			type == Material.LAVA -> return false
+		}
 
 		if (starship.contains(block.x, block.y, block.z)) {
 			return false
 		}
 
-		if (block.world.ion.detectionForbiddenBlocks.contains(toBlockKey(block.x, block.y, block.z))) return false
+		if (block.world.ion.detectionForbiddenBlocks.contains(toBlockKey(block.x, block.y, block.z))) {
+			return false
+		}
 
 		if (ActiveStarships.findByBlock(block) != null) {
 			return false
 		}
 
 		if (DeactivatedPlayerStarships.getContaining(block.world, block.x, block.y, block.z) != null) {
+			return false
+		}
+
+		if (Space.isCelestialBody(starship.world, block.x.toDouble(), block.y.toDouble(), block.z.toDouble())) {
+			return false
+		}
+
+		if (starship.world.ion.multiblockManager.getMultiblockEntity(block.x, block.y, block.z) is AreaShield.AreaShieldEntity) {
+			return false
+		}
+
+		if (Bukkit.getPluginManager().isPluginEnabled("worldguard") && isWorldGuardDenied(player, block.location, Flags.BUILD, Flags.BLOCK_BREAK)) {
+			return false
+		}
+
+		if (Bukkit.getPluginManager().isPluginEnabled("plotsquared") && isPlotDenied(player, block.location)) {
 			return false
 		}
 

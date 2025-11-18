@@ -121,6 +121,10 @@ class FluidStorageContainer private constructor(
 		runUpdates()
 	}
 
+	fun isEmpty() = contentsUnsafe.isEmpty()
+	fun isNotEmpty() = contentsUnsafe.isNotEmpty()
+	fun isFull() = contentsUnsafe.amount >= capacity
+
 	override fun toString(): String {
 		return "Container[name= $name, key= $namespacedKey, storage= $contentsUnsafe]"
 	}

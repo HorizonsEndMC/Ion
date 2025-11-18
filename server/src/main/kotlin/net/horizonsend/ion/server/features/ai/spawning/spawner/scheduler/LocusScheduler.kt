@@ -25,6 +25,7 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.empty
 import net.kyori.adventure.text.Component.text
 import net.kyori.adventure.text.format.TextColor
+import net.minecraft.data.worldgen.TrialChambersStructurePools.spawner
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.World
@@ -54,8 +55,10 @@ class LocusScheduler(
 	private val endMessage: Component?,
 	val radius: Double,
 	private val spawnSeparation: Supplier<Duration>,
-	private val worlds: List<String>
+	worlds: List<String>
 ) : SpawnerScheduler, TickedScheduler, StatusScheduler, PersistentDataSpawnerComponent<LocusPersistentData> {
+	val worlds by lazy { worlds.mapNotNull(Bukkit::getWorld) }
+
 	private lateinit var spawner: AISpawner
 	val MAX_TICK_MULTIPLIER = 4
 	val ANNOUCE_WORLD = Duration.ofMinutes(30)
@@ -81,13 +84,26 @@ class LocusScheduler(
 	private var lastSeparation: Duration = separation.get()   // first run
 
 	override fun tick(logger: Logger) {
+		if (worlds.isEmpty()) return
+
 		if (!active) {
 			// Interval from the end of the last one
 			val interval = System.currentTimeMillis() - (lastActiveTime + lastDuration.toMillis())
-			if (interval + ANNOUCE_WORLD.toMillis() > lastSeparation.toMillis() && center == null) center = calculateNewCenter()
+
+			if (interval + ANNOUCE_WORLD.toMillis() > lastSeparation.toMillis() && center == null) {
+				val newCenter = calculateNewCenter()
+				center = newCenter
+
+				if (center == null) {
+					end()
+					return
+				}
+			}
+
 			if (interval + ANNOUCE_DIFFICULTY.toMillis() > lastSeparation.toMillis() && difficulty == null) {
 				difficulty = difficultySupplier(center!!.world).get()
 			}
+
 			// Start the locus if the separation has passed
 			if (interval > lastSeparation.toMillis()) start()
 		} else {
@@ -110,7 +126,8 @@ class LocusScheduler(
 		active = true
 		markDynmapZone()
 		addGravityWell()
-		if (center == null) center = calculateNewCenter()
+		if (center == null) center = calculateNewCenter() ?: return end()
+
 		if (difficulty == null) difficulty = difficultySupplier(center!!.world).get()
 
 		if (announcementMessage != null) Notify.chatAndGlobal(
@@ -150,9 +167,10 @@ class LocusScheduler(
 		getSpawner().trigger(logger, AISpawningManager.context)
 	}
 
-	private fun calculateNewCenter(): Location {
+	private fun calculateNewCenter(): Location? {
 		// If you make a world with nothing but a planet in a tiny world border this will crash your server, but that is on you
-		val world = Bukkit.getWorld(worlds.random())!!
+		val world = worlds.randomOrNull() ?: return null
+
 		val border = world.worldBorder
 
 		val planets = Space.getAllPlanets()
