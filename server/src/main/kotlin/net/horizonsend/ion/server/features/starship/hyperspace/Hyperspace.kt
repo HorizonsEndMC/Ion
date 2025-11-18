@@ -117,7 +117,7 @@ object Hyperspace : IonServerComponent() {
 		destinationWorld: World,
 		useFuel: Boolean
 	) {
-		val dest = Location(destinationWorld, x.toDouble(), 192.0, z.toDouble())
+		val dest = Location(destinationWorld, x.toDouble(), starship.centerOfMass.y.toDouble(), z.toDouble())
 		val mass = starship.getTotalMass()
 		val speed = if (hyperdrive != null) {calculateSpeed(hyperdrive.multiblock.hyperdriveClass, mass)}
 			else calculateSpeed(3, mass)
@@ -132,8 +132,6 @@ object Hyperspace : IonServerComponent() {
 	fun cancelJumpWarmup(warmup: HyperspaceWarmup) {
 		check(warmupTasks.remove(warmup.ship, warmup)) { "Warmup wasn't in the map!" }
 
-		val drive: HyperdriveSubsystem? = warmup.drive
-		if (drive != null && drive.isIntact()) drive.restoreFuel()
 		warmup.ship.information("Canceled Jump Warmup")
 	}
 

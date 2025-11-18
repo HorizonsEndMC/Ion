@@ -32,9 +32,9 @@ class HeavyLaserProjectile(
 
 		var speedPenalty = SLOW_FACTOR
 		// ships above 1400 not affected
-		if (starship.initialBlockCount >= 1400) return
+		if (starship.initialBlockCount >= 3500) return
 		// ships above 700 half affected
-		if (starship.initialBlockCount >= 700) speedPenalty = SLOW_FACTOR * 0.5
+		if (starship.initialBlockCount >= 2500) speedPenalty = SLOW_FACTOR * 0.5
 
 		starship.userErrorAction("Direct Control speed slowed by ${(speedPenalty * 100).toInt()}%!")
 		// starship was not slowed by heavy lasers recently
