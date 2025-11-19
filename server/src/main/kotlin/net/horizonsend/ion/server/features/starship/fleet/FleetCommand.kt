@@ -221,7 +221,7 @@ object FleetCommand : SLCommand() {
     }
 
     @Subcommand("broadcast|bc")
-    @CommandCompletion("@players")
+    @CommandCompletion("@autoTurretTargets")
     fun onFleetBroadcast(sender: Player, broadcast: String) {
         val fleet = getFleet(sender) ?: return
 
