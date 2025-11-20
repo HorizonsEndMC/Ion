@@ -132,13 +132,13 @@ abstract class AbstractTractorBeam : Multiblock(), InteractableMultiblock, Displ
 
 			for (y in originY + 1..<player.world.maxHeight) {
 				val block = getBlockIfLoaded(world, x, y, z) ?: return player.debug("Block not loaded, cancelled")
+				val blockType = block.getTypeSafe() ?: return player.debug("Block type could not be obtained, cancelled")
 
-				if (block.getTypeSafe()?.isAir == true) {
-					continue
-				}
+				if (blockType.isAir) continue
+				if (!blockType.isCollidable) continue
 
 				if (!checkMultiblock(block)) {
-					if (block.getTypeSafe()?.isAir == false) break // obstructed
+					if (!blockType.isAir && blockType.isCollidable) break // obstructed
 
 					continue
 				}
