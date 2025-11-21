@@ -62,7 +62,7 @@ object AISpawningManager : IonServerComponent(true) {
 	}
 
 	// The AI ship must be at least 30 minutes old
-	val timeLivedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(10)
+	val timeLivedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(30)
 
 	// And not damaged within the last 7 minutes
 	val lastDamagedRequirement get() = System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(7)
