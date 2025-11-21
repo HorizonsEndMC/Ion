@@ -229,7 +229,7 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 	}
 
 	@CommandAlias("jump")
-	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks|@nationMembers")
+	@CommandCompletion("auto|@planetsInWorld|@hyperspaceGatesInWorld|@bookmarks|@onlineNationMembers")
 	@Description("Jump to a set of coordinates, a hyperspace beacon, a planet, or a member of your nation")
 	fun onJump(sender: Player, destination: String, @Optional hyperdriveTier: Int?) {
 		val separated = destination.split(",")
