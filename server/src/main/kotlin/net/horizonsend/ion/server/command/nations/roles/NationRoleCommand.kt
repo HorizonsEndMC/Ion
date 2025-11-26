@@ -14,6 +14,7 @@ import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.NationRole
 import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.miscellaneous.utils.SLTextStyle
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.litote.kmongo.eq
 
@@ -26,6 +27,14 @@ internal object NationRoleCommand : RoleCommand<Nation, NationRole.Permission, N
 			val nation = cached.nationOid ?: return@registerAsyncCompletion listOf()
 
 			SLPlayer.findProp(SLPlayer::nation eq nation, SLPlayer::lastKnownName).toList()
+		}
+
+		manager.commandCompletions.registerAsyncCompletion("onlineNationMembers") {
+			val player = it.player
+			val cached = PlayerCache[player]
+			val nation = cached.nationOid ?: return@registerAsyncCompletion listOf()
+
+			Bukkit.getOnlinePlayers().filter { otherPlayer -> PlayerCache[otherPlayer].nationOid == nation }.map { otherPlayer -> otherPlayer.name }
 		}
 
 		manager.commandCompletions.registerAsyncCompletion("nationRoles") {
