@@ -294,11 +294,17 @@ object ActiveStarshipMechanics : IonServerComponent() {
 		if (!getPluginManager().isPluginEnabled("dynmap")) return
 
 		val isNoStarship = starship == null
+		var isInPOICheck = false
 		val isHoldingController = isHoldingController(player)
-		val isInPOI = isInPOI(player, starship)
+
+		if (player.world.hasFlag(WorldFlag.SPACE_WORLD) || player.world.hasFlag(WorldFlag.SECONDARY_SPACE_WORLD)) {
+			if (isInPOI(player, starship)) {
+				isInPOICheck = true
+			}}
+
 		val shouldBeVisible = isInSuperPOI(player, starship)
 
-		val isInvisible = isNoStarship && !isHoldingController && !isInPOI && !shouldBeVisible
+		val isInvisible = isNoStarship && !isHoldingController && !isInPOICheck && !shouldBeVisible
 		DynmapPlugin.plugin.assertPlayerInvisibility(player, isInvisible, IonServer)
 	}
 
