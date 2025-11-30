@@ -814,15 +814,4 @@ object MiscStarshipCommands : net.horizonsend.ion.server.command.SLCommand() {
 			}
 		}
 	}
-
-	@Suppress("unused")
-	@CommandAlias("targetposition")
-	@Description("Targets a currentPosition")
-	fun onTargetPosition(sender: Player, x: Double, y: Double, z: Double) {
-		val starship = getStarshipPiloting(sender)
-		if (!starship.weapons.any {it is ArsenalRocketStarshipWeaponSubsystem}) sender.userError("Error: No Arsenal Missiles found, position not targeted")
-
-		starship.targetedPosition = Location(starship.world, x, y, z)
-		sender.information("Targeted: $x, $y, $z with the ships Arsenal Missiles")
-	}
 }

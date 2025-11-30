@@ -251,7 +251,7 @@ data class ArsenalRocketBalancing(
 
 	@Serializable
 	data class ArsenalRocketProjectileBalancing(
-		override val range: Double = 700.0,
+		override val range: Double = 300.0,
 		override val speed: Double = 50.0,
 		override val explosionPower: Float = 3f,
 		override val starshipShieldDamageMultiplier: Double = 1.0,
@@ -259,7 +259,8 @@ data class ArsenalRocketBalancing(
 		override val entityDamage: EntityDamage = RegularDamage(10.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.arsenal_missile.shoot", volume = 1f, source = Sound.Source.PLAYER),
-	) : StarshipProjectileBalancing {
+		override val proximityRange: Double = 75.0,
+	) : StarshipProjectileBalancing, StarshipProximityProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = ArsenalRocketProjectile::class
 	}
@@ -345,6 +346,8 @@ data class TriTurretBalancing(
 		override val clazz: KClass<out Projectile> = TurretLaserProjectile::class
 	}
 }
+
+
 
 @Serializable
 data class LightTurretBalancing(

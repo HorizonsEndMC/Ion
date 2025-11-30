@@ -370,6 +370,7 @@ class MultiblockShape {
 		fun aluminumBlock() = customBlock(CustomBlockKeys.ALUMINUM_BLOCK.getValue())
 		fun chetheriteBlock() = customBlock(CustomBlockKeys.CHETHERITE_BLOCK.getValue())
 		fun steelBlock() = customBlock(CustomBlockKeys.STEEL_BLOCK.getValue())
+		fun uraniumBlock() = customBlock(CustomBlockKeys.URANIUM_BLOCK.getValue())
 		fun enrichedUraniumBlock() = customBlock(CustomBlockKeys.ENRICHED_URANIUM_BLOCK.getValue())
 
 		fun anyCopperVariant() = anyType(

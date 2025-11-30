@@ -28,7 +28,7 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<TriTurretPro
 	protected abstract fun getYFactor(): Int
 
 	override val displayName: Component get() = text("RHML (${if (getYFactor() == 1) "Top" else "Bottom"})")
-	override val description: Component get() = text("Heavy missile's, great for anti capital weapons.")
+	override val description: Component get() = text("Heavy missiles, anti-capital.")
 
 	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<TriTurretProjectileBalancing> = starship.balancingManager.getWeapon(TriTurretWeaponSubsystem::class)
 

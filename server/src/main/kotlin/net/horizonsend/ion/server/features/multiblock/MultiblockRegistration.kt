@@ -169,6 +169,8 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AIHeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.AIPhaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.BottomArsenalStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.BottomSwarmMissileStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.DoomsdayDeviceWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.DownwardRocketStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HeavyLaserStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.HorizontalRocketStarshipWeaponMultiblock
@@ -381,6 +383,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(NeutralizerStarshipWeaponMultiblock)
 		registerMultiblock(ScramblerStarshipWeaponMultiblock)
 		registerMultiblock(ArtilleryStarshipWeaponMultiblock)
+		registerMultiblock(DoomsdayDeviceWeaponMultiblock)
 
 		// Starship event weapons
 		registerMultiblock(SonicMissileWeaponMultiblock)
