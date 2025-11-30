@@ -2,6 +2,9 @@ package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.datacomponent.item.DyedItemColor
+import net.horizonsend.ion.common.database.cache.nations.RelationCache
+import net.horizonsend.ion.common.database.schema.misc.SLPlayer
+import net.horizonsend.ion.common.database.schema.nations.NationRelation
 import net.horizonsend.ion.common.utils.miscellaneous.randomDouble
 import net.horizonsend.ion.server.configuration.starship.SwarmMissileBalancing
 import net.horizonsend.ion.server.features.client.display.modular.ItemDisplayContainer
@@ -11,6 +14,7 @@ import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.circlePoints
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.lerp
+import net.horizonsend.ion.server.miscellaneous.utils.slPlayerId
 import net.kyori.adventure.text.Component
 import org.bukkit.Color
 import org.bukkit.Location
@@ -80,7 +84,13 @@ class SwarmMissileProjectile(
         // Free flight
         direction = calculateBoidDirection(direction)
 
-        val closestStarship = getStarshipsInProximity(location).minByOrNull { starship ->
+        val closestStarship = getStarshipsInProximity(location).filter {
+			val otherPilot = it.playerPilot?.slPlayerId ?: return@filter true
+			val shooterPilot = shooter.starship?.playerPilot?.slPlayerId ?: return@filter true
+			val otherNation = SLPlayer[otherPilot]?.nation ?: return@filter true
+			val shooterNation = SLPlayer[shooterPilot]?.nation ?: return@filter true
+			RelationCache[otherNation, shooterNation] < NationRelation.Level.FRIENDLY
+		}.minByOrNull { starship ->
             starship.centerOfMass.toVector().distanceSquared(location.toVector())
         }
 

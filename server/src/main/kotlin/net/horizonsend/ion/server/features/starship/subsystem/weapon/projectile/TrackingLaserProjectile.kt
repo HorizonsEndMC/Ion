@@ -26,6 +26,7 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 	val maxTrackingRadius = 0.15
 	private lateinit var getTargetOrigin: () -> Vector
 	private lateinit var targetBase: Vector
+	var track: Boolean = true
 
 	protected val maxDegrees: Double get() = balancing.maxDegrees
 
@@ -54,7 +55,7 @@ abstract class TrackingLaserProjectile<B : StarshipTrackingProjectileBalancing>(
 
 	override fun tick() {
 		super.tick()
-		adjustDirection()
+		if (track) adjustDirection()
 	}
 
 	private fun adjustDirection() {

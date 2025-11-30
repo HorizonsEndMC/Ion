@@ -17,7 +17,6 @@ import net.horizonsend.ion.server.features.starship.subsystem.checklist.CruiserR
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.FuelTankSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.LargeReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.SmallReactorSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.checklist.MediumReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.checklist.MiniReactorSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.BalancedWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.Projectile
@@ -1113,6 +1112,11 @@ sealed interface StarshipTrackingProjectileBalancing : StarshipParticleProjectil
 @Serializable
 sealed interface StarshipProximityProjectileBalancing : StarshipProjectileBalancing {
 	val proximityRange: Double
+}
+
+@Serializable
+sealed interface StarshipHealingProjectileBalancing : StarshipProjectileBalancing {
+	val shieldBoostFactor: Int
 }
 
 @Serializable

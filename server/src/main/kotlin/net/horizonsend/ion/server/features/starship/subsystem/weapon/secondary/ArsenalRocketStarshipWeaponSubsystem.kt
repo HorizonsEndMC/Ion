@@ -71,7 +71,7 @@ class ArsenalRocketStarshipWeaponSubsystem(
 	}
 	override fun manualFire(shooter: Damager, dir: Vector, target: Vector) {
 		val origin = getFirePos().toLocation(starship.world)
-		val projectile = ArsenalRocketProjectile(StarshipProjectileSource(starship), getName(), origin, dir, shooter, upOrDown, TopArsenalStarshipWeaponMultiblock.damageType)
+		val projectile = ArsenalRocketProjectile(StarshipProjectileSource(starship), getName(), origin, dir, getFirePos(), shooter, upOrDown, TopArsenalStarshipWeaponMultiblock.damageType)
 		projectile.fire()
 	}
 

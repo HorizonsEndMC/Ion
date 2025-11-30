@@ -54,12 +54,14 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.Hea
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.InterceptorCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.IonTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.LaserCannonWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.LightLogisticsCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.LightTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.LogisticTurretWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.PlasmaCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.PointDefenseSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.PulseCannonWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.QuadTurretWeaponSubsystem
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.RapidMissileLauncherStarshipWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.TestBoidWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.ArsenalRocketProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.CycleTurretProjectile
@@ -70,6 +72,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.IonTurretProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.LaserCannonLaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.LogisticTurretProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.LogisticsCannonProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PhaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PlasmaLaserProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.PointDefenseLaserProjectile
@@ -234,6 +237,50 @@ data class PhaserBalancing(
 }
 
 @Serializable
+data class WebifierBalancing(
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(10),
+	override val fireRestrictions: FireRestrictions = FireRestrictions(maxBlockCount = 12000, incompatibleMultiblocks = listOf(
+		/*
+		IncompatibleSubsystemInfo(
+			SwarmMissileStarshipWeaponSubsystem::class.java,
+			"Phasers are incompatible with swarm missiles!"
+		)
+		 */
+	)),
+	override val firePowerConsumption: Int = 50000,
+	override val isForwardOnly: Boolean = false,
+	override val maxPerShot: Int? = null,
+	override val applyCooldownToAll: Boolean = false,
+
+	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(3),
+
+	override val convergeDistance: Double = 0.0,
+	override val projectileSpawnDistance: Int = 0,
+	override val angleRadiansHorizontal: Double = 180.0,
+	override val angleRadiansVertical: Double = 180.0,
+
+	override val projectile: WebifierProjectileBalancing = WebifierProjectileBalancing()
+) : StarshipCannonWeaponBalancing<WebifierBalancing.WebifierProjectileBalancing>, StarshipHeavyWeaponBalancing<WebifierBalancing.WebifierProjectileBalancing> {
+	@Transient
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = PhaserWeaponSubsystem::class
+
+	@Serializable
+	data class WebifierProjectileBalancing(
+		override val range: Double = 140.0,
+		override val speed: Double = 1000.0,
+		override val explosionPower: Float = 2f,
+		override val starshipShieldDamageMultiplier: Double = 55.0,
+		override val areaShieldDamageMultiplier: Double = 5.0,
+		override val entityDamage: EntityDamage = RegularDamage(10.0),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.phaser.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
+	) : StarshipProjectileBalancing {
+		@Transient
+		override val clazz: KClass<out Projectile> = PhaserProjectile::class
+	}
+}
+
+@Serializable
 data class ArsenalRocketBalancing(
 	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false),
 	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
@@ -312,6 +359,53 @@ data class SwarmMissileBalancing(
 		override val clazz: KClass<out Projectile> = SwarmMissileProjectile::class
 	}
 }
+
+@Serializable
+data class RapidMissileLauncherBalancing(
+	override val fireRestrictions: FireRestrictions = FireRestrictions(canFire = false, incompatibleMultiblocks = listOf(
+		/*
+		IncompatibleSubsystemInfo(
+			PhaserWeaponSubsystem::class.java,
+			"Swarm missiles are incompatible with phasers!"
+		)
+		 */
+	)),
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(250),
+	override val firePowerConsumption: Int = 32846,
+	override val isForwardOnly: Boolean = false,
+	override val maxPerShot: Int? = 1,
+	override val applyCooldownToAll: Boolean = false,
+	val packpath: String = "projectile/activated_arsenal_missile",
+	override val projectile: RapidMissileLauncherProjectileBalancing = RapidMissileLauncherProjectileBalancing(),
+	override val aimDistance: Int = 5,
+	override val convergeDistance: Double = 10.0,
+	override val projectileSpawnDistance: Int = 4,
+	override val angleRadiansHorizontal: Double = 180.0,
+	override val angleRadiansVertical: Double = 180.0,
+) : StarshipTrackingWeaponBalancing<RapidMissileLauncherBalancing.RapidMissileLauncherProjectileBalancing> {
+	@Transient
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = RapidMissileLauncherStarshipWeaponSubsystem::class
+
+	@Serializable
+	data class RapidMissileLauncherProjectileBalancing(
+		override val range: Double = 170.0,
+		override val speed: Double = 100.0,
+		val packPath: String = "projectile/activated_arsenal_missile",
+		override val explosionPower: Float = 2.0f,
+		override val starshipShieldDamageMultiplier: Double = 5.8,
+		override val areaShieldDamageMultiplier: Double = 4.0,
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.swarm_missile.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.swarm_missile.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
+		override val entityDamage: EntityDamage = RegularDamage(10.0),
+		override val maxDegrees: Double = 90.0,
+		override val particleThickness: Double = 2.0,
+	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
+		@Transient
+		override val clazz: KClass<out Projectile> = SwarmMissileProjectile::class
+	}
+}
+
+
 
 @Serializable
 data class TriTurretBalancing(
@@ -854,12 +948,85 @@ data class LogisticsTurretBalancing(
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override val particleThickness: Double = 1.0,
-        val shieldBoostFactor: Int = 50000
-	) : StarshipParticleProjectileBalancing {
+        override val shieldBoostFactor: Int = 50000
+	) : StarshipParticleProjectileBalancing, StarshipHealingProjectileBalancing {
 		@Transient
 		override val clazz: KClass<out Projectile> = LogisticTurretProjectile::class
 	}
 }
+
+@Serializable
+data class LightLogisticsCannonBalancing(
+	override val fireRestrictions: FireRestrictions = FireRestrictions(),
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(500),
+	override val firePowerConsumption: Int = 100,
+	override val isForwardOnly: Boolean = false,
+	override val maxPerShot: Int = 67,
+	override val applyCooldownToAll: Boolean = true,
+	override val convergeDistance: Double = 10.0,
+	override val projectileSpawnDistance: Int = 1,
+	override val angleRadiansVertical: Double = 180.0,
+	override val angleRadiansHorizontal: Double = 180.0,
+
+	override val projectile: LightLogisticsCannonProjectileBalancing = LightLogisticsCannonProjectileBalancing(),
+) : StarshipCannonWeaponBalancing<LightLogisticsCannonBalancing.LightLogisticsCannonProjectileBalancing> {
+	@Transient
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = LightLogisticsCannonWeaponSubsystem::class
+
+	@Serializable
+	data class LightLogisticsCannonProjectileBalancing(
+		override val range: Double = 200.0,
+		override val speed: Double = 2000.0,
+		override val explosionPower: Float = 0f,
+		override val starshipShieldDamageMultiplier: Double = 0.0,
+		override val areaShieldDamageMultiplier: Double = 0.0,
+		override val entityDamage: EntityDamage = RegularDamage(10.0),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
+		override val particleThickness: Double = 1.0,
+		override val shieldBoostFactor: Int = 50000
+	) : StarshipParticleProjectileBalancing, StarshipHealingProjectileBalancing {
+		@Transient
+		override val clazz: KClass<out Projectile> = LogisticsCannonProjectile::class
+	}
+}
+
+data class HeavyLogisticsCannonBalancing(
+	override val fireRestrictions: FireRestrictions = FireRestrictions(),
+	override val fireCooldownNanos: Long = TimeUnit.MILLISECONDS.toNanos(500),
+	override val firePowerConsumption: Int = 100,
+	override val isForwardOnly: Boolean = false,
+	override val maxPerShot: Int = 67,
+	override val applyCooldownToAll: Boolean = true,
+	override val convergeDistance: Double = 10.0,
+	override val projectileSpawnDistance: Int = 1,
+	override val angleRadiansVertical: Double = 180.0,
+	override val angleRadiansHorizontal: Double = 180.0,
+
+	override val projectile: HeavyLogisticsCannonProjectileBalancing = HeavyLogisticsCannonProjectileBalancing(),
+) : StarshipCannonWeaponBalancing<HeavyLogisticsCannonBalancing.HeavyLogisticsCannonProjectileBalancing> {
+	@Transient
+	override val clazz: KClass<out BalancedWeaponSubsystem<*>> = LightLogisticsCannonWeaponSubsystem::class
+
+	@Serializable
+	data class HeavyLogisticsCannonProjectileBalancing(
+		override val range: Double = 200.0,
+		override val speed: Double = 2000.0,
+		override val explosionPower: Float = 0f,
+		override val starshipShieldDamageMultiplier: Double = 0.0,
+		override val areaShieldDamageMultiplier: Double = 0.0,
+		override val entityDamage: EntityDamage = RegularDamage(10.0),
+		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
+		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
+		override val particleThickness: Double = 1.0,
+		override val shieldBoostFactor: Int = 50000
+	) : StarshipParticleProjectileBalancing, StarshipHealingProjectileBalancing {
+		@Transient
+		override val clazz: KClass<out Projectile> = LogisticsCannonProjectile::class
+	}
+}
+
+
 
 @Serializable
 data class DisintegratorBeamBalancing(

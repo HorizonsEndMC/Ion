@@ -25,6 +25,8 @@ sealed class LogisticTurretMultiblock : TurretMultiblock<LogisticsTurretProjecti
         return LogisticTurretWeaponSubsystem(starship, pos, getFacing(pos, starship), this)
     }
 
+
+
     override val displayName: Component get() = text("Cycle Turret (${if (getSign() == 1) "Top" else "Bottom"})")
     override val description: Component get() = text("Rotating weapon system that heals other starships.")
 

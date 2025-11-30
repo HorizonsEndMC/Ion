@@ -1,7 +1,6 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer
 
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
-import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.kyori.adventure.text.Component
@@ -9,8 +8,9 @@ import net.kyori.adventure.text.Component.text
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
 
-sealed class JumpFieldGeneratorMultiblock : NavigationComputerMultiblock(), DisplayNameMultilblock {
+object JumpFieldGeneratorMultiblock : NavigationComputerMultiblock() {
 	override val description: Component get() = text("Allows a starship to jump to a jump beacon")
+	override val displayName: Component get() = text("Jump Field Generator")
 	override val signText = createSignText(
 		line1 = "&6Jump",
 		line2 = "&8Field",

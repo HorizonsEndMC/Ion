@@ -112,6 +112,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.Me
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.MiniReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.checklist.SmallReactorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.AmplifiedGravityWellMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.DisruptorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.InterdictionWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.gravitywell.StandardGravityWellMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.hyperdrive.HyperdriveMultiblockClass1
@@ -143,14 +144,22 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier4Top
 import net.horizonsend.ion.server.features.multiblock.type.starship.mininglasers.MiningLaserMultiblockTier4TopMirrored
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.HorizontalNavigationComputerMultiblockAdvanced
+import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.JumpBeaconMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.JumpFieldGeneratorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.NavigationComputerMultiblockBasic
 import net.horizonsend.ion.server.features.multiblock.type.starship.navigationcomputer.VerticalNavigationComputerMultiblockAdvanced
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.ArtilleryStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.BottomHeavyLogisticsCannonMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.BottomLightLogisticsCannonMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.BottomRapidMissileLauncherStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.InterceptorCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.LaserCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.PulseCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.ScramblerStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.TopHeavyLogisticsCannonMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.TopLightLogisticsCannonMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.TopRapidMissileLauncherStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.BottomAutocannonMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.BottomRapidHeavyMissileLauncherMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.CapitalBeamStarshipWeaponMultiblock
@@ -180,6 +189,7 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TopArsenalStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.TorpedoStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.UpwardRocketStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.WebifierStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockBottom
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockSide
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.misc.PointDefenseStarshipWeaponMultiblockTop
@@ -374,6 +384,14 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(DownwardRocketStarshipWeaponMultiblock)
 		registerMultiblock(PhaserStarshipWeaponMultiblock)
 		registerMultiblock(MiniPhaserStarshipWeaponMultiblock)
+		registerMultiblock(TopHeavyLogisticsCannonMultiblock)
+		registerMultiblock(BottomHeavyLogisticsCannonMultiblock)
+		registerMultiblock(TopLightLogisticsCannonMultiblock)
+		registerMultiblock(BottomLightLogisticsCannonMultiblock)
+		registerMultiblock(WebifierStarshipWeaponMultiblock)
+		registerMultiblock(TopRapidMissileLauncherStarshipWeaponMultiblock)
+		registerMultiblock(BottomRapidMissileLauncherStarshipWeaponMultiblock)
+
 
 		registerMultiblock(TopArsenalStarshipWeaponMultiblock)
 		registerMultiblock(BottomArsenalStarshipWeaponMultiblock)
@@ -424,6 +442,8 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(VerticalNavigationComputerMultiblockAdvanced)
 		registerMultiblock(HorizontalNavigationComputerMultiblockAdvanced)
 		registerMultiblock(HorizontalNavigationComputerMultiblockAdvanced, "NavigationComputerMultiblockAdvanced")
+		registerMultiblock(JumpFieldGeneratorMultiblock)
+		registerMultiblock(JumpBeaconMultiblock)
 
 		registerMultiblock(HyperdriveMultiblockClass1)
 		registerMultiblock(HyperdriveMultiblockClass2)
@@ -447,6 +467,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(AmplifiedGravityWellMultiblock)
 		registerMultiblock(HornMultiblock)
 		registerMultiblock(InterdictionWellMultiblock)
+		registerMultiblock(DisruptorMultiblock)
 
 		// Machine
 		registerMultiblock(ShipFactoryMultiblock)
