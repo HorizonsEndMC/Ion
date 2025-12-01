@@ -1,25 +1,22 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event
 
-import net.horizonsend.ion.server.configuration.starship.HeavyTurretBalancing.HeavyTurretProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.AutocannonBalancing.AutocannonProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.AutocannonWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.primary.HeavyTurretWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
-import org.bukkit.Material.GRINDSTONE
-import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
 
-sealed class AutocannonMultiblock : TurretMultiblock<HeavyTurretProjectileBalancing>() {
+sealed class AutocannonMultiblock : TurretMultiblock<AutocannonProjectileBalancing>() {
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): AutocannonWeaponSubsystem {
 		return AutocannonWeaponSubsystem(starship, pos, getFacing(pos, starship), this)
 	}
@@ -29,7 +26,7 @@ sealed class AutocannonMultiblock : TurretMultiblock<HeavyTurretProjectileBalanc
 
 	protected abstract fun getSign(): Int
 
-	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<HeavyTurretProjectileBalancing> = starship.balancingManager.getWeapon(HeavyTurretWeaponSubsystem::class)
+	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<AutocannonProjectileBalancing> = starship.balancingManager.getWeapon(AutocannonWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> =
 		listOf(Vec3i(-1, getSign() * 4, +2), Vec3i(1, getSign() * 4, +2))

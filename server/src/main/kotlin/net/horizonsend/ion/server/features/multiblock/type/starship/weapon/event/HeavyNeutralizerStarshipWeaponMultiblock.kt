@@ -5,6 +5,7 @@ import net.horizonsend.ion.server.features.multiblock.type.DisplayNameMultilbloc
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.SignlessStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.HeavyNeutralizerWeaponSubsystem
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.NeutralizerWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
@@ -15,10 +16,10 @@ import org.bukkit.Material
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Stairs
 
-object HeavyNeutralizerStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<NeutralizerWeaponSubsystem>(), DisplayNameMultilblock {
+object HeavyNeutralizerStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblock<HeavyNeutralizerWeaponSubsystem>(), DisplayNameMultilblock {
 	override val key: String = "heavy neutralizer"
-	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): NeutralizerWeaponSubsystem {
-		return NeutralizerWeaponSubsystem(starship, pos, face)
+	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): HeavyNeutralizerWeaponSubsystem {
+		return HeavyNeutralizerWeaponSubsystem(starship, pos, face)
 	}
 
 	override val displayName: Component

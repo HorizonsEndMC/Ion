@@ -1,26 +1,24 @@
 package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event
 
+import net.horizonsend.ion.server.configuration.starship.RapidHeavyMissileLauncherBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
-import net.horizonsend.ion.server.configuration.starship.TriTurretBalancing.TriTurretProjectileBalancing
+import net.horizonsend.ion.server.configuration.starship.RapidHeavyMissileLauncherBalancing.RapidHeavyMissileLauncherProjectileBalancing
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.RapidHeavyMissileLauncherWeaponSubsystem
-import net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary.TriTurretWeaponSubsystem
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.RelativeFace
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
-import org.bukkit.Material.GRINDSTONE
-import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Slab
 import org.bukkit.block.data.type.Stairs
 
-sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<TriTurretProjectileBalancing>() {
+sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMissileLauncherProjectileBalancing>() {
 	override fun createSubsystem(starship: ActiveStarship, pos: Vec3i, face: BlockFace): RapidHeavyMissileLauncherWeaponSubsystem {
 		return RapidHeavyMissileLauncherWeaponSubsystem(starship, pos, getFacing(pos, starship), this)
 	}
@@ -30,7 +28,7 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<TriTurretPro
 	override val displayName: Component get() = text("RHML (${if (getYFactor() == 1) "Top" else "Bottom"})")
 	override val description: Component get() = text("Heavy missiles, anti-capital.")
 
-	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<TriTurretProjectileBalancing> = starship.balancingManager.getWeapon(TriTurretWeaponSubsystem::class)
+	override fun getBalancing(starship: ActiveStarship): StarshipWeaponBalancing<RapidHeavyMissileLauncherProjectileBalancing> = starship.balancingManager.getWeapon(RapidHeavyMissileLauncherWeaponSubsystem::class)
 
 	override fun buildFirePointOffsets(): List<Vec3i> = listOf(
 		Vec3i(-2, getYFactor() * 4, +3),

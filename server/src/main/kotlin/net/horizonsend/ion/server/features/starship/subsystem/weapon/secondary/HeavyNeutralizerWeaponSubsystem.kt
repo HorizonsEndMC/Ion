@@ -1,6 +1,6 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.secondary
 
-import net.horizonsend.ion.server.configuration.starship.HeavyLaserBalancing
+import net.horizonsend.ion.server.configuration.starship.HeavyNeutralizerBalancing
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.TargetTrackingCannonWeaponSubsystem
@@ -20,7 +20,7 @@ class HeavyNeutralizerWeaponSubsystem(
     starship: ActiveStarship,
     pos: Vec3i,
     face: BlockFace
-) : TargetTrackingCannonWeaponSubsystem<HeavyLaserBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(HeavyNeutralizerWeaponSubsystem::class)), HeavyWeaponSubsystem, AmmoConsumingWeaponSubsystem {
+) : TargetTrackingCannonWeaponSubsystem<HeavyNeutralizerBalancing>(starship, pos, face, starship.balancingManager.getWeaponSupplier(HeavyNeutralizerWeaponSubsystem::class)), HeavyWeaponSubsystem, AmmoConsumingWeaponSubsystem {
 	override val length: Int = 8
 
 	override val boostChargeNanos: Long get() = balancing.boostChargeNanos
