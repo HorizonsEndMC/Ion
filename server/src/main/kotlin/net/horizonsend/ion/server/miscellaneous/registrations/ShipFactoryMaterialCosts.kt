@@ -165,49 +165,49 @@ import org.bukkit.block.data.BlockData
 
 object ShipFactoryMaterialCosts {
 	var blockprice = mapOf(
-		IRON_BLOCK to 50.0,
-		DIAMOND_BLOCK to 50.0,
-		GOLD_BLOCK to 50.0,
-		COPPER_BLOCK to 175.0,
-		EXPOSED_COPPER to 175.0,
-		WEATHERED_COPPER to 175.0,
-		OXIDIZED_COPPER to 175.0,
-		WAXED_COPPER_BLOCK to 175.0,
-		WAXED_EXPOSED_COPPER to 175.0,
-		WAXED_WEATHERED_COPPER to 175.0,
-		WAXED_OXIDIZED_COPPER to 175.0,
-		REDSTONE_BLOCK to 100.0,
+		IRON_BLOCK to 0.1,
+		DIAMOND_BLOCK to 0.1,
+		GOLD_BLOCK to 0.1,
+		COPPER_BLOCK to 0.1,
+		EXPOSED_COPPER to 0.1,
+		WEATHERED_COPPER to 0.1,
+		OXIDIZED_COPPER to 0.1,
+		WAXED_COPPER_BLOCK to 0.1,
+		WAXED_EXPOSED_COPPER to 0.1,
+		WAXED_WEATHERED_COPPER to 0.1,
+		WAXED_OXIDIZED_COPPER to 0.1,
+		REDSTONE_BLOCK to 0.1,
 
-		GRINDSTONE to 50.0,
-		END_ROD to 5.0,
-		BELL to 50.0,
+		GRINDSTONE to 0.1,
+		END_ROD to 0.1,
+		BELL to 0.1,
 		SPONGE to 2.0,
-		END_PORTAL_FRAME to 500.0,
-		PISTON to 20.0,
-		STICKY_PISTON to 50.0,
+		END_PORTAL_FRAME to 0.1,
+		PISTON to 0.1,
+		STICKY_PISTON to 0.1,
 		REDSTONE to 1.0,
-		JUKEBOX to 50.0,
-		CRAFTING_TABLE to 30.0,
-		DROPPER to 15.0,
-		HOPPER to 50.0,
+		JUKEBOX to 0.1,
+		CRAFTING_TABLE to 0.1,
+		DROPPER to 0.1,
+		HOPPER to 0.1,
 		LEVER to 1.0,
 		CHEST to 5.0,
-		FURNACE to 15.0,
-		DISPENSER to 25.0,
-		MAGMA_BLOCK to 25.0,
-		SEA_LANTERN to 25.0,
-		REDSTONE_LAMP to 25.0,
-		OCHRE_FROGLIGHT to 25.0,
-		VERDANT_FROGLIGHT to 25.0,
-		PEARLESCENT_FROGLIGHT to 25.0,
+		FURNACE to 5.0,
+		DISPENSER to 5.0,
+		MAGMA_BLOCK to 5.0,
+		SEA_LANTERN to 5.0,
+		REDSTONE_LAMP to 5.0,
+		OCHRE_FROGLIGHT to 5.0,
+		VERDANT_FROGLIGHT to 5.0,
+		PEARLESCENT_FROGLIGHT to 5.0,
 		SHROOMLIGHT to 25.0,
-		IRON_TRAPDOOR to 50.0,
-		NOTE_BLOCK to 20.0,
-		IRON_BARS to 10.0,
+		IRON_TRAPDOOR to 0.0,
+		NOTE_BLOCK to 0.0,
+		IRON_BARS to 1.0,
 		OBSERVER to 5.0,
 		TRAPPED_CHEST to 5.0,
 		BARREL to 5.0,
-		LODESTONE to 50.0,
+		LODESTONE to 5.0,
 
 		OAK_PLANKS to 0.1,
 		SPRUCE_PLANKS to 0.1,
@@ -327,13 +327,13 @@ object ShipFactoryMaterialCosts {
 		val customBlockKey = data.customBlock?.key
 
 		when (customBlockKey) {
-			CustomBlockKeys.TITANIUM_BLOCK -> return 200.0
-			CustomBlockKeys.URANIUM_BLOCK -> return 50.0
-			CustomBlockKeys.CHETHERITE_BLOCK -> return 100.0
-			CustomBlockKeys.ALUMINUM_BLOCK -> return 100.0
-			CustomBlockKeys.RAW_ALUMINUM_BLOCK -> return 30.0
-			CustomBlockKeys.RAW_TITANIUM_BLOCK -> return 30.0
-			CustomBlockKeys.RAW_URANIUM_BLOCK -> return 30.0
+			CustomBlockKeys.TITANIUM_BLOCK -> return 0.1
+			CustomBlockKeys.URANIUM_BLOCK -> return 0.1
+			CustomBlockKeys.CHETHERITE_BLOCK -> return 0.1
+			CustomBlockKeys.ALUMINUM_BLOCK -> return 0.1
+			CustomBlockKeys.RAW_ALUMINUM_BLOCK -> return 0.1
+			CustomBlockKeys.RAW_TITANIUM_BLOCK -> return 0.1
+			CustomBlockKeys.RAW_URANIUM_BLOCK -> return 0.1
 		}
 
 		return when (data) {

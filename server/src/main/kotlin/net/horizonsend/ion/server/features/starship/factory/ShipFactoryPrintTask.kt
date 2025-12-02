@@ -33,6 +33,7 @@ import net.horizonsend.ion.server.features.starship.factory.integration.ShipFact
 import net.horizonsend.ion.server.features.transport.NewTransport
 import net.horizonsend.ion.server.features.transport.items.util.ItemReference
 import net.horizonsend.ion.server.features.transport.manager.extractors.ExtractorManager
+import net.horizonsend.ion.server.miscellaneous.registrations.CreditPrintBlackList
 import net.horizonsend.ion.server.miscellaneous.registrations.ShipFactoryMaterialCosts
 import net.horizonsend.ion.server.miscellaneous.utils.Tasks
 import net.horizonsend.ion.server.miscellaneous.utils.coordinates.BlockKey
@@ -181,7 +182,12 @@ class ShipFactoryPrintTask(
 			val requiredAmount = StarshipFactories.getRequiredAmount(blockData)
 
 			// Check if the position is obstructed, if it is, skip the block and try the next.
-			if (!checkObstruction(printItem = printItem, worldBlockData = worldBlockData, requiredAmount = requiredAmount)) {
+			if (!checkObstruction(
+					printItem = printItem,
+					worldBlockData = worldBlockData,
+					requiredAmount = requiredAmount
+				)
+			) {
 				skippedBlocks++
 				continue
 			}
@@ -190,18 +196,33 @@ class ShipFactoryPrintTask(
 			if (!checkPowerConsumption(consumedPower)) break
 
 			val price = ShipFactoryMaterialCosts.getPrice(blockData)
+
+			//Check if the current block can be credit printed
+			val isntCreditPrintable = CreditPrintBlackList.checkForCreditPrintBlacklist(blockData)
 			if (!checkAvailablecredits(availableCredits, price)) break
 
-			val success = checkAvailableItems(printPosition, availableItems, printItem, requiredAmount)
-			if (success) {
+			//If the block is credit printable, print the block
+			if (!isntCreditPrintable) {
 				toPrint.add(printPosition)
 				printedBlocks++
 
 				consumedCredits += price
-				consumedPower += 10
+				consumedPower += 0
+
+				continue //Prevent adding to missing blocks or printing the same block twice
 			}
-			if (isDisabled) break
-		}
+
+			//If the block isn't credit printable, go on and check if available to material print
+			val success = checkAvailableItems(printPosition, availableItems, printItem, requiredAmount)
+				if (success) {
+					toPrint.add(printPosition)
+					printedBlocks++
+
+					consumedCredits += price
+					consumedPower += 0
+				}
+				if (isDisabled) break
+			}
 
 		// If the block map is empty, printing has finished
 		// If the total number of skipped blocks and printed blocks equals the size of the block queue, it is
