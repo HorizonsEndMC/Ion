@@ -17,7 +17,7 @@ object MiniReactorMultiblock : AbstractReactorCore({ customBlock(CustomBlockKeys
 		"&7-=[&c==&a==&b==&7]=-"
 	)
 	override fun MultiblockShape.buildStructure() {
-		z(-2) {
+		z(2) {
 			y(0) {
 				x(1).ironBlock()
 				x(0).sponge()
@@ -29,7 +29,7 @@ object MiniReactorMultiblock : AbstractReactorCore({ customBlock(CustomBlockKeys
 				x(-1).ironBlock()
 			}
 		}
-		z(-1) {
+		z(1) {
 			y(0) {
 				x(1).titaniumBlock()
 				x(0).sponge()

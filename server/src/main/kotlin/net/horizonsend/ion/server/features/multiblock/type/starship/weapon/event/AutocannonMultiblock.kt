@@ -32,12 +32,12 @@ sealed class AutocannonMultiblock : TurretMultiblock<AutocannonProjectileBalanci
 		listOf(Vec3i(-1, getSign() * 4, +2), Vec3i(1, getSign() * 4, +2))
 
 	override fun MultiblockShape.buildStructure() {
-		z(0) {
+		z(1) {
 			y(3) {
 				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(-1).anyTerracotta()
-				x(0).anyTerracotta()
-				x(1).anyTerracotta()
+				x(-1).terracottaOrDoubleSlab()
+				x(0).terracottaOrDoubleSlab()
+				x(1).terracottaOrDoubleSlab()
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(4) {
@@ -47,7 +47,7 @@ sealed class AutocannonMultiblock : TurretMultiblock<AutocannonProjectileBalanci
 			}
 			y(5) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(0).anyTerracotta()
+				x(0).terracottaOrDoubleSlab()
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 
@@ -55,12 +55,12 @@ sealed class AutocannonMultiblock : TurretMultiblock<AutocannonProjectileBalanci
 				x(0).sponge()
 			}
 		}
-		z(-1) {
+		z(0) {
 			y(3) {
 				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(-1).anyTerracotta()
+				x(-1).terracottaOrDoubleSlab()
 				x(0).anyConcrete()
-				x(1).anyTerracotta()
+				x(1).terracottaOrDoubleSlab()
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(2) {
@@ -69,24 +69,23 @@ sealed class AutocannonMultiblock : TurretMultiblock<AutocannonProjectileBalanci
 			}
 			y(4) {
 				x(-1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(0).anyDoubleSlab()
+				x(0).terracottaOrDoubleSlab()
 				x(1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 			}
 			y(5) {
 				x(-1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(0).anyDoubleSlab()
+				x(0).terracottaOrDoubleSlab()
 				x(1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 			}
 			y(0) {
-				x(0).type(Material.OAK_WALL_SIGN)
 			}
 		}
-		z(-2) {
+		z(-1) {
 			y(3) {
 				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(-1).anyTerracotta()
-				x(0).anyTerracotta()
-				x(1).anyTerracotta()
+				x(-1).terracottaOrDoubleSlab()
+				x(0).terracottaOrDoubleSlab()
+				x(1).terracottaOrDoubleSlab()
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(4) {
@@ -103,14 +102,14 @@ sealed class AutocannonMultiblock : TurretMultiblock<AutocannonProjectileBalanci
 				x(0).sponge()
 			}
 		}
-		z(1) {
+		z(2) {
 			y(3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
-		z(-3) {
+		z(-2) {
 			y(3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))

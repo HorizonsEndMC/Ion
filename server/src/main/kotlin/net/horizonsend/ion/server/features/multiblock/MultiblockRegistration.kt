@@ -157,6 +157,8 @@ import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.canno
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.PlasmaCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.PulseCannonStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.ScramblerStarshipWeaponMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.SideHeavyLogisticsCannonMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.SideLightLogisticsCannonMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.TopHeavyLogisticsCannonMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.TopLightLogisticsCannonMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.cannon.TopRapidMissileLauncherStarshipWeaponMultiblock
@@ -385,8 +387,10 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(PhaserStarshipWeaponMultiblock)
 		registerMultiblock(MiniPhaserStarshipWeaponMultiblock)
 		registerMultiblock(TopHeavyLogisticsCannonMultiblock)
+		registerMultiblock(SideHeavyLogisticsCannonMultiblock)
 		registerMultiblock(BottomHeavyLogisticsCannonMultiblock)
 		registerMultiblock(TopLightLogisticsCannonMultiblock)
+		registerMultiblock(SideLightLogisticsCannonMultiblock)
 		registerMultiblock(BottomLightLogisticsCannonMultiblock)
 		registerMultiblock(WebifierStarshipWeaponMultiblock)
 		registerMultiblock(TopRapidMissileLauncherStarshipWeaponMultiblock)

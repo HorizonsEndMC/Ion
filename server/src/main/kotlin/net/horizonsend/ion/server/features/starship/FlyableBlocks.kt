@@ -202,6 +202,7 @@ val FLYABLE_BLOCKS: EnumSet<Material> = mutableSetOf(
 
 	SPONGE, // used for lots of ship subsystems, esp. weapons
 	WET_SPONGE,
+	Material.POLISHED_BASALT,
 
 	GLASS,
 	GLASS_PANE,

@@ -11,6 +11,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
+import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
 import org.bukkit.block.data.type.Slab
@@ -32,7 +33,7 @@ sealed class GaussCannonMultiblock : TurretMultiblock<GaussCannonProjectileBalan
 		listOf(Vec3i(0, getSign() * 4, +4))
 
 	override fun MultiblockShape.buildStructure() {
-		z(0) {
+		z(1) {
 			y(3) {
 				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-1).anyConcrete()
@@ -52,20 +53,20 @@ sealed class GaussCannonMultiblock : TurretMultiblock<GaussCannonProjectileBalan
 				x(0).sponge()
 			}
 		}
-		z(-1) {
+		z(0) {
 			y(3) {
 				x(-2).ironBlock()
 				x(-1).anyConcrete()
-				x(0).anyTerracotta()
+				x(0).terracottaOrDoubleSlab()
 				x(1).anyConcrete()
 				x(2).ironBlock()
 			}
 			y(4) {
-				x(-2).anyTrapdoor(PrepackagedPreset.trapdoor(Bisected.Half.BOTTOM, RelativeFace.LEFT, false, false))
+				x(-2).type(IRON_TRAPDOOR)
 				x(-1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-				x(2).anyTrapdoor(PrepackagedPreset.trapdoor(Bisected.Half.BOTTOM, RelativeFace.RIGHT, false, false))
+				x(2).type(IRON_TRAPDOOR)
 			}
 			y(2) {
 				x(-1).sponge()
@@ -75,24 +76,24 @@ sealed class GaussCannonMultiblock : TurretMultiblock<GaussCannonProjectileBalan
 				x(0).type(Material.OAK_WALL_SIGN)
 			}
 		}
-		z(-2) {
+		z(-1) {
 			y(3) {
 				x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-1).anyConcrete()
-				x(0).anyTerracotta()
+				x(0).terracottaOrDoubleSlab()
 				x(1).anyConcrete()
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(4) {
-				x(-1).anyTrapdoor(PrepackagedPreset.trapdoor(Bisected.Half.BOTTOM, RelativeFace.LEFT, false, false))
+				x(-1).type(IRON_TRAPDOOR)
 				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(1).anyTrapdoor(PrepackagedPreset.trapdoor(Bisected.Half.BOTTOM, RelativeFace.BACKWARD, false, false))
+				x(1).type(IRON_TRAPDOOR)
 			}
 			y(2) {
 				x(0).sponge()
 			}
 		}
-		z(1) {
+		z(2) {
 			y(3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
@@ -102,7 +103,7 @@ sealed class GaussCannonMultiblock : TurretMultiblock<GaussCannonProjectileBalan
 				x(0).ironBlock()
 			}
 		}
-		z(-3) {
+		z(-2) {
 			y(3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))

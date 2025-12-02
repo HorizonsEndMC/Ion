@@ -37,14 +37,14 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 	)
 
 	override fun MultiblockShape.buildStructure() {
-		z(0) {
+		z(1) {
 			y(3) {
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(-2).anyTerracotta()
-				x(-1).anyTerracotta()
+				x(-2).terracottaOrDoubleSlab()
+				x(-1).terracottaOrDoubleSlab()
 				x(0).anyConcrete()
-				x(1).anyTerracotta()
-				x(2).anyTerracotta()
+				x(1).terracottaOrDoubleSlab()
+				x(2).terracottaOrDoubleSlab()
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(5) {
@@ -60,28 +60,27 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 				x(1).anyWall()
 			}
 			y(0) {
-				x(0).ironBlock()
 			}
 			y(2) {
 				x(0).sponge()
 			}
 		}
-		z(-1) {
+		z(0) {
 			y(3) {
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(-2).anyTerracotta()
+				x(-2).terracottaOrDoubleSlab()
 				x(-1).anyConcrete()
 				x(0).anyConcrete()
 				x(1).anyConcrete()
-				x(2).anyTerracotta()
+				x(2).terracottaOrDoubleSlab()
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(5) {
-				x(-2).anyTerracotta()
-				x(-1).anyTerracotta()
+				x(-2).type(Material.POLISHED_BASALT)
+				x(-1).type(Material.POLISHED_BASALT)
 				x(0).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
-				x(1).anyTerracotta()
-				x(2).anyTerracotta()
+				x(1).type(Material.POLISHED_BASALT)
+				x(2).type(Material.POLISHED_BASALT)
 			}
 			y(2) {
 				x(-1).sponge()
@@ -89,18 +88,18 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 			}
 			y(4) {
 				x(-1).ironBlock()
-				x(0).anyTrapdoor(PrepackagedPreset.trapdoor(Bisected.Half.BOTTOM, RelativeFace.FORWARD, false, false))
+				x(0).titaniumBlock() // TODO: CHANGE TO KOTH BLOCK
 				x(1).ironBlock()
 			}
 		}
-		z(-2) {
+		z(-1) {
 			y(3) {
 				x(-3).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(-2).anyTerracotta()
-				x(-1).anyTerracotta()
+				x(-2).terracottaOrDoubleSlab()
+				x(-1).terracottaOrDoubleSlab()
 				x(0).anyConcrete()
-				x(1).anyTerracotta()
-				x(2).anyTerracotta()
+				x(1).terracottaOrDoubleSlab()
+				x(2).terracottaOrDoubleSlab()
 				x(3).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(5) {
@@ -119,44 +118,46 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 				x(0).sponge()
 			}
 		}
-		z(1) {
+		z(2) {
 			y(3) {
 				x(-2).ironBlock()
-				x(-1).anyTerracotta()
-				x(0).anyTerracotta()
-				x(1).anyTerracotta()
+				x(-1).terracottaOrDoubleSlab()
+				x(0).terracottaOrDoubleSlab()
+				x(1).terracottaOrDoubleSlab()
 				x(2).ironBlock()
 			}
 			y(5) {
 				x(-2).type(Material.POLISHED_BASALT)
 				x(-1).type(Material.POLISHED_BASALT)
+				x(0).endRod()
 				x(1).type(Material.POLISHED_BASALT)
 				x(2).type(Material.POLISHED_BASALT)
 			}
 		}
-		z(-3) {
+		z(-1) {
 			y(3) {
 				x(-2).ironBlock()
-				x(-1).anyTerracotta()
-				x(0).anyTerracotta()
-				x(1).anyTerracotta()
+				x(-1).terracottaOrDoubleSlab()
+				x(0).terracottaOrDoubleSlab()
+				x(1).terracottaOrDoubleSlab()
 				x(2).ironBlock()
 			}
 			y(5) {
 				x(-2).dispenser()
 				x(-1).dispenser()
+				x(0).endRod()
 				x(1).dispenser()
 				x(2).dispenser()
 			}
 		}
-		z(2) {
+		z(3) {
 			y(3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
-		z(-4) {
+		z(-3) {
 			y(3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))

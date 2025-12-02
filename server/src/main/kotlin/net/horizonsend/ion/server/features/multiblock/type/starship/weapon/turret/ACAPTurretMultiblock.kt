@@ -16,6 +16,7 @@ import net.horizonsend.ion.server.miscellaneous.utils.coordinates.Vec3i
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.Component.text
 import org.bukkit.Material
+import org.bukkit.Material.IRON_TRAPDOOR
 import org.bukkit.World
 import org.bukkit.block.BlockFace
 import org.bukkit.block.data.Bisected
@@ -41,15 +42,15 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 		listOf(Vec3i(0, getSign() * 4, +5), Vec3i(-2, getSign() * 4, +4), Vec3i(2, getSign() * 4, +4))
 
 	override fun MultiblockShape.buildStructure() {
-		z(0) {
+		z(1) {
 			y(3) {
 				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-3).anyConcrete()
-				x(-2).anyTerracotta()
+				x(-2).terracottaOrDoubleSlab()
 				x(-1).anyConcrete()
 				x(0).anyConcrete()
 				x(1).anyConcrete()
-				x(2).anyTerracotta()
+				x(2).terracottaOrDoubleSlab()
 				x(3).anyConcrete()
 				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
@@ -66,58 +67,58 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(0).sponge()
 			}
 		}
-		z(-1) {
+		z(0) {
 			y(3) {
-				x(-4).anyTerracotta()
+				x(-4).terracottaOrDoubleSlab()
 				x(-3).anyConcrete()
-				x(-2).anyTerracotta()
+				x(-2).terracottaOrDoubleSlab()
 				x(-1).anyConcrete()
-				x(0).anyTerracotta()
+				x(0).terracottaOrDoubleSlab()
 				x(1).anyConcrete()
-				x(2).anyTerracotta()
+				x(2).terracottaOrDoubleSlab()
 				x(3).anyConcrete()
-				x(4).anyTerracotta()
+				x(4).terracottaOrDoubleSlab()
 			}
 			y(4) {
-				x(-3).anyTrapdoor(PrepackagedPreset.trapdoor(Bisected.Half.BOTTOM, RelativeFace.BACKWARD, false, false))
+				x(-3).type(IRON_TRAPDOOR)
 				x(-2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(3).anyTrapdoor(PrepackagedPreset.trapdoor(Bisected.Half.BOTTOM, RelativeFace.BACKWARD, false, false))
+				x(3).type(IRON_TRAPDOOR)
 			}
 			y(2) {
 				x(-1).sponge()
 				x(1).sponge()
 			}
 		}
-		z(-2) {
+		z(-1) {
 			y(3) {
 				x(-4).anyStairs(PrepackagedPreset.stairs(RelativeFace.RIGHT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				x(-3).anyConcrete()
-				x(-2).anyTerracotta()
-				x(-1).anyTerracotta()
-				x(0).anyTerracotta()
-				x(1).anyTerracotta()
-				x(2).anyTerracotta()
+				x(-2).terracottaOrDoubleSlab()
+				x(-1).terracottaOrDoubleSlab()
+				x(0).terracottaOrDoubleSlab()
+				x(1).terracottaOrDoubleSlab()
+				x(2).terracottaOrDoubleSlab()
 				x(3).anyConcrete()
 				x(4).anyStairs(PrepackagedPreset.stairs(RelativeFace.LEFT, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 			y(4) {
-				x(-3).anyTrapdoor(PrepackagedPreset.trapdoor(Bisected.Half.BOTTOM, RelativeFace.BACKWARD, false, false))
+				x(-3).type(IRON_TRAPDOOR)
 				x(-2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(-1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.FORWARD, example = Material.GRINDSTONE.createBlockData()))
 				x(1).anySlab(PrepackagedPreset.slab(Slab.Type.BOTTOM))
 				x(2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(3).anyTrapdoor(PrepackagedPreset.trapdoor(Bisected.Half.BOTTOM, RelativeFace.BACKWARD, false, false))
+				x(3).type(IRON_TRAPDOOR)
 			}
 			y(2) {
 				x(0).sponge()
 			}
 		}
-		z(1) {
+		z(2) {
 			y(3) {
 				x(-3).ironBlock()
 				x(-2).anyConcrete()
@@ -135,25 +136,25 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
-		z(-3) {
+		z(-2) {
 			y(3) {
 				x(-3).ironBlock()
-				x(-2).anyTerracotta()
+				x(-2).terracottaOrDoubleSlab()
 				x(-1).anyConcrete()
-				x(0).anyTerracotta()
+				x(0).terracottaOrDoubleSlab()
 				x(1).anyConcrete()
-				x(2).anyTerracotta()
+				x(2).terracottaOrDoubleSlab()
 				x(3).ironBlock()
 			}
 			y(4) {
 				x(-2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(-1).anyTrapdoor(PrepackagedPreset.trapdoor(Bisected.Half.BOTTOM, RelativeFace.BACKWARD, false, false))
+				x(-1).type(IRON_TRAPDOOR)
 				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(1).anyTrapdoor(PrepackagedPreset.trapdoor(Bisected.Half.BOTTOM, RelativeFace.BACKWARD, false, false))
+				x(1).type(IRON_TRAPDOOR)
 				x(2).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 			}
 		}
-		z(2) {
+		z(3) {
 			y(3) {
 				x(-2).ironBlock()
 				x(-1).anyConcrete()
@@ -167,31 +168,31 @@ sealed class ACAPTurretMultiblock : TurretMultiblock<ACAPTurretBalancing.ACAPTur
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
-		z(-4) {
+		z(-3) {
 			y(3) {
 				x(-2).ironBlock()
 				x(-1).anyConcrete()
-				x(0).anyTerracotta()
+				x(0).terracottaOrDoubleSlab()
 				x(1).anyConcrete()
 				x(2).ironBlock()
 			}
 			y(4) {
-				x(-1).anyTrapdoor(PrepackagedPreset.trapdoor(Bisected.Half.BOTTOM, RelativeFace.BACKWARD, false, false))
+				x(-1).type(IRON_TRAPDOOR)
 				x(0).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(1).anyTrapdoor(PrepackagedPreset.trapdoor(Bisected.Half.BOTTOM, RelativeFace.BACKWARD, false, false))
+				x(1).type(IRON_TRAPDOOR)
 			}
 		}
-		z(3) {
+		z(4) {
 			y(3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(0).anyTerracotta()
+				x(0).terracottaOrDoubleSlab()
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}
-		z(-5) {
+		z(-4) {
 			y(3) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(0).anyTerracotta()
+				x(0).terracottaOrDoubleSlab()
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 		}

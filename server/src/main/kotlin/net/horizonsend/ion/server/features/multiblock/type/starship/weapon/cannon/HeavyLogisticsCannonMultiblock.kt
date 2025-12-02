@@ -36,7 +36,7 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 		override fun getFirePointOffset(): Vec3i = Vec3i(+0, +3, +0)
 		override val key: String = "top_heavy_logistics_cannon"
 		override fun MultiblockShape.buildStructure() {
-			z(2) {
+			z(1) {
 				y(1) {
 					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
@@ -50,7 +50,7 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD, RelativeFace.LEFT))
 				}
 			}
-			z(1) {
+			z(0) {
 				y(1) {
 					x(-2).ironBlock()
 					x(-1).ironBlock()
@@ -71,7 +71,7 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 					x(1).anyGlass()
 				}
 			}
-			z(0) {
+			z(-1) {
 				y(1) {
 					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
@@ -87,7 +87,7 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 				y(0) {
 				}
 			}
-			z(3) {
+			z(2) {
 				y(1) {
 					x(-1).ironBlock()
 					x(0).ironBlock()
@@ -97,7 +97,7 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 					x(0).anyWall()
 				}
 			}
-			z(-1) {
+			z(-2) {
 				y(1) {
 					x(-1).ironBlock()
 					x(0).ironBlock()
@@ -117,7 +117,7 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 		override fun getFirePointOffset(): Vec3i = Vec3i(+0, +0, +4)
 		override val key: String = "side_heavy_logistics_cannon"
 		override fun MultiblockShape.buildStructure() {
-			z(2) {
+			z(1) {
 				y(-1) {
 					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
@@ -150,7 +150,7 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 					x(1).ironBlock()
 				}
 			}
-			z(3) {
+			z(2) {
 				y(0) {
 					x(-2).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.BACKWARD))
 					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.BACKWARD, RelativeFace.LEFT))
@@ -179,7 +179,7 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD, RelativeFace.LEFT))
 				}
 			}
-			z(1) {
+			z(0) {
 				y(0) {
 					x(-1).anyGlass()
 					x(0).emeraldBlock()
@@ -196,7 +196,7 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 		override fun getFirePointOffset(): Vec3i = Vec3i(+0, -3, +0)
 		override val key: String = "bottom_heavy_logistics_cannon"
 		override fun MultiblockShape.buildStructure() {
-			z(1) {
+			z(0) {
 				y(-2) {
 					x(-2).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT))
 					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.BACKWARD, RelativeFace.LEFT))
@@ -217,7 +217,7 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 					x(1).anyGlass()
 				}
 			}
-			z(2) {
+			z(1) {
 				y(-1) {
 					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
@@ -231,7 +231,7 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD, RelativeFace.LEFT))
 				}
 			}
-			z(0) {
+			z(-1) {
 				y(-1) {
 					x(-2).anyStairs(PrepackagedPreset.stairs(RelativeFace.FORWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
@@ -247,7 +247,7 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 				y(0) {
 				}
 			}
-			z(3) {
+			z(2) {
 				y(-1) {
 					x(-1).ironBlock()
 					x(0).ironBlock()
@@ -257,7 +257,7 @@ sealed class HeavyLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<H
 					x(0).anyWall()
 				}
 			}
-			z(-1) {
+			z(-2) {
 				y(-1) {
 					x(-1).ironBlock()
 					x(0).ironBlock()

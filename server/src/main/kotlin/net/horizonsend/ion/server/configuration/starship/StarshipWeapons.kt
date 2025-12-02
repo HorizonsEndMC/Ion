@@ -1098,7 +1098,7 @@ data class DoomsdayDeviceBalancing(
 	override val applyCooldownToAll: Boolean = true,
 
 	override val convergeDistance: Double = 0.0,
-	override val projectileSpawnDistance: Int = 1,
+	override val projectileSpawnDistance: Int = 2,
 	override val angleRadiansHorizontal: Double = 70.0,
 	override val angleRadiansVertical: Double = 70.0,
 	override val boostChargeNanos: Long = TimeUnit.SECONDS.toNanos(25),

@@ -36,7 +36,7 @@ sealed class LightLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<L
 		override fun getFirePointOffset(): Vec3i = Vec3i(+0, +3, +0)
 		override val key: String = "top_light_logistics_cannon"
 		override fun MultiblockShape.buildStructure() {
-			z(2) {
+			z(1) {
 				y(0) {
 					x(-1).ironBlock()
 					x(1).ironBlock()
@@ -52,7 +52,7 @@ sealed class LightLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<L
 					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.BACKWARD, RelativeFace.LEFT))
 				}
 			}
-			z(1) {
+			z(0) {
 				y(0) {
 					x(-1).ironBlock()
 					x(0).emeraldBlock()
@@ -69,7 +69,7 @@ sealed class LightLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<L
 					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.BACKWARD, RelativeFace.LEFT))
 				}
 			}
-			z(0) {
+			z(-1) {
 				y(0) {
 					x(-1).ironBlock()
 					x(1).ironBlock()
@@ -94,7 +94,7 @@ sealed class LightLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<L
 		override fun getFirePointOffset(): Vec3i = Vec3i(+0, +0, +4)
 		override val key: String = "side_light_logistics_cannon"
 		override fun MultiblockShape.buildStructure() {
-			z(3) {
+			z(2) {
 				y(-1) {
 					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT))
 					x(0).anyWall()
@@ -111,7 +111,7 @@ sealed class LightLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<L
 					x(1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.LEFT))
 				}
 			}
-			z(2) {
+			z(1) {
 				y(-1) {
 					x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.TOP, shape = Stairs.Shape.STRAIGHT))
 					x(0).ironBlock()
@@ -128,7 +128,7 @@ sealed class LightLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<L
 					x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 				}
 			}
-			z(1) {
+			z(0) {
 				y(-1) {
 					x(-1).ironBlock()
 					x(1).ironBlock()
@@ -152,7 +152,7 @@ sealed class LightLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<L
 		override fun getFirePointOffset(): Vec3i = Vec3i(+0, -3, +0)
 		override val key: String = "bottom_light_logistics_cannon"
 		override fun MultiblockShape.buildStructure() {
-			z(2) {
+			z(1) {
 				y(-2) {
 					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.RIGHT, RelativeFace.BACKWARD))
 					x(0).anyWall()
@@ -168,7 +168,7 @@ sealed class LightLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<L
 					x(1).ironBlock()
 				}
 			}
-			z(1) {
+			z(0) {
 				y(-2) {
 					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT, RelativeFace.BACKWARD))
 					x(0).type(Material.LODESTONE)
@@ -185,7 +185,7 @@ sealed class LightLogisticsCannonMultiblock : SignlessStarshipWeaponMultiblock<L
 					x(1).ironBlock()
 				}
 			}
-			z(0) {
+			z(-1) {
 				y(-2) {
 					x(-1).anyGlassPane(PrepackagedPreset.pane(RelativeFace.FORWARD, RelativeFace.RIGHT))
 					x(0).anyWall()

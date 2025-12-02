@@ -287,7 +287,7 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 		register(
 			CustomBlockKeys.LARGE_REACTOR_CORE, CustomBlock(
 				key = CustomBlockKeys.LARGE_REACTOR_CORE,
-				blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST)),
+				blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.NORTH)),
 				drops = BlockLoot(
 					requiredTool = null,
 					drops = customItemDrop(CustomItemKeys.LARGE_REACTOR_CORE)
