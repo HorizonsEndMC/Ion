@@ -296,6 +296,97 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 			)
 		)
 
+        //New Server Ores
+        register(
+            CustomBlockKeys.SCORDITE_ORE, CustomBlock(
+                key = CustomBlockKeys.SCORDITE_ORE,
+                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,BlockFace.SOUTH)),
+                drops = BlockLoot(
+                    requiredTool = null,
+                    drops = customItemDrop(CustomItemKeys.SCORDITE)
+                ),
+                CustomItemKeys.SCORDITE_ORE
+            )
+        )
+        register(
+            CustomBlockKeys.SCORDITE_BLOCK, CustomBlock(
+                key = CustomBlockKeys.SCORDITE_BLOCK,
+                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,BlockFace.NORTH)),
+                drops = BlockLoot(
+                    requiredTool = null,
+                    drops = customItemDrop(CustomItemKeys.SCORDITE_BLOCK)
+                ),
+                CustomItemKeys.SCORDITE_BLOCK
+            )
+        )
+        register(
+            CustomBlockKeys.VANADIUM_ORE, CustomBlock(
+                key = CustomBlockKeys.VANADIUM_ORE,
+                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,BlockFace.WEST)),
+                drops = BlockLoot(
+                    requiredTool = null,
+                    drops = customItemDrop(CustomItemKeys.VANADIUM)
+                ),
+                CustomItemKeys.VANADIUM_ORE
+            )
+        )
+        register(
+            CustomBlockKeys.VANADIUM_BLOCK, CustomBlock(
+                key = CustomBlockKeys.VANADIUM_BLOCK,
+                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST,BlockFace.EAST)),
+                drops = BlockLoot(
+                    requiredTool = null,
+                    drops = customItemDrop(CustomItemKeys.VANADIUM_BLOCK)
+                ),
+                CustomItemKeys.VANADIUM_BLOCK
+            )
+        )
+        register(
+            CustomBlockKeys.ZIRCON_ORE, CustomBlock(
+                key = CustomBlockKeys.ZIRCON_ORE,
+                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.NORTH,BlockFace.WEST)),
+                drops = BlockLoot(
+                    requiredTool = null,
+                    drops = customItemDrop(CustomItemKeys.ZIRCON)
+                ),
+                CustomItemKeys.ZIRCON_ORE
+            )
+        )
+        register(
+            CustomBlockKeys.ZIRCON_BLOCK, CustomBlock(
+                key = CustomBlockKeys.ZIRCON_BLOCK,
+                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.NORTH,BlockFace.EAST)),
+                drops = BlockLoot(
+                    requiredTool = null,
+                    drops = customItemDrop(CustomItemKeys.ZIRCON_BLOCK)
+                ),
+                CustomItemKeys.ZIRCON_BLOCK
+            )
+        )
+        register(
+            CustomBlockKeys.ATAVUM_ORE, CustomBlock(
+                key = CustomBlockKeys.ATAVUM_ORE,
+                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.NORTH,BlockFace.NORTH)),
+                drops = BlockLoot(
+                    requiredTool = null,
+                    drops = customItemDrop(CustomItemKeys.ATAVUM)
+                ),
+                CustomItemKeys.ATAVUM_ORE
+            )
+        )
+        register(
+            CustomBlockKeys.ATAVUM_BLOCK, CustomBlock(
+                key = CustomBlockKeys.ATAVUM_BLOCK,
+                blockData = mushroomBlockData(setOf(BlockFace.SOUTH, BlockFace.EAST, BlockFace.SOUTH,BlockFace.NORTH)),
+                drops = BlockLoot(
+                    requiredTool = null,
+                    drops = customItemDrop(CustomItemKeys.ATAVUM_BLOCK)
+                ),
+                CustomItemKeys.ATAVUM_BLOCK
+            )
+        )
+
+
 		register(CustomBlockKeys.MULTIBLOCK_WORKBENCH, MultiblockWorkbench)
 		register(CustomBlockKeys.ADVANCED_ITEM_EXTRACTOR, AdvancedItemExtractorBlock)
 		register(CustomBlockKeys.ITEM_FILTER, ItemFilterBlock)

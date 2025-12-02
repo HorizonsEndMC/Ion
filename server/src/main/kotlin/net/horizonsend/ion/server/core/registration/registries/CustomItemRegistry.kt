@@ -268,6 +268,23 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerOreBlock(CustomItemKeys.URANIUM_ORE, name = "uranium", block = CustomBlockKeys.URANIUM_ORE)
 		registerIngotBlock(CustomItemKeys.URANIUM_BLOCK, name = "uranium", block = CustomBlockKeys.URANIUM_BLOCK)
 		registerRawBlock(CustomItemKeys.RAW_URANIUM_BLOCK, name = "uranium", block = CustomBlockKeys.RAW_URANIUM_BLOCK)
+
+		//Removing Smelting from all custom ores below this line to fit in with Server Thematic. Ore Block -> Raw Ore -> Raw Block
+		registerRawOre(CustomItemKeys.SCORDITE, name = "scordite")
+		registerOreBlock(CustomItemKeys.SCORDITE_ORE, name = "scordite", block = CustomBlockKeys.SCORDITE_ORE)
+		registerRawBlock(CustomItemKeys.SCORDITE_BLOCK, name = "scordite", block = CustomBlockKeys.SCORDITE_BLOCK)
+
+		registerRawOre(CustomItemKeys.VANADIUM, name = "vanadium")
+		registerOreBlock(CustomItemKeys.VANADIUM_ORE, name = "vanadium", block = CustomBlockKeys.VANADIUM_ORE)
+		registerRawBlock(CustomItemKeys.VANADIUM_BLOCK, name = "vanadium", block = CustomBlockKeys.VANADIUM_BLOCK)
+
+		registerRawOre(CustomItemKeys.ZIRCON, name = "zircon")
+		registerOreBlock(CustomItemKeys.ZIRCON_ORE, name = "zircon", block = CustomBlockKeys.ZIRCON_ORE)
+		registerRawBlock(CustomItemKeys.ZIRCON_BLOCK, name = "zircon", block = CustomBlockKeys.ZIRCON_BLOCK)
+
+		registerRawOre(CustomItemKeys.ATAVUM, name = "atavum")
+		registerOreBlock(CustomItemKeys.ATAVUM_ORE, name = "atavum", block = CustomBlockKeys.ATAVUM_ORE)
+		registerRawBlock(CustomItemKeys.ATAVUM_BLOCK, name = "atavum", block = CustomBlockKeys.ATAVUM_BLOCK)
 	}
 
 	private fun registerIndustry() {
