@@ -1,8 +1,8 @@
 package net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile
 
 import net.horizonsend.ion.common.extensions.userErrorAction
-import net.horizonsend.ion.server.configuration.starship.NeutralizerBalancing
-import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.heavy.NeutralizerStarshipWeaponMultiblock
+import net.horizonsend.ion.server.configuration.starship.HeavyNeutralizerBalancing
+import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.event.HeavyNeutralizerStarshipWeaponMultiblock
 import net.horizonsend.ion.server.features.starship.active.ActiveStarship
 import net.horizonsend.ion.server.features.starship.damager.Damager
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.source.ProjectileSource
@@ -12,7 +12,7 @@ import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.util.Vector
 
-class NeutralizerProjectile(
+class HeavyNeutralizerProjectile(
     source: ProjectileSource,
 	name: Component,
     loc: Location,
@@ -20,14 +20,14 @@ class NeutralizerProjectile(
     shooter: Damager,
     originalTarget: Vector,
     baseAimDistance: Int
-) : TrackingLaserProjectile<NeutralizerBalancing.NeutralizerProjectileBalancing>(source, name, loc, dir, shooter, originalTarget, baseAimDistance, NeutralizerStarshipWeaponMultiblock.damageType) {
+) : TrackingLaserProjectile<HeavyNeutralizerBalancing.HeavyNeutralizerProjectileBalancing>(source, name, loc, dir, shooter, originalTarget, baseAimDistance, HeavyNeutralizerStarshipWeaponMultiblock.damageType) {
 	override val color: Color = Color.ORANGE
 
     override fun onImpactStarship(starship: ActiveStarship, impactLocation: Location) {
         val shooterStarship = shooter.starship ?: return
-		starship.shieldRegenModifier = 0.8
-		starship.cruiseData.accel *= 0.8
-		starship.userErrorAction("Ship shield regeneration and acceleration disrupted!")
+		starship.shieldRegenModifier = 0.2
+		starship.cruiseData.accel *= 0.7
+		starship.userErrorAction("Ship shield regeneration and acceleration severely disrupted!")
 		val endLocation = shooterStarship.centerOfMass.toLocation(shooterStarship.world)
         shooterStarship.world.spawnParticle(
             Particle.TRAIL,

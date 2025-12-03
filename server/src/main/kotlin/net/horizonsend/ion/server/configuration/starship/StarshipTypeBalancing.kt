@@ -245,6 +245,7 @@ data class NewStarshipBalancing(
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 			),
 			shieldPowerMultiplier = 0.75,
+			shieldRegenMultiplier = 1.25,
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
@@ -269,6 +270,7 @@ data class NewStarshipBalancing(
 				TorpedoBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 			),
 			shieldPowerMultiplier = 0.75,
+			shieldRegenMultiplier = 0.25,
 			shipSounds = StarshipSounds(
 				explodeNear = SoundInfo("horizonsend:starship.explosion.fighter.near"),
 				explodeFar = SoundInfo("horizonsend:starship.explosion.fighter.far")
@@ -320,6 +322,7 @@ data class NewStarshipBalancing(
 			hyperspaceRangeMultiplier = 1.6,
 			cruiseSpeedMultiplier = 0.9,
 			shieldPowerMultiplier = 1.3,
+			shieldRegenMultiplier = 0.7,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					MiniReactorSubsystem::class.java,
@@ -346,6 +349,7 @@ data class NewStarshipBalancing(
 			hyperspaceRangeMultiplier = 1.6,
 			cruiseSpeedMultiplier = 1.0,
 			shieldPowerMultiplier = 0.75,
+			shieldRegenMultiplier = 0.5,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					MiniReactorSubsystem::class.java,
@@ -391,6 +395,7 @@ data class NewStarshipBalancing(
 			cruiseSpeedMultiplier = 1.05,
 			hyperspaceRangeMultiplier = 1.7,
 			shieldPowerMultiplier = 1.0,
+			shieldRegenMultiplier = 0.5,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					SmallReactorSubsystem::class.java,
@@ -419,6 +424,7 @@ data class NewStarshipBalancing(
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
 			shieldPowerMultiplier = 1.0,
+			shieldRegenMultiplier = 1.0,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					SmallReactorSubsystem::class.java,
@@ -448,6 +454,7 @@ data class NewStarshipBalancing(
 			cruiseSpeedMultiplier = 0.75,
 			hyperspaceRangeMultiplier = 1.7,
 			shieldPowerMultiplier = 1.25,
+			shieldRegenMultiplier = 0.8,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
 					SmallReactorSubsystem::class.java,
@@ -547,6 +554,7 @@ data class NewStarshipBalancing(
 			wellStrength = 1.0,
 			hyperspaceRangeMultiplier = 1.8,
 			shieldPowerMultiplier = 0.8,
+			shieldRegenMultiplier = 0.8,
 			cruiseSpeedMultiplier = 1.25,
 			requiredMultiblocks = listOf(
 				RequiredSubsystemInfo(
@@ -700,7 +708,8 @@ data class NewStarshipBalancing(
 			wellStrength = 2.0,
 			hyperspaceRangeMultiplier = 1.9,
 			cruiseSpeedMultiplier = 0.92,
-			shieldPowerMultiplier = 0.95,
+			shieldPowerMultiplier = 1.0,
+			shieldRegenMultiplier = 1.5,
 			weaponOverrides = listOf(
 				IonTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
@@ -737,6 +746,7 @@ data class NewStarshipBalancing(
 			hyperspaceRangeMultiplier = 1.9,
 			cruiseSpeedMultiplier = 0.98,
 			shieldPowerMultiplier = 1.15,
+			shieldRegenMultiplier = 0.9,
 			weaponOverrides = listOf(
 				IonTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
 				HeavyTurretBalancing(fireRestrictions = FireRestrictions(canFire = false)),
@@ -922,6 +932,7 @@ sealed interface StarshipTypeBalancing {
 	val hyperspaceRangeMultiplier: Double
 	val cruiseSpeedMultiplier: Double
 	val shieldPowerMultiplier: Double
+	val shieldRegenMultiplier: Double
 
 	val requiredMultiblocks: List<RequiredSubsystemInfo>
 
@@ -944,6 +955,7 @@ open class StanrdardStarshipTypeBalancing(
 	override val hyperspaceRangeMultiplier: Double,
 	override val cruiseSpeedMultiplier: Double = 1.0,
 	override val shieldPowerMultiplier: Double = 1.0,
+	override val shieldRegenMultiplier: Double = 1.0,
 
 	override val requiredMultiblocks: List<RequiredSubsystemInfo> = listOf(),
 
@@ -966,6 +978,7 @@ open class GroundStarshipBalancing(
 	override val hyperspaceRangeMultiplier: Double,
 	override val cruiseSpeedMultiplier: Double = 1.0,
 	override val shieldPowerMultiplier: Double = 1.0,
+	override val shieldRegenMultiplier: Double = 1.0,
 
 	override val requiredMultiblocks: List<RequiredSubsystemInfo> = listOf(),
 
@@ -1117,6 +1130,10 @@ sealed interface StarshipProximityProjectileBalancing : StarshipProjectileBalanc
 @Serializable
 sealed interface StarshipHealingProjectileBalancing : StarshipProjectileBalancing {
 	val shieldBoostFactor: Int
+}
+
+sealed interface StarshipShieldDrainingProjectileBalancing : StarshipProjectileBalancing {
+	val shieldDrainFactor: Int
 }
 
 @Serializable

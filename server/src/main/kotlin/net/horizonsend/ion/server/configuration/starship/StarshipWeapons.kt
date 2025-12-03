@@ -71,6 +71,7 @@ import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DisintegratorBeamProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.DoomsdayDeviceProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyLaserProjectile
+import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.HeavyNeutralizerProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.InterceptorCannonProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.IonTurretProjectile
 import net.horizonsend.ion.server.features.starship.subsystem.weapon.projectile.LaserCannonLaserProjectile
@@ -239,7 +240,7 @@ data class HeavyNeutralizerBalancing(
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.heavy_laser.shoot.far", volume = 1f, source = Sound.Source.PLAYER)
 	) : StarshipProjectileBalancing, StarshipTrackingProjectileBalancing {
 		@Transient
-		override val clazz: KClass<out Projectile> = HeavyLaserProjectile::class
+		override val clazz: KClass<out Projectile> = HeavyNeutralizerProjectile::class
 	}
 }
 

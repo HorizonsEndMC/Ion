@@ -481,8 +481,10 @@ class Starship(
 
 	val autoTurretTargets = mutableMapOf<String, AutoTurretTargeting.AutoTurretTarget<*>>()
 
+	var shieldRegenModifier: Double = 1.0
+
 	val shieldEfficiency: Double
-		get() = (shields.size.d().pow(0.9) / (initialBlockCount / 500.0).coerceAtLeast(1.0).pow(0.7))
+		get() = (shieldRegenModifier*(shields.size.d().pow(0.9) / (initialBlockCount / 500.0).coerceAtLeast(1.0).pow(0.7)) * type.balancing.shieldRegenMultiplier)
 			.coerceAtMost(1.0)
 
 	val maxShields: Int = (0.00671215 * initialBlockCount.toDouble().pow(0.836512) - 0.188437).toInt()
