@@ -29,7 +29,7 @@ class DoomsdayDeviceProjectile(
 	shooter: Damager
 ) : ParticleProjectile<DoomsdayDeviceBalancing.DoomsdayDeviceProjectileBalancing>(source, name, loc, dir, shooter, DoomsdayDeviceWeaponMultiblock.damageType) {
     private val greenParticleData = Particle.DustTransition(
-        Color.fromARGB(255, 182, 255, 0),
+        shooter.color,
         Color.BLACK,
         balancing.particleThickness.toFloat()
     )

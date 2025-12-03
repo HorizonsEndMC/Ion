@@ -285,6 +285,8 @@ class CustomItemRegistry : Registry<CustomItem>(RegistryKeys.CUSTOM_ITEMS) {
 		registerRawOre(CustomItemKeys.ATAVUM, name = "atavum")
 		registerOreBlock(CustomItemKeys.ATAVUM_ORE, name = "atavum", block = CustomBlockKeys.ATAVUM_ORE)
 		registerRawBlock(CustomItemKeys.ATAVUM_BLOCK, name = "atavum", block = CustomBlockKeys.ATAVUM_BLOCK)
+
+		registerIngotBlock(CustomItemKeys.KOTH_BLOCK, name = "koth_block", block = CustomBlockKeys.KOTH_BLOCK)
 	}
 
 	private fun registerIndustry() {

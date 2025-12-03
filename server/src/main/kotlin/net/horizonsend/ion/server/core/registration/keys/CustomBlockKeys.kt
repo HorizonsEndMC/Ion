@@ -39,17 +39,14 @@ object CustomBlockKeys : KeyRegistry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS, Cu
 	val LARGE_REACTOR_CORE = registerKey("LARGE_REACTOR_CORE")
 
 	val SCORDITE_ORE = registerKey("SCORDITE_ORE")
-	val SCORDITE = registerKey("SCORDITE")
 	val SCORDITE_BLOCK = registerKey("SCORDITE_BLOCK")
 	val VANADIUM_ORE = registerKey("VANADIUM_ORE")
-	val VANADIUM = registerKey("VANADIUM")
 	val VANADIUM_BLOCK = registerKey("VANADIUM_BLOCK")
 	val ZIRCON_ORE = registerKey("ZIRCON_ORE")
-	val ZIRCON = registerKey("ZIRCON")
 	val ZIRCON_BLOCK = registerKey("ZIRCON_BLOCK")
 	val ATAVUM_ORE = registerKey("AVATUM_ORE")
-	val ATAVUM = registerKey("AVATUM")
 	val ATAVUM_BLOCK = registerKey("AVATUM_BLOCK")
+	val KOTH_BLOCK = registerKey("KOTH_BLOCK")
 
 	val MULTIBLOCK_WORKBENCH = registerTypedKey<MultiblockWorkbench>("MULTIBLOCK_WORKBENCH")
 	val ADVANCED_ITEM_EXTRACTOR = registerTypedKey<AdvancedItemExtractorBlock>("ADVANCED_ITEM_EXTRACTOR")

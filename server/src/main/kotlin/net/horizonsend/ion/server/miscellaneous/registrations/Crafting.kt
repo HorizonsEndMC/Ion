@@ -5,6 +5,7 @@ import io.papermc.paper.datacomponent.item.ItemEnchantments
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.core.IonServerComponent
 import net.horizonsend.ion.server.core.registration.IonRegistryKey
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCORDITE_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ADVANCED_ITEM_EXTRACTOR
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ALUMINUM_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ALUMINUM_INGOT
@@ -15,6 +16,8 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ARMOR_MO
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ARMOR_MODIFICATION_ROCKET_BOOSTING
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ARMOR_MODIFICATION_SHOCK_ABSORBING
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ARMOR_MODIFICATION_SPEED_BOOSTING
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ATAVUM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ATAVUM_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BARGE_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BATTERY_A
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.BATTERY_G
@@ -101,6 +104,7 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.REINFORC
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.RIFLE_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SALAD
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SALAMI
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SCORDITE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SHOTGUN_RECEIVER
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMALL_REACTOR_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.SMB_RECEIVER
@@ -146,8 +150,12 @@ import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_CORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_ORE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.URANIUM_ROD
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.VANADIUM
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.VANADIUM_BLOCK
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.VEGETARIAN_NUTRIENT_CUBE
 import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.WRENCH
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON
+import net.horizonsend.ion.server.core.registration.keys.CustomItemKeys.ZIRCON_BLOCK
 import net.horizonsend.ion.server.features.custom.items.CustomItem
 import net.horizonsend.ion.server.miscellaneous.registrations.persistence.NamespacedKeys
 import net.horizonsend.ion.server.miscellaneous.utils.ALL_GLASS_TYPES
@@ -720,29 +728,10 @@ object Crafting : IonServerComponent() {
 			setIngredient('z', FUEL_CONTROL.getValue().constructItemStack())
 		}
 
-		shaped("minireactorCore", MINI_REACTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.BUILDING) {
-			shape(" x ", " x ", " x ")
-
-			setIngredient('x', STICK)
-		}
-
-		shaped("smallreactorCore", SMALL_REACTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.BUILDING) {
-			shape(" x ", " x ", " x ")
-
-			setIngredient('x', GOLD_INGOT)
-		}
-
-		shaped("mediumreactorCore", MEDIUM_REACTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.BUILDING) {
-			shape(" x ", " x ", " x ")
-
-			setIngredient('x', IRON_INGOT)
-		}
-
-		shaped("largereactorCore", LARGE_REACTOR_CORE.getValue().constructItemStack(), CraftingBookCategory.BUILDING) {
-			shape(" x ", " x ", " x ")
-
-			setIngredient('x', COPPER_INGOT)
-		}
+		shapeless("scordite_block", SCORDITE_BLOCK.getValue().constructItemStack(), CraftingBookCategory.BUILDING, SCORDITE.getValue().constructItemStack(9))
+		shapeless("vanadium_block", VANADIUM_BLOCK.getValue().constructItemStack(), CraftingBookCategory.BUILDING, VANADIUM.getValue().constructItemStack(9))
+		shapeless("zircon_block", ZIRCON_BLOCK.getValue().constructItemStack(), CraftingBookCategory.BUILDING, ZIRCON.getValue().constructItemStack(9))
+		shapeless("atavum_block", ATAVUM_BLOCK.getValue().constructItemStack(), CraftingBookCategory.BUILDING, ATAVUM.getValue().constructItemStack(9))
 
 		shaped("multiblock_workbench", MULTIBLOCK_WORKBENCH.getValue().constructItemStack(), CraftingBookCategory.MISC) {
 			shape("i", "c")

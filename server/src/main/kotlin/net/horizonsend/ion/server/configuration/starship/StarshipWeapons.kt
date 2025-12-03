@@ -1112,10 +1112,10 @@ data class DoomsdayDeviceBalancing(
 	data class DoomsdayDeviceProjectileBalancing(
         override val range: Double = 500.0,
         override val speed: Double = 400.0,
-        override val explosionPower: Float = 10f,
-        override val starshipShieldDamageMultiplier: Double = 100.0,
+        override val explosionPower: Float = 20f,
+        override val starshipShieldDamageMultiplier: Double = 150.0,
         override val areaShieldDamageMultiplier: Double = 100.0,
-        override val entityDamage: EntityDamage = RegularDamage(10.0),
+        override val entityDamage: EntityDamage = RegularDamage(100.0),
 		override val fireSoundNear: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.near", volume = 1f, source = Sound.Source.PLAYER),
 		override val fireSoundFar: SoundInfo = SoundInfo("horizonsend:starship.weapon.light_turret.shoot.far", volume = 1f, source = Sound.Source.PLAYER),
         override val particleThickness: Double = 5.0

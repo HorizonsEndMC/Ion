@@ -273,6 +273,17 @@ class CustomBlockRegistry : Registry<CustomBlock>(RegistryKeys.CUSTOM_BLOCKS) {
 				CustomItemKeys.SMALL_REACTOR_CORE
 			)
 		)
+        register(
+            CustomBlockKeys.KOTH_BLOCK, CustomBlock(
+                key = CustomBlockKeys.KOTH_BLOCK,
+                blockData = mushroomBlockData(setOf(BlockFace.NORTH, BlockFace.EAST, BlockFace.WEST,BlockFace.NORTH)),
+                drops = BlockLoot(
+                    requiredTool = null,
+                    drops = customItemDrop(CustomItemKeys.KOTH_BLOCK)
+                ),
+                CustomItemKeys.KOTH_BLOCK
+            )
+        )
 		register(
 			CustomBlockKeys.MEDIUM_REACTOR_CORE, CustomBlock(
 				key = CustomBlockKeys.MEDIUM_REACTOR_CORE,
