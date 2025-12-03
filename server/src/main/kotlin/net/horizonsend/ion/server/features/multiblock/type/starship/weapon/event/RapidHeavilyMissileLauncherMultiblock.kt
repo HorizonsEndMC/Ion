@@ -88,7 +88,7 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 			}
 			y(4) {
 				x(-1).ironBlock()
-				x(0).titaniumBlock() // TODO: CHANGE TO KOTH BLOCK
+				x(0).kothBlock()
 				x(1).ironBlock()
 			}
 		}

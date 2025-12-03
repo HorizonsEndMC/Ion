@@ -38,14 +38,14 @@ object HeavyNeutralizerStarshipWeaponMultiblock : SignlessStarshipWeaponMultiblo
 		z(1) {
 			y(0) {
 				x(1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
-				x(0).anyTerracotta()
+				x(0).ironBlock()
 				x(-1).grindstone(PrepackagedPreset.simpleDirectional(RelativeFace.BACKWARD, example = Material.GRINDSTONE.createBlockData()))
 			}
 		}
 		z(2) {
 			y(0) {
 				x(1).goldBlock()
-				x(0).anyTerracotta()
+				x(0).kothBlock()
 				x(-1).goldBlock()
 			}
 		}

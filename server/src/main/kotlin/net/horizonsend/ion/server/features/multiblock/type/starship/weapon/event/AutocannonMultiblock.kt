@@ -2,6 +2,7 @@ package net.horizonsend.ion.server.features.multiblock.type.starship.weapon.even
 
 import net.horizonsend.ion.server.configuration.starship.AutocannonBalancing.AutocannonProjectileBalancing
 import net.horizonsend.ion.server.configuration.starship.StarshipWeaponBalancing
+import net.horizonsend.ion.server.core.registration.keys.CustomBlockKeys.KOTH_BLOCK
 import net.horizonsend.ion.server.features.multiblock.shape.MultiblockShape
 import net.horizonsend.ion.server.features.multiblock.type.starship.weapon.turret.TurretMultiblock
 import net.horizonsend.ion.server.features.multiblock.util.PrepackagedPreset
@@ -47,7 +48,7 @@ sealed class AutocannonMultiblock : TurretMultiblock<AutocannonProjectileBalanci
 			}
 			y(5) {
 				x(-1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
-				x(0).terracottaOrDoubleSlab()
+				x(0).kothBlock()
 				x(1).anyStairs(PrepackagedPreset.stairs(RelativeFace.BACKWARD, Bisected.Half.BOTTOM, shape = Stairs.Shape.STRAIGHT))
 			}
 

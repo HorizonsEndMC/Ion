@@ -20,16 +20,16 @@ object DoomsdayDeviceWeaponMultiblock : SignlessStarshipWeaponMultiblock<Doomsda
         z(0) {
             y(0) {
                 x(2).ironBlock()
-                x(1).anyTerracotta()
+                x(1).kothBlock()
                 x(0).uraniumBlock()
-                x(-1).anyTerracotta()
+                x(-1).kothBlock()
                 x(-2).ironBlock()
             }
             y(-1) {
-                x(0).anyTerracotta()
+                x(0).kothBlock()
             }
             y(1) {
-                x(0).anyTerracotta()
+                x(0).kothBlock()
             }
         }
         z(1) {
@@ -50,16 +50,16 @@ object DoomsdayDeviceWeaponMultiblock : SignlessStarshipWeaponMultiblock<Doomsda
         z(2) {
             y(0) {
                 x(2).ironBlock()
-                x(1).anyTerracotta()
+                x(1).kothBlock()
                 x(0).uraniumBlock()
-                x(-1).anyTerracotta()
+                x(-1).kothBlock()
                 x(-2).ironBlock()
             }
             y(-1) {
-                x(0).anyTerracotta()
+                x(0).kothBlock()
             }
             y(1) {
-                x(0).anyTerracotta()
+                x(0).kothBlock()
             }
         }
         z(3) {
