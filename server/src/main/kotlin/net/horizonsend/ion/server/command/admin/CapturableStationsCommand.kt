@@ -4,13 +4,17 @@ import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Subcommand
+import net.horizonsend.ion.common.database.Oid
 import net.horizonsend.ion.common.database.schema.nations.CapturableStation
+import net.horizonsend.ion.common.database.schema.nations.KothStation
+import net.horizonsend.ion.common.database.schema.nations.Nation
 import net.horizonsend.ion.common.database.schema.nations.SolarSiegeZone
 import net.horizonsend.ion.common.extensions.success
 import net.horizonsend.ion.server.IonServer
 import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
+import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.time.DayOfWeek
@@ -47,6 +51,41 @@ object CapturableStationsCommand : SLCommand() {
 
 		sender.success("Successfully created Solar Siege Zone ({0}), At {1}, {2}", stationName, x, z)
 	}
+}
+
+@CommandAlias("kotharena")
+@CommandPermission("ion.core.capturablestation.create")
+object KothStationCommand : SLCommand() {
+	@Subcommand("create")
+	fun capturableStationCreation(sender: Player, stationName: String, x: Int, z: Int, siegehour: Int) {
+		KothStation.findById(
+			KothStation.create(
+				stationName,
+				sender.world.name,
+				x,
+				z,
+				siegehour,
+				DayOfWeek.values().toSet(),
+				mutableMapOf<Oid<Nation>, Int>()
+			)
+		)
+			?.let { RegionKothZone(it) }?.let { NationsMap.addKingOfTheHill(it) }
+		sender.success(
+			"Successfully created King of the Hill ($stationName), At {$x}, {$z}, SiegeHour is {$siegehour}"
+		)
+	}
+
+	//@Subcommand("inititate")
+	//fun capturableStationCreation(sender: Player, stationName: String, x: Int, z: Int) {
+	//	val id = SolarSiegeZone.create(
+	//		stationName,
+	//		sender.world.name,
+	//		x,
+	//		z
+	//	)
+//
+//		sender.success("Successfully created Solar Siege Zone ({0}), At {1}, {2}", stationName, x, z)
+//	}
 }
 
 @CommandAlias("graceperiodtoggle")
