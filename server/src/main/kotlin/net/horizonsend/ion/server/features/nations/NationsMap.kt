@@ -342,13 +342,14 @@ object NationsMap : IonServerComponent(true) {
 		marker.setFillStyle(0.0, Color.WHITE.asRGB())
 		marker.setLineStyle(5, 0.8, rgb)
 
-		val quarter = station.kothTimeFrame
+		val hour = station.siegeHour
+		val day = station.siegeDays
 
 		marker.description = """
 		<p><h2>${station.name}</h2></p><p>
 		${
 			"""
-			<p>Activates during $quarter:00 (UTC)
+			<p>Activates during $hour:00 on the $day'st day of the week (UTC)
 			""".trimIndent()
 		}
 		</p>
