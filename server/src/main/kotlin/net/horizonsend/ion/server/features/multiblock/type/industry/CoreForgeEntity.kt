@@ -100,7 +100,7 @@ abstract class CoreForgeEntity (
 			currentCore == LARGE_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.largeReactorRecipe
 			currentCore == CRUISER_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.cruiserReactorRecipe
 			currentCore == BATTLECRUISER_REACTOR_CORE.getValue().constructItemStack() -> CoreRecipes.battlecruiserReactorRecipe
-			else -> player.userError("Something broke! blame fell",)
+			else -> return player.userError("Something broke! blame fell")
 		} as Map<ItemStack, Int>
 
 		val input: Inventory = getInput() ?: return
