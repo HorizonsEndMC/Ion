@@ -252,7 +252,7 @@ object KingOfTheHills : IonServerComponent() {
 	}
 
 	fun getCurrentKoth() = Regions.getAllOf<RegionKothZone>()
-		.filter { koth -> koth.kothTimeFrame == currentHour() }
+		.filter { koth -> koth.siegeHour == currentHour() }
 
 
 	override fun onDisable() {
