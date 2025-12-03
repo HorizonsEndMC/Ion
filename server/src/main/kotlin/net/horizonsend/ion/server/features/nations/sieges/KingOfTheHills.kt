@@ -16,12 +16,10 @@ import net.horizonsend.ion.server.features.cache.PlayerCache
 import net.horizonsend.ion.server.features.chat.Discord
 import net.horizonsend.ion.server.features.nations.NATIONS_BALANCE
 import net.horizonsend.ion.server.features.nations.region.Regions
-import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
 import net.horizonsend.ion.server.features.player.CombatTimer
 import net.horizonsend.ion.server.features.progression.achievements.Achievement
 import net.horizonsend.ion.server.features.progression.achievements.rewardAchievement
-import net.horizonsend.ion.server.features.starship.StarshipType
 import net.horizonsend.ion.server.features.starship.control.controllers.player.PlayerController
 import net.horizonsend.ion.server.features.starship.damager.PlayerDamager
 import net.horizonsend.ion.server.features.starship.PilotedStarships.isPiloting
@@ -49,7 +47,7 @@ object KingOfTheHills : IonServerComponent() {
 
 	private val activeKoths = mutableListOf<Koths>()
 
-	private val kothMaxTimeMillis get() = TimeUnit.MINUTES.toMillis(NATIONS_BALANCE.capturableStation.siegeMaxDuration)
+	private val kothMaxTimeMillis get() = TimeUnit.MINUTES.toMillis(NATIONS_BALANCE.koths.majorKOTHMaxDuration)
 
 	private fun currentHour() = ZonedDateTime.now().hour
 
@@ -227,8 +225,8 @@ object KingOfTheHills : IonServerComponent() {
 			)
 		}
 
-		val stations = Regions.getAllOf<RegionCapturableStation>()
-			.filter { station -> station.siegeTimeFrame == lastQuarter }
+		val stations = Regions.getAllOf<RegionKothZone>()
+			.filter { station -> station.siegeHour == lastQuarter }
 
 		for (station in stations) {
 
@@ -313,6 +311,7 @@ object KingOfTheHills : IonServerComponent() {
 		Notify.chatAndGlobal(
 			MiniMessage.miniMessage().deserialize("<gold>King of the hill ${currentKoth.name} has begun!")
 		)
+
 		Discord.sendMessage(
 			ConfigurationFiles.discordSettings().eventsChannel,
 			"<gold>King of the hill ${currentKoth.name} has begun!"
@@ -321,6 +320,26 @@ object KingOfTheHills : IonServerComponent() {
 	}
 
 	fun isActiveKoth(stationId: Oid<KothStation>) = activeKoths.any { it.kothId == stationId }
+
+	fun forceActivateKoth(desiredKoth: String) {
+		val allKoths = Regions.getAllOf<RegionKothZone>()
+		for (koth in allKoths) {
+			if (koth.name == desiredKoth) {
+				check(isActiveKoth(koth.id)) { "Koth is already active"}
+				KothSiege.create(koth.id)
+				activeKoths.add(Koths(koth.id, currentTimeMillis(), kothScores, null))
+				Notify.chatAndGlobal(
+					MiniMessage.miniMessage().deserialize("<gold>King of the hill ${koth.name} has begun!")
+				)
+				Discord.sendMessage(
+					ConfigurationFiles.discordSettings().eventsChannel,
+					"<gold>King of the hill ${koth.name} has begun!"
+				)
+				return
+			}
+		}
+	}
+
 
 	fun getKOTHS(): Iterable<Koths> = activeKoths
 

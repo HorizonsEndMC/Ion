@@ -52,7 +52,6 @@ data class KothStation(
 			col.insertOne(KothStation(id, name, world, x, z, siegeHour, siegeDays, kothPoints))
 			return id
 		}
-
 	}
 }
 

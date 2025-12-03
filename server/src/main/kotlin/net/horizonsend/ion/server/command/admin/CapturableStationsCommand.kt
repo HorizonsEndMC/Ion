@@ -15,6 +15,7 @@ import net.horizonsend.ion.server.command.SLCommand
 import net.horizonsend.ion.server.features.nations.NationsMap
 import net.horizonsend.ion.server.features.nations.region.types.RegionCapturableStation
 import net.horizonsend.ion.server.features.nations.region.types.RegionKothZone
+import net.horizonsend.ion.server.features.nations.sieges.KingOfTheHills
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.time.DayOfWeek
@@ -75,17 +76,11 @@ object KothStationCommand : SLCommand() {
 		)
 	}
 
-	//@Subcommand("inititate")
-	//fun capturableStationCreation(sender: Player, stationName: String, x: Int, z: Int) {
-	//	val id = SolarSiegeZone.create(
-	//		stationName,
-	//		sender.world.name,
-	//		x,
-	//		z
-	//	)
-//
-//		sender.success("Successfully created Solar Siege Zone ({0}), At {1}, {2}", stationName, x, z)
-//	}
+	@Subcommand("inititate")
+	fun kothInitiation(sender: Player, kothName: String) {
+		KingOfTheHills.forceActivateKoth(kothName)
+		sender.success("Successfully initiated $kothName")
+	}
 }
 
 @CommandAlias("graceperiodtoggle")
