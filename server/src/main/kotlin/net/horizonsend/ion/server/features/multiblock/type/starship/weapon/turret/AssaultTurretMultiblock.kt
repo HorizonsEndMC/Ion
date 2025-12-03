@@ -74,6 +74,9 @@ sealed class AssaultTurretMultiblock : TurretMultiblock<AssaultTurretProjectileB
 					)
 				)
 			}
+			y(2) {
+				x(0).sponge()
+			}
 		}
 		z(0) {
 			y(3) {

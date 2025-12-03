@@ -134,7 +134,7 @@ sealed class RapidHeavyMissileLauncherMultiblock : TurretMultiblock<RapidHeavyMi
 				x(2).type(Material.POLISHED_BASALT)
 			}
 		}
-		z(-1) {
+		z(-2) {
 			y(3) {
 				x(-2).ironBlock()
 				x(-1).terracottaOrDoubleSlab()
