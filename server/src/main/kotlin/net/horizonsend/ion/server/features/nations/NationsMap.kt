@@ -39,7 +39,7 @@ object NationsMap : IonServerComponent(true) {
 
 	private val markerSet
 		get() = markerAPI.getMarkerSet("nations")
-			?: markerAPI.createMarkerSet("nations", "Nations, Settlements, & Stations", null, false)
+			?: markerAPI.createMarkerSet("nations", "Nations, Settlements, Koths & Stations", null, false)
 
 	private lateinit var updates: Closeable
 
@@ -79,6 +79,7 @@ object NationsMap : IonServerComponent(true) {
 		Tasks.sync {
 			Regions.getAllOf<RegionTerritory>().forEach(::addTerritory)
 			Regions.getAllOf<RegionCapturableStation>().forEach(::addCapturableStation)
+			Regions.getAllOf<RegionKothZone>().forEach { ::addKingOfTheHill }
 			Regions.getAllOf<RegionSolarSiegeZone>().forEach(::addSolarSiege)
 			Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(::addSpaceStation)
 			Regions.getAllOf<RegionNPCSpaceStation>().forEach(::addNpcSpaceStation)
@@ -92,6 +93,7 @@ object NationsMap : IonServerComponent(true) {
 
 		Regions.getAllOf<RegionTerritory>().forEach(NationsMap::updateTerritory)
 		Regions.getAllOf<RegionCapturableStation>().forEach(NationsMap::updateCapturableStation)
+		Regions.getAllOf<RegionKothZone>().forEach { NationsMap::updateKingOfTheHill}
 		Regions.getAllOf<RegionSpaceStation<*, *>>().forEach(NationsMap::updateSpaceStation)
 	}
 
@@ -335,8 +337,7 @@ object NationsMap : IonServerComponent(true) {
 			return@syncOnly
 		}
 
-		val marker: CircleMarker = markerSet.findCircleMarker(station.name)
-			?: return@syncOnly addKingOfTheHill(station)
+		val marker: CircleMarker = markerSet.findCircleMarker(station.name) ?: return@syncOnly addKingOfTheHill(station)
 
 		val rgb = Color.WHITE.asRGB()
 		marker.setFillStyle(0.0, Color.WHITE.asRGB())

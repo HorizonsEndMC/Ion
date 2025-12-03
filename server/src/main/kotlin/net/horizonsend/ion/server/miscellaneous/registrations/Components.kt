@@ -33,6 +33,7 @@ import net.horizonsend.ion.server.features.machine.AreaShields
 import net.horizonsend.ion.server.features.misc.AutoRestart
 import net.horizonsend.ion.server.features.misc.CapturableStationCache
 import net.horizonsend.ion.server.features.misc.GameplayTweaks
+import net.horizonsend.ion.server.features.misc.KothStationCache
 import net.horizonsend.ion.server.features.misc.ProxyMessaging
 import net.horizonsend.ion.server.features.misc.ServerInboxes
 import net.horizonsend.ion.server.features.misc.Shuttles
@@ -222,6 +223,7 @@ val components: List<IonComponent> = listOf(
 	AntiAirCannons,
 	OreGeneration,
 	CapturableStationCache,
+	KothStationCache,
 	UnusedSoldShipPurge,
 	ClientDisplayEntities,
 	HudIcons,
