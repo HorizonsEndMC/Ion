@@ -37,6 +37,7 @@ import net.horizonsend.ion.server.features.multiblock.type.fluid.storage.BasicFl
 import net.horizonsend.ion.server.features.multiblock.type.industry.CentrifugeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CircuitfabMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.CompressorMultiblock
+import net.horizonsend.ion.server.features.multiblock.type.industry.CoreForgeMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.DehydratorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.FabricatorMultiblock
 import net.horizonsend.ion.server.features.multiblock.type.industry.FermenterMultiblock
@@ -271,6 +272,7 @@ object MultiblockRegistration : IonServerComponent() {
 		registerMultiblock(AutoCrafterMultiblockTier2Mirrored)
 		registerMultiblock(AutoCrafterMultiblockTier3)
 		registerMultiblock(AutoCrafterMultiblockTier3Mirrored)
+		registerMultiblock(CoreForgeMultiblock)
 
 		registerMultiblock(PowerFurnaceMultiblockTier1)
 		registerMultiblock(PowerFurnaceMultiblockTier2)
