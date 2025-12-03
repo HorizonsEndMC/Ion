@@ -78,9 +78,9 @@ object CustomItemKeys : KeyRegistry<CustomItem>(RegistryKeys.CUSTOM_ITEMS, Custo
 	val ZIRCON_ORE = registerKey("ZIRCON_ORE")
 	val ZIRCON = registerKey("ZIRCON")
 	val ZIRCON_BLOCK = registerKey("ZIRCON_BLOCK")
-	val ATAVUM_ORE = registerKey("AVATUM_ORE")
-	val ATAVUM = registerKey("AVATUM")
-	val ATAVUM_BLOCK = registerKey("AVATUM_BLOCK")
+	val ATAVUM_ORE = registerKey("ATAVUM_ORE")
+	val ATAVUM = registerKey("ATAVUM")
+	val ATAVUM_BLOCK = registerKey("ATAVUM_BLOCK")
 	val KOTH_BLOCK = registerKey("KOTH_BLOCK")
 	
 	val NETHERITE_CASING = registerTypedKey<CustomBlockItem>("NETHERITE_CASING")
