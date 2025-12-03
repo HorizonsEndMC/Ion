@@ -355,6 +355,7 @@ object MultiblockRegistration : IonServerComponent() {
 
 		// Starship weapons
 		registerMultiblock(LaserCannonStarshipWeaponMultiblock)
+		registerMultiblock(DoomsdayDeviceWeaponMultiblock)
 		registerMultiblock(PlasmaCannonStarshipWeaponMultiblock)
 		registerMultiblock(PulseCannonStarshipWeaponMultiblock)
 		registerMultiblock(InterceptorCannonStarshipWeaponMultiblock)
