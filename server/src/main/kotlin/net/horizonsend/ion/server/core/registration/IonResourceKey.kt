@@ -4,5 +4,5 @@ import net.horizonsend.ion.server.IonServer
 import org.bukkit.NamespacedKey
 
 open class IonResourceKey<T: Any>(val key: String) {
-	val ionNapespacedKey = NamespacedKey(IonServer, key)
+	val ionNamespacedKey = NamespacedKey(IonServer, key)
 }

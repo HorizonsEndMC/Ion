@@ -22,10 +22,10 @@ import org.bukkit.Bukkit
 data class SpaceGenerationConfiguration(
 	val baseAsteroidDensity: Double = 0.25,
 	val maxAsteroidSize: Double = 14.0,
-	val blockPalettes: ArrayList<Palette>,
+	val blockPalettes: List<Palette>,
 	val oreRatio: Double,
 	val features: List<AsteroidFeature>,
-	val wreckClasses: ArrayList<WreckClass>,
+	val wreckClasses: List<WreckClass>,
 	val wreckMultiplier: Double = 0.01
 ) : GenerationConfiguration {
 	override fun buildGenerator(world: IonWorld): IonWorldGenerator<*> {

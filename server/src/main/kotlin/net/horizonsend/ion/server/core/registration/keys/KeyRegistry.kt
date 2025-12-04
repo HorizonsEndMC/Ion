@@ -9,6 +9,8 @@ import net.horizonsend.ion.server.core.registration.registries.Registry
 import org.bukkit.persistence.ListPersistentDataType
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.NamespacedKey
+import org.bukkit.persistence.ListPersistentDataType
+import org.bukkit.persistence.PersistentDataType
 import kotlin.reflect.KClass
 
 abstract class KeyRegistry<T : Any>(private val registryId: IonBindableResourceKey<Registry<T>>, private val type: KClass<T>) {
@@ -23,7 +25,7 @@ abstract class KeyRegistry<T : Any>(private val registryId: IonBindableResourceK
 	protected inline fun <reified Z : T> registerTypedKey(key: String): IonRegistryKey<T, Z> {
 		val registryKey = registry.createKey(key, Z::class)
 		keys[key] = registryKey
-		namespaced[registryKey.ionNapespacedKey] = registryKey
+		namespaced[registryKey.ionNamespacedKey] = registryKey
 		allKeys.add(registryKey)
 		return registryKey
 	}
@@ -31,7 +33,7 @@ abstract class KeyRegistry<T : Any>(private val registryId: IonBindableResourceK
 	protected fun registerKey(key: String): IonRegistryKey<T, T> {
 		val registryKey = registry.createKey(key, type)
 		keys[key] = registryKey
-		namespaced[registryKey.ionNapespacedKey] = registryKey
+		namespaced[registryKey.ionNamespacedKey] = registryKey
 		allKeys.add(registryKey)
 		return registryKey
 	}
