@@ -1,5 +1,6 @@
 package net.horizonsend.ion.server.miscellaneous.utils.coordinates
 
+import com.sk89q.worldedit.math.BlockVector3
 import net.horizonsend.ion.common.utils.miscellaneous.d
 import net.horizonsend.ion.common.utils.miscellaneous.squared
 import net.minecraft.core.BlockPos
@@ -759,3 +760,5 @@ fun lightning(startLocation: Location, endLocation: Location, maxGenerations: In
 	return finalLocations
 	 */
 }
+
+fun BlockVector3.toVec3i(): Vec3i = Vec3i(x(), y(), z())

@@ -23,6 +23,7 @@ import net.horizonsend.ion.server.features.world.environment.modules.GravityModu
 import net.horizonsend.ion.server.features.world.environment.weather.configuration.WeatherTypeConfiguration
 import net.horizonsend.ion.server.features.world.environment.weather.configuration.WorldWeatherConfiguration
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.feature.AsteroidPlacementConfiguration
+import net.horizonsend.ion.server.features.world.generation.generators.configuration.feature.WreckPlacementConfiguration
 import net.horizonsend.ion.server.features.world.generation.generators.configuration.generator.FeatureGeneratorConfiguration
 import org.bukkit.entity.EntityType
 import java.util.concurrent.TimeUnit
@@ -111,7 +112,8 @@ object DefaultWorldConfiguration {
 				)
 			),
 			terrainGenerationSettings = FeatureGeneratorConfiguration(features = setOf(
-				AsteroidPlacementConfiguration()
+				AsteroidPlacementConfiguration(),
+				WreckPlacementConfiguration()
 			))
 		)
 	)

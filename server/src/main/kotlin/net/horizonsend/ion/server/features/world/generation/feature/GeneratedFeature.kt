@@ -25,7 +25,7 @@ abstract class GeneratedFeature<T: FeatureMetaData>(override val key: IonRegistr
 
 	abstract fun generateChunk(generator: IonWorldGenerator<*>, chunkPos: ChunkPos, chunkData: ChunkGenerator.ChunkData, start: FeatureStart, metaData: T, minY: Int, maxY: Int)
 
-	val resourceKey: ResourceKey<Structure> = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(key.ionNapespacedKey.namespace, key.ionNapespacedKey.key))
+	val resourceKey: ResourceKey<Structure> = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(key.ionNamespacedKey.namespace, key.ionNamespacedKey.key))
 	lateinit var ionStructure: Reference<Structure> // by lazy { MinecraftServer.getServer().registryAccess().lookupOrThrow(Registries.STRUCTURE).getValueOrThrow(resourceKey) as IonStructureTypes.IonStructure }
 
 	@Suppress("UNCHECKED_CAST")
@@ -40,7 +40,7 @@ abstract class GeneratedFeature<T: FeatureMetaData>(override val key: IonRegistr
 	}
 
 	/**
-	 * Returns min point to max point, centered on the placement origin.
+	 * Returns min point to max point, relative from the origin of the feature
 	 **/
 	abstract fun getExtents(metaData: T): Pair<Vec3i, Vec3i>
 
