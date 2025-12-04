@@ -12,9 +12,7 @@ enum class Crop(val material: Material, val seed: Material) {
 	POTATOES(Material.POTATOES, Material.POTATO),
 	BEETROOTS(Material.BEETROOTS, Material.BEETROOT_SEEDS),
 	NETHER_WART(Material.NETHER_WART, Material.NETHER_WART),
-	SWEET_BERRIES(Material.SWEET_BERRY_BUSH, Material.SWEET_BERRIES),
-	PUMPKINS(Material.PUMPKIN_STEM, Material.PUMPKIN_SEEDS),
-	MELONS(Material.MELON_STEM, Material.MELON_SEEDS) {
+	SWEET_BERRIES(Material.SWEET_BERRY_BUSH, Material.SWEET_BERRIES) {
 		private val harvestedBush = Material.SWEET_BERRY_BUSH.createBlockData {
 			it as Ageable
 
@@ -42,8 +40,9 @@ enum class Crop(val material: Material, val seed: Material) {
 		override fun canBePlanted(block: Block): Boolean {
 			return plantable.contains(block.getRelative(BlockFace.DOWN).type)
 		}
-	}
-
+	},
+	PUMPKINS(Material.PUMPKIN_STEM, Material.PUMPKIN_SEEDS),
+	MELONS(Material.MELON_STEM, Material.MELON_SEEDS)
 	;
 
 	open fun harvest(block: Block) {
